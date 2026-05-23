@@ -361,7 +361,7 @@ export default function Auth() {
   // Forgot Password View
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#f8f9fc]">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -388,10 +388,21 @@ export default function Auth() {
   // Main Auth View
   return (
     <div className="min-h-screen relative overflow-hidden flex">
-      <AuthLeftPanel />
+      <div className="hidden lg:flex w-1/2 bg-[#f1f3f9] items-center justify-center border-r border-border">
+        <div className="max-w-md text-center space-y-4">
+          <div className="h-16 w-16 bg-primary rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-primary/20">
+            <Shield className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight text-[#1a1c21]">Promo Finance</h2>
+          <p className="text-[#64748b] text-lg font-medium leading-relaxed">
+            Sua plataforma de inteligência financeira premium.
+          </p>
+        </div>
+      </div>
+
 
       <div className="w-full lg:w-1/2 relative">
-        <AuthMobileBackground />
+        <div className="absolute inset-0 bg-[#ffffff] pointer-events-none" />
         
         <div className="relative z-10 min-h-screen flex items-center justify-center p-4 lg:p-8">
           <motion.div
@@ -407,22 +418,16 @@ export default function Auth() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="border-none bg-background/60 backdrop-blur-2xl shadow-2xl rounded-3xl ring-1 ring-white/10 overflow-hidden">
-                <CardHeader className="text-center p-8 pb-4">
-                  <CardTitle className="text-2xl font-extrabold tracking-tight flex items-center justify-center gap-3">
-                    <motion.div
-                      initial={{ scale: 0, rotate: -20 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ delay: 0.5, type: 'spring', damping: 12 }}
-                    >
-                      <Shield className="h-6 w-6 text-primary" />
-                    </motion.div>
-                    Acesso ao Sistema
+              <Card className="border border-border bg-white shadow-xl shadow-black/5 rounded-2xl overflow-hidden">
+                <CardHeader className="text-center p-8 pb-2">
+                  <CardTitle className="text-2xl font-bold tracking-tight text-[#1a1c21]">
+                    Bem-vindo de volta
                   </CardTitle>
-                  <CardDescription className="text-sm font-medium text-muted-foreground opacity-80">
-                    Sua plataforma de inteligência financeira premium.
+                  <CardDescription className="text-sm font-medium text-[#64748b]">
+                    Acesse sua conta para continuar
                   </CardDescription>
                 </CardHeader>
+
                 
                 <CardContent>
                   {sloFailure && (
@@ -432,17 +437,18 @@ export default function Auth() {
                     />
                   )}
                   <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/40 p-1.5 rounded-2xl border border-border/50 backdrop-blur-sm" variant="bordered">
+                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-[#f1f3f9] p-1 rounded-lg border border-border" variant="bordered">
                       <TabsTrigger 
                         value="login" 
-                        className="gap-2 rounded-xl py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-lg"
+                        className="gap-2 rounded-md py-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+
                       >
                         <LogIn className="h-4 w-4" />
                         Acessar
                       </TabsTrigger>
                       <TabsTrigger 
                         value="register" 
-                        className="gap-2 rounded-xl py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-lg"
+                        className="gap-2 rounded-md py-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
                       >
                         <UserPlus className="h-4 w-4" />
                         Criar Conta

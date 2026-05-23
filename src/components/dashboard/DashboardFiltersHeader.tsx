@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import { Building2, Target, Settings2, Sparkles, Sun, Moon, Sunrise, Sunset, Activity, TrendingUp, Calendar, CheckCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Building2, Target, Settings2, Calendar, Sunrise, Sun, Sunset, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -13,30 +12,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
 } as const;
 
-function getGreeting(): { text: string; icon: React.ElementType; emoji: string } {
+function getGreeting(): { text: string; icon: React.ElementType } {
   const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return { text: 'Bom dia', icon: Sunrise, emoji: '☀️' };
-  if (hour >= 12 && hour < 18) return { text: 'Boa tarde', icon: Sun, emoji: '🌤️' };
-  if (hour >= 18 && hour < 22) return { text: 'Boa noite', icon: Sunset, emoji: '🌅' };
-  return { text: 'Boa noite', icon: Moon, emoji: '🌙' };
-}
-
-function getMotivationalInsight(): string {
-  const day = new Date().getDay();
-  const insights = [
-    'Comece a semana revisando suas metas financeiras.',
-    'Verifique suas cobranças pendentes para manter o fluxo de caixa saudável.',
-    'Meio de semana é ideal para revisar conciliações bancárias.',
-    'Antecipe pagamentos com desconto para economizar.',
-    'Sexta-feira: revise o fechamento semanal antes do fim do dia.',
-    'Aproveite o sábado para planejar a próxima semana.',
-    'Domingo de planejamento: defina prioridades para amanhã.',
-  ];
-  return insights[day];
+  if (hour >= 5 && hour < 12) return { text: 'Bom dia', icon: Sunrise };
+  if (hour >= 12 && hour < 18) return { text: 'Boa tarde', icon: Sun };
+  if (hour >= 18 && hour < 22) return { text: 'Boa noite', icon: Sunset };
+  return { text: 'Boa noite', icon: Moon };
 }
 
 function formatDate(): string {
@@ -67,13 +52,12 @@ export function DashboardFiltersHeader({
   setCentroCustoFilter,
   onOpenConfig,
 }: DashboardFiltersHeaderProps) {
-  const { currentEmpresaId, user } = useAuth();
+  const { currentEmpresaId, profile, user } = useAuth();
   const greeting = getGreeting();
   const GreetingIcon = greeting.icon;
-  const insight = getMotivationalInsight();
   const dateStr = formatDate();
+  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Gestor';
 
-  // Sincroniza filtro de empresa do dashboard com a empresa ativa do sistema
   useEffect(() => {
     if (currentEmpresaId && empresaFilter !== currentEmpresaId && empresaFilter === 'all') {
       setEmpresaFilter(currentEmpresaId);
@@ -81,122 +65,71 @@ export function DashboardFiltersHeader({
   }, [currentEmpresaId, empresaFilter, setEmpresaFilter]);
 
   return (
-    <motion.div variants={itemVariants} className="relative px-1">
-      {/* Floating Premium Hero Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-background/20 backdrop-blur-3xl p-8 sm:p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] ring-1 ring-white/10 group">
-        {/* Animated Accent Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+    <motion.div variants={itemVariants} className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-[#64748b] mb-1">
+            <Calendar className="h-3.5 w-3.5" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">{dateStr}</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 shadow-sm text-primary">
+              <GreetingIcon className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1a1c21]">
+                {greeting.text}, <span className="text-primary">{displayName}</span>
+              </h1>
+              <p className="text-sm font-medium text-[#64748b]">
+                Bem-vindo ao seu painel financeiro consolidado.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          onClick={onOpenConfig}
+          className="h-10 px-4 rounded-lg border-border bg-white font-bold text-xs gap-2 hover:bg-[#f8f9fc] transition-all self-start md:self-auto"
+        >
+          <Settings2 className="h-4 w-4 text-[#64748b]" />
+          Personalizar Painel
+        </Button>
+      </div>
+      
+      <div className="flex flex-col sm:flex-row items-center gap-4 p-3 rounded-xl bg-white border border-border shadow-sm">
+        <div className="flex items-center gap-2 flex-1 w-full px-2">
+          <Building2 className="h-4 w-4 text-[#64748b] shrink-0" />
+          <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
+            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-[#f1f3f9] transition-all font-bold text-xs focus:ring-0">
+              <SelectValue placeholder="Empresa" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as Empresas</SelectItem>
+              {empresas.map(e => (
+                <SelectItem key={e.id} value={e.id}>
+                  {e.nome_fantasia || e.razao_social}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         
-        {/* Glass Orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="w-px h-6 bg-border hidden sm:block" />
 
-        <div className="relative z-10 flex flex-col gap-8">
-          {/* Header Top Section */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-            <div className="space-y-6">
-              {/* Status & Date Badges */}
-              <div className="flex items-center gap-4 flex-wrap">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-sm"
-                >
-                  <Calendar className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/80">{dateStr}</span>
-                </motion.div>
-                
-                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/10 border border-success/20">
-                  <div className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Quantum-Governance 10/10 Online</span>
-                </div>
-              </div>
-
-              {/* Greeting with Dynamic Icon */}
-              <div className="flex items-center gap-6">
-                <motion.div 
-                  className="h-16 w-16 rounded-[1.5rem] bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-2xl shadow-primary/20 relative overflow-hidden"
-                  whileHover={{ scale: 1.05, rotate: 5 }}
-                >
-                  <div className="absolute inset-0 bg-white/20 blur-sm -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                  <GreetingIcon className="h-8 w-8 text-white relative z-10" />
-                </motion.div>
-                <div>
-                  <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-foreground flex items-center gap-3">
-                    Cyber-Singularity: <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600 drop-shadow-[0_0_30px_rgba(var(--primary),0.5)]">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
-                  </h1>
-                  <p className="text-lg font-medium text-muted-foreground/70 mt-1 max-w-xl italic">
-                    "{insight}"
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions Global */}
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={onOpenConfig}
-                className="h-14 px-6 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-black gap-3 transition-all hover:translate-y-[-2px] shadow-xl group/btn"
-              >
-                <Settings2 className="h-5 w-5 text-primary group-hover/btn:rotate-90 transition-transform duration-500" />
-                Command Center
-              </Button>
-            </div>
-          </div>
-          
-          {/* Intelligence Filters Bar */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 p-2 rounded-[1.8rem] bg-black/20 border border-white/5 backdrop-blur-xl">
-            <div className="flex items-center gap-3 pl-6 border-r border-white/10 pr-6 h-10 hidden sm:flex">
-              <Sparkles className="h-4 w-4 text-purple-400" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Cyber-Governance 10/10</span>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:flex items-center gap-4 flex-1 w-full px-4 sm:px-0">
-              <div className="flex items-center gap-3 flex-1">
-                <Building2 className="h-4 w-4 text-primary shrink-0" />
-                <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
-                  <SelectTrigger className="w-full h-12 rounded-xl border-none bg-transparent hover:bg-white/5 transition-all font-bold text-sm focus:ring-0">
-                    <SelectValue placeholder="Selecione a Organização" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
-                    <SelectItem value="all">
-                      <div className="flex items-center gap-2">
-                        Todas as Empresas
-                        {empresaFilter === 'all' && <CheckCircle className="h-3 w-3 text-success" />}
-                      </div>
-                    </SelectItem>
-                    {empresas.map(e => (
-                      <SelectItem key={e.id} value={e.id} className="rounded-lg">
-                        <div className="flex items-center gap-2">
-                          {e.nome_fantasia || e.razao_social}
-                          {empresaFilter === e.id && <CheckCircle className="h-3 w-3 text-success" />}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="w-px h-6 bg-white/10 hidden sm:block" />
-
-              <div className="flex items-center gap-3 flex-1">
-                <Target className="h-4 w-4 text-purple-400 shrink-0" />
-                <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
-                  <SelectTrigger className="w-full h-12 rounded-xl border-none bg-transparent hover:bg-white/5 transition-all font-bold text-sm focus:ring-0">
-                    <SelectValue placeholder="Centro de Custos" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
-                    <SelectItem value="all">Filtro Global de Custos</SelectItem>
-                    {centrosCusto.map(cc => (
-                      <SelectItem key={cc.id} value={cc.id} className="rounded-lg">{cc.nome}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 flex-1 w-full px-2">
+          <Target className="h-4 w-4 text-[#64748b] shrink-0" />
+          <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
+            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-[#f1f3f9] transition-all font-bold text-xs focus:ring-0">
+              <SelectValue placeholder="Centro de Custos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Filtro Global</SelectItem>
+              {centrosCusto.map(cc => (
+                <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </motion.div>

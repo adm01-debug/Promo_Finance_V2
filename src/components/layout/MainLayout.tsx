@@ -41,7 +41,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const showOnboarding = location.pathname === '/';
 
   return (
-    <div className="min-h-screen bg-[#05070A] text-white selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-[#f8f9fc] text-[#1a1c21] selection:bg-primary selection:text-white">
       {/* Skip links para acessibilidade WCAG AA */}
       <SkipLinks />
 
@@ -95,11 +95,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 100 : 320}px)`,
         }}
       >
-        <div className="w-full max-w-[1800px] mx-auto p-4 md:p-10 lg:p-16">
+        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 lg:p-10">
           {/* Contextual Breadcrumbs with Back Button */}
-          <div className="mb-12">
+          <div className="mb-6">
             <ContextualBreadcrumbs />
           </div>
+
           
           {/* Onboarding Checklist - show on dashboard */}
           {showOnboarding && (

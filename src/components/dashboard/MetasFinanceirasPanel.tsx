@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Target, Plus, TrendingUp, Lightbulb, Loader2, Sparkles, Trash2, LayoutGrid, CheckCircle2 } from 'lucide-react';
+import { Target, Plus, TrendingUp, Lightbulb, Loader2, Sparkles, Trash2, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,69 +38,37 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
   const latestScore = scoreHistory?.[0];
 
   return (
-    <div className="space-y-8">
-      {/* Overview Cards if expanded */}
-      {defaultExpanded && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="bg-background/40 backdrop-blur-xl border-white/10">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/50">Total em Metas</p>
-                  <p className="text-2xl font-black tabular-nums">{formatCurrency(metas?.reduce((acc, m) => acc + m.valor_meta, 0) || 0)}</p>
-                </div>
-                <Target className="h-8 w-8 text-primary/40" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-background/40 backdrop-blur-xl border-white/10">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/50">Objetivos Ativos</p>
-                  <p className="text-2xl font-black tabular-nums">{metas?.length || 0}</p>
-                </div>
-                <CheckCircle2 className="h-8 w-8 text-success/40" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Executive Score Matrix */}
+    <div className="space-y-6">
       {latestScore && (
-        <Card className="border-none bg-gradient-to-br from-primary/10 via-background to-purple-500/5 shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 group">
-          <CardContent className="p-8 relative">
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-              <TrendingUp className="h-24 w-24 text-primary" />
-            </div>
-            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-8">
+        <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden group">
+          <CardContent className="p-6 relative">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="text-center sm:text-left">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/60 mb-2">Corporate Vitality Index</p>
-                <div className="flex items-baseline gap-2 justify-center sm:justify-start">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748b] mb-1">Score de Vitalidade</p>
+                <div className="flex items-baseline gap-1 justify-center sm:justify-start">
                   <span className={cn(
-                    "text-6xl font-black tracking-tighter tabular-nums",
-                    latestScore.score >= 70 ? 'text-success' : latestScore.score >= 40 ? 'text-warning' : 'text-destructive'
+                    "text-4xl font-bold tracking-tight tabular-nums",
+                    latestScore.score >= 70 ? 'text-emerald-600' : latestScore.score >= 40 ? 'text-amber-600' : 'text-rose-600'
                   )}>
                     {latestScore.score}
                   </span>
-                  <span className="text-xl font-bold text-muted-foreground/30 italic">/ 100</span>
+                  <span className="text-sm font-medium text-[#94a3b8]">/100</span>
                 </div>
               </div>
-              <div className="flex-1 max-w-sm w-full space-y-4">
-                <div className="h-3 rounded-full bg-white/5 overflow-hidden ring-1 ring-white/10">
+              <div className="flex-1 max-w-xs w-full space-y-3">
+                <div className="h-1.5 rounded-full bg-[#e2e8f0] overflow-hidden">
                   <m.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${latestScore.score}%` }}
-                    transition={{ duration: 1.5, ease: "circOut" }}
+                    transition={{ duration: 1 }}
                     className={cn(
-                      "h-full rounded-full shadow-[0_0_15px_rgba(var(--primary),0.5)]",
-                      latestScore.score >= 70 ? 'bg-success' : latestScore.score >= 40 ? 'bg-warning' : 'bg-destructive'
+                      "h-full rounded-full",
+                      latestScore.score >= 70 ? 'bg-emerald-500' : latestScore.score >= 40 ? 'bg-amber-500' : 'bg-rose-500'
                     )} 
                   />
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 text-center italic">
-                  Neural Scan: System operating at {latestScore.score >= 70 ? 'peak performance' : latestScore.score >= 40 ? 'nominal efficiency' : 'critical levels'}
+                <p className="text-[10px] font-medium text-[#64748b] text-center italic leading-relaxed">
+                  Sistema operando em nível {latestScore.score >= 70 ? 'ótimo' : latestScore.score >= 40 ? 'estável' : 'crítico'}
                 </p>
               </div>
             </div>
@@ -108,127 +76,122 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
         </Card>
       )}
 
-      {/* Strategy Objectives Matrix */}
-      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl rounded-[2rem] overflow-hidden ring-1 ring-white/10">
-        <CardHeader className="p-8 pb-4 border-b border-white/5">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-primary shadow-lg shadow-primary/20 flex items-center justify-center text-white">
-                <Target className="h-6 w-6" />
+      <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden">
+        <CardHeader className="p-6 pb-4 border-b border-border">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-primary">
+                <Target className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-black tracking-tight">Strategy Objectives — Quantum 10/10 — {currentYear}</CardTitle>
-                <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50">Goal synchronization & attainment matrix</CardDescription>
+                <CardTitle className="text-lg font-bold text-[#1a1c21]">Objetivos Estratégicos</CardTitle>
+                <CardDescription className="text-xs text-[#64748b]">Metas para {currentYear}</CardDescription>
               </div>
             </div>
             <Dialog open={formOpen} onOpenChange={setFormOpen}>
               <DialogTrigger asChild>
-                <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-                  <Plus className="h-5 w-5" />
-                  Define Meta
+                <Button size="sm" className="h-9 px-4 rounded-lg bg-primary text-white font-bold gap-2">
+                  <Plus className="h-4 w-4" />
+                  Meta
                 </Button>
               </DialogTrigger>
-              <DialogContent className="rounded-[2.5rem] border-white/10 bg-background/95 backdrop-blur-3xl shadow-2xl p-8 max-w-md">
-                <DialogHeader className="mb-6">
-                  <DialogTitle className="text-2xl font-black tracking-tight">Nova Diretriz Estratégica</DialogTitle>
+              <DialogContent className="rounded-xl p-6 max-w-sm">
+                <DialogHeader className="mb-4">
+                  <DialogTitle className="text-xl font-bold">Nova Meta</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Título da Meta</Label>
-                    <Input className="h-12 rounded-xl bg-white/5 border-white/10 focus:ring-primary" placeholder="Ex: Expansão Market Share" value={form.titulo} onChange={(e) => setForm(f => ({ ...f, titulo: e.target.value }))} />
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-[#64748b]">Título</Label>
+                    <Input className="h-10 rounded-lg" placeholder="Ex: Meta de Faturamento" value={form.titulo} onChange={(e) => setForm(f => ({ ...f, titulo: e.target.value }))} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Vetor</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-bold text-[#64748b]">Tipo</Label>
                       <Select value={form.tipo} onValueChange={(v) => setForm(f => ({ ...f, tipo: v }))}>
-                        <SelectTrigger className="h-12 rounded-xl bg-white/5 border-white/10"><SelectValue /></SelectTrigger>
-                        <SelectContent className="rounded-xl border-white/10 bg-background/90 backdrop-blur-xl">
+                        <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
+                        <SelectContent>
                           <SelectItem value="receita">Receita</SelectItem>
-                          <SelectItem value="despesa">Redução Custos</SelectItem>
-                          <SelectItem value="lucro">Profit/Lucro</SelectItem>
-                          <SelectItem value="inadimplencia">Inadimplência</SelectItem>
+                          <SelectItem value="despesa">Despesa</SelectItem>
+                          <SelectItem value="lucro">Lucro</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Ciclo Mensal</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-bold text-[#64748b]">Mês</Label>
                       <Select value={form.mes} onValueChange={(v) => setForm(f => ({ ...f, mes: v }))}>
-                        <SelectTrigger className="h-12 rounded-xl bg-white/5 border-white/10"><SelectValue /></SelectTrigger>
-                        <SelectContent className="rounded-xl border-white/10 bg-background/90 backdrop-blur-xl max-h-[200px]">
+                        <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
+                        <SelectContent>
                           {Array.from({ length: 12 }, (_, i) => (
-                            <SelectItem key={i + 1} value={String(i + 1)}>{new Date(2000, i).toLocaleString('pt-BR', { month: 'long' })}</SelectItem>
+                            <SelectItem key={i + 1} value={String(i + 1)}>{new Date(2000, i).toLocaleString('pt-BR', { month: 'short' })}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Valor Alvo (R$)</Label>
-                    <Input type="number" className="h-12 rounded-xl bg-white/5 border-white/10 focus:ring-primary font-bold" placeholder="0,00" value={form.valor_meta} onChange={(e) => setForm(f => ({ ...f, valor_meta: e.target.value }))} />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-[#64748b]">Valor Alvo</Label>
+                    <Input type="number" className="h-10 rounded-lg font-bold" placeholder="0,00" value={form.valor_meta} onChange={(e) => setForm(f => ({ ...f, valor_meta: e.target.value }))} />
                   </div>
-                  <Button onClick={handleCreate} disabled={createMeta.isPending || !form.titulo || !form.valor_meta} className="w-full h-14 rounded-2xl bg-primary font-black text-lg gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                    {createMeta.isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
-                    Engajar Objetivo
+                  <Button onClick={handleCreate} disabled={createMeta.isPending || !form.titulo || !form.valor_meta} className="w-full h-11 rounded-lg bg-primary text-white font-bold gap-2 mt-2">
+                    {createMeta.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    Definir Objetivo
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
         </CardHeader>
-        <CardContent className="p-8 pt-6">
+        <CardContent className="p-6">
           <AnimatePresence mode="popLayout">
             {isLoading ? (
-              <div className="space-y-4">
-                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl bg-white/5" />)}
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg bg-[#f1f3f9]" />)}
               </div>
             ) : !metas || metas.length === 0 ? (
-              <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-                <Target className="h-20 w-20 mb-4 stroke-[1px]" />
-                <p className="text-lg font-bold">Horizonte Vazio</p>
-                <p className="text-sm font-medium">Defina novas diretrizes para sincronizar o sistema.</p>
-              </m.div>
+              <div className="flex flex-col items-center justify-center py-12 text-center text-[#94a3b8]">
+                <Target className="h-12 w-12 mb-3 opacity-20" />
+                <p className="text-sm font-bold">Sem metas definidas</p>
+                <p className="text-xs">Clique em 'Meta' para começar.</p>
+              </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3">
                 {metas.map((meta, index) => (
                   <m.div 
                     key={meta.id} 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="group relative p-6 rounded-2xl border border-white/5 bg-black/20 backdrop-blur-xl hover:bg-black/30 transition-all overflow-hidden"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    className="group relative p-4 rounded-lg border border-border bg-[#f8f9fc] hover:bg-white transition-all"
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-black tracking-tight">{meta.titulo}</span>
-                          <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest py-0 px-2 border-white/10 bg-white/5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-sm font-bold text-[#1a1c21] truncate">{meta.titulo}</span>
+                          <Badge variant="outline" className="text-[9px] font-bold px-1.5 h-auto rounded-sm uppercase bg-white">
                             {meta.tipo}
                           </Badge>
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">Mês {meta.mes}/{meta.ano} • Vector Scan</p>
+                        <p className="text-[10px] font-medium text-[#64748b]">Mês {meta.mes}/{meta.ano}</p>
                       </div>
-                      <p className="text-xl font-black tracking-tighter tabular-nums text-primary">{formatCurrency(meta.valor_meta)}</p>
+                      <p className="text-sm font-bold text-primary tabular-nums">{formatCurrency(meta.valor_meta)}</p>
                     </div>
-                    <div className="space-y-3">
-                      <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                    <div className="space-y-2">
+                      <div className="h-1.5 rounded-full bg-[#e2e8f0] overflow-hidden">
                         <m.div 
                           initial={{ width: 0 }}
-                          animate={{ width: "35%" }} // Exemplo estático para visual, o correto seria (realizado/meta)*100
-                          className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full"
+                          animate={{ width: "35%" }}
+                          className="h-full bg-primary rounded-full"
                         />
                       </div>
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">35% Synchronized</span>
-                        </div>
+                        <span className="text-[10px] font-bold text-emerald-600">35% atingido</span>
                         <Button 
                           variant="ghost" 
                           size="icon" 
                           onClick={() => deleteMeta.mutate(meta.id)}
-                          className="h-8 w-8 rounded-lg text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
+                          className="h-6 w-6 text-[#94a3b8] hover:text-rose-500 hover:bg-rose-50 rounded-md opacity-0 group-hover:opacity-100 transition-all"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
@@ -240,42 +203,39 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
         </CardContent>
       </Card>
 
-      {/* Neural Directives Matrix */}
       {recomendacoes && recomendacoes.length > 0 && (
-        <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10">
-          <CardHeader className="p-8 pb-4 border-b border-white/5">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-warning/20 shadow-lg shadow-warning/5 flex items-center justify-center text-warning">
-                <Lightbulb className="h-6 w-6" />
+        <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden">
+          <CardHeader className="p-6 pb-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-amber-50 flex items-center justify-center border border-amber-100 text-amber-600">
+                <Lightbulb className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-black tracking-tight">IA Directives Matrix</CardTitle>
-                <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50">High-impact neural optimizations</CardDescription>
+                <CardTitle className="text-lg font-bold text-[#1a1c21]">Recomendações</CardTitle>
+                <CardDescription className="text-xs text-[#64748b]">Otimizações de alto impacto</CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-8 pt-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <CardContent className="p-6 space-y-3">
             {recomendacoes.map((rec, i) => (
               <m.div 
                 key={rec.id} 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="group p-5 rounded-2xl border border-warning/10 bg-warning/5 hover:bg-warning/10 transition-all cursor-default"
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="p-4 rounded-lg border border-amber-100 bg-amber-50/50"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-8 w-8 rounded-lg bg-warning/20 flex items-center justify-center text-warning">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <span className="text-sm font-black tracking-tight">{rec.titulo}</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+                  <span className="text-sm font-bold text-[#1a1c21]">{rec.titulo}</span>
                 </div>
-                <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed mb-4 italic">
-                  "{rec.descricao}"
+                <p className="text-xs text-[#64748b] leading-relaxed mb-3">
+                  {rec.descricao}
                 </p>
                 {rec.impacto_estimado > 0 && (
-                  <div className="flex items-center gap-2 py-2 px-3 rounded-xl bg-black/40 border border-white/5">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-success" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-success/80">Estimated ROI: {formatCurrency(rec.impacto_estimado)}</span>
+                  <div className="inline-flex items-center gap-1.5 py-1 px-2 rounded-md bg-white border border-amber-100">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                    <span className="text-[10px] font-bold text-emerald-700">Impacto: {formatCurrency(rec.impacto_estimado)}</span>
                   </div>
                 )}
               </m.div>

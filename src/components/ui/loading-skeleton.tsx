@@ -241,12 +241,11 @@ export function LoadingSkeleton({
 // Full page loading with centered spinner
 export function PageLoading({ message = "Carregando..." }: { message?: string }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+    <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
       <div className="relative">
-        <div className="h-12 w-12 rounded-full border-4 border-muted animate-pulse" />
-        <div className="absolute inset-0 h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+        <div className="h-10 w-10 rounded-full border-4 border-[#333333] border-t-[#3b82f6] animate-spin" />
       </div>
-      <p className="text-muted-foreground text-sm animate-pulse">{message}</p>
+      <p className="text-[#999999] text-xs font-medium tracking-tight">{message}</p>
     </div>
   );
 }
