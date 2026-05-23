@@ -204,17 +204,17 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-[#f1f3f9] transition-all">
-                <div className="h-7 w-7 rounded-md bg-[#e2e8f0] flex items-center justify-center font-bold text-[#64748b] text-[10px]">
+              <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-muted transition-all">
+                <div className="h-7 w-7 rounded bg-muted flex items-center justify-center font-bold text-muted-foreground text-[10px]">
                   {initials}
                 </div>
                 <div className="hidden sm:flex flex-col items-start text-left">
-                  <span className="text-xs font-bold text-[#1a1c21] leading-none">{displayName}</span>
+                  <span className="text-xs font-semibold text-foreground leading-none">{displayName}</span>
                   {roleInfo && (
-                    <span className="text-[10px] text-[#64748b] font-medium mt-0.5">{roleInfo.label}</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">{roleInfo.label}</span>
                   )}
                 </div>
-                <ChevronDown className="h-3.5 w-3.5 text-[#94a3b8]" />
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
