@@ -102,17 +102,17 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-14 bg-background border-b border-border transition-all duration-200',
+        'fixed top-0 right-0 z-30 h-16 border-b border-border transition-all duration-200 glass-effect bg-background/60 backdrop-blur-xl',
         sidebarCollapsed ? 'left-[80px]' : 'left-[280px]'
       )}
     >
-      <div className="h-full flex items-center justify-between px-6 gap-6">
-        <div className="flex items-center flex-1 max-w-xl gap-3">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="h-full flex items-center justify-between px-8 gap-6">
+        <div className="flex items-center flex-1 max-w-xl gap-4">
+          <div className="relative w-full max-w-sm group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
-              placeholder="Pesquisar..."
-              className="pl-10 bg-muted/50 border-transparent focus:bg-background h-9 rounded-md transition-all text-sm"
+              placeholder="Comando (Ctrl+K)..."
+              className="pl-11 bg-muted/30 border-transparent focus:bg-background focus:ring-1 focus:ring-primary/20 h-10 rounded-xl transition-all text-[13px] font-medium placeholder:text-muted-foreground/50 shadow-sm group-hover:bg-muted/50"
               onFocus={(e) => {
                 e.preventDefault();
                 e.target.blur();
@@ -122,9 +122,9 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           </div>
 
           {empresaLabel && (
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50 border border-border">
-              <div className="h-1.5 w-1.5 rounded-full bg-success" />
-              <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[150px]">
+            <div className="hidden xl:flex items-center gap-2.5 px-4 py-2 rounded-xl bg-primary/5 border border-primary/10 shadow-sm transition-all hover:bg-primary/10 cursor-default">
+              <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+              <span className="text-[11px] font-black text-primary uppercase tracking-widest truncate max-w-[200px]">
                 {empresaLabel}
               </span>
             </div>
