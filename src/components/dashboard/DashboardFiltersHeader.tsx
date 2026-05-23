@@ -68,9 +68,9 @@ export function DashboardFiltersHeader({
     <motion.div variants={itemVariants} className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-[#64748b] mb-1">
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <Calendar className="h-3.5 w-3.5" />
-            <span className="text-[11px] font-bold uppercase tracking-wider">{dateStr}</span>
+            <span className="text-[11px] font-medium uppercase tracking-wider">{dateStr}</span>
           </div>
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 shadow-sm text-primary">
