@@ -1,6 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, Brain, Target, ShieldCheck } from 'lucide-react';
+import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, ShieldCheck, ShieldAlert, FileText, Download } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,45 +19,39 @@ import { SaldoPorBancoCard } from './SaldoPorBancoCard';
 import { TopClientesLeaderboard } from './TopClientesLeaderboard';
 import { StatusContasPieChart } from './StatusContasPieChart';
 import { TopCentrosCustoChart } from './TopCentrosCustoChart';
-import { DraggableDashboard } from './DraggableDashboard';
 import { CentroAcoesInteligentes } from './CentroAcoesInteligentes';
 import { BlingNFeTab } from '@/components/bling/BlingNFeTab';
 import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
-import { RelatoriosModelos } from '@/components/relatorios/RelatoriosModelos';
-import { ShieldAlert, FileText, Download, TrendingUp, Target as TargetIcon, History } from 'lucide-react';
 import { AlertasOrcamento } from './AlertasOrcamento';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { exportToCSV, exportToPDF } from '@/lib/export-utils';
-import { toast } from 'sonner';
-
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
 } as const;
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
 } as const;
 
 function SectionDivider({ label, icon: Icon }: { label: string; icon: React.ElementType }) {
   return (
-    <div className="flex items-center gap-3 py-1">
+    <div className="flex items-center gap-3 py-2">
       <div className="flex items-center gap-2 shrink-0">
-        <div className="h-10 w-10 rounded-xl bg-primary/[0.08] flex items-center justify-center border border-primary/10 shadow-inner">
-          <Icon className="h-5 w-5 text-primary" />
+        <div className="h-8 w-8 rounded-lg bg-[#f1f3f9] flex items-center justify-center border border-border">
+          <Icon className="h-4 w-4 text-[#64748b]" />
         </div>
-        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground/80">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
           {label}
         </span>
       </div>
-      <div className="flex-1 h-[2px] bg-gradient-to-r from-border/60 via-border/20 to-transparent" />
+      <div className="flex-1 h-px bg-border" />
     </div>
   );
 }
@@ -71,11 +65,6 @@ export const DashboardExecutivo = () => {
 
   const {
     widgets,
-    isEditing,
-    setIsEditing,
-    toggleWidget,
-    reorderWidgets,
-    resizeWidget,
     resetToDefault,
   } = useDashboardConfig();
 
@@ -101,25 +90,12 @@ export const DashboardExecutivo = () => {
     }
   });
 
-  const { data: auditLogs } = useQuery({
-    queryKey: ['dashboard-audit-logs'],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('audit_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      if (error) throw error;
-      return data;
-    }
-  });
-
   if (metrics.isLoading) {
     return <DashboardSkeleton />;
   }
 
   const inadimplenciaBadge = metrics.totalVencidasReceber > 0
-    ? formatCurrency(metrics.totalVencidasReceber) + " overdue"
+    ? formatCurrency(metrics.totalVencidasReceber) + " atrasado"
     : undefined;
 
   const inadimplenciaBadgeVariant = metrics.totalVencidasReceber > 0
@@ -193,7 +169,7 @@ export const DashboardExecutivo = () => {
     })();
 
     return (
-      <div id={widget.id} className={cn(isTarget && "ring-2 ring-primary ring-offset-4 ring-offset-background rounded-[2.5rem] transition-all duration-1000")}>
+      <div id={widget.id} className={cn(isTarget && "ring-2 ring-primary ring-offset-2 rounded-lg")}>
         {widgetContent}
       </div>
     );
@@ -201,20 +177,11 @@ export const DashboardExecutivo = () => {
 
   return (
     <div className="relative min-h-screen">
-      {/* Premium Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[70%] h-[70%] rounded-full bg-primary/25 blur-[160px] animate-[pulse_6s_infinite] opacity-60" />
-        <div className="absolute bottom-[10%] right-[-15%] w-[60%] h-[60%] rounded-full bg-blue-600/20 blur-[140px] animate-[pulse_8s_infinite] opacity-60" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[20%] right-[5%] w-[55%] h-[55%] rounded-full bg-purple-600/20 blur-[170px] animate-[pulse_7s_infinite] opacity-60" style={{ animationDelay: '4s' }} />
-        <div className="absolute middle-0 left-[20%] w-[50%] h-[50%] rounded-full bg-emerald-500/15 blur-[150px] animate-[pulse_9s_infinite] opacity-50" style={{ animationDelay: '1s' }} />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05)_0%,transparent_100%)]" />
-      </div>
-
       <motion.div 
         variants={containerVariants} 
         initial="hidden" 
         animate="visible" 
-        className="relative z-10 space-y-12 sm:space-y-16 pb-32" 
+        className="relative z-10 space-y-8 pb-20" 
         data-tour="dashboard"
       >
         {/* Header Section */}
@@ -229,55 +196,50 @@ export const DashboardExecutivo = () => {
         />
 
         {/* Hero KPIs Section */}
-        <motion.div variants={itemVariants} className="px-1">
+        <motion.div variants={itemVariants}>
           <HeroKPIGrid layout="hero-first">
             <HeroKPICard
-              title="Total Liquidity Index"
+              title="Saldo Consolidado"
               value={metrics.saldoTotal}
               icon={Wallet}
-              iconColor="text-primary"
-              iconBg="bg-primary/10"
-              accentColor="hsl(24, 95%, 46%)"
+              iconColor="text-blue-600"
+              iconBg="bg-blue-50"
+              accentColor="hsl(221 100% 50%)"
               href="/contas-bancarias"
               size="hero"
-              badge={`${metrics.contasBancariasFiltradas.length} active nodes`}
-              tooltip="Consolidado bancário neural em tempo real"
-              insight="Otimize aplicações para CDI superior"
+              badge={`${metrics.contasBancariasFiltradas.length} contas ativas`}
+              tooltip="Saldo total disponível em todas as contas conectadas"
             />
             <HeroKPICard
-              title="Projected Inbound"
+              title="Previsão de Recebimento"
               value={metrics.totalReceber}
               previousValue={metrics.totalReceber - metrics.receitasMes}
               icon={ArrowDownCircle}
-              iconColor="text-success"
-              iconBg="bg-success/10"
+              iconColor="text-emerald-600"
+              iconBg="bg-emerald-50"
               accentColor="hsl(150, 70%, 42%)"
               href="/contas-receber"
               size="primary"
-              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " realized" : undefined}
-              emptyStateMessage={metrics.totalReceber === 0 ? "Aguardando faturamento..." : undefined}
-              emptyStateHref="/contas-receber"
+              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " recebido" : undefined}
             />
             <HeroKPICard
-              title="Cash Exposure Index"
+              title="Compromissos a Pagar"
               value={metrics.totalPagar}
               previousValue={metrics.totalPagar - metrics.despesasMes}
               icon={ArrowUpCircle}
-              iconColor="text-destructive"
-              iconBg="bg-destructive/10"
+              iconColor="text-rose-600"
+              iconBg="bg-rose-50"
               accentColor="hsl(0, 78%, 55%)"
               href="/contas-pagar"
               size="primary"
-              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " settled" : undefined}
-              emptyStateMessage={metrics.totalPagar === 0 ? "Nenhum compromisso pendente" : undefined}
-              emptyStateHref="/contas-pagar"
+              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " pago" : undefined}
             />
             <HeroKPICard
-              title="Delinquency Matrix"
+              title="Índice de Inadimplência"
               value={metrics.inadimplencia}
               icon={AlertTriangle}
-              iconColor={metrics.inadimplencia > 10 ? "text-destructive" : metrics.inadimplencia > 5 ? "text-warning" : "text-success"}
-              iconBg={metrics.inadimplencia > 10 ? "bg-destructive/10" : metrics.inadimplencia > 5 ? "bg-warning/10" : "bg-success/10"}
+              iconColor={metrics.inadimplencia > 10 ? "text-rose-600" : metrics.inadimplencia > 5 ? "text-amber-600" : "text-emerald-600"}
+              iconBg={metrics.inadimplencia > 10 ? "bg-rose-50" : metrics.inadimplencia > 5 ? "bg-amber-50" : "bg-emerald-50"}
               accentColor={metrics.inadimplencia > 10 ? "hsl(0, 78%, 55%)" : metrics.inadimplencia > 5 ? "hsl(42, 95%, 48%)" : "hsl(150, 70%, 42%)"}
               href="/cobrancas"
               size="primary"
@@ -285,14 +247,13 @@ export const DashboardExecutivo = () => {
               isCurrency={false}
               badge={inadimplenciaBadge}
               badgeVariant={inadimplenciaBadgeVariant}
-              emptyStateMessage={metrics.inadimplencia === 0 ? "Performance 10/10 — Zero Atrasos" : undefined}
             />
           </HeroKPIGrid>
         </motion.div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16">
-          <div className="lg:col-span-8 space-y-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 space-y-8">
             {/* Secondary KPIs */}
             <motion.div variants={itemVariants}>
               <SecondaryKPICards
@@ -314,115 +275,95 @@ export const DashboardExecutivo = () => {
             </motion.div>
 
             {/* Analytics Section */}
-            <div className="space-y-6">
-              <SectionDivider label="Matrix Strategic Analytics 10/10" icon={BarChart3} />
+            <div className="space-y-4">
+              <SectionDivider label="Análises Estratégicas" icon={BarChart3} />
               
-              {/* Intelligent Purchasing 360 & Anti-Duplicity Hub */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-16">
-                <motion.div variants={itemVariants} className="premium-card p-8 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <ShieldCheck className="h-12 w-12 text-primary" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-white rounded-xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
-                  <div className="relative z-10 space-y-4">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-[9px] font-black uppercase tracking-widest">
-                      <ShieldAlert className="h-3 w-3" /> Anti-Duplicity Engine
+                  <div className="relative z-10 space-y-3">
+                    <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+                      <ShieldAlert className="h-3 w-3" /> Anti-Duplicidade
                     </div>
-                    <h3 className="text-xl font-black tracking-tight">Cyber-Sentinel: Anti-Duplicidade</h3>
+                    <h3 className="text-lg font-bold tracking-tight text-[#1a1c21]">Sentinel: Proteção de Caixa</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Proteção Ativa</span>
-                        <span className="text-sm font-bold text-primary">{formatCurrency(duplicateStats?.totalValue || 0)} economizados</span>
+                        <span className="text-[10px] text-[#64748b] uppercase font-bold tracking-wider">Proteção</span>
+                        <span className="text-sm font-bold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
                       </div>
-                      <div className="h-8 w-px bg-white/10 mx-2" />
+                      <div className="h-6 w-px bg-border mx-2" />
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Bloqueios</span>
-                        <span className="text-sm font-bold">{duplicateStats?.count || 0} tentativas</span>
+                        <span className="text-[10px] text-[#64748b] uppercase font-bold tracking-wider">Bloqueios</span>
+                        <span className="text-sm font-bold">{duplicateStats?.count || 0} ocorrências</span>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria cyber-neural em tempo real.</p>
-                    <div className="flex items-center gap-3 pt-2">
-                      <Button asChild size="lg" className="rounded-2xl font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-2xl shadow-primary/30 h-14 px-8">
+                    <p className="text-xs text-[#64748b] leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
+                    <div className="flex items-center gap-2 pt-2">
+                      <Button asChild size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
                       </Button>
-                      <Button asChild variant="ghost" size="lg" className="rounded-2xl font-black uppercase tracking-widest text-muted-foreground/60 hover:text-primary h-14 px-8">
-                        <Link to="/configuracoes">Regras de Bloqueio</Link>
+                      <Button asChild variant="ghost" size="sm" className="rounded-lg font-bold text-[#64748b] hover:text-[#1a1c21] h-9 px-4">
+                        <Link to="/configuracoes">Configurar</Link>
                       </Button>
                     </div>
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="premium-card p-8 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <FileText className="h-12 w-12 text-blue-400" />
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-white rounded-xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <FileText className="h-10 w-10 text-indigo-400" />
                   </div>
-                  <div className="relative z-10 space-y-4">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase tracking-widest">
-                      <Download className="h-3 w-3" /> Conciliation Reports
+                  <div className="relative z-10 space-y-3">
+                    <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                      <Download className="h-3 w-3" /> Relatórios
                     </div>
-                    <h3 className="text-xl font-black tracking-tight">Relatórios & Conciliação</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas em PDF/CSV para conciliações bancárias impecáveis.</p>
-                    <div className="flex items-center gap-3 pt-2">
-                      <Button asChild size="lg" variant="secondary" className="rounded-2xl font-black uppercase tracking-widest h-14 px-8">
-                        <Link to="/relatorios">Painel de Relatórios</Link>
+                    <h3 className="text-lg font-bold tracking-tight text-[#1a1c21]">Relatórios & Conciliação</h3>
+                    <p className="text-xs text-[#64748b] leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
+                    <div className="flex items-center gap-2 pt-2">
+                      <Button size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
+                        Gerar PDF
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="rounded-xl font-bold gap-2"
-                        onClick={() => {
-                          if (!auditLogs?.length) {
-                            toast.error('Nenhum log para exportar');
-                            return;
-                          }
-                          exportToCSV(auditLogs, [
-                            { key: 'created_at', header: 'Data' },
-                            { key: 'user_email', header: 'Usuário' },
-                            { key: 'action', header: 'Ação' },
-                            { key: 'table_name', header: 'Tabela' },
-                            { key: 'details', header: 'Detalhes' }
-                          ], 'audit_logs_executivo');
-                          toast.success('Logs exportados com sucesso');
-                        }}
-                      >
-                        <History className="h-3.5 w-3.5" /> Export Audit Logs
+                      <Button variant="ghost" size="sm" className="rounded-lg font-bold text-[#64748b] hover:text-[#1a1c21] h-9 px-4">
+                        Outros formatos
                       </Button>
                     </div>
                   </div>
                 </motion.div>
               </div>
 
-              <DraggableDashboard
-                widgets={widgets}
-                isEditing={isEditing}
-                setIsEditing={setIsEditing}
-                onReorder={reorderWidgets}
-                onToggle={toggleWidget}
-                onResize={resizeWidget}
-                renderWidget={renderWidget}
-              />
+              <motion.div variants={itemVariants} className="space-y-6">
+                {widgets.filter(w => w.visible).map(widget => (
+                  <div key={widget.id} className="w-full">
+                    {renderWidget(widget)}
+                  </div>
+                ))}
+              </motion.div>
             </div>
           </div>
 
-          <aside className="lg:col-span-4 space-y-8">
-            {/* AI Insights & Previsions */}
-            <SectionDivider label="Quantum Forecasting & Neural Node Matrix" icon={Brain} />
-            <div className="space-y-6">
-              {renderWidget({ id: 'previsao-ia', title: 'Previsão IA', type: 'previsao-ia', visible: true, order: 0, size: 'lg' })}
-              {renderWidget({ id: 'alertas-preditivos', title: 'Alertas Preditivos', type: 'kpi-vencidas', visible: true, order: 1, size: 'md' })}
-              {renderWidget({ id: 'metas', title: 'Metas', type: 'kpi-saldo', visible: true, order: 2, size: 'md' })}
-            </div>
-          </aside>
+          <div className="lg:col-span-4 space-y-8">
+            <motion.div variants={itemVariants}>
+              <PrevisaoIA />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <MetasFinanceirasPanel />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <AlertasOrcamento />
+            </motion.div>
+          </div>
         </div>
-
-        <DashboardConfigDialog
-          open={configDialogOpen}
-          onOpenChange={setConfigDialogOpen}
-          widgets={widgets}
-          onToggleWidget={toggleWidget}
-          onResizeWidget={resizeWidget}
-          onResetToDefault={resetToDefault}
-        />
       </motion.div>
+
+      <DashboardConfigDialog
+        open={configDialogOpen}
+        onOpenChange={setConfigDialogOpen}
+        widgets={widgets}
+        onToggleWidget={resetToDefault}
+        onReset={resetToDefault}
+      />
     </div>
   );
 };
