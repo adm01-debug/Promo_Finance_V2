@@ -16,6 +16,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
 import { VisualValidator } from '@/components/ui/ux-validator';
+import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOverlay';
 
 
 
@@ -111,6 +112,7 @@ const MetasFinanceirasPage = lazy(() => import('./pages/MetasFinanceiras'));
 const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
 const Logistica = lazy(() => import('./pages/Logistica'));
+const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
 
 
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
@@ -139,6 +141,7 @@ function AppRoutes() {
         <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
         <VisualValidator />
+        <VisualCorrectionOverlay />
         <Suspense fallback={<PageLoading />}>
           <Routes>
             {/* Public Routes */}
@@ -151,6 +154,7 @@ function AppRoutes() {
 
             
             {/* Protected Routes */}
+            <Route path="/design-system-debug" element={<DesignSystemDebug />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
