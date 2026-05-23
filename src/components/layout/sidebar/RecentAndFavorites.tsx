@@ -31,8 +31,8 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   if (collapsed) return null;
 
   return (
-    <div className="px-4 py-8 space-y-8 border-b border-white/5 bg-white/[0.02] relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+    <div className="px-3 py-4 space-y-4 border-b border-border bg-muted/20 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" />
       {/* Quick Company Switcher */}
       {vinculos.length > 0 && (
         <div className="space-y-3">
