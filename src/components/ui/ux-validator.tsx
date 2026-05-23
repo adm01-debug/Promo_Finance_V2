@@ -778,28 +778,59 @@ export const VisualValidator = () => {
                         </Badge>
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="flex items-center gap-4 bg-zinc-900/30 p-2 rounded-lg border border-white/5 mb-2 overflow-x-auto">
+                        <div className="flex -space-x-2">
+                           {['desktop', 'tablet', 'mobile'].map((bp) => (
+                             <div key={bp} className="h-8 w-12 rounded border border-white/10 bg-black overflow-hidden relative group/thumb cursor-pointer">
+                               <img src={(step.screenshots as any)?.[bp]} className="w-full h-full object-cover" alt={bp} />
+                               <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center">
+                                 <Eye className="h-3 w-3 text-white" />
+                               </div>
+                             </div>
+                           ))}
+                        </div>
+                        <div className="h-4 w-px bg-white/10" />
+                        <div className="text-[10px] text-white/60 font-medium">Overlay Diff Master</div>
+                        <div className="flex-1" />
+                        <Button variant="ghost" size="sm" className="h-7 text-[9px] font-black uppercase tracking-tighter hover:bg-white/5">Auto-Fix Ref</Button>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
                         {['desktop', 'tablet', 'mobile'].map((bp) => (
-                          <div key={bp} className="space-y-2">
-                            <p className="text-[10px] text-white/30 font-bold uppercase text-center">{bp}</p>
-                            <div className="relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-black group">
+                          <div key={bp} className="space-y-2 group">
+                            <div className="flex items-center justify-between px-1">
+                              <p className="text-[9px] text-white/30 font-black uppercase tracking-widest">{bp}</p>
+                              {step.diffScore && step.diffScore > 2 && (
+                                <span className="text-[8px] font-black text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded">DRIFT DETECTADO</span>
+                              )}
+                            </div>
+                            <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-black shadow-2xl transition-all group-hover:border-primary/50">
                               {/* Actual Screenshot */}
                               <img 
                                 src={(step.screenshots as any)?.[bp]} 
                                 className="w-full h-full object-cover" 
                                 alt={bp} 
                               />
-                              {/* Diff Overlay on Hover */}
+                              {/* Overlay Heatmap / Diff Component */}
                               {(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`] && (
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <img 
-                                    src={(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`]} 
-                                    className="w-full h-full object-cover mix-blend-screen bg-black/40" 
-                                    alt="diff" 
-                                  />
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-                                    <p className="text-[8px] font-black text-white bg-red-600 px-2 py-1 rounded">HEATMAP DE DESVIO</p>
-                                  </div>
+                                <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-[2px]">
+                                   {/* The Diff image blended in */}
+                                   <img 
+                                      src={(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`]} 
+                                      className="w-full h-full object-cover mix-blend-screen bg-rose-600/20" 
+                                      alt="diff-overlay" 
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-3">
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5">
+                                          <div className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
+                                          <span className="text-[8px] font-black text-white uppercase">Heatmap Ativo</span>
+                                        </div>
+                                        <div className="h-6 w-6 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+                                          <Maximize2 className="h-3 w-3 text-white" />
+                                        </div>
+                                      </div>
+                                    </div>
                                 </div>
                               )}
                             </div>
