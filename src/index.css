@@ -136,3 +136,19 @@
   @apply bg-zinc-200 rounded-full hover:bg-zinc-300 transition-colors;
 }
 
+@media print {
+  .fixed, .premium-button:not(.print-show), button:not(.print-show) {
+    display: none !important;
+  }
+  .premium-card {
+    border: 1px solid #eee !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
