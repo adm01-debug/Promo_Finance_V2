@@ -156,7 +156,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9]">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted">
                   <ThemeIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
