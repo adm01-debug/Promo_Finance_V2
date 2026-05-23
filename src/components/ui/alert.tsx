@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { AlertCircle, CheckCircle, Info, XCircle, X } from 'lucide-react';
+import { AlertCircle, AlertTriangle, CheckCircle, Info, XCircle, X } from 'lucide-react';
 
 const alertVariants = {
   default: 'bg-muted text-foreground',
@@ -14,7 +14,7 @@ const alertIcons = {
   default: Info,
   info: Info,
   success: CheckCircle,
-  warning: AlertCircle,
+  warning: AlertTriangle,
   error: XCircle,
 };
 

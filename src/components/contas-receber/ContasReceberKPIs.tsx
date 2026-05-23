@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { DollarSign, CheckCircle2, AlertTriangle, TrendingUp, Clock, CalendarClock, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { DollarSign, CheckCircle2, AlertTriangle, TrendingUp, Clock, CalendarClock, ArrowUpRight, ArrowDownRight, Bell, ShieldAlert, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ContasReceberKPIsProps {
   totalReceber: number;
@@ -40,6 +41,27 @@ export function ContasReceberKPIs({
   const varReceber = useMemo(() => calcVariation(totalReceber, totalReceberAnterior || (totalReceber * 1.05)), [totalReceber, totalReceberAnterior]);
   const varRecebido = useMemo(() => calcVariation(totalRecebidoMes, totalRecebidoMesAnterior || (totalRecebidoMes * 0.95)), [totalRecebidoMes, totalRecebidoMesAnterior]);
   const varVencido = useMemo(() => calcVariation(totalVencido, totalVencidoAnterior || (totalVencido * 1.1)), [totalVencido, totalVencidoAnterior]);
+
+  // Alert Grouping & Severity System
+  const [lastNotificationTime, setLastNotificationTime] = useState(0);
+  const COOLDOWN = 60000; // 1 minute cooldown between grouped high-severity alerts
+
+  useEffect(() => {
+    const now = Date.now();
+    if (taxaInadimplencia > 15 && now - lastNotificationTime > COOLDOWN) {
+      toast.error("CRITICAL RISK DETECTED", {
+        description: `Taxa de inadimplência em nível crítico: ${taxaInadimplencia.toFixed(1)}%. Ações de cobrança imediata recomendadas.`,
+        duration: 10000,
+      });
+      setLastNotificationTime(now);
+    } else if (venceHoje > 5 && now - lastNotificationTime > COOLDOWN) {
+      toast.warning("ALERTA DE FLUXO", {
+        description: `${venceHoje} títulos vencem hoje. Verifique a liquidez.`,
+        duration: 5000,
+      });
+      setLastNotificationTime(now);
+    }
+  }, [taxaInadimplencia, venceHoje, lastNotificationTime]);
 
   const kpis = [
     {
@@ -124,24 +146,43 @@ export function ContasReceberKPIs({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 24 }}
         >
-          <Card className="border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700 hover:ring-primary/40">
+          <Card className={cn(
+            "border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700 hover:ring-primary/40",
+            taxaInadimplencia > 10 ? "relative" : ""
+          )}>
+            {taxaInadimplencia > 10 && (
+              <motion.div 
+                className="absolute inset-0 bg-destructive/5 pointer-events-none"
+                animate={{ opacity: [0.1, 0.2, 0.1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            )}
             <CardContent className="p-6 relative">
               <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Risk Score</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Risk Score</p>
+                      {taxaInadimplencia > 10 && (
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="h-2 w-2 rounded-full bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                        />
+                      )}
+                    </div>
                     <p className={cn(
                       "text-2xl sm:text-3xl font-black font-display tracking-tighter tabular-nums",
-                      taxaInadimplencia > 10 ? 'text-destructive' : taxaInadimplencia > 5 ? 'text-warning' : 'text-success'
+                      taxaInadimplencia > 15 ? 'text-destructive animate-pulse' : taxaInadimplencia > 10 ? 'text-destructive' : taxaInadimplencia > 5 ? 'text-warning' : 'text-success'
                     )}>
                       {taxaInadimplencia.toFixed(1)}%
                     </p>
                   </div>
                   <div className={cn(
                     "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110",
-                    taxaInadimplencia > 10 ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"
+                    taxaInadimplencia > 10 ? "bg-destructive/10 text-destructive shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "bg-success/10 text-success"
                   )}>
-                    <TrendingUp className="h-6 w-6" />
+                    {taxaInadimplencia > 15 ? <ShieldAlert className="h-6 w-6" /> : <TrendingUp className="h-6 w-6" />}
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -182,8 +223,18 @@ export function ContasReceberKPIs({
               >
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-warning/20 flex items-center justify-center shadow-inner">
-                      <Clock className="h-6 w-6 text-warning" />
+                    <div className={cn(
+                      "h-12 w-12 rounded-xl flex items-center justify-center shadow-inner relative",
+                      venceHoje > 5 ? "bg-warning/30" : "bg-warning/20"
+                    )}>
+                      {venceHoje > 5 && (
+                        <motion.div 
+                          className="absolute inset-0 rounded-xl bg-warning/40"
+                          animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                        />
+                      )}
+                      <Clock className={cn("h-6 w-6 text-warning", venceHoje > 5 && "animate-bounce")} />
                     </div>
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-warning/70">Vence Hoje</p>

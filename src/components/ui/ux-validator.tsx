@@ -29,6 +29,9 @@ import {
   Info,
   Loader2,
   RefreshCw,
+  Clock,
+  ExternalLink,
+  Github,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -41,7 +44,7 @@ import { cn } from '@/lib/utils';
 import html2canvas from 'html2canvas';
 
 // --- Comparison Utility ---
-const compareImages = (img1Data: string, img2Data: string): Promise<string> => {
+const compareImages = (img1Data: string, img2Data: string): Promise<{ heatmap: string; diffScore: number }> => {
   return new Promise((resolve) => {
     const img1 = new Image();
     const img2 = new Image();
@@ -56,43 +59,49 @@ const compareImages = (img1Data: string, img2Data: string): Promise<string> => {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        if (!ctx) return resolve(img1Data);
+        if (!ctx) return resolve({ heatmap: img1Data, diffScore: 0 });
 
-        // Draw first image
         ctx.drawImage(img1, 0, 0);
+        const img1PixelData = ctx.getImageData(0, 0, width, height).data;
         
-        // Draw second image with difference blend mode
-        ctx.globalCompositeOperation = 'difference';
+        ctx.clearRect(0, 0, width, height);
         ctx.drawImage(img2, 0, 0);
+        const img2PixelData = ctx.getImageData(0, 0, width, height).data;
         
-        // Enhance difference for heatmap
-        const diffData = ctx.getImageData(0, 0, width, height);
+        const diffCanvas = document.createElement('canvas');
+        diffCanvas.width = width;
+        diffCanvas.height = height;
+        const diffCtx = diffCanvas.getContext('2d')!;
+        const diffData = diffCtx.createImageData(width, height);
         const data = diffData.data;
+        
+        let diffPixels = 0;
         for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          const brightness = (r + g + b) / 3;
+          const rDiff = Math.abs(img1PixelData[i] - img2PixelData[i]);
+          const gDiff = Math.abs(img1PixelData[i + 1] - img2PixelData[i + 1]);
+          const bDiff = Math.abs(img1PixelData[i + 2] - img2PixelData[i + 2]);
+          const brightness = (rDiff + gDiff + bDiff) / 3;
           
-          if (brightness > 0) {
-            // Highlight differences in magenta
+          if (brightness > 10) { // Tolerance
             data[i] = 255;
             data[i + 1] = 0;
             data[i + 2] = 255;
-            data[i + 3] = 200; 
+            data[i + 3] = 200;
+            diffPixels++;
           } else {
             data[i + 3] = 0;
           }
         }
-        ctx.putImageData(diffData, 0, 0);
-        resolve(canvas.toDataURL());
+        diffCtx.putImageData(diffData, 0, 0);
+        const diffScore = (diffPixels / (width * height)) * 100;
+        resolve({ heatmap: diffCanvas.toDataURL(), diffScore });
       }
     };
 
     img1.onload = onLoaded;
     img2.onload = onLoaded;
-    img1.onerror = () => resolve('');
-    img2.onerror = () => resolve('');
+    img1.onerror = () => resolve({ heatmap: '', diffScore: 0 });
+    img2.onerror = () => resolve({ heatmap: '', diffScore: 0 });
     img1.src = img1Data;
     img2.src = img2Data;
   });
@@ -105,10 +114,14 @@ interface ValidationStep {
   name: string;
   path: string;
   status: 'pending' | 'success' | 'error';
+  diffScore?: number;
   screenshots?: {
     mobile?: string;
     tablet?: string;
     desktop?: string;
+    diffMobile?: string;
+    diffTablet?: string;
+    diffDesktop?: string;
   };
 }
 
@@ -163,8 +176,8 @@ export const VisualValidator = () => {
       setCurrentScreenshot(dataUrl);
       
       if (referenceImage) {
-        const diff = await compareImages(referenceImage, dataUrl);
-        setDiffImage(diff);
+        const { heatmap } = await compareImages(referenceImage, dataUrl);
+        setDiffImage(heatmap);
       }
       
       toast.success('Screenshot capturado e comparado!');
@@ -229,6 +242,7 @@ export const VisualValidator = () => {
       setValidationSteps(prev => prev.map(s => s.id === step.id ? { ...s, status: 'pending' } : s));
       
       const stepScreenshots: any = {};
+      let totalDiff = 0;
       
       for (const bp of breakpoints) {
         toast.info(`Processando: ${step.name} (${bp.name})...`);
@@ -236,14 +250,20 @@ export const VisualValidator = () => {
         stepScreenshots[bp.name] = screenshot;
         
         const baselineKey = `baseline-${step.id}-${bp.name}`;
-        if (!localStorage.getItem(baselineKey) && screenshot) {
+        const baseline = localStorage.getItem(baselineKey);
+        if (!baseline && screenshot) {
           localStorage.setItem(baselineKey, screenshot);
+        } else if (baseline && screenshot) {
+          const { heatmap, diffScore } = await compareImages(baseline, screenshot);
+          stepScreenshots[`diff${bp.name.charAt(0).toUpperCase() + bp.name.slice(1)}`] = heatmap;
+          totalDiff += diffScore;
         }
       }
       
       setValidationSteps(prev => prev.map(s => s.id === step.id ? { 
         ...s, 
-        status: 'success',
+        status: totalDiff > 5 ? 'error' : 'success',
+        diffScore: totalDiff / 3,
         screenshots: stepScreenshots
       } : s));
     }
@@ -263,8 +283,8 @@ export const VisualValidator = () => {
         localStorage.setItem('ux-reference-image', result);
         
         if (currentScreenshot) {
-          const diff = await compareImages(result, currentScreenshot);
-          setDiffImage(diff);
+          const { heatmap } = await compareImages(result, currentScreenshot);
+          setDiffImage(heatmap);
         }
         
         toast.success('Referência carregada!');
@@ -698,18 +718,54 @@ export const VisualValidator = () => {
                 </div>
               </div>
 
-              <ScrollArea className="h-64 mb-8 pr-4">
-                <div className="space-y-4">
-                  {validationSteps.map(step => (
-                    <div key={step.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        <span className="text-sm font-bold text-white/80">{step.name}</span>
+              <ScrollArea className="h-[450px] mb-8 pr-4">
+                <div className="space-y-6">
+                  {validationSteps.filter(s => s.status !== 'pending').map(step => (
+                    <div key={step.id} className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {step.status === 'success' ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <AlertCircle className="h-5 w-5 text-red-500" />
+                          )}
+                          <div>
+                            <span className="text-sm font-black text-white">{step.name}</span>
+                            <p className="text-[10px] text-white/40 uppercase tracking-tighter">Desvio médio: {step.diffScore?.toFixed(2)}%</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className={cn("text-[10px]", step.status === 'success' ? "text-green-500 border-green-500/30" : "text-red-500 border-red-500/30")}>
+                          {step.status === 'success' ? 'VALIDADO' : 'DESIGN DRIFT'}
+                        </Badge>
                       </div>
-                      <div className="flex gap-1">
-                        <div className="h-1.5 w-6 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-6 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-6 rounded-full bg-green-500" />
+                      
+                      <div className="grid grid-cols-3 gap-2">
+                        {['desktop', 'tablet', 'mobile'].map((bp) => (
+                          <div key={bp} className="space-y-2">
+                            <p className="text-[10px] text-white/30 font-bold uppercase text-center">{bp}</p>
+                            <div className="relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-black group">
+                              {/* Actual Screenshot */}
+                              <img 
+                                src={(step.screenshots as any)?.[bp]} 
+                                className="w-full h-full object-cover" 
+                                alt={bp} 
+                              />
+                              {/* Diff Overlay on Hover */}
+                              {(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`] && (
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <img 
+                                    src={(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`]} 
+                                    className="w-full h-full object-cover mix-blend-screen bg-black/40" 
+                                    alt="diff" 
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                                    <p className="text-[8px] font-black text-white bg-red-600 px-2 py-1 rounded">HEATMAP DE DESVIO</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))}
