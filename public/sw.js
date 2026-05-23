@@ -1,5 +1,5 @@
 // Service Worker for Push Notifications and Offline Cache
-const CACHE_NAME = 'promo-brindes-v1';
+const CACHE_NAME = 'promo-brindes-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
