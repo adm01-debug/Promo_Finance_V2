@@ -31,9 +31,9 @@ function calcVariation(current: number, previous: number): { text: string; posit
 
 const kpiConfig = [
   { key: 'totalPagar', label: 'Total a Pagar', icon: DollarSign, iconBg: 'bg-destructive/10', iconColor: 'text-destructive', isCurrency: true },
-  { key: 'totalPagoMes', label: 'Pago no Mês', icon: CheckCircle2, iconBg: 'bg-success/10', iconColor: 'text-success', isCurrency: true },
-  { key: 'totalVencido', label: 'Vencido', icon: AlertTriangle, iconBg: 'bg-destructive/10', iconColor: 'text-destructive', isCurrency: true, valueColor: 'text-destructive' },
-  { key: 'venceHoje', label: 'Vence Hoje', icon: Calendar, iconBg: 'bg-warning/10', iconColor: 'text-warning', isCurrency: false, suffix: 'Contas' },
+  { key: 'totalPagoMes', label: 'Pago no Mês', icon: CheckCircle2, iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-500', isCurrency: true },
+  { key: 'totalVencido', label: 'Vencido', icon: AlertTriangle, iconBg: 'bg-rose-500/10', iconColor: 'text-rose-500', isCurrency: true, valueColor: 'text-rose-500 animate-pulse-slow' },
+  { key: 'venceHoje', label: 'Vence Hoje', icon: Calendar, iconBg: 'bg-amber-500/10', iconColor: 'text-amber-500', isCurrency: false, suffix: 'Contas' },
 ] as const;
 
 export function ContasPagarKPIs({

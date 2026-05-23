@@ -131,6 +131,10 @@ export const VisualValidator = () => {
     { id: 'bi', name: 'Business Intelligence', path: '/bi', status: 'pending' },
     { id: 'conciliacao', name: 'Conciliação Bancária', path: '/conciliacao', status: 'pending' },
     { id: 'config', name: 'Configurações', path: '/configuracoes', status: 'pending' },
+    { id: 'telemetria', name: 'Telemetria Admin', path: '/admin/telemetria', status: 'pending' },
+    { id: 'assinatura', name: 'Assinaturas Digitais', path: '/assinatura-digital', status: 'pending' },
+    { id: 'reforma', name: 'Reforma Tributária', path: '/reforma-tributaria', status: 'pending' },
+    { id: 'seguranca', name: 'Segurança & Logs', path: '/seguranca', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff' | 'split'>('side-by-side');
