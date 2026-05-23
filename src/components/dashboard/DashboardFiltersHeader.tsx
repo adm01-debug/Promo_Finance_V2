@@ -101,7 +101,7 @@ export function DashboardFiltersHeader({
         <div className="flex items-center gap-2 flex-1 w-full px-2">
           <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
-            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-[#f1f3f9] transition-all font-bold text-xs focus:ring-0">
+            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-accent transition-all font-medium text-xs focus:ring-0">
               <SelectValue placeholder="Empresa" />
             </SelectTrigger>
             <SelectContent>
