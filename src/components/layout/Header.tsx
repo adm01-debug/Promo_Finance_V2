@@ -122,9 +122,9 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           </div>
 
           {empresaLabel && (
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#f1f3f9] border border-border">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span className="text-[11px] font-semibold text-[#64748b] truncate max-w-[150px]">
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50 border border-border">
+              <div className="h-1.5 w-1.5 rounded-full bg-success" />
+              <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[150px]">
                 {empresaLabel}
               </span>
             </div>
