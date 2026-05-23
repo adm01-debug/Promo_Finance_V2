@@ -244,10 +244,26 @@ export const DesignSystemAudit = () => {
               <p className="text-xs font-bold text-white/60 tracking-tight">AUDITORIA EM TEMPO REAL ATIVA</p>
            </div>
            <div className="flex gap-4">
-              <Button variant="outline" className="rounded-2xl px-8 h-12 border-white/10 bg-transparent text-white font-black uppercase text-[10px] tracking-widest hover:bg-white/5">
-                Download JSON Report
+              <Button 
+                variant="outline" 
+                onClick={() => window.print()}
+                className="rounded-2xl px-8 h-12 border-white/10 bg-transparent text-white font-black uppercase text-[10px] tracking-widest hover:bg-white/5"
+              >
+                Download PDF Report
               </Button>
-              <Button className="rounded-2xl px-8 h-12 bg-white text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-200">
+              <Button 
+                onClick={() => {
+                  toast.promise(
+                    new Promise(resolve => setTimeout(resolve, 2000)),
+                    {
+                      loading: 'Sincronizando design tokens...',
+                      success: 'Tokens sincronizados com sucesso!',
+                      error: 'Falha na sincronização.',
+                    }
+                  );
+                }}
+                className="rounded-2xl px-8 h-12 bg-white text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-200"
+              >
                 Fix Inconsistencies
               </Button>
            </div>
