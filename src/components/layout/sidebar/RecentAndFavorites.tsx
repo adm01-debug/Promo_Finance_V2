@@ -97,7 +97,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
             <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
               <Star className="h-4 w-4" />
             </div>
-            <span className="flex-1 text-left">Priority Access</span>
+            <span className="flex-1 text-left">Favoritos</span>
             <motion.div
               animate={{ rotate: isFavoritesOpen ? 180 : 0 }}
               transition={{ duration: 0.4, ease: "backOut" }}
