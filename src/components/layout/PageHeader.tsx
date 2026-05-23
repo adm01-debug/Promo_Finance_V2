@@ -45,7 +45,7 @@ export const PageHeader = ({
             {badge}
           </div>
         )}
-        <h1 className="text-5xl font-black tracking-tighter md:text-6xl lg:text-7xl">
+        <h1 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter">
           {title.split(' ').map((word, i, arr) => (
             i === arr.length - 1 ? (
               <span key={i} className={cn("text-transparent bg-clip-text bg-gradient-to-r", gradientFrom, gradientVia, gradientTo)}>
@@ -63,7 +63,7 @@ export const PageHeader = ({
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+      <div className="flex flex-col sm:flex-row items-center gap-3 bg-background/40 p-2 rounded-2xl md:rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
         {showEmpresaSwitcher && (
           <div className="hidden lg:flex items-center gap-3 pr-3 border-r border-white/10">
             <EmpresaSwitcher />
