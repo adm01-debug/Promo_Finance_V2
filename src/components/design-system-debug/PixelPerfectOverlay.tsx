@@ -120,7 +120,8 @@ export const PixelPerfectOverlay = ({ referenceImageUrl }: PixelPerfectOverlayPr
           className="fixed inset-0 z-[9998] pointer-events-none overflow-hidden flex justify-center"
           style={{ 
             opacity: opacity[0] / 100,
-            mixBlendMode: 'difference' // Heatmap-like effect for pixel differences
+            mixBlendMode: 'difference',
+            filter: 'invert(1)' // Heatmap-like effect for pixel differences
           }}
         >
           <div 
