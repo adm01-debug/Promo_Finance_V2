@@ -41,7 +41,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const showOnboarding = location.pathname === '/';
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] text-[#1a1c21] selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-background text-foreground font-sans antialiased">
       {/* Skip links para acessibilidade WCAG AA */}
       <SkipLinks />
 
