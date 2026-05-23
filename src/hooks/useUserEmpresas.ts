@@ -21,14 +21,21 @@ export function useUserEmpresas() {
     queryKey: ['user-empresas', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data, error } = await (supabase as any)
-        .from('user_empresas')
-        .select('id, empresa_id, role, is_default, provisioned_via, ativo, empresa:empresas(id,razao_social,nome_fantasia,cnpj)')
-        .eq('user_id', user.id)
-        .eq('ativo', true)
-        .order('is_default', { ascending: false });
-      if (error) throw error;
-      const links = (data ?? []) as UserEmpresaLink[];
+      let links: UserEmpresaLink[] = [];
+      try {
+        const { data, error } = await (supabase as any)
+          .from('user_empresas')
+          .select('id, empresa_id, role, is_default, provisioned_via, ativo, empresa:empresas(id,razao_social,nome_fantasia,cnpj)')
+          .eq('user_id', user.id)
+          .eq('ativo', true)
+          .order('is_default', { ascending: false });
+        // Tabela inexistente / RLS / coluna ausente → cai no fallback abaixo
+        if (!error) {
+          links = (data ?? []) as UserEmpresaLink[];
+        }
+      } catch {
+        // segue para o fallback
+      }
 
       // Fallback: sistema exclusivo Grupo Promo Brindes — usuário autenticado
       // sem vínculos específicos recebe acesso automático a todas as empresas ativas do grupo.
@@ -55,8 +62,11 @@ export function useUserEmpresas() {
       return links;
     },
     enabled: !!user,
+    retry: 1,
+    staleTime: 60_000,
   });
 }
+
 
 const STORAGE_KEY = 'pf:current-empresa-id';
 
