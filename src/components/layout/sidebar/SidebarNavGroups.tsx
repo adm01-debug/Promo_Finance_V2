@@ -309,30 +309,36 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
       <NavLink
         to={item.href}
         className={cn(
-          'flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 group relative',
+          'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative text-[13px] font-medium tracking-tight',
           isActive
-            ? 'bg-accent text-accent-foreground font-medium'
+            ? 'active-nav-item'
             : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
         )}
       >
         <Icon
           className={cn(
-            'h-4 w-4 flex-shrink-0 transition-colors',
-            isActive ? 'text-primary' : 'group-hover:text-foreground'
+            'h-[18px] w-[18px] flex-shrink-0 transition-all duration-300',
+            isActive ? 'text-primary scale-110' : 'group-hover:text-foreground'
           )}
         />
         {!collapsed && (
-          <span className="text-sm whitespace-nowrap overflow-hidden">
+          <span className="flex-1 whitespace-nowrap overflow-hidden">
             {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
           </span>
         )}
         {badge && !collapsed && (
           <Badge
-            variant="secondary"
-            className="ml-auto text-[10px] h-5 px-1.5"
+            variant={item.highlight ? "default" : "secondary"}
+            className={cn(
+              "ml-auto text-[10px] h-5 px-1.5 font-bold tabular-nums",
+              item.highlight && "bg-primary text-white border-none shadow-sm"
+            )}
           >
             {badge}
           </Badge>
+        )}
+        {item.highlight && !collapsed && !badge && (
+          <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
         )}
       </NavLink>
     );
