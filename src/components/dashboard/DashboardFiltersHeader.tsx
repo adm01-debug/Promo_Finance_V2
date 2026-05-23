@@ -77,7 +77,7 @@ export function DashboardFiltersHeader({
               <GreetingIcon className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-heading">
                 {greeting.text}, <span className="text-primary">{displayName}</span>
               </h1>
               <p className="text-sm font-normal text-muted-foreground">

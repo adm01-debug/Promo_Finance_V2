@@ -287,7 +287,7 @@ export const DashboardExecutivo = () => {
                     <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicidade
                     </div>
-                    <h3 className="text-lg font-semibold tracking-tight text-foreground">Sentinel: Proteção de Caixa</h3>
+                    <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Sentinel: Proteção de Caixa</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
                         <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Proteção</span>
@@ -319,7 +319,7 @@ export const DashboardExecutivo = () => {
                     <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
                       <Download className="h-3 w-3" /> Relatórios
                     </div>
-                    <h3 className="text-lg font-semibold tracking-tight text-foreground">Relatórios & Conciliação</h3>
+                    <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Relatórios & Conciliação</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
                     <div className="flex items-center gap-2 pt-2">
                       <Button size="sm" className="rounded-md font-medium bg-primary text-white h-9 px-4">
