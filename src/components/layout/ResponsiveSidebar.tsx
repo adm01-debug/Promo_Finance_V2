@@ -1,6 +1,6 @@
 import { forwardRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CreditCard, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SidebarNavGroups } from './sidebar/SidebarNavGroups';
@@ -23,7 +23,6 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
     onCollapseChange?.(value);
   };
 
-  // Mobile: Show bottom nav + drawer
   if (isMobile) {
     return (
       <>
@@ -36,91 +35,70 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
     );
   }
 
-  // Desktop: Show full sidebar
   return (
     <motion.aside
       ref={ref}
       initial={false}
-      animate={{ width: collapsed ? 100 : 320 }}
-      transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+      animate={{ width: collapsed ? 80 : 280 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-sidebar/80 backdrop-blur-3xl border-r border-sidebar-border flex flex-col shadow-[20px_0_60px_-20px_rgba(0,0,0,0.5)] transition-all duration-700'
+        'fixed left-0 top-0 z-40 h-screen bg-white border-r border-border flex flex-col shadow-sm transition-all duration-200'
       )}
       data-tour="sidebar"
     >
-      {/* Dynamic Background Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
-      
-      {/* Logo Section */}
-      <div className="h-32 flex items-center justify-between px-8 border-b border-sidebar-border relative overflow-hidden group/logo">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-1000" />
-        
+      <div className="h-16 flex items-center px-6 border-b border-border">
         <AnimatePresence mode="wait">
           {!collapsed ? (
             <motion.div
-              initial={{ opacity: 0, x: -15, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, x: -15, filter: 'blur(10px)' }}
-              transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-              className="flex items-center gap-4 relative z-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-3"
             >
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-blue-600 flex items-center justify-center shadow-[0_0_30px_rgba(var(--primary),0.3)] relative overflow-hidden group-hover/logo:scale-105 transition-transform duration-500">
-                <div className="absolute inset-0 bg-white/30 blur-md -translate-x-full group-hover/logo:translate-x-full transition-transform duration-1000" />
-                <CreditCard className="h-6 w-6 text-white relative z-10" />
+              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+                <Shield className="h-5 w-5 text-white" />
               </div>
-              <div className="flex flex-col">
-                <span className="font-display font-black text-2xl text-white tracking-tighter leading-none">
-                  PROMO
-                </span>
-                <span className="text-[10px] font-black text-primary/80 uppercase tracking-[0.4em] leading-none mt-1.5">
-                  FINANCE
-                </span>
-              </div>
+              <span className="font-bold text-lg text-[#1a1c21] tracking-tight">
+                Promo Finance
+              </span>
             </motion.div>
           ) : (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.5, filter: 'blur(5px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 0.5, filter: 'blur(5px)' }}
-              className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(var(--primary),0.2)] mx-auto relative overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-sm mx-auto"
             >
-              <CreditCard className="h-6 w-6 text-white relative z-10" />
+              <Shield className="h-5 w-5 text-white" />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none py-6 space-y-6">
-        {/* Quick Create Button */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-4">
         <div className="px-4">
           <QuickCreateButton collapsed={collapsed} />
         </div>
-
-        {/* Recent & Favorites */}
         <RecentAndFavorites collapsed={collapsed} />
-
-        {/* Navigation Groups */}
         <SidebarNavGroups collapsed={collapsed} />
       </div>
 
-      {/* Collapse Button */}
       <button
         onClick={() => handleCollapse(!collapsed)}
-        className="absolute -right-5 top-28 h-10 w-10 rounded-full bg-[#0A0D14] border border-white/10 flex items-center justify-center shadow-2xl hover:bg-primary hover:text-white transition-all duration-700 group/btn hover:scale-110 active:scale-95 z-50 ring-1 ring-white/5"
+        className="absolute -right-3 top-20 h-6 w-6 rounded-full bg-white border border-border flex items-center justify-center shadow-sm hover:bg-[#f8f9fc] transition-all z-50"
       >
         {collapsed ? (
-          <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-0.5 transition-transform" />
+          <ChevronRight className="h-3.5 w-3.5 text-[#64748b]" />
         ) : (
-          <ChevronLeft className="h-5 w-5 group-hover/btn:-translate-x-0.5 transition-transform" />
+          <ChevronLeft className="h-3.5 w-3.5 text-[#64748b]" />
         )}
       </button>
 
-      {/* Footer / Support */}
       {!collapsed && (
-        <div className="p-6 border-t border-white/5">
-          <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 group/support cursor-pointer hover:bg-primary/10 transition-colors">
-            <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Enterprise Support</p>
-            <p className="text-xs text-white/60 font-medium group-hover:text-white transition-colors">Consulência Estratégica</p>
+        <div className="p-4 border-t border-border">
+          <div className="p-3 rounded-lg bg-[#f1f3f9] border border-border group/support cursor-pointer hover:bg-[#e2e8f0] transition-colors">
+            <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">Suporte</p>
+            <p className="text-[11px] text-[#64748b] font-medium group-hover:text-[#1a1c21] transition-colors">Falar com especialista</p>
           </div>
         </div>
       )}
