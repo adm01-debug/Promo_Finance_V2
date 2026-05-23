@@ -290,16 +290,16 @@ export const DashboardExecutivo = () => {
                     <h3 className="text-lg font-semibold tracking-tight text-foreground">Sentinel: Proteção de Caixa</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-[#64748b] uppercase font-bold tracking-wider">Proteção</span>
-                        <span className="text-sm font-bold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Proteção</span>
+                        <span className="text-sm font-semibold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
                       </div>
                       <div className="h-6 w-px bg-border mx-2" />
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-[#64748b] uppercase font-bold tracking-wider">Bloqueios</span>
-                        <span className="text-sm font-bold">{duplicateStats?.count || 0} ocorrências</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Bloqueios</span>
+                        <span className="text-sm font-semibold">{duplicateStats?.count || 0} ocorrências</span>
                       </div>
                     </div>
-                    <p className="text-xs text-[#64748b] leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
                     <div className="flex items-center gap-2 pt-2">
                       <Button asChild size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
