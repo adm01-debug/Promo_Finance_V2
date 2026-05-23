@@ -181,7 +181,7 @@ export const DashboardExecutivo = () => {
         variants={containerVariants} 
         initial="hidden" 
         animate="visible" 
-        className="relative z-10 space-y-10 pb-24" 
+        className="relative z-10 space-y-12 pb-32" 
         data-tour="dashboard"
       >
         {/* Header Section */}
@@ -278,7 +278,7 @@ export const DashboardExecutivo = () => {
             <div className="space-y-4">
               <SectionDivider label="Análises Estratégicas" icon={BarChart3} />
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                 <motion.div variants={itemVariants} className="premium-card p-6 relative overflow-hidden group">
 
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">

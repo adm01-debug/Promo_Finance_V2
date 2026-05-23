@@ -147,9 +147,9 @@ export function HeroKPIGrid({ children, layout = 'default' }: { children: ReactN
     const otherChildren = childArray.slice(1);
 
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1">{heroChild}</div>
-        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-1 h-full">{heroChild}</div>
+        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-8 h-full">
           {otherChildren}
         </div>
       </div>
@@ -157,7 +157,7 @@ export function HeroKPIGrid({ children, layout = 'default' }: { children: ReactN
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {children}
     </div>
   );
