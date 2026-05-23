@@ -50,11 +50,18 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http requests
   if (!url.protocol.startsWith('http')) return;
 
-  // API requests - network first, cache fallback
-  if (url.pathname.includes('/rest/v1/') || url.pathname.includes('/functions/')) {
-    event.respondWith(networkFirstStrategy(request));
-    return;
+  // NEVER intercept Supabase REST or Edge Functions — let the browser handle
+  // them directly so real errors (CORS, 4xx/5xx, network) reach the app
+  // instead of a synthetic 503 "Offline" response from the SW.
+  if (
+    url.pathname.includes('/rest/v1/') ||
+    url.pathname.includes('/functions/') ||
+    url.pathname.includes('/auth/v1/') ||
+    url.hostname.endsWith('.supabase.co')
+  ) {
+    return; // bypass SW entirely
   }
+
 
   // Static assets - cache first, network fallback
   if (isStaticAsset(url)) {
