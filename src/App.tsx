@@ -15,6 +15,7 @@ import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
+import { VisualValidator } from '@/components/ui/ux-validator';
 
 
 
@@ -137,6 +138,7 @@ function AppRoutes() {
         <SkipLinks />
         <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
+        <VisualValidator />
         <Suspense fallback={<PageLoading />}>
           <Routes>
             {/* Public Routes */}

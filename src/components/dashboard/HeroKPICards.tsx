@@ -83,7 +83,7 @@ export function HeroKPICard({
               <Skeleton className="h-8 w-32" />
             ) : (
               <p className={cn(
-                'text-foreground font-semibold tabular-nums tracking-tight',
+                'text-foreground font-black tabular-nums tracking-tighter font-heading',
                 size === 'hero' ? 'text-3xl' : 'text-xl',
                 isZero && 'text-[#94a3b8]'
               )}>

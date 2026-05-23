@@ -47,7 +47,7 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
                 <Activity className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-lg font-bold text-[#1a1c21]">Fluxo de Caixa</CardTitle>
+                <CardTitle className="text-lg font-black text-[#1a1c21] font-heading">Fluxo de Caixa</CardTitle>
                 <CardDescription className="text-xs text-[#64748b]">Projeção de entradas e saídas</CardDescription>
               </div>
             </div>
