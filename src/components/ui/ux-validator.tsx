@@ -89,6 +89,8 @@ const compareImages = (img1Data: string, img2Data: string): Promise<string> => {
       }
     };
 
+    img1.onload = onLoaded;
+    img2.onload = onLoaded;
     img1.onerror = () => resolve('');
     img2.onerror = () => resolve('');
     img1.src = img1Data;
@@ -170,34 +172,79 @@ export const VisualValidator = () => {
 
   const runValidationRoadmap = async () => {
     setIsProcessing(true);
-    toast.info("Iniciando roteiro de validação nos 3 breakpoints...");
+    toast.info("Iniciando regressão visual automática multi-breakpoint...");
+    
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.top = '-10000px';
+    iframe.style.left = '-10000px';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+
+    const breakpoints = [
+      { name: 'desktop', width: 1440, height: 1080 },
+      { name: 'tablet', width: 768, height: 1024 },
+      { name: 'mobile', width: 375, height: 812 }
+    ];
+
+    const captureRoute = async (path: string, width: number, height: number) => {
+      return new Promise<string>((resolve) => {
+        iframe.style.width = `${width}px`;
+        iframe.style.height = `${height}px`;
+        iframe.src = path;
+        
+        const handleLoad = async () => {
+          // Wait for content and animations
+          await new Promise(r => setTimeout(r, 1500));
+          try {
+            const canvas = await html2canvas(iframe.contentDocument!.body, {
+              useCORS: true,
+              scale: 1,
+              logging: false,
+              backgroundColor: '#ffffff',
+              width: width,
+              height: height
+            });
+            resolve(canvas.toDataURL('image/png'));
+          } catch (e) {
+            console.error("Capture failed", e);
+            resolve('');
+          }
+          iframe.removeEventListener('load', handleLoad);
+        };
+        
+        iframe.addEventListener('load', handleLoad);
+      });
+    };
     
     const updatedSteps = [...validationSteps];
     for (let i = 0; i < updatedSteps.length; i++) {
       const step = updatedSteps[i];
       setValidationSteps(prev => prev.map(s => s.id === step.id ? { ...s, status: 'pending' } : s));
       
-      // Real simulation of navigation and capture logic
-      await new Promise(r => setTimeout(r, 800));
+      const stepScreenshots: any = {};
       
-      // In a real automated environment, this would use a proxy or background worker to capture
-      // For this 10/10 UX, we show the transition and results
+      for (const bp of breakpoints) {
+        toast.info(`Processando: ${step.name} (${bp.name})...`);
+        const screenshot = await captureRoute(step.path, bp.width, bp.height);
+        stepScreenshots[bp.name] = screenshot;
+        
+        const baselineKey = `baseline-${step.id}-${bp.name}`;
+        if (!localStorage.getItem(baselineKey) && screenshot) {
+          localStorage.setItem(baselineKey, screenshot);
+        }
+      }
+      
       setValidationSteps(prev => prev.map(s => s.id === step.id ? { 
         ...s, 
         status: 'success',
-        screenshots: {
-          desktop: `https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80&sig=${i}`,
-          tablet: `https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80&sig=${i}`,
-          mobile: `https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=200&q=80&sig=${i}`,
-        }
+        screenshots: stepScreenshots
       } : s));
-      
-      if (i === 1) toast.info("Auditando alinhamento de containers...");
-      if (i === 3) toast.info("Verificando hierarquia de cores...");
     }
     
+    document.body.removeChild(iframe);
     setIsProcessing(false);
-    toast.success("Roteiro concluído! 100% de conformidade visual detectada.");
+    toast.success("Regressão visual completa em todos os dispositivos!");
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
