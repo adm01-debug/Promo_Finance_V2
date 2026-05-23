@@ -1,5 +1,5 @@
 // Service Worker for Push Notifications and Offline Cache
-const CACHE_NAME = 'promo-brindes-v2';
+const CACHE_NAME = 'promo-brindes-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,7 +8,7 @@ const STATIC_ASSETS = [
 ];
 
 // Dynamic cache for API responses
-const API_CACHE_NAME = 'promo-brindes-api-v1';
+const API_CACHE_NAME = 'promo-brindes-api-v2';
 const API_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
 self.addEventListener('install', (event) => {
