@@ -38,7 +38,7 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
       className="h-full"
     >
       <div className={cn(
-        'relative h-full p-4 rounded-xl border border-border bg-white transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md',
+        'relative h-full p-4 rounded-md border border-border bg-card transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md',
         alertLevel === 'warning' && value > 0 && 'border-amber-200 bg-amber-50',
         alertLevel === 'danger' && value > 0 && 'border-rose-200 bg-rose-50',
       )}>
