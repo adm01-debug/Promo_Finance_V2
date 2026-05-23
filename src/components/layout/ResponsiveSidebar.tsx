@@ -46,7 +46,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       )}
       data-tour="sidebar"
     >
-      <div className="h-16 flex items-center px-6 border-b border-border">
+      <div className="h-14 flex items-center px-6 border-b border-sidebar-border">
         <AnimatePresence mode="wait">
           {!collapsed ? (
             <motion.div
