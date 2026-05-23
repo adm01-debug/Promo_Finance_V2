@@ -127,10 +127,11 @@ export const VisualValidator = () => {
     { id: 'config', name: 'Configurações', path: '/configuracoes', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff'>('side-by-side');
+  const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff' | 'split'>('side-by-side');
   const [diffImage, setDiffImage] = useState<string | null>(null);
   const [activeBreakpoint, setActiveBreakpoint] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [showReport, setShowReport] = useState(false);
+  const [splitPosition, setSplitPosition] = useState(50);
 
   // Load reference from localStorage if exists
   useEffect(() => {
@@ -341,7 +342,14 @@ export const VisualValidator = () => {
                                 onClick={() => setViewMode('diff')}
                                 className="justify-start gap-2 h-9 text-xs"
                               >
-                                <Zap className="h-4 w-4" /> Heatmap de Desvios
+                                <Palette className="h-4 w-4" /> Heatmap de Desvios
+                              </Button>
+                              <Button 
+                                variant={viewMode === 'split' ? 'default' : 'outline'} 
+                                onClick={() => setViewMode('split')}
+                                className="justify-start gap-2 h-9 text-xs"
+                              >
+                                <Maximize2 className="h-4 w-4" /> Split View Slider
                               </Button>
                               <div className="pt-2">
                                 <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-2">Opacidade Overlay</p>
@@ -392,6 +400,61 @@ export const VisualValidator = () => {
                              {!currentScreenshot && !referenceImage && <PlaceholderView />}
                              <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-[10px] text-white/60">
                                 Modo Diferença: Transparência em 0 indica pixels idênticos
+                             </div>
+                          </div>
+                        )}
+
+                        {viewMode === 'split' && (
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-900 group select-none">
+                             {/* Original / Actual */}
+                             <div className="absolute inset-0 w-full h-full">
+                               {currentScreenshot ? <img src={currentScreenshot} className="w-full h-full object-cover" alt="Actual" /> : <PlaceholderView />}
+                             </div>
+                             
+                             {/* Reference / Overlaid */}
+                             <div 
+                               className="absolute inset-0 w-full h-full overflow-hidden border-r-2 border-primary z-10"
+                               style={{ width: `${splitPosition}%` }}
+                             >
+                               {referenceImage ? (
+                                 <img 
+                                   src={referenceImage} 
+                                   className="h-full object-cover" 
+                                   style={{ width: `${100 / (splitPosition / 100)}%`, maxWidth: 'none' }} 
+                                   alt="Reference" 
+                                 />
+                               ) : (
+                                 <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                                   <Layers className="h-8 w-8 text-white/20" />
+                                 </div>
+                               )}
+                             </div>
+
+                             {/* Slider Handle */}
+                             <div 
+                               className="absolute inset-y-0 z-20 w-1 bg-primary cursor-col-resize group-active:scale-x-150 transition-transform"
+                               style={{ left: `${splitPosition}%` }}
+                             >
+                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl">
+                                 <RefreshCw className="h-4 w-4" />
+                               </div>
+                             </div>
+
+                             {/* Input for control */}
+                             <input 
+                               type="range" 
+                               min="0" 
+                               max="100" 
+                               value={splitPosition} 
+                               onChange={(e) => setSplitPosition(parseInt(e.target.value))}
+                               className="absolute inset-0 w-full h-full opacity-0 cursor-col-resize z-30"
+                             />
+
+                             <div className="absolute top-4 left-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[8px] font-black text-white/60 uppercase tracking-widest border border-white/10">
+                               Referência
+                             </div>
+                             <div className="absolute top-4 right-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[8px] font-black text-white/60 uppercase tracking-widest border border-white/10">
+                               Atual
                              </div>
                           </div>
                         )}
