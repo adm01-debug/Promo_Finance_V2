@@ -7,17 +7,17 @@
 /* ========== DESIGN TOKENS ========== */
 @layer base {
   :root {
-    --background: 224 71% 4%;
-    --foreground: 210 40% 98%;
-    --card: 224 71% 4%;
-    --card-foreground: 210 40% 98%;
+    --background: 230 25% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
     --card-elevated: 0 0% 100%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71% 4%;
     --primary: 221 100% 50%;
     --primary-foreground: 210 40% 98%;
     --primary-glow: 221 100% 70%;
-    --secondary: 210 40% 96%;
+    --secondary: 215 25% 95%;
     --secondary-foreground: 222 47% 11%;
     --info: 199 89% 48%;
     --info-foreground: 210 40% 98%;
@@ -25,33 +25,33 @@
     --success-foreground: 210 40% 98%;
     --warning: 38 92% 50%;
     --warning-foreground: 210 40% 98%;
-    --muted: 210 40% 92%;
+    --muted: 215 25% 95%;
     --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96%;
+    --accent: 215 25% 95%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 221 100% 50%;
-    --radius: 1rem;
-    --glass-bg: 0 0% 100% / 0.4;
+    --radius: 0.75rem;
+    --glass-bg: 0 0% 100% / 0.7;
     --glass-border: 0 0% 0% / 0.05;
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     --easing-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
-    --sidebar-background: 210 40% 98%;
+    --sidebar-background: 230 25% 98%;
     --sidebar-foreground: 224 71% 4%;
     --sidebar-primary: 221 100% 50%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 94%;
+    --sidebar-accent: 215 25% 92%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
     --sidebar-ring: 221 100% 50%;
-    --header-shadow: 0 2px 12px hsl(225 30% 10% / 0.05);
-    --gradient-primary: linear-gradient(135deg, hsl(221 100% 50%), hsl(221 100% 40%));
+    --header-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --gradient-primary: linear-gradient(to bottom right, hsl(221 100% 50%), hsl(221 100% 45%));
     --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
   }
 
@@ -102,18 +102,16 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
-    transition: background-color 0.4s var(--easing-apple), color 0.4s var(--easing-apple);
-    background-image: radial-gradient(at 0% 0%, hsl(var(--primary) / 0.15) 0px, transparent 50%),
-                      radial-gradient(at 100% 100%, hsl(var(--info) / 0.1) 0px, transparent 50%),
-                      radial-gradient(at 50% 50%, hsl(var(--primary) / 0.05) 0px, transparent 80%);
-    background-attachment: fixed;
-    letter-spacing: -0.01em;
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    background-image: none;
+    background-attachment: scroll;
+    letter-spacing: normal;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
-    @apply tracking-tight font-bold;
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply tracking-tight font-semibold;
   }
 
   :focus-visible {
@@ -124,43 +122,25 @@
 
 @layer components {
   .premium-card {
-    @apply rounded-[2.5rem] border bg-card/30 backdrop-blur-2xl transition-all duration-700 ease-apple relative overflow-hidden;
-    border-color: var(--glass-border);
-    box-shadow: 0 4px 30px -10px rgb(0 0 0 / 0.1);
-  }
-  .premium-card::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 transition-opacity duration-700;
+    @apply rounded-xl border bg-card transition-all duration-200 shadow-sm overflow-hidden;
   }
   .premium-card:hover {
-    @apply bg-card/50;
-    box-shadow: 0 30px 60px -12px rgb(0 0 0 / 0.2);
-    border-color: hsl(var(--primary) / 0.4);
-    transform: translateY(-6px) scale(1.01);
-  }
-  .premium-card:hover::before {
-    @apply opacity-100;
+    @apply shadow-md border-border/80;
+    transform: none;
   }
 
   .premium-button {
-    @apply relative overflow-hidden transition-all duration-500 active:scale-95 rounded-2xl font-black tracking-tight px-8 py-3.5;
-    background: var(--gradient-primary);
-    box-shadow: 0 8px 16px -4px hsl(var(--primary) / 0.4);
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    @apply relative overflow-hidden transition-all duration-200 active:scale-95 rounded-lg font-semibold px-4 py-2;
+    background: hsl(var(--primary));
+    box-shadow: none;
+    text-transform: none;
+    font-size: 0.875rem;
+    letter-spacing: normal;
   }
   .premium-button:hover {
-    @apply brightness-110 shadow-xl;
-    box-shadow: 0 12px 24px -6px hsl(var(--primary) / 0.5);
-    transform: translateY(-2px);
-  }
-  .premium-button::after {
-    content: '';
-    @apply absolute inset-0 opacity-0 transition-opacity duration-500 bg-white/20;
-  }
-  .premium-button:hover::after {
-    @apply opacity-100;
+    @apply brightness-105;
+    box-shadow: none;
+    transform: none;
   }
 
   .glass-panel {
