@@ -67,7 +67,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-sm mx-auto"
+              className="h-7 w-7 rounded bg-primary flex items-center justify-center shadow-none mx-auto"
             >
               <Shield className="h-5 w-5 text-white" />
             </motion.div>
