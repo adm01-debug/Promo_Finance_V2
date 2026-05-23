@@ -118,7 +118,7 @@ export function DashboardFiltersHeader({
         <div className="w-px h-6 bg-border hidden sm:block" />
 
         <div className="flex items-center gap-2 flex-1 w-full px-2">
-          <Target className="h-4 w-4 text-[#64748b] shrink-0" />
+          <Target className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
             <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-[#f1f3f9] transition-all font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Centro de Custos" />
