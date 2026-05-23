@@ -84,7 +84,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         id="main-content"
         initial={false}
         animate={{
-          marginLeft: isMobile ? 0 : (sidebarCollapsed ? 100 : 320),
+          marginLeft: isMobile ? 0 : (sidebarCollapsed ? 80 : 280),
         }}
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
