@@ -150,11 +150,12 @@ export const VisualValidator = () => {
     { id: 'seguranca', name: 'Segurança & Logs', path: '/seguranca', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff' | 'split'>('side-by-side');
+  const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff' | 'split' | 'heatmap'>('side-by-side');
   const [diffImage, setDiffImage] = useState<string | null>(null);
   const [activeBreakpoint, setActiveBreakpoint] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [showReport, setShowReport] = useState(false);
   const [splitPosition, setSplitPosition] = useState(50);
+  const [heatmapIntensity, setHeatmapIntensity] = useState(0.8);
 
   // Load reference from localStorage if exists
   useEffect(() => {
@@ -428,15 +429,26 @@ export const VisualValidator = () => {
                               >
                                 <Maximize2 className="h-4 w-4" /> Split View Slider
                               </Button>
+                              <Button 
+                                variant={viewMode === 'heatmap' ? 'default' : 'outline'} 
+                                onClick={() => setViewMode('heatmap')}
+                                className="justify-start gap-2 h-9 text-xs"
+                              >
+                                <Zap className="h-4 w-4" /> Heatmap Avançado
+                              </Button>
                               <div className="pt-2">
-                                <p className="text-caption mb-2">Opacidade Overlay</p>
+                                <p className="text-caption mb-2">Ajuste de Intensidade / Opacidade</p>
                                 <input 
                                   type="range" 
                                   min="0" 
                                   max="1" 
                                   step="0.1" 
-                                  value={overlayOpacity} 
-                                  onChange={(e) => setOverlayOpacity(parseFloat(e.target.value))}
+                                  value={viewMode === 'heatmap' ? heatmapIntensity : overlayOpacity} 
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value);
+                                    if (viewMode === 'heatmap') setHeatmapIntensity(val);
+                                    else setOverlayOpacity(val);
+                                  }}
                                   className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
                                 />
                               </div>
@@ -553,6 +565,33 @@ export const VisualValidator = () => {
                              )}
                              <div className="absolute bottom-4 left-4 bg-primary/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-primary/30 text-[10px] text-primary font-bold">
                                MAGENTA = DESVIO DETECTADO
+                             </div>
+                          </div>
+                        )}
+
+                        {viewMode === 'heatmap' && (
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-950 flex items-center justify-center">
+                             {currentScreenshot && <img src={currentScreenshot} className="absolute inset-0 w-full opacity-40 grayscale" alt="Base" />}
+                             {diffImage ? (
+                               <div className="absolute inset-0 z-10" style={{ filter: `blur(8px) contrast(2) brightness(1.5)` }}>
+                                 <img 
+                                   src={diffImage} 
+                                   className="w-full h-full object-contain mix-blend-screen" 
+                                   style={{ opacity: heatmapIntensity }}
+                                   alt="Heatmap overlay" 
+                                 />
+                               </div>
+                             ) : (
+                               <div className="text-center p-8">
+                                 <Zap className="h-12 w-12 text-primary/20 mx-auto mb-4" />
+                                 <p className="text-white/40 text-sm">Aguardando dados de comparação para gerar heatmap térmico.</p>
+                               </div>
+                             )}
+                             <div className="absolute top-4 right-4 flex flex-col gap-1 items-end">
+                               <div className="flex items-center gap-2">
+                                 <div className="h-2 w-10 bg-gradient-to-r from-blue-500 via-yellow-500 to-red-500 rounded-full" />
+                                 <span className="text-[10px] text-white/40 font-bold">GRADIENTE DE DESVIO</span>
+                               </div>
                              </div>
                           </div>
                         )}
@@ -739,28 +778,59 @@ export const VisualValidator = () => {
                         </Badge>
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="flex items-center gap-4 bg-zinc-900/30 p-2 rounded-lg border border-white/5 mb-2 overflow-x-auto">
+                        <div className="flex -space-x-2">
+                           {['desktop', 'tablet', 'mobile'].map((bp) => (
+                             <div key={bp} className="h-8 w-12 rounded border border-white/10 bg-black overflow-hidden relative group/thumb cursor-pointer">
+                               <img src={(step.screenshots as any)?.[bp]} className="w-full h-full object-cover" alt={bp} />
+                               <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center">
+                                 <Eye className="h-3 w-3 text-white" />
+                               </div>
+                             </div>
+                           ))}
+                        </div>
+                        <div className="h-4 w-px bg-white/10" />
+                        <div className="text-[10px] text-white/60 font-medium">Overlay Diff Master</div>
+                        <div className="flex-1" />
+                        <Button variant="ghost" size="sm" className="h-7 text-[9px] font-black uppercase tracking-tighter hover:bg-white/5">Auto-Fix Ref</Button>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
                         {['desktop', 'tablet', 'mobile'].map((bp) => (
-                          <div key={bp} className="space-y-2">
-                            <p className="text-[10px] text-white/30 font-bold uppercase text-center">{bp}</p>
-                            <div className="relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-black group">
+                          <div key={bp} className="space-y-2 group">
+                            <div className="flex items-center justify-between px-1">
+                              <p className="text-[9px] text-white/30 font-black uppercase tracking-widest">{bp}</p>
+                              {step.diffScore && step.diffScore > 2 && (
+                                <span className="text-[8px] font-black text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded">DRIFT DETECTADO</span>
+                              )}
+                            </div>
+                            <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-black shadow-2xl transition-all group-hover:border-primary/50">
                               {/* Actual Screenshot */}
                               <img 
                                 src={(step.screenshots as any)?.[bp]} 
                                 className="w-full h-full object-cover" 
                                 alt={bp} 
                               />
-                              {/* Diff Overlay on Hover */}
+                              {/* Overlay Heatmap / Diff Component */}
                               {(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`] && (
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <img 
-                                    src={(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`]} 
-                                    className="w-full h-full object-cover mix-blend-screen bg-black/40" 
-                                    alt="diff" 
-                                  />
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-                                    <p className="text-[8px] font-black text-white bg-red-600 px-2 py-1 rounded">HEATMAP DE DESVIO</p>
-                                  </div>
+                                <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-[2px]">
+                                   {/* The Diff image blended in */}
+                                   <img 
+                                      src={(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`]} 
+                                      className="w-full h-full object-cover mix-blend-screen bg-rose-600/20" 
+                                      alt="diff-overlay" 
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-3">
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5">
+                                          <div className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
+                                          <span className="text-[8px] font-black text-white uppercase">Heatmap Ativo</span>
+                                        </div>
+                                        <div className="h-6 w-6 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+                                          <Maximize2 className="h-3 w-3 text-white" />
+                                        </div>
+                                      </div>
+                                    </div>
                                 </div>
                               )}
                             </div>
