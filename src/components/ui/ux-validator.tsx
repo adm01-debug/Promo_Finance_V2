@@ -89,6 +89,8 @@ const compareImages = (img1Data: string, img2Data: string): Promise<string> => {
       }
     };
 
+    img1.onload = onLoaded;
+    img2.onload = onLoaded;
     img1.onerror = () => resolve('');
     img2.onerror = () => resolve('');
     img1.src = img1Data;
