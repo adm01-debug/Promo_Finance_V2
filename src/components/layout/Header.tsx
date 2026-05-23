@@ -108,11 +108,11 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     >
       <div className="h-full flex items-center justify-between px-6 gap-6">
         <div className="flex items-center flex-1 max-w-xl gap-3">
-          <div className="relative w-full max-w-sm group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8] group-focus-within:text-primary transition-colors" />
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Pesquisar..."
-              className="pl-10 bg-[#f1f3f9] border-transparent focus:bg-white focus:border-primary/30 h-9 rounded-lg transition-all text-sm font-medium"
+              className="pl-10 bg-muted/50 border-transparent focus:bg-background h-9 rounded-md transition-all text-sm"
               onFocus={(e) => {
                 e.preventDefault();
                 e.target.blur();
