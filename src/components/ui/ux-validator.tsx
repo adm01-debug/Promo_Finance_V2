@@ -403,7 +403,7 @@ export const VisualValidator = () => {
                                 <Maximize2 className="h-4 w-4" /> Split View Slider
                               </Button>
                               <div className="pt-2">
-                                <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-2">Opacidade Overlay</p>
+                                <p className="text-caption mb-2">Opacidade Overlay</p>
                                 <input 
                                   type="range" 
                                   min="0" 
@@ -501,10 +501,10 @@ export const VisualValidator = () => {
                                className="absolute inset-0 w-full h-full opacity-0 cursor-col-resize z-30"
                              />
 
-                             <div className="absolute top-4 left-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[8px] font-black text-white/60 uppercase tracking-widest border border-white/10">
+                             <div className="absolute top-4 left-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-caption border border-white/10">
                                Referência
                              </div>
-                             <div className="absolute top-4 right-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[8px] font-black text-white/60 uppercase tracking-widest border border-white/10">
+                             <div className="absolute top-4 right-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-caption border border-white/10">
                                Atual
                              </div>
                           </div>
@@ -608,7 +608,7 @@ export const VisualValidator = () => {
                                 </div>
                                 <div>
                                   <p className="text-sm font-bold text-white">{step.name}</p>
-                                  <p className="text-[10px] text-white/40 font-mono">{step.path}</p>
+                                  <p className="text-caption text-white/30 lowercase">{step.path}</p>
                                 </div>
                               </div>
                               <div className="flex items-center gap-6">
@@ -629,7 +629,7 @@ export const VisualValidator = () => {
               </div>
 
               <div className="p-6 border-t border-white/5 flex items-center justify-between bg-zinc-900/50">
-                <p className="text-[10px] text-white/20 font-bold uppercase tracking-[0.2em]">
+                <p className="text-caption text-primary">
                   Status: Sistema em Conformidade Total (100%)
                 </p>
                 <div className="flex items-center gap-3">
@@ -744,7 +744,7 @@ const TokenItem = ({ name, value, type }: any) => (
   <div className="p-3 bg-white/5 border border-white/5 rounded-xl flex items-center gap-3">
     {type === 'color' && <div className="h-8 w-8 rounded-lg border border-white/10" style={{ backgroundColor: value }} />}
     <div>
-      <p className="text-[10px] text-white/40 uppercase font-black tracking-widest leading-none mb-1">{name}</p>
+      <p className="text-caption leading-none mb-1">{name}</p>
       <code className="text-xs text-white/90 font-mono">{value}</code>
     </div>
   </div>
@@ -754,7 +754,7 @@ const TypographyRow = ({ label, value, sub }: any) => (
   <div className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
     <div>
       <p className="text-xs font-bold text-white leading-none mb-1">{label}</p>
-      <p className="text-[10px] text-white/40">{sub}</p>
+      <p className="text-caption !text-primary/40">{sub}</p>
     </div>
     <code className="text-[11px] text-primary font-mono">{value}</code>
   </div>
