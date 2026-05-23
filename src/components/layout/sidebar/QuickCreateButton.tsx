@@ -30,7 +30,7 @@ export function QuickCreateButton({ collapsed }: QuickCreateButtonProps) {
     >
       <Plus className={cn('shrink-0', collapsed ? 'h-5 w-5' : 'h-4 w-4')} />
       {!collapsed && (
-        <span className="text-xs uppercase tracking-wider">Novo Registro</span>
+        <span className="text-sm font-medium">Novo Registro</span>
       )}
     </motion.button>
   );
