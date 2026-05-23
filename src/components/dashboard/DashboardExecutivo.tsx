@@ -319,7 +319,7 @@ export const DashboardExecutivo = () => {
                     <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
                       <Download className="h-3 w-3" /> Relatórios
                     </div>
-                    <h3 className="text-lg font-bold tracking-tight text-[#1a1c21]">Relatórios & Conciliação</h3>
+                    <h3 className="text-lg font-semibold tracking-tight text-foreground">Relatórios & Conciliação</h3>
                     <p className="text-xs text-[#64748b] leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
                     <div className="flex items-center gap-2 pt-2">
                       <Button size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
