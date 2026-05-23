@@ -311,7 +311,7 @@ export const DashboardExecutivo = () => {
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-white rounded-xl relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-card rounded-md relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <FileText className="h-10 w-10 text-indigo-400" />
                   </div>
