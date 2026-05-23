@@ -8,8 +8,8 @@ import {
 } from 'recharts';
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
 } as const;
 
 interface FluxoCaixaChartProps {
@@ -21,15 +21,15 @@ interface FluxoCaixaChartProps {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload) return null;
   return (
-    <div className="bg-popover/95 backdrop-blur-md border border-border/60 rounded-xl p-3.5 shadow-xl text-xs space-y-2 min-w-[180px]">
-      <p className="font-semibold text-foreground text-sm border-b border-border/40 pb-1.5">{label}</p>
+    <div className="bg-white border border-border rounded-lg p-3 shadow-lg text-xs space-y-2 min-w-[180px]">
+      <p className="font-bold text-[#1a1c21] border-b border-border pb-1.5">{label}</p>
       {payload.map((entry: any, i: number) => (
         <div key={i} className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-2.5 w-2.5 rounded-full ring-1 ring-white/10" style={{ background: entry.color }} />
-            <span className="text-muted-foreground">{entry.name}</span>
+            <div className="h-2 w-2 rounded-full" style={{ background: entry.color }} />
+            <span className="text-[#64748b]">{entry.name}</span>
           </div>
-          <span className="font-bold text-foreground tabular-nums">{formatCurrency(entry.value)}</span>
+          <span className="font-bold text-[#1a1c21] tabular-nums">{formatCurrency(entry.value)}</span>
         </div>
       ))}
     </div>
@@ -39,22 +39,22 @@ function CustomTooltip({ active, payload, label }: any) {
 export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCaixaChartProps) {
   return (
     <motion.div variants={itemVariants} className="w-full">
-      <Card className="h-[400px] sm:h-[450px] md:h-[500px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] ring-1 ring-white/10 rounded-[2.5rem] group hover:ring-white/20 transition-all duration-700">
-        <CardHeader className="pb-4 p-6 sm:p-8 md:p-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="min-w-0">
-              <CardTitle className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter flex items-center gap-4">
-                <div className="h-12 w-12 rounded-[1rem] bg-primary/10 flex items-center justify-center shrink-0 shadow-2xl shadow-primary/10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
-                  <Activity className="h-6 w-6 text-primary" />
-                </div>
-                <span className="truncate">Quantum Cash Horizon 10/10</span>
-              </CardTitle>
-              <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 hidden sm:block mt-1">Projeção Neural de Liquidez</CardDescription>
+      <Card className="h-[400px] border border-border bg-white shadow-sm rounded-xl group overflow-hidden">
+        <CardHeader className="p-6 pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100">
+                <Activity className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-bold text-[#1a1c21]">Fluxo de Caixa</CardTitle>
+                <CardDescription className="text-xs text-[#64748b]">Projeção de entradas e saídas</CardDescription>
+              </div>
             </div>
-            <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo} className="bg-white/5 p-1 rounded-2xl border border-white/10">
-              <TabsList className="h-10 bg-transparent border-none">
+            <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo} className="bg-[#f1f3f9] p-0.5 rounded-lg border border-border">
+              <TabsList className="h-8 bg-transparent border-none p-0">
                 {['7', '15', '30'].map(v => (
-                  <TabsTrigger key={v} value={v} className="text-xs px-5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest rounded-xl transition-all">
+                  <TabsTrigger key={v} value={v} className="text-[11px] px-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm font-bold rounded-md h-7">
                     {v}d
                   </TabsTrigger>
                 ))}
@@ -62,44 +62,46 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
             </Tabs>
           </div>
         </CardHeader>
-        <CardContent className="h-[280px] sm:h-[320px] md:h-[350px] p-6 sm:p-8 md:p-10 pt-0">
+        <CardContent className="h-[300px] p-6 pt-0">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={data} margin={{ left: -15, right: 5, top: 5, bottom: 5 }}>
+            <ComposedChart data={data} margin={{ left: -15, right: 0, top: 20, bottom: 0 }}>
               <defs>
                 <linearGradient id="gradReceitas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={0.02} />
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="gradDespesas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--destructive))" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="hsl(var(--destructive))" stopOpacity={0.02} />
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis
                 dataKey="data"
                 tickFormatter={(v) => v.slice(8)}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={9}
+                stroke="#94a3b8"
+                fontSize={10}
                 tickLine={false}
                 axisLine={false}
-                interval="preserveStartEnd"
+                dy={10}
               />
               <YAxis
-                tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={9}
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                stroke="#94a3b8"
+                fontSize={10}
                 width={35}
                 tickLine={false}
                 axisLine={false}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--border))', strokeDasharray: '4 4' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#e2e8f0', strokeDasharray: '4 4' }} />
               <Legend
-                wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
-                formatter={(value: string) => <span className="text-muted-foreground">{value}</span>}
+                verticalAlign="top"
+                align="right"
+                wrapperStyle={{ fontSize: '11px', paddingBottom: '15px' }}
+                formatter={(value: string) => <span className="text-[#64748b] font-medium">{value}</span>}
               />
-              <Area type="monotone" dataKey="receitas" name="Receitas" stroke="hsl(var(--success))" fill="url(#gradReceitas)" strokeWidth={2} />
-              <Area type="monotone" dataKey="despesas" name="Despesas" stroke="hsl(var(--destructive))" fill="url(#gradDespesas)" strokeWidth={2} />
-              <Line type="monotone" dataKey="saldo" name="Saldo" stroke="hsl(var(--secondary))" strokeWidth={2.5} dot={false} strokeDasharray="6 3" />
+              <Area type="monotone" dataKey="receitas" name="Receitas" stroke="#10b981" fill="url(#gradReceitas)" strokeWidth={2} />
+              <Area type="monotone" dataKey="despesas" name="Despesas" stroke="#ef4444" fill="url(#gradDespesas)" strokeWidth={2} />
+              <Line type="monotone" dataKey="saldo" name="Saldo" stroke="#475569" strokeWidth={2} dot={false} strokeDasharray="5 5" />
             </ComposedChart>
           </ResponsiveContainer>
         </CardContent>
