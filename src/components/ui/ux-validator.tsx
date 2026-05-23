@@ -718,18 +718,54 @@ export const VisualValidator = () => {
                 </div>
               </div>
 
-              <ScrollArea className="h-64 mb-8 pr-4">
-                <div className="space-y-4">
-                  {validationSteps.map(step => (
-                    <div key={step.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        <span className="text-sm font-bold text-white/80">{step.name}</span>
+              <ScrollArea className="h-[450px] mb-8 pr-4">
+                <div className="space-y-6">
+                  {validationSteps.filter(s => s.status !== 'pending').map(step => (
+                    <div key={step.id} className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {step.status === 'success' ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <AlertCircle className="h-5 w-5 text-red-500" />
+                          )}
+                          <div>
+                            <span className="text-sm font-black text-white">{step.name}</span>
+                            <p className="text-[10px] text-white/40 uppercase tracking-tighter">Desvio médio: {step.diffScore?.toFixed(2)}%</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className={cn("text-[10px]", step.status === 'success' ? "text-green-500 border-green-500/30" : "text-red-500 border-red-500/30")}>
+                          {step.status === 'success' ? 'VALIDADO' : 'DESIGN DRIFT'}
+                        </Badge>
                       </div>
-                      <div className="flex gap-1">
-                        <div className="h-1.5 w-6 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-6 rounded-full bg-green-500" />
-                        <div className="h-1.5 w-6 rounded-full bg-green-500" />
+                      
+                      <div className="grid grid-cols-3 gap-2">
+                        {['desktop', 'tablet', 'mobile'].map((bp) => (
+                          <div key={bp} className="space-y-2">
+                            <p className="text-[10px] text-white/30 font-bold uppercase text-center">{bp}</p>
+                            <div className="relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-black group">
+                              {/* Actual Screenshot */}
+                              <img 
+                                src={(step.screenshots as any)?.[bp]} 
+                                className="w-full h-full object-cover" 
+                                alt={bp} 
+                              />
+                              {/* Diff Overlay on Hover */}
+                              {(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`] && (
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <img 
+                                    src={(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`]} 
+                                    className="w-full h-full object-cover mix-blend-screen bg-black/40" 
+                                    alt="diff" 
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                                    <p className="text-[8px] font-black text-white bg-red-600 px-2 py-1 rounded">HEATMAP DE DESVIO</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))}
