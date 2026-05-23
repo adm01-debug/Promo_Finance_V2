@@ -70,10 +70,6 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
   return cardContent;
 }
 
-  if (href) return <Link to={href} className="h-full">{cardContent}</Link>;
-  return cardContent;
-}
-
 export function SecondaryKPICards({
   empresasCount,
   contasBancariasCount,
