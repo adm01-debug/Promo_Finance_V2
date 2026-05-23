@@ -12,7 +12,6 @@ import {
   Monitor,
   Shield,
   Languages,
-
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +31,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-
 import { useAlertas } from '@/hooks/useAlertas';
 import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
@@ -44,29 +42,11 @@ interface HeaderProps {
 }
 
 const roleLabels: Record<string, { label: string; color: string }> = {
-  admin: { label: 'Administrador', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  financeiro: { label: 'Financeiro', color: 'bg-secondary/10 text-secondary border-secondary/20' },
-  operacional: { label: 'Operacional', color: 'bg-success/10 text-success border-success/20' },
-  visualizador: { label: 'Visualizador', color: 'bg-muted text-muted-foreground' },
+  admin: { label: 'Administrador', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  financeiro: { label: 'Financeiro', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  operacional: { label: 'Operacional', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
+  visualizador: { label: 'Visualizador', color: 'bg-gray-100 text-gray-700 border-gray-200' },
 };
-
-// Generate a consistent gradient from user name
-function getAvatarGradient(name: string): string {
-  const gradients = [
-    'from-primary to-accent',
-    'from-primary to-success',
-    'from-accent to-warning',
-    'from-success to-primary',
-    'from-warning to-primary',
-    'from-secondary to-primary',
-    'from-streak to-primary',
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return gradients[Math.abs(hash) % gradients.length];
-}
 
 function getInitialsFromName(name?: string | null, email?: string | null): string {
   if (name) {
@@ -91,7 +71,6 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     toast.success(`Idioma alterado para ${lng === 'pt' ? 'Português' : lng === 'en' ? 'English' : 'Español'}`);
   };
 
-
   const unreadAlerts = useMemo(() => alertas.filter((a) => !a.lido).length, [alertas]);
 
   const handleSignOut = async () => {
@@ -102,7 +81,6 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Usuário';
   const initials = getInitialsFromName(profile?.full_name, user?.email);
-  const avatarGradient = getAvatarGradient(displayName);
 
   const getThemeIcon = () => {
     if (theme === 'system') return Monitor;
@@ -124,20 +102,17 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-20 bg-background/30 backdrop-blur-3xl border-b border-border/40 transition-all duration-1000 ease-apple',
-        sidebarCollapsed ? 'left-[100px]' : 'left-[320px]'
+        'fixed top-0 right-0 z-30 h-14 bg-white border-b border-border transition-all duration-200',
+        sidebarCollapsed ? 'left-[80px]' : 'left-[280px]'
       )}
-      style={{ boxShadow: '0 8px 32px -1px rgba(0, 0, 0, 0.05)' }}
     >
-      <div className="h-full flex items-center justify-between px-8 gap-8">
-        {/* Left: Search Command & Filter Status */}
-        <div className="flex items-center flex-1 max-w-2xl gap-4 group" data-tour="search">
-          <div className="relative w-full max-w-md">
-            <div className="absolute inset-0 bg-white/5 rounded-2xl -m-0.5 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
+      <div className="h-full flex items-center justify-between px-6 gap-6">
+        <div className="flex items-center flex-1 max-w-xl gap-3">
+          <div className="relative w-full max-w-sm group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8] group-focus-within:text-primary transition-colors" />
             <Input
-              placeholder="Intelligent Search (⌘K)"
-              className="pl-14 bg-white/5 border-white/10 focus:bg-background/80 focus:border-primary/50 h-12 rounded-[1rem] transition-all duration-1000 font-black text-xs shadow-2xl placeholder:text-white/10 text-white tracking-widest uppercase"
+              placeholder="Pesquisar..."
+              className="pl-10 bg-[#f1f3f9] border-transparent focus:bg-white focus:border-primary/30 h-9 rounded-lg transition-all text-sm font-medium"
               onFocus={(e) => {
                 e.preventDefault();
                 e.target.blur();
@@ -146,248 +121,125 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             />
           </div>
 
-          <div className="hidden xl:flex items-center gap-3 px-6 py-2.5 rounded-[1.25rem] bg-white/5 border border-white/10 backdrop-blur-3xl shadow-2xl">
-            <div className="h-2 w-2 rounded-full bg-success animate-pulse shadow-[0_0_12px_rgba(34,197,94,0.5)]" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 whitespace-nowrap">
-              Cyber-Node: {empresaLabel || 'Global Nexus'}
-            </span>
-          </div>
+          {empresaLabel && (
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#f1f3f9] border border-border">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="text-[11px] font-semibold text-[#64748b] truncate max-w-[150px]">
+                {empresaLabel}
+              </span>
+            </div>
+          )}
         </div>
 
-
-        {/* Right: Actions */}
-        <div className="flex items-center gap-3">
-          {/* Empresa switcher with better styling */}
-          <div className="bg-white/5 p-1 rounded-2xl border border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <EmpresaSwitcher />
-          </div>
+            
+            <div className="w-px h-4 bg-border mx-1 hidden lg:block" />
 
-          <div className="w-px h-6 bg-border mx-2 hidden lg:block" />
-
-          {/* Action Buttons Grid */}
-          <div className="flex items-center gap-1.5">
-            {/* Keyboard Shortcuts */}
             <KeyboardShortcutsDialog />
 
-            {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Tooltip delayDuration={300}>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-[1rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
-                      <Languages className="h-5 w-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Alterar idioma / Change language</TooltipContent>
-                </Tooltip>
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9]">
+                  <Languages className="h-4 w-4" />
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-popover">
-                <DropdownMenuLabel>Idioma / Language</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuLabel className="text-xs">Idioma</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => changeLanguage('pt')} className={cn("cursor-pointer gap-2", i18n.language === 'pt' && "bg-primary/10")}>
-                  <span className="text-lg">🇧🇷</span> Português
-                  {i18n.language === 'pt' && <Badge variant="secondary" className="ml-auto">Ativo</Badge>}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('en')} className={cn("cursor-pointer gap-2", i18n.language === 'en' && "bg-primary/10")}>
-                  <span className="text-lg">🇺🇸</span> English
-                  {i18n.language === 'en' && <Badge variant="secondary" className="ml-auto">Active</Badge>}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('es')} className={cn("cursor-pointer gap-2", i18n.language === 'es' && "bg-primary/10")}>
-                  <span className="text-lg">🇪🇸</span> Español
-                  {i18n.language === 'es' && <Badge variant="secondary" className="ml-auto">Activo</Badge>}
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('pt')} className="text-sm">Português</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('en')} className="text-sm">English</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('es')} className="text-sm">Español</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-
-            {/* Theme Toggle */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild data-tour="theme">
-                <Tooltip delayDuration={300}>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-[1rem] bg-muted/20 hover:bg-primary/20 hover:text-primary border border-border transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={theme}
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          exit={{ scale: 0, rotate: 180 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ThemeIcon className="h-5 w-5" />
-                        </motion.div>
-                      </AnimatePresence>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Alterar tema</TooltipContent>
-                </Tooltip>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9]">
+                  <ThemeIcon className="h-4 w-4" />
+                </Button>
               </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover">
-              <DropdownMenuLabel>Tema</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setTheme('light')} className={cn("cursor-pointer gap-2", theme === 'light' && "bg-primary/10")}>
-                <Sun className="h-4 w-4" /> Claro
-                {theme === 'light' && <Badge variant="secondary" className="ml-auto">Ativo</Badge>}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme('dark')} className={cn("cursor-pointer gap-2", theme === 'dark' && "bg-primary/10")}>
-                <Moon className="h-4 w-4" /> Escuro
-                {theme === 'dark' && <Badge variant="secondary" className="ml-auto">Ativo</Badge>}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme('system')} className={cn("cursor-pointer gap-2", theme === 'system' && "bg-primary/10")}>
-                <Monitor className="h-4 w-4" /> Sistema
-                {theme === 'system' && <Badge variant="secondary" className="ml-auto">Ativo</Badge>}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuLabel className="text-xs">Tema</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setTheme('light')} className="text-sm">Claro</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('dark')} className="text-sm">Escuro</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('system')} className="text-sm">Sistema</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Notifications */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild data-tour="notifications">
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-11 w-11 rounded-[1rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 relative shadow-2xl ring-1 ring-white/5">
-                    <Bell className="h-5 w-5" />
-                    {unreadAlerts > 0 && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-0.5 -right-0.5 h-5 w-5 bg-destructive text-destructive-foreground rounded-full text-[10px] flex items-center justify-center font-bold"
-                      >
-                        {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                      </motion.span>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {unreadAlerts > 0 ? `${unreadAlerts} notificações não lidas` : 'Notificações'}
-                </TooltipContent>
-              </Tooltip>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 bg-popover">
-              <DropdownMenuLabel className="flex items-center justify-between">
-                <span>Notificações</span>
-                <Badge variant="secondary">{unreadAlerts} novas</Badge>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {alertas.slice(0, 4).map((alerta) => (
-                <DropdownMenuItem
-                  key={alerta.id}
-                  className={cn(
-                    'flex flex-col items-start gap-1 p-3 cursor-pointer',
-                    !alerta.lido && 'bg-primary/5'
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9] relative">
+                  <Bell className="h-4 w-4" />
+                  {unreadAlerts > 0 && (
+                    <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full border-2 border-white" />
                   )}
-                >
-                  <div className="flex items-center gap-2 w-full">
-                    <span className={cn(
-                      'h-2 w-2 rounded-full',
-                      alerta.prioridade === 'critica' && 'bg-destructive',
-                      alerta.prioridade === 'alta' && 'bg-streak',
-                      alerta.prioridade === 'media' && 'bg-warning',
-                      alerta.prioridade === 'baixa' && 'bg-muted-foreground'
-                    )} />
-                    <span className="font-medium text-sm flex-1 truncate">{alerta.titulo}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2 pl-4">{alerta.mensagem}</p>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel className="text-xs font-bold px-4 py-3 border-b">Notificações</DropdownMenuLabel>
+                <div className="max-h-[300px] overflow-y-auto">
+                  {alertas.length > 0 ? (
+                    alertas.slice(0, 5).map((alerta) => (
+                      <DropdownMenuItem key={alerta.id} className="p-4 cursor-pointer border-b last:border-0 flex flex-col items-start gap-1">
+                        <span className="font-semibold text-xs">{alerta.titulo}</span>
+                        <p className="text-[11px] text-[#64748b] line-clamp-2">{alerta.mensagem}</p>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <div className="p-8 text-center text-xs text-[#94a3b8]">Sem notificações</div>
+                  )}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="justify-center py-2 text-primary font-bold text-[11px] cursor-pointer" onClick={() => navigate('/alertas')}>
+                  Ver todas
                 </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-center text-primary font-medium cursor-pointer justify-center"
-                onClick={() => navigate('/alertas')}
-              >
-                Ver todas as notificações
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-          {/* User Menu with gradient avatar */}
+          <div className="w-px h-6 bg-border mx-1 hidden lg:block" />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-12 gap-3 pl-2 pr-6 hover:bg-muted/20 rounded-[1rem] transition-all duration-1000 ring-1 ring-border/40 hover:ring-primary/40 bg-muted/5 shadow-2xl">
-                {/* Gradient Avatar */}
-                <div className="relative">
-                  <div className={cn(
-                    'h-10 w-10 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-2xl ring-2 ring-white/10',
-                    avatarGradient,
-                  )}>
-                    {profile?.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt={displayName}
-                        className="h-full w-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-sm font-bold text-primary-foreground drop-shadow-sm">
-                        {initials}
-                      </span>
-                    )}
-                  </div>
-                  {/* Online indicator */}
-                  <span className="absolute -bottom-0 -right-0 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-card" />
+              <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-[#f1f3f9] transition-all">
+                <div className="h-7 w-7 rounded-md bg-[#e2e8f0] flex items-center justify-center font-bold text-[#64748b] text-[10px]">
+                  {initials}
                 </div>
-
-                <div className="hidden sm:flex flex-col items-start">
-                  <span className="text-sm font-medium leading-tight">{displayName}</span>
+                <div className="hidden sm:flex flex-col items-start text-left">
+                  <span className="text-xs font-bold text-[#1a1c21] leading-none">{displayName}</span>
                   {roleInfo && (
-                    <span className="text-[10px] text-muted-foreground leading-tight truncate max-w-[160px]">
-                      {roleInfo.label}
-                      {empresaLabel ? ` · ${empresaLabel}` : isFallbackGlobal ? ' · Global' : ''}
-                    </span>
+                    <span className="text-[10px] text-[#64748b] font-medium mt-0.5">{roleInfo.label}</span>
                   )}
                 </div>
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                <ChevronDown className="h-3.5 w-3.5 text-[#94a3b8]" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-popover">
-              <DropdownMenuLabel>
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    'h-10 w-10 rounded-full flex items-center justify-center bg-gradient-to-br shrink-0',
-                    avatarGradient,
-                  )}>
-                    <span className="text-base font-bold text-primary-foreground">{initials}</span>
-                  </div>
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="font-semibold truncate">{displayName}</span>
-                    <span className="text-xs font-normal text-muted-foreground truncate">{user?.email}</span>
-                    {roleInfo && (
-                      <div className="flex flex-wrap items-center gap-1 mt-0.5">
-                        <Badge variant="outline" className={cn("w-fit text-[10px]", roleInfo.color)}>
-                          <Shield className="h-2.5 w-2.5 mr-1" />
-                          {roleInfo.label}
-                        </Badge>
-                        {empresaLabel ? (
-                          <Badge variant="secondary" className="w-fit text-[10px] max-w-[140px] truncate">
-                            {empresaLabel}
-                          </Badge>
-                        ) : isFallbackGlobal ? (
-                          <Badge variant="outline" className="w-fit text-[10px] text-muted-foreground">
-                            Global
-                          </Badge>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="font-normal p-4">
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-bold text-[#1a1c21]">{displayName}</p>
+                  <p className="text-xs text-[#64748b]">{user?.email}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <User className="h-4 w-4 mr-2" /> Meu Perfil
+              <DropdownMenuItem onClick={() => navigate('/meu-perfil')} className="cursor-pointer">
+                <User className="h-4 w-4 mr-2" /> Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/configuracoes')}>
+              <DropdownMenuItem onClick={() => navigate('/configuracoes')} className="cursor-pointer">
                 <Settings className="h-4 w-4 mr-2" /> Configurações
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
+              <DropdownMenuItem onClick={handleSignOut} className="text-rose-500 cursor-pointer focus:text-rose-500">
                 <LogOut className="h-4 w-4 mr-2" /> Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
-    </div>
-  </header>
-);
+    </header>
+  );
 });
-Header.displayName = 'Header';
 Header.displayName = 'Header';
