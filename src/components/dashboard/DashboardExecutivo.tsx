@@ -361,9 +361,11 @@ export const DashboardExecutivo = () => {
         open={configDialogOpen}
         onOpenChange={setConfigDialogOpen}
         widgets={widgets}
-        onToggleWidget={resetToDefault}
-        onReset={resetToDefault}
+        onToggleWidget={() => {}}
+        onResizeWidget={() => {}}
+        onResetToDefault={resetToDefault}
       />
+
     </div>
   );
 };
