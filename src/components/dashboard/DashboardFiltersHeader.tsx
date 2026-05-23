@@ -80,7 +80,7 @@ export function DashboardFiltersHeader({
               <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
                 {greeting.text}, <span className="text-primary">{displayName}</span>
               </h1>
-              <p className="text-sm font-medium text-[#64748b]">
+              <p className="text-sm font-normal text-muted-foreground">
                 Bem-vindo ao seu painel financeiro consolidado.
               </p>
             </div>
