@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { AlertCircle, XCircle, AlertTriangle, Info, Bell, Calendar, Users, TrendingDown, DollarSign, CheckCircle2, Clock, Eye, ArrowRight, Loader2 } from 'lucide-react';
+import { AlertCircle, XCircle, AlertTriangle, Info, Bell, Calendar, Users, TrendingDown, DollarSign, CheckCircle2, Clock, Eye, ArrowRight, Loader2, ShieldCheck, BellOff, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
