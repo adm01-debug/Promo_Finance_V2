@@ -13,13 +13,15 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
     "noImplicitReturns": false,
     "noImplicitThis": false,
     "noUncheckedIndexedAccess": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "paths": {
       "@/*": [
         "./src/*"
@@ -43,11 +45,12 @@
     "node_modules",
     "dist",
     "e2e",
+    "**/__tests__/**",
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "src/__tests__"
+    "src/test/**"
   ],
   "include": [
     "src"

@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency , todayISOLocal} from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ExpertAction, ActionResult, TipoCobranca, EtapaCobranca } from './types';
@@ -95,8 +95,8 @@ export async function criarContaPagar(
     fornecedor_nome: action.fornecedor_nome || 'Fornecedor EXPERT',
     descricao: action.descricao || 'Lançamento via EXPERT',
     valor: action.valor || 0,
-    data_vencimento: action.data_vencimento || new Date().toISOString().split('T')[0],
-    data_emissao: new Date().toISOString().split('T')[0],
+    data_vencimento: action.data_vencimento || todayISOLocal(),
+    data_emissao: todayISOLocal(),
     tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,
@@ -122,8 +122,8 @@ export async function criarContaReceber(
     cliente_nome: action.cliente_nome || 'Cliente EXPERT',
     descricao: action.descricao || 'Lançamento via EXPERT',
     valor: action.valor || 0,
-    data_vencimento: action.data_vencimento || new Date().toISOString().split('T')[0],
-    data_emissao: new Date().toISOString().split('T')[0],
+    data_vencimento: action.data_vencimento || todayISOLocal(),
+    data_emissao: todayISOLocal(),
     tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,

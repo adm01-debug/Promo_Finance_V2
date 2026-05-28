@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -247,11 +248,12 @@ export function useContasPagarLogic() {
 
   const sortedContas = [...filteredContas].sort((a, b) => {
     switch (ordenacao) {
-      case 'prioridade_aprovacao':
+      case 'prioridade_aprovacao': {
         const prioA = calcularPrioridadeAprovacao(a);
         const prioB = calcularPrioridadeAprovacao(b);
         if (prioA !== prioB) return prioA - prioB;
         return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
+      }
       case 'vencimento':
         return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
       case 'vencimento_desc':
@@ -354,7 +356,7 @@ export function useContasPagarLogic() {
       await updateMutation.mutateAsync({
         id,
         status: 'pago',
-        data_pagamento: new Date().toISOString().split('T')[0],
+        data_pagamento: todayISOLocal(),
         valor_pago: sortedContas.find(c => c.id === id)?.valor || 0
       });
     }, { showProgress: true });

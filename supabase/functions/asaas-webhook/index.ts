@@ -14,27 +14,35 @@ Deno.serve(async (req) => {
   const ip_origem = req.headers.get('x-forwarded-for') || 'desconhecido'
 
   try {
+    // Fail closed: if the webhook secret isn't configured in this
+    // environment, refuse every request. Previously, an unset env var
+    // accepted any payload because the if-guard simply skipped the check.
     const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN')
+    if (!WEBHOOK_TOKEN) {
+      logger.error('ASAAS_WEBHOOK_TOKEN não configurado — rejeitando webhook', { correlation_id })
+      return createErrorResponse('Webhook não configurado', 503)
+    }
     const receivedToken = req.headers.get('asaas-access-token')
-
-    if (WEBHOOK_TOKEN && receivedToken !== WEBHOOK_TOKEN) {
+    if (receivedToken !== WEBHOOK_TOKEN) {
       logger.error('Token de webhook inválido', { ip_origem, correlation_id })
       return createErrorResponse('Token inválido', 403)
     }
 
-
     const body = await req.json()
     const validation = validatePayload(AsaasWebhookSchema, body)
-    
+
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details)
     }
 
     const { event, payment, transfer } = validation.data
 
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    if (!supabaseUrl || !serviceRoleKey) {
+      logger.error('SUPABASE_URL/SERVICE_ROLE_KEY ausentes', { correlation_id })
+      return createErrorResponse('Configuração do servidor incompleta', 500)
+    }
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
     // 1. Processar COBRANÇAS (Payments)

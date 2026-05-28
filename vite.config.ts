@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => ({
       },
     },
     chunkSizeWarningLimit: 1000,
-    sourcemap: false,
+    sourcemap: 'hidden',
     minify: 'esbuild',
     target: 'es2020',
     cssMinify: true,

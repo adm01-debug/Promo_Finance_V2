@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
@@ -292,7 +293,7 @@ export function useContasReceberLogic() {
       const conta = sortedContas.find(c => c.id === id);
       const { error } = await supabase.from('contas_receber').update({
         status: 'pago',
-        data_recebimento: new Date().toISOString().split('T')[0],
+        data_recebimento: todayISOLocal(),
         valor_recebido: conta?.valor || 0,
       }).eq('id', id);
       if (error) throw error;

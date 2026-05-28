@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { generateFluxoCaixaPDF } from '@/lib/pdf-generator';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency , todayISOLocal} from '@/lib/formatters';
 import { toast } from 'sonner';
 import type { ActionResult } from './types';
 
@@ -90,7 +90,7 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
     }
 
     case 'inadimplencia': {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       const { data } = await supabase
         .from('contas_receber')
         .select('*, clientes(razao_social, score)')

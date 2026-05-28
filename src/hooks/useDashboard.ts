@@ -1,3 +1,4 @@
+import { todayISOLocal, formatDateForInput } from '@/lib/formatters';
 import { useState, useCallback, useMemo } from 'react'; // dashboard hook
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { contasPagarService } from '@/services/contas-pagar.service';
@@ -63,22 +64,25 @@ export function useDashboard(options: UseDashboardOptions = {}) {
       case 'today':
         startDate = endDate;
         break;
-      case 'week':
+      case 'week': {
         const weekAgo = new Date(today);
         weekAgo.setDate(weekAgo.getDate() - 7);
-        startDate = weekAgo.toISOString().split('T')[0];
+        startDate = formatDateForInput(weekAgo);
         break;
-      case 'year':
+      }
+      case 'year': {
         const yearAgo = new Date(today);
         yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-        startDate = yearAgo.toISOString().split('T')[0];
+        startDate = formatDateForInput(yearAgo);
         break;
+      }
       case 'month':
-      default:
+      default: {
         const monthAgo = new Date(today);
         monthAgo.setMonth(monthAgo.getMonth() - 1);
-        startDate = monthAgo.toISOString().split('T')[0];
+        startDate = formatDateForInput(monthAgo);
         break;
+      }
     }
     
     return { startDate, endDate };
@@ -89,7 +93,7 @@ export function useDashboard(options: UseDashboardOptions = {}) {
     queryKey: ['dashboard', 'stats', dateRange],
     queryFn: async (): Promise<DashboardStats> => {
       const summary = await reportService.getSummary(dateRange);
-      const today = new Date().toISOString().split('T')[0];
+      const today = todayISOLocal();
 
       // Buscar transações de hoje
       const [receberHoje, pagarHoje] = await Promise.all([

@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -335,7 +336,7 @@ export function useAsaas(empresaId?: string) {
   const aceitarSugestao = useMutation({
     mutationFn: async ({ suggestionId, contaId }: { suggestionId: string, contaId: string }) => {
       await supabase.from('asaas_reconciliation_suggestions').update({ status: 'ACCEPTED' }).eq('id', suggestionId);
-      await supabase.from('contas_receber').update({ status: 'pago', data_recebimento: new Date().toISOString().split('T')[0] }).eq('id', contaId);
+      await supabase.from('contas_receber').update({ status: 'pago', data_recebimento: todayISOLocal() }).eq('id', contaId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] });

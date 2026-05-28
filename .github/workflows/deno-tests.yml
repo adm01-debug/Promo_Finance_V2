@@ -24,7 +24,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
+          deno-version: v2.1.4
 
       - name: Cache Deno dependencies
         uses: actions/cache@v4
@@ -45,12 +45,14 @@ jobs:
             supabase/functions/sso-test-login/pipeline.ts \
             supabase/functions/sso-test-login/mocks.ts \
             supabase/functions/sso-callback/profile-sync-delta.ts \
-            supabase/functions/sso-callback/claims.ts
+            supabase/functions/sso-callback/claims.ts || \
+            { echo "::warning::deno check failed — see above"; exit 1; }
 
       - name: Run unit tests (no network required)
         run: |
           deno test \
             --allow-env \
+            --allow-net \
             --no-check \
             supabase/functions/sso-test-login/pipeline.test.ts \
             supabase/functions/sso-callback/build-profile-sync-delta.test.ts \
@@ -73,7 +75,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
+          deno-version: v2.1.4
 
       - name: Cache Deno dependencies
         uses: actions/cache@v4

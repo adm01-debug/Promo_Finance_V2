@@ -50,6 +50,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentEmpresaId, setCurrentEmpresaIdState] = useState<string | null>(getCurrentEmpresaId());
   const [isLoading, setIsLoading] = useState(true);
 
+  const ROLE_PRIORITY: Record<AppRole, number> = {
+    admin: 4,
+    financeiro: 3,
+    operacional: 2,
+    visualizador: 1,
+  };
+
+  const pickHighestRole = (rows: Array<{ role: string | null }> | null): AppRole | null => {
+    if (!rows || rows.length === 0) return null;
+    let best: AppRole | null = null;
+    for (const row of rows) {
+      const r = row.role as AppRole | null;
+      if (!r || !(r in ROLE_PRIORITY)) continue;
+      if (!best || ROLE_PRIORITY[r] > ROLE_PRIORITY[best]) best = r;
+    }
+    return best;
+  };
+
   const fetchProfile = async (userId: string) => {
     try {
       const { data: profileData, error: profileError } = await supabase
@@ -64,19 +82,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(profileData);
       }
 
-      const { data: roleData, error: roleError } = await supabase
+      // user_roles can legitimately have multiple rows per user (legacy
+      // multi-empresa setups), so .maybeSingle() throws PGRST116. Fetch all
+      // rows and pick the highest-privilege role as the global fallback.
+      const { data: roleRows, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', userId)
-        .maybeSingle();
+        .eq('user_id', userId);
 
       if (roleError) {
         logger.error('[useAuth] Error fetching role:', roleError);
-      } else if (roleData) {
-        setRole(roleData.role as AppRole);
+      } else {
+        setRole(pickHighestRole(roleRows));
       }
-    } catch {
-      // silently fail
+    } catch (err) {
+      logger.warn('[useAuth] fetchProfile falhou', err);
     }
   };
 
@@ -86,20 +106,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     try {
-      const { data, error } = await (supabase as any)
-        .from('user_empresas')
+      // TODO(types): regenerate supabase types so user_empresas is typed.
+      const { data, error } = await (supabase as unknown as {
+        from: (t: string) => {
+          select: (c: string) => {
+            eq: (k: string, v: unknown) => {
+              eq: (k: string, v: unknown) => {
+                eq: (k: string, v: unknown) => Promise<{
+                  data: Array<{ role: string | null }> | null;
+                  error: { message?: string } | null;
+                }>;
+              };
+            };
+          };
+        };
+      }).from('user_empresas')
         .select('role')
         .eq('user_id', userId)
         .eq('empresa_id', empresaId)
-        .eq('ativo', true)
-        .maybeSingle();
+        .eq('ativo', true);
       if (error) {
         logger.error('[useAuth] Error fetching role per empresa:', error);
         setRoleAtual(null);
         return;
       }
-      setRoleAtual((data?.role as AppRole | undefined) ?? null);
-    } catch {
+      setRoleAtual(pickHighestRole(data as Array<{ role: string | null }> | null));
+    } catch (err) {
+      logger.warn('[useAuth] fetchRoleForEmpresa falhou', err);
       setRoleAtual(null);
     }
   };
@@ -112,27 +145,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let mounted = true;
+    const timers = new Set<ReturnType<typeof setTimeout>>();
+    const safeTimeout = (fn: () => void) => {
+      const t = setTimeout(() => {
+        timers.delete(t);
+        if (mounted) fn();
+      }, 0);
+      timers.add(t);
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (!mounted) return;
         setSession(session);
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          setTimeout(() => {
+          safeTimeout(() => {
             fetchProfile(session.user.id);
             fetchRoleForEmpresa(session.user.id, getCurrentEmpresaId());
-          }, 0);
+          });
 
           if (event === 'SIGNED_IN') {
             const provider = (session.user.app_metadata as Record<string, unknown> | undefined)?.provider as string | undefined;
             const ssoProviderId = (session.user.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
             const isSaml = provider === 'sso:saml' || provider?.startsWith('sso');
             if (isSaml && ssoProviderId) {
-              setTimeout(() => {
+              safeTimeout(() => {
                 supabase.functions.invoke('sso-callback', {
                   body: { kind: 'saml-finalize', provider_id: ssoProviderId },
                 }).catch((err) => logger.warn('[useAuth] saml-finalize falhou', err));
-              }, 0);
+              });
             }
           }
         } else {
@@ -146,6 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
 
@@ -157,7 +202,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      for (const t of timers) clearTimeout(t);
+      subscription.unsubscribe();
+    };
+    // fetchProfile / fetchRoleForEmpresa are stable closures over setters
+    // that are themselves stable; intentionally empty deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Sincroniza com mudanças de empresa disparadas pelo EmpresaSwitcher / EmpresaGuard

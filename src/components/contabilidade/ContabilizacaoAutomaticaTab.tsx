@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -69,7 +70,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const [simForm, setSimForm] = useState({
     tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
     valor: 100,
-    data: new Date().toISOString().split('T')[0],
+    data: todayISOLocal(),
     descricao: 'Simulação de teste',
     categoria_id: '',
     lote_quantidade: 1,
@@ -943,7 +944,8 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                                 variant="ghost"
                                 className="h-8 w-8 text-destructive"
                                 onClick={() => {
-                                  if (confirm('Deseja remover esta regra?')) {
+                                  // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
+                                  if (window.confirm('Deseja remover esta regra?')) {
                                     deleteRegra.mutate(r.id);
                                   }
                                 }}

@@ -113,7 +113,7 @@ export default function BloqueiosDuplicidade() {
       
       if (filters.periodo !== 'all') {
         const now = new Date();
-        let startDate = new Date();
+        const startDate = new Date();
         if (filters.periodo === 'today') startDate.setHours(0, 0, 0, 0);
         if (filters.periodo === 'week') startDate.setDate(now.getDate() - 7);
         if (filters.periodo === 'month') startDate.setMonth(now.getMonth() - 1);

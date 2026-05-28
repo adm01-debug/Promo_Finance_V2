@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency , todayISOLocal} from '@/lib/formatters';
 import type { ActionResult } from './types';
 
 export async function consultarSaldos(): Promise<ActionResult> {
@@ -152,7 +152,7 @@ export async function analisarFluxo(periodo: string): Promise<ActionResult> {
 
 export async function consultarVencimentos(periodo: string): Promise<ActionResult> {
   const dias = parseInt(periodo) || 7;
-  const hoje = new Date().toISOString().split('T')[0];
+  const hoje = todayISOLocal();
   const fim = new Date();
   fim.setDate(fim.getDate() + dias);
   const fimStr = fim.toISOString().split('T')[0];

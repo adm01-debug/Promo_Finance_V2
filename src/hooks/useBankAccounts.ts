@@ -195,8 +195,11 @@ export function useBankAccountRealtime(accountId?: string) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const subscription = supabase
-      .channel('bank-accounts-changes')
+    // Channel name must be unique per (mount, accountId) so we don't
+    // collide with other instances of this hook still subscribed.
+    const channelName = `bank-accounts-changes:${accountId ?? 'all'}`;
+    const channel = supabase
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -215,7 +218,10 @@ export function useBankAccountRealtime(accountId?: string) {
       .subscribe();
 
     return () => {
-      subscription.unsubscribe();
+      // Use removeChannel rather than the channel's own unsubscribe so the
+      // channel is also evicted from the client's channel map; otherwise
+      // it lingers in supabase.getChannels() and can keep WS frames alive.
+      supabase.removeChannel(channel);
     };
   }, [accountId, queryClient]);
 }

@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +37,7 @@ export function BlingFinanceiroPanel() {
   const categorias = categoriasData?.data || [];
   const borderos = borderosData?.data || [];
 
-  const [baixaForm, setBaixaForm] = useState({ valorRecebido: '', data: new Date().toISOString().split('T')[0] });
+  const [baixaForm, setBaixaForm] = useState({ valorRecebido: '', data: todayISOLocal() });
 
   return (
     <div className="space-y-4">
@@ -106,7 +107,7 @@ export function BlingFinanceiroPanel() {
                                 <DropdownMenuContent align="end">
                                   {c.situacao !== 2 && (
                                     <DropdownMenuItem onClick={() => {
-                                      setBaixaForm({ valorRecebido: String(c.valor || ''), data: new Date().toISOString().split('T')[0] });
+                                      setBaixaForm({ valorRecebido: String(c.valor || ''), data: todayISOLocal() });
                                       setShowBaixa({ id: String(c.id), tipo });
                                     }}>
                                       <CheckCircle2 className="h-4 w-4 mr-2" /> Dar Baixa
@@ -114,10 +115,12 @@ export function BlingFinanceiroPanel() {
                                   )}
                                   {c.situacao === 2 && (
                                     <DropdownMenuItem onClick={() => {
-                                      if (confirm('Estornar a última baixa?')) {
-                                        tipo === 'receber'
-                                          ? estornarBaixaReceber.mutate({ id: String(c.id), baixaId: 'last' })
-                                          : estornarBaixaPagar.mutate({ id: String(c.id), baixaId: 'last' });
+                                      // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
+                                      if (!window.confirm('Estornar a última baixa?')) return;
+                                      if (tipo === 'receber') {
+                                        estornarBaixaReceber.mutate({ id: String(c.id), baixaId: 'last' });
+                                      } else {
+                                        estornarBaixaPagar.mutate({ id: String(c.id), baixaId: 'last' });
                                       }
                                     }}>
                                       <RotateCcw className="h-4 w-4 mr-2" /> Estornar Baixa
@@ -125,8 +128,12 @@ export function BlingFinanceiroPanel() {
                                   )}
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem className="text-destructive" onClick={() => {
-                                    if (confirm('Excluir esta conta?')) {
-                                      tipo === 'receber' ? excluirContaReceber.mutate(String(c.id)) : excluirContaPagar.mutate(String(c.id));
+                                    // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
+                                    if (!window.confirm('Excluir esta conta?')) return;
+                                    if (tipo === 'receber') {
+                                      excluirContaReceber.mutate(String(c.id));
+                                    } else {
+                                      excluirContaPagar.mutate(String(c.id));
                                     }
                                   }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
                                 </DropdownMenuContent>

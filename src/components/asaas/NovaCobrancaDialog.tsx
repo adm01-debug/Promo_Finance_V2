@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 // ============================================
 // DIALOG: Nova Cobrança ASAAS (com parcelas, juros, multa, desconto)
 // ============================================
@@ -317,7 +318,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                   type="date"
                   value={vencimento}
                   onChange={e => setVencimento(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={todayISOLocal()}
                 />
               </div>
               <div className="space-y-2">

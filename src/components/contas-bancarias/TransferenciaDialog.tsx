@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useCreateTransferencia } from '@/hooks/useFinancialOperations';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency , todayISOLocal} from '@/lib/formatters';
 import { toast } from 'sonner';
 
 interface TransferenciaDialogProps {
@@ -57,7 +57,7 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
         empresa_id: origem?.empresa_id || '',
         valor: valorNum,
         descricao: descricao || `Transferência entre contas`,
-        data_transferencia: new Date().toISOString().split('T')[0],
+        data_transferencia: todayISOLocal(),
       },
       {
         onSuccess: () => {

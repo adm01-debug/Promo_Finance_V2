@@ -1,12 +1,15 @@
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 import { DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatCurrency, parseCurrency } from '@/lib/currency';
+import { formatCurrency, parseCurrency, type CurrencyCode } from '@/lib/currency';
 
-interface CurrencyInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
+type CurrencyInputCurrency = Extract<CurrencyCode, 'BRL' | 'USD' | 'EUR'>;
+
+interface CurrencyInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'size'> {
   value?: number;
   onChange?: (value: number) => void;
-  currency?: 'BRL' | 'USD' | 'EUR';
+  currency?: CurrencyInputCurrency;
   showIcon?: boolean;
   allowNegative?: boolean;
   inputSize?: 'sm' | 'md' | 'lg';
@@ -27,7 +30,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
       currency = 'BRL',
       showIcon = true,
       allowNegative = false,
-      size = 'md',
+      inputSize = 'md',
       error = false,
       className,
       disabled,
@@ -51,26 +54,33 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
         if (!allowNegative) {
           inputValue = inputValue.replace(/-/g, '');
         }
-        const normalizedValue = inputValue.replace(',', '.');
-        const numericValue = parseFloat(normalizedValue);
         setDisplayValue(inputValue);
-        if (!isNaN(numericValue)) {
-          onChange?.(numericValue);
-        } else if (inputValue === '' || inputValue === '-') {
+
+        if (inputValue === '' || inputValue === '-') {
           onChange?.(0);
+          return;
+        }
+
+        // Use locale-aware parser so "1.234,56" (BRL) → 1234.56 instead of
+        // the broken parseFloat("1.234.56") = 1.234.
+        const numericValue = parseCurrency(inputValue, currency);
+        if (!Number.isNaN(numericValue) && Number.isFinite(numericValue)) {
+          onChange?.(numericValue);
         }
       },
-      [allowNegative, onChange]
+      [allowNegative, onChange, currency]
     );
 
     const handleFocus = useCallback(() => {
       setIsFocused(true);
       if (value !== undefined && value !== 0) {
-        setDisplayValue(value.toFixed(2).replace('.', ','));
+        // While editing, show the raw decimal using the locale separator so
+        // users can re-edit without having to fight against thousands dots.
+        setDisplayValue(formatCurrency(value, currency, { showSymbol: false }));
       } else {
         setDisplayValue('');
       }
-    }, [value]);
+    }, [value, currency]);
 
     const handleBlur = useCallback(() => {
       setIsFocused(false);
@@ -79,7 +89,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
       }
     }, [value, currency]);
 
-    const classes = sizeClasses[size];
+    const classes = sizeClasses[inputSize];
 
     return (
       <div className="relative">
@@ -93,7 +103,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
             <DollarSign className="w-full h-full" />
           </div>
         )}
-        
+
         <input
           ref={ref}
           type="text"
@@ -159,13 +169,13 @@ export function LabeledCurrencyInput({
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </label>
-      
+
       <CurrencyInput error={hasError} {...props} />
-      
+
       {errorMessage && (
         <p className="mt-1 text-sm text-destructive">{errorMessage}</p>
       )}
-      
+
       {helperText && !errorMessage && (
         <p className="mt-1 text-sm text-muted-foreground">{helperText}</p>
       )}

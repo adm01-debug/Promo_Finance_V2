@@ -253,7 +253,7 @@ function AppRoutes() {
             <Route path="/orcamentos" element={<ProtectedRoute><Orcamentos /></ProtectedRoute>} />
             <Route path="/categorias" element={<ProtectedRoute><Categorias /></ProtectedRoute>} />
             <Route path="/clientes/portal-tokens" element={<ProtectedRoute><PortalTokensPage /></ProtectedRoute>} />
-            <Route path="/clientes/scoring" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
+            <Route path="/clientes/scoring" element={<ProtectedRoute><ScoringClientesPage /></ProtectedRoute>} />
 
             <Route path="/compras" element={<ProtectedRoute><Compras /></ProtectedRoute>} />
             <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />

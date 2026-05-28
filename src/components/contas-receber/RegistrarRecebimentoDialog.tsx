@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { toastReceiptSuccess } from '@/lib/toast-confetti';
 import { sounds } from '@/lib/sound-feedback';
 import { haptic } from '@/lib/haptic-feedback';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency , todayISOLocal} from '@/lib/formatters';
 import { logger } from '@/lib/logger';
 import {
   Dialog,
@@ -83,7 +83,7 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
     resolver: zodResolver(recebimentoSchema),
     defaultValues: {
       valor_recebido: saldoRestante,
-      data_recebimento: new Date().toISOString().split('T')[0],
+      data_recebimento: todayISOLocal(),
       observacoes: '',
     },
   });
@@ -93,7 +93,7 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
       const saldo = conta.valor - (conta.valor_recebido || 0);
       form.reset({
         valor_recebido: tipoRecebimento === 'total' ? saldo : 0,
-        data_recebimento: new Date().toISOString().split('T')[0],
+        data_recebimento: todayISOLocal(),
         observacoes: '',
       });
     }

@@ -1,6 +1,7 @@
 // Utilitários para exportação de dados em PDF e Excel (CSV)
 
-import { formatCurrency, formatDate } from './formatters';
+import { toast } from 'sonner';
+import { formatCurrency, formatDate, todayISOLocal } from './formatters';
 
 export interface ExportColumn<T> {
   key: keyof T | string;
@@ -48,7 +49,7 @@ export function exportToCSV<T extends object>(
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+  link.download = `${filename}_${todayISOLocal()}.csv`;
   link.click();
   URL.revokeObjectURL(link.href);
 }
@@ -63,7 +64,7 @@ export function exportToPDF<T extends object>(
   // Criar HTML para impressão
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
-    alert('Permita pop-ups para exportar PDF');
+    toast.error('Permita pop-ups para exportar PDF');
     return;
   }
   
