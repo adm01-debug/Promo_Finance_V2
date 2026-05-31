@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { BlingWebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts';
+import { BlingWebhookSchema, corsHeaders, validatePayload, createErrorResponse, isWebhookProcessed } from '../_shared/validation.ts';
 
 
 export const handler = async (req: Request) => {
@@ -32,17 +32,10 @@ export const handler = async (req: Request) => {
     const retries = payload.retries || 0;
 
 
-    // Idempotency check
+    // Idempotency check using shared helper
     if (resourceId) {
-      const { data: existing } = await supabase
-        .from("bling_webhook_events")
-        .select("id")
-        .eq("resource_id", resourceId)
-        .eq("event_type", eventType)
-        .eq("processed", true)
-        .limit(1);
-
-      if (existing && existing.length > 0) {
+      const isProcessed = await isWebhookProcessed(supabase, 'bling_webhook_events', 'resource_id', resourceId, 'bling');
+      if (isProcessed) {
         console.log(`Event already processed: ${eventType} for ${resourceId}`);
         return new Response(JSON.stringify({ ok: true, skipped: true }), {
           status: 200,

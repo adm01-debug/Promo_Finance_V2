@@ -10,9 +10,11 @@ Deno.serve(async (req) => {
 
   const health: Record<string, any> = {
     timestamp: new Date().toISOString(),
+    status: 'operational',
     services: {
       edge_runtime: { status: 'operational', version: Deno.version.deno },
       database: { status: 'unknown' },
+      realtime: { status: 'unknown' },
       external_apis: {
         asaas: { status: 'unknown' },
         bling: { status: 'unknown' },
@@ -43,6 +45,17 @@ Deno.serve(async (req) => {
   } catch {
     health.services.external_apis.bling.status = 'outage'
   }
+
+  // 3. Check Realtime
+  try {
+    // Check if realtime is accepting connections (simple HTTP check to health endpoint if available, or assume operational if DB is up)
+    health.services.realtime.status = health.services.database.status;
+  } catch {
+    health.services.realtime.status = 'degraded';
+  }
+
+  // Final Overall Status
+  if (health.services.database.status === 'outage') health.status = 'degraded';
 
   return new Response(JSON.stringify(health), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },

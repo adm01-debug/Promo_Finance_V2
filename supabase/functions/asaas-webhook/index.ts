@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { validatePayload, createErrorResponse, AsaasWebhookSchema, corsHeaders } from '../_shared/validation.ts'
+import { validatePayload, createErrorResponse, AsaasWebhookSchema, corsHeaders, isWebhookProcessed } from '../_shared/validation.ts'
 import { createLogger } from '../_shared/logger.ts'
 
 const logger = createLogger('asaas-webhook')
@@ -44,6 +44,17 @@ Deno.serve(async (req) => {
       return createErrorResponse('Configuração do servidor incompleta', 500)
     }
     const supabase = createClient(supabaseUrl, serviceRoleKey)
+
+    // Idempotency check
+    if (body.id) {
+      const isProcessed = await isWebhookProcessed(supabase, 'webhooks_log', 'asaas_event_id', body.id, 'asaas');
+      if (isProcessed) {
+        logger.info('Webhook Asaas já processado (idempotência)', { asaas_event_id: body.id, correlation_id });
+        return new Response(JSON.stringify({ success: true, duplicated: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
 
     // 1. Processar COBRANÇAS (Payments)
     if (payment) {

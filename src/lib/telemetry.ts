@@ -11,6 +11,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { onCLS, onFID, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
 
+// Breadcrumbs para rastreamento de ações do usuário e chamadas Supabase
+const breadcrumbs: Array<{ message: string; timestamp: string; data?: any }> = [];
+const MAX_BREADCRUMBS = 20;
+
+export function addBreadcrumb(message: string, data?: any) {
+  breadcrumbs.push({ message, data, timestamp: new Date().toISOString() });
+  if (breadcrumbs.length > MAX_BREADCRUMBS) breadcrumbs.shift();
+}
+
 type Severity = 'error' | 'warning' | 'critical';
 
 interface TelemetryPayload {
@@ -19,6 +28,7 @@ interface TelemetryPayload {
   url?: string;
   user_agent?: string;
   severity?: Severity;
+  breadcrumbs?: typeof breadcrumbs;
   context?: Record<string, unknown>;
 }
 
@@ -48,7 +58,7 @@ async function flushQueues(): Promise<void> {
         url: p.url ?? window.location.href,
         user_agent: p.user_agent ?? navigator.userAgent,
         severity: p.severity ?? 'error',
-        context: (p.context ?? null) as never,
+        context: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs } as never,
       }));
       await supabase.from('frontend_error_logs').insert(rows);
     }
@@ -83,7 +93,7 @@ function scheduleFlush(): void {
 
 export function reportError(payload: TelemetryPayload): void {
   if (errorQueue.length >= MAX_QUEUE) errorQueue.shift();
-  errorQueue.push(payload);
+  errorQueue.push({ ...payload, breadcrumbs: [...breadcrumbs] });
   scheduleFlush();
 }
 
