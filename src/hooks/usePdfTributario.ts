@@ -22,7 +22,7 @@ interface PdfResponse {
 export function useGerarPdfTributario() {
   return useMutation<PdfResponse, Error, GerarPdfParams>({
     mutationFn: async (params) => {
-      const { data, error } = await supabase.functions.invoke<PdfResponse>(
+      const { data, error } = await (supabase.functions as any).invoke(
         'gerar-pdf-tributario',
         { body: params }
       );
@@ -63,7 +63,7 @@ interface BitrixResponse {
 export function useEnviarBitrix24Tributario() {
   return useMutation<BitrixResponse, Error, EnviarBitrixParams>({
     mutationFn: async (params) => {
-      const { data, error } = await supabase.functions.invoke<BitrixResponse>(
+      const { data, error } = await (supabase.functions as any).invoke(
         'enviar-bitrix24-tributario',
         { body: params }
       );

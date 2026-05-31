@@ -21,7 +21,7 @@ export function useSincronizarAnomaliaBitrix() {
 
   return useMutation<SyncResponse, Error, { anomaliaId: string; evento: EventoBitrix }>({
     mutationFn: async ({ anomaliaId, evento }) => {
-      const { data, error } = await supabase.functions.invoke<SyncResponse>(
+      const { data, error } = await (supabase.functions as any).invoke(
         "sincronizar-anomalia-bitrix24",
         { body: { anomaliaId, evento } },
       );

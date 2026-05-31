@@ -16,7 +16,7 @@ export function useConciliacaoAudit(empresaId?: string) {
         .select('*, contas_bancarias(empresa_id)')
         .eq('conciliada', false)
         .lt('data', threeDaysAgo.toISOString())
-        .returns<any[]>();
+        .returns<any>();
 
       const pendentesDaEmpresa = pendentes?.filter(p => p.contas_bancarias?.empresa_id === empresaId) || [];
 
