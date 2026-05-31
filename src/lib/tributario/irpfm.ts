@@ -1,8 +1,6 @@
-// ============================================
 // MOTOR IRPFM PF — Lei 15.270/2025
 // Imposto Mínimo PF sobre dividendos > R$ 50k/mês
 // Vigência: 2026
-// ============================================
 
 export interface ParametrosIRPFM {
   /** Valor de dividendos recebidos no mês (R$) */

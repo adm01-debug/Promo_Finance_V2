@@ -1,7 +1,5 @@
-// ============================================
 // SPED ECD - Escrituração Contábil Digital
 // Layout 9 (versão 2024)
-// ============================================
 
 export interface EmpresaECD {
   cnpj: string;

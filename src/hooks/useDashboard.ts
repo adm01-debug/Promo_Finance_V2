@@ -1,5 +1,5 @@
 import { todayISOLocal, formatDateForInput } from '@/lib/formatters';
-import { useState, useCallback, useMemo } from 'react'; // dashboard hook
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { contasPagarService } from '@/services/contas-pagar.service';
 import { contasReceberService } from '@/services/contas-receber.service';
@@ -54,10 +54,8 @@ export function useDashboard(options: UseDashboardOptions = {}) {
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
-  // Calcular datas baseado no período
   const dateRange = useMemo(() => {
-    const today = new Date();
-    const endDate = today.toISOString().split('T')[0];
+    const endDate = todayISOLocal();
     
     let startDate: string;
     switch (period) {
@@ -166,8 +164,8 @@ export function useDashboard(options: UseDashboardOptions = {}) {
 
       const contas = await contasPagarService.getAll({
         status: 'pendente',
-        startDate: today.toISOString().split('T')[0],
-        endDate: nextWeek.toISOString().split('T')[0],
+        startDate: todayISOLocal(),
+        endDate: formatDateForInput(nextWeek),
       });
 
       return (contas || []).map(conta => ({
@@ -281,13 +279,12 @@ export function useDashboardStats() {
   return useQuery({
     queryKey: ['dashboard', 'statsLight'],
     queryFn: async () => {
-      const today = new Date();
-      const monthAgo = new Date(today);
+      const monthAgo = new Date();
       monthAgo.setMonth(monthAgo.getMonth() - 1);
 
       return reportService.getSummary({
-        startDate: monthAgo.toISOString().split('T')[0],
-        endDate: today.toISOString().split('T')[0],
+        startDate: formatDateForInput(monthAgo),
+        endDate: todayISOLocal(),
       });
     },
     staleTime: 60 * 1000,
@@ -295,28 +292,26 @@ export function useDashboardStats() {
   });
 }
 
-/**
- * Hook para alertas do dashboard
- */
 export function useDashboardAlerts() {
   return useQuery({
     queryKey: ['dashboard', 'alerts'],
     queryFn: async () => {
-      const today = new Date();
-      const tomorrow = new Date(today);
+      const todayStr = todayISOLocal();
+      const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = formatDateForInput(tomorrow);
 
       const [overdue, dueToday, dueTomorrow] = await Promise.all([
         contasPagarService.getOverdue(),
         contasPagarService.getAll({
           status: 'pendente',
-          startDate: today.toISOString().split('T')[0],
-          endDate: today.toISOString().split('T')[0],
+          startDate: todayStr,
+          endDate: todayStr,
         }),
         contasPagarService.getAll({
           status: 'pendente',
-          startDate: tomorrow.toISOString().split('T')[0],
-          endDate: tomorrow.toISOString().split('T')[0],
+          startDate: tomorrowStr,
+          endDate: tomorrowStr,
         }),
       ]);
 

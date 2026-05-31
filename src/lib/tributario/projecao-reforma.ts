@@ -1,7 +1,5 @@
-// ============================================
 // PROJEÇÃO REFORMA TRIBUTÁRIA 2026-2033
 // Cronograma de transição CBS + IBS + redução PIS/COFINS/ICMS/ISS
-// ============================================
 
 export interface AliquotaTransicao {
   ano: number;

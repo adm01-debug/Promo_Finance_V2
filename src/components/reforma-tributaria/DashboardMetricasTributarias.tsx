@@ -1,6 +1,4 @@
-// ============================================
 // COMPONENTE: DASHBOARD DE MÉTRICAS TRIBUTÁRIAS
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

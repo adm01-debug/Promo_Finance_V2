@@ -1,6 +1,4 @@
-// ============================================
 // DIALOG: Link de Pagamento ASAAS
-// ============================================
 
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';

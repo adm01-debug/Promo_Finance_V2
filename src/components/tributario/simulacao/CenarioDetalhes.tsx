@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: Detalhes do Cenário Tributário
 // Extraído de SimulacaoRegimes.tsx (modularização)
-// ============================================
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

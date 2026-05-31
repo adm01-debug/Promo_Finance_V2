@@ -1,6 +1,4 @@
-// ============================================
 // COMPONENT: AssistenteFechamentoMensal (P10)
-// ============================================
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock, ShieldAlert } from "lucide-react";

@@ -1,12 +1,8 @@
 // @ts-nocheck
-// ============================================
-// HOOK: OPERAÇÕES TRIBUTÁVEIS
-// Gerencia operações com cálculo CBS/IBS/IS
-// ============================================
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { formatDateForInput } from '@/lib/formatters';
 import { ALIQUOTAS_TRANSICAO, CONFIGURACOES_IS, REGIMES_ESPECIAIS } from '@/types/reforma-tributaria';
 
 export interface OperacaoTributavel {
@@ -331,8 +327,8 @@ export function useOperacoesTributaveis(empresaId?: string) {
     return useQuery({
       queryKey: ['operacoes_estatisticas', empresaId, ano, mes],
       queryFn: async () => {
-        const inicioMes = new Date(ano, mes - 1, 1).toISOString().split('T')[0];
-        const fimMes = new Date(ano, mes, 0).toISOString().split('T')[0];
+        const inicioMes = formatDateForInput(new Date(ano, mes - 1, 1));
+        const fimMes = formatDateForInput(new Date(ano, mes, 0));
         
         let query = supabase
           .from('operacoes_tributaveis')

@@ -72,7 +72,6 @@ function headerLines(titulo: string, ctx: PeriodoCtx): string[] {
   ];
 }
 
-// ============ CSV ============
 
 export function exportDiarioCSV(partidas: PartidaExport[], ctx: PeriodoCtx) {
   const lines: string[] = headerLines('LIVRO DIÁRIO', ctx);
@@ -178,7 +177,6 @@ export function exportRazaoCSV(contas: RazaoContaExport[], ctx: PeriodoCtx) {
   downloadCSV(lines.join('\n'), buildFilename('livro-razao', ctx));
 }
 
-// ============ PDF ============
 
 function drawHeader(doc: jsPDF, titulo: string, ctx: PeriodoCtx) {
   const e = ctx.empresa;
@@ -392,7 +390,6 @@ export function exportRazaoPDF(contas: RazaoContaExport[], ctx: PeriodoCtx) {
   doc.save(`livro-razao_${ctx.dataInicio}_a_${ctx.dataFim}.pdf`);
 }
 
-// ============ Auditoria CFC ============
 
 interface AuditoriaCFCExportData {
   scoreConformidade: number;

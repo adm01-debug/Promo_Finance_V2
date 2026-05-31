@@ -20,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, calculateOverdueDays, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import type { ContaReceberWithRelations } from './ContasReceberTableRow';
+import type { StatusPagamento } from '@/types/financial';
 
 
 interface ContaReceberDetailDrawerProps {
@@ -30,8 +31,6 @@ interface ContaReceberDetailDrawerProps {
   onRegistrarRecebimento: (conta: ContaReceberWithRelations) => void;
   onEnviarCobranca: (conta: ContaReceberWithRelations) => void;
 }
-
-type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 
 const statusConfig: Record<StatusPagamento, { label: string; color: string; icon: typeof CheckCircle2 }> = {
   pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },

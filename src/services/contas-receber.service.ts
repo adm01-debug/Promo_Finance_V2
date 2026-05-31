@@ -1,4 +1,4 @@
-import { todayISOLocal } from '@/lib/formatters';
+import { todayISOLocal, formatDateForInput } from '@/lib/formatters';
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -183,16 +183,17 @@ export const contasReceberService = {
   },
 
   async getDueThisWeek() {
-    const today = new Date();
-    const endOfWeek = new Date(today);
-    endOfWeek.setDate(today.getDate() + 7);
+    const startDate = todayISOLocal();
+    const end = new Date();
+    end.setDate(end.getDate() + 7);
+    const endDate = formatDateForInput(end);
 
     const { data, error } = await supabase
       .from('contas_receber')
       .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .eq('status', 'pendente')
-      .gte('data_vencimento', today.toISOString().split('T')[0])
-      .lte('data_vencimento', endOfWeek.toISOString().split('T')[0])
+      .gte('data_vencimento', startDate)
+      .lte('data_vencimento', endDate)
       .order('data_vencimento', { ascending: true });
 
     if (error) throw error;

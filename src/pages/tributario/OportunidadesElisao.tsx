@@ -1,7 +1,5 @@
 // @ts-nocheck
-// ============================================
 // PÁGINA: Oportunidades de Elisão Fiscal
-// ============================================
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

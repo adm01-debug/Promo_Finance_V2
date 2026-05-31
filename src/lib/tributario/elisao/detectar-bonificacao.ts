@@ -1,7 +1,5 @@
-// ============================================
 // BONIFICAÇÃO EM MERCADORIAS
 // LC 87/96; Tema 144 STJ
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 

@@ -33,15 +33,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import type { StatusPagamento, TipoCobranca } from '@/types/financial';
 import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { VersionHistory } from '@/components/common/VersionHistory';
 import { supabase } from '@/integrations/supabase/client';
 import { DuplicateButton } from '@/components/common/DuplicateButton';
 import { toast } from 'sonner';
-
-type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
-type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
 
 const statusConfig: Record<StatusPagamento, { label: string; color: string; icon: typeof CheckCircle2 }> = {
   pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },

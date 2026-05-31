@@ -1,7 +1,5 @@
-// ============================================
 // SPED ECF - Escrituração Contábil Fiscal
 // Layout 10 (versão 2024)
-// ============================================
 
 import type { EmpresaECD, ContaPlano, LancamentoECD, ValidacaoSPED } from './sped-ecd-generator';
 

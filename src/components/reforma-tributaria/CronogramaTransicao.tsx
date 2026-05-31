@@ -1,7 +1,5 @@
-// ============================================
 // CRONOGRAMA DE TRANSIÇÃO
 // Timeline visual 2026-2033
-// ============================================
 
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

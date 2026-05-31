@@ -1,7 +1,5 @@
-// ============================================
 // FATOR R — Define se atividade vai para Anexo III ou V
 // LC 123/2006, art. 18, §5º-M
-// ============================================
 
 import type { FolhaMes } from './types';
 import type { AnexoSimples } from './types';

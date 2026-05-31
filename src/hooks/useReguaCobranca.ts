@@ -3,9 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// ============================================
 // RÉGUA DE COBRANÇA
-// ============================================
 export function useReguaCobranca(empresaId?: string) {
   return useQuery({
     queryKey: ['regua-cobranca', empresaId],
@@ -31,9 +29,7 @@ export function useUpdateReguaCobranca() {
   });
 }
 
-// ============================================
 // TEMPLATES DE COBRANÇA
-// ============================================
 export function useTemplatesCobranca(etapa?: string) {
   return useQuery({
     queryKey: ['templates-cobranca', etapa],
@@ -59,9 +55,7 @@ export function useUpdateTemplate() {
   });
 }
 
-// ============================================
 // FILA DE COBRANÇAS
-// ============================================
 export function useFilaCobrancas(status?: string) {
   return useQuery({
     queryKey: ['fila-cobrancas', status],
@@ -75,9 +69,7 @@ export function useFilaCobrancas(status?: string) {
   });
 }
 
-// ============================================
 // EXECUÇÕES DE COBRANÇA (log de disparos)
-// ============================================
 export function useExecucoesCobranca(empresaId?: string) {
   return useQuery({
     queryKey: ['execucoes-cobranca', empresaId],
@@ -91,9 +83,7 @@ export function useExecucoesCobranca(empresaId?: string) {
   });
 }
 
-// ============================================
 // PROCESSAR RÉGUA (RPC)
-// ============================================
 export function useProcessarRegua() {
   const qc = useQueryClient();
   return useMutation({
@@ -120,9 +110,7 @@ export function useProcessarRegua() {
   });
 }
 
-// ============================================
 // PROCESSAR FILA (dequeue + enviar)
-// ============================================
 export function useProcessarFila() {
   const qc = useQueryClient();
   return useMutation({
@@ -140,9 +128,7 @@ export function useProcessarFila() {
   });
 }
 
-// ============================================
 // CONFIRMAR ENVIO (callback pós-disparo)
-// ============================================
 export function useConfirmarEnvio() {
   const qc = useQueryClient();
   return useMutation({

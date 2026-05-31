@@ -3,9 +3,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
-// ============================================================================
 // CARD BASE
-// ============================================================================
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
@@ -55,9 +53,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-// ============================================================================
 // INTERACTIVE CARD - Com hover effects
-// ============================================================================
 
 interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElement> {
   hoverEffect?: "lift" | "glow" | "border" | "scale" | "tilt";
@@ -100,9 +96,7 @@ const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardProps>(
 );
 InteractiveCard.displayName = "InteractiveCard";
 
-// ============================================================================
 // TILT CARD - Efeito 3D
-// ============================================================================
 
 interface TiltCardProps extends React.HTMLAttributes<HTMLDivElement> {
   tiltAmount?: number;
@@ -161,9 +155,7 @@ const TiltCard = React.forwardRef<HTMLDivElement, TiltCardProps>(
 );
 TiltCard.displayName = "TiltCard";
 
-// ============================================================================
 // FLIP CARD - Cartão com frente e verso
-// ============================================================================
 
 interface FlipCardProps {
   front: React.ReactNode;
@@ -206,9 +198,7 @@ const FlipCard = ({ front, back, className, flipOnHover = true }: FlipCardProps)
   );
 };
 
-// ============================================================================
 // GRADIENT CARD
-// ============================================================================
 
 interface GradientCardProps extends React.HTMLAttributes<HTMLDivElement> {
   gradient?: "primary" | "success" | "warning" | "danger" | "rainbow";
@@ -243,9 +233,7 @@ const GradientCard = React.forwardRef<HTMLDivElement, GradientCardProps>(
 );
 GradientCard.displayName = "GradientCard";
 
-// ============================================================================
 // SPOTLIGHT CARD - Efeito de spotlight no hover
-// ============================================================================
 
 interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   spotlightColor?: string;
@@ -289,9 +277,7 @@ const SpotlightCard = React.forwardRef<HTMLDivElement, SpotlightCardProps>(
 );
 SpotlightCard.displayName = "SpotlightCard";
 
-// ============================================================================
 // ANIMATED CARD STACK
-// ============================================================================
 
 interface CardStackProps {
   cards: React.ReactNode[];
@@ -332,9 +318,7 @@ const CardStack = ({ cards, className }: CardStackProps) => {
   );
 };
 
-// ============================================================================
 // STATS CARD
-// ============================================================================
 
 interface StatsCardProps {
   title: string;

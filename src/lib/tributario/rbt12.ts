@@ -1,7 +1,5 @@
-// ============================================
 // RBT12 — Receita Bruta dos últimos 12 meses
 // Conforme CGSN 140/2018, art. 21
-// ============================================
 
 import type { FaturamentoMes } from './types';
 

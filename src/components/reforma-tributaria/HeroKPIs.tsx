@@ -1,7 +1,5 @@
-// ============================================
 // HERO KPIs - REFORMA TRIBUTÁRIA
 // Cards de métricas com hierarquia visual forte
-// ============================================
 
 import { motion } from 'framer-motion';
 import { 

@@ -1,7 +1,5 @@
 
-// ============================================
 // LOGICA TRIBUTARIA COMPARTILHADA
-// ============================================
 
 export type RegimeTributario = 'simples_nacional' | 'lucro_presumido' | 'lucro_real';
 export type AnexoSimples = 'I' | 'II' | 'III' | 'IV' | 'V';

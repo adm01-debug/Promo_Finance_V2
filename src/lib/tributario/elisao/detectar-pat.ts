@@ -1,7 +1,5 @@
-// ============================================
 // PAT — Programa de Alimentação ao Trabalhador
 // Lei 6.321/76
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 

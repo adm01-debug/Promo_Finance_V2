@@ -48,9 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-// ============================================================================
 // FLOATING LABEL INPUT
-// ============================================================================
 
 interface FloatingLabelInputProps extends InputProps {
   label: string;
@@ -113,9 +111,7 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
 );
 FloatingLabelInput.displayName = "FloatingLabelInput";
 
-// ============================================================================
 // PASSWORD INPUT
-// ============================================================================
 
 interface PasswordInputProps extends Omit<InputProps, "type"> {
   showStrength?: boolean;
@@ -206,9 +202,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
 );
 PasswordInput.displayName = "PasswordInput";
 
-// ============================================================================
 // SEARCH INPUT
-// ============================================================================
 
 interface SearchInputProps extends Omit<InputProps, "type"> {
   onClear?: () => void;
@@ -253,9 +247,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
 );
 SearchInput.displayName = "SearchInput";
 
-// ============================================================================
 // INPUT WITH VALIDATION
-// ============================================================================
 
 interface ValidatedInputProps extends InputProps {
   validationState?: "idle" | "validating" | "valid" | "invalid";
@@ -317,9 +309,7 @@ const ValidatedInput = React.forwardRef<HTMLInputElement, ValidatedInputProps>(
 );
 ValidatedInput.displayName = "ValidatedInput";
 
-// ============================================================================
 // INPUT GROUP
-// ============================================================================
 
 interface InputGroupProps {
   children: React.ReactNode;
@@ -345,9 +335,7 @@ const InputGroup = ({ children, className }: InputGroupProps) => {
   );
 };
 
-// ============================================================================
 // INPUT ADDON
-// ============================================================================
 
 interface InputAddonProps {
   children: React.ReactNode;

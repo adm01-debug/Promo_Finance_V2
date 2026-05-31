@@ -1,6 +1,4 @@
-// ============================================
-// HOOK: Dashboard Tributário v2 - Agregação completa
-// ============================================
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSimulacaoRegimes } from './useSimulacaoRegimes';

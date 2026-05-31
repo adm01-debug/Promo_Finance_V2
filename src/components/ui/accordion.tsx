@@ -5,15 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
-// ============================================================================
 // ACCORDION BASE
-// ============================================================================
 
 const Accordion = AccordionPrimitive.Root;
 
-// ============================================================================
 // ACCORDION ITEM COM VARIANTES
-// ============================================================================
 
 interface AccordionItemProps
   extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {
@@ -41,9 +37,7 @@ const AccordionItem = React.forwardRef<
 });
 AccordionItem.displayName = "AccordionItem";
 
-// ============================================================================
 // ACCORDION TRIGGER COM ÍCONES PERSONALIZADOS
-// ============================================================================
 
 interface AccordionTriggerProps
   extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> {
@@ -94,9 +88,7 @@ const AccordionTrigger = React.forwardRef<
 });
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
 
-// ============================================================================
 // ACCORDION CONTENT ANIMADO
-// ============================================================================
 
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
@@ -120,9 +112,7 @@ const AccordionContent = React.forwardRef<
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
 
-// ============================================================================
 // FAQ ACCORDION - Componente pronto para FAQs
-// ============================================================================
 
 interface FAQItem {
   question: string;
@@ -166,9 +156,7 @@ const FAQAccordion = ({
   );
 };
 
-// ============================================================================
 // ANIMATED ACCORDION GROUP - Com animações stagger
-// ============================================================================
 
 interface AnimatedAccordionGroupProps {
   children: React.ReactNode;
@@ -212,9 +200,7 @@ const AnimatedAccordionGroup = ({
   );
 };
 
-// ============================================================================
 // NESTED ACCORDION - Accordion aninhado
-// ============================================================================
 
 interface NestedAccordionItem {
   id: string;

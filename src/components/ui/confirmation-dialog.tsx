@@ -10,9 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from './button';
 
-// ============================================================================
 // Types
-// ============================================================================
 
 type ConfirmationType = 'danger' | 'warning' | 'success' | 'info' | 'question';
 
@@ -42,9 +40,7 @@ interface UseConfirmationOptions {
   onCancel?: () => void;
 }
 
-// ============================================================================
 // Icon and style configurations
-// ============================================================================
 
 const typeConfig: Record<
   ConfirmationType,
@@ -87,9 +83,7 @@ const typeConfig: Record<
   },
 };
 
-// ============================================================================
 // Confirmation Dialog Component
-// ============================================================================
 
 export function ConfirmationDialog({
   isOpen,
@@ -211,9 +205,7 @@ export function ConfirmationDialog({
   );
 }
 
-// ============================================================================
 // Delete Confirmation Dialog
-// ============================================================================
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -249,9 +241,7 @@ export function DeleteConfirmationDialog({
   );
 }
 
-// ============================================================================
 // useConfirmation Hook
-// ============================================================================
 
 interface ConfirmationState {
   isOpen: boolean;
@@ -306,9 +296,7 @@ export function useConfirmation() {
   };
 }
 
-// ============================================================================
 // useDeleteConfirmation Hook
-// ============================================================================
 
 export function useDeleteConfirmation(onDelete: () => void | Promise<void>) {
   const [isOpen, setIsOpen] = useState(false);

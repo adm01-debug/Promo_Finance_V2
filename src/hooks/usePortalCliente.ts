@@ -2,9 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// ============================================
 // PORTAL CLIENTE TOKENS
-// ============================================
 
 export function usePortalClienteTokens(clienteId?: string) {
   return useQuery({
@@ -72,9 +70,7 @@ export function useRevokePortalToken() {
   });
 }
 
-// ============================================
 // PORTAL CLIENTE ACESSOS (logs)
-// ============================================
 
 export function usePortalClienteAcessos(clienteId?: string) {
   return useQuery({

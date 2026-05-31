@@ -1,6 +1,4 @@
-// ============================================
 // DECISOR — Orquestra os 3 simuladores e ranqueia
-// ============================================
 
 import type { ParametrosSimulacao, ResultadoDecisao, RegimeTributario } from './types';
 import { simularSimples } from './simular-simples';

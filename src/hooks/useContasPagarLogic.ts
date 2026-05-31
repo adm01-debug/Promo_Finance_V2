@@ -48,7 +48,6 @@ export function useContasPagarLogic() {
   const [deletingConta, setDeletingConta] = useState<ContaPagarType | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Sincroniza com empresa ativa do sistema via evento global
   useEffect(() => {
     const handleSync = (e: Event) => {
       const detail = (e as CustomEvent).detail;
@@ -59,9 +58,6 @@ export function useContasPagarLogic() {
         setAdvancedFilters(prev => ({ ...prev, empresaId }));
         setCurrentPage(1);
       }
-      if (bankAccountId !== undefined) {
-        // bankAccountId pode ser null para "Todas as Contas"
-      }
     };
     window.addEventListener('sync-financial-filters', handleSync);
     return () => window.removeEventListener('sync-financial-filters', handleSync);
@@ -71,7 +67,6 @@ export function useContasPagarLogic() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Data fetching
   const { data: paginatedResult, isLoading } = useContasPagarPaginated({
     page: currentPage,
     pageSize,

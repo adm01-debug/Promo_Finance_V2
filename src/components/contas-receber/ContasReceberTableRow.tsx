@@ -21,6 +21,7 @@ import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime, getE
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
+import type { StatusPagamento } from '@/types/financial';
 
 import { VersionHistory } from '@/components/common/VersionHistory';
 import { DuplicateButton } from '@/components/common/DuplicateButton';
@@ -42,8 +43,6 @@ export interface ContaReceberWithRelations extends ContaReceberRow {
   has_protesto?: boolean;
   has_boleto?: boolean;
 }
-
-type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 
 const statusConfig: Record<StatusPagamento, { label: string; color: string; icon: typeof CheckCircle2 }> = {
   pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },

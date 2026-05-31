@@ -21,9 +21,7 @@ export interface CategoriaInput {
   icone?: string;
 }
 
-// ============================================
 // HOOKS
-// ============================================
 
 export function useCategorias(tipo?: 'despesa' | 'receita') {
   const {

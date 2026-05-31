@@ -1,7 +1,5 @@
-// ============================================
 // PROGRESSO DA MIGRAÇÃO - VISUAL APRIMORADO
 // Barra de progresso com microinterações
-// ============================================
 
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Zap } from 'lucide-react';

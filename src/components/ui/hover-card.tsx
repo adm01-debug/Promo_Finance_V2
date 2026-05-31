@@ -44,9 +44,7 @@ const HoverCardContent = React.forwardRef<
 });
 HoverCardContent.displayName = HoverCardPrimitive.Content.displayName;
 
-// ============================================================================
 // Enhanced Profile Hover Card
-// ============================================================================
 
 interface ProfileHoverCardProps {
   trigger: React.ReactNode;
@@ -120,9 +118,7 @@ function ProfileHoverCard({ trigger, user, side = 'bottom', children }: ProfileH
   );
 }
 
-// ============================================================================
 // Info Hover Card - Para informações contextuais
-// ============================================================================
 
 interface InfoHoverCardProps {
   trigger: React.ReactNode;
@@ -161,9 +157,7 @@ function InfoHoverCard({ trigger, title, description, footer, icon, side = 'top'
   );
 }
 
-// ============================================================================
 // Preview Hover Card - Para preview de links/conteúdo
-// ============================================================================
 
 interface PreviewHoverCardProps {
   trigger: React.ReactNode;
@@ -204,9 +198,7 @@ function PreviewHoverCard({ trigger, title, description, image, meta, side = 'bo
   );
 }
 
-// ============================================================================
 // Animated Hover Reveal - Revelar conteúdo no hover
-// ============================================================================
 
 interface HoverRevealProps {
   children: React.ReactNode;

@@ -1,7 +1,5 @@
-// ============================================
 // RELATÓRIO PDF EXECUTIVO — Decisão Tributária
 // Inclui capa com branding, gráficos canvas e timeline reforma
-// ============================================
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';

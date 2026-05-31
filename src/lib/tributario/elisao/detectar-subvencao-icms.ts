@@ -1,7 +1,5 @@
-// ============================================
 // SUBVENÇÃO DE ICMS — Exclusão IRPJ/CSLL
 // LC 160/17, Lei 12.973/14, Tema 1.182 STJ
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 

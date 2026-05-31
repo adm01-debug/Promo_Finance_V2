@@ -1,6 +1,4 @@
-// ============================================
 // MOTOR TRIBUTÁRIO — Tipos compartilhados
-// ============================================
 
 export type RegimeTributario = 'simples_nacional' | 'lucro_presumido' | 'lucro_real';
 

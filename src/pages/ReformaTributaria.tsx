@@ -1,7 +1,5 @@
-// ============================================
 // PÁGINA: REFORMA TRIBUTÁRIA
 // Módulo contábil para empresas Lucro Real
-// ============================================
 
 import { DashboardReformaTributaria } from '@/components/reforma-tributaria/DashboardReformaTributaria';
 import { MainLayout } from '@/components/layout/MainLayout';

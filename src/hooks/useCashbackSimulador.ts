@@ -1,7 +1,5 @@
-// ============================================
 // HOOK: SIMULADOR DE CASHBACK
 // Para bens essenciais (LC 214/2025)
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { ALIQUOTAS_TRANSICAO, CASHBACK_PERCENTUAIS } from '@/types/reforma-tributaria';

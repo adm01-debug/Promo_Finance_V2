@@ -1,7 +1,5 @@
-// ============================================
 // JUROS SOBRE CAPITAL PRÓPRIO (JCP)
 // Lei 9.249/95 art. 9º
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 import { TJLP_ANUAL } from './types';

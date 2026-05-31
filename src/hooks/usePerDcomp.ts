@@ -1,8 +1,6 @@
 // @ts-nocheck
-// ============================================
 // HOOK: PER/DCOMP DIGITAL
 // Pedido de Restituição e Compensação
-// ============================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

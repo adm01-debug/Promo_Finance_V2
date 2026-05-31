@@ -1,7 +1,5 @@
-// ============================================
 // CHART: Evolução mensal (faturamento ou folha)
 // Reutilizado por FaturamentoTab e FolhaTab
-// ============================================
 
 import { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

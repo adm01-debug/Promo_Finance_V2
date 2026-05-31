@@ -1,7 +1,5 @@
-// ============================================
 // CSV IMPORTER — Faturamento + Folha mensal
 // Detecta encoding, separador e valida linhas
-// ============================================
 
 export type CsvKind = 'faturamento' | 'folha';
 

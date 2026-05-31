@@ -1,6 +1,4 @@
-// ============================================
 // COMPONENTE: COMPARATIVO DE REGIMES TRIBUTÁRIOS
-// ============================================
 
 import { Calculator, Award, XCircle, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,15 +1,9 @@
-// ============================================
-// TIPOS DO SISTEMA FINANCEIRO - PROMO FINANCE
-// ============================================
-
-// Enums
 export type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 export type TipoTransacao = 'receita' | 'despesa';
 export type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
 export type PrioridadeAlerta = 'baixa' | 'media' | 'alta' | 'critica';
 export type EtapaReguaCobranca = 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico';
 
-// Entidades Base
 export interface CNPJ {
   id: string;
   cnpj: string;
@@ -46,7 +40,6 @@ export interface CentroCusto {
   createdAt: Date;
 }
 
-// Contas a Pagar / Receber
 export interface ContaPagar {
   id: string;
   cnpjId: string;
@@ -99,7 +92,6 @@ export interface ContaReceber {
   updatedAt: Date;
 }
 
-// Cobrança
 export interface Cobranca {
   id: string;
   contaReceberId: string;
@@ -132,7 +124,6 @@ export interface EtapaReguaCobrancaConfig {
   ativo: boolean;
 }
 
-// Conciliação Bancária
 export interface TransacaoBancaria {
   id: string;
   contaBancariaId: string;
@@ -154,7 +145,6 @@ export interface ConciliacaoItem {
   status: 'pendente' | 'conciliado' | 'ignorado';
 }
 
-// Alertas
 export interface Alerta {
   id: string;
   tipo: 'vencimento' | 'fluxo_caixa' | 'inadimplencia' | 'conciliacao' | 'meta';
@@ -169,7 +159,6 @@ export interface Alerta {
   createdAt: Date;
 }
 
-// Dashboard KPIs
 export interface DashboardKPIs {
   saldoTotal: number;
   saldoTotalVariacao: number;
@@ -209,7 +198,6 @@ export interface DistribuicaoCentroCusto {
   orcado: number;
 }
 
-// Bitrix24 Integration
 export interface Bitrix24Deal {
   id: string;
   title: string;
@@ -229,7 +217,6 @@ export interface Bitrix24SyncStatus {
   status: 'idle' | 'syncing' | 'error' | 'success';
 }
 
-// Filtros
 export interface FiltrosFinanceiros {
   cnpjId?: string;
   contaBancariaId?: string;
@@ -241,7 +228,6 @@ export interface FiltrosFinanceiros {
   tipoCobranca?: TipoCobranca[];
 }
 
-// Paginação
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;

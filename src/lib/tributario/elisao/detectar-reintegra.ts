@@ -1,7 +1,5 @@
-// ============================================
 // REINTEGRA — Crédito sobre Exportação
 // Lei 13.043/14
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 

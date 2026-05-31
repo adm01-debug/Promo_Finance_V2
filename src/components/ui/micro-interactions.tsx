@@ -5,9 +5,7 @@ import confetti from 'canvas-confetti';
 import { sounds } from '@/lib/sound-feedback';
 import { Check, Sparkles, PartyPopper, Zap, Heart, Star, Trophy, Target } from 'lucide-react';
 
-// ============================================
 // HAPTIC FEEDBACK
-// ============================================
 export function triggerHaptic(type: 'light' | 'medium' | 'heavy' | 'success' | 'error' = 'light') {
   if ('vibrate' in navigator) {
     const patterns = {
@@ -21,9 +19,7 @@ export function triggerHaptic(type: 'light' | 'medium' | 'heavy' | 'success' | '
   }
 }
 
-// ============================================
 // CONFETTI CELEBRATIONS
-// ============================================
 interface ConfettiOptions {
   particleCount?: number;
   spread?: number;
@@ -109,9 +105,7 @@ export function celebrateMilestone() {
   triggerHaptic('heavy');
 }
 
-// ============================================
 // ANIMATED COUNTER
-// ============================================
 interface AnimatedCounterProps {
   value: number;
   duration?: number;
@@ -147,9 +141,7 @@ export function AnimatedCounter({
   return <span className={className}>{formatter(displayValue)}</span>;
 }
 
-// ============================================
 // PULSE DOT
-// ============================================
 interface PulseDotProps {
   color?: 'success' | 'warning' | 'destructive' | 'primary';
   size?: 'sm' | 'md' | 'lg';
@@ -174,9 +166,7 @@ export function PulseDot({ color = 'success', size = 'md', className }: PulseDot
   );
 }
 
-// ============================================
 // SHIMMER EFFECT
-// ============================================
 export function Shimmer({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={cn("relative overflow-hidden", className)}>
@@ -186,9 +176,7 @@ export function Shimmer({ children, className }: { children: React.ReactNode; cl
   );
 }
 
-// ============================================
 // SUCCESS CHECKMARK
-// ============================================
 export function SuccessCheck({ show }: { show: boolean }) {
   return (
     <AnimatePresence>
@@ -227,9 +215,7 @@ export function SuccessCheck({ show }: { show: boolean }) {
   );
 }
 
-// ============================================
 // HOVER LIFT
-// ============================================
 export function HoverLift({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <motion.div
@@ -242,9 +228,7 @@ export function HoverLift({ children, className }: { children: React.ReactNode; 
   );
 }
 
-// ============================================
 // STAGGER ANIMATION
-// ============================================
 interface StaggerContainerProps {
   children: React.ReactNode;
   className?: string;
@@ -281,9 +265,7 @@ export function StaggerItem({ children, className }: { children: React.ReactNode
   );
 }
 
-// ============================================
 // EMPTY STATE
-// ============================================
 interface EmptyStateProps {
   icon: React.ReactNode;
   title: string;
@@ -314,9 +296,7 @@ export function EmptyState({ icon, title, description, action, className }: Empt
   );
 }
 
-// ============================================
 // FLOATING CELEBRATION ICONS
-// ============================================
 const celebrationIcons = [Sparkles, PartyPopper, Zap, Heart, Star, Trophy, Target];
 
 export function FloatingCelebration({ children, trigger }: { children: React.ReactNode; trigger: boolean }) {
@@ -345,9 +325,7 @@ export function FloatingCelebration({ children, trigger }: { children: React.Rea
   );
 }
 
-// ============================================
 // LOADING DOTS
-// ============================================
 export function LoadingDots({ color = 'currentColor' }: { color?: string }) {
   return (
     <span className="inline-flex items-center gap-1">
@@ -365,9 +343,7 @@ export function LoadingDots({ color = 'currentColor' }: { color?: string }) {
   );
 }
 
-// ============================================
 // RIPPLE EFFECT
-// ============================================
 export function Ripple({ className, color = 'rgba(255, 255, 255, 0.3)' }: { className?: string; color?: string }) {
   return (
     <motion.span
@@ -380,9 +356,7 @@ export function Ripple({ className, color = 'rgba(255, 255, 255, 0.3)' }: { clas
   );
 }
 
-// ============================================
 // INTERACTIVE BUTTON WRAPPER
-// ============================================
 interface InteractiveButtonProps {
   children: React.ReactNode;
   onClick?: () => void | Promise<void>;

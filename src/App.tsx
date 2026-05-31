@@ -20,7 +20,6 @@ import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOve
 
 
 
-// Lazy load pages for better performance
 const Index = lazy(() => import('./pages/Index'));
 const Auth = lazy(() => import('./pages/Auth'));
 const CorporateOnboarding = lazy(() => import('./pages/auth/CorporateOnboarding'));
@@ -113,25 +112,18 @@ const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
 const Logistica = lazy(() => import('./pages/Logistica'));
 const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
-
-
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
 const ApiManagement = lazy(() => import('./pages/admin/ApiManagement'));
 const CustomFieldsAdmin = lazy(() => import('./pages/admin/CustomFieldsAdmin'));
 const StatusPage = lazy(() => import('./pages/StatusPage'));
-
-
-
-
 const Compras = lazy(() => import('./pages/Compras'));
 const Integracoes = lazy(() => import('./pages/Integracoes'));
 const PortalCliente = lazy(() => import('./pages/PortalCliente'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 
-// Inner app component that can use routing hooks
 function AppRoutes() {
   return (
     <KeyboardShortcutsProvider>
@@ -144,16 +136,12 @@ function AppRoutes() {
         <VisualCorrectionOverlay />
         <Suspense fallback={<PageLoading />}>
           <Routes>
-            {/* Public Routes */}
             <Route path="/auth" element={<Auth />} />
             <Route path="/auth/corporate" element={<CorporateOnboarding />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/contador/:token" element={<ContadorReadonly />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/portal-cliente" element={<PortalCliente />} />
-
-            
-            {/* Protected Routes */}
             <Route path="/design-system-debug" element={<DesignSystemDebug />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
@@ -231,10 +219,6 @@ function AppRoutes() {
             <Route path="/admin/api" element={<ProtectedRoute requiredRoles={['admin']}><ApiManagement /></ProtectedRoute>} />
             <Route path="/admin/campos-customizados" element={<ProtectedRoute requiredRoles={['admin']}><CustomFieldsAdmin /></ProtectedRoute>} />
             <Route path="/logistica" element={<ProtectedRoute><Logistica /></ProtectedRoute>} />
-
-
-
-            
             <Route path="/tributario/split-payment" element={<ProtectedRoute><SplitPaymentPage /></ProtectedRoute>} />
             <Route path="/tributario/conciliacao" element={<ProtectedRoute><ConciliacaoTributariaPage /></ProtectedRoute>} />
             <Route path="/tributario/incentivos" element={<ProtectedRoute><IncentivosFiscaisPage /></ProtectedRoute>} />
@@ -257,8 +241,6 @@ function AppRoutes() {
 
             <Route path="/compras" element={<ProtectedRoute><Compras /></ProtectedRoute>} />
             <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
-            
-            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
