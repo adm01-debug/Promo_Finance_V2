@@ -74,9 +74,13 @@ Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/c
 
 ## Technical Documentation
 
-Para entender a arquitetura detalhada, fluxos de dados e padrões de segurança:
+A arquitetura do projeto é baseada em princípios de **resiliência, telemetria e segurança multi-empresa**. Para entender os fluxos de dados, padrões de código e responsabilidades de cada camada, consulte a documentação técnica oficial:
 
-- [Guia de Arquitetura Principal](docs/ARCHITECTURE.md)
-- [Auditoria Técnica e Resiliência](docs/TECHNICAL_AUDIT_RESILIENCE.md)
-- [Guia de Testes](docs/TESTING.md)
-- [Acessibilidade](docs/ACCESSIBILITY.md)
+### 📖 Guias de Referência
+- **[Arquitetura Principal (Padrões e Camadas)](docs/ARCHITECTURE.md)**: Visão geral da stack, decisões de design e fluxo ponta a ponta.
+- **[Auditoria Técnica e Resiliência](docs/TECHNICAL_AUDIT_RESILIENCE.md)**: Detalhes sobre o sistema de telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.
+- **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: Como rodar e escrever testes garantindo a estabilidade do sistema.
+- **[Acessibilidade](docs/ACCESSIBILITY.md)**: Padrões WCAG seguidos no frontend.
+
+### 🛠️ Consultando a Documentação
+Novos desenvolvedores devem começar pelo `ARCHITECTURE.md` para entender como a comunicação com o Supabase é interceptada para logs e como as permissões de empresa são aplicadas automaticamente em todas as rotas.

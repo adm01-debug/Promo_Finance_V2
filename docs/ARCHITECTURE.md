@@ -72,6 +72,30 @@ flowchart TD
 - **Proxy externo** para `clientes`/`fornecedores` via Edge Function `external-data` — `mem://integrations/proxy-dados-supabase-externo`.
 - **Lovable AI Gateway** para IA (sem API key custom) — usa `LOVABLE_API_KEY`.
 
+## Padrões do `external-data` (Bridge de Dados)
+
+O acesso a dados de clientes e fornecedores externos deve obrigatoriamente seguir o contrato da Edge Function `external-data`. Este padrão evita dependências diretas de banco e permite fallback gracioso.
+
+### Contrato de Requisição
+- **Endpoint**: `/functions/v1/external-data`
+- **Query Params**:
+  - `tabela`: `clientes` | `fornecedores` (Obrigatório)
+  - `search`: string de busca (Opcional)
+  - `page`/`limit`: Paginação (Opcional, default 1/50)
+
+### Exemplo de Resposta (Sucesso)
+```json
+{
+  "data": [{ "id": "uuid", "razao_social": "Empresa X", ... }],
+  "total": 120,
+  "page": 1,
+  "total_pages": 3
+}
+```
+
+### Gestão de Erros e Fallback
+Se a integração não estiver configurada (`EXTERNAL_SUPABASE_URL` ausente), a função retorna status `200` com `fallback: true` e `data: []`. Devs devem tratar esse estado na UI para mostrar avisos de configuração em vez de erros de crash.
+
 ---
 
 Para detalhes sobre resiliência, telemetria e segurança multi-empresa, consulte o [Guia de Auditoria Técnica e Resiliência](./TECHNICAL_AUDIT_RESILIENCE.md).
