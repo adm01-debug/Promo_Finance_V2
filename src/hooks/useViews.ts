@@ -2,9 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
 
-// ============================================
 // Hook para vw_saldos_contas
-// ============================================
 export function useSaldosContas(empresaId?: string) {
   return useQuery({
     queryKey: ['views', 'saldos-contas', empresaId],
@@ -19,9 +17,7 @@ export function useSaldosContas(empresaId?: string) {
   });
 }
 
-// ============================================
 // Hook para vw_dre_mensal
-// ============================================
 export function useDREMensal(empresaId?: string) {
   return useQuery({
     queryKey: ['views', 'dre-mensal', empresaId],
@@ -36,9 +32,7 @@ export function useDREMensal(empresaId?: string) {
   });
 }
 
-// ============================================
 // Hook para vw_fluxo_caixa (projeção por título)
-// ============================================
 export function useFluxoCaixaView() {
   return useQuery({
     queryKey: ['views', 'fluxo-caixa'],
@@ -54,9 +48,7 @@ export function useFluxoCaixaView() {
   });
 }
 
-// ============================================
 // Hook para vw_fluxo_caixa_diario (movimentações reais)
-// ============================================
 export function useFluxoCaixaDiario(empresaId?: string) {
   return useQuery({
     queryKey: ['views', 'fluxo-caixa-diario', empresaId],
@@ -71,9 +63,7 @@ export function useFluxoCaixaDiario(empresaId?: string) {
   });
 }
 
-// ============================================
 // Hook para vw_dso_aging (aging de recebíveis)
-// ============================================
 export function useDSOAging(empresaId?: string) {
   return useQuery({
     queryKey: ['views', 'dso-aging', empresaId],
@@ -88,9 +78,7 @@ export function useDSOAging(empresaId?: string) {
   });
 }
 
-// ============================================
 // Hook para vw_gastos_centro_custo
-// ============================================
 export function useGastosCentroCusto() {
   return useQuery({
     queryKey: ['views', 'gastos-centro-custo'],
@@ -106,9 +94,7 @@ export function useGastosCentroCusto() {
   });
 }
 
-// ============================================
 // Hook para vw_metricas_cobranca
-// ============================================
 export function useMetricasCobranca(empresaId?: string) {
   return useQuery({
     queryKey: ['views', 'metricas-cobranca', empresaId],
@@ -123,9 +109,7 @@ export function useMetricasCobranca(empresaId?: string) {
   });
 }
 
-// ============================================
 // Hook para vw_transferencias_painel
-// ============================================
 export function useTransferenciasPainel() {
   return useQuery({
     queryKey: ['views', 'transferencias-painel'],

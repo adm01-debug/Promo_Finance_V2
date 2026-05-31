@@ -13,9 +13,7 @@ import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { logger } from "@/lib/logger";
 import { checkShouldDispatch } from "@/hooks/savedFilterDedup";
 
-// ============================================================================
 // Tipos das entidades suportadas
-// ============================================================================
 
 interface AnomaliaRow {
   id: string;
@@ -55,9 +53,7 @@ interface ConciliacaoFilters {
   confiancaIA?: "todos" | "alta" | "media" | "baixa";
 }
 
-// ============================================================================
 // Matchers (puros) — replicam a lógica dos painéis
-// ============================================================================
 
 function matchesAnomaliaFilters(
   row: AnomaliaRow,
@@ -93,9 +89,7 @@ function matchesConciliacaoFilters(
   return true;
 }
 
-// ============================================================================
 // Helpers de apresentação
-// ============================================================================
 
 /** Descreve a ordenação ativa do preset em forma curta para o toast. */
 function describeSort(payload: SavedFilterPayload<unknown>): string | null {
@@ -123,9 +117,7 @@ function buildDescription(
   return extras.length > 0 ? `${base}\n${extras.join(" · ")}` : base;
 }
 
-// ============================================================================
 // Hook genérico interno: escuta INSERT em uma tabela e processa via matcher
-// ============================================================================
 
 interface EntityConfig<TRow, TFilters> {
   table: string;
@@ -509,9 +501,7 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
   }, [user, queryClient, markSeen]);
 }
 
-// ============================================================================
 // Hooks públicos
-// ============================================================================
 
 /**
  * Escuta INSERTs em anomalias_detectadas e dispara toast in-app + push para

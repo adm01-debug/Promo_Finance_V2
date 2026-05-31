@@ -1,7 +1,5 @@
-// ============================================
 // HOOK: APURAÇÕES TRIBUTÁRIAS
 // Gerencia apurações de CBS/IBS/IS no banco
-// ============================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

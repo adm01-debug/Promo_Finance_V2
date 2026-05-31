@@ -1,7 +1,5 @@
 
-// ============================================
 // PÁGINA: ASAAS - Cobranças & Pagamentos (Full)
-// ============================================
 
 import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';

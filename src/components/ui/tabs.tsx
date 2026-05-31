@@ -4,15 +4,11 @@ import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
-// ============================================================================
 // TABS BASE
-// ============================================================================
 
 const Tabs = TabsPrimitive.Root;
 
-// ============================================================================
 // TABS LIST COM VARIANTES
-// ============================================================================
 
 interface TabsListProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
   variant?: "default" | "pills" | "underline" | "bordered";
@@ -43,9 +39,7 @@ const TabsList = React.forwardRef<
 });
 TabsList.displayName = TabsPrimitive.List.displayName;
 
-// ============================================================================
 // TABS TRIGGER COM VARIANTES E ANIMAÇÃO
-// ============================================================================
 
 interface TabsTriggerProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {
   variant?: "default" | "pills" | "underline" | "bordered";
@@ -101,9 +95,7 @@ const TabsTrigger = React.forwardRef<
 });
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-// ============================================================================
 // TABS CONTENT ANIMADO
-// ============================================================================
 
 interface TabsContentProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> {
   animation?: "fade" | "slide" | "scale" | "none";
@@ -159,9 +151,7 @@ const TabsContent = React.forwardRef<
 });
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 
-// ============================================================================
 // ANIMATED TABS - Com indicador animado
-// ============================================================================
 
 interface AnimatedTabsProps {
   tabs: { value: string; label: string; icon?: React.ReactNode; content: React.ReactNode }[];
@@ -224,9 +214,7 @@ const AnimatedTabs = ({
   );
 };
 
-// ============================================================================
 // VERTICAL TABS
-// ============================================================================
 
 interface VerticalTabsProps {
   tabs: { value: string; label: string; icon?: React.ReactNode; content: React.ReactNode }[];
@@ -276,9 +264,7 @@ const VerticalTabs = ({ tabs, defaultValue, className }: VerticalTabsProps) => {
   );
 };
 
-// ============================================================================
 // SCROLLABLE TABS
-// ============================================================================
 
 interface ScrollableTabsProps {
   tabs: { value: string; label: string; icon?: React.ReactNode }[];

@@ -1,7 +1,5 @@
-// ============================================
 // EMPTY STATES COM CTAs - REFORMA TRIBUTÁRIA
 // Estados vazios com orientação ao usuário
-// ============================================
 
 import { motion } from 'framer-motion';
 import { 

@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: APURAÇÃO TRIBUTÁRIA MENSAL
 // Gestão de apurações CBS/IBS/IS
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

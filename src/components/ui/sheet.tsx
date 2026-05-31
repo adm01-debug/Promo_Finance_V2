@@ -140,9 +140,7 @@ const SheetDescription = React.forwardRef<
 ));
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
-// ============================================================================
 // Sheet with Sections
-// ============================================================================
 
 interface SheetSectionProps {
   title?: string;
@@ -161,9 +159,7 @@ function SheetSection({ title, children, className }: SheetSectionProps) {
   );
 }
 
-// ============================================================================
 // Resizable Sheet Hook
-// ============================================================================
 
 interface UseResizableSheetOptions {
   minWidth?: number;
@@ -204,9 +200,7 @@ function useResizableSheet(options: UseResizableSheetOptions = {}) {
   return { width, isResizing, handleMouseDown };
 }
 
-// ============================================================================
 // Resizable Sheet Content
-// ============================================================================
 
 interface ResizableSheetContentProps extends Omit<SheetContentProps, 'style'> {
   minWidth?: number;

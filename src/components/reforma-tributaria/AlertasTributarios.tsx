@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: ALERTAS TRIBUTÁRIOS EM TEMPO REAL
 // Monitoramento de prazos e compliance
-// ============================================
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

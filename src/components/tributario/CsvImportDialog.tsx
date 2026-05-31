@@ -1,7 +1,5 @@
-// ============================================
 // MODAL: Importar CSV (faturamento ou folha)
 // Preview, validação e UPSERT em lote
-// ============================================
 
 import { useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';

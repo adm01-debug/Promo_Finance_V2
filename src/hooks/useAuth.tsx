@@ -12,6 +12,24 @@ import { setSloFailure } from '@/lib/sso-slo-state';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
+const ROLE_PRIORITY: Record<AppRole, number> = {
+  admin: 4,
+  financeiro: 3,
+  operacional: 2,
+  visualizador: 1,
+};
+
+function pickHighestRole(rows: Array<{ role: string | null }> | null): AppRole | null {
+  if (!rows || rows.length === 0) return null;
+  let best: AppRole | null = null;
+  for (const row of rows) {
+    const r = row.role as AppRole | null;
+    if (!r || !(r in ROLE_PRIORITY)) continue;
+    if (!best || ROLE_PRIORITY[r] > ROLE_PRIORITY[best]) best = r;
+  }
+  return best;
+}
+
 interface Profile {
   id: string;
   email: string;
@@ -49,24 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [roleAtual, setRoleAtual] = useState<AppRole | null>(null);
   const [currentEmpresaId, setCurrentEmpresaIdState] = useState<string | null>(getCurrentEmpresaId());
   const [isLoading, setIsLoading] = useState(true);
-
-  const ROLE_PRIORITY: Record<AppRole, number> = {
-    admin: 4,
-    financeiro: 3,
-    operacional: 2,
-    visualizador: 1,
-  };
-
-  const pickHighestRole = (rows: Array<{ role: string | null }> | null): AppRole | null => {
-    if (!rows || rows.length === 0) return null;
-    let best: AppRole | null = null;
-    for (const row of rows) {
-      const r = row.role as AppRole | null;
-      if (!r || !(r in ROLE_PRIORITY)) continue;
-      if (!best || ROLE_PRIORITY[r] > ROLE_PRIORITY[best]) best = r;
-    }
-    return best;
-  };
 
   const fetchProfile = async (userId: string) => {
     try {

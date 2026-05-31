@@ -1,6 +1,4 @@
-// ============================================
 // Validação de consistência da configuração SSO
-// ============================================
 // Função pura usada pelo editor para alertar conflitos entre
 // claim_mapping, allowed_domains, role_mappings e default_role.
 

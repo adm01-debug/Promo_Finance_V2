@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: SPLIT PAYMENT
 // Recolhimento fracionado LC 214/2025
-// ============================================
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

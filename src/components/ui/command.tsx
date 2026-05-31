@@ -7,9 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-// ============================================================================
 // COMMAND BASE
-// ============================================================================
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -26,9 +24,7 @@ const Command = React.forwardRef<
 ));
 Command.displayName = CommandPrimitive.displayName;
 
-// ============================================================================
 // COMMAND DIALOG
-// ============================================================================
 
 interface CommandDialogProps extends DialogProps {}
 
@@ -47,9 +43,7 @@ const CommandDialog = React.forwardRef<HTMLDivElement, CommandDialogProps>(
 );
 CommandDialog.displayName = "CommandDialog";
 
-// ============================================================================
 // COMMAND INPUT
-// ============================================================================
 
 interface CommandInputProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> {
   loading?: boolean;
@@ -108,9 +102,7 @@ const CommandInput = React.forwardRef<
 ));
 CommandInput.displayName = CommandPrimitive.Input.displayName;
 
-// ============================================================================
 // COMMAND LIST
-// ============================================================================
 
 const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
@@ -124,9 +116,7 @@ const CommandList = React.forwardRef<
 ));
 CommandList.displayName = CommandPrimitive.List.displayName;
 
-// ============================================================================
 // COMMAND EMPTY
-// ============================================================================
 
 interface CommandEmptyProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty> {
   icon?: React.ReactNode;
@@ -152,9 +142,7 @@ const CommandEmpty = React.forwardRef<
 ));
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
-// ============================================================================
 // COMMAND GROUP
-// ============================================================================
 
 interface CommandGroupProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group> {
   icon?: React.ReactNode;
@@ -183,9 +171,7 @@ const CommandGroup = React.forwardRef<
 ));
 CommandGroup.displayName = CommandPrimitive.Group.displayName;
 
-// ============================================================================
 // COMMAND SEPARATOR
-// ============================================================================
 
 const CommandSeparator = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
@@ -195,9 +181,7 @@ const CommandSeparator = React.forwardRef<
 ));
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 
-// ============================================================================
 // COMMAND ITEM COM VARIANTES
-// ============================================================================
 
 interface CommandItemProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item> {
   icon?: React.ReactNode;
@@ -244,18 +228,14 @@ const CommandItem = React.forwardRef<
 ));
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
-// ============================================================================
 // COMMAND SHORTCUT
-// ============================================================================
 
 const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
   return <span className={cn("ml-auto text-xs tracking-widest text-muted-foreground", className)} {...props} />;
 };
 CommandShortcut.displayName = "CommandShortcut";
 
-// ============================================================================
 // SPOTLIGHT - Command Palette completo
-// ============================================================================
 
 interface SpotlightAction {
   id: string;
@@ -381,9 +361,7 @@ const Spotlight = ({
   );
 };
 
-// ============================================================================
 // COMMAND MENU HOOK
-// ============================================================================
 
 function useCommandMenu() {
   const [open, setOpen] = React.useState(false);

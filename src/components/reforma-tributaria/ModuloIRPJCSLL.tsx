@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: MÓDULO IRPJ/CSLL LUCRO REAL
 // Apuração trimestral/anual completa
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';

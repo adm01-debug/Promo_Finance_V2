@@ -2,9 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
 
-// ============================================
-// EXTRATO BANCÁRIO (importação OFX/CSV)
-// ============================================
 export function useExtratoBancario(contaBancariaId?: string) {
   return useQuery({
     queryKey: ['extrato-bancario', contaBancariaId],
@@ -18,9 +15,6 @@ export function useExtratoBancario(contaBancariaId?: string) {
   });
 }
 
-// ============================================
-// SESSÕES DE CONCILIAÇÃO
-// ============================================
 export function useConciliacoes(empresaId?: string) {
   return useQuery({
     queryKey: ['conciliacoes', empresaId],
@@ -35,9 +29,7 @@ export function useConciliacoes(empresaId?: string) {
   });
 }
 
-// ============================================
 // WEBHOOKS LOG (Asaas)
-// ============================================
 export function useWebhooksLog() {
   return useQuery({
     queryKey: ['webhooks-log'],
@@ -53,9 +45,7 @@ export function useWebhooksLog() {
   });
 }
 
-// ============================================
 // VIEW vw_webhooks_recentes
-// ============================================
 export function useWebhooksRecentes() {
   return useQuery({
     queryKey: ['views', 'webhooks-recentes'],
@@ -68,9 +58,7 @@ export function useWebhooksRecentes() {
   });
 }
 
-// ============================================
 // HISTÓRICO ANÁLISES PREDITIVAS
-// ============================================
 export function useHistoricoAnalisesPreditivas() {
   return useQuery({
     queryKey: ['historico-analises-preditivas'],

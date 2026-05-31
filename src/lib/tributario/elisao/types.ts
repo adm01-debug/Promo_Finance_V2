@@ -1,6 +1,4 @@
-// ============================================
 // MOTOR DE ELISÃO FISCAL — Tipos
-// ============================================
 
 export type RegimeAplicavel = 'simples' | 'presumido' | 'real';
 export type RiscoElisao = 'baixo' | 'medio' | 'alto';

@@ -1,7 +1,5 @@
-// ============================================
 // Gerador PDF Anual Tributário (P6)
 // jsPDF + autoTable — layout corporativo (capa + 4 seções)
-// ============================================
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { analisarOportunidadesElisao } from '@/lib/tributario/elisao/orquestrador-elisao';

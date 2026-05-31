@@ -1,7 +1,5 @@
-// ============================================
 // HOLDING PATRIMONIAL / FAMILIAR
 // Lei 15.270/2025 — IRPFM
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 import { TETO_DIVIDENDOS_IRPFM } from './types';

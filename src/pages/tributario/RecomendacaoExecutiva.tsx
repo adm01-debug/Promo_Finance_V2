@@ -1,7 +1,5 @@
-// ============================================
 // PÁGINA: Recomendação Executiva (FASE 3 - Roadmap)
 // Resumo executivo do regime ótimo + 3 cenários ranqueados
-// ============================================
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';

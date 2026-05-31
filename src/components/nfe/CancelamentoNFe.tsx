@@ -21,9 +21,7 @@ import { registrarEvento } from '@/lib/sefaz-event-logger';
 import { toast } from 'sonner';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 
-// ============================================
 // COMPONENTE: MODAL DE CANCELAMENTO DE NF-E
-// ============================================
 
 // Using SefazResponse from sefaz-simulator import
 

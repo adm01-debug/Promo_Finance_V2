@@ -1,6 +1,4 @@
-// ============================================
 // ANIMATED COUNTER - Contagem animada de valores
-// ============================================
 
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';

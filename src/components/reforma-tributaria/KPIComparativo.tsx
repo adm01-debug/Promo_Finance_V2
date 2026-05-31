@@ -1,7 +1,5 @@
-// ============================================
 // KPI COM COMPARATIVO TEMPORAL
 // Badge com ↑↓% vs período anterior
-// ============================================
 
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';

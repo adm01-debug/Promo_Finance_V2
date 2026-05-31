@@ -1,9 +1,7 @@
 // @ts-nocheck
-// ============================================
 // HOOK: useReformaTributaria
 // Gestão completa do módulo contábil da Reforma
 // Dados 100% reais (operacoes_tributaveis + apuracoes_tributarias)
-// ============================================
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -30,9 +28,7 @@ import {
   ResultadoSimulacao,
 } from '@/lib/reforma-tributaria-calculator';
 
-// ========================
 // CONSTANTES
-// ========================
 
 const ANO_STORAGE_KEY = 'reforma-tributaria:ano-referencia';
 const EMPRESA_TODAS = 'all';
@@ -43,9 +39,7 @@ export function normalizarEmpresaId(value?: string | null): string | undefined {
   return value;
 }
 
-// ========================
 // HOOK PRINCIPAL
-// ========================
 
 export function useReformaTributaria(empresaIdFiltro?: string) {
   const { toast } = useToast();

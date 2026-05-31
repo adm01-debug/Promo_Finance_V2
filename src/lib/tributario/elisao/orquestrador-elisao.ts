@@ -1,7 +1,5 @@
-// ============================================
 // ORQUESTRADOR DE ELISÃO FISCAL
 // Roda todas as 9 estratégias e ranqueia
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 import { detectarJCP } from './detectar-jcp';

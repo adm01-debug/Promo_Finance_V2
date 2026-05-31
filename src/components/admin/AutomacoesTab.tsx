@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENT: AutomacoesTab (P13)
 // Status dos cron jobs ativos
-// ============================================
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";

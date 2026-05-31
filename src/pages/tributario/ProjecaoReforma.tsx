@@ -1,6 +1,4 @@
-// ============================================
 // PÁGINA: Projeção Reforma Tributária 2026-2033
-// ============================================
 
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

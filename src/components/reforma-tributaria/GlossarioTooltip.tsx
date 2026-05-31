@@ -1,7 +1,5 @@
-// ============================================
 // GLOSSÁRIO INTERATIVO - REFORMA TRIBUTÁRIA
 // Tooltips educativos para termos técnicos
-// ============================================
 
 import { Info } from 'lucide-react';
 import {

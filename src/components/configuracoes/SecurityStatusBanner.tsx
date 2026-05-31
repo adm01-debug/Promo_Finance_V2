@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENT: SecurityStatusBanner
 // Transparência de configuração de segurança (admin-only)
-// ============================================
 import { ShieldCheck, ShieldAlert, Info } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

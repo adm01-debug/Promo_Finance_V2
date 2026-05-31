@@ -1,7 +1,5 @@
-// ============================================
 // ALÍQUOTAS DO SIMPLES NACIONAL
 // 5 Anexos × 6 Faixas (LC 123/2006 com redação da LC 155/2016)
-// ============================================
 
 import type { AnexoSimples } from './types';
 

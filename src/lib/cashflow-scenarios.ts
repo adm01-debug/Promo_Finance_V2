@@ -1,6 +1,4 @@
-// ============================================
 // CASH FLOW SCENARIO PROJECTIONS ENGINE
-// ============================================
 
 export type CenarioTipo = 'otimista' | 'realista' | 'pessimista';
 

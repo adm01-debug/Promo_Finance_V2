@@ -1,7 +1,5 @@
-// ============================================
 // GESTOR DE CRÉDITOS TRIBUTÁRIOS
 // Controle de créditos IBS/CBS com dados reais
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';

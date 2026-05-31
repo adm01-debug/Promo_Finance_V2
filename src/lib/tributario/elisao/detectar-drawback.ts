@@ -1,7 +1,5 @@
-// ============================================
 // DRAWBACK — Suspensão de Tributos na Importação
 // Lei 11.945/09
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 

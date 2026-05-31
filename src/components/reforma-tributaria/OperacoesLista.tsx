@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: LISTA DE OPERAÇÕES TRIBUTÁVEIS
 // Visualização de operações com CBS/IBS/IS
-// ============================================
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

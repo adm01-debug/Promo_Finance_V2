@@ -5,9 +5,7 @@ import { STALE_TIMES, GC_TIMES } from '@/lib/queryClient';
 // Re-export useDebounce from dedicated module
 export { useDebounce } from './useDebounce';
 
-// ============================================
 // PREFETCH CRITICAL DATA
-// ============================================
 export function usePrefetchCriticalData() {
   const queryClient = useQueryClient();
 
@@ -57,9 +55,7 @@ export function usePrefetchCriticalData() {
   }, [queryClient]);
 }
 
-// ============================================
 // HOOKS PARA DADOS CRÍTICOS (Memoizados)
-// ============================================
 export function useEmpresas() {
   return useQuery({
     queryKey: ['empresas'],

@@ -1,7 +1,5 @@
-// ============================================
 // SIMULADOR DE CENÁRIOS TRIBUTÁRIOS
 // Comparação sistema antigo vs novo
-// ============================================
 
 import { useState, useMemo } from 'react';
 import useReformaTributaria from '@/hooks/useReformaTributaria';

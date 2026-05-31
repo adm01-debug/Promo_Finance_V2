@@ -1,7 +1,5 @@
-// ============================================
 // HOOK: IMPORTAÇÃO XML NF-e
 // Upload em lote de XMLs para lançar créditos
-// ============================================
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';

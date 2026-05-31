@@ -1,8 +1,6 @@
 
-// ============================================
 // HOOK: ALERTAS TRIBUTÁRIOS EM TEMPO REAL
 // Monitoramento de prazos e compliance
-// ============================================
 
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

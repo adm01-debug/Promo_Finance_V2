@@ -1,7 +1,5 @@
-// ============================================
 // CALCULADORA DE TRIBUTOS - REFORMA TRIBUTÁRIA
 // Engine de cálculo para IBS, CBS e IS
-// ============================================
 
 import {
   TipoTributoNovo,
@@ -17,9 +15,7 @@ import {
   REGIMES_ESPECIAIS,
 } from '@/types/reforma-tributaria';
 
-// ========================
 // TIPOS DE ENTRADA
-// ========================
 
 export interface DadosOperacao {
   valorOperacao: number;
@@ -76,9 +72,7 @@ export interface ResultadoCalculo {
   detalhamento: string[];
 }
 
-// ========================
 // FUNÇÕES AUXILIARES
-// ========================
 
 /**
  * Determina a fase de transição baseada no ano
@@ -182,9 +176,7 @@ export function verificarIsencao(dados: DadosOperacao): { isento: boolean; motiv
   return { isento: false };
 }
 
-// ========================
 // CALCULADORA PRINCIPAL
-// ========================
 
 /**
  * Calcula todos os tributos da Reforma Tributária
@@ -346,9 +338,7 @@ export function calcularTributosReforma(
   };
 }
 
-// ========================
 // CÁLCULO DE CRÉDITOS
-// ========================
 
 export interface DadosCredito {
   valorAquisicao: number;
@@ -404,9 +394,7 @@ export function calcularCreditos(dados: DadosCredito): ResultadoCredito {
   };
 }
 
-// ========================
 // SIMULADOR COMPARATIVO
-// ========================
 
 export interface DadosSimulacao {
   faturamentoAnual: number;

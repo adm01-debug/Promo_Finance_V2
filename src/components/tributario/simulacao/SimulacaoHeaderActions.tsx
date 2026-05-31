@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: Ações do header da Simulação
 // Extraído de SimulacaoRegimes.tsx (modularização)
-// ============================================
 
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Sparkles, ArrowRight, FileDown, Save } from 'lucide-react';

@@ -235,9 +235,7 @@ const ContextMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLS
 };
 ContextMenuShortcut.displayName = "ContextMenuShortcut";
 
-// ============================================================================
 // Quick Actions Context - Ações rápidas inline
-// ============================================================================
 
 interface QuickAction {
   icon: LucideIcon;

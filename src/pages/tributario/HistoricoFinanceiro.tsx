@@ -1,7 +1,5 @@
-// ============================================
 // PÁGINA: Histórico Financeiro (Faturamento + Folha)
 // Modularizado — tabs extraídos para components/tributario/historico/
-// ============================================
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

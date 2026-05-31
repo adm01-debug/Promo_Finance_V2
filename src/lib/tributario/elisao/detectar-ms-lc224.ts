@@ -1,7 +1,5 @@
-// ============================================
 // MS LC 224/2025 — Reforma Tributária
 // Discussão judicial sobre sublimite estadual
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 import { SUBLIMITE_SIMPLES } from './types';

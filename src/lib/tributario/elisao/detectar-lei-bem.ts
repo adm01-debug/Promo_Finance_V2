@@ -1,7 +1,5 @@
-// ============================================
 // LEI DO BEM — Incentivo a P&D
 // Lei 11.196/05
-// ============================================
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 

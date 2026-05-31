@@ -1,7 +1,5 @@
-// ============================================
 // CSV IMPORTER — Lançamentos contábeis em lote
 // Cada linha = uma partida; agrupa por lancamento_ref
-// ============================================
 
 import type { PlanoContaRow } from '@/hooks/usePlanoContas';
 

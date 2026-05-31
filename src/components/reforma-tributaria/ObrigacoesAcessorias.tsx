@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: OBRIGAÇÕES ACESSÓRIAS
 // Dashboard de compliance tributário
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

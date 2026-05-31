@@ -1,12 +1,8 @@
-// ============================================
 // TIPOS DO SISTEMA CONTÁBIL - REFORMA TRIBUTÁRIA
 // Baseado na LC 214/2025 e EC 132/2023
 // Empresa: Lucro Real
-// ============================================
 
-// ========================
 // ENUMS E CONSTANTES
-// ========================
 
 export type RegimeTributario = 'lucro_real' | 'lucro_presumido' | 'simples_nacional' | 'mei';
 
@@ -62,9 +58,7 @@ export type RegimeEspecial =
   | 'sociedades_cooperativas'
   | 'nenhum';
 
-// ========================
 // ALÍQUOTAS DE TRANSIÇÃO
-// ========================
 
 export interface AliquotasTransicao {
   ano: number;
@@ -93,9 +87,7 @@ export const ALIQUOTA_REFERENCIA_IVA_DUAL = 26.5;
 export const ALIQUOTA_CBS_REFERENCIA = 8.8;
 export const ALIQUOTA_IBS_REFERENCIA = 17.7;
 
-// ========================
 // IMPOSTO SELETIVO (IS)
-// ========================
 
 export interface ConfiguracaoIS {
   categoria: CategoriaIS;
@@ -164,9 +156,7 @@ export const CONFIGURACOES_IS: ConfiguracaoIS[] = [
   },
 ];
 
-// ========================
 // CRÉDITOS TRIBUTÁRIOS
-// ========================
 
 export interface CreditoTributario {
   id: string;
@@ -201,9 +191,7 @@ export interface SaldoCreditosTributarios {
   creditosAVencer90Dias: number;
 }
 
-// ========================
 // OPERAÇÕES TRIBUTÁVEIS
-// ========================
 
 export interface OperacaoTributavel {
   id: string;
@@ -255,9 +243,7 @@ export interface OperacaoTributavel {
   updatedAt: Date;
 }
 
-// ========================
 // APURAÇÃO TRIBUTÁRIA
-// ========================
 
 export interface ApuracaoTributaria {
   id: string;
@@ -306,9 +292,7 @@ export interface ApuracaoTributaria {
   updatedAt: Date;
 }
 
-// ========================
 // SIMULAÇÃO E PLANEJAMENTO
-// ========================
 
 export interface SimulacaoTributaria {
   id: string;
@@ -351,9 +335,7 @@ export interface SimulacaoTributaria {
   createdAt: Date;
 }
 
-// ========================
 // SPLIT PAYMENT
-// ========================
 
 export interface SplitPaymentConfig {
   id: string;
@@ -402,9 +384,7 @@ export interface TransacaoSplitPayment {
   createdAt: Date;
 }
 
-// ========================
 // CASHBACK (Devolução)
-// ========================
 
 export interface ConfiguracaoCashback {
   percentualCBSCesta: number; // 100% CBS para cesta básica
@@ -432,9 +412,7 @@ export const CASHBACK_PERCENTUAIS: ConfiguracaoCashback = {
   percentualIBSDemais: 20,
 };
 
-// ========================
 // REGIMES ESPECIAIS
-// ========================
 
 export interface ConfiguracaoRegimeEspecial {
   regime: RegimeEspecial;
@@ -512,9 +490,7 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   },
 ];
 
-// ========================
 // OBRIGAÇÕES ACESSÓRIAS
-// ========================
 
 export interface ObrigacaoAcessoria {
   codigo: string;
@@ -550,9 +526,7 @@ export const OBRIGACOES_ACESSORIAS_REFORMA: ObrigacaoAcessoria[] = [
   },
 ];
 
-// ========================
 // DASHBOARD E MÉTRICAS
-// ========================
 
 export interface MetricasReformaTributaria {
   empresaId: string;
@@ -596,9 +570,7 @@ export interface MetricasReformaTributaria {
   percentualMigracao: number;
 }
 
-// ========================
 // PLANO DE CONTAS CONTÁBIL
-// ========================
 
 export interface ContaContabilReforma {
   codigo: string;

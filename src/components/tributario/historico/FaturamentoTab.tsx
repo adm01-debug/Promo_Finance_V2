@@ -1,7 +1,5 @@
-// ============================================
 // TAB: Faturamento Mensal — Histórico Tributário
 // Extraído de HistoricoFinanceiro.tsx (modularização)
-// ============================================
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

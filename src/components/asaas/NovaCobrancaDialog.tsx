@@ -1,7 +1,5 @@
 import { todayISOLocal } from '@/lib/formatters';
-// ============================================
 // DIALOG: Nova Cobrança ASAAS (com parcelas, juros, multa, desconto)
-// ============================================
 
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';

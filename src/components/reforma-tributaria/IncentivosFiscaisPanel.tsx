@@ -1,7 +1,5 @@
-// ============================================
 // COMPONENTE: GESTÃO DE INCENTIVOS FISCAIS
 // Interface para cadastrar/gerenciar incentivos
-// ============================================
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

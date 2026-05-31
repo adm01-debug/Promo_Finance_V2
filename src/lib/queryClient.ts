@@ -1,10 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
 
-// ============================================
-// QUERY CLIENT OTIMIZADO
-// Configurações globais para melhor performance
-// ============================================
-
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -35,9 +30,6 @@ export const queryClient = new QueryClient({
   },
 });
 
-// ============================================
-// STALE TIMES POR TIPO DE DADOS
-// ============================================
 export const STALE_TIMES = {
   // Dados que mudam raramente (10 min)
   static: 10 * 60 * 1000,
@@ -51,9 +43,6 @@ export const STALE_TIMES = {
   dashboard: 60 * 1000,
 } as const;
 
-// ============================================
-// GC TIMES (Cache Time)
-// ============================================
 export const GC_TIMES = {
   // Dados estáticos ficam em cache por 30 min
   static: 30 * 60 * 1000,
@@ -63,9 +52,6 @@ export const GC_TIMES = {
   volatile: 5 * 60 * 1000,
 } as const;
 
-// ============================================
-// HELPER PARA CRIAR QUERY OPTIONS
-// ============================================
 export function createQueryOptions<T>(
   queryKey: readonly unknown[],
   queryFn: () => Promise<T>,
@@ -86,9 +72,6 @@ export function createQueryOptions<T>(
   };
 }
 
-// ============================================
-// BATCH INVALIDATION
-// ============================================
 export function batchInvalidate(
   client: QueryClient,
   queryKeys: readonly unknown[][]
@@ -98,9 +81,6 @@ export function batchInvalidate(
   });
 }
 
-// ============================================
-// OPTIMISTIC UPDATE HELPER
-// ============================================
 export function createOptimisticUpdate<TData, TVariables>(
   queryKey: readonly unknown[],
   updateFn: (oldData: TData | undefined, variables: TVariables) => TData
@@ -139,9 +119,6 @@ export function createOptimisticUpdate<TData, TVariables>(
   };
 }
 
-// ============================================
-// QUERY KEYS FACTORY
-// ============================================
 export const queryKeys = {
   all: ['promo-finance'] as const,
   
@@ -228,9 +205,6 @@ export const queryKeys = {
   },
 } as const;
 
-// ============================================
-// INVALIDATION HELPERS
-// ============================================
 export const invalidateQueries = {
   contasPagar: () => queryClient.invalidateQueries({ queryKey: queryKeys.contasPagar.all() }),
   contasReceber: () => queryClient.invalidateQueries({ queryKey: queryKeys.contasReceber.all() }),

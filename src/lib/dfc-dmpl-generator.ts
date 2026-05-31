@@ -1,7 +1,5 @@
-// =====================================================
 // Geradores de DFC (método indireto) e DMPL
 // A partir de lançamentos contábeis e plano de contas
-// =====================================================
 
 import type { ContaPlano, LancamentoECD } from './sped-ecd-generator';
 
@@ -146,9 +144,7 @@ export function gerarDFC(
   };
 }
 
-// =====================================================
 // DMPL - Demonstração das Mutações do Patrimônio Líquido
-// =====================================================
 
 export interface DmplColuna {
   capital_social: number;

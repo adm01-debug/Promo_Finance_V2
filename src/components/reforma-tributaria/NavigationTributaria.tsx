@@ -1,7 +1,5 @@
-// =============================================
 // NAVEGAÇÃO HIERÁRQUICA - REFORMA TRIBUTÁRIA
 // Mega menu com grupos lógicos
-// =============================================
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

@@ -1,7 +1,5 @@
-// ============================================
 // UTILITÁRIO: EXPORTAÇÃO SPED/EFD
 // Gera arquivos no formato oficial SPED
-// ============================================
 
 import { format, parseISO } from 'date-fns';
 
@@ -86,9 +84,7 @@ function gerarLinhaSPED(registro: RegistroSPED): string {
   return `|${registro.tipo}|${registro.campos.join('|')}|`;
 }
 
-// ============================================
 // EFD-IBS/CBS (Novo formato pós-reforma)
-// ============================================
 
 export function gerarEFD_IBS_CBS(
   empresa: DadosEmpresa,
@@ -367,9 +363,7 @@ export function gerarEFD_IBS_CBS(
   return linhas.join('\r\n');
 }
 
-// ============================================
 // EFD-Contribuições (PIS/COFINS residual)
-// ============================================
 
 export function gerarEFD_Contribuicoes(
   empresa: DadosEmpresa,
@@ -434,9 +428,7 @@ export function gerarEFD_Contribuicoes(
   return linhas.join('\r\n');
 }
 
-// ============================================
 // Geração de arquivo para download
-// ============================================
 
 export function downloadArquivoSPED(conteudo: string, nomeArquivo: string): void {
   const blob = new Blob([conteudo], { type: 'text/plain;charset=utf-8' });

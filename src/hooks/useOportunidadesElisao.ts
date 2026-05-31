@@ -1,7 +1,5 @@
 // @ts-nocheck
-// ============================================
 // HOOK: Oportunidades de Elisão Fiscal
-// ============================================
 
 import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

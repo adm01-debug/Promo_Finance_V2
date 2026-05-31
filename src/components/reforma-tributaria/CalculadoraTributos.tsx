@@ -1,7 +1,5 @@
-// ============================================
 // CALCULADORA DE TRIBUTOS IBS/CBS/IS
 // Cálculo em tempo real para operações
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';

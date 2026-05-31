@@ -1,6 +1,4 @@
-// ============================================
 // COMPONENTE: CONCILIAÇÃO TRIBUTÁRIA AUTOMÁTICA
-// ============================================
 
 import { useState } from 'react';
 import { RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';

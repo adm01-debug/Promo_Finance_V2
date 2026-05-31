@@ -1,7 +1,5 @@
-// ============================================
 // HOOK: CRÉDITOS TRIBUTÁRIOS
 // Gerencia créditos de CBS/IBS no banco
-// ============================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

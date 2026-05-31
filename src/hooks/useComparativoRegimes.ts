@@ -1,7 +1,5 @@
-// ============================================
 // HOOK: COMPARATIVO DE REGIMES TRIBUTÁRIOS
 // Lucro Real vs Presumido vs Simples Nacional
-// ============================================
 
 import { useState, useMemo } from 'react';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
