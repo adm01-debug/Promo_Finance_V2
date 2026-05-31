@@ -12,7 +12,7 @@ export function useConciliacaoAudit(empresaId?: string) {
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       
       const { data: pendentes } = await (supabase
-        .from('transacoes_bancarias')
+        .from('transacoes_bancarias' as any)
         .select('*, contas_bancarias(empresa_id)')
         .eq('conciliada', false)
         .lt('data', threeDaysAgo.toISOString()) as any);
