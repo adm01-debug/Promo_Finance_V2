@@ -132,8 +132,8 @@ function AppRoutes() {
         <SkipLinks />
         <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
-        <VisualValidator />
-        <VisualCorrectionOverlay />
+        {/* <VisualValidator /> */}
+        {/* <VisualCorrectionOverlay /> */}
         <Suspense fallback={<PageLoading />}>
           <Routes>
             <Route path="/auth" element={<Auth />} />
