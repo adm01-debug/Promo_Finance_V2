@@ -113,13 +113,13 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
       </Table>
       <FixedSizeList
         height={600}
-        itemCount={contas.length}
-        itemSize={100} 
+        rowCount={contas.length}
+        rowHeight={100} 
         width="100%"
         className="min-w-[1200px] custom-scrollbar"
-      >
-        {Row}
-      </FixedSizeList>
+        rowComponent={Row}
+      />
+
     </div>
   );
 };
