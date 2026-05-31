@@ -21,12 +21,12 @@ export function useSincronizarAnomaliaBitrix() {
 
   return useMutation<SyncResponse, Error, { anomaliaId: string; evento: EventoBitrix }>({
     mutationFn: async ({ anomaliaId, evento }) => {
-      const { data, error } = await supabase.functions.invoke<SyncResponse>(
+      const { data, error } = await (supabase.functions as any).invoke(
         "sincronizar-anomalia-bitrix24",
         { body: { anomaliaId, evento } },
       );
       if (error) throw error;
-      const result = data ?? {};
+      const result = (data as any) ?? {};
 
       if (result.skipped) {
         if (typeof sessionStorage !== "undefined" && !sessionStorage.getItem(SKIPPED_FLAG)) {

@@ -95,11 +95,11 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
       const tx = txMap.get(fb.transacao_bancaria_id);
       if (!tx) continue;
       result.push({
-        descricao: tx.descricao ?? '',
-        data: tx.data ?? '',
-        valor: Number(tx.valor ?? 0),
-        tipo: tx.tipo ?? '',
-        status: tx.conciliada ? 'conciliada' : 'pendente',
+        descricao: (tx as any).descricao ?? '',
+        data: (tx as any).data ?? '',
+        valor: Number((tx as any).valor ?? 0),
+        tipo: (tx as any).tipo ?? '',
+        status: (tx as any).conciliada ? 'conciliada' : 'pendente',
         acao_ia: fb.acao ?? '',
         motivo_rejeicao: fb.motivo_rejeicao ?? null,
       });

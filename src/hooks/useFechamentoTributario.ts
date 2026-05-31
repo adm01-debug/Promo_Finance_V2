@@ -54,12 +54,12 @@ export function useFechamentoTributario(empresaId?: string, ano?: number, mes?: 
       justificativa?: string;
       observacoes?: string;
     }) => {
-      const { data, error } = await supabase.functions.invoke<FechamentoResultado>(
+      const { data, error } = await (supabase.functions as any).invoke(
         "executar-fechamento-tributario",
         { body: payload },
       );
       if (error) throw error;
-      return data!;
+      return data as FechamentoResultado;
     },
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ["fechamento-tributario"] });

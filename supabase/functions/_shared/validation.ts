@@ -1,4 +1,5 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { createLogger, LogLevel } from "./logger.ts";
 
 /**
@@ -67,6 +68,32 @@ export function createErrorResponse(message: string, status = 400, details?: any
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     }
   );
+}
+
+
+/**
+ * Deduplica webhooks baseados em ID do provedor para evitar processamento duplo.
+ */
+export async function isWebhookProcessed(
+  supabase: ReturnType<typeof createClient>,
+  tableName: string,
+  providerIdColumn: string,
+  providerId: string,
+  provider: string
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from(tableName)
+    .select("id")
+    .eq(providerIdColumn, providerId)
+    .eq("processed", true)
+    .limit(1);
+
+  if (error) {
+    console.warn(`[webhook-dedup] Falha ao verificar idempotência para ${provider}:`, error);
+    return false;
+  }
+  
+  return !!(data && data.length > 0);
 }
 
 // Schemas

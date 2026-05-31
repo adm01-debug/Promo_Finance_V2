@@ -22,13 +22,13 @@ interface PdfResponse {
 export function useGerarPdfTributario() {
   return useMutation<PdfResponse, Error, GerarPdfParams>({
     mutationFn: async (params) => {
-      const { data, error } = await supabase.functions.invoke<PdfResponse>(
+      const { data, error } = await (supabase.functions as any).invoke(
         'gerar-pdf-tributario',
         { body: params }
       );
       if (error) throw error;
-      if (!data?.success) throw new Error('Falha ao gerar PDF');
-      return data;
+      if (!(data as any)?.success) throw new Error('Falha ao gerar PDF');
+      return data as PdfResponse;
     },
     onSuccess: (data) => {
       // Download direto do base64
@@ -63,13 +63,13 @@ interface BitrixResponse {
 export function useEnviarBitrix24Tributario() {
   return useMutation<BitrixResponse, Error, EnviarBitrixParams>({
     mutationFn: async (params) => {
-      const { data, error } = await supabase.functions.invoke<BitrixResponse>(
+      const { data, error } = await (supabase.functions as any).invoke(
         'enviar-bitrix24-tributario',
         { body: params }
       );
       if (error) throw error;
-      if (!data?.success) throw new Error('Falha ao enviar para Bitrix24');
-      return data;
+      if (!(data as any)?.success) throw new Error('Falha ao enviar para Bitrix24');
+      return data as BitrixResponse;
     },
     onSuccess: (data) => {
       toast.success('Enviado ao CRM Bitrix24', {

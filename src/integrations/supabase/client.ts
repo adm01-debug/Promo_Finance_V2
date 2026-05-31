@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { addBreadcrumb } from '@/lib/telemetry';
 import type { Database } from './types';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -22,7 +23,7 @@ const storageKey = SUPABASE_PROJECT_ID
   ? `sb-${SUPABASE_PROJECT_ID}-auth-token`
   : 'sb-promo-finance-auth-token';
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+const supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,
     storageKey,
@@ -32,3 +33,38 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     flowType: 'pkce',
   },
 });
+
+// Proxy para interceptar chamadas e adicionar breadcrumbs
+const supabaseProxyHandler: ProxyHandler<any> = {
+  get(target, prop) {
+    const value = target[prop];
+    if (prop === 'from' && typeof value === 'function') {
+      const fromFn = (...args: any[]) => {
+        const tableName = args[0];
+        addBreadcrumb(`Supabase: Accessing table ${tableName}`);
+        return value.apply(target, args);
+      };
+      return fromFn;
+    }
+    if (prop === 'functions' && value) {
+      return new Proxy(value, {
+        get(fnTarget, fnProp) {
+          const fnValue = fnTarget[fnProp];
+          if (fnProp === 'invoke' && typeof fnValue === 'function') {
+            const invokeFn = (...args: any[]) => {
+              const fnName = args[0];
+              const options = args[1];
+              addBreadcrumb(`Supabase: Invoking Edge Function ${fnName}`, { options });
+              return fnValue.apply(fnTarget, args);
+            };
+            return invokeFn;
+          }
+          return fnValue;
+        }
+      });
+    }
+    return value;
+  }
+};
+
+export const supabase = new Proxy(supabaseInstance, supabaseProxyHandler) as unknown as typeof supabaseInstance;

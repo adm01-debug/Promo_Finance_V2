@@ -176,7 +176,7 @@ export default function ContasPagar() {
                 onSolicitarAprovacao={logic.abrirModalAprovacao}
                 getApprovalStatus={logic.getApprovalStatus}
                 historicoAprovacaoPorConta={logic.historicoAprovacaoPorConta}
-                profilesMap={logic.profilesMap}
+                profilesMap={logic.profilesMap as any}
                 valorMinimoAprovacao={logic.valorMinimoAprovacao}
                 getRowAnimation={logic.getRowAnimation}
               />
