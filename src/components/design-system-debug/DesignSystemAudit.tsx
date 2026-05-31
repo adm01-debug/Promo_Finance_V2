@@ -60,7 +60,7 @@ export const DesignSystemAudit = () => {
       // Real DOM scan for typography inconsistencies
       const allElements = document.querySelectorAll('*');
       const fontFamilies = new Set<string>();
-      let nonTokenElements = 0;
+      const nonTokenElements = 0;
       
       allElements.forEach(el => {
         const style = window.getComputedStyle(el);
