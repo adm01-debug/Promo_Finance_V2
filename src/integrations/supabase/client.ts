@@ -38,20 +38,23 @@ const supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHAB
 const supabaseProxyHandler: ProxyHandler<any> = {
   get(target, prop) {
     const value = target[prop];
-    if (prop === 'from') {
-      return (tableName: string) => {
+    if (prop === 'from' && typeof value === 'function') {
+      return (...args: any[]) => {
+        const tableName = args[0];
         addBreadcrumb(`Supabase: Accessing table ${tableName}`);
-        return value.call(target, tableName);
+        return value.apply(target, args);
       };
     }
-    if (prop === 'functions') {
+    if (prop === 'functions' && value) {
       return new Proxy(value, {
         get(fnTarget, fnProp) {
           const fnValue = fnTarget[fnProp];
-          if (fnProp === 'invoke') {
-            return (fnName: string, options: any) => {
+          if (fnProp === 'invoke' && typeof fnValue === 'function') {
+            return (...args: any[]) => {
+              const fnName = args[0];
+              const options = args[1];
               addBreadcrumb(`Supabase: Invoking Edge Function ${fnName}`, { options });
-              return fnValue.call(fnTarget, fnName, options);
+              return fnValue.apply(fnTarget, args);
             };
           }
           return fnValue;
@@ -62,4 +65,4 @@ const supabaseProxyHandler: ProxyHandler<any> = {
   }
 };
 
-export const supabase = new Proxy(supabaseInstance, supabaseProxyHandler);
+export const supabase = new Proxy(supabaseInstance, supabaseProxyHandler) as typeof supabaseInstance;
