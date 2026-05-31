@@ -55,6 +55,7 @@ export function useDashboard(options: UseDashboardOptions = {}) {
   const [refreshing, setRefreshing] = useState(false);
 
   const dateRange = useMemo(() => {
+    const today = new Date();
     const endDate = todayISOLocal();
     
     let startDate: string;

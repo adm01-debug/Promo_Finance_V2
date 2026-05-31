@@ -3162,7 +3162,57 @@ export type Database = {
           tipo_conta?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       contas_pagar: {
         Row: {
@@ -3274,6 +3324,62 @@ export type Database = {
           valor_pago?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "contas_pagar_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
           {
             foreignKeyName: "contas_pagar_fornecedor_id_fkey"
             columns: ["fornecedor_id"]
@@ -3406,11 +3512,67 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "contas_receber_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contas_receber_cliente_id_fkey"
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
@@ -10014,6 +10176,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_onboarding_progress: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_completed: boolean | null
+          last_step: string | null
+          steps_completed: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_step?: string | null
+          steps_completed?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_step?: string | null
+          steps_completed?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_passkeys: {
         Row: {
           backed_up: boolean | null
@@ -11098,6 +11290,62 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "contas_pagar_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
             foreignKeyName: "contas_pagar_fornecedor_id_fkey"
             columns: ["fornecedor_id"]
             isOneToOne: false
@@ -11151,11 +11399,67 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "contas_receber_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contas_receber_cliente_id_fkey"
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
