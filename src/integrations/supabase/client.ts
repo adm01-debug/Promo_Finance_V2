@@ -39,23 +39,25 @@ const supabaseProxyHandler: ProxyHandler<any> = {
   get(target, prop) {
     const value = target[prop];
     if (prop === 'from' && typeof value === 'function') {
-      return (...args: any[]) => {
+      const fromFn = (...args: any[]) => {
         const tableName = args[0];
         addBreadcrumb(`Supabase: Accessing table ${tableName}`);
         return value.apply(target, args);
       };
+      return fromFn;
     }
     if (prop === 'functions' && value) {
       return new Proxy(value, {
         get(fnTarget, fnProp) {
           const fnValue = fnTarget[fnProp];
           if (fnProp === 'invoke' && typeof fnValue === 'function') {
-            return (...args: any[]) => {
+            const invokeFn = (...args: any[]) => {
               const fnName = args[0];
               const options = args[1];
               addBreadcrumb(`Supabase: Invoking Edge Function ${fnName}`, { options });
               return fnValue.apply(fnTarget, args);
             };
+            return invokeFn;
           }
           return fnValue;
         }
@@ -65,4 +67,4 @@ const supabaseProxyHandler: ProxyHandler<any> = {
   }
 };
 
-export const supabase = new Proxy(supabaseInstance, supabaseProxyHandler) as typeof supabaseInstance;
+export const supabase = new Proxy(supabaseInstance, supabaseProxyHandler) as unknown as typeof supabaseInstance;
