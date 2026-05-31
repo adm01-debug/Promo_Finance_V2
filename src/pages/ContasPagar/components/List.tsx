@@ -116,8 +116,10 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
         rowHeight={100} 
         style={{ height: 600, width: '100%' }}
         className="min-w-[1200px] custom-scrollbar"
-        rowComponent={Row}
+        rowComponent={Row as any}
+        rowProps={{}}
       />
+
 
 
     </div>
