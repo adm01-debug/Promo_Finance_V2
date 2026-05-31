@@ -1,12 +1,10 @@
 import React from 'react';
-import * as ReactWindow from 'react-window';
+import { List as FixedSizeList } from 'react-window';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Sparkles } from 'lucide-react';
 
-// Forçando o uso como any se o import nomeado falhar no build
-const FixedSizeList = (ReactWindow as any).FixedSizeList;
 
 interface ContasPagarListProps {
   contas: any[];
