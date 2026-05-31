@@ -26,7 +26,7 @@ export function useSincronizarAnomaliaBitrix() {
         { body: { anomaliaId, evento } },
       );
       if (error) throw error;
-      const result = data ?? {};
+      const result = (data as any) ?? {};
 
       if (result.skipped) {
         if (typeof sessionStorage !== "undefined" && !sessionStorage.getItem(SKIPPED_FLAG)) {

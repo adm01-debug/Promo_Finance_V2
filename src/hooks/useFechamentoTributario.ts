@@ -59,7 +59,7 @@ export function useFechamentoTributario(empresaId?: string, ano?: number, mes?: 
         { body: payload },
       );
       if (error) throw error;
-      return data!;
+      return data as FechamentoResultado;
     },
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ["fechamento-tributario"] });
