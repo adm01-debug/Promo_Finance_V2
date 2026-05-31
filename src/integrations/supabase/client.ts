@@ -33,3 +33,33 @@ const supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHAB
     flowType: 'pkce',
   },
 });
+
+// Proxy para interceptar chamadas e adicionar breadcrumbs
+const supabaseProxyHandler: ProxyHandler<any> = {
+  get(target, prop) {
+    const value = target[prop];
+    if (prop === 'from') {
+      return (tableName: string) => {
+        addBreadcrumb(`Supabase: Accessing table ${tableName}`);
+        return value.call(target, tableName);
+      };
+    }
+    if (prop === 'functions') {
+      return new Proxy(value, {
+        get(fnTarget, fnProp) {
+          const fnValue = fnTarget[fnProp];
+          if (fnProp === 'invoke') {
+            return (fnName: string, options: any) => {
+              addBreadcrumb(`Supabase: Invoking Edge Function ${fnName}`, { options });
+              return fnValue.call(fnTarget, fnName, options);
+            };
+          }
+          return fnValue;
+        }
+      });
+    }
+    return value;
+  }
+};
+
+export const supabase = new Proxy(supabaseInstance, supabaseProxyHandler);
