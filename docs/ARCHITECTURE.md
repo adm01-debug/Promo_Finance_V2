@@ -71,3 +71,7 @@ flowchart TD
 - **Independent projects** (não monorepo) — `mem://architecture/independent-projects-strategy`.
 - **Proxy externo** para `clientes`/`fornecedores` via Edge Function `external-data` — `mem://integrations/proxy-dados-supabase-externo`.
 - **Lovable AI Gateway** para IA (sem API key custom) — usa `LOVABLE_API_KEY`.
+
+---
+
+Para detalhes sobre resiliência, telemetria e segurança multi-empresa, consulte o [Guia de Auditoria Técnica e Resiliência](./TECHNICAL_AUDIT_RESILIENCE.md).
