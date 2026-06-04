@@ -11,6 +11,7 @@ jobs:
   quality-gate:
     name: Quality Gate & Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +29,6 @@ jobs:
 
       - name: Lint check
         run: bun run lint
-
 
       - name: Type check
         run: bun run type-check
@@ -53,16 +53,18 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           VISUAL_REGRESSION: true
+          CI: true
 
       - name: Upload Visual Regression Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: visual-regression-report
+          name: playwright-report
           path: playwright-report/
+          retention-days: 30
 
       - name: Trigger Simulation Audit
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && success()
         run: |
           curl -X POST "${{ secrets.SUPABASE_URL }}/functions/v1/webhook-simulator" \
           -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
@@ -71,4 +73,6 @@ jobs:
 
       - name: Notify Failure
         if: failure()
-        run: echo "CI Pipeline failed. Check the logs for details."
+        run: |
+          echo "CI Pipeline failed. Check the logs and Playwright report for details."
+          exit 1
