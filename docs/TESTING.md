@@ -9,11 +9,15 @@ npm run test:watch
 npm run test:coverage
 ```
 
-### E2E Tests
+### E2E Tests (Playwright)
 ```bash
-npm run test:e2e
-npm run test:e2e:ui
+bun test:e2e
+bun test:e2e:ui
 ```
+Os testes ponta a ponta estão localizados em `tests/` e cobrem fluxos críticos:
+- `auth-flow.spec.ts`: Login, Logout, proteção de rotas e navegação.
+- `visual-regression.spec.ts`: Testes de regressão visual em diferentes viewports.
+
 
 ### Integration Tests
 ```bash
