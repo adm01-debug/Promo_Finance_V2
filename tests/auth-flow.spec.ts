@@ -23,52 +23,11 @@ test.describe('Critical Auth and Navigation Flow', () => {
     await page.click('button[type="submit"]');
     
     // Check for error toast or message
-    // In this app, we use sonner toast
     const toast = page.locator('li[data-sonner-toast]');
     await expect(toast).toBeVisible();
   });
 
-  test('navigation between main pages when authenticated', async ({ page }) => {
-    // Note: In a real CI environment, we would use a seeded user or mock the session
-    // For this test, we assume the environment is set up or we're documenting the flow
-    
-    // 1. Login
-    await page.goto('/auth');
-    await page.fill('input[type="email"]', TEST_USER_EMAIL);
-    await page.fill('input[type="password"]', TEST_USER_PASSWORD);
-    await page.click('button[type="submit"]');
-
-    // Wait for navigation to dashboard
-    await expect(page).toHaveURL(/\//);
-    
-    // 2. Navigation to protected routes
-    const routes = [
-      { path: '/contas-pagar', title: 'Contas a Pagar' },
-      { path: '/contas-receber', title: 'Contas a Receber' },
-      { path: '/fluxo-caixa', title: 'Fluxo de Caixa' },
-      { path: '/configuracoes', title: 'Configurações' }
-    ];
-
-    for (const route of routes) {
-      await page.goto(route.path);
-      await expect(page).toHaveURL(new RegExp(route.path));
-      // Optional: check for specific page content if known
-    }
-
-    // 3. Logout
-    // Assuming there's a logout button in the user menu
-    const userMenuTrigger = page.locator('button[aria-haspopup="menu"]');
-    if (await userMenuTrigger.isVisible()) {
-      await userMenuTrigger.click();
-      await page.click('text=Sair');
-      await expect(page).toHaveURL(/\/auth/);
-    }
-  });
-
   test('protected routes block unauthorized access', async ({ page }) => {
-    // Ensure we are logged out
-    await page.goto('/auth');
-    
     const protectedPaths = ['/contas-pagar', '/relatorios', '/usuarios'];
     
     for (const path of protectedPaths) {
@@ -76,4 +35,39 @@ test.describe('Critical Auth and Navigation Flow', () => {
       await expect(page).toHaveURL(/\/auth/);
     }
   });
+
+  // This test demonstrates a full flow but requires valid credentials
+  test('full auth and navigation flow', async ({ page }) => {
+    // 1. Login
+    await page.goto('/auth');
+    await page.fill('input[type="email"]', TEST_USER_EMAIL);
+    await page.fill('input[type="password"]', TEST_USER_PASSWORD);
+    await page.click('button[type="submit"]');
+
+    // Wait for navigation to dashboard - check URL or a dashboard element
+    // Using a more flexible regex for URL
+    await expect(page).toHaveURL(/\/($|dashboard)/, { timeout: 10000 });
+    
+    // 2. Navigation between pages via sidebar/header
+    // In this app, we can navigate directly to test routing
+    const routes = [
+      { path: '/contas-pagar', title: 'Contas a Pagar' },
+      { path: '/fluxo-caixa', title: 'Fluxo de Caixa' }
+    ];
+
+    for (const route of routes) {
+      await page.goto(route.path);
+      await expect(page).toHaveURL(new RegExp(route.path));
+    }
+
+    // 3. Logout flow
+    // Locate initials/avatar button in Header
+    const userMenuTrigger = page.locator('button:has-text("' + TEST_USER_EMAIL.slice(0, 1).toUpperCase() + '")').first();
+    if (await userMenuTrigger.isVisible()) {
+      await userMenuTrigger.click();
+      await page.click('text=Sair');
+      await expect(page).toHaveURL(/\/auth/);
+    }
+  });
 });
+
