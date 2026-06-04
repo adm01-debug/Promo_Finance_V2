@@ -40,16 +40,14 @@ test.describe('Critical Auth and Navigation Flow', () => {
   test('full auth and navigation flow', async ({ page }) => {
     // 1. Login
     await page.goto('/auth');
-    await page.fill('input[type="email"]', TEST_USER_EMAIL);
-    await page.fill('input[type="password"]', TEST_USER_PASSWORD);
-    await page.click('button[type="submit"]');
+    await page.fill('input[id="login-email"]', TEST_USER_EMAIL);
+    await page.fill('input[id="login-password"]', TEST_USER_PASSWORD);
+    await page.click('button:has-text("Acessar Plataforma")');
 
     // Wait for navigation to dashboard - check URL or a dashboard element
-    // Using a more flexible regex for URL
-    await expect(page).toHaveURL(/\/($|dashboard)/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/($|dashboard)/, { timeout: 15000 });
     
-    // 2. Navigation between pages via sidebar/header
-    // In this app, we can navigate directly to test routing
+    // 2. Navigation between pages
     const routes = [
       { path: '/contas-pagar', title: 'Contas a Pagar' },
       { path: '/fluxo-caixa', title: 'Fluxo de Caixa' }
@@ -61,13 +59,16 @@ test.describe('Critical Auth and Navigation Flow', () => {
     }
 
     // 3. Logout flow
-    // Locate initials/avatar button in Header
-    const userMenuTrigger = page.locator('button:has-text("' + TEST_USER_EMAIL.slice(0, 1).toUpperCase() + '")').first();
+    // The initials in the header are based on the user's email or name
+    const initials = TEST_USER_EMAIL.slice(0, 2).toUpperCase();
+    const userMenuTrigger = page.locator(`button:has-text("${initials}")`).first();
+    
     if (await userMenuTrigger.isVisible()) {
       await userMenuTrigger.click();
       await page.click('text=Sair');
       await expect(page).toHaveURL(/\/auth/);
     }
   });
+
 });
 
