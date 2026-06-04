@@ -55,13 +55,23 @@ jobs:
           VISUAL_REGRESSION: true
           CI: true
 
-      - name: Upload Visual Regression Report
+      - name: Upload Test Artifacts (Reports & Screenshots)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: playwright-artifacts
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 30
+
+      - name: Upload Error Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-error-logs
+          path: "*.log"
+          retention-days: 7
 
       - name: Trigger Simulation Audit
         if: github.ref == 'refs/heads/main' && success()
