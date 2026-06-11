@@ -19,7 +19,7 @@ import {
   Bell,
   XCircle,
 } from 'lucide-react';
-import { format, addDays, isBefore, isAfter, differenceInDays } from 'date-fns';
+import { format, isBefore, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 // Definição das obrigações acessórias

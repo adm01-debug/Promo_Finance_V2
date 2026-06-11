@@ -6,7 +6,6 @@ import {
   ArrowUpCircle,
   Bot,
   Menu,
-  Bell,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';

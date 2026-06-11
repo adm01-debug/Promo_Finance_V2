@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -129,7 +129,7 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         celebrateSuccess('Empresa cadastrada com sucesso!');
       }
       onSuccess();
-    } catch (error: unknown) {
+    } catch {
       showError('Erro ao salvar empresa');
     }
   };

@@ -1,5 +1,4 @@
-import { ReactNode, useState } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode } from 'react';
 import { LucideIcon, TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

@@ -5,11 +5,7 @@ import {
   Settings2, 
   Plus, 
   Trash2, 
-  Settings,
-  Layout,
-  Tag,
-  CheckCircle2,
-  AlertTriangle
+  Settings
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,7 +31,6 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCustomFieldDefinitions, useSaveCustomFieldDefinition, useDeleteCustomFieldDefinition, type EntityType, type FieldType } from '@/hooks/useCustomFields';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
 
 const ENTITY_TYPES: { value: EntityType; label: string }[] = [
   { value: 'contas_pagar', label: 'Contas a Pagar' },

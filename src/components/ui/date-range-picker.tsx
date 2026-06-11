@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Calendar, ChevronDown, X } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, subDays, subMonths, startOfYear, endOfYear, isValid } from 'date-fns';
+import { format, startOfMonth, endOfMonth, subDays, subMonths, startOfYear, endOfYear, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from './button';
 import { cn } from '@/lib/utils';

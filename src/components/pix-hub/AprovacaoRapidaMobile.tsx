@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { Check, X, ChevronLeft, ChevronRight, AlertCircle, Clock, Building2 } from 'lucide-react';
+import { Check, X, ChevronLeft, ChevronRight, AlertCircle, Clock } from 'lucide-react';
 import { useSolicitacoesPendentes, useAprovarSolicitacao, useRejeitarSolicitacao, SolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 

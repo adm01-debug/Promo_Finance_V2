@@ -50,8 +50,8 @@ export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTable
       </TableHeader>
       <TableBody>
         {categorias.map((categoria) => {
-          // @ts-ignore
-          const IconComponent = Icons[categoria.icone?.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('')] || Icons.Tag;
+          const pascalName = categoria.icone?.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('') ?? '';
+          const IconComponent = (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
           
           return (
             <TableRow key={categoria.id} className="border-white/5 group hover:bg-white/5 transition-colors">

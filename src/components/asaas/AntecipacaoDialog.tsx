@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Zap, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Loader2, Zap, AlertCircle } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
 import { formatCurrency } from '@/lib/currency';
 import { Separator } from '@/components/ui/separator';
@@ -24,7 +23,7 @@ export function AntecipacaoDialog({ paymentId, onClose, empresaId }: Props) {
     try {
       const result = await simularAntecipacao.mutateAsync({ payment_id: paymentId });
       setSimulation(result);
-    } catch (e) {
+    } catch {
       // toast handled in hook
     } finally {
       setLoading(false);
@@ -36,7 +35,7 @@ export function AntecipacaoDialog({ paymentId, onClose, empresaId }: Props) {
     try {
       await solicitarAntecipacao.mutateAsync({ payment_id: paymentId });
       onClose();
-    } catch (e) {}
+    } catch {}
   };
 
   // Auto-simulate on open

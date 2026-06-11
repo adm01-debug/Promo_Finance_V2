@@ -138,13 +138,12 @@ export function Panel({
   defaultSize = 50,
   minSize = 10,
   maxSize = 90,
-  collapsible = false,
   collapsedSize = 0,
   className,
   order = 0,
 }: PanelProps) {
   const context = useContext(PanelGroupContext);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   if (!context) {

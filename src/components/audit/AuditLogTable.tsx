@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,6 @@ import { maskIp } from '@/lib/ip-mask';
 import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
 import { AuditDiffView } from './AuditDiffView';
 
-type AuditAction = string;
 
 interface AuditLog {
   id: string;

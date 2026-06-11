@@ -10,7 +10,6 @@ import {
   TrendingDown,
   BarChart3,
   PieChart as PieChartIcon,
-  LineChart as LineChartIcon,
   RefreshCw,
   Printer,
   Mail,
@@ -20,7 +19,6 @@ import {
   ArrowUpDown,
   Clock,
   Sparkles,
-  Scale,
   Brain,
   ShieldCheck,
 } from 'lucide-react';

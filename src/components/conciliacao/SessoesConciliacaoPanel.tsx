@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useConciliacoes } from '@/hooks/useExtratoWebhooks';
-import { formatCurrency, formatDate } from '@/lib/formatters';
+import { formatDate } from '@/lib/formatters';
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   em_andamento: { icon: Clock, color: 'text-warning', label: 'Em Andamento' },

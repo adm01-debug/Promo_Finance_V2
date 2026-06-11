@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Inbox, CheckCircle2, XCircle, LayoutGrid, Table as TableIcon, Plus, Zap, Settings, RefreshCcw } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHeader } from '@/components/ui/table';
@@ -57,7 +56,7 @@ export default function ContasReceber() {
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
-    selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
+    selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
     baixaDialogOpen, setBaixaDialogOpen, webhookDialogOpen, setWebhookDialogOpen,
   } = useContasReceberLogic();

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bot, Send, Loader2, TrendingDown, MessageSquare, X, Sparkles } from 'lucide-react';
+import { Bot, Send, Loader2, TrendingDown, X, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

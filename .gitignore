@@ -16,6 +16,12 @@ dist-ssr
 coverage
 playwright-report
 test-results
+playwright/.auth
+
+# Generated artifacts
+design-audit-report.json
+combined_migrations.sql
+combined_part*.sql
 
 # Editor directories and files
 .vscode/*

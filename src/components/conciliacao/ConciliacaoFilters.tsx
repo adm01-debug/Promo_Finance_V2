@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Filter, X, Calendar, DollarSign, Brain, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter,
@@ -10,7 +9,6 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 
 export interface ConciliacaoFilterState {
   periodoInicio: string;

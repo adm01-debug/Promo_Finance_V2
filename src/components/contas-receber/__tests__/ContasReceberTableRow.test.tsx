@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ContasReceberTableRow, ContaReceberWithRelations } from '../ContasReceberTableRow';
 import { Table, TableBody } from '@/components/ui/table';
 
@@ -61,10 +62,15 @@ const renderRow = (conta: Partial<ContaReceberWithRelations> = {}, extraProps = 
     onAplicarDesconto: vi.fn(),
     ...extraProps,
   };
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
-    <Table><TableBody>
-      <ContasReceberTableRow conta={merged} {...defaultHandlers} />
-    </TableBody></Table>
+    <QueryClientProvider client={queryClient}>
+      <Table><TableBody>
+        <ContasReceberTableRow conta={merged} {...defaultHandlers} />
+      </TableBody></Table>
+    </QueryClientProvider>
   );
 };
 
@@ -72,7 +78,7 @@ describe('ContasReceberTableRow', () => {
   // ===== #14: Coluna Empresa =====
   describe('Gap #14 - Coluna Empresa', () => {
     it('mostra coluna empresa quando showEmpresa=true', () => {
-      const { container } = renderRow(
+      renderRow(
         { empresas: { razao_social: 'Minha Empresa LTDA', nome_fantasia: 'MinhaEmpresa' } as any },
         { showEmpresa: true }
       );
@@ -338,7 +344,7 @@ describe('ContasReceberTableRow', () => {
   // ===== Score do cliente =====
   describe('Score do cliente', () => {
     it('exibe score >= 800 com cor success', () => {
-      const { container } = renderRow({ clientes: { razao_social: 'X', nome_fantasia: null, score: 850 } });
+      renderRow({ clientes: { razao_social: 'X', nome_fantasia: null, score: 850 } });
       expect(screen.getByText('850')).toBeInTheDocument();
       expect(screen.getByText('Excelente')).toBeInTheDocument();
     });
@@ -365,7 +371,6 @@ describe('ContasReceberTableRow', () => {
       const onDesconto = vi.fn();
       renderRow({ status: 'pendente' }, { onAplicarDesconto: onDesconto });
       // O dropdown existe
-      const moreButton = screen.getAllByRole('button').find(b => b.querySelector('[class*="lucide-more"]') || b.textContent === '');
       // Dropdown is hidden until clicked, but the component is mounted
     });
   });

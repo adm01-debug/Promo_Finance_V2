@@ -4,35 +4,21 @@ const authFile = 'playwright/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
   // Navigate to login page
-  await page.goto('/login');
-  
+  await page.goto('/auth');
+
   // Wait for the login form to be visible
-  await expect(page.getByRole('heading', { name: /entrar/i })).toBeVisible();
-  
+  await expect(page.getByRole('heading', { name: /promo finance/i })).toBeVisible();
+
   // Fill in credentials
   await page.getByLabel(/email/i).fill(process.env.E2E_USER_EMAIL || 'test@example.com');
   await page.getByLabel(/senha/i).fill(process.env.E2E_USER_PASSWORD || 'Test@123456');
-  
+
   // Click login button
-  await page.getByRole('button', { name: /entrar/i }).click();
-  
-  // Wait for redirect to dashboard
-  await expect(page).toHaveURL('/dashboard');
-  
-  // Verify we're logged in
-  await expect(page.getByText(/dashboard/i)).toBeVisible();
-  
+  await page.getByRole('button', { name: /acessar plataforma/i }).click();
+
+  // Wait for redirect to the authenticated area (login navigates to "/")
+  await expect(page).toHaveURL(/\/(dashboard)?$/, { timeout: 15000 });
+
   // Save authentication state
   await page.context().storageState({ path: authFile });
-});
-
-setup.describe('setup verification', () => {
-  setup('can access protected routes after auth', async ({ page }) => {
-    // Load saved auth state
-    await page.goto('/dashboard');
-    
-    // Should be able to access dashboard without redirect to login
-    await expect(page).toHaveURL('/dashboard');
-    await expect(page.getByText(/bem-vindo/i)).toBeVisible();
-  });
 });

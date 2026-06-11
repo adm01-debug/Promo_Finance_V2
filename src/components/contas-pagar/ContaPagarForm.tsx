@@ -8,7 +8,6 @@ import { Building2, DollarSign, Edit, Scan, Loader2 } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
 import { LeitorCodigoBarras } from './LeitorCodigoBarras';
 import { DadosBoleto } from '@/lib/barcode-parser';
-import { useAuth } from '@/hooks/useAuth';
 import { 
   useFornecedores, 
   useCentrosCusto, 
@@ -18,7 +17,7 @@ import {
   useUpdateContaPagar 
 } from '@/hooks/useFinancialData';
 import { useCategorias } from '@/hooks/useCategorias';
-import { useProcessarNFOCR, type DadosExtraidosNF } from '@/hooks/useProcessarNFOCR';
+import { useProcessarNFOCR } from '@/hooks/useProcessarNFOCR';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
@@ -77,7 +76,6 @@ interface ContaPagarFormProps {
 }
 
 export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProps) {
-  const { user } = useAuth();
   const { celebrateSuccess } = useCelebrations();
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
   const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Target, Plus, TrendingUp, Lightbulb, Loader2, Sparkles, Trash2, CheckCircle2 } from 'lucide-react';
+import { Target, Plus, Lightbulb, Loader2, Sparkles, Trash2, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +16,7 @@ import { motion as m, AnimatePresence } from 'framer-motion';
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpanded?: boolean }) {
+export function MetasFinanceirasPanel(_props: { defaultExpanded?: boolean }) {
   const { data: metas, isLoading } = useMetasFinanceiras(currentYear);
   const { data: scoreHistory } = useHistoricoScoreSaude();
   const { data: recomendacoes } = useRecomendacoesIA();

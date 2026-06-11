@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { 
   TrendingUp, TrendingDown, Minus, 
   RefreshCw, Shield, AlertTriangle, 
-  Users, Target, ChevronRight,
+  Users, Target,
   ArrowUpRight, ArrowDownRight
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

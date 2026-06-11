@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';

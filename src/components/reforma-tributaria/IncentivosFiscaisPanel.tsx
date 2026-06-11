@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Gift, TrendingUp, Calendar, DollarSign, Percent, FileText, CheckCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Gift, TrendingUp, DollarSign, Percent, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,11 +52,9 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
   const { 
     incentivos = [], 
     resumo,
-    isLoading, 
     criarIncentivo, 
     atualizarIncentivo, 
     excluirIncentivo,
-    calcularEconomia 
   } = useIncentivosFiscais(empresaId);
 
   const handleSubmit = async () => {

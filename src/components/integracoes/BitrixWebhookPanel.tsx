@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
 import {
   Webhook,
   RefreshCw,
   CheckCircle2,
-  XCircle,
   Clock,
-  ExternalLink,
   Copy,
   Eye,
   EyeOff,

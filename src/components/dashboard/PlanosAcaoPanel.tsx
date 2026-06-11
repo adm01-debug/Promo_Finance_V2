@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   DropdownMenu, 
@@ -23,7 +22,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { usePlanosAcao, useUpdatePlanoAcao, useCreatePlanoAcao } from '@/hooks/useInteligenciaOperacional';
+import { usePlanosAcao, useUpdatePlanoAcao } from '@/hooks/useInteligenciaOperacional';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

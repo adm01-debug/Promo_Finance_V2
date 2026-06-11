@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import { Wifi, WifiOff, Signal, SignalLow, SignalMedium, SignalHigh, Zap, AlertTriangle } from 'lucide-react';
+import { Wifi, WifiOff, SignalLow, SignalMedium, SignalHigh, Zap, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,7 +22,7 @@ export const NetworkStatusIndicator = forwardRef<HTMLDivElement, NetworkStatusIn
   showLabel = false,
   variant = 'badge',
   className 
-}, ref) {
+}, _ref) {
   const { isOnline, effectiveType, downlink, rtt } = useNetworkStatus();
 
   const getSignalIcon = () => {

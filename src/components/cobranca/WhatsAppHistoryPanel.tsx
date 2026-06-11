@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWhatsAppCobrancaHistory } from '@/hooks/useWhatsAppCobrancaHistory';
 import { formatDate } from '@/lib/formatters';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   enviado: { icon: CheckCircle2, color: 'text-success', label: 'Enviado' },

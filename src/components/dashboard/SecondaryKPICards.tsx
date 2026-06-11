@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Building2, CreditCard, CheckCircle2, Clock, ShieldAlert, AlertTriangle, ArrowRight, FileText, Target } from 'lucide-react';
+import { Building2, CreditCard, CheckCircle2, Clock, ShieldAlert, AlertTriangle, FileText, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/hooks/useCountUp';
 

@@ -1,13 +1,12 @@
 import { useMemo } from 'react';
 import { BarChart3, TrendingUp, TrendingDown, Minus, Info, Building2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatCurrency } from '@/lib/formatters';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
+import { subMonths, format } from 'date-fns';
 
 interface IndicadorBenchmark {
   nome: string;
@@ -32,9 +31,6 @@ const BENCHMARKS_SETOR = {
 
 export function BenchmarkingSetorial() {
   const hoje = new Date();
-  const inicioMes = startOfMonth(hoje);
-  const fimMes = endOfMonth(hoje);
-  const inicioMesAnterior = startOfMonth(subMonths(hoje, 1));
 
   // Buscar dados da empresa
   const { data: dadosEmpresa } = useQuery({
@@ -234,7 +230,7 @@ export function BenchmarkingSetorial() {
       <CardContent className="space-y-4">
         <TooltipProvider>
           {indicadores.map((ind, idx) => {
-            const { status, percentDiff } = getComparativo(ind);
+            const { status } = getComparativo(ind);
             const progressValue = Math.min(100, (ind.valorEmpresa / (ind.valorMercado * 2)) * 100);
             
             return (

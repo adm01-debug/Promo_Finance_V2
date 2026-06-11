@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Save, History, CheckCircle2, XCircle, Info, Zap, Sparkles, Sliders, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, Save, History, CheckCircle2, XCircle, Info, Zap, Sparkles, Sliders } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

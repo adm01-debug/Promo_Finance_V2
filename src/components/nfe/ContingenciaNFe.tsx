@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   AlertTriangle, Wifi, WifiOff, Server, RefreshCw, FileText, Zap, Shield, Activity,
-  AlertCircle, Play, Settings2, Loader2,
+  AlertCircle, Play, Settings2,
 } from 'lucide-react';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';

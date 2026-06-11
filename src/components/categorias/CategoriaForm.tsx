@@ -134,8 +134,8 @@ export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'de
               <FormLabel>Ícone</FormLabel>
               <div className="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1 border rounded-md">
                 {CATEGORY_ICONS.map((iconName) => {
-                  // @ts-ignore
-                  const IconComponent = Icons[iconName.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('')] || Icons.Tag;
+                  const pascalName = iconName.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
+                  const IconComponent = (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
                   return (
                     <Button
                       key={iconName}

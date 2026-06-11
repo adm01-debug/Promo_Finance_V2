@@ -16,7 +16,7 @@ const containerVariants = {
 } as const;
 
 export default function Logistica() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [, setActiveTab] = useState('overview');
 
   return (
     <MainLayout>

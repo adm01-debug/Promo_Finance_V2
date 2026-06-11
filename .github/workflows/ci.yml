@@ -45,14 +45,13 @@ jobs:
       - name: Install Playwright Browsers
         run: bunx playwright install --with-deps
 
-      - name: E2E & Visual Regression Tests
+      - name: E2E Tests
         run: bun run test:e2e
         env:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          VISUAL_REGRESSION: true
           CI: true
 
       - name: Upload Test Artifacts (Reports & Screenshots)

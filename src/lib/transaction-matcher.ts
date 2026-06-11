@@ -328,7 +328,6 @@ export function encontrarMatchesParaTransacao(
 
     if (scoreFinal >= config.scoreMinimo) {
       // Bonus for high similarity or document match
-      const isHighConfidence = scoreFinal >= 80 || motivos.some(m => m.tipo === 'documento' || m.tipo === 'valor_exato');
       
       const diffValor = Math.abs(valorTransacao - lancamento.valor);
 

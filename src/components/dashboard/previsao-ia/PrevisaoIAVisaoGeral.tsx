@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Activity, Users, Clock, Wallet, DollarSign, Target } from 'lucide-react';
+import { Activity, Users, Clock, Wallet, DollarSign, Target } from 'lucide-react';
 
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } } as const;
 

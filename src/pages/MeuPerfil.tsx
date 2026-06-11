@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Save, Loader2, Camera, Shield, Key } from 'lucide-react';
+import { User, Mail, Save, Loader2, Shield, Key } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -71,7 +71,6 @@ export default function MeuPerfil() {
     }
   };
 
-  const initials = fullName ? fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : email?.substring(0, 2).toUpperCase();
 
   return (
     <MainLayout>

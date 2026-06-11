@@ -3,13 +3,11 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { 
   Code2, 
-  Key, 
   Plus, 
   Trash2, 
   ExternalLink, 
   Copy, 
   CheckCircle2, 
-  Clock, 
   ShieldCheck,
   Zap,
   Book,
@@ -18,7 +16,6 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
   Dialog, 
@@ -34,7 +31,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useApiKeys, useCreateApiKey, useRevokeApiKey } from '@/hooks/useApiKeys';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 const SCOPES = [

@@ -39,7 +39,7 @@ interface ScimLogRow {
 
 const operations = ["all", "list", "get", "create", "update", "patch", "replace", "delete", "auth"];
 const resources = ["all", "Users", "Groups", "ServiceProviderConfig", "Schemas", "ResourceTypes"];
-const statusFilters = ["all", "2xx", "4xx", "5xx"] as const;
+type StatusBucket = "all" | "2xx" | "4xx" | "5xx";
 
 function statusVariant(code: number) {
   if (code >= 500) return "destructive" as const;
@@ -63,7 +63,7 @@ export default function ScimAudit() {
   const [userIdFilter, setUserIdFilter] = useState<string>("");
   const [resource, setResource] = useState<string>("all");
   const [operation, setOperation] = useState<string>("all");
-  const [statusBucket, setStatusBucket] = useState<typeof statusFilters[number]>("all");
+  const [statusBucket, setStatusBucket] = useState<StatusBucket>("all");
   const [search, setSearch] = useState<string>("");
   const [selected, setSelected] = useState<ScimLogRow | null>(null);
 
@@ -233,7 +233,7 @@ export default function ScimAudit() {
               {operations.map((o) => <SelectItem key={o} value={o}>{o === "all" ? "Todas ops" : o}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select value={statusBucket} onValueChange={(v) => setStatusBucket(v as typeof statusFilters[number])}>
+          <Select value={statusBucket} onValueChange={(v) => setStatusBucket(v as StatusBucket)}>
             <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos status</SelectItem>

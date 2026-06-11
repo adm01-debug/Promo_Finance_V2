@@ -7,16 +7,12 @@ import { motion } from "framer-motion";
 import { 
   Palette, 
   Type, 
-  Layout, 
   Activity, 
   MousePointer2, 
-  Focus, 
-  Loader2, 
-  LayoutPanelLeft,
+  Loader2,
   Search,
   AlertCircle
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const Section = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => (
   <motion.section 

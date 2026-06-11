@@ -371,9 +371,8 @@
 | Funcionalidade | Ferramenta | Arquivo |
 |----------------|------------|---------|
 | Install Prompt | Custom component | `src/components/pwa/InstallPWA.tsx` |
-| Service Worker | Workbox | `public/sw-workbox.js` |
+| Service Worker | Custom (cache + push) | `public/sw.js` |
 | Manifest | PWA config | `public/manifest.json` |
-| Offline Sync | IndexedDB | `src/hooks/useOfflineSync.tsx` |
 | Offline Storage | Local storage | `src/lib/offline-storage.ts` |
 | Network Status | Indicator | `src/hooks/useNetworkStatus.ts` |
 

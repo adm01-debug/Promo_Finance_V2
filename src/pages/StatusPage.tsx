@@ -10,7 +10,7 @@ import {
   Globe,
   ArrowRight
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -18,17 +18,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 
-const SERVICES = [
-  { id: 'api', name: 'API Core & Engine', status: 'operational' },
-  { id: 'auth', name: 'Autenticação & SSO', status: 'operational' },
-  { id: 'db', name: 'Database (Supabase)', status: 'operational' },
-  { id: 'storage', name: 'File Storage', status: 'operational' },
-  { id: 'ai', name: 'Quantum AI Engine', status: 'operational' },
-  { id: 'billing', name: 'Processamento de Boletos', status: 'operational' },
-];
-
 export default function StatusPage() {
-  const { data: healthData, isLoading: isLoadingHealth } = useQuery({
+  const { data: healthData } = useQuery({
     queryKey: ['system-health'],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('health');

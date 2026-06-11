@@ -5,17 +5,16 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
+import { ExtratoOFX } from '@/lib/ofx-parser';
 import {
   Building2, Calendar, Hash, TrendingUp, TrendingDown, FileCheck,
-  AlertTriangle, CheckCircle2, Zap, Settings2, Search, Table as TableIcon,
-  ChevronDown, CheckCircle
+  AlertTriangle, Zap, Settings2, CheckCircle
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useMemo } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

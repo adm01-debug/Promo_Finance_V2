@@ -48,17 +48,24 @@ export const PageHeader = ({
             {badge}
           </div>
         )}
-        <h1 className="text-display">
-          {title.split(' ').map((word, i, arr) => (
-            i === arr.length - 1 ? (
-              <span key={i} className={cn("text-transparent bg-clip-text bg-gradient-to-r", gradientFrom, gradientVia, gradientTo)}>
-                {" "}{word}
-              </span>
-            ) : (
-              <span key={i}>{i > 0 && " "}{word}</span>
-            )
-          ))}
-        </h1>
+        <div className="flex items-center gap-3">
+          {Icon && (
+            <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary shrink-0">
+              <Icon className="h-6 w-6" aria-hidden="true" />
+            </div>
+          )}
+          <h1 className="text-display">
+            {title.split(' ').map((word, i, arr) => (
+              i === arr.length - 1 ? (
+                <span key={i} className={cn("text-transparent bg-clip-text bg-gradient-to-r", gradientFrom, gradientVia, gradientTo)}>
+                  {" "}{word}
+                </span>
+              ) : (
+                <span key={i}>{i > 0 && " "}{word}</span>
+              )
+            ))}
+          </h1>
+        </div>
         {subtitle && (
           <p className="text-xl text-muted-foreground/70 max-w-2xl leading-relaxed font-medium italic">
             {subtitle}

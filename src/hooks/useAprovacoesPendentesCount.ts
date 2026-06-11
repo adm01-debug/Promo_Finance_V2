@@ -31,7 +31,7 @@ export const useAprovacoesPendentesCount = () => {
           schema: 'public',
           table: 'solicitacoes_aprovacao',
         },
-        async (payload) => {
+        async () => {
           // Refetch the count when any change happens
           try {
             const { count, error } = await supabase

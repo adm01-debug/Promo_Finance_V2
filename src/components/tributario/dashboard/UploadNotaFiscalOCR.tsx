@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useProcessarNFOCR, type DadosExtraidosNF } from '@/hooks/useProcessarNFOCR';
 import { Upload, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters';
 
 interface Props {
@@ -19,7 +20,7 @@ export function UploadNotaFiscalOCR({ empresaId }: Props) {
 
   const handleFile = useCallback(async (file: File) => {
     if (file.size > 10 * 1024 * 1024) {
-      alert('Arquivo muito grande (máx 10MB)');
+      toast.error('Arquivo muito grande (máx 10MB)');
       return;
     }
     const result = await processar.mutateAsync(file);

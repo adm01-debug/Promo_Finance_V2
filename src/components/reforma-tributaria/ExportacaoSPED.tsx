@@ -9,16 +9,12 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { 
   FileText, 
   Download, 
-  CheckCircle2, 
-  AlertTriangle,
+  CheckCircle2,
   FileSpreadsheet,
-  Upload,
-  FolderOpen,
   Settings,
 } from 'lucide-react';
 import { format } from 'date-fns';

@@ -21,7 +21,6 @@ test.describe('Realtime Stability', () => {
       await refreshBtn.click();
       
       // Should not crash and should deduplicate logic (check console)
-      const logs = await page.evaluate(() => (window as any).console.history || []);
       // Verification logic here
     }
   });

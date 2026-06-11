@@ -1,5 +1,4 @@
 import { todayISOLocal } from '@/lib/formatters';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowRightLeft, Building2, Landmark, Wallet } from 'lucide-react';
+import { ArrowRightLeft, Building2 } from 'lucide-react';
 import { useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
 import { toast } from 'sonner';
 

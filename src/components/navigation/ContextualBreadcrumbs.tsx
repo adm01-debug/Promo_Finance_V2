@@ -15,7 +15,6 @@ import {
   FileText, 
   Users, 
   Building2, 
-  Wallet, 
   ArrowDownCircle, 
   ArrowUpCircle,
   PiggyBank,

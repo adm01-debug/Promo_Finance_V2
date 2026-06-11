@@ -7,13 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AntecipacaoDialog } from '@/components/asaas/AntecipacaoDialog';
 import { TransferenciaPixHistoryPanel } from '@/components/asaas/TransferenciaPixHistoryPanel';
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
-import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -26,9 +25,9 @@ import { Progress } from '@/components/ui/progress';
 import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
-  Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
+  Send, Users, Undo2, FileText, MoreHorizontal, Download, History,
   Settings as SettingsIcon, LayoutDashboard, FileSpreadsheet, PlayCircle,
-  Search, Filter, Calendar, Bell, Mail, Phone, Loader2, Eye, TrendingUp, Target, Zap,
+  Search, Bell, Mail, Phone, Loader2, Eye, TrendingUp, Target, Zap,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -84,14 +83,12 @@ export default function Asaas() {
   const {
     payments, loadingPayments, stats,
     cancelarCobranca, consultarSaldo,
-    obterComprovante, auditTrail, loadingAudit,
-    suggestions, loadingSuggestions, aceitarSugestao, gerarSugestoes,
+    obterComprovante, auditTrail,
     detailStats,
     // Novos do hook
-    config, loadingConfig, salvarConfig,
+    config, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
     exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
-    sincronizarTransferencia,
   } = useAsaas(empresaId);
 
   // States for Advanced Filters
@@ -124,7 +121,6 @@ export default function Asaas() {
   const [selectedAnticipationId, setSelectedAnticipationId] = useState<string | null>(null);
   const [selectedQueueHistory, setSelectedQueueHistory] = useState<any[] | null>(null);
 
-  const { toast: toastToast } = useToast();
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -220,7 +216,7 @@ export default function Asaas() {
       });
       setReprocessDialog(null);
       setReprocessReason('');
-    } catch (e) {
+    } catch {
       // toast handled in hook
     }
   };
@@ -697,7 +693,7 @@ export default function Asaas() {
                         className="w-full h-8"
                         onClick={async () => {
                           try {
-                            const { data, error } = await supabase.functions.invoke('gerar-resumo-financeiro-diario');
+                            const { error } = await supabase.functions.invoke('gerar-resumo-financeiro-diario');
                             if (error) throw error;
                             toast.success('Relatório gerado e enviado com sucesso');
                           } catch (e: any) {

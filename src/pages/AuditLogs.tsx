@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { format, subDays, startOfDay, endOfDay, differenceInMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, Search, FileText, Filter, RefreshCcw, Activity, Database, Download, FileSpreadsheet, X } from 'lucide-react';
+import { CalendarIcon, Search, FileText, Filter, RefreshCcw, Activity, Database, Download, FileSpreadsheet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { exportToCSV, exportToPDF, ExportColumn } from '@/lib/export-utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
@@ -152,7 +152,6 @@ export default function AuditLogs() {
 
   const handleExportCSV = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToCSV(filteredLogs, auditColumns, 'logs_auditoria'); toast.success('Exportado para CSV com sucesso!'); };
   const handleExportPDF = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria'); toast.success('PDF gerado para impressão!'); };
-  const clearFilters = () => { setSearchTerm(''); setActionFilter('all'); setTableFilter('all'); setUserFilter('all'); setProviderFilter('all'); setSsoFieldFilter('all'); setDateRange({ from: subDays(new Date(), 7), to: new Date() }); };
 
   const filtersController = useManagedFilters({
     entityType: 'audit-logs',

@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,7 +48,7 @@ export interface ManagedFiltersController<T extends AnyFilters> {
 const PAYLOAD_VERSION = 1;
 const DEBOUNCE_MS = 500;
 
-function readLocal<T>(key: string | undefined, fallback: T): T | null {
+function readLocal<T>(key: string | undefined, _fallback: T): T | null {
   if (!key || typeof window === 'undefined') return null;
   try {
     const raw = window.localStorage.getItem(key);

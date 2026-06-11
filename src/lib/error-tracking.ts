@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- fallback tracker usa console quando Sentry não está disponível */
 // Error tracking utilities
 // Ready for Sentry integration when API key is provided
 
@@ -123,7 +124,7 @@ export function reportErrorToTracker(error: Error, componentStack?: string) {
 }
 
 // Initialize Sentry (call this when you have the DSN)
-export function initSentry(dsn: string, environment: string = 'production') {
+export function initSentry(_dsn: string, _environment: string = 'production') {
   // This would be called when Sentry is set up
   // The actual Sentry initialization script would need to be added to index.html
   console.info('[ErrorTracker] Ready for Sentry initialization with DSN');

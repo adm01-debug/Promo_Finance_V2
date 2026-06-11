@@ -21,13 +21,6 @@ export interface MatchSugestaoIA {
   lancamento?: LancamentoSistema;
 }
 
-interface ConciliacaoIAResponse {
-  matches: MatchSugestaoIA[];
-  processedAt: string;
-  transacoesAnalisadas: number;
-  lancamentosAnalisados: number;
-}
-
 export function useConciliacaoIA() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [matchesIA, setMatchesIA] = useState<Map<string, MatchSugestaoIA[]>>(new Map());

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- console é o transporte deste logger */
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 class Logger {

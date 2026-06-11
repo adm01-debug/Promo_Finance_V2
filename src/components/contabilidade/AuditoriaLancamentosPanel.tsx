@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Eye, History, Search, User, Clock, RefreshCw, FileSearch, Filter, ChevronDown, Download } from 'lucide-react';
+import { Eye, History, Search, User, Clock, RefreshCw, FileSearch } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ViewExportButton } from '@/components/shared/ViewExportButton';
 import { format } from 'date-fns';

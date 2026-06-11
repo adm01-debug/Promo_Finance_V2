@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertTriangle,
-  TrendingDown,
   ShieldAlert,
   Lightbulb,
   Clock,
@@ -16,16 +15,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+
+
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/formatters';
-import { useAlertasPreditivos, AlertaPreditivo } from '@/hooks/useAlertasPreditivos';
+import { useAlertasPreditivos } from '@/hooks/useAlertasPreditivos';
 
 interface AlertasPreditivosPanelProps {
   saldoAtual: number;

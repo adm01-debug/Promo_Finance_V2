@@ -18,7 +18,6 @@ import { Calculator, Plus } from 'lucide-react';
 import { useIRPJCSLL } from '@/hooks/useIRPJCSLL';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
-const trimestres = ['1º Trimestre', '2º Trimestre', '3º Trimestre', '4º Trimestre'];
 
 export function ModuloIRPJCSLL() {
   const { data: empresas } = useAllEmpresas();
@@ -33,7 +32,6 @@ export function ModuloIRPJCSLL() {
     calcularApuracao,
     ALIQUOTA_IRPJ,
     ALIQUOTA_CSLL,
-    LIMITE_ADICIONAL_MES,
   } = useIRPJCSLL(empresaId);
 
   const [anoSelecionado, setAnoSelecionado] = useState(new Date().getFullYear());

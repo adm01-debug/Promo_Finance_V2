@@ -24,7 +24,7 @@ export function useFluxoCaixaPage() {
   const [cenarioAtivo, setCenarioAtivo] = useState<CenarioTipo>('realista');
   const [alertasDismissed, setAlertasDismissed] = useState<string[]>([]);
   
-  const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
+  const { filterType, handleFilterChange } = useQuickDateFilter();
   
   const dias = periodoDias[periodo] || 30;
   

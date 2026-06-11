@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useGlobalFilterSync } from '../useGlobalFilterSync';
 import { toast } from 'sonner';
@@ -8,11 +8,6 @@ vi.mock('sonner', () => ({
   toast: {
     info: vi.fn(),
   },
-}));
-
-// Mock do react-router-dom
-vi.mock('react-router-dom', () => ({
-  useLocation: () => ({ pathname: '/' }),
 }));
 
 describe('useGlobalFilterSync', () => {
@@ -26,8 +21,7 @@ describe('useGlobalFilterSync', () => {
     expect(addEventListenerSpy).toHaveBeenCalledWith('current-empresa-changed', expect.any(Function));
   });
 
-  it('deve disparar toast e log quando o evento current-empresa-changed ocorre', () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+  it('deve disparar toast quando o evento current-empresa-changed ocorre', () => {
     renderHook(() => useGlobalFilterSync());
 
     const event = new CustomEvent('current-empresa-changed', { detail: 'empresa-123' });
@@ -36,9 +30,6 @@ describe('useGlobalFilterSync', () => {
     expect(toast.info).toHaveBeenCalledWith('Filtros sincronizados', expect.objectContaining({
       description: expect.stringContaining('empresa'),
     }));
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('empresa-123'));
-    
-    consoleSpy.mockRestore();
   });
 
   it('não deve disparar se o detalhe do evento estiver vazio', () => {

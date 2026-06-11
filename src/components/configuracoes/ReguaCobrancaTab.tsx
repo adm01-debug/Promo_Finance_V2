@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plus, Edit, Mail, MessageSquare, Phone, Clock } from 'lucide-react';
+import { Plus, Edit, Mail, MessageSquare, Phone } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

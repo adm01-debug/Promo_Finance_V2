@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,8 +15,7 @@ import {
   FileText, 
   Info, 
   Download, 
-  Search, 
-  Filter,
+  Search,
   ArrowRight,
   Bell,
   CheckCircle2,
@@ -30,7 +29,6 @@ import {
   RefreshCcw,
   Zap,
   Lock,
-  Unlock,
   Copy,
   Building2
 } from "lucide-react";
@@ -40,7 +38,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { saveAs } from 'file-saver';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { PageHeader, PageBackground } from "@/components/layout/PageHeader";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";

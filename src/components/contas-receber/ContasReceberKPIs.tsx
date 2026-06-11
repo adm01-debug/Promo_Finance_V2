@@ -1,8 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { DollarSign, CheckCircle2, AlertTriangle, TrendingUp, Clock, CalendarClock, ArrowUpRight, ArrowDownRight, Bell, ShieldAlert, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { DollarSign, CheckCircle2, AlertTriangle, TrendingUp, Clock, CalendarClock, ArrowUpRight, ArrowDownRight, ShieldAlert } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

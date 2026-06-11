@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { 
   BarChart3, Scale, Download, AlertTriangle, CheckCircle2, 
-  FileJson, FileText, Calendar as CalendarIcon, Filter,
+  FileJson, FileText,
   TrendingUp, TrendingDown, Layers, PieChart, ArrowUpRight,
-  ChevronRight, Info as InfoIcon, Zap, RefreshCw, Eye, History, Globe, Search, RotateCcw, FolderOpen
+  ChevronRight, Info as InfoIcon, Zap, Search, RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,7 +21,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -59,7 +57,7 @@ interface DrillDownState {
   natureza?: string;
 }
 
-export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
+export function DreBalancoTab({ empresaId, ano }: Props) {
   const { user } = useAuth();
   const { preferences, update: updatePrefs } = useUserDemonstrativoPreferences();
   
@@ -172,9 +170,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
   const {
     dre: dreNovo,
     balanco: balancoNovo,
-    origem,
     isLoading: isLoadingNovo,
-    error,
   } = useDemonstrativosContabeis({
     empresaId: selectedEmpresaId,
     ano,
@@ -1020,15 +1016,6 @@ function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tipoBp }: 
           </Table>
         </ScrollArea>
       </div>
-    </div>
-  );
-}
-
-function Info({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div>
-      <p className="text-[11px] text-muted-foreground">{label}</p>
-      <p className={`text-sm ${mono ? 'font-mono' : ''}`}>{value}</p>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Mail, MessageSquare, Phone, Smartphone, ToggleLeft, ToggleRight, Clock, Zap, Edit2, Check, X } from 'lucide-react';
+import { Settings, Mail, MessageSquare, Phone, Smartphone, Clock, Edit2, Check, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

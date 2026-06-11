@@ -1,9 +1,7 @@
-// @ts-nocheck
 import { useState, useMemo } from 'react';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,10 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import {
-  ArrowUpCircle, ArrowDownCircle, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar,
+  ArrowUpCircle, ArrowDownCircle, Search, TrendingUp, TrendingDown, DollarSign, Calendar,
 } from 'lucide-react';
 import { useMovimentacoes } from '@/hooks/useFinancialOperations';
-import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -27,7 +24,6 @@ export default function Movimentacoes() {
   const [endDate, setEndDate] = useState(format(endOfMonth(new Date()), 'yyyy-MM-dd'));
 
   const { data: movimentacoes, isLoading } = useMovimentacoes(undefined, { startDate, endDate });
-  const { data: empresas } = useAllEmpresas();
 
   useHighlightFromUrl('highlight', !isLoading && (movimentacoes?.length ?? 0) > 0);
 

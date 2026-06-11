@@ -77,7 +77,6 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
     let lancNaoBalanceados = 0;
     let partidasSemConta = 0;
     let receitaRazao = 0;
-    let despesaRazao = 0;
     let totalPartidas = 0;
     const datasSemPartida: string[] = [];
     const lancamentosForaPeriodo: string[] = [];
@@ -104,14 +103,12 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
           debitoRazao += v;
           // Heurística de classificação por código (3 = receita, 4/5 = despesa)
           const codigo = p.conta?.codigo || '';
-          if (codigo.startsWith('4') || codigo.startsWith('5')) despesaRazao += v;
           if (codigo.startsWith('3')) receitaRazao -= v;
         } else if (p.tipo === 'C') {
           cLanc += v;
           creditoRazao += v;
           const codigo = p.conta?.codigo || '';
           if (codigo.startsWith('3')) receitaRazao += v;
-          if (codigo.startsWith('4') || codigo.startsWith('5')) despesaRazao -= v;
         }
       }
       if (Math.abs(dLanc - cLanc) > TOLERANCIA) {

@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { QrCode, Copy, ExternalLink, RefreshCw, Clock, CheckCircle2 } from 'lucide-react';
+import { QrCode, Copy, RefreshCw, Clock, CheckCircle2 } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { PixQrCodeDialog } from '@/components/asaas/PixQrCodeDialog';

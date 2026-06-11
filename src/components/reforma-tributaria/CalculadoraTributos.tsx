@@ -2,10 +2,8 @@
 // Cálculo em tempo real para operações
 
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -49,7 +47,6 @@ export function CalculadoraTributos() {
     regimesEspeciais, 
     impostosSeletivos,
     faseAtual,
-    aliquotasAtuais,
   } = useReformaTributaria();
 
   // Estado do formulário

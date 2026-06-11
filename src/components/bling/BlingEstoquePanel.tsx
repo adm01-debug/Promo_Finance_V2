@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Warehouse, MapPin, RefreshCw, Plus, Loader2 } from 'lucide-react';
 import { useBlingEstoque, useBlingDepositos, useBlingEstoqueMutations } from '@/hooks/useBling';
-import { LoadingSkeleton } from './BlingShared';
 
 export function BlingEstoquePanel() {
   const { data, refetch, isFetching } = useBlingEstoque();

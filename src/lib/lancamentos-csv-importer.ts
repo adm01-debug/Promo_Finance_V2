@@ -52,7 +52,7 @@ function detectSeparator(sample: string): string {
 
 function parseNumber(raw: string | undefined): number {
   if (!raw) return 0;
-  const cleaned = raw.trim().replace(/\s/g, '').replace(/R\$/gi, '').replace(/[^\d,.\-]/g, '');
+  const cleaned = raw.trim().replace(/\s/g, '').replace(/R\$/gi, '').replace(/[^\d,.-]/g, '');
   if (!cleaned) return 0;
   if (cleaned.includes(',') && cleaned.lastIndexOf(',') > cleaned.lastIndexOf('.')) {
     return Number(cleaned.replace(/\./g, '').replace(',', '.'));

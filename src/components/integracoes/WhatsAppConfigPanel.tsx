@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { MessageSquare, Settings, CheckCircle2, AlertTriangle, ExternalLink, Send, Phone } from 'lucide-react';
+import { MessageSquare, CheckCircle2, AlertTriangle, ExternalLink, Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +22,7 @@ export function WhatsAppConfigPanel() {
     }
     setTesting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('whatsapp-ia-proativo', {
+      const { error } = await supabase.functions.invoke('whatsapp-ia-proativo', {
         body: {
           action: 'test',
           telefone: testNumber,

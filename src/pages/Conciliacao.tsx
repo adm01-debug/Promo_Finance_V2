@@ -6,9 +6,8 @@ import {
    BarChart3, Zap, History, Keyboard, Database, Clock,
    Shield, Brain
  } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,7 +16,6 @@ import { ConciliacaoRetroativaPanel } from '@/components/conciliacao/Conciliacao
 import { ConciliacaoAuditPanel } from '@/components/conciliacao/ConciliacaoAuditPanel';
 import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -30,7 +28,6 @@ import { ConciliacaoSplitDialog } from '@/components/conciliacao/ConciliacaoSpli
 import { RelatorioImportacaoDialog } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
-import { ConciliacaoFilters } from '@/components/conciliacao/ConciliacaoFilters';
 import { ConciliacaoToolbar, CONCILIACAO_COLUMNS, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
 import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu';
 import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
@@ -43,7 +40,6 @@ import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConcili
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { useConciliacaoPage } from '@/hooks/useConciliacaoPage';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
-import { useAuth } from '@/hooks/useAuth';
 import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher';
 import { EmpresaSwitcher } from '@/components/layout/EmpresaSwitcher';
 
@@ -74,10 +70,9 @@ function ConciliacaoToolbarHost({
 }
 
 export default function Conciliacao() {
-  const { currentEmpresaId } = useAuth();
   const {
     mainTab, setMainTab, statusTab, setStatusTab,
-    selectedBanco, setSelectedBanco, searchTerm, setSearchTerm,
+    selectedBanco, searchTerm, setSearchTerm,
     showImportDialog, setShowImportDialog,
     showManualDialog, setShowManualDialog,
     showSplitDialog, setShowSplitDialog,
@@ -87,12 +82,12 @@ export default function Conciliacao() {
     filters, setFilters, selectedIds, setSelectedIds,
     showReportDialog, setShowReportDialog,
     importReport,
-    contasBancarias, lancamentosSistema,
+    lancamentosSistema,
     filteredTransacoes, exportData,
     totalTransacoes, conciliadas, pendentes, percentualConciliado,
     showSugestoesFila, setShowSugestoesFila,
     handleImportSuccess, handleConfirmarMatch, handleRejeitarMatch,
-    handleConciliarManual, handleConciliarSplit, handleManualSuccess,
+    handleConciliarManual, handleManualSuccess,
     handleConciliar, handleIgnorar,
     handleBulkConciliar, handleBulkIgnorar,
     toggleSelect, toggleSelectAll,

@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: useReformaTributaria
 // Gestão completa do módulo contábil da Reforma
 // Dados 100% reais (operacoes_tributaveis + apuracoes_tributarias)

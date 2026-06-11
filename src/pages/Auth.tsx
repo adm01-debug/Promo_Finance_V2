@@ -13,9 +13,7 @@ import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
 import { useAuthValidation } from '@/hooks/useAuthValidation';
 import { 
-  AuthLeftPanel, 
-  AuthMobileHeader, 
-  AuthMobileBackground 
+  AuthMobileHeader 
 } from '@/components/auth/AuthBackground';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { AccountLockoutBanner } from '@/components/auth/AccountLockoutBanner';
@@ -28,7 +26,7 @@ import { readSloFailure, type SloFailureSnapshot } from '@/lib/sso-slo-state';
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string()
   .min(8, 'Senha deve ter no mínimo 8 caracteres')
-  .regex(/[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]/, 'Senha deve conter caractere especial');
+  .regex(/[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/~`]/, 'Senha deve conter caractere especial');
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -249,7 +247,7 @@ export default function Auth() {
         
         toast.success('Login realizado com sucesso!');
       }
-    } catch (error: unknown) {
+    } catch {
       await logLoginAttempt(email, false, 'Erro desconhecido');
       toast.error('Erro ao realizar login');
     } finally {
@@ -315,7 +313,7 @@ export default function Auth() {
       } else {
         toast.success('Conta criada com sucesso!');
       }
-    } catch (error: unknown) {
+    } catch {
       toast.error('Erro ao criar conta');
     } finally {
       setIsLoading(false);
@@ -347,7 +345,7 @@ export default function Auth() {
         setResetEmailSent(true);
         toast.success('Solicitação enviada! Aguarde a aprovação do gestor.');
       }
-    } catch (error: unknown) {
+    } catch {
       toast.error('Erro ao solicitar reset de senha');
     } finally {
       setIsLoading(false);

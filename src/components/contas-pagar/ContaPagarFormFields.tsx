@@ -1,6 +1,5 @@
 import { UseFormReturn } from 'react-hook-form';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Sparkles } from 'lucide-react';
+import { Building2, Calendar, FileText, Tag, CreditCard, Banknote, QrCode, Wallet } from 'lucide-react';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';

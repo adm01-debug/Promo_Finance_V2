@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { 
   encontrarMatchesParaTransacao, 
-  LancamentoSistema, 
-  DEFAULT_CONFIG 
+  LancamentoSistema 
 } from '../transaction-matcher';
 import { TransacaoOFX } from '../ofx-parser';
 

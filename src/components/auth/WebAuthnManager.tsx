@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Fingerprint, Plus, Trash2, Loader2, Smartphone, Monitor, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,7 +19,7 @@ interface WebAuthnCredential {
 
 export function WebAuthnManager() {
   const { user } = useAuth();
-  const { registerCredential, isLoading: webAuthnLoading } = useWebAuthn();
+  const { registerCredential } = useWebAuthn();
   const [credentials, setCredentials] = useState<WebAuthnCredential[]>([]);
   const [loading, setLoading] = useState(true);
   const [registerOpen, setRegisterOpen] = useState(false);

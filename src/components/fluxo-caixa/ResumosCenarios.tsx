@@ -5,7 +5,6 @@ import {
   Minus, 
   Wallet,
   AlertTriangle,
-  Target,
   ArrowRight,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';

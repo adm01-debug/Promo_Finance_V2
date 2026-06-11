@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface TransacaoExtrato {
   id: string;
@@ -43,15 +43,6 @@ export function ConciliacaoSplitDialog({
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
-  const { data: centrosCusto } = useQuery({
-    queryKey: ['centros-custo'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('centros_custo').select('*').eq('ativo', true);
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const tipoFiltro = transacao?.tipo === 'credito' ? 'receber' : 'pagar';
 
   const lancamentosFiltrados = useMemo(() => {
@@ -131,7 +122,7 @@ export function ConciliacaoSplitDialog({
       onOpenChange(false);
       setSplits([]);
       setSearch('');
-    } catch (error) {
+    } catch {
       toast.error('Erro ao salvar conciliação parcial');
     } finally {
       setIsLoading(false);

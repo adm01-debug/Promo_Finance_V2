@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, Clock, MessageSquare } from 'lucide-react';
+import { CheckCircle2, Circle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WorkflowStep {
@@ -19,10 +19,7 @@ export const WorkflowVisualizer = ({ steps }: WorkflowVisualizerProps) => {
       {/* Linha de fundo */}
       <div className="absolute top-1/2 left-0 w-full h-0.5 bg-muted -translate-y-1/2 z-0" />
       
-      {steps.map((step, index) => {
-        const isLast = index === steps.length - 1;
-        const isFirst = index === 0;
-
+      {steps.map((step) => {
         return (
           <div key={step.id} className="relative z-10 flex flex-col items-center">
             {/* Ícone */}

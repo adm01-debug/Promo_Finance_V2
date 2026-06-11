@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { Maximize2, Minimize2, Eye, EyeOff, Camera, Layers, Monitor, Tablet, Smartphone } from "lucide-react";
+import { Eye, EyeOff, Camera, Layers, Monitor, Tablet, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 
 interface PixelPerfectOverlayProps {
@@ -12,7 +12,6 @@ interface PixelPerfectOverlayProps {
 export const PixelPerfectOverlay = ({ referenceImageUrl }: PixelPerfectOverlayProps) => {
   const [opacity, setOpacity] = useState([50]);
   const [isVisible, setIsVisible] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
   const [overlayUrl, setOverlayUrl] = useState(referenceImageUrl || '');
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
 

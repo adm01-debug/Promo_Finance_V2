@@ -1,6 +1,6 @@
-import { Loader2, PieChart as PieChartIcon, TrendingUp, DollarSign, Users, AlertTriangle, Activity } from 'lucide-react';
+import { Loader2, PieChart as PieChartIcon, TrendingUp, Users, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ResponsiveContainer, ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, Legend, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart } from 'recharts';
+import { ResponsiveContainer, ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, Legend, PieChart, Pie, Cell, CartesianGrid } from 'recharts';
 import { formatCurrency } from '@/lib/formatters';
 import { motion } from 'framer-motion';
 

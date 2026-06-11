@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { format, differenceInDays, addDays, parseISO } from 'date-fns';
+import { format, differenceInDays, parseISO } from 'date-fns';
 
 export type TipoAlerta = 
   | 'vencimento_apuracao' 
@@ -102,7 +102,6 @@ export function useAlertasTributarios(empresaId?: string) {
           const novoAlerta = payload.new as AlertaTributario;
           
           // Notificar usuário
-          const config = ALERTA_CONFIG[novoAlerta.tipo];
           toast[novoAlerta.prioridade === 'critica' ? 'error' : 'warning'](
             novoAlerta.titulo,
             { description: novoAlerta.mensagem }
@@ -219,7 +218,7 @@ export function useAlertasTributarios(empresaId?: string) {
     });
 
     // Verificar retenções pendentes
-    const { data: retencoesPendentes, error: errorRet } = await supabase.rpc('get_retencoes_pendentes_count', { p_empresa_id: empresaId });
+    const { data: retencoesPendentes } = await supabase.rpc('get_retencoes_pendentes_count', { p_empresa_id: empresaId });
     const countRetencoes = (retencoesPendentes as number) || 0;
 
     if (countRetencoes > 5) {

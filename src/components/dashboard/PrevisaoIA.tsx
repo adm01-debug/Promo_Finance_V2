@@ -59,11 +59,11 @@ export function PrevisaoIA({ className }: { className?: string }) {
     } finally { setLoading(false); }
   };
 
-  const getTendenciaIcon = (tendencia: string) => {
+  const getTendenciaIcon = (_tendencia: string) => {
     return <Activity className="h-4 w-4 text-[#64748b]" />;
   };
 
-  const getTendenciaColor = (tendencia: string, inverted = false) => {
+  const getTendenciaColor = (tendencia: string, _inverted = false) => {
     return 'text-[#64748b]';
   };
 

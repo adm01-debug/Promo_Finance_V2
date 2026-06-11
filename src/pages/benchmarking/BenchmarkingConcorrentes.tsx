@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BarChart3, Shield, Zap, Sparkles, Download, 
-  Clock, TrendingUp, AlertTriangle, Lightbulb, 
+import { Zap, Download, 
+  Clock, Lightbulb, 
   ExternalLink, Search, LayoutGrid, ListTodo
 } from 'lucide-react';
 import { generateBenchmarkingPDF } from '@/lib/pdf-generator';

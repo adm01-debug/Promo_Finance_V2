@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: IRPJ/CSLL - LUCRO REAL
 // Gerencia apurações de IRPJ e CSLL
 

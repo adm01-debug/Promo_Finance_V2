@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type DialogProps } from "@radix-ui/react-dialog";
 import { Command as CommandPrimitive } from "cmdk";
-import { Search, Loader2, X, ArrowRight, Hash, FileText, Settings, User } from "lucide-react";
+import { Search, Loader2, X, Hash } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ Command.displayName = CommandPrimitive.displayName;
 
 // COMMAND DIALOG
 
-interface CommandDialogProps extends DialogProps {}
+type CommandDialogProps = DialogProps;
 
 const CommandDialog = React.forwardRef<HTMLDivElement, CommandDialogProps>(
   function CommandDialog({ children, ...props }, ref) {

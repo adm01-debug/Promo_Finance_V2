@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Building2, Check, ChevronsUpDown, BarChart3, ArrowUpCircle, ArrowDownCircle, RefreshCcw, Receipt, Sparkles } from 'lucide-react';
+import { Building2, Check, ChevronsUpDown, ArrowUpCircle, ArrowDownCircle, RefreshCcw, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserEmpresas, getCurrentEmpresaId, setCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 

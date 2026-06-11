@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, 
   Layers, 
   Maximize2, 
-  Minimize2, 
-  Download, 
   CheckCircle2, 
   AlertCircle,
   Eye,
   EyeOff,
-  Search,
   Check,
   Smartphone,
   Tablet,
@@ -19,26 +16,16 @@ import {
   Type,
   Palette,
   Ruler,
-  FileJson,
   X,
-  Plus,
-  ArrowRight,
   ClipboardCheck,
   Zap,
-  ChevronDown,
-  Info,
   Loader2,
   RefreshCw,
-  Clock,
-  ExternalLink,
-  Github,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import html2canvas from 'html2canvas';

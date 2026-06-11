@@ -1,9 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { 
-  formatCurrency, 
   parseCurrency, 
-  valueToCents, 
-  centsToValue, 
   sumCurrency, 
   compareCurrency,
   calculateInstallments

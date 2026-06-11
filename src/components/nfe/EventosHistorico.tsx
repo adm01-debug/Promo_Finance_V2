@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   History, 
@@ -21,12 +20,10 @@ import {
   WifiOff,
   Eye,
   Copy,
-  Download,
   Filter,
   Activity,
   Zap,
-  Timer,
-  TrendingUp
+  Timer
 } from 'lucide-react';
 import { 
   getEventos, 

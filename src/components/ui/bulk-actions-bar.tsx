@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, Check, Loader2 } from 'lucide-react';
+import { X, Check, Loader2 } from 'lucide-react';
 import { Button } from './button';
 import { Progress } from './progress';
 import { cn } from '@/lib/utils';

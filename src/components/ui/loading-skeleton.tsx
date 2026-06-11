@@ -266,7 +266,6 @@ export function TableShimmerSkeleton({
   showAvatar = true,
   className 
 }: TableShimmerSkeletonProps) {
-  const totalColumns = columns + (showCheckbox ? 1 : 0);
   
   return (
     <div className={cn("w-full", className)}>

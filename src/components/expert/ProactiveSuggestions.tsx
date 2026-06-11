@@ -4,9 +4,7 @@ import {
   Lightbulb, 
   TrendingDown, 
   AlertTriangle, 
-  DollarSign, 
-  Users, 
-  Calendar,
+  DollarSign,
   ChevronRight,
   X,
   Sparkles
@@ -171,7 +169,7 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
       }
 
       // 6. Verificar aprovações pendentes
-      const { data: aprovacoesPendentes, count } = await supabase
+      const { count } = await supabase
         .from('solicitacoes_aprovacao')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pendente');

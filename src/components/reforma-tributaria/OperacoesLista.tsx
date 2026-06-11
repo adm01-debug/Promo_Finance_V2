@@ -9,9 +9,8 @@ import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { FileText, Search, Download, Filter } from 'lucide-react';
+import { FileText, Search, Download } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { useOperacoesTributaveis } from '@/hooks/useOperacoesTributaveis';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
@@ -19,7 +18,7 @@ import { formatCurrency } from '@/lib/formatters';
 export function OperacoesLista() {
   const { data: empresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
-  const { operacoes, isLoading } = useOperacoesTributaveis(empresaId);
+  const { operacoes } = useOperacoesTributaveis(empresaId);
   const [busca, setBusca] = useState('');
 
   const operacoesFiltradas = operacoes?.filter(op => 

@@ -7,7 +7,6 @@ import { formatDate } from '@/lib/formatters';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
 
 export function WebhooksLogPanel() {
   const { data: webhooks, isLoading } = useWebhooksLog();

@@ -19,7 +19,7 @@ import {
   TrendingUp,
   History
 } from 'lucide-react';
-import { TableRow, TableCell } from '@/components/ui/table';
+import { TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

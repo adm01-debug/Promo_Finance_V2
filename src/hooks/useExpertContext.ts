@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { format, startOfMonth, endOfMonth, addDays } from 'date-fns';
+import { format, startOfMonth, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface ExpertContextData {
@@ -11,7 +11,6 @@ interface ExpertContextData {
 export function useExpertContext(): ExpertContextData {
   const hoje = new Date();
   const inicioMes = startOfMonth(hoje);
-  const fimMes = endOfMonth(hoje);
   const em7Dias = addDays(hoje, 7);
   const em30Dias = addDays(hoje, 30);
 

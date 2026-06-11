@@ -18,7 +18,7 @@ const hoisted = vi.hoisted(() => ({
   invokeMock: vi.fn(),
   logEventMock: vi.fn(),
 }));
-const { mockNavigate, toastErrorMock, toastInfoMock, invokeMock, logEventMock } = hoisted;
+const { mockNavigate, invokeMock, logEventMock } = hoisted;
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');

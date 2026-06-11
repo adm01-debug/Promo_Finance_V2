@@ -12,15 +12,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
-import { useAuth } from '@/hooks/useAuth';
-import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
-import { differenceInDays, subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
+import { subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
 import { calculateCollectionStage } from '@/lib/collection-engine';
 
 
 export function useContasReceberLogic() {
-  const { currentEmpresaId, currentBankAccountId } = useGlobalFinancialFilter();
+  const { currentEmpresaId } = useGlobalFinancialFilter();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -37,7 +35,7 @@ export function useContasReceberLogic() {
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingConta, setDeletingConta] = useState<ContaReceberWithRelations | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
   const [detailConta, setDetailConta] = useState<ContaReceberWithRelations | null>(null);
