@@ -12,6 +12,15 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    // Limita a quantidade de ambientes jsdom em paralelo e isola cada arquivo
+    // num fork (memória reciclada por arquivo). Sem isso, a execução paralela
+    // da suíte (78 arquivos) estourava a heap do worker em CI
+    // (ERR_WORKER_OUT_OF_MEMORY), mesmo com todos os testes passando.
+    pool: 'forks',
+    poolOptions: {
+      forks: { minForks: 1, maxForks: 2 },
+    },
+    isolate: true,
     setupFiles: ['./src/test/setup.ts'],
     // Valores fictícios para que o cliente Supabase inicialize sem lançar
     // durante os testes (o createClient não realiza chamadas de rede na
