@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ValidacoesPreSpedDialog, type ValidacoesPreSpedArquivo } from '../ValidacoesPreSpedDialog';
 
 function makeArquivo(overrides: Partial<ValidacoesPreSpedArquivo> = {}): ValidacoesPreSpedArquivo {
@@ -57,10 +57,13 @@ describe('ValidacoesPreSpedDialog — bloqueio de download por erros', () => {
     expect(screen.getByTestId('contador-erros')).toHaveTextContent('2');
     expect(screen.getByTestId('contador-avisos')).toHaveTextContent('1');
 
-    // Lista de erros é renderizada (aba "Erros" é a default quando há erros)
-    const lista = screen.getByTestId('lista-erros');
-    expect(within(lista).getByText(/Lançamento 42 desbalanceado/)).toBeInTheDocument();
-    expect(within(lista).getByText(/Conta 3.1.01 sem código CFC/)).toBeInTheDocument();
+    // As validações são agrupadas por categoria (colapsadas por padrão quando
+    // há mais de 2 grupos). Expandimos a categoria de cada erro e conferimos
+    // que a mensagem correspondente é exibida.
+    fireEvent.click(screen.getByText(/lançamentos contábeis/i));
+    expect(screen.getByText(/Lançamento 42 desbalanceado/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/conformidade cfc/i));
+    expect(screen.getByText(/Conta 3\.1\.01 sem código CFC/)).toBeInTheDocument();
 
     // Cliques em botões desabilitados não disparam callbacks
     fireEvent.click(btnTxt);
