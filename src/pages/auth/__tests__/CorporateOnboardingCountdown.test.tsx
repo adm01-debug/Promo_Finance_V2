@@ -129,8 +129,10 @@ async function startAutoRedirect(email = 'edge@acme.com') {
   renderPage();
   fireEvent.change(screen.getByLabelText(/E-mail corporativo/i), { target: { value: email } });
   fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
-  // Aguarda o countdown aparecer antes de qualquer manipulação de timer.
-  await screen.findByRole('button', { name: /Cancelar redirecionamento e voltar/i });
+  // O botão de cancelar é renderizado sincronamente (o resolver é mockado e
+  // os efeitos são flushados pelo fireEvent), então getByRole basta — assim
+  // não dependemos de shouldAdvanceTime e o tempo fica 100% controlado.
+  screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i });
 }
 
 let hrefStore = '';
@@ -156,7 +158,9 @@ beforeEach(() => {
     data: { redirect_url: 'https://idp.acme/done', verifier: 'v', state: 's' },
     error: null,
   });
-  vi.useFakeTimers({ shouldAdvanceTime: true });
+  // Sem shouldAdvanceTime: o tempo só avança via advanceTimersByTimeAsync,
+  // tornando as bordas do countdown (ex.: cancelar em 2999ms) determinísticas.
+  vi.useFakeTimers();
 });
 
 afterEach(() => {
@@ -233,12 +237,16 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(3_000);
     });
-    await waitFor(() => expect(hoisted.invokeMock).toHaveBeenCalledTimes(1));
+    expect(hoisted.invokeMock).toHaveBeenCalledTimes(1);
     expect(hoisted.invokeMock).toHaveBeenCalledWith(
       'sso-initiate',
       expect.objectContaining({ body: expect.objectContaining({ provider_id: 'prov-force' }) }),
     );
-    await waitFor(() => expect(hrefStore).toBe('https://idp.acme/done'));
+    // Flush das microtasks de triggerSso (await invoke → set window.location.href).
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(hrefStore).toBe('https://idp.acme/done');
   });
 
   it('cancelar enquanto o invoke já está in-flight: ignora a resposta e não navega', async () => {

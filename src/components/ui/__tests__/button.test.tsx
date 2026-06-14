@@ -25,12 +25,12 @@ describe('Button', () => {
 
   it('renders ghost variant', () => {
     render(<Button variant="ghost">Ghost</Button>);
-    expect(screen.getByRole('button')).toHaveClass('hover:bg-accent');
+    expect(screen.getByRole('button')).toHaveClass('hover:bg-primary/5');
   });
 
   it('renders secondary variant', () => {
     render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-secondary');
+    expect(screen.getByRole('button')).toHaveClass('bg-secondary/50');
   });
 
   it('renders link variant', () => {

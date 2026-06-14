@@ -15,12 +15,12 @@ describe('Badge', () => {
 
   it('renders secondary variant', () => {
     render(<Badge variant="secondary">Secondary</Badge>);
-    expect(screen.getByText('Secondary')).toHaveClass('bg-secondary');
+    expect(screen.getByText('Secondary')).toHaveClass('bg-secondary/50');
   });
 
   it('renders destructive variant', () => {
     render(<Badge variant="destructive">Destructive</Badge>);
-    expect(screen.getByText('Destructive')).toHaveClass('bg-destructive');
+    expect(screen.getByText('Destructive')).toHaveClass('bg-rose-500/10');
   });
 
   it('renders outline variant', () => {
@@ -30,12 +30,12 @@ describe('Badge', () => {
 
   it('renders success variant', () => {
     render(<Badge variant="success">Success</Badge>);
-    expect(screen.getByText('Success')).toHaveClass('text-success');
+    expect(screen.getByText('Success')).toHaveClass('text-emerald-600');
   });
 
   it('renders warning variant', () => {
     render(<Badge variant="warning">Warning</Badge>);
-    expect(screen.getByText('Warning')).toHaveClass('text-warning');
+    expect(screen.getByText('Warning')).toHaveClass('text-amber-600');
   });
 
   it('renders removable badge with X button', () => {
@@ -56,15 +56,16 @@ describe('Badge', () => {
     expect(screen.getByText('Custom')).toHaveClass('custom');
   });
 
-  it('has rounded-full class', () => {
+  it('has rounded-lg class', () => {
     render(<Badge>Rounded</Badge>);
-    expect(screen.getByText('Rounded')).toHaveClass('rounded-full');
+    expect(screen.getByText('Rounded')).toHaveClass('rounded-lg');
   });
 
-  it('has text-xs font-semibold', () => {
+  it('has text-[10px] font-black', () => {
     render(<Badge>Styled</Badge>);
     const el = screen.getByText('Styled');
-    expect(el).toHaveClass('text-xs');
-    expect(el).toHaveClass('font-semibold');
+    expect(el).toHaveClass('text-[10px]');
+    // O variant default sobrescreve o font-bold base por font-black (twMerge).
+    expect(el).toHaveClass('font-black');
   });
 });

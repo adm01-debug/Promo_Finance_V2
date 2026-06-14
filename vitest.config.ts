@@ -13,6 +13,14 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Valores fictícios para que o cliente Supabase inicialize sem lançar
+    // durante os testes (o createClient não realiza chamadas de rede na
+    // construção). Testes que exercitam o backend devem mockar o cliente.
+    env: {
+      VITE_SUPABASE_URL: 'https://test.supabase.co',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
+      VITE_SUPABASE_PROJECT_ID: 'test-project',
+    },
     include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
     exclude: ['node_modules', 'dist', 'e2e'],
     coverage: {

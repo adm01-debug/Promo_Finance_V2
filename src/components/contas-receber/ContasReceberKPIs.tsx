@@ -38,9 +38,11 @@ export function ContasReceberKPIs({
   totalVencidoAnterior,
   onKpiClick,
 }: ContasReceberKPIsProps) {
-  const varReceber = useMemo(() => calcVariation(totalReceber, totalReceberAnterior || (totalReceber * 1.05)), [totalReceber, totalReceberAnterior]);
-  const varRecebido = useMemo(() => calcVariation(totalRecebidoMes, totalRecebidoMesAnterior || (totalRecebidoMes * 0.95)), [totalRecebidoMes, totalRecebidoMesAnterior]);
-  const varVencido = useMemo(() => calcVariation(totalVencido, totalVencidoAnterior || (totalVencido * 1.1)), [totalVencido, totalVencidoAnterior]);
+  // A variação só é exibida quando há dados reais do período anterior — não
+  // sintetizamos um comparativo fictício para não induzir o usuário a erro.
+  const varReceber = useMemo(() => calcVariation(totalReceber, totalReceberAnterior), [totalReceber, totalReceberAnterior]);
+  const varRecebido = useMemo(() => calcVariation(totalRecebidoMes, totalRecebidoMesAnterior), [totalRecebidoMes, totalRecebidoMesAnterior]);
+  const varVencido = useMemo(() => calcVariation(totalVencido, totalVencidoAnterior), [totalVencido, totalVencidoAnterior]);
 
   // Alert Grouping & Severity System
   const [lastNotificationTime, setLastNotificationTime] = useState(0);
@@ -49,7 +51,7 @@ export function ContasReceberKPIs({
   useEffect(() => {
     const now = Date.now();
     if (taxaInadimplencia > 15 && now - lastNotificationTime > COOLDOWN) {
-      toast.error("CRITICAL RISK DETECTED", {
+      toast.error("RISCO CRÍTICO DETECTADO", {
         description: `Taxa de inadimplência em nível crítico: ${taxaInadimplencia.toFixed(1)}%. Ações de cobrança imediata recomendadas.`,
         duration: 10000,
       });
@@ -130,7 +132,7 @@ export function ContasReceberKPIs({
                           : <ArrowDownRight className="h-3 w-3" />
                         }
                         <span>{kpi.variation.text}</span>
-                        <span className="opacity-40">vs prev</span>
+                        <span className="opacity-40">vs mês anterior</span>
                       </div>
                     )}
                   </div>
@@ -162,7 +164,7 @@ export function ContasReceberKPIs({
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Risk Score</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Inadimplência</p>
                       {taxaInadimplencia > 10 && (
                         <motion.div 
                           animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
@@ -186,18 +188,25 @@ export function ContasReceberKPIs({
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-2 rounded-full bg-white/5 overflow-hidden ring-1 ring-white/5">
-                    <motion.div 
+                  <div
+                    role="progressbar"
+                    aria-label="Taxa de inadimplência"
+                    aria-valuenow={Math.round(taxaInadimplencia)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    className="h-2 rounded-full bg-white/5 overflow-hidden ring-1 ring-white/5"
+                  >
+                    <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${taxaInadimplencia}%` }}
                       transition={{ duration: 1.5, ease: "circOut" }}
                       className={cn(
                         "h-full rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)]",
                         taxaInadimplencia > 10 ? "bg-destructive" : taxaInadimplencia > 5 ? "bg-warning" : "bg-success"
-                      )} 
+                      )}
                     />
                   </div>
-                  <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest">Global Default Rate</span>
+                  <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest">Taxa de inadimplência global</span>
                 </div>
               </div>
             </CardContent>
@@ -239,7 +248,7 @@ export function ContasReceberKPIs({
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-warning/70">Vence Hoje</p>
                       <p className="text-xl font-black tabular-nums text-foreground tracking-tight">
-                        {venceHoje} {venceHoje === 1 ? 'título prioritário' : 'títulos prioritários'}
+                        {venceHoje} {venceHoje === 1 ? 'título' : 'títulos'}
                       </p>
                     </div>
                   </div>
@@ -263,9 +272,9 @@ export function ContasReceberKPIs({
                       <CalendarClock className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Vencimento Semanal</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Vence esta Semana</p>
                       <p className="text-xl font-black tabular-nums text-foreground tracking-tight">
-                        {venceSemana} {venceSemana === 1 ? 'pendência estratégica' : 'pendências estratégicas'}
+                        {venceSemana} {venceSemana === 1 ? 'título' : 'títulos'}
                       </p>
                     </div>
                   </div>

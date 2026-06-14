@@ -14,10 +14,10 @@ interface ContasReceberKanbanProps {
 }
 
 const columns = [
-  { id: 'pendente', label: 'Hold / Pending', icon: Clock, color: 'text-warning', bg: 'bg-warning/5', ring: 'ring-warning/20' },
-  { id: 'vencido', label: 'Critical / Overdue', icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/5', ring: 'ring-destructive/20' },
-  { id: 'parcial', label: 'Partial Settle', icon: Wallet, color: 'text-secondary', bg: 'bg-secondary/5', ring: 'ring-secondary/20' },
-  { id: 'pago', label: 'Cleared / Settled', icon: CheckCircle2, color: 'text-success', bg: 'bg-success/5', ring: 'ring-success/20' },
+  { id: 'pendente', label: 'Pendente', icon: Clock, color: 'text-warning', bg: 'bg-warning/5', ring: 'ring-warning/20' },
+  { id: 'vencido', label: 'Vencido', icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/5', ring: 'ring-destructive/20' },
+  { id: 'parcial', label: 'Parcial', icon: Wallet, color: 'text-secondary', bg: 'bg-secondary/5', ring: 'ring-secondary/20' },
+  { id: 'pago', label: 'Pago', icon: CheckCircle2, color: 'text-success', bg: 'bg-success/5', ring: 'ring-success/20' },
 ];
 
 export function ContasReceberKanban({ contas, onSelectConta }: ContasReceberKanbanProps) {
@@ -61,7 +61,7 @@ export function ContasReceberKanban({ contas, onSelectConta }: ContasReceberKanb
                 </div>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-xl font-black tabular-nums tracking-tighter text-foreground">{formatCurrency(total)}</span>
-                  <span className="text-[8px] font-black text-muted-foreground/40 uppercase tracking-widest leading-none">Net Vol</span>
+                  <span className="text-[8px] font-black text-muted-foreground/40 uppercase tracking-widest leading-none">Vol. líquido</span>
                 </div>
               </CardHeader>
             </Card>
@@ -70,7 +70,7 @@ export function ContasReceberKanban({ contas, onSelectConta }: ContasReceberKanb
               <div className="space-y-3 p-1">
                 {items.length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-white/5 p-8 text-center bg-black/10">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/20 italic">No Command Records</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/20 italic">Nenhum título</p>
                   </div>
                 ) : items.map((conta, i) => {
                   const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
@@ -93,7 +93,7 @@ export function ContasReceberKanban({ contas, onSelectConta }: ContasReceberKanb
                           <p className="text-sm font-black tracking-tight text-foreground truncate">{conta.cliente_nome}</p>
                           {overdueDays > 0 && col.id !== 'pago' && (
                             <Badge variant="destructive" className="text-[8px] font-black px-1.5 py-0 rounded-md border-none bg-destructive/20 text-destructive animate-pulse">
-                              {overdueDays}D
+                              {overdueDays}d em atraso
                             </Badge>
                           )}
                         </div>

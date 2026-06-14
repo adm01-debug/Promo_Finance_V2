@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ContasReceberTableRow, ContaReceberWithRelations } from '../ContasReceberTableRow';
 import { Table, TableBody } from '@/components/ui/table';
 
@@ -61,10 +62,13 @@ const renderRow = (conta: Partial<ContaReceberWithRelations> = {}, extraProps = 
     onAplicarDesconto: vi.fn(),
     ...extraProps,
   };
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <Table><TableBody>
-      <ContasReceberTableRow conta={merged} {...defaultHandlers} />
-    </TableBody></Table>
+    <QueryClientProvider client={queryClient}>
+      <Table><TableBody>
+        <ContasReceberTableRow conta={merged} {...defaultHandlers} />
+      </TableBody></Table>
+    </QueryClientProvider>
   );
 };
 
@@ -156,9 +160,11 @@ describe('ContasReceberTableRow', () => {
       // Menos colunas renderizadas
       const cells = container.querySelectorAll('td');
       const withDias = render(
-        <Table><TableBody>
-          <ContasReceberTableRow conta={baseConta} index={0} isSelected={false} onToggleSelect={vi.fn()} onEdit={vi.fn()} onDelete={vi.fn()} onRegistrarRecebimento={vi.fn()} showDiasAtraso />
-        </TableBody></Table>
+        <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+          <Table><TableBody>
+            <ContasReceberTableRow conta={baseConta} index={0} isSelected={false} onToggleSelect={vi.fn()} onEdit={vi.fn()} onDelete={vi.fn()} onRegistrarRecebimento={vi.fn()} showDiasAtraso />
+          </TableBody></Table>
+        </QueryClientProvider>
       ).container.querySelectorAll('td');
       expect(cells.length).toBeLessThan(withDias.length);
     });

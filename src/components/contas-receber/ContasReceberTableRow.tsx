@@ -162,7 +162,7 @@ export function ContasReceberTableRow({
           <div className="flex items-center gap-2">
             {conta.numero_documento && <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-white/5 text-muted-foreground/60 tracking-wider">DOC: {conta.numero_documento}</Badge>}
             {conta.numero_parcela_atual && conta.total_parcelas && (
-              <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-primary/20 bg-primary/5 text-primary tracking-wider">Lote {conta.numero_parcela_atual}/{conta.total_parcelas}</Badge>
+              <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-primary/20 bg-primary/5 text-primary tracking-wider">{conta.numero_parcela_atual}/{conta.total_parcelas}</Badge>
             )}
           </div>
         </div>
@@ -172,18 +172,12 @@ export function ContasReceberTableRow({
         <div className="space-y-1">
           <p className="text-xl font-black tabular-nums tracking-tighter text-white group-hover:scale-105 transition-transform origin-left">{formatCurrency(conta.valor)}</p>
           {conta.valor_desconto && conta.valor_desconto > 0 && (
-            <p className="text-[10px] font-black text-warning uppercase tracking-widest leading-none">Yield Adj: -{formatCurrency(conta.valor_desconto)}</p>
+            <p className="text-[10px] font-black text-warning uppercase tracking-widest leading-none">Desconto: -{formatCurrency(conta.valor_desconto)}</p>
           )}
           {conta.valor_recebido && conta.valor_recebido > 0 && (
             <div className="pt-1.5 max-w-[120px]">
-              <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${percentualRecebido}%` }}
-                  className="h-full bg-success shadow-[0_0_8px_rgba(var(--success),0.5)]" 
-                />
-              </div>
-              <p className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest mt-1">Settle: {formatCurrency(saldo)}</p>
+              <Progress value={percentualRecebido} className="h-1" aria-label="Percentual recebido" />
+              <p className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest mt-1">Saldo: {formatCurrency(saldo)}</p>
             </div>
           )}
         </div>
@@ -200,9 +194,9 @@ export function ContasReceberTableRow({
           <div>
             <p className="text-sm font-black tabular-nums tracking-tight">{formatDate(new Date(conta.data_vencimento))}</p>
             {overdueDays > 0 && conta.status !== 'pago' ? (
-              <p className="text-[10px] font-black text-destructive uppercase tracking-widest mt-0.5">Critical Delay</p>
+              <p className="text-[10px] font-black text-destructive uppercase tracking-widest mt-0.5">Em atraso</p>
             ) : overdueDays < 0 && conta.status !== 'pago' ? (
-              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mt-0.5">Horizon: {getRelativeTime(new Date(conta.data_vencimento))}</p>
+              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mt-0.5">Vence em: {getRelativeTime(new Date(conta.data_vencimento))}</p>
             ) : null}
           </div>
         </div>
@@ -213,15 +207,15 @@ export function ContasReceberTableRow({
           {conta.status !== 'pago' && conta.status !== 'cancelado' ? (
             <div className="flex flex-col items-center">
               <span className={cn(
-                "text-xl font-black tabular-nums tracking-tighter leading-none",
+                "text-xl font-semibold tabular-nums tracking-tighter leading-none",
                 overdueDays > 30 ? "text-destructive" : overdueDays > 0 ? "text-warning" : "text-success"
               )}>
-                {overdueDays > 0 ? overdueDays : overdueDays === 0 ? 'T0' : `${Math.abs(overdueDays)}d`}
+                {overdueDays > 0 ? overdueDays : overdueDays === 0 ? 'Hoje' : `${Math.abs(overdueDays)}d`}
               </span>
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 mt-1">Offset</span>
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 mt-1">Atraso</span>
             </div>
           ) : (
-            <span className="text-[10px] font-black text-muted-foreground/20 tracking-widest uppercase">Cleared</span>
+            <span className="text-[10px] font-black text-muted-foreground/20 tracking-widest uppercase">—</span>
           )}
         </TableCell>
       )}
@@ -240,6 +234,16 @@ export function ContasReceberTableRow({
             {EtapaIcon && etapa && (
               <Badge variant="outline" className={cn("gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider", etapaColors[etapa] || '')}>
                 <EtapaIcon className="h-2 w-2" /> {getEtapaCobrancaLabel(etapa)}
+              </Badge>
+            )}
+            {conta.has_protesto && (
+              <Badge variant="outline" className="gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider bg-destructive/10 text-destructive">
+                <Gavel className="h-2 w-2" /> Protestado
+              </Badge>
+            )}
+            {conta.has_boleto && (
+              <Badge variant="outline" className="gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider bg-primary/10 text-primary">
+                <Banknote className="h-2 w-2" /> Boleto
               </Badge>
             )}
           </div>
@@ -272,19 +276,41 @@ export function ContasReceberTableRow({
 
       <TableCell className="p-6">
         <div className="flex items-center justify-end gap-2">
-          {conta.status !== 'pago' && conta.status !== 'cancelado' && (
-            <TooltipProvider>
+          <TooltipProvider>
+            {onView && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-primary hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    onClick={() => onView(conta)} aria-label="Visualizar">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">Visualizar</TooltipContent>
+              </Tooltip>
+            )}
+            {conta.status !== 'pago' && conta.status !== 'cancelado' && onEnviarCobranca && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-blue-500 hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    onClick={() => onEnviarCobranca(conta)} aria-label="Enviar cobrança">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">Enviar cobrança</TooltipContent>
+              </Tooltip>
+            )}
+            {conta.status !== 'pago' && conta.status !== 'cancelado' && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-success hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
-                    onClick={() => onRegistrarRecebimento(conta)}>
+                    onClick={() => onRegistrarRecebimento(conta)} aria-label="Registrar recebimento">
                     <DollarSign className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">Liquidate Alpha</TooltipContent>
+                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">Registrar recebimento</TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-          )}
+            )}
+          </TooltipProvider>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -293,11 +319,11 @@ export function ContasReceberTableRow({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-2xl border-white/10 p-2 rounded-2xl shadow-2xl min-w-[200px]">
-              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-3 py-2">Entity Operations</DropdownMenuLabel>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onView?.(conta)}><Eye className="h-4 w-4 text-primary" /> Analysis Detail</DropdownMenuItem>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Configuration</DropdownMenuItem>
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-3 py-2">Operações</DropdownMenuLabel>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onView?.(conta)}><Eye className="h-4 w-4 text-primary" /> Ver detalhes</DropdownMenuItem>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Editar</DropdownMenuItem>
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => setHistoryOpen(true)}>
-                <History className="h-4 w-4" /> Audit History
+                <History className="h-4 w-4" /> Histórico de alterações
               </DropdownMenuItem>
               <DuplicateButton 
                 data={conta} 
@@ -310,7 +336,7 @@ export function ContasReceberTableRow({
                 variant="ghost"
                 size="default"
               />
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4 text-blue-400" /> Command Comms</DropdownMenuItem>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4 text-blue-400" /> Enviar cobrança</DropdownMenuItem>
 
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
                 <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => window.location.href = `/boletos?novo=true&receber_id=${conta.id}`}>
@@ -319,16 +345,16 @@ export function ContasReceberTableRow({
               )}
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
                 <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onAplicarDesconto?.(conta)}>
-                  <Tag className="h-4 w-4 text-warning" /> Adjust Yield
+                  <Tag className="h-4 w-4 text-warning" /> Aplicar Desconto
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator className="bg-white/5" />
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-success/20 text-success" onClick={() => onRegistrarRecebimento(conta)} disabled={conta.status === 'pago' || conta.status === 'cancelado'}>
-                <CheckCircle2 className="h-4 w-4" /> Settle Transaction
+                <CheckCircle2 className="h-4 w-4" /> Registrar recebimento
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/5" />
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-destructive/20 text-destructive font-bold" onClick={() => onDelete(conta)}>
-                <Trash2 className="h-4 w-4" /> Purge Record
+                <Trash2 className="h-4 w-4" /> Excluir
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
