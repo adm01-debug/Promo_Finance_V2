@@ -209,7 +209,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     // fetchProfile / fetchRoleForEmpresa are stable closures over setters
     // that are themselves stable; intentionally empty deps.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Sincroniza com mudanças de empresa disparadas pelo EmpresaSwitcher / EmpresaGuard
