@@ -41,7 +41,7 @@ export default defineConfig({
       provider: 'v8',
       // 'html' gera uma página por arquivo (1100+ arquivos) — lento e pesado
       // em memória. Mantemos apenas text/json/lcov para o gate e tooling.
-      reporter: ['text', 'json', 'lcov'],
+      reporter: ['text', 'json', 'json-summary', 'lcov'],
       reportsDirectory: './coverage',
       exclude: [
         'node_modules/',
