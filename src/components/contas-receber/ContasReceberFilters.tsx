@@ -63,7 +63,7 @@ export function ContasReceberFilters({
     <StandardFilterSection
       searchTerm={searchTerm}
       onSearchChange={onSearchChange}
-      searchPlaceholder="Search within receivables (Client, description, reference...)"
+      searchPlaceholder="Buscar recebíveis (cliente, descrição, referência...)"
       badge="Governança"
     >
       <div className="flex items-center gap-2 flex-1 min-w-[140px]">
@@ -73,7 +73,7 @@ export function ContasReceberFilters({
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
-            <SelectItem value="all">Global Status</SelectItem>
+            <SelectItem value="all">Todos status</SelectItem>
             <SelectItem value="pendente">Pendente</SelectItem>
             <SelectItem value="vencido">Vencido</SelectItem>
             <SelectItem value="pago">Pago</SelectItem>
@@ -91,7 +91,7 @@ export function ContasReceberFilters({
               <SelectValue placeholder="Empresa" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
-              <SelectItem value="all">Enterprise Filter</SelectItem>
+              <SelectItem value="all">Todas empresas</SelectItem>
               {empresas.map(e => (
                 <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>
               ))}
@@ -108,7 +108,7 @@ export function ContasReceberFilters({
               <SelectValue placeholder="Forma" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
-              <SelectItem value="all">Payment Methods</SelectItem>
+              <SelectItem value="all">Todas formas</SelectItem>
               <SelectItem value="boleto">Boleto</SelectItem>
               <SelectItem value="pix">PIX</SelectItem>
               <SelectItem value="cartao">Cartão</SelectItem>
@@ -143,7 +143,7 @@ export function ContasReceberFilters({
             <SelectValue placeholder="Centro Custo" />
           </SelectTrigger>
           <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
-            <SelectItem value="all">Cost Centers</SelectItem>
+            <SelectItem value="all">Todos centros</SelectItem>
             {centrosCusto.map(cc => (
               <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
             ))}

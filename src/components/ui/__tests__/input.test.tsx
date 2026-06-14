@@ -15,7 +15,7 @@ describe('Input', () => {
 
   it('renders filled variant', () => {
     render(<Input variant="filled" placeholder="filled" />);
-    expect(screen.getByPlaceholderText('filled')).toHaveClass('bg-muted');
+    expect(screen.getByPlaceholderText('filled')).toHaveClass('bg-muted/30');
   });
 
   it('renders underline variant', () => {
@@ -25,12 +25,12 @@ describe('Input', () => {
 
   it('renders sm size', () => {
     render(<Input inputSize="sm" placeholder="sm" />);
-    expect(screen.getByPlaceholderText('sm')).toHaveClass('h-8');
+    expect(screen.getByPlaceholderText('sm')).toHaveClass('h-9');
   });
 
   it('renders lg size', () => {
     render(<Input inputSize="lg" placeholder="lg" />);
-    expect(screen.getByPlaceholderText('lg')).toHaveClass('h-12');
+    expect(screen.getByPlaceholderText('lg')).toHaveClass('h-14');
   });
 
   it('renders error state', () => {

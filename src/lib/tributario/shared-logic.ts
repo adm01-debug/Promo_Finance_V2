@@ -103,7 +103,12 @@ export function calcularFolha12m(hist: FolhaMes[], ano: number, mes: number): nu
   return u12.length < 12 && u12.length > 0 ? (soma / u12.length) * 12 : soma;
 }
 
-export function simularSimples(p: ParametrosSimulacao, ano: number, mes: number): ResultadoCenario {
+export function simularSimples(
+  p: ParametrosSimulacao,
+  ano: number,
+  mes: number,
+  forcarAnexo?: AnexoSimples,
+): ResultadoCenario {
   const obs: string[] = [];
   if (p.faturamentoAnual > LIMITE_SIMPLES) {
     return {
@@ -116,14 +121,21 @@ export function simularSimples(p: ParametrosSimulacao, ano: number, mes: number)
   let rbt12 = p.faturamentoAnual;
   if (p.faturamentoMensal?.length) {
     const r = calcularRBT12(p.faturamentoMensal, ano, mes);
-    if (r > 0) rbt12 = r;
+    if (r > 0) {
+      rbt12 = r;
+    } else {
+      obs.push('RBT12 estimado a partir do faturamento anual informado (histórico mensal sem meses anteriores ao mês de referência).');
+    }
   }
   const folha12m = p.folhaMensal?.length
     ? calcularFolha12m(p.folhaMensal, ano, mes)
     : (p.folhaAnual || 0);
   const fatorR = rbt12 > 0 ? folha12m / rbt12 : 0;
   let anexo: AnexoSimples = 'I';
-  if (p.percentualServicos > 50) {
+  if (forcarAnexo) {
+    anexo = forcarAnexo;
+    obs.push(`Anexo forçado manualmente para simulação: Anexo ${anexo}.`);
+  } else if (p.percentualServicos > 50) {
     anexo = fatorR >= 0.28 ? 'III' : 'V';
     obs.push(`Fator R = ${(fatorR * 100).toFixed(2)}% → Anexo ${anexo}.`);
   } else {
@@ -227,10 +239,19 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const iss = rs * aliqISS;
   const cpp = (p.folhaAnual || 0) * 0.20;
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
+  const observacoes = [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
+  if (lucro <= 240000) {
+    observacoes.push('Sem adicional de IRPJ: lucro anual ≤ R$ 240k.');
+  } else {
+    observacoes.push('Adicional de IRPJ de 10% sobre o lucro excedente a R$ 240k.');
+  }
+  if (p.margemLucro < 8) {
+    observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
+  }
   return {
     regime: 'lucro_real', nome: 'Lucro Real', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
-    observacoes: [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'],
+    observacoes,
   };
 }

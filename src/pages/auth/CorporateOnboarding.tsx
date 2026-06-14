@@ -65,16 +65,30 @@ export default function CorporateOnboarding() {
     });
   }, [autoRedirectProvider, redirecting, ssoError, userCancelled, submittedEmail, domain, logEvent]);
 
+  // Dispara o SSO de forma determinística: um ÚNICO timer de prazo
+  // (countdown * 1000ms) agendado quando `redirecting` é definido, em vez de
+  // re-agendar um setTimeout a cada decremento (cadeia frágil que podia não
+  // completar). Um setInterval separado cuida apenas do decremento visual.
+  // O efeito depende somente de `redirecting`, capturando o countdown inicial.
   useEffect(() => {
     if (!redirecting) return;
+    // Fluxo manual: countdown já em 0 → dispara imediatamente (síncrono).
     if (countdown <= 0) {
-      if (cancelRef.current) return;
-      void triggerSso(redirecting);
+      if (!cancelRef.current) void triggerSso(redirecting);
       return;
     }
-    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [redirecting, countdown]);
+    const deadline = setTimeout(() => {
+      if (!cancelRef.current) void triggerSso(redirecting);
+    }, countdown * 1000);
+    const interval = setInterval(() => {
+      setCountdown((c) => (c > 0 ? c - 1 : 0));
+    }, 1000);
+    return () => {
+      clearTimeout(deadline);
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [redirecting]);
 
   const triggerSso = async (p: ResolvedSsoProvider) => {
     try {
@@ -112,11 +126,14 @@ export default function CorporateOnboarding() {
     }
   };
 
-  const handleManualSso = async (p: ResolvedSsoProvider) => {
+  const handleManualSso = (p: ResolvedSsoProvider) => {
     setSsoError(null);
     setUserCancelled(false);
     cancelRef.current = false;
     setRedirecting(p);
+    // countdown 0 mostra "Conectando…" imediatamente e faz o efeito de
+    // countdown disparar o triggerSso uma única vez. Não chamamos triggerSso
+    // aqui para evitar dupla invocação do sso-initiate.
     setCountdown(0);
     logEvent({
       eventType: 'manual_provider_selected',
@@ -124,7 +141,6 @@ export default function CorporateOnboarding() {
       providerId: p.id,
       context: { domain, provider_nome: p.nome, provider_tipo: p.tipo },
     });
-    await triggerSso(p);
   };
 
   const handleCancelRedirect = () => {

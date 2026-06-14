@@ -15,10 +15,10 @@ export function simularSimples(
   params: ParametrosSimulacao,
   opcoes: OpcoesSimples,
 ): ResultadoCenario {
-  const result = simularSimplesShared(params, opcoes.anoReferencia, opcoes.mesReferencia);
-  
-  // Se forçado um anexo, poderíamos re-simular aqui ou ajustar o parâmetro se o shared-logic suportasse
-  // Por enquanto o shared-logic já cobre a maioria dos casos.
-  
-  return result;
+  return simularSimplesShared(
+    params,
+    opcoes.anoReferencia,
+    opcoes.mesReferencia,
+    opcoes.forcarAnexo,
+  );
 }

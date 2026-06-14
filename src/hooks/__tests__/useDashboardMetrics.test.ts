@@ -27,6 +27,25 @@ vi.mock('@/hooks/useAprovacoesPendentesCount', () => ({
   useAprovacoesPendentesCount: () => mockAprovacoes(),
 }));
 
+// Dependências auxiliares que tocam Supabase/react-query — mockadas para
+// isolar a lógica de cálculo dos KPIs. currentEmpresaId nulo faz o filtro
+// "all" incluir todas as linhas (ver useDashboardMetrics linhas 46/55/63).
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ currentEmpresaId: null }),
+}));
+
+vi.mock('@/hooks/useDivergenciasConciliacao', () => ({
+  useDivergenciasConciliacao: () => ({ divergencias: [] }),
+}));
+
+vi.mock('@/hooks/useBoletos', () => ({
+  useBoletos: () => ({ stats: {}, isLoading: false }),
+}));
+
+vi.mock('@/hooks/useCobrancas', () => ({
+  useCobrancaKPIs: () => ({ data: {}, isLoading: false }),
+}));
+
 import { useDashboardMetrics } from '../useDashboardMetrics';
 
 const FILTERS_ALL = { empresaFilter: 'all', centroCustoFilter: 'all', periodoFluxo: '30' };
