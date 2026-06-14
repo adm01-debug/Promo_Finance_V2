@@ -34,7 +34,9 @@ export default defineConfig({
     exclude: ['node_modules', 'dist', 'e2e'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
+      // 'html' gera uma página por arquivo (1100+ arquivos) — lento e pesado
+      // em memória. Mantemos apenas text/json/lcov para o gate e tooling.
+      reporter: ['text', 'json', 'lcov'],
       reportsDirectory: './coverage',
       exclude: [
         'node_modules/',
@@ -55,9 +57,10 @@ export default defineConfig({
     },
     testTimeout: 10000,
     hookTimeout: 10000,
-    reporters: ['default', 'html'],
-    outputFile: {
-      html: './coverage/test-report.html',
-    },
+    // O reporter 'html' acumulava todos os resultados + grafo de módulos de
+    // ~1185 testes na memória do processo principal do vitest, estourando a
+    // heap em CI (FATAL ERROR: Reached heap limit) e travando o teardown
+    // localmente. Usamos apenas o reporter padrão.
+    reporters: ['default'],
   },
 });
