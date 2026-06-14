@@ -21,6 +21,11 @@ export default defineConfig({
       forks: { minForks: 1, maxForks: 2 },
     },
     isolate: true,
+    // Workers escrevem o console direto no stdout em vez de o processo
+    // coordenador bufferizar/agrupar os logs de ~1185 testes — reduz bastante
+    // a memória do coordenador (que, junto ao reporter HTML, causava o
+    // "Reached heap limit" em CI).
+    disableConsoleIntercept: true,
     setupFiles: ['./src/test/setup.ts'],
     // Valores fictícios para que o cliente Supabase inicialize sem lançar
     // durante os testes (o createClient não realiza chamadas de rede na

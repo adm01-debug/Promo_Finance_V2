@@ -55,6 +55,11 @@ jobs:
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # O app é Vite: o dev server (npm run dev) só expõe variáveis com
+          # prefixo VITE_. Sem elas, src/integrations/supabase/client.ts lança
+          # no carregamento e o app nem inicializa para o Playwright.
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           VISUAL_REGRESSION: true
           CI: true
 
