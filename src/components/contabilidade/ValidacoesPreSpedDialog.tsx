@@ -67,8 +67,12 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
   const [isCopied, setIsCopied] = useState(false);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const erros = arquivo?.validacoes?.erros ?? [];
-  const avisos = arquivo?.validacoes?.avisos ?? [];
+  // Memoizados para manter referência estável entre renders. Sem isso, o `?? []`
+  // criava novos arrays a cada render → errosFiltrados/avisos/agrupados (useMemo)
+  // recalculavam → o useEffect [agrupados] chamava setExpandedCats a cada render,
+  // gerando loop infinito ("Maximum update depth exceeded").
+  const erros = useMemo(() => arquivo?.validacoes?.erros ?? [], [arquivo]);
+  const avisos = useMemo(() => arquivo?.validacoes?.avisos ?? [], [arquivo]);
   const isRejeitado = arquivo?.status === 'rejeitado';
   const bloqueado = erros.length > 0 || isRejeitado;
   const hashCurto = arquivo?.hash_sha256 ? `${arquivo.hash_sha256.slice(0, 12)}…` : '—';
