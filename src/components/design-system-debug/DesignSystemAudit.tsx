@@ -146,9 +146,9 @@ export const DesignSystemAudit = () => {
         {/* Main Tabs */}
         <Tabs defaultValue="typography" className="w-full space-y-8">
           <TabsList className="bg-card/5 border border-white/5 p-1 rounded-2xl w-full md:w-fit">
-            <TabsTrigger value="typography" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Typography</TabsTrigger>
-            <TabsTrigger value="colors" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Color Palette</TabsTrigger>
-            <TabsTrigger value="spacing" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Grid & Spacing</TabsTrigger>
+            <TabsTrigger value="typography" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-card-foreground font-bold uppercase text-[10px] tracking-widest transition-all">Typography</TabsTrigger>
+            <TabsTrigger value="colors" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-card-foreground font-bold uppercase text-[10px] tracking-widest transition-all">Color Palette</TabsTrigger>
+            <TabsTrigger value="spacing" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-card-foreground font-bold uppercase text-[10px] tracking-widest transition-all">Grid & Spacing</TabsTrigger>
           </TabsList>
 
           <TabsContent value="typography" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -262,7 +262,7 @@ export const DesignSystemAudit = () => {
                     }
                   );
                 }}
-                className="rounded-2xl px-8 h-12 bg-card text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-200"
+                className="rounded-2xl px-8 h-12 bg-card text-card-foreground font-black uppercase text-[10px] tracking-widest hover:bg-zinc-200"
               >
                 Fix Inconsistencies
               </Button>

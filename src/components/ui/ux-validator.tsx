@@ -366,7 +366,7 @@ export const VisualValidator = () => {
                                 <Layers className="h-8 w-8 text-foreground/10" />
                               )}
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <label className="cursor-pointer bg-card text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
+                                <label className="cursor-pointer bg-card text-card-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
                                   Upload Ref
                                   <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                                 </label>
@@ -387,7 +387,7 @@ export const VisualValidator = () => {
                                 <Camera className="h-8 w-8 text-foreground/10" />
                               )}
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <Button size="sm" onClick={handleCapture} disabled={isProcessing} className="bg-card text-black hover:bg-card/90">
+                                <Button size="sm" onClick={handleCapture} disabled={isProcessing} className="bg-card text-card-foreground hover:bg-card/90">
                                   {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Capturar Agora"}
                                 </Button>
                               </div>
@@ -657,7 +657,7 @@ export const VisualValidator = () => {
                               runValidationRoadmap().then(() => setShowReport(true));
                             }}
                             disabled={isProcessing}
-                            className="bg-card text-black text-xs font-black px-8 py-5 rounded-xl hover:bg-card/90 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95"
+                            className="bg-card text-card-foreground text-xs font-black px-8 py-5 rounded-xl hover:bg-card/90 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95"
                           >
                             {isProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Zap className="h-4 w-4 mr-2" />}
                             EXECUTAR ROTEIRO COMPLETO
@@ -843,7 +843,7 @@ export const VisualValidator = () => {
               </ScrollArea>
 
               <div className="flex gap-4">
-                <Button className="flex-1 bg-card text-black font-black uppercase tracking-widest h-12 rounded-xl hover:bg-zinc-200">
+                <Button className="flex-1 bg-card text-card-foreground font-black uppercase tracking-widest h-12 rounded-xl hover:bg-zinc-200">
                   BAIXAR CERTIFICADO DE QUALIDADE
                 </Button>
                 <Button variant="outline" className="flex-1 border-border bg-transparent text-foreground font-black uppercase tracking-widest h-12 rounded-xl hover:bg-card/5" onClick={() => window.location.href = '/design-system-debug'}>
@@ -909,7 +909,7 @@ const DeviceToggle = ({ icon: Icon, label, active, onClick }: any) => (
     onClick={onClick}
     className={cn(
       "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-      active ? "bg-card text-black" : "text-foreground/40 hover:bg-card/5"
+      active ? "bg-card text-card-foreground" : "text-foreground/40 hover:bg-card/5"
     )}
   >
     <Icon className="h-4 w-4" /> {label}
