@@ -34,7 +34,7 @@ import { useTranslation } from 'react-i18next';
 import { useAlertas } from '@/hooks/useAlertas';
 import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
-import { EmpresaSwitcher } from './EmpresaSwitcher';
+import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface HeaderProps {
