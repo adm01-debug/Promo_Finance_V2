@@ -31,7 +31,7 @@ async function loginAs(page: Page, email: string, password: string) {
   await expect(page.locator('#login-email')).toBeVisible({ timeout: 15_000 });
   await page.locator('#login-email').fill(email);
   await page.locator('#login-password').fill(password);
-  await page.getByRole('button', { name: /Acessar Plataforma/i }).click();
+  await page.locator('#login-password').press('Enter');
   await expect(page).not.toHaveURL(/\/auth/, { timeout: 20_000 });
 }
 
