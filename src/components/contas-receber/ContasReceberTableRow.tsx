@@ -125,7 +125,7 @@ export function ContasReceberTableRow({
       {...animationProps} 
       className={cn(
         "group transition-all duration-500 border-white/5 relative overflow-hidden", 
-        isSelected ? "bg-primary/10 shadow-inner" : "hover:bg-white/[0.04]"
+        isSelected ? "bg-primary/10 shadow-inner" : "hover:bg-card/[0.04]"
       )}
     >
       <TableCell className="p-6 text-center">
@@ -138,7 +138,7 @@ export function ContasReceberTableRow({
       
       <TableCell className="p-6">
         <div className="flex items-center gap-4">
-          <div className="h-14 w-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center relative shadow-2xl transition-all group-hover:scale-110 duration-700 group-hover:rotate-3 group-hover:border-primary/30">
+          <div className="h-14 w-14 rounded-2xl bg-card/[0.03] border border-white/10 flex items-center justify-center relative shadow-2xl transition-all group-hover:scale-110 duration-700 group-hover:rotate-3 group-hover:border-primary/30">
             <Building2 className="h-7 w-7 text-primary/40 group-hover:text-primary transition-colors" />
             {conta.has_protesto && (
               <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive flex items-center justify-center shadow-lg ring-2 ring-background">
@@ -160,7 +160,7 @@ export function ContasReceberTableRow({
             <span className="text-sm font-semibold tracking-tight text-foreground truncate max-w-[200px] leading-none">{conta.descricao}</span>
           </div>
           <div className="flex items-center gap-2">
-            {conta.numero_documento && <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-white/5 text-muted-foreground/60 tracking-wider">DOC: {conta.numero_documento}</Badge>}
+            {conta.numero_documento && <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-card/5 text-muted-foreground/60 tracking-wider">DOC: {conta.numero_documento}</Badge>}
             {conta.numero_parcela_atual && conta.total_parcelas && (
               <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-primary/20 bg-primary/5 text-primary tracking-wider">{conta.numero_parcela_atual}/{conta.total_parcelas}</Badge>
             )}
@@ -187,7 +187,7 @@ export function ContasReceberTableRow({
         <div className="flex items-center gap-3">
           <div className={cn(
             "h-12 w-12 rounded-2xl flex items-center justify-center border transition-all duration-700 shadow-2xl group-hover:scale-105",
-            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-white/[0.03] border-white/10 text-white/20"
+            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-card/[0.03] border-white/10 text-white/20"
           )}>
             <Calendar className="h-5 w-5" />
           </div>
@@ -280,7 +280,7 @@ export function ContasReceberTableRow({
             {onView && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-primary hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-primary hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
                     onClick={() => onView(conta)} aria-label="Visualizar">
                     <Eye className="h-4 w-4" />
                   </Button>
@@ -291,7 +291,7 @@ export function ContasReceberTableRow({
             {conta.status !== 'pago' && conta.status !== 'cancelado' && onEnviarCobranca && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-blue-500 hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-blue-500 hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
                     onClick={() => onEnviarCobranca(conta)} aria-label="Enviar cobrança">
                     <Send className="h-4 w-4" />
                   </Button>
@@ -302,7 +302,7 @@ export function ContasReceberTableRow({
             {conta.status !== 'pago' && conta.status !== 'cancelado' && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-success hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-success hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
                     onClick={() => onRegistrarRecebimento(conta)} aria-label="Registrar recebimento">
                     <DollarSign className="h-4 w-4" />
                   </Button>
@@ -314,15 +314,15 @@ export function ContasReceberTableRow({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100">
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-card/10 transition-all opacity-0 group-hover:opacity-100">
                 <MoreHorizontal className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-2xl border-white/10 p-2 rounded-2xl shadow-2xl min-w-[200px]">
               <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-3 py-2">Operações</DropdownMenuLabel>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onView?.(conta)}><Eye className="h-4 w-4 text-primary" /> Ver detalhes</DropdownMenuItem>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Editar</DropdownMenuItem>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => setHistoryOpen(true)}>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onView?.(conta)}><Eye className="h-4 w-4 text-primary" /> Ver detalhes</DropdownMenuItem>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Editar</DropdownMenuItem>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => setHistoryOpen(true)}>
                 <History className="h-4 w-4" /> Histórico de alterações
               </DropdownMenuItem>
               <DuplicateButton 
@@ -332,27 +332,27 @@ export function ContasReceberTableRow({
                   toast.success('Registro clonado. Revise os dados e salve.');
                 }}
                 label="Analisar Duplicação"
-                className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm gap-3 rounded-xl focus:bg-white/10"
+                className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm gap-3 rounded-xl focus:bg-card/10"
                 variant="ghost"
                 size="default"
               />
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4 text-blue-400" /> Enviar cobrança</DropdownMenuItem>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4 text-blue-400" /> Enviar cobrança</DropdownMenuItem>
 
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
-                <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => window.location.href = `/boletos?novo=true&receber_id=${conta.id}`}>
+                <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => window.location.href = `/boletos?novo=true&receber_id=${conta.id}`}>
                   <Banknote className="h-4 w-4 text-primary" /> Gerar Boleto
                 </DropdownMenuItem>
               )}
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
-                <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onAplicarDesconto?.(conta)}>
+                <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onAplicarDesconto?.(conta)}>
                   <Tag className="h-4 w-4 text-warning" /> Aplicar Desconto
                 </DropdownMenuItem>
               )}
-              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuSeparator className="bg-card/5" />
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-success/20 text-success" onClick={() => onRegistrarRecebimento(conta)} disabled={conta.status === 'pago' || conta.status === 'cancelado'}>
                 <CheckCircle2 className="h-4 w-4" /> Registrar recebimento
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuSeparator className="bg-card/5" />
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-destructive/20 text-destructive font-bold" onClick={() => onDelete(conta)}>
                 <Trash2 className="h-4 w-4" /> Excluir
               </DropdownMenuItem>

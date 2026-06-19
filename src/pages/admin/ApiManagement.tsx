@@ -102,7 +102,7 @@ export default function ApiManagement() {
             gradientTo="to-indigo-500"
           >
             <div className="flex items-center gap-3">
-              <Button variant="outline" className="bg-white/5 border-white/10 text-white gap-2">
+              <Button variant="outline" className="bg-card/5 border-white/10 text-white gap-2">
                 <Book className="h-4 w-4" />
                 Documentação API
               </Button>
@@ -115,7 +115,7 @@ export default function ApiManagement() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-white">Suas Chaves de API</CardTitle>
                   <CardDescription>
@@ -140,9 +140,9 @@ export default function ApiManagement() {
                         <TableRow><TableCell colSpan={5} className="text-center py-12 text-white/20">Nenhuma chave de API gerada.</TableCell></TableRow>
                       ) : (
                         apiKeys.map((key) => (
-                          <TableRow key={key.id} className="border-white/5 hover:bg-white/5 transition-colors">
+                          <TableRow key={key.id} className="border-white/5 hover:bg-card/5 transition-colors">
                             <TableCell className="font-bold text-white">{key.name}</TableCell>
-                            <TableCell><code className="bg-white/10 px-2 py-0.5 rounded text-xs text-primary">{key.key_prefix}...</code></TableCell>
+                            <TableCell><code className="bg-card/10 px-2 py-0.5 rounded text-xs text-primary">{key.key_prefix}...</code></TableCell>
                             <TableCell className="text-white/60 text-xs">
                               {key.last_used_at ? format(new Date(key.last_used_at), 'dd/MM/yy HH:mm') : 'Nunca usada'}
                             </TableCell>
@@ -167,7 +167,7 @@ export default function ApiManagement() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-white">Configuração de Webhooks</CardTitle>
                   <CardDescription>
@@ -202,7 +202,7 @@ export default function ApiManagement() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-white">Quick Start</CardTitle>
                 </CardHeader>
@@ -244,7 +244,7 @@ export default function ApiManagement() {
                   value={newKeyName} 
                   onChange={(e) => setNewKeyName(e.target.value)}
                   placeholder="Ex: Integração ERP"
-                  className="bg-white/5 border-white/10"
+                  className="bg-card/5 border-white/10"
                 />
               </div>
 

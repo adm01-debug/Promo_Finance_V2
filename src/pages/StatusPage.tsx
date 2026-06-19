@@ -102,14 +102,14 @@ export default function StatusPage() {
 
         {/* Uptime Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+          <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
             <CardContent className="pt-6">
               <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">Uptime (90 dias)</p>
               <div className="text-3xl font-black text-primary">{metrics?.uptime90d}%</div>
-              <Progress value={99.98} className="h-1 mt-4 bg-white/10" />
+              <Progress value={99.98} className="h-1 mt-4 bg-card/10" />
             </CardContent>
           </Card>
-          <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+          <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
             <CardContent className="pt-6">
               <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">Latência Média</p>
               <div className="text-3xl font-black text-white">{metrics?.latencyMs}ms</div>
@@ -118,7 +118,7 @@ export default function StatusPage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+          <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
             <CardContent className="pt-6">
               <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">Incidentes (24h)</p>
               <div className="text-3xl font-black text-white">{metrics?.incidents24h}</div>
@@ -128,8 +128,8 @@ export default function StatusPage() {
         </div>
 
         {/* Services Status */}
-        <Card className="bg-white/5 border-white/10 backdrop-blur-xl mb-12 overflow-hidden">
-          <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+        <Card className="bg-card/5 border-white/10 backdrop-blur-xl mb-12 overflow-hidden">
+          <div className="p-6 border-b border-white/10 flex justify-between items-center bg-card/5">
             <h3 className="font-bold text-lg flex items-center gap-2">
               <Globe className="h-5 w-5 text-primary" />
               Status por Serviço
@@ -139,7 +139,7 @@ export default function StatusPage() {
           <CardContent className="p-0">
             <div className="divide-y divide-white/5">
               {dynamicServices.map((service) => (
-                <div key={service.id} className="p-6 flex justify-between items-center hover:bg-white/[0.02] transition-colors">
+                <div key={service.id} className="p-6 flex justify-between items-center hover:bg-card/[0.02] transition-colors">
                   <span className="font-medium text-white/80">{service.name}</span>
                   <div className="flex items-center gap-3">
                     <Badge className={getStatusColor(service.status)}>

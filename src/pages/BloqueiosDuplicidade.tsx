@@ -234,7 +234,7 @@ export default function BloqueiosDuplicidade() {
           <div className="flex flex-wrap items-center gap-3">
             <Button 
               variant="outline" 
-              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-white/[0.02] transition-all"
+              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-card/[0.02] transition-all"
               onClick={exportCSV}
               disabled={!bloqueios?.length}
             >
@@ -242,7 +242,7 @@ export default function BloqueiosDuplicidade() {
             </Button>
             <Button 
               variant="outline" 
-              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-white/[0.02] transition-all"
+              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-card/[0.02] transition-all"
               onClick={exportPDF}
               disabled={!bloqueios?.length}
             >
@@ -276,7 +276,7 @@ export default function BloqueiosDuplicidade() {
              </div>
           </Card>
 
-          <Card className="p-8 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+          <Card className="p-8 border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
                <ShieldAlert className="h-16 w-16 text-white" />
              </div>
@@ -287,7 +287,7 @@ export default function BloqueiosDuplicidade() {
              </div>
           </Card>
 
-          <Card className="p-8 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+          <Card className="p-8 border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
                <User className="h-16 w-16 text-white" />
              </div>
@@ -302,13 +302,13 @@ export default function BloqueiosDuplicidade() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="p-6 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem]">
+          <Card className="p-6 border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem]">
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <div className="relative group md:col-span-1.5">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input 
                   placeholder="Fornecedor..." 
-                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
+                  className="pl-10 h-14 bg-card/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.fornecedor}
                   onChange={(e) => setFilters(prev => ({ ...prev, fornecedor: e.target.value }))}
                 />
@@ -317,7 +317,7 @@ export default function BloqueiosDuplicidade() {
               <div className="relative group">
                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <select 
-                  className="w-full pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium appearance-none text-sm"
+                  className="w-full pl-10 h-14 bg-card/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium appearance-none text-sm"
                   value={filters.empresa_id}
                   onChange={(e) => setFilters(prev => ({ ...prev, empresa_id: e.target.value }))}
                 >
@@ -332,7 +332,7 @@ export default function BloqueiosDuplicidade() {
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input 
                   placeholder="Competência (MM/AAAA)..." 
-                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
+                  className="pl-10 h-14 bg-card/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.competencia}
                   onChange={(e) => setFilters(prev => ({ ...prev, competencia: e.target.value }))}
                 />
@@ -342,7 +342,7 @@ export default function BloqueiosDuplicidade() {
                 <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input 
                   placeholder="Documento..." 
-                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
+                  className="pl-10 h-14 bg-card/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.documento}
                   onChange={(e) => setFilters(prev => ({ ...prev, documento: e.target.value }))}
                 />
@@ -352,7 +352,7 @@ export default function BloqueiosDuplicidade() {
                 <Badge className="absolute left-3 top-1/2 -translate-y-1/2 text-[8px] bg-primary/20 text-primary border-none">R$</Badge>
                 <Input 
                   placeholder="Valor..." 
-                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
+                  className="pl-10 h-14 bg-card/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.valor}
                   onChange={(e) => setFilters(prev => ({ ...prev, valor: e.target.value }))}
                 />
@@ -361,7 +361,7 @@ export default function BloqueiosDuplicidade() {
               <div className="flex gap-2">
                 <Button 
                   variant="secondary" 
-                  className="h-14 flex-1 rounded-2xl font-bold bg-white/5 hover:bg-white/10 border border-white/5 transition-all"
+                  className="h-14 flex-1 rounded-2xl font-bold bg-card/5 hover:bg-card/10 border border-white/5 transition-all"
                   onClick={() => setFilters({ fornecedor: "", documento: "", valor: "", periodo: "all", empresa_id: "all", competencia: "" })}
                 >
                   Limpar
@@ -380,10 +380,10 @@ export default function BloqueiosDuplicidade() {
 
 
         <motion.div variants={itemVariants}>
-          <Card className="border border-white/10 bg-white/[0.01] backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden">
+          <Card className="border border-white/10 bg-card/[0.01] backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="hover:bg-transparent border-b border-white/5 bg-white/[0.02]">
+              <TableRow className="hover:bg-transparent border-b border-white/5 bg-card/[0.02]">
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Evento / Timestamp</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Agente Responsável</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Análise de Bloqueio</TableHead>
@@ -414,7 +414,7 @@ export default function BloqueiosDuplicidade() {
                 </TableRow>
               ) : (
                 bloqueios?.map((b) => (
-                  <TableRow key={b.id} className="hover:bg-white/[0.03] transition-colors group">
+                  <TableRow key={b.id} className="hover:bg-card/[0.03] transition-colors group">
                     <TableCell className="p-6">
                       <div className="flex flex-col">
                         <span className="font-bold text-sm text-white/90">
@@ -433,7 +433,7 @@ export default function BloqueiosDuplicidade() {
                         </div>
                         <div className="flex flex-col">
                           <span className="font-bold text-sm">{(b as any).perfil?.display_name || "Sistema Externo"}</span>
-                          <Badge variant="outline" className="text-[8px] h-4 w-fit px-1 uppercase tracking-tighter bg-white/5 border-none">
+                          <Badge variant="outline" className="text-[8px] h-4 w-fit px-1 uppercase tracking-tighter bg-card/5 border-none">
                             Origin: {b.tabela.replace('_', ' ')}
                           </Badge>
                         </div>
@@ -465,7 +465,7 @@ export default function BloqueiosDuplicidade() {
                     <TableCell className="p-6">
                       <div className="flex flex-wrap gap-2 max-w-[300px]">
                         {Object.entries(b.campos_conflitantes as Record<string, any>).map(([key, val]) => (
-                          <div key={key} className="flex flex-col p-2 bg-white/5 rounded-lg min-w-[80px]">
+                          <div key={key} className="flex flex-col p-2 bg-card/5 rounded-lg min-w-[80px]">
                             <span className="text-[9px] uppercase font-black text-muted-foreground/60">{key}</span>
                             <span className="text-[11px] font-bold truncate">
                               {typeof val === 'number' ? formatCurrency(val) : String(val)}
@@ -493,7 +493,7 @@ export default function BloqueiosDuplicidade() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="rounded-lg h-10 w-10 p-0 hover:bg-white/10 group-hover:text-primary transition-all"
+                        className="rounded-lg h-10 w-10 p-0 hover:bg-card/10 group-hover:text-primary transition-all"
                         onClick={() => {
                           setSelectedBlock(b);
                           setIsDetailsOpen(true);
@@ -557,11 +557,11 @@ export default function BloqueiosDuplicidade() {
 
             <div className="grid gap-6 py-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+                <div className="p-4 rounded-2xl bg-card/[0.03] border border-white/5 space-y-1">
                   <span className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">ID do Evento</span>
                   <p className="text-xs font-mono truncate">{selectedBlock?.id}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+                <div className="p-4 rounded-2xl bg-card/[0.03] border border-white/5 space-y-1">
                   <span className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">Tipo de Bloqueio</span>
                   <Badge className="bg-destructive/20 text-destructive border-none text-[10px] uppercase font-black">
                     {selectedBlock?.match_type || 'EXACT MATCH'}
@@ -578,7 +578,7 @@ export default function BloqueiosDuplicidade() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="h-8 text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-white/5"
+                      className="h-8 text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-card/5"
                       onClick={() => {
                         navigator.clipboard.writeText(selectedBlock.dados_tentativa.idempotency_key);
                         toast.success("Chave de idempotência copiada!");

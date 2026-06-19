@@ -419,7 +419,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
         </div>
       </CardHeader>
       <CardContent className="p-8 pt-2 relative z-10 space-y-8">
-        <div className="flex flex-wrap items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/5 backdrop-blur-sm relative overflow-hidden group/filter">
+        <div className="flex flex-wrap items-center gap-4 bg-card/5 p-4 rounded-3xl border border-white/5 backdrop-blur-sm relative overflow-hidden group/filter">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-0 group-hover/filter:opacity-100 transition-opacity duration-700 pointer-events-none" />
           <div className="flex items-center gap-3 relative z-10">
             <ToggleGroup 
@@ -463,13 +463,13 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             </ToggleGroup>
           </div>
 
-          <div className="h-8 w-px bg-white/10 hidden md:block" />
+          <div className="h-8 w-px bg-card/10 hidden md:block" />
 
           <div className="flex items-center gap-3 relative z-10">
             <div className="flex flex-col gap-1">
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Empresa</Label>
               <Select value={selectedEmpresaId} onValueChange={handleSetEmpresaId}>
-                <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-white/5 font-bold">
+                <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-card/5 font-bold">
                   <SelectValue placeholder="Selecione a empresa" />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
@@ -484,7 +484,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             <div className="flex flex-col gap-1">
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Mês de Referência</Label>
               <Select value={String(mes)} onValueChange={(v) => handleSetMes(Number(v))}>
-                <SelectTrigger className="h-12 w-[140px] rounded-2xl border-white/5 bg-white/5 font-bold">
+                <SelectTrigger className="h-12 w-[140px] rounded-2xl border-white/5 bg-card/5 font-bold">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
@@ -496,7 +496,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5 ml-auto">
+          <div className="flex items-center gap-3 bg-card/5 p-3 rounded-2xl border border-white/5 ml-auto">
             <FilterPresetsManager 
               entityType="dre-balanco"
               empresaId={selectedEmpresaId}
@@ -508,27 +508,27 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
               variant="outline" 
               size="sm" 
               onClick={resetPreferences}
-              className="h-10 rounded-xl border-white/10 bg-white/5 gap-2 px-4 font-bold text-muted-foreground hover:text-primary"
+              className="h-10 rounded-xl border-white/10 bg-card/5 gap-2 px-4 font-bold text-muted-foreground hover:text-primary"
             >
               <RotateCcw className="h-4 w-4" />
               <span className="hidden sm:inline">Restaurar</span>
             </Button>
 
-            <div className="h-8 w-px bg-white/10" />
+            <div className="h-8 w-px bg-card/10" />
             <div className="flex flex-col items-end mr-3">
               <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Governança Fiscal</span>
               <span className="text-[9px] font-bold text-primary">Nível de Auditoria: Máximo</span>
             </div>
-            <div className="h-8 w-px bg-white/10" />
+            <div className="h-8 w-px bg-card/10" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-white/5 hover:bg-white/10 px-6 transition-all hover:translate-y-[-2px]">
+                <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-card/5 hover:bg-card/10 px-6 transition-all hover:translate-y-[-2px]">
                   <Download className="h-4 w-4 text-primary" /> Exportar Livros
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                 <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40 px-3 py-2">Selecionar Formato</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuSeparator className="bg-card/5" />
                 <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('pdf') : exportarBalanco('pdf'))} className="rounded-xl gap-3 py-3 cursor-pointer">
                   <div className="p-2 bg-destructive/20 rounded-lg">
                     <FileText className="h-4 w-4 text-destructive" />
@@ -559,7 +559,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
         ) : modo === 'dre' ? (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-white/5 border-white/5 p-4 rounded-3xl relative overflow-hidden group/kpi">
+              <Card className="bg-card/5 border-white/5 p-4 rounded-3xl relative overflow-hidden group/kpi">
                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover/kpi:scale-110 transition-transform">
                   <TrendingUp className="h-12 w-12 text-success" />
                 </div>
@@ -571,7 +571,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                 </div>
               </Card>
 
-              <Card className="bg-white/5 border-white/5 p-4 rounded-3xl relative overflow-hidden group/kpi">
+              <Card className="bg-card/5 border-white/5 p-4 rounded-3xl relative overflow-hidden group/kpi">
                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover/kpi:scale-110 transition-transform">
                   <TrendingDown className="h-12 w-12 text-destructive" />
                 </div>
@@ -601,8 +601,8 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             </div>
 
             <div className="space-y-4">
-              <section className="bg-white/[0.02] rounded-3xl border border-white/5 overflow-hidden">
-                <div className="bg-white/5 px-6 py-4 border-b border-white/5 flex items-center justify-between">
+              <section className="bg-card/[0.02] rounded-3xl border border-white/5 overflow-hidden">
+                <div className="bg-card/5 px-6 py-4 border-b border-white/5 flex items-center justify-between">
                   <h3 className="text-sm font-black uppercase tracking-widest opacity-80 flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-success" /> (+) Receitas Operacionais
                   </h3>
@@ -629,7 +629,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                                           l.codigo === '6.1' ? 'despesa_administrativa' : 
                                           l.codigo === '6.2' ? 'despesa_comercial' : undefined
                         })}
-                        className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-white/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
+                        className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-card/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
                         style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
                       >
                         <div className="flex items-center gap-4">
@@ -661,8 +661,8 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                 </div>
               </section>
               
-              <section className="bg-white/[0.02] rounded-3xl border border-white/5 overflow-hidden">
-                <div className="bg-white/5 px-6 py-4 border-b border-white/5 flex items-center justify-between">
+              <section className="bg-card/[0.02] rounded-3xl border border-white/5 overflow-hidden">
+                <div className="bg-card/5 px-6 py-4 border-b border-white/5 flex items-center justify-between">
                   <h3 className="text-sm font-black uppercase tracking-widest opacity-80 flex items-center gap-2">
                     <TrendingDown className="h-4 w-4 text-destructive" /> (−) Custos e Despesas
                   </h3>
@@ -687,7 +687,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                                           l.codigo === '6.1' ? 'despesa_administrativa' : 
                                           l.codigo === '6.2' ? 'despesa_comercial' : undefined
                         })}
-                        className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-white/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
+                        className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-card/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
                         style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
                       >
                         <div className="flex items-center gap-4">
@@ -740,14 +740,14 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             {(() => {
               const equilibrado = balancoNovo.equilibrado;
               const sectionClass = cn(
-                "border-none bg-white/[0.02] shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/5 group/card"
+                "border-none bg-card/[0.02] shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/5 group/card"
               );
 
               return (
                 <>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <section className={sectionClass}>
-                      <div className="bg-white/5 px-8 py-6 flex items-center justify-between border-b border-white/5">
+                      <div className="bg-card/5 px-8 py-6 flex items-center justify-between border-b border-white/5">
                         <div className="flex items-center gap-4">
                           <div className="p-3 bg-primary/20 rounded-2xl">
                             <ArrowUpRight className="h-6 w-6 text-primary" />
@@ -757,7 +757,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                             <p className="text-[10px] font-bold text-primary uppercase">Bens e Direitos</p>
                           </div>
                         </div>
-                        <Badge variant="outline" className="font-mono text-xs border-none bg-white/5 px-4 h-10 rounded-xl">
+                        <Badge variant="outline" className="font-mono text-xs border-none bg-card/5 px-4 h-10 rounded-xl">
                           {balancoNovo.ativo.length} Contas
                         </Badge>
                       </div>
@@ -776,11 +776,11 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                                 tipo_bp: l.codigo === '1.1' ? 'circulante_ativo' : 
                                         l.codigo === '1.2' ? 'nao_circ_ativo' : undefined
                               })}
-                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row cursor-pointer" 
+                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-card/5 transition-colors group/row cursor-pointer" 
                               style={{ marginLeft: `${l.nivel * 1.5}rem` }}
                             >
                               <div className="flex items-center gap-3">
-                                <div className={cn("w-1.5 h-1.5 rounded-full opacity-40", l.nivel === 0 ? "bg-primary" : "bg-white/40")} />
+                                <div className={cn("w-1.5 h-1.5 rounded-full opacity-40", l.nivel === 0 ? "bg-primary" : "bg-card/40")} />
                                 <div className="flex flex-col">
                                   <span className={cn("text-xs font-bold", l.nivel === 0 ? "text-foreground" : "text-foreground/70")}>{l.descricao}</span>
                                   <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
@@ -793,14 +793,14 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                           ))}
                         </AnimatePresence>
                       </div>
-                      <div className="bg-white/5 p-6 border-t border-white/5 flex items-center justify-between font-black">
+                      <div className="bg-card/5 p-6 border-t border-white/5 flex items-center justify-between font-black">
                         <span className="text-xs uppercase tracking-widest opacity-60">Total do Ativo</span>
                         <span className="font-mono text-lg text-primary tabular-nums">{formatCurrency(balancoNovo.totalAtivo)}</span>
                       </div>
                     </section>
 
                     <section className={sectionClass}>
-                      <div className="bg-white/5 px-8 py-6 flex items-center justify-between border-b border-white/5">
+                      <div className="bg-card/5 px-8 py-6 flex items-center justify-between border-b border-white/5">
                         <div className="flex items-center gap-4">
                           <div className="p-3 bg-secondary/20 rounded-2xl">
                             <Scale className="h-6 w-6 text-secondary" />
@@ -810,7 +810,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                             <p className="text-[10px] font-bold text-secondary uppercase">Dívidas e Capital</p>
                           </div>
                         </div>
-                        <Badge variant="outline" className="font-mono text-xs border-none bg-white/5 px-4 h-10 rounded-xl">
+                        <Badge variant="outline" className="font-mono text-xs border-none bg-card/5 px-4 h-10 rounded-xl">
                           {balancoNovo.passivo.length} Contas
                         </Badge>
                       </div>
@@ -830,11 +830,11 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                                         l.codigo === '2.2' ? 'nao_circ_pas' :
                                         l.codigo === '3' ? 'pl' : undefined
                               })}
-                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row cursor-pointer" 
+                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-card/5 transition-colors group/row cursor-pointer" 
                               style={{ marginLeft: `${l.nivel * 1.5}rem` }}
                             >
                               <div className="flex items-center gap-3">
-                                <div className={cn("w-1.5 h-1.5 rounded-full opacity-40", l.nivel === 0 ? "bg-secondary" : "bg-white/40")} />
+                                <div className={cn("w-1.5 h-1.5 rounded-full opacity-40", l.nivel === 0 ? "bg-secondary" : "bg-card/40")} />
                                 <div className="flex flex-col">
                                   <span className={cn("text-xs font-bold", l.nivel === 0 ? "text-foreground" : "text-foreground/70")}>{l.descricao}</span>
                                   <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
@@ -847,7 +847,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                           ))}
                         </AnimatePresence>
                       </div>
-                      <div className="bg-white/5 p-6 border-t border-white/5 flex items-center justify-between font-black">
+                      <div className="bg-card/5 p-6 border-t border-white/5 flex items-center justify-between font-black">
                         <span className="text-xs uppercase tracking-widest opacity-60">Total Passivo + PL</span>
                         <span className="font-mono text-lg text-secondary tabular-nums">{formatCurrency(balancoNovo.totalPassivo)}</span>
                       </div>
@@ -893,7 +893,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                             { label: 'Liquidez', val: balancoNovo.ativoCirculante, icon: <Zap className="h-3 w-3" />, color: 'text-primary' },
                             { label: 'Equity', val: balancoNovo.patrimonioLiquido, icon: <Scale className="h-3 w-3" />, color: 'text-secondary' },
                           ].map((item, i) => (
-                            <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-[140px]">
+                            <div key={i} className="bg-card/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-[140px]">
                               <div className="flex items-center gap-2 opacity-40">
                                 {item.icon}
                                 <p className="text-[9px] font-black uppercase tracking-widest">{item.label}</p>
@@ -980,7 +980,7 @@ function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tipoBp }: 
       <div className="rounded-2xl border border-white/5 overflow-hidden">
         <ScrollArea className="h-[400px]">
           <Table>
-            <TableHeader className="bg-white/5 sticky top-0 z-20">
+            <TableHeader className="bg-card/5 sticky top-0 z-20">
               <TableRow className="border-white/5">
                 <TableHead className="text-[9px] font-black uppercase tracking-widest">Data</TableHead>
                 <TableHead className="text-[9px] font-black uppercase tracking-widest">Lanç.</TableHead>
@@ -991,7 +991,7 @@ function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tipoBp }: 
             </TableHeader>
             <TableBody>
               {partidasFiltradas.map((p, i) => (
-                <TableRow key={i} className="border-white/5 hover:bg-white/5 transition-colors">
+                <TableRow key={i} className="border-white/5 hover:bg-card/5 transition-colors">
                   <TableCell className="text-[10px] font-bold py-3">{format(new Date(p.data_lancamento + 'T00:00:00'), 'dd/MM/yy')}</TableCell>
                   <TableCell className="text-[10px] font-mono py-3">#{p.numero_lancamento}</TableCell>
                   <TableCell className="py-3">

@@ -40,11 +40,11 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
   return (
     <div className="space-y-6">
       {latestScore && (
-        <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden group">
+        <Card className="border border-border bg-card shadow-sm rounded-xl overflow-hidden group">
           <CardContent className="p-6 relative">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="text-center sm:text-left">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748b] mb-1">Score de Vitalidade</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Score de Vitalidade</p>
                 <div className="flex items-baseline gap-1 justify-center sm:justify-start">
                   <span className={cn(
                     "text-4xl font-bold tracking-tight tabular-nums",
@@ -52,11 +52,11 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                   )}>
                     {latestScore.score}
                   </span>
-                  <span className="text-sm font-medium text-[#94a3b8]">/100</span>
+                  <span className="text-sm font-medium text-muted-foreground">/100</span>
                 </div>
               </div>
               <div className="flex-1 max-w-xs w-full space-y-3">
-                <div className="h-1.5 rounded-full bg-[#e2e8f0] overflow-hidden">
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                   <m.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${latestScore.score}%` }}
@@ -67,7 +67,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                     )} 
                   />
                 </div>
-                <p className="text-[10px] font-medium text-[#64748b] text-center italic leading-relaxed">
+                <p className="text-[10px] font-medium text-muted-foreground text-center italic leading-relaxed">
                   Sistema operando em nível {latestScore.score >= 70 ? 'ótimo' : latestScore.score >= 40 ? 'estável' : 'crítico'}
                 </p>
               </div>
@@ -76,7 +76,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
         </Card>
       )}
 
-      <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden">
+      <Card className="border border-border bg-card shadow-sm rounded-xl overflow-hidden">
         <CardHeader className="p-6 pb-4 border-b border-border">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -84,8 +84,8 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                 <Target className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-lg font-bold text-[#1a1c21]">Objetivos Estratégicos</CardTitle>
-                <CardDescription className="text-xs text-[#64748b]">Metas para {currentYear}</CardDescription>
+                <CardTitle className="text-lg font-bold text-foreground">Objetivos Estratégicos</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">Metas para {currentYear}</CardDescription>
               </div>
             </div>
             <Dialog open={formOpen} onOpenChange={setFormOpen}>
@@ -101,12 +101,12 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold text-[#64748b]">Título</Label>
+                    <Label className="text-xs font-bold text-muted-foreground">Título</Label>
                     <Input className="h-10 rounded-lg" placeholder="Ex: Meta de Faturamento" value={form.titulo} onChange={(e) => setForm(f => ({ ...f, titulo: e.target.value }))} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-bold text-[#64748b]">Tipo</Label>
+                      <Label className="text-xs font-bold text-muted-foreground">Tipo</Label>
                       <Select value={form.tipo} onValueChange={(v) => setForm(f => ({ ...f, tipo: v }))}>
                         <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
                         <SelectContent>
@@ -117,7 +117,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                       </Select>
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-bold text-[#64748b]">Mês</Label>
+                      <Label className="text-xs font-bold text-muted-foreground">Mês</Label>
                       <Select value={form.mes} onValueChange={(v) => setForm(f => ({ ...f, mes: v }))}>
                         <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
                         <SelectContent>
@@ -129,7 +129,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold text-[#64748b]">Valor Alvo</Label>
+                    <Label className="text-xs font-bold text-muted-foreground">Valor Alvo</Label>
                     <Input type="number" className="h-10 rounded-lg font-bold" placeholder="0,00" value={form.valor_meta} onChange={(e) => setForm(f => ({ ...f, valor_meta: e.target.value }))} />
                   </div>
                   <Button onClick={handleCreate} disabled={createMeta.isPending || !form.titulo || !form.valor_meta} className="w-full h-11 rounded-lg bg-primary text-white font-bold gap-2 mt-2">
@@ -145,10 +145,10 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
           <AnimatePresence mode="popLayout">
             {isLoading ? (
               <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg bg-[#f1f3f9]" />)}
+                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg bg-muted/50" />)}
               </div>
             ) : !metas || metas.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center text-[#94a3b8]">
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
                 <Target className="h-12 w-12 mb-3 opacity-20" />
                 <p className="text-sm font-bold">Sem metas definidas</p>
                 <p className="text-xs">Clique em 'Meta' para começar.</p>
@@ -161,22 +161,22 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03 }}
-                    className="group relative p-4 rounded-lg border border-border bg-[#f8f9fc] hover:bg-white transition-all"
+                    className="group relative p-4 rounded-lg border border-border bg-muted/30 hover:bg-card transition-all"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-sm font-bold text-[#1a1c21] truncate">{meta.titulo}</span>
-                          <Badge variant="outline" className="text-[9px] font-bold px-1.5 h-auto rounded-sm uppercase bg-white">
+                          <span className="text-sm font-bold text-foreground truncate">{meta.titulo}</span>
+                          <Badge variant="outline" className="text-[9px] font-bold px-1.5 h-auto rounded-sm uppercase bg-card">
                             {meta.tipo}
                           </Badge>
                         </div>
-                        <p className="text-[10px] font-medium text-[#64748b]">Mês {meta.mes}/{meta.ano}</p>
+                        <p className="text-[10px] font-medium text-muted-foreground">Mês {meta.mes}/{meta.ano}</p>
                       </div>
                       <p className="text-sm font-bold text-primary tabular-nums">{formatCurrency(meta.valor_meta)}</p>
                     </div>
                     <div className="space-y-2">
-                      <div className="h-1.5 rounded-full bg-[#e2e8f0] overflow-hidden">
+                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                         <m.div 
                           initial={{ width: 0 }}
                           animate={{ width: "35%" }}
@@ -189,7 +189,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                           variant="ghost" 
                           size="icon" 
                           onClick={() => deleteMeta.mutate(meta.id)}
-                          className="h-6 w-6 text-[#94a3b8] hover:text-rose-500 hover:bg-rose-50 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                          className="h-6 w-6 text-muted-foreground hover:text-rose-500 hover:bg-rose-50 rounded-md opacity-0 group-hover:opacity-100 transition-all"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
@@ -204,15 +204,15 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
       </Card>
 
       {recomendacoes && recomendacoes.length > 0 && (
-        <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden">
+        <Card className="border border-border bg-card shadow-sm rounded-xl overflow-hidden">
           <CardHeader className="p-6 pb-4 border-b border-border">
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-amber-50 flex items-center justify-center border border-amber-100 text-amber-600">
                 <Lightbulb className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-lg font-bold text-[#1a1c21]">Recomendações</CardTitle>
-                <CardDescription className="text-xs text-[#64748b]">Otimizações de alto impacto</CardDescription>
+                <CardTitle className="text-lg font-bold text-foreground">Recomendações</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">Otimizações de alto impacto</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -227,13 +227,13 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="h-3.5 w-3.5 text-amber-600" />
-                  <span className="text-sm font-bold text-[#1a1c21]">{rec.titulo}</span>
+                  <span className="text-sm font-bold text-foreground">{rec.titulo}</span>
                 </div>
-                <p className="text-xs text-[#64748b] leading-relaxed mb-3">
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
                   {rec.descricao}
                 </p>
                 {rec.impacto_estimado > 0 && (
-                  <div className="inline-flex items-center gap-1.5 py-1 px-2 rounded-md bg-white border border-amber-100">
+                  <div className="inline-flex items-center gap-1.5 py-1 px-2 rounded-md bg-card border border-amber-100">
                     <CheckCircle2 className="h-3 w-3 text-emerald-600" />
                     <span className="text-[10px] font-bold text-emerald-700">Impacto: {formatCurrency(rec.impacto_estimado)}</span>
                   </div>
