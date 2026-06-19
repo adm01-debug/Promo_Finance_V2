@@ -24,7 +24,7 @@ export function QuickCreateButton({ collapsed }: QuickCreateButtonProps) {
       onClick={() => setOpen(true)}
       className={cn(
         'flex items-center gap-3 w-full rounded-md transition-all duration-200 relative overflow-hidden',
-        'bg-primary text-white font-medium shadow-sm hover:bg-primary/90',
+        'bg-primary text-primary-foreground font-medium shadow-sm hover:bg-primary/90',
         collapsed ? 'p-2 justify-center' : 'px-4 py-2.5'
       )}
     >

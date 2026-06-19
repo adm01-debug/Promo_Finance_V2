@@ -187,7 +187,7 @@ export function ContasReceberTableRow({
         <div className="flex items-center gap-3">
           <div className={cn(
             "h-12 w-12 rounded-2xl flex items-center justify-center border transition-all duration-700 shadow-2xl group-hover:scale-105",
-            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-card/[0.03] border-white/10 text-white/20"
+            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-card/[0.03] border-white/10 text-primary-foreground/20"
           )}>
             <Calendar className="h-5 w-5" />
           </div>
@@ -280,7 +280,7 @@ export function ContasReceberTableRow({
             {onView && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-primary hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-primary hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100"
                     onClick={() => onView(conta)} aria-label="Visualizar">
                     <Eye className="h-4 w-4" />
                   </Button>
@@ -302,7 +302,7 @@ export function ContasReceberTableRow({
             {conta.status !== 'pago' && conta.status !== 'cancelado' && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-success hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-success hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100"
                     onClick={() => onRegistrarRecebimento(conta)} aria-label="Registrar recebimento">
                     <DollarSign className="h-4 w-4" />
                   </Button>

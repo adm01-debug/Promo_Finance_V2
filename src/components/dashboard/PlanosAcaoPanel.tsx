@@ -38,8 +38,8 @@ const PRIORIDADE_CONFIG = {
 const STATUS_CONFIG = {
   pendente: { label: 'Pendente', color: 'bg-muted/20 text-muted-foreground' },
   em_andamento: { label: 'Em Andamento', color: 'bg-blue-500 text-white' },
-  concluido: { label: 'Concluído', color: 'bg-success text-white' },
-  cancelado: { label: 'Cancelado', color: 'bg-destructive text-white' },
+  concluido: { label: 'Concluído', color: 'bg-success text-primary-foreground' },
+  cancelado: { label: 'Cancelado', color: 'bg-destructive text-primary-foreground' },
 };
 
 export function PlanosAcaoPanel() {
@@ -85,7 +85,7 @@ export function PlanosAcaoPanel() {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <Button size="icon" className="h-10 w-10 rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
+            <Button size="icon" className="h-10 w-10 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
               <Plus className="h-5 w-5" />
             </Button>
           </div>

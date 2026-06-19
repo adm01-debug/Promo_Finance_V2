@@ -71,7 +71,7 @@ export default function PortalCliente() {
         {/* User Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center text-white font-black text-xl shadow-lg">
+            <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-xl shadow-lg">
               JS
             </div>
             <div>
@@ -89,7 +89,7 @@ export default function PortalCliente() {
 
         {/* Dashboard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-primary text-white shadow-xl shadow-primary/20">
+          <Card className="bg-primary text-primary-foreground shadow-xl shadow-primary/20">
             <CardContent className="p-6">
               <p className="text-primary-foreground/80 text-xs font-bold uppercase tracking-wider">A pagar este mês</p>
               <h3 className="text-3xl font-black mt-2">{formatCurrency(3900.50)}</h3>

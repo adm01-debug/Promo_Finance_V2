@@ -28,7 +28,7 @@ export const WorkflowVisualizer = ({ steps }: WorkflowVisualizerProps) => {
             {/* Ícone */}
             <div className={cn(
               "h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-              step.status === 'completo' ? "bg-success border-success text-white" :
+              step.status === 'completo' ? "bg-success border-success text-primary-foreground" :
               step.status === 'atual' ? "bg-background border-primary text-primary animate-pulse shadow-[0_0_15px_rgba(var(--primary),0.5)]" :
               "bg-background border-muted text-muted-foreground"
             )}>

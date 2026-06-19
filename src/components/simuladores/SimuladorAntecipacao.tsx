@@ -165,7 +165,7 @@ export function SimuladorAntecipacao() {
         
         <CardHeader className="p-8 pb-4 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-primary shadow-lg shadow-primary/20 flex items-center justify-center text-white">
+            <div className="h-12 w-12 rounded-2xl bg-primary shadow-lg shadow-primary/20 flex items-center justify-center text-primary-foreground">
               <TrendingUp className="h-6 w-6" />
             </div>
             <div>
@@ -245,7 +245,7 @@ export function SimuladorAntecipacao() {
                         <div className="flex items-center gap-4">
                           <div className={cn(
                             "h-10 w-10 rounded-xl flex items-center justify-center transition-colors",
-                            selecionado ? "bg-primary text-white" : "bg-card/10 text-muted-foreground/60"
+                            selecionado ? "bg-primary text-primary-foreground" : "bg-card/10 text-muted-foreground/60"
                           )}>
                             <Building2 className="h-5 w-5" />
                           </div>

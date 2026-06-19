@@ -164,7 +164,7 @@ export function WhatsAppProativoPanel() {
             <Button
               onClick={analisarAlertas}
               disabled={isAnalyzing}
-              className="gap-2 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-white"
+              className="gap-2 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-primary-foreground"
             >
               {isAnalyzing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

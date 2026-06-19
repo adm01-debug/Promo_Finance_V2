@@ -75,7 +75,7 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
           <div className="flex items-center gap-5">
             <div className={cn(
               "p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500",
-              podeGerar ? "bg-success/20 text-success" : "bg-card/5 text-white/20"
+              podeGerar ? "bg-success/20 text-success" : "bg-card/5 text-primary-foreground/20"
             )}>
               {podeGerar ? <ShieldCheck className="h-8 w-8" /> : <ShieldAlert className="h-8 w-8" />}
             </div>

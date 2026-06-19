@@ -442,7 +442,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                         <div className={cn(
                           "p-3 rounded-xl transition-all shadow-sm",
                           catErros.length > 0 ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning",
-                          isOpen && (catErros.length > 0 ? "bg-destructive text-white" : "bg-warning text-white")
+                          isOpen && (catErros.length > 0 ? "bg-destructive text-primary-foreground" : "bg-warning text-primary-foreground")
                         )}>
                           {catErros.length > 0 ? <XCircle className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
                         </div>

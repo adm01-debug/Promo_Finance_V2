@@ -67,7 +67,7 @@ export function PrevisaoIAProjecoes({ projecao, recomendacoes, parseValor }: Pro
                     </div>
                     
                     {isCritical && (
-                      <Button variant="outline" size="sm" className="w-full h-8 text-[9px] font-black uppercase tracking-widest bg-destructive/10 border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all gap-2" asChild>
+                      <Button variant="outline" size="sm" className="w-full h-8 text-[9px] font-black uppercase tracking-widest bg-destructive/10 border-destructive/20 text-destructive hover:bg-destructive hover:text-primary-foreground transition-all gap-2" asChild>
                         <Link to="/simulador-antecipacao">
                           Corrigir Déficit via Antecipação
                           <TrendingUp className="h-3 w-3" />

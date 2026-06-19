@@ -90,7 +90,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
             </div>
             <Dialog open={formOpen} onOpenChange={setFormOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="h-9 px-4 rounded-lg bg-primary text-white font-bold gap-2">
+                <Button size="sm" className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-bold gap-2">
                   <Plus className="h-4 w-4" />
                   Meta
                 </Button>
@@ -132,7 +132,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                     <Label className="text-xs font-bold text-muted-foreground">Valor Alvo</Label>
                     <Input type="number" className="h-10 rounded-lg font-bold" placeholder="0,00" value={form.valor_meta} onChange={(e) => setForm(f => ({ ...f, valor_meta: e.target.value }))} />
                   </div>
-                  <Button onClick={handleCreate} disabled={createMeta.isPending || !form.titulo || !form.valor_meta} className="w-full h-11 rounded-lg bg-primary text-white font-bold gap-2 mt-2">
+                  <Button onClick={handleCreate} disabled={createMeta.isPending || !form.titulo || !form.valor_meta} className="w-full h-11 rounded-lg bg-primary text-primary-foreground font-bold gap-2 mt-2">
                     {createMeta.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                     Definir Objetivo
                   </Button>
