@@ -12,11 +12,11 @@ const badgeVariants = cva(
       variant: {
         default: "border-transparent bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-black",
         secondary: "border-transparent bg-secondary/50 backdrop-blur-sm text-secondary-foreground shadow-sm font-bold",
-        destructive: "border-transparent bg-rose-500/10 text-rose-600 shadow-none font-black ring-1 ring-rose-500/20",
+        destructive: "border-transparent bg-destructive/10 text-destructive shadow-none font-black ring-1 ring-destructive/20",
         outline: "border-border/50 text-foreground bg-background/50 font-bold",
-        success: "border-transparent bg-emerald-500/10 text-emerald-600 font-black ring-1 ring-emerald-500/20",
-        warning: "border-transparent bg-amber-500/10 text-amber-600 font-black ring-1 ring-amber-500/20",
-        info: "border-transparent bg-blue-500/10 text-blue-600 font-black ring-1 ring-blue-500/20",
+        success: "border-transparent bg-success/10 text-success font-black ring-1 ring-success/20",
+        warning: "border-transparent bg-warning/10 text-warning font-black ring-1 ring-warning/20",
+        info: "border-transparent bg-info/10 text-info font-black ring-1 ring-info/20",
       },
     },
     defaultVariants: {
@@ -40,7 +40,7 @@ function Badge({ className, variant, removable, onRemove, children, ...props }: 
             e.stopPropagation();
             onRemove();
           }}
-          className="ml-1 p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition-colors"
+            className="ml-1 p-0.5 rounded-full hover:bg-muted transition-colors"
         >
           <X className="h-3 w-3" />
         </button>
