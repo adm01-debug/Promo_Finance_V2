@@ -196,7 +196,7 @@ export function RegrasDuplicidadeTab() {
               <CardTitle className="text-xl font-black uppercase tracking-tighter italic">Segurança Ativa</CardTitle>
             </CardHeader>
             <CardContent className="p-8 pt-0 space-y-6">
-              <p className="text-sm text-white/80 leading-relaxed">
+              <p className="text-sm text-foreground/80 leading-relaxed">
                 As alterações nestas regras são aplicadas instantaneamente a todos os novos lançamentos e edições.
               </p>
               <Button 

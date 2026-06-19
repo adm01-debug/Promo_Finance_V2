@@ -332,16 +332,16 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             <div className="p-3.5 bg-primary/20 rounded-2xl shadow-[0_0_30px_rgba(var(--primary),0.3)] ring-1 ring-primary/30">
               <ShieldAlert className="h-8 w-8 text-primary" />
             </div>
-            <span>Validações <span className="text-primary">{arquivo.tipo}</span> <span className="text-white/20">·</span> {arquivo.ano_calendario}</span>
+            <span>Validações <span className="text-primary">{arquivo.tipo}</span> <span className="text-foreground/20">·</span> {arquivo.ano_calendario}</span>
           </DialogTitle>
-          <DialogDescription className="text-sm font-bold uppercase tracking-[0.2em] text-white/40 pl-20">
+          <DialogDescription className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/40 pl-20">
             Governança & Compliance Fiscal PVA
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-3 gap-4">
           <div className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl group/stat">
-            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Erros</div>
+            <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Erros</div>
             <div
               data-testid="contador-erros"
               className={cn("text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl", erros.length > 0 ? 'text-destructive' : 'text-success')}
@@ -350,10 +350,10 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             </div>
           </div>
           <div className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl group/stat">
-            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Avisos</div>
+            <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Avisos</div>
             <div
               data-testid="contador-avisos"
-              className={cn("text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl", avisos.length > 0 ? 'text-warning' : 'text-white/20')}
+              className={cn("text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl", avisos.length > 0 ? 'text-warning' : 'text-foreground/20')}
             >
               {avisos.length}
             </div>
@@ -362,10 +362,10 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl flex flex-col justify-center overflow-hidden group/stat cursor-pointer relative"
             onClick={copyHash}
           >
-            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors flex items-center justify-center gap-1">
+            <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors flex items-center justify-center gap-1">
               Hash Alpha {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
             </div>
-            <div className="text-[10px] font-mono mt-1 truncate bg-black/40 p-2.5 rounded-xl border border-white/5 text-white/60 transition-all group-hover/stat:border-primary/30 group-hover/stat:text-white" title={arquivo.hash_sha256 ?? ''}>
+            <div className="text-[10px] font-mono mt-1 truncate bg-black/40 p-2.5 rounded-xl border border-white/5 text-foreground/60 transition-all group-hover/stat:border-primary/30 group-hover/stat:text-white" title={arquivo.hash_sha256 ?? ''}>
               {hashCurto}
             </div>
           </div>
@@ -391,7 +391,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar nas validações (ex: código de conta, descrição)..."
-              className="h-14 pl-12 pr-12 text-sm font-bold bg-card/[0.03] border-white/5 focus-visible:ring-1 focus-visible:ring-primary/40 transition-all rounded-2xl shadow-inner placeholder:text-white/20 text-white"
+              className="h-14 pl-12 pr-12 text-sm font-bold bg-card/[0.03] border-white/5 focus-visible:ring-1 focus-visible:ring-primary/40 transition-all rounded-2xl shadow-inner placeholder:text-foreground/20 text-foreground"
             />
             {busca && (
               <button

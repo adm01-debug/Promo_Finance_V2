@@ -34,11 +34,11 @@ export function RelatoriosResumosSemanais() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* List of Summaries */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 px-2">Histórico de Resumos</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wider text-foreground/40 px-2">Histórico de Resumos</h3>
         <ScrollArea className="h-[600px] pr-4">
           <div className="space-y-3">
             {resumos.length === 0 ? (
-              <div className="text-center py-12 text-white/20">
+              <div className="text-center py-12 text-foreground/20">
                 <FileText className="h-12 w-12 mx-auto mb-4 opacity-10" />
                 <p>Nenhum resumo gerado ainda.</p>
               </div>
@@ -63,8 +63,8 @@ export function RelatoriosResumosSemanais() {
                       </Badge>
                     )}
                   </div>
-                  <h4 className="text-white font-bold text-sm truncate">Resumo Executivo Quantum</h4>
-                  <div className="flex items-center gap-2 mt-2 text-[10px] text-white/40">
+                  <h4 className="text-foreground font-bold text-sm truncate">Resumo Executivo Quantum</h4>
+                  <div className="flex items-center gap-2 mt-2 text-[10px] text-foreground/40">
                     <Calendar className="h-3 w-3" />
                     {format(new Date(resumo.created_at), "PPP", { locale: ptBR })}
                   </div>
@@ -90,7 +90,7 @@ export function RelatoriosResumosSemanais() {
                 <CardHeader className="border-b border-white/10 flex-shrink-0">
                   <div className="flex justify-between items-center">
                     <div>
-                      <CardTitle className="text-white flex items-center gap-2">
+                      <CardTitle className="text-foreground flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-primary" />
                         Resumo Semanal
                       </CardTitle>
@@ -99,11 +99,11 @@ export function RelatoriosResumosSemanais() {
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-white">
+                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-foreground">
                         <Download className="h-4 w-4 mr-2" />
                         PDF
                       </Button>
-                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-white">
+                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-foreground">
                         <Mail className="h-4 w-4 mr-2" />
                         Reenviar
                       </Button>
@@ -112,7 +112,7 @@ export function RelatoriosResumosSemanais() {
                 </CardHeader>
                 <CardContent className="flex-grow overflow-hidden p-0">
                   <ScrollArea className="h-full p-6">
-                    <div className="prose prose-invert max-w-none prose-p:text-white/70 prose-headings:text-white prose-strong:text-primary">
+                    <div className="prose prose-invert max-w-none prose-p:text-foreground/70 prose-headings:text-white prose-strong:text-primary">
                       <ReactMarkdown>{selectedResumo.resumo_md}</ReactMarkdown>
                     </div>
                   </ScrollArea>
@@ -120,9 +120,9 @@ export function RelatoriosResumosSemanais() {
               </Card>
             </motion.div>
           ) : (
-            <div className="h-[600px] rounded-xl border border-dashed border-white/10 flex flex-col items-center justify-center text-white/20 p-8 text-center">
+            <div className="h-[600px] rounded-xl border border-dashed border-white/10 flex flex-col items-center justify-center text-foreground/20 p-8 text-center">
               <Sparkles className="h-12 w-12 mb-4 opacity-10" />
-              <h3 className="text-lg font-bold text-white/40 mb-2">Selecione um resumo</h3>
+              <h3 className="text-lg font-bold text-foreground/40 mb-2">Selecione um resumo</h3>
               <p className="max-w-xs text-sm">
                 Escolha um resumo semanal no histórico ao lado para visualizar os insights e KPIs detalhados.
               </p>

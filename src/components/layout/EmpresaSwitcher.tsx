@@ -74,7 +74,7 @@ export function EmpresaSwitcher() {
     return (
       <div className="flex items-center gap-2 px-3 h-11">
         <Building2 className="h-4 w-4 text-primary" />
-        <span className="text-sm font-semibold text-white truncate max-w-[200px]">
+        <span className="text-sm font-semibold text-foreground truncate max-w-[200px]">
           {current?.empresa.nome_fantasia || current?.empresa.razao_social}
         </span>
       </div>
@@ -100,7 +100,7 @@ export function EmpresaSwitcher() {
                     'relative h-9 px-3 rounded-xl flex items-center gap-2 text-[10px] font-black transition-all duration-500 border group',
                     isActive
                       ? 'bg-primary text-primary-foreground border-primary shadow-[0_8px_20px_-4px_rgba(var(--primary),0.4)] scale-105 z-10'
-                      : 'bg-transparent text-white/40 border-transparent hover:bg-card/10 hover:text-white hover:border-white/10',
+                      : 'bg-transparent text-foreground/40 border-transparent hover:bg-card/10 hover:text-white hover:border-white/10',
                   )}
                 >
                   <span className="tracking-tighter uppercase whitespace-nowrap">
@@ -140,7 +140,7 @@ export function EmpresaSwitcher() {
           <Button
             variant="outline"
             role="combobox"
-            className="gap-2 max-w-[260px] h-10 rounded-xl border-white/10 bg-card/5 hover:bg-card/10 text-white transition-all duration-300"
+            className="gap-2 max-w-[260px] h-10 rounded-xl border-white/10 bg-card/5 hover:bg-card/10 text-foreground transition-all duration-300"
             aria-label="Selecionar empresa"
           >
             <Building2 className="h-4 w-4 shrink-0 text-primary" />

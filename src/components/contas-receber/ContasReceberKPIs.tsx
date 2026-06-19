@@ -107,7 +107,7 @@ export function ContasReceberKPIs({
                   <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">{kpi.label}</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">{kpi.label}</p>
                         <p className={cn("text-3xl sm:text-4xl font-black font-display tracking-tighter tabular-nums drop-shadow-2xl", kpi.valueColor)}>
                           {kpi.value}
                         </p>
