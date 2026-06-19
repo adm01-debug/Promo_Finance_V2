@@ -1,5 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const baseURL = process.env.E2E_BASE_URL || 'http://localhost:8080';
+const authStorageState = 'playwright/.auth/user.json';
+const chromiumExecutablePath =
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || process.env.CHROMIUM_EXECUTABLE_PATH;
+const chromiumLaunchOptions = chromiumExecutablePath
+  ? { launchOptions: { executablePath: chromiumExecutablePath } }
+  : {};
+
 /**
  * Promo Finance E2E Test Configuration
  * @see https://playwright.dev/docs/test-configuration
@@ -29,7 +37,7 @@ export default defineConfig({
   /* Shared settings for all the projects below */
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
-    baseURL: process.env.E2E_BASE_URL || 'http://localhost:8080',
+    baseURL,
 
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
@@ -53,13 +61,15 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
+      use: chromiumLaunchOptions,
     },
 
     {
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        storageState: 'playwright/.auth/user.json',
+        ...chromiumLaunchOptions,
+        storageState: authStorageState,
       },
       dependencies: ['setup'],
     },
@@ -68,7 +78,7 @@ export default defineConfig({
       name: 'firefox',
       use: { 
         ...devices['Desktop Firefox'],
-        storageState: 'playwright/.auth/user.json',
+        storageState: authStorageState,
       },
       dependencies: ['setup'],
     },
@@ -77,7 +87,7 @@ export default defineConfig({
       name: 'webkit',
       use: { 
         ...devices['Desktop Safari'],
-        storageState: 'playwright/.auth/user.json',
+        storageState: authStorageState,
       },
       dependencies: ['setup'],
     },
@@ -87,7 +97,8 @@ export default defineConfig({
       name: 'Mobile Chrome',
       use: { 
         ...devices['Pixel 5'],
-        storageState: 'playwright/.auth/user.json',
+        ...chromiumLaunchOptions,
+        storageState: authStorageState,
       },
       dependencies: ['setup'],
     },
@@ -95,7 +106,7 @@ export default defineConfig({
       name: 'Mobile Safari',
       use: { 
         ...devices['iPhone 12'],
-        storageState: 'playwright/.auth/user.json',
+        storageState: authStorageState,
       },
       dependencies: ['setup'],
     },
@@ -114,7 +125,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run dev',
-    url: process.env.E2E_BASE_URL || 'http://localhost:8080',
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
