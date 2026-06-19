@@ -204,7 +204,12 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-muted transition-all">
+              <Button
+                variant="ghost"
+                className="h-9 px-2 gap-2 hover:bg-muted transition-all"
+                aria-label="Menu do usuário"
+                data-testid="user-menu"
+              >
                 <div className="h-7 w-7 rounded bg-muted flex items-center justify-center font-bold text-muted-foreground text-[10px]">
                   {initials}
                 </div>

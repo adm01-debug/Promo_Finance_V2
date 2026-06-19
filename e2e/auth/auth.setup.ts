@@ -18,11 +18,10 @@ setup('authenticate', async ({ page }) => {
 
   if (!email || !password) {
     // No credentials: emit empty storage so dependent projects don't fail
-    // on missing file. Authenticated tests should `test.skip()` themselves
-    // when E2E_USER_EMAIL is absent.
-    if (!existsSync(authFile)) {
-      writeFileSync(authFile, JSON.stringify({ cookies: [], origins: [] }));
-    }
+    // on missing file or accidentally reuse a stale authenticated session.
+    // Authenticated tests should `test.skip()` themselves when credentials
+    // are absent.
+    writeFileSync(authFile, JSON.stringify({ cookies: [], origins: [] }));
     setup.skip(true, 'E2E_USER_EMAIL/PASSWORD not set — skipping real login');
     return;
   }
