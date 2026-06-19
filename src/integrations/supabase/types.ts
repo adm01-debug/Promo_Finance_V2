@@ -4623,6 +4623,7 @@ export type Database = {
           cep: string | null
           cidade: string | null
           cnpj: string | null
+          cor_hex: string | null
           created_at: string
           email: string | null
           endereco: string | null
@@ -4632,6 +4633,7 @@ export type Database = {
           logo_url: string | null
           nome_fantasia: string | null
           razao_social: string
+          sigla: string | null
           telefone: string | null
           user_id: string
         }
@@ -4641,6 +4643,7 @@ export type Database = {
           cep?: string | null
           cidade?: string | null
           cnpj?: string | null
+          cor_hex?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
@@ -4650,6 +4653,7 @@ export type Database = {
           logo_url?: string | null
           nome_fantasia?: string | null
           razao_social: string
+          sigla?: string | null
           telefone?: string | null
           user_id?: string
         }
@@ -4659,6 +4663,7 @@ export type Database = {
           cep?: string | null
           cidade?: string | null
           cnpj?: string | null
+          cor_hex?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
@@ -4668,6 +4673,7 @@ export type Database = {
           logo_url?: string | null
           nome_fantasia?: string | null
           razao_social?: string
+          sigla?: string | null
           telefone?: string | null
           user_id?: string
         }
@@ -11992,6 +11998,7 @@ export type Database = {
             Returns: undefined
           }
       gerar_numero_acordo: { Args: never; Returns: string }
+      gerar_sigla_empresa: { Args: { _nome: string }; Returns: string }
       get_active_uapi_token: {
         Args: never
         Returns: {
