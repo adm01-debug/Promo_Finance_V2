@@ -7,6 +7,7 @@ import { useAuth } from './useAuth';
 import { logger } from '@/lib/logger';
 
 type AppRole = Extract<Database['public']['Enums']['app_role'], 'admin' | 'financeiro' | 'operacional' | 'visualizador'>;
+type RawAppRole = Database['public']['Enums']['app_role'];
 type ProvisionedVia = 'manual' | 'sso' | 'scim';
 
 interface EmpresaSummary {
@@ -38,20 +39,35 @@ export interface UserEmpresaLink {
 
 const APP_ROLES: readonly AppRole[] = ['admin', 'financeiro', 'operacional', 'visualizador'];
 const PROVISIONING_MODES: readonly ProvisionedVia[] = ['manual', 'sso', 'scim'];
+const ROLE_ALIASES: Partial<Record<RawAppRole, AppRole>> = {
+  admin: 'admin',
+  manager: 'financeiro',
+  financeiro: 'financeiro',
+  contador: 'financeiro',
+  operator: 'operacional',
+  operacional: 'operacional',
+  viewer: 'visualizador',
+  visualizador: 'visualizador',
+};
 
 function normalizeProvisionedVia(value: string): ProvisionedVia {
   return PROVISIONING_MODES.includes(value as ProvisionedVia) ? (value as ProvisionedVia) : 'manual';
 }
 
+function normalizeRole(value: RawAppRole): AppRole | null {
+  return ROLE_ALIASES[value] ?? null;
+}
+
 function normalizeUserEmpresa(row: UserEmpresaQueryRow): UserEmpresaLink | null {
-  if (!APP_ROLES.includes(row.role as AppRole)) return null;
+  const role = normalizeRole(row.role);
+  if (!role || !APP_ROLES.includes(role)) return null;
   const empresa = Array.isArray(row.empresa) ? row.empresa[0] : row.empresa;
   if (!empresa) return null;
 
   return {
     id: row.id,
     empresa_id: row.empresa_id,
-    role: row.role as AppRole,
+    role,
     is_default: row.is_default,
     provisioned_via: normalizeProvisionedVia(row.provisioned_via),
     ativo: row.ativo,
