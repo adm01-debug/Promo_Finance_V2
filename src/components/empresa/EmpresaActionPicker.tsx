@@ -68,13 +68,13 @@ export function EmpresaActionPicker({
         table_name: 'empresas',
         record_id: empresaId,
         details: `Operação ${contexto.tipo} por ${empresaId}${aceitouRecomendacao ? ' (aceitou sugestão IA)' : ' (rejeitou sugestão IA)'}`,
-        new_data: {
+        new_data: JSON.parse(JSON.stringify({
           empresa_id: empresaId,
           recomendada_id: recomendadaId,
           aceitou_recomendacao: aceitouRecomendacao,
           score: rec?.score,
-          contexto: contexto as unknown as Record<string, unknown>,
-        },
+          contexto,
+        })),
       }]);
     } catch (err) {
       logger.warn('[EmpresaActionPicker] falha ao auditar escolha', err);
