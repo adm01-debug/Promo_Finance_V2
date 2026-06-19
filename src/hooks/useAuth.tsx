@@ -1,6 +1,7 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +12,7 @@ import { runAuthCleanup } from '@/lib/auth-cleanup';
 import { setSloFailure } from '@/lib/sso-slo-state';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
+type RawAppRole = Database['public']['Enums']['app_role'];
 
 const ROLE_PRIORITY: Record<AppRole, number> = {
   admin: 4,
@@ -19,12 +21,28 @@ const ROLE_PRIORITY: Record<AppRole, number> = {
   visualizador: 1,
 };
 
-function pickHighestRole(rows: Array<{ role: string | null }> | null): AppRole | null {
+const ROLE_ALIASES: Partial<Record<RawAppRole, AppRole>> = {
+  admin: 'admin',
+  manager: 'financeiro',
+  financeiro: 'financeiro',
+  contador: 'financeiro',
+  operator: 'operacional',
+  operacional: 'operacional',
+  viewer: 'visualizador',
+  visualizador: 'visualizador',
+};
+
+function normalizeRole(role: RawAppRole | string | null): AppRole | null {
+  if (!role) return null;
+  return ROLE_ALIASES[role as RawAppRole] ?? null;
+}
+
+function pickHighestRole(rows: Array<{ role: RawAppRole | string | null }> | null): AppRole | null {
   if (!rows || rows.length === 0) return null;
   let best: AppRole | null = null;
   for (const row of rows) {
-    const r = row.role as AppRole | null;
-    if (!r || !(r in ROLE_PRIORITY)) continue;
+    const r = normalizeRole(row.role);
+    if (!r) continue;
     if (!best || ROLE_PRIORITY[r] > ROLE_PRIORITY[best]) best = r;
   }
   return best;
