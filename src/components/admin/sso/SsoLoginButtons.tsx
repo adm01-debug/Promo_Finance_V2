@@ -22,12 +22,7 @@ export function SsoLoginButtons({ email }: { email: string }) {
     const dom = email.split('@')[1]?.toLowerCase().trim();
     if (!dom || dom.length < 3) { setProviders([]); return; }
     (async () => {
-      const { data } = await (supabase as any)
-        .from('sso_providers')
-        .select('id,nome,tipo,preset,allowed_domains,force_sso_for_domains')
-        .eq('ativo', true)
-        .contains('allowed_domains', [dom])
-        .order('ordem');
+      const { data } = await supabase.rpc('resolve_sso_providers_for_domain', { p_domain: dom });
       setProviders((data ?? []) as Provider[]);
     })();
   }, [email]);
