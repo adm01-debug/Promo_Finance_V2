@@ -3942,34 +3942,64 @@ export type Database = {
       darfs: {
         Row: {
           alerta_id: string | null
+          codigo_barras: string | null
           codigo_receita: string | null
+          competencia: string | null
           created_at: string | null
+          data_pagamento: string | null
           data_vencimento: string | null
           descricao_receita: string | null
+          empresa_id: string | null
           id: string
+          linha_digitavel: string | null
           periodo_apuracao: string | null
+          retencoes_ids: string[]
+          status: string
+          updated_at: string
+          valor_juros: number
+          valor_multa: number
           valor_principal: number | null
           valor_total: number | null
         }
         Insert: {
           alerta_id?: string | null
+          codigo_barras?: string | null
           codigo_receita?: string | null
+          competencia?: string | null
           created_at?: string | null
+          data_pagamento?: string | null
           data_vencimento?: string | null
           descricao_receita?: string | null
+          empresa_id?: string | null
           id?: string
+          linha_digitavel?: string | null
           periodo_apuracao?: string | null
+          retencoes_ids?: string[]
+          status?: string
+          updated_at?: string
+          valor_juros?: number
+          valor_multa?: number
           valor_principal?: number | null
           valor_total?: number | null
         }
         Update: {
           alerta_id?: string | null
+          codigo_barras?: string | null
           codigo_receita?: string | null
+          competencia?: string | null
           created_at?: string | null
+          data_pagamento?: string | null
           data_vencimento?: string | null
           descricao_receita?: string | null
+          empresa_id?: string | null
           id?: string
+          linha_digitavel?: string | null
           periodo_apuracao?: string | null
+          retencoes_ids?: string[]
+          status?: string
+          updated_at?: string
+          valor_juros?: number
+          valor_multa?: number
           valor_principal?: number | null
           valor_total?: number | null
         }
@@ -3980,6 +4010,55 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "alertas_tributarios"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
@@ -9534,30 +9613,164 @@ export type Database = {
       }
       sso_providers: {
         Row: {
+          allowed_domains: string[]
           ativo: boolean | null
+          authorization_endpoint: string | null
+          auto_provision_users: boolean
+          claim_mapping: Json
+          client_id: string | null
+          client_secret_ref: string | null
           configuracoes: Json | null
           created_at: string | null
+          created_by: string | null
+          default_role: Database["public"]["Enums"]["app_role"]
+          discovery_url: string | null
+          empresa_id: string | null
+          entity_id_idp: string | null
+          force_sso_for_domains: boolean
           id: string
+          jwks_uri: string | null
+          metadata_xml: string | null
+          name_id_format: string
           nome: string
+          ordem: number
+          preset: string | null
+          scopes: string[]
+          signature_algorithm: string
+          slo_url: string | null
+          sso_url: string | null
           tipo: string
+          token_endpoint: string | null
+          ultimo_teste_em: string | null
+          ultimo_teste_mensagem: string | null
+          ultimo_teste_sucesso: boolean | null
+          updated_at: string
+          userinfo_endpoint: string | null
+          x509_cert: string | null
         }
         Insert: {
+          allowed_domains?: string[]
           ativo?: boolean | null
+          authorization_endpoint?: string | null
+          auto_provision_users?: boolean
+          claim_mapping?: Json
+          client_id?: string | null
+          client_secret_ref?: string | null
           configuracoes?: Json | null
           created_at?: string | null
+          created_by?: string | null
+          default_role?: Database["public"]["Enums"]["app_role"]
+          discovery_url?: string | null
+          empresa_id?: string | null
+          entity_id_idp?: string | null
+          force_sso_for_domains?: boolean
           id?: string
+          jwks_uri?: string | null
+          metadata_xml?: string | null
+          name_id_format?: string
           nome: string
+          ordem?: number
+          preset?: string | null
+          scopes?: string[]
+          signature_algorithm?: string
+          slo_url?: string | null
+          sso_url?: string | null
           tipo: string
+          token_endpoint?: string | null
+          ultimo_teste_em?: string | null
+          ultimo_teste_mensagem?: string | null
+          ultimo_teste_sucesso?: boolean | null
+          updated_at?: string
+          userinfo_endpoint?: string | null
+          x509_cert?: string | null
         }
         Update: {
+          allowed_domains?: string[]
           ativo?: boolean | null
+          authorization_endpoint?: string | null
+          auto_provision_users?: boolean
+          claim_mapping?: Json
+          client_id?: string | null
+          client_secret_ref?: string | null
           configuracoes?: Json | null
           created_at?: string | null
+          created_by?: string | null
+          default_role?: Database["public"]["Enums"]["app_role"]
+          discovery_url?: string | null
+          empresa_id?: string | null
+          entity_id_idp?: string | null
+          force_sso_for_domains?: boolean
           id?: string
+          jwks_uri?: string | null
+          metadata_xml?: string | null
+          name_id_format?: string
           nome?: string
+          ordem?: number
+          preset?: string | null
+          scopes?: string[]
+          signature_algorithm?: string
+          slo_url?: string | null
+          sso_url?: string | null
           tipo?: string
+          token_endpoint?: string | null
+          ultimo_teste_em?: string | null
+          ultimo_teste_mensagem?: string | null
+          ultimo_teste_sucesso?: boolean | null
+          updated_at?: string
+          userinfo_endpoint?: string | null
+          x509_cert?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       templates_cobranca: {
         Row: {
@@ -11883,6 +12096,15 @@ export type Database = {
         Args: { p_empresa_id?: string; p_simulate?: boolean }
         Returns: Json
       }
+      profile_sensitive_fields_unchanged: {
+        Args: {
+          _empresa_id: string
+          _profile_id: string
+          _role: string
+          _user_id: string
+        }
+        Returns: boolean
+      }
       record_failed_login: {
         Args: { p_email: string; p_ip_address?: unknown }
         Returns: {
@@ -11953,6 +12175,18 @@ export type Database = {
             Returns: undefined
           }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
+      resolve_sso_providers_for_domain: {
+        Args: { p_domain: string }
+        Returns: {
+          allowed_domains: string[]
+          force_sso_for_domains: boolean
+          id: string
+          nome: string
+          ordem: number
+          preset: string
+          tipo: string
+        }[]
+      }
       run_daily_cleanup: { Args: never; Returns: Json }
       run_daily_cleanup_with_logging: { Args: never; Returns: undefined }
       use_reset_token: {
