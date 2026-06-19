@@ -447,7 +447,7 @@ export default function OportunidadesElisao() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-white/5"
+                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-card/5"
                       onClick={() => {
                         const csvContent = "data:text/csv;charset=utf-8," 
                           + "ID,NCM,CST,Valor,Status,Score,Metodologia\n"
@@ -467,7 +467,7 @@ export default function OportunidadesElisao() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-white/5"
+                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-card/5"
                       onClick={() => baixarRelatorioAuditoriaCreditos(empresaSelecionada?.razao_social || 'Empresa', [c])}
                     >
                       <FilePieChart className="h-4 w-4 text-primary" />

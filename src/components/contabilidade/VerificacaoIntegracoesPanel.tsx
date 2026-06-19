@@ -38,7 +38,7 @@ function StatCard({ label, value, description, tone = 'default', icon: Icon, tre
     tone === 'success' ? 'text-success bg-success/5 border-success/20 shadow-lg shadow-success/10' :
     tone === 'destructive' ? 'text-destructive bg-destructive/5 border-destructive/20 shadow-lg shadow-destructive/10' :
     tone === 'warning' ? 'text-warning bg-warning/5 border-warning/20 shadow-lg shadow-warning/10' :
-    'text-foreground bg-white/5 border-white/10 shadow-2xl';
+    'text-foreground bg-card/5 border-white/10 shadow-2xl';
 
   return (
     <motion.div
@@ -53,7 +53,7 @@ function StatCard({ label, value, description, tone = 'default', icon: Icon, tre
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
           <p className="text-[11px] font-black uppercase tracking-[0.25em] opacity-40">{label}</p>
-          <div className="p-2 bg-white/5 rounded-xl">
+          <div className="p-2 bg-card/5 rounded-xl">
             {Icon && <Icon className="h-4 w-4 opacity-60" />}
           </div>
         </div>
@@ -167,7 +167,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
               variant="outline"
               onClick={() => qc.invalidateQueries({ queryKey: ['verificacao-integracoes', empresaId, ano] })}
               disabled={isFetching}
-              className="gap-2 rounded-xl font-bold border-white/10 bg-white/5 hover:bg-white/10 transition-all hover:translate-y-[-2px]"
+              className="gap-2 rounded-xl font-bold border-white/10 bg-card/5 hover:bg-card/10 transition-all hover:translate-y-[-2px]"
             >
               <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
               Reanalisar
@@ -180,14 +180,14 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
               <RefreshCw className="h-6 w-6 animate-spin mr-3" /> Analisando integridade...
             </div>
           ) : resumos.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border border-dashed border-white/10 rounded-[1.5rem] bg-white/[0.02]">
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border border-dashed border-white/10 rounded-[1.5rem] bg-card/[0.02]">
               <Activity className="h-10 w-10 opacity-20 mb-4" />
               <p className="text-sm font-bold uppercase tracking-widest">Nenhum lançamento importado</p>
             </div>
           ) : (
-            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-card/[0.01] shadow-inner">
               <Table>
-                <TableHeader className="bg-white/5">
+                <TableHeader className="bg-card/5">
                   <TableRow className="border-white/5 hover:bg-transparent">
                     <TableHead className="text-[10px] font-black uppercase tracking-widest p-6">Origem de Dados</TableHead>
                     <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Registros</TableHead>
@@ -210,7 +210,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: idx * 0.05 }}
-                          className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                          className="border-white/5 hover:bg-card/5 transition-colors group/row"
                         >
                           <TableCell className="p-6">
                             <Badge variant="outline" className="capitalize border-none bg-primary/10 text-primary font-black text-[10px] px-3 py-1 rounded-xl flex items-center gap-2 w-fit">
@@ -232,7 +232,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                           </TableCell>
                           <TableCell className="pr-8">
                             <div className="flex items-center gap-2">
-                              <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden w-16">
+                              <div className="flex-1 h-1.5 bg-card/5 rounded-full overflow-hidden w-16">
                                 <motion.div 
                                   initial={{ width: 0 }}
                                   animate={{ width: `${taxa}%` }}
@@ -271,18 +271,18 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                 placeholder="Buscar histórico, nº ou ref..." 
                 value={busca} 
                 onChange={e => setBusca(e.target.value)} 
-                className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" 
+                className="h-12 pl-12 bg-card/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" 
               />
             </div>
             <Select value={origemFiltro} onValueChange={setOrigemFiltro}>
-              <SelectTrigger className="w-[200px] h-12 rounded-2xl border-white/5 bg-white/5 font-bold"><Filter className="h-4 w-4 mr-2 opacity-50" /><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-[200px] h-12 rounded-2xl border-white/5 bg-card/5 font-bold"><Filter className="h-4 w-4 mr-2 opacity-50" /><SelectValue /></SelectTrigger>
               <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                 <SelectItem value="todas">Todas as origens</SelectItem>
                 {origens.map(o => <SelectItem key={o} value={o} className="capitalize">{o}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={statusFiltro} onValueChange={v => setStatusFiltro(v as 'todos' | StatusConsistencia)}>
-              <SelectTrigger className="w-[220px] h-12 rounded-2xl border-white/5 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-[220px] h-12 rounded-2xl border-white/5 bg-card/5 font-bold"><SelectValue /></SelectTrigger>
               <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                 <SelectItem value="todos">Todos os status</SelectItem>
                 <SelectItem value="ok">Consistentes (D=C)</SelectItem>
@@ -291,7 +291,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                 <SelectItem value="orfao">Órfãos</SelectItem>
               </SelectContent>
             </Select>
-            <div className="text-[10px] font-black uppercase tracking-widest opacity-40 bg-white/5 px-4 py-3 rounded-2xl border border-white/5">
+            <div className="text-[10px] font-black uppercase tracking-widest opacity-40 bg-card/5 px-4 py-3 rounded-2xl border border-white/5">
               {filtrados.length} / {lancs.length} registros
             </div>
           </div>
@@ -301,9 +301,9 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
           ) : filtrados.length === 0 ? (
             <p className="text-sm text-muted-foreground py-6 text-center">Nenhum lançamento encontrado com os filtros aplicados.</p>
           ) : (
-            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-card/[0.01] shadow-inner">
               <Table>
-                <TableHeader className="bg-white/5">
+                <TableHeader className="bg-card/5">
                   <TableRow className="border-white/5 hover:bg-transparent">
                     <TableHead className="text-[10px] font-black uppercase tracking-widest p-6">ID / Ref</TableHead>
                     <TableHead className="text-[10px] font-black uppercase tracking-widest">Data Lanc.</TableHead>
@@ -325,7 +325,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.005 }}
                         className={cn(
-                          "border-white/5 hover:bg-white/5 transition-colors group/row", 
+                          "border-white/5 hover:bg-card/5 transition-colors group/row", 
                           l.status_consistencia !== 'ok' ? 'bg-destructive/[0.03]' : undefined
                         )}
                       >
@@ -347,7 +347,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                           {l.diferenca > 0 ? formatCurrency(l.diferenca) : '—'}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Badge variant="outline" className="font-mono text-[10px] border-none bg-white/5 font-black px-2.5 rounded-lg">
+                          <Badge variant="outline" className="font-mono text-[10px] border-none bg-card/5 font-black px-2.5 rounded-lg">
                             {l.qtd_partidas}
                           </Badge>
                         </TableCell>

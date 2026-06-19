@@ -49,20 +49,20 @@ export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory:
 
   return (
     <div className="relative pt-2">
-      <div className="absolute left-[27px] top-0 bottom-0 w-px bg-white/10" />
+      <div className="absolute left-[27px] top-0 bottom-0 w-px bg-card/10" />
       <div className="space-y-6">
         {allItems.map((item: any) => {
           if (item.type === 'audit') {
             return (
               <div key={item.id} className="relative pl-14 pb-1">
-                <div className="absolute left-6 top-1 h-2 w-2 rounded-full bg-white/20 border border-background z-10" />
+                <div className="absolute left-6 top-1 h-2 w-2 rounded-full bg-card/20 border border-background z-10" />
                 <div className="text-sm">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-muted-foreground/60 text-[10px] uppercase tracking-widest">{operacaoLabels[item.operacao] || item.operacao}</p>
                     <span className="text-[10px] text-muted-foreground/40">• {formatDateTime(item.created_at)}</span>
                   </div>
                   {item.dados_novos && item.operacao === 'UPDATE' && (
-                    <div className="mt-1 p-2 rounded-lg bg-white/5 border border-white/5 text-[10px] space-y-0.5">
+                    <div className="mt-1 p-2 rounded-lg bg-card/5 border border-white/5 text-[10px] space-y-0.5">
                       {Object.entries(item.dados_novos).slice(0, 3).map(([key, val]) => (
                         <div key={key} className="flex gap-2">
                           <span className="text-muted-foreground uppercase font-black opacity-40">{key}:</span>

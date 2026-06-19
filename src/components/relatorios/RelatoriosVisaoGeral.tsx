@@ -165,7 +165,7 @@ export function RelatoriosVisaoGeral({
                         </div>
                         <span className="text-primary">{cat.percentual.toFixed(1)}%</span>
                       </div>
-                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full bg-card/5 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
                           animate={{ width: `${cat.percentual}%` }}

@@ -152,7 +152,7 @@ export function ContasPagarKPIs({
                 </div>
                 <div className={cn(
                   "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110 group-hover:rotate-12 shrink-0",
-                  countAprovacoesUrgentes > 0 ? "bg-warning/20 text-warning" : "bg-white/5 text-muted-foreground/40"
+                  countAprovacoesUrgentes > 0 ? "bg-warning/20 text-warning" : "bg-card/5 text-muted-foreground/40"
                 )}>
                   <ShieldAlert className="h-6 w-6" />
                 </div>

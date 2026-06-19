@@ -271,7 +271,7 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                         {...field}
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         disabled={tipoRecebimento === 'total'}
-                        className="pl-12 h-12 rounded-xl bg-white/5 border-white/10 font-bold"
+                        className="pl-12 h-12 rounded-xl bg-card/5 border-white/10 font-bold"
                       />
                     </div>
                   </FormControl>
@@ -290,7 +290,7 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                   <FormControl>
                     <div className="relative">
                       <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                      <Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" />
+                      <Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" />
                     </div>
                   </FormControl>
                   <FormMessage />

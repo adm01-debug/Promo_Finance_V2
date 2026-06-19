@@ -87,7 +87,7 @@ export function DrawerDetailsTab({ conta, overdueDays, boletos, acordos }: Props
       {/* Client Info */}
       <div className="space-y-3 px-1">
         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Entity Data</h4>
-        <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-primary/30 transition-all">
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-card/5 border border-white/5 group hover:border-primary/30 transition-all">
           <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Building2 className="h-6 w-6 text-primary" />
           </div>
@@ -104,11 +104,11 @@ export function DrawerDetailsTab({ conta, overdueDays, boletos, acordos }: Props
       <div className="space-y-3 px-1">
         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Timeline Matrix</h4>
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+          <div className="p-4 rounded-2xl bg-card/5 border border-white/5">
             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Emissão</span>
             <p className="text-md font-bold mt-1 tabular-nums">{formatDate(conta.data_emissao)}</p>
           </div>
-          <div className={cn("p-4 rounded-2xl border", overdueDays > 0 && conta.status !== 'pago' ? 'bg-destructive/5 border-destructive/20' : 'bg-white/5 border-white/5')}>
+          <div className={cn("p-4 rounded-2xl border", overdueDays > 0 && conta.status !== 'pago' ? 'bg-destructive/5 border-destructive/20' : 'bg-card/5 border-white/5')}>
             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Vencimento</span>
             <p className={cn("text-md font-bold mt-1 tabular-nums", overdueDays > 0 && conta.status !== 'pago' ? 'text-destructive' : '')}>
               {formatDate(conta.data_vencimento)}
@@ -132,7 +132,7 @@ export function DrawerDetailsTab({ conta, overdueDays, boletos, acordos }: Props
           <DetailRow label="Settlement Account" value={conta.contas_bancarias?.banco} />
           
           {conta.chave_pix && (
-            <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/5">
+            <div className="flex justify-between items-center p-3 rounded-xl bg-card/5 border border-white/5">
               <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">Chave PIX</span>
               <Button variant="ghost" size="sm" className="h-8 gap-2 text-xs font-black text-primary hover:bg-primary/10" onClick={handleCopyPix}>
                 <Copy className="h-3.5 w-3.5" /> {conta.chave_pix}
@@ -146,7 +146,7 @@ export function DrawerDetailsTab({ conta, overdueDays, boletos, acordos }: Props
       {conta.observacoes && (
         <div className="space-y-2 px-1">
           <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Audit Notes</h4>
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/5 text-sm text-muted-foreground italic leading-relaxed">
+          <div className="p-4 rounded-2xl bg-card/5 border border-white/5 text-sm text-muted-foreground italic leading-relaxed">
             {conta.observacoes}
           </div>
         </div>
@@ -158,7 +158,7 @@ export function DrawerDetailsTab({ conta, overdueDays, boletos, acordos }: Props
 function DetailRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
-    <div className="flex justify-between items-center p-3 px-4 rounded-xl bg-white/5 border border-white/5">
+    <div className="flex justify-between items-center p-3 px-4 rounded-xl bg-card/5 border border-white/5">
       <span className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.15em]">{label}</span>
       <span className="text-xs font-bold tracking-tight">{value}</span>
     </div>

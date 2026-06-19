@@ -84,7 +84,7 @@ export function ContaReceberFormFields({
               <div className="relative group">
                 <div className="absolute inset-0 bg-primary/5 rounded-xl -m-0.5 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                <Input placeholder="Buscar por nome, fantasia ou CNPJ..." value={clienteSearch} onChange={e => setClienteSearch(e.target.value)} className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" />
+                <Input placeholder="Buscar por nome, fantasia ou CNPJ..." value={clienteSearch} onChange={e => setClienteSearch(e.target.value)} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" />
               </div>
               <Select onValueChange={onClienteSelect} value={form.watch('cliente_id')}>
                 <SelectTrigger><SelectValue placeholder="Selecione um cliente" /></SelectTrigger>
@@ -109,7 +109,7 @@ export function ContaReceberFormFields({
             <motion.div key="input" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
               <FormField control={form.control} name="cliente_nome" render={({ field }) => (
                 <FormItem><FormControl>
-                  <div className="relative group"><User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input {...field} placeholder="Nome do cliente" className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" /></div>
+                  <div className="relative group"><User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input {...field} placeholder="Nome do cliente" className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
                 </FormControl><FormMessage /></FormItem>
               )} />
             </motion.div>
@@ -188,7 +188,7 @@ export function ContaReceberFormFields({
         <FormItem>
           <FieldLabel label="Descrição" required tooltip="Detalhamento do recebível" />
           <FormControl>
-            <div className="relative group"><FileText className="absolute left-4 top-4 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Textarea {...field} placeholder="Descrição do recebível" className="pl-12 min-h-[100px] rounded-xl bg-white/5 border-white/10 p-4" /></div>
+            <div className="relative group"><FileText className="absolute left-4 top-4 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Textarea {...field} placeholder="Descrição do recebível" className="pl-12 min-h-[100px] rounded-xl bg-card/5 border-white/10 p-4" /></div>
           </FormControl><FormMessage />
         </FormItem>
       )} />
@@ -201,7 +201,7 @@ export function ContaReceberFormFields({
             <FormControl>
               <div className="relative group">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-sm font-bold">R$</span>
-                <Input type="number" step="0.01" min="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} placeholder="0,00" className="pl-12 h-12 rounded-xl bg-white/5 border-white/10 font-bold" />
+                <Input type="number" step="0.01" min="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} placeholder="0,00" className="pl-12 h-12 rounded-xl bg-card/5 border-white/10 font-bold" />
               </div>
             </FormControl><FormMessage />
           </FormItem>
@@ -216,7 +216,7 @@ export function ContaReceberFormFields({
                 return (
                   <Button key={option.value} type="button" variant={isSelected ? 'default' : 'outline'} size="sm"
                     onClick={() => field.onChange(option.value)}
-                    className={cn('h-10 px-4 rounded-xl gap-2 transition-all border-white/10', isSelected ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 hover:bg-white/10 text-muted-foreground')}>
+                    className={cn('h-10 px-4 rounded-xl gap-2 transition-all border-white/10', isSelected ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-card/5 hover:bg-card/10 text-muted-foreground')}>
                     <Icon className="h-4 w-4" /> <span className="text-[10px] font-black uppercase tracking-widest">{option.label}</span>
                   </Button>
                 );
@@ -230,12 +230,12 @@ export function ContaReceberFormFields({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField control={form.control} name="data_vencimento" render={({ field }) => (
           <FormItem><FormLabel>Data de Vencimento *</FormLabel><FormControl>
-            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" /></div>
+            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
           </FormControl><FormMessage /></FormItem>
         )} />
         <FormField control={form.control} name="data_emissao" render={({ field }) => (
           <FormItem><FormLabel>Data de Emissão</FormLabel><FormControl>
-            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" /></div>
+            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
           </FormControl><FormMessage /></FormItem>
         )} />
       </div>
@@ -288,7 +288,7 @@ export function ContaReceberFormFields({
         )} />
         <FormField control={form.control} name="numero_documento" render={({ field }) => (
           <FormItem><FormLabel>Número do Documento</FormLabel><FormControl>
-            <div className="relative group"><Tag className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input {...field} placeholder="NF, Fatura, etc." className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" /></div>
+            <div className="relative group"><Tag className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input {...field} placeholder="NF, Fatura, etc." className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
           </FormControl><FormMessage /></FormItem>
         )} />
       </div>

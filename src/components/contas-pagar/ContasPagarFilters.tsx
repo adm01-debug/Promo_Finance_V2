@@ -70,7 +70,7 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
         <div className="flex items-center gap-2 flex-1 min-w-[140px]">
           <Tag className="h-4 w-4 text-primary/40 shrink-0" />
           <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+            <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -87,7 +87,7 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
         <div className="flex items-center gap-2 flex-1 min-w-[140px]">
           <Target className="h-4 w-4 text-primary/40 shrink-0" />
           <Select value={centroCustoFilter} onValueChange={onCentroCustoChange}>
-            <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+            <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Centro Custo" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -102,7 +102,7 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
         <div className="flex items-center gap-2 flex-1 min-w-[160px]">
           <ShieldAlert className="h-4 w-4 text-warning/40 shrink-0" />
           <Select value={aprovacaoFilter} onValueChange={onAprovacaoChange}>
-            <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+            <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Aprovação" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -122,7 +122,7 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
         <div className="flex items-center gap-2 flex-1 min-w-[160px]">
           <ArrowDownAZ className="h-4 w-4 text-primary/40 shrink-0" />
           <Select value={ordenacao} onValueChange={onOrdenacaoChange}>
-            <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+            <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Ordenar" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">

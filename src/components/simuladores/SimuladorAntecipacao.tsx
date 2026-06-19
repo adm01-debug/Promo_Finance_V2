@@ -202,7 +202,7 @@ export function SimuladorAntecipacao() {
                 variant="outline" 
                 size="lg" 
                 onClick={selecionarTodos} 
-                className="w-full h-14 rounded-2xl border-white/10 bg-white/5 font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all gap-2"
+                className="w-full h-14 rounded-2xl border-white/10 bg-card/5 font-black uppercase tracking-widest text-xs hover:bg-card/10 transition-all gap-2"
               >
                 {recebivelSelecionados.length === recebiveis.length ? (
                   <>Purge Selection ({recebiveis.length})</>
@@ -216,7 +216,7 @@ export function SimuladorAntecipacao() {
           <div className="rounded-[2rem] border border-white/5 bg-black/20 p-2 shadow-inner">
             {recebiveis.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                <div className="h-16 w-16 rounded-full bg-card/5 flex items-center justify-center border border-white/10">
                   <DollarSign className="h-8 w-8 text-muted-foreground/30" />
                 </div>
                 <div className="space-y-1">
@@ -237,7 +237,7 @@ export function SimuladorAntecipacao() {
                         "p-5 rounded-2xl cursor-pointer transition-all border group",
                         selecionado 
                           ? "bg-primary/10 border-primary shadow-[0_0_20px_rgba(var(--primary),0.1)]" 
-                          : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10"
+                          : "bg-card/5 border-white/5 hover:bg-card/10 hover:border-white/10"
                       )}
                       onClick={() => toggleRecebivel(rec.id)}
                     >
@@ -245,7 +245,7 @@ export function SimuladorAntecipacao() {
                         <div className="flex items-center gap-4">
                           <div className={cn(
                             "h-10 w-10 rounded-xl flex items-center justify-center transition-colors",
-                            selecionado ? "bg-primary text-white" : "bg-white/10 text-muted-foreground/60"
+                            selecionado ? "bg-primary text-white" : "bg-card/10 text-muted-foreground/60"
                           )}>
                             <Building2 className="h-5 w-5" />
                           </div>
@@ -254,7 +254,7 @@ export function SimuladorAntecipacao() {
                             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 flex items-center gap-2">
                               <Calendar className="h-3 w-3" />
                               {format(new Date(rec.data_vencimento), "dd MMM yyyy", { locale: ptBR })} 
-                              <span className="w-1 h-1 rounded-full bg-white/20" />
+                              <span className="w-1 h-1 rounded-full bg-card/20" />
                               Horizonte: {rec.diasParaVencimento}d
                             </p>
                           </div>
@@ -283,12 +283,12 @@ export function SimuladorAntecipacao() {
                 className="space-y-8"
               >
                 <Tabs value={modoComparacao} onValueChange={(v) => setModoComparacao(v as 'instituicoes' | 'personalizado')} className="w-full">
-                  <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-white/5 p-1 text-muted-foreground w-full border border-white/10 backdrop-blur-xl mb-8">
-                    <TabsTrigger value="instituicoes" className="flex-1 h-12 rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary font-black text-xs gap-2 uppercase tracking-widest">
+                  <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-card/5 p-1 text-muted-foreground w-full border border-white/10 backdrop-blur-xl mb-8">
+                    <TabsTrigger value="instituicoes" className="flex-1 h-12 rounded-xl data-[state=active]:bg-card data-[state=active]:text-primary font-black text-xs gap-2 uppercase tracking-widest">
                       <Building2 className="h-4 w-4" />
                       Institutional Matrix
                     </TabsTrigger>
-                    <TabsTrigger value="personalizado" className="flex-1 h-12 rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary font-black text-xs gap-2 uppercase tracking-widest">
+                    <TabsTrigger value="personalizado" className="flex-1 h-12 rounded-xl data-[state=active]:bg-card data-[state=active]:text-primary font-black text-xs gap-2 uppercase tracking-widest">
                       <Calculator className="h-4 w-4" />
                       Neural Override
                     </TabsTrigger>
@@ -340,8 +340,8 @@ export function SimuladorAntecipacao() {
                           className={cn(
                             "p-6 rounded-2xl border transition-all cursor-pointer relative group",
                             instituicaoSelecionada === sim.instituicao.id 
-                              ? "bg-white/10 border-primary ring-1 ring-primary/20 shadow-lg" 
-                              : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10"
+                              ? "bg-card/10 border-primary ring-1 ring-primary/20 shadow-lg" 
+                              : "bg-card/5 border-white/5 hover:bg-card/10 hover:border-white/10"
                           )}
                           onClick={() => setInstituicaoSelecionada(sim.instituicao.id)}
                         >
@@ -360,7 +360,7 @@ export function SimuladorAntecipacao() {
                                 </div>
                                 <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
                                   <span>{sim.instituicao.taxaMensal}% a.m.</span>
-                                  <span className="w-1 h-1 rounded-full bg-white/20" />
+                                  <span className="w-1 h-1 rounded-full bg-card/20" />
                                   <span>{sim.instituicao.prazoAprovacao}</span>
                                 </div>
                               </div>
@@ -417,7 +417,7 @@ export function SimuladorAntecipacao() {
                           { label: 'Projected Liquidity', value: formatCurrency(simulacaoPersonalizada.valorLiquido), color: 'text-success' },
                           { label: 'Average Horizon', value: `${simulacaoPersonalizada.diasMedio} Days`, color: 'text-primary' },
                         ].map((stat, i) => (
-                          <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-1">
+                          <div key={i} className="p-6 rounded-2xl bg-card/5 border border-white/5 space-y-1">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">{stat.label}</p>
                             <p className={cn("text-xl font-black tracking-tighter", stat.color)}>{stat.value}</p>
                           </div>
@@ -444,7 +444,7 @@ export function SimuladorAntecipacao() {
                       </motion.div>
                     )}
 
-                    <Button variant="outline" className="w-full h-14 rounded-2xl border-white/10 bg-white/5 font-black uppercase tracking-widest text-xs hover:bg-white/10">
+                    <Button variant="outline" className="w-full h-14 rounded-2xl border-white/10 bg-card/5 font-black uppercase tracking-widest text-xs hover:bg-card/10">
                       Export Neural Simulation Report
                     </Button>
                   </TabsContent>
