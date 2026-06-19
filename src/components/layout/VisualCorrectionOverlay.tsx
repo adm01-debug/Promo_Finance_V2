@@ -2,8 +2,10 @@ import React from 'react';
 import { PixelPerfectOverlay } from '@/components/design-system-debug/PixelPerfectOverlay';
 
 export const VisualCorrectionOverlay = () => {
-  // Only render in development or if a specific flag is set
-  if (process.env.NODE_ENV !== 'development' && !window.location.search.includes('debug=true')) {
+  const params = new URLSearchParams(window.location.search);
+
+  // Renderiza somente quando explicitamente solicitado para evitar contaminar a UI do app.
+  if (!params.has('visualDebug')) {
     return null;
   }
 
