@@ -125,7 +125,7 @@ export const DesignSystemAudit = () => {
             </p>
           </div>
           
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center min-w-[240px] shadow-2xl backdrop-blur-xl">
+          <div className="bg-card/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center min-w-[240px] shadow-2xl backdrop-blur-xl">
              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2">Conformidade</div>
              <div className="text-7xl font-black text-white leading-none">{auditResults.score}%</div>
              <div className="mt-4 flex items-center gap-2 text-success text-xs font-bold bg-success/10 px-3 py-1 rounded-full">
@@ -145,23 +145,23 @@ export const DesignSystemAudit = () => {
 
         {/* Main Tabs */}
         <Tabs defaultValue="typography" className="w-full space-y-8">
-          <TabsList className="bg-white/5 border border-white/5 p-1 rounded-2xl w-full md:w-fit">
-            <TabsTrigger value="typography" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Typography</TabsTrigger>
-            <TabsTrigger value="colors" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Color Palette</TabsTrigger>
-            <TabsTrigger value="spacing" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Grid & Spacing</TabsTrigger>
+          <TabsList className="bg-card/5 border border-white/5 p-1 rounded-2xl w-full md:w-fit">
+            <TabsTrigger value="typography" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Typography</TabsTrigger>
+            <TabsTrigger value="colors" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Color Palette</TabsTrigger>
+            <TabsTrigger value="spacing" className="rounded-xl px-8 data-[state=active]:bg-card data-[state=active]:text-black font-bold uppercase text-[10px] tracking-widest transition-all">Grid & Spacing</TabsTrigger>
           </TabsList>
 
           <TabsContent value="typography" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <Card className="bg-white/5 border-white/10 overflow-hidden rounded-3xl premium-card">
+            <Card className="bg-card/5 border-white/10 overflow-hidden rounded-3xl premium-card">
               <CardContent className="p-0">
-                <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-white/20 p-6 bg-white/[0.02]">
+                <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-white/20 p-6 bg-card/[0.02]">
                   <div className="md:col-span-3">Token & Usage</div>
                   <div className="md:col-span-5">Visual Spec</div>
                   <div className="md:col-span-2">Size / Line-Height</div>
                   <div className="md:col-span-2">Weight / Family</div>
                 </div>
                 {auditResults.typography.map((item: any, idx: number) => (
-                  <div key={idx} className="grid grid-cols-1 md:grid-cols-12 items-center p-8 border-b border-white/5 last:border-0 group hover:bg-white/[0.02] transition-colors">
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-12 items-center p-8 border-b border-white/5 last:border-0 group hover:bg-card/[0.02] transition-colors">
                     <div className="md:col-span-3">
                       <p className="text-xs font-black text-white mb-1">{item.name}</p>
                       <p className="text-[10px] font-medium text-primary uppercase tracking-tighter">{item.usage}</p>
@@ -190,7 +190,7 @@ export const DesignSystemAudit = () => {
           <TabsContent value="colors" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {auditResults.colors.map((color: any, idx: number) => (
-                <Card key={idx} className="bg-white/5 border-white/10 rounded-3xl overflow-hidden premium-card">
+                <Card key={idx} className="bg-card/5 border-white/10 rounded-3xl overflow-hidden premium-card">
                   <div className="h-32 w-full border-b border-white/10" style={{ backgroundColor: `hsl(${color.value})` }} />
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
@@ -218,14 +218,14 @@ export const DesignSystemAudit = () => {
           </TabsContent>
 
           <TabsContent value="spacing" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <Card className="bg-white/5 border-white/10 rounded-3xl premium-card">
+             <Card className="bg-card/5 border-white/10 rounded-3xl premium-card">
                 <CardContent className="p-8 space-y-8">
                   {auditResults.spacing.map((s: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-8 group">
                       <div className="w-24 text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-primary transition-colors">
                         {s.name}
                       </div>
-                      <div className="flex-1 h-12 bg-white/5 rounded-2xl relative overflow-hidden flex items-center px-4 border border-white/5">
+                      <div className="flex-1 h-12 bg-card/5 rounded-2xl relative overflow-hidden flex items-center px-4 border border-white/5">
                          <div className="absolute left-0 top-0 bottom-0 bg-primary/20 border-r border-primary/30" style={{ width: s.value }} />
                          <span className="relative z-10 text-[10px] font-mono text-white/40">{s.px} / {s.value}</span>
                       </div>
@@ -247,7 +247,7 @@ export const DesignSystemAudit = () => {
               <Button 
                 variant="outline" 
                 onClick={() => window.print()}
-                className="rounded-2xl px-8 h-12 border-white/10 bg-transparent text-white font-black uppercase text-[10px] tracking-widest hover:bg-white/5"
+                className="rounded-2xl px-8 h-12 border-white/10 bg-transparent text-white font-black uppercase text-[10px] tracking-widest hover:bg-card/5"
               >
                 Download PDF Report
               </Button>
@@ -262,7 +262,7 @@ export const DesignSystemAudit = () => {
                     }
                   );
                 }}
-                className="rounded-2xl px-8 h-12 bg-white text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-200"
+                className="rounded-2xl px-8 h-12 bg-card text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-200"
               >
                 Fix Inconsistencies
               </Button>
@@ -274,7 +274,7 @@ export const DesignSystemAudit = () => {
 };
 
 const StatCard = ({ label, value, icon: Icon, color }: any) => (
-  <Card className="bg-white/5 border-white/10 rounded-3xl premium-card">
+  <Card className="bg-card/5 border-white/10 rounded-3xl premium-card">
     <CardContent className="p-6 flex items-center justify-between">
       <div>
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">{label}</p>

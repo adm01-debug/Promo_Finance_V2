@@ -93,7 +93,7 @@ export default function PortalCliente() {
             <CardContent className="p-6">
               <p className="text-primary-foreground/80 text-xs font-bold uppercase tracking-wider">A pagar este mês</p>
               <h3 className="text-3xl font-black mt-2">{formatCurrency(3900.50)}</h3>
-              <div className="mt-4 flex items-center gap-2 text-xs font-semibold bg-white/10 w-fit px-2 py-1 rounded">
+              <div className="mt-4 flex items-center gap-2 text-xs font-semibold bg-card/10 w-fit px-2 py-1 rounded">
                 <Clock className="h-3 w-3" /> 2 títulos pendentes
               </div>
             </CardContent>

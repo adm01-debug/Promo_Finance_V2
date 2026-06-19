@@ -42,7 +42,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       animate={{ width: collapsed ? 80 : 280 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col shadow-none transition-all duration-200 glass-effect bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl'
+        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col shadow-none transition-all duration-200 glass-effect bg-card/70 dark:bg-zinc-950/70 backdrop-blur-2xl'
       )}
       data-tour="sidebar"
     >

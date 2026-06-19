@@ -74,7 +74,7 @@ export function BankAccountSwitcher() {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[240px] justify-between h-11 bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 transition-all rounded-xl backdrop-blur-sm group"
+            className="w-[240px] justify-between h-11 bg-card/5 border-white/10 hover:bg-card/10 hover:border-white/20 transition-all rounded-xl backdrop-blur-sm group"
           >
             <div className="flex items-center gap-2 overflow-hidden">
               <div className={cn(
@@ -105,7 +105,7 @@ export function BankAccountSwitcher() {
               <CommandGroup heading="Contas Ativas">
                 <CommandItem
                   onSelect={() => handleSelect(null)}
-                  className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-card/5 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
@@ -119,7 +119,7 @@ export function BankAccountSwitcher() {
                   <CommandItem
                     key={account.id}
                     onSelect={() => handleSelect(account.id)}
-                    className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-card/5 transition-colors"
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
                       <div 
@@ -146,9 +146,9 @@ export function BankAccountSwitcher() {
               </CommandGroup>
             </CommandList>
           </Command>
-          <div className="p-2 border-t border-white/5 bg-white/5 flex items-center justify-between">
+          <div className="p-2 border-t border-white/5 bg-card/5 flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">Consolidado Bancário</span>
-            <Button variant="ghost" size="sm" className="h-7 text-[10px] hover:bg-white/10" onClick={() => window.location.href = '/contas-bancarias'}>
+            <Button variant="ghost" size="sm" className="h-7 text-[10px] hover:bg-card/10" onClick={() => window.location.href = '/contas-bancarias'}>
               Gerenciar Contas
             </Button>
           </div>

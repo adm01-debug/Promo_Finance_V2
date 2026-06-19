@@ -174,7 +174,7 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
         {anexos.map((anexo) => (
           <div 
             key={anexo.id} 
-            className="group flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all"
+            className="group flex items-center justify-between p-2.5 rounded-xl bg-card/5 border border-white/5 hover:border-white/10 transition-all"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">

@@ -52,7 +52,7 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
 
   return (
     <div className="space-y-6 p-4">
-      <div className="bg-white text-black rounded-lg p-6 space-y-4 print:shadow-none">
+      <div className="bg-card text-black rounded-lg p-6 space-y-4 print:shadow-none">
         <div className="flex items-center justify-between border-b-2 border-black pb-4">
           <div className="flex items-center gap-4">
             <div className="w-20 h-10 bg-muted rounded flex items-center justify-center text-muted-foreground text-xs">Logo Banco</div>
@@ -154,7 +154,7 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
                 </h4>
                 <div className="space-y-3">
                   {boleto.eventos_pagamento.map((evento: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between text-xs bg-white/40 p-2 rounded-lg border border-success/5">
+                    <div key={i} className="flex items-center justify-between text-xs bg-card/40 p-2 rounded-lg border border-success/5">
                       <div className="flex items-center gap-2">
                         <TrendingUp className="h-3 w-3 text-success" />
                         <div>

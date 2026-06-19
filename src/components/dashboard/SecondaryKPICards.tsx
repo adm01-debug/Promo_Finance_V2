@@ -43,7 +43,7 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
           ? 'border-amber-200 bg-amber-50/50 dark:bg-amber-900/10' 
           : alertLevel === 'danger' && value > 0 
             ? 'border-rose-200 bg-rose-50/50 dark:bg-rose-900/10' 
-            : 'border-black/5 bg-white dark:bg-zinc-900/50 dark:border-white/5'
+            : 'border-black/5 bg-card dark:bg-zinc-900/50 dark:border-white/5'
       )}>
         <div className="flex items-center gap-3 relative z-10">
           <div className={cn(

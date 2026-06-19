@@ -54,7 +54,7 @@ export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTable
           const IconComponent = Icons[categoria.icone?.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('')] || Icons.Tag;
           
           return (
-            <TableRow key={categoria.id} className="border-white/5 group hover:bg-white/5 transition-colors">
+            <TableRow key={categoria.id} className="border-white/5 group hover:bg-card/5 transition-colors">
               <TableCell>
                 <div 
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm"

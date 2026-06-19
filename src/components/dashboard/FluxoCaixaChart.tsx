@@ -21,15 +21,15 @@ interface FluxoCaixaChartProps {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload) return null;
   return (
-    <div className="bg-white border border-border rounded-lg p-3 shadow-lg text-xs space-y-2 min-w-[180px]">
-      <p className="font-bold text-[#1a1c21] border-b border-border pb-1.5">{label}</p>
+    <div className="bg-card border border-border rounded-lg p-3 shadow-lg text-xs space-y-2 min-w-[180px]">
+      <p className="font-bold text-foreground border-b border-border pb-1.5">{label}</p>
       {payload.map((entry: any, i: number) => (
         <div key={i} className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full" style={{ background: entry.color }} />
-            <span className="text-[#64748b]">{entry.name}</span>
+            <span className="text-muted-foreground">{entry.name}</span>
           </div>
-          <span className="font-bold text-[#1a1c21] tabular-nums">{formatCurrency(entry.value)}</span>
+          <span className="font-bold text-foreground tabular-nums">{formatCurrency(entry.value)}</span>
         </div>
       ))}
     </div>
@@ -39,7 +39,7 @@ function CustomTooltip({ active, payload, label }: any) {
 export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCaixaChartProps) {
   return (
     <motion.div variants={itemVariants} className="w-full">
-      <Card className="h-[400px] border border-border bg-white shadow-sm rounded-xl group overflow-hidden">
+      <Card className="h-[400px] border border-border bg-card shadow-sm rounded-xl group overflow-hidden">
         <CardHeader className="p-6 pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -47,14 +47,14 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
                 <Activity className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-lg font-black text-[#1a1c21] font-heading">Fluxo de Caixa</CardTitle>
-                <CardDescription className="text-xs text-[#64748b]">Projeção de entradas e saídas</CardDescription>
+                <CardTitle className="text-lg font-black text-foreground font-heading">Fluxo de Caixa</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">Projeção de entradas e saídas</CardDescription>
               </div>
             </div>
-            <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo} className="bg-[#f1f3f9] p-0.5 rounded-lg border border-border">
+            <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo} className="bg-muted/50 p-0.5 rounded-lg border border-border">
               <TabsList className="h-8 bg-transparent border-none p-0">
                 {['7', '15', '30'].map(v => (
-                  <TabsTrigger key={v} value={v} className="text-[11px] px-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm font-bold rounded-md h-7">
+                  <TabsTrigger key={v} value={v} className="text-[11px] px-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-bold rounded-md h-7">
                     {v}d
                   </TabsTrigger>
                 ))}
@@ -97,7 +97,7 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
                 verticalAlign="top"
                 align="right"
                 wrapperStyle={{ fontSize: '11px', paddingBottom: '15px' }}
-                formatter={(value: string) => <span className="text-[#64748b] font-medium">{value}</span>}
+                formatter={(value: string) => <span className="text-muted-foreground font-medium">{value}</span>}
               />
               <Area type="monotone" dataKey="receitas" name="Receitas" stroke="#10b981" fill="url(#gradReceitas)" strokeWidth={2} />
               <Area type="monotone" dataKey="despesas" name="Despesas" stroke="#ef4444" fill="url(#gradDespesas)" strokeWidth={2} />

@@ -142,7 +142,7 @@ export default function Empresas() {
         </div>
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button onClick={() => handleOpenDialog()} size="lg" className="gap-2 font-semibold shadow-lg shadow-primary/20 relative overflow-hidden group" style={{ background: 'var(--gradient-primary)' }}>
-            <span className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
+            <span className="absolute inset-0 bg-card/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
             <Plus className="h-4 w-4 relative z-10" /><span className="relative z-10">Nova Empresa</span>
           </Button>
         </motion.div>

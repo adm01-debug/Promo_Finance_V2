@@ -125,7 +125,7 @@ export function RegrasRoteamentoTab() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ delay: index * 0.1 }}
-                  className="p-4 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all group"
+                  className="p-4 rounded-xl border border-white/5 bg-card/5 hover:bg-card/10 transition-all group"
                 >
                   <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                     <div className="flex items-center gap-4 flex-1">

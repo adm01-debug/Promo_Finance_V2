@@ -369,14 +369,14 @@ export default function Configuracoes() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-card/5">
                     <div className="space-y-0.5">
                       <Label className="text-sm font-bold">Compras Preditivas</Label>
                       <p className="text-xs text-muted-foreground">Reposição automática baseada em demanda histórica.</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
-                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-card/5">
                     <div className="space-y-0.5">
                       <Label className="text-sm font-bold">Otimização Tributária</Label>
                       <p className="text-xs text-muted-foreground">Selecionar fornecedores por melhor benefício fiscal (ICMS/IPI).</p>
@@ -397,7 +397,7 @@ export default function Configuracoes() {
                 </div>
               </div>
               
-              <Separator className="bg-white/5" />
+              <Separator className="bg-card/5" />
               
               <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 flex items-start gap-4">
                 <Brain className="h-10 w-10 text-primary shrink-0" />

@@ -138,7 +138,7 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
                     <FormLabel>Fornecedor</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-white/5 border-white/10">
+                        <SelectTrigger className="bg-card/5 border-white/10">
                           <SelectValue placeholder="Selecione um fornecedor" />
                         </SelectTrigger>
                       </FormControl>
@@ -161,7 +161,7 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
                     <FormLabel>Centro de Custo</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-white/5 border-white/10">
+                        <SelectTrigger className="bg-card/5 border-white/10">
                           <SelectValue placeholder="Selecione um centro de custo" />
                         </SelectTrigger>
                       </FormControl>
@@ -191,7 +191,7 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
               </div>
 
               {form.watch('itens').map((_, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-4 bg-white/5 rounded-xl border border-white/10">
+                <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-4 bg-card/5 rounded-xl border border-white/10">
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -254,7 +254,7 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea {...field} className="bg-white/5 border-white/10 min-h-[100px]" />
+                    <Textarea {...field} className="bg-card/5 border-white/10 min-h-[100px]" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

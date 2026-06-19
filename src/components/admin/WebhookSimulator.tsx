@@ -125,7 +125,7 @@ export function WebhookSimulator() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card className="bg-white/5 border-white/5 p-4 text-center">
+            <Card className="bg-card/5 border-white/5 p-4 text-center">
               <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">Cenários Executados</p>
               <p className="text-2xl font-bold">{stats.total}</p>
             </Card>
@@ -158,7 +158,7 @@ export function WebhookSimulator() {
                 </div>
               ) : (
                 results.map((res: any) => (
-                  <div key={res.id} className="flex items-center justify-between p-2 rounded bg-white/5 border border-white/5">
+                  <div key={res.id} className="flex items-center justify-between p-2 rounded bg-card/5 border border-white/5">
                     <div className="flex items-center gap-3">
                       {res.success ? (
                         <CheckCircle2 className="h-4 w-4 text-emerald-500" />

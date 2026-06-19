@@ -60,11 +60,11 @@ export function PrevisaoIA({ className }: { className?: string }) {
   };
 
   const getTendenciaIcon = (tendencia: string) => {
-    return <Activity className="h-4 w-4 text-[#64748b]" />;
+    return <Activity className="h-4 w-4 text-muted-foreground" />;
   };
 
   const getTendenciaColor = (tendencia: string, inverted = false) => {
-    return 'text-[#64748b]';
+    return 'text-muted-foreground';
   };
 
   const parseValor = (valor: string): number => {
@@ -102,7 +102,7 @@ export function PrevisaoIA({ className }: { className?: string }) {
 
   if (loading) {
     return (
-      <Card className={cn(className, "border border-border bg-white shadow-sm rounded-xl")}>
+      <Card className={cn(className, "border border-border bg-card shadow-sm rounded-xl")}>
         <CardHeader className="p-6">
           <div className="flex items-center gap-4">
             <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center text-primary animate-pulse">
@@ -115,8 +115,8 @@ export function PrevisaoIA({ className }: { className?: string }) {
           </div>
         </CardHeader>
         <CardContent className="p-6 pt-2 space-y-6">
-          <Skeleton className="h-32 w-full rounded-lg bg-[#f1f3f9]" />
-          <Skeleton className="h-48 w-full rounded-lg bg-[#f1f3f9]" />
+          <Skeleton className="h-32 w-full rounded-lg bg-muted/50" />
+          <Skeleton className="h-48 w-full rounded-lg bg-muted/50" />
         </CardContent>
       </Card>
     );
@@ -154,16 +154,16 @@ export function PrevisaoIA({ className }: { className?: string }) {
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="space-y-1 text-center sm:text-left">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748b]">Score Financeiro</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Score Financeiro</p>
                 <div className="flex items-baseline justify-center sm:justify-start gap-1">
                   <span className={cn("text-5xl font-bold tracking-tight", getScoreColor(analise?.score_saude_financeira || '0'))}>
                     {analise?.score_saude_financeira || 0}
                   </span>
-                  <span className="text-base font-medium text-[#94a3b8]">/100</span>
+                  <span className="text-base font-medium text-muted-foreground">/100</span>
                 </div>
               </div>
               <div className="flex-1 max-w-xs w-full space-y-3">
-                <div className="h-2 rounded-full bg-[#e2e8f0] overflow-hidden">
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${score}%` }}
@@ -174,7 +174,7 @@ export function PrevisaoIA({ className }: { className?: string }) {
                     )} 
                   />
                 </div>
-                <p className="text-[11px] font-medium text-[#64748b] leading-relaxed text-center italic">
+                <p className="text-[11px] font-medium text-muted-foreground leading-relaxed text-center italic">
                   "{analise?.resumo_executivo}"
                 </p>
               </div>
@@ -182,20 +182,20 @@ export function PrevisaoIA({ className }: { className?: string }) {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-4 h-9 items-center justify-center rounded-lg bg-[#f1f3f9] p-0.5 text-[#64748b] w-full border border-border mb-6">
-              <TabsTrigger value="visao-geral" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
+            <TabsList className="grid grid-cols-4 h-9 items-center justify-center rounded-lg bg-muted/50 p-0.5 text-muted-foreground w-full border border-border mb-6">
+              <TabsTrigger value="visao-geral" className="rounded-md data-[state=active]:bg-card data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <PieChart className="h-3.5 w-3.5" />
                 Resumo
               </TabsTrigger>
-              <TabsTrigger value="tendencias" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
+              <TabsTrigger value="tendencias" className="rounded-md data-[state=active]:bg-card data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <BarChart3 className="h-3.5 w-3.5" />
                 Trends
               </TabsTrigger>
-              <TabsTrigger value="projecoes" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
+              <TabsTrigger value="projecoes" className="rounded-md data-[state=active]:bg-card data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <Target className="h-3.5 w-3.5" />
                 Metas
               </TabsTrigger>
-              <TabsTrigger value="alertas" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
+              <TabsTrigger value="alertas" className="rounded-md data-[state=active]:bg-card data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <AlertTriangle className="h-3.5 w-3.5" />
                 Riscos
               </TabsTrigger>

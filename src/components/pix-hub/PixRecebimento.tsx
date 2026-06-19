@@ -82,7 +82,7 @@ export function PixRecebimento() {
       </div>
 
       <Card className="border-none bg-background/40 backdrop-blur-xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10">
-        <CardHeader className="border-b border-white/5 bg-white/[0.02] p-8">
+        <CardHeader className="border-b border-white/5 bg-card/[0.02] p-8">
           <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
             Cobranças PIX Recentes
@@ -98,7 +98,7 @@ export function PixRecebimento() {
           ) : (
             <div className="divide-y divide-white/5">
               {pixPayments.map((payment) => (
-                <div key={payment.id} className="flex items-center justify-between p-6 hover:bg-white/[0.02] transition-colors group">
+                <div key={payment.id} className="flex items-center justify-between p-6 hover:bg-card/[0.02] transition-colors group">
                   <div className="flex items-center gap-4">
                     <div className={cn(
                       "h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110",

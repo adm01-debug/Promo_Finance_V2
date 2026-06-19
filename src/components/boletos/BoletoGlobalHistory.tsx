@@ -31,7 +31,7 @@ export function BoletoGlobalHistory() {
   }
 
   return (
-    <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden">
+    <div className="rounded-xl border border-white/5 bg-card/[0.02] overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">

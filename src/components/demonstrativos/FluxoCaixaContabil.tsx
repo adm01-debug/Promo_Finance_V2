@@ -172,8 +172,8 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
         ease: [0.23, 1, 0.32, 1]
       }}
       className={cn(
-        "group transition-all duration-300 hover:bg-white/[0.03]",
-        linha.nivel === 0 ? "bg-white/[0.02] font-black" : "font-medium"
+        "group transition-all duration-300 hover:bg-card/[0.03]",
+        linha.nivel === 0 ? "bg-card/[0.02] font-black" : "font-medium"
       )}
     >
       <td className="p-6 text-[11px] font-mono text-muted-foreground/40 group-hover:text-primary transition-colors">
@@ -215,7 +215,7 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
           <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 group hover:ring-primary/30 transition-all duration-500">
             <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2.5 rounded-xl bg-white/5 text-muted-foreground group-hover:text-primary transition-colors">
+                <div className="p-2.5 rounded-xl bg-card/5 text-muted-foreground group-hover:text-primary transition-colors">
                   <Wallet className="h-5 w-5" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Initial Balance</span>
@@ -313,7 +313,7 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-white/[0.02] border-b border-white/5">
+                  <tr className="bg-card/[0.02] border-b border-white/5">
                     <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 w-24">Código</th>
                     <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Discriminação das Atividades</th>
                     <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 w-48">Fluxo (R$)</th>
@@ -337,7 +337,7 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
                   {fluxo.financiamento.map((linha, index) => renderLinha(linha, index + fluxo.operacional.length + fluxo.investimento.length))}
 
                   {/* Variação */}
-                  <tr className="bg-white/[0.03] font-black">
+                  <tr className="bg-card/[0.03] font-black">
                     <td className="p-6 text-[11px] font-mono text-muted-foreground/40">4</td>
                     <td className="p-6 text-base uppercase tracking-tight">(=) VARIAÇÃO LÍQUIDA DE CAIXA NO PERÍODO</td>
                     <td className={cn(
@@ -359,8 +359,8 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
             </div>
           </div>
 
-          <div className="mt-8 flex items-center gap-3 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <div className="p-2 rounded-lg bg-white/5">
+          <div className="mt-8 flex items-center gap-3 p-6 rounded-2xl bg-card/[0.02] border border-white/5">
+            <div className="p-2 rounded-lg bg-card/5">
               <Coins className="h-4 w-4 text-muted-foreground" />
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">

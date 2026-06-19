@@ -260,7 +260,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+          className="bg-card/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
         >
           <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
             <History className="h-20 w-20 text-primary" />
@@ -276,7 +276,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+          className="bg-card/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
         >
           <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
             <ShieldCheck className="h-20 w-20 text-success" />
@@ -296,7 +296,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+          className="bg-card/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
         >
           <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
             <Layers className="h-20 w-20 text-purple-400" />
@@ -314,7 +314,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+          className="bg-card/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
         >
           <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
             <Cpu className="h-20 w-20 text-orange-400" />
@@ -403,7 +403,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 max={new Date().getFullYear()} 
                 value={ano}
                 onChange={e => setAno(Number(e.target.value))} 
-                className="h-14 bg-white/5 border-white/10 rounded-2xl font-black text-xl tracking-tighter focus:ring-primary/40 focus:border-primary transition-all text-center"
+                className="h-14 bg-card/5 border-white/10 rounded-2xl font-black text-xl tracking-tighter focus:ring-primary/40 focus:border-primary transition-all text-center"
               />
             </div>
 
@@ -413,7 +413,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                   disabled={!empresaId}
                   variant="outline"
                   onClick={() => setPreviewOpen(true)}
-                  className="flex-1 h-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold gap-3 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+                  className="flex-1 h-14 rounded-2xl border-white/10 bg-card/5 hover:bg-card/10 font-bold gap-3 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
                 >
                   <FileSearch className="h-5 w-5 text-primary" />
                   Pré-visualizar
@@ -424,7 +424,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 disabled={!empresaId} 
                 variant="outline" 
                 onClick={() => setWizardOpen(true)} 
-                className="flex-1 h-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold gap-3 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+                className="flex-1 h-14 rounded-2xl border-white/10 bg-card/5 hover:bg-card/10 font-bold gap-3 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
               >
                 <Wand2 className="h-5 w-5 text-purple-400" />
                 Inteligência Assistida
@@ -451,7 +451,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
               animate={{ opacity: 1, scale: 1 }}
               className={cn(
                 'flex items-center gap-4 rounded-[1.5rem] border p-6 backdrop-blur-md shadow-lg',
-                exportStatus === 'queued' && 'border-white/10 bg-white/5 text-muted-foreground',
+                exportStatus === 'queued' && 'border-white/10 bg-card/5 text-muted-foreground',
                 exportStatus === 'processing' && 'border-primary/20 bg-primary/5 text-primary',
                 exportStatus === 'done' && 'border-success/20 bg-success/5 text-success',
                 exportStatus === 'error' && 'border-destructive/20 bg-destructive/5 text-destructive',
@@ -503,7 +503,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 mb-2">
+          <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 bg-card/5 p-4 mb-2">
             <div className="space-y-1.5 flex-1 min-w-[140px]">
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Buscar Ano</Label>
               <div className="relative">
@@ -552,7 +552,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => { setSearchAno(''); setStatusFilter('all'); setValidacaoFilter('all'); }}
-                className="h-10 rounded-xl px-4 gap-2 text-xs font-bold hover:bg-white/10"
+                className="h-10 rounded-xl px-4 gap-2 text-xs font-bold hover:bg-card/10"
               >
                 <X className="h-3.5 w-3.5" />
                 Limpar
@@ -564,7 +564,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
             <p className="text-sm text-muted-foreground">Carregando...</p>
           ) : historicoFiltrado.length === 0 ? (
             <div className="py-20 text-center space-y-4">
-              <div className="inline-flex p-4 rounded-full bg-white/5 text-muted-foreground/30">
+              <div className="inline-flex p-4 rounded-full bg-card/5 text-muted-foreground/30">
                 <Filter className="h-8 w-8" />
               </div>
               <p className="text-muted-foreground font-medium">Nenhum registro encontrado para os filtros aplicados.</p>
@@ -576,7 +576,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
             <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
               <div className="overflow-x-auto custom-scrollbar">
                 <Table>
-                  <TableHeader className="bg-white/5">
+                  <TableHeader className="bg-card/5">
                     <TableRow className="border-white/5 hover:bg-transparent">
                       <TableHead className="w-12 p-6"></TableHead>
                       <TableHead className="p-6 font-black text-[10px] uppercase tracking-[0.2em] opacity-40 text-left">Período Fiscal</TableHead>
@@ -720,7 +720,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                             size="sm" 
                             variant="outline" 
                             onClick={() => { setTransmissaoArquivo(h); setReciboInput(''); }} 
-                            className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-primary/20 text-primary transition-all"
+                            className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-primary/20 text-primary transition-all"
                             title="Registrar transmissão"
                           >
                             <Send className="h-4 w-4" />

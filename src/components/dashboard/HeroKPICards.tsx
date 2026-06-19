@@ -102,7 +102,7 @@ export function HeroKPICard({
               <p className={cn(
                 'text-foreground font-black tabular-nums tracking-tighter leading-none font-heading transition-all duration-300 group-hover:translate-x-1',
                 size === 'hero' ? 'text-4xl' : 'text-2xl',
-                isZero && 'text-[#94a3b8]'
+                isZero && 'text-muted-foreground'
               )}>
                 {formattedValue}
               </p>

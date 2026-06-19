@@ -55,9 +55,9 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
         ease: [0.23, 1, 0.32, 1]
       }}
       className={cn(
-        "group transition-all duration-300 hover:bg-white/[0.03]",
-        conta.nivel === 0 ? "bg-white/[0.02] font-black" : "font-medium",
-        conta.nivel === 1 ? "bg-white/[0.01]" : ""
+        "group transition-all duration-300 hover:bg-card/[0.03]",
+        conta.nivel === 0 ? "bg-card/[0.02] font-black" : "font-medium",
+        conta.nivel === 1 ? "bg-card/[0.01]" : ""
       )}
     >
       <td className="p-6 text-[11px] font-mono text-muted-foreground/40 group-hover:text-primary transition-colors">
@@ -75,7 +75,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
       </td>
       <td className="p-6 text-right">
         <div className="flex items-center justify-end gap-3">
-          <div className="w-16 h-1.5 rounded-full bg-white/5 overflow-hidden">
+          <div className="w-16 h-1.5 rounded-full bg-card/5 overflow-hidden">
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${total > 0 ? Math.min((conta.valor / total) * 100, 100) : 0}%` }}
@@ -126,7 +126,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
       <div className="grid gap-8 md:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-primary/40 transition-all duration-700">
+          <Card className="border-none bg-card/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-primary/40 transition-all duration-700">
             <CardContent className="p-10">
               <div className="flex items-center justify-between mb-8">
                 <div className="p-3 rounded-2xl bg-primary shadow-lg shadow-primary/20 text-primary-foreground">
@@ -143,7 +143,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
                   <span>Liquidez Corrente</span>
                   <span className="text-primary">{balanco.totalAtivo > 0 ? ((balanco.ativoCirculante / balanco.totalAtivo) * 100).toFixed(0) : 0}%</span>
                 </div>
-                <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                <div className="h-2 rounded-full bg-card/5 overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${balanco.totalAtivo > 0 ? (balanco.ativoCirculante / balanco.totalAtivo) * 100 : 0}%` }}
@@ -201,7 +201,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-purple-500/40 transition-all duration-700">
+          <Card className="border-none bg-card/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-purple-500/40 transition-all duration-700">
             <CardContent className="p-10">
               <div className="flex items-center justify-between mb-8">
                 <div className="p-3 rounded-2xl bg-purple-600 shadow-lg shadow-purple-500/20 text-white">
@@ -218,7 +218,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
                   <span>Solvência (Equity)</span>
                   <span className="text-purple-400">{balanco.totalPassivo > 0 ? ((balanco.patrimonioLiquido / balanco.totalPassivo) * 100).toFixed(0) : 0}%</span>
                 </div>
-                <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                <div className="h-2 rounded-full bg-card/5 overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${balanco.totalPassivo > 0 ? (balanco.patrimonioLiquido / balanco.totalPassivo) * 100 : 0}%` }}
@@ -234,7 +234,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
       <div className="grid gap-12 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_rgba(0,0,0,0.4)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative">
+          <Card className="border-none bg-card/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_rgba(0,0,0,0.4)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
             <CardHeader className="p-10 pb-4 relative z-10">
               <div className="flex items-center justify-between">
@@ -257,7 +257,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
-                      <tr className="bg-white/[0.02] border-b border-white/5">
+                      <tr className="bg-card/[0.02] border-b border-white/5">
                         <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Cód.</th>
                         <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Descrição</th>
                         <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Valor</th>
@@ -275,7 +275,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
         </motion.div>
 
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
-          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_rgba(0,0,0,0.4)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative">
+          <Card className="border-none bg-card/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_rgba(0,0,0,0.4)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative">
             <div className="absolute inset-0 bg-gradient-to-bl from-purple-500/5 via-transparent to-transparent pointer-events-none" />
             <CardHeader className="p-10 pb-4 relative z-10">
               <div className="flex items-center justify-between">
@@ -295,7 +295,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
-                      <tr className="bg-white/[0.02] border-b border-white/5">
+                      <tr className="bg-card/[0.02] border-b border-white/5">
                         <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Cód.</th>
                         <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Descrição</th>
                         <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Valor</th>

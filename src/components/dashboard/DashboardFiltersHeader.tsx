@@ -98,7 +98,7 @@ export function DashboardFiltersHeader({
         </Button>
       </div>
       
-      <div className="flex flex-col sm:flex-row items-center gap-4 p-2.5 rounded-2xl glass-effect bg-white/40 dark:bg-zinc-900/40 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-xl">
+      <div className="flex flex-col sm:flex-row items-center gap-4 p-2.5 rounded-2xl glass-effect bg-card/40 dark:bg-zinc-900/40 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-xl">
         <div className="flex items-center px-2">
           <VisualValidator />
         </div>
@@ -125,7 +125,7 @@ export function DashboardFiltersHeader({
         <div className="flex items-center gap-2 flex-1 w-full px-2">
           <Target className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
-            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-[#f1f3f9] transition-all font-bold text-xs focus:ring-0">
+            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-muted/50 transition-all font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Centro de Custos" />
             </SelectTrigger>
             <SelectContent>
