@@ -361,7 +361,7 @@ export default function Auth() {
   // Forgot Password View
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-[#f8f9fc]">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/30">
         <motion.div
           variants={containerVariants}
           initial="hidden"
