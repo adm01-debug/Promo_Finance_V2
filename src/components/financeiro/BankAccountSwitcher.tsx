@@ -74,7 +74,7 @@ export function BankAccountSwitcher() {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[240px] justify-between h-11 bg-card/5 border-white/10 hover:bg-card/10 hover:border-white/20 transition-all rounded-xl backdrop-blur-sm group"
+            className="w-[240px] justify-between h-11 bg-card/5 border-border hover:bg-card/10 hover:border-white/20 transition-all rounded-xl backdrop-blur-sm group"
           >
             <div className="flex items-center gap-2 overflow-hidden">
               <div className={cn(
@@ -84,7 +84,7 @@ export function BankAccountSwitcher() {
                 <Landmark className="h-3.5 w-3.5" />
               </div>
               <div className="flex flex-col items-start truncate">
-                <span className="text-xs font-bold text-white truncate">
+                <span className="text-xs font-bold text-foreground truncate">
                   {current ? `${current.banco} (${current.conta})` : 'Todas as Contas'}
                 </span>
                 {current && (
@@ -97,7 +97,7 @@ export function BankAccountSwitcher() {
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 transition-transform group-hover:translate-y-0.5" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0 bg-[#0A0D12]/95 border-white/10 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden" align="start">
+        <PopoverContent className="w-[300px] p-0 bg-popover/95 border-border backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden" align="start">
           <Command className="bg-transparent">
             <CommandInput placeholder="Buscar conta..." className="h-12 border-none bg-transparent focus:ring-0" />
             <CommandList className="max-h-[300px] overflow-y-auto">

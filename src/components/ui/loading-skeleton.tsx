@@ -243,9 +243,9 @@ export function PageLoading({ message = "Carregando..." }: { message?: string })
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
       <div className="relative">
-        <div className="h-10 w-10 rounded-full border-4 border-[#333333] border-t-[#3b82f6] animate-spin" />
+        <div className="h-10 w-10 rounded-full border-4 border-muted border-t-primary animate-spin" />
       </div>
-      <p className="text-[#999999] text-xs font-medium tracking-tight">{message}</p>
+      <p className="text-muted-foreground text-xs font-medium tracking-tight">{message}</p>
     </div>
   );
 }

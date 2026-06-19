@@ -138,9 +138,9 @@ export default function CustomFieldsAdmin() {
           </PageHeader>
 
           <div className="grid grid-cols-1 gap-6">
-            <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
+            <Card className="bg-card/5 border-border backdrop-blur-xl">
               <CardHeader>
-                <CardTitle className="text-white">Dicionário de Dados Customizados</CardTitle>
+                <CardTitle className="text-foreground">Dicionário de Dados Customizados</CardTitle>
                 <CardDescription>
                   Estes campos aparecerão automaticamente nos formulários de criação e edição das entidades selecionadas.
                 </CardDescription>
@@ -148,20 +148,20 @@ export default function CustomFieldsAdmin() {
               <CardContent>
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-white/10">
-                      <TableHead className="text-white/40">Entidade</TableHead>
-                      <TableHead className="text-white/40">Label</TableHead>
-                      <TableHead className="text-white/40">Nome Técnico</TableHead>
-                      <TableHead className="text-white/40">Tipo</TableHead>
-                      <TableHead className="text-white/40">Obrigatório</TableHead>
-                      <TableHead className="text-right text-white/40">Ações</TableHead>
+                    <TableRow className="border-border">
+                      <TableHead className="text-foreground/40">Entidade</TableHead>
+                      <TableHead className="text-foreground/40">Label</TableHead>
+                      <TableHead className="text-foreground/40">Nome Técnico</TableHead>
+                      <TableHead className="text-foreground/40">Tipo</TableHead>
+                      <TableHead className="text-foreground/40">Obrigatório</TableHead>
+                      <TableHead className="text-right text-foreground/40">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-white/40">Carregando...</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-foreground/40">Carregando...</TableCell></TableRow>
                     ) : definitions.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-12 text-white/20">Nenhum campo customizado definido.</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={6} className="text-center py-12 text-foreground/20">Nenhum campo customizado definido.</TableCell></TableRow>
                     ) : (
                       definitions.map((def) => (
                         <TableRow key={def.id} className="border-white/5 hover:bg-card/5 transition-colors">
@@ -170,24 +170,24 @@ export default function CustomFieldsAdmin() {
                               {ENTITY_TYPES.find(e => e.value === def.entity_type)?.label || def.entity_type}
                             </Badge>
                           </TableCell>
-                          <TableCell className="font-bold text-white">{def.label}</TableCell>
-                          <TableCell><code className="text-xs text-white/40">{def.name}</code></TableCell>
-                          <TableCell className="text-white/60">
+                          <TableCell className="font-bold text-foreground">{def.label}</TableCell>
+                          <TableCell><code className="text-xs text-foreground/40">{def.name}</code></TableCell>
+                          <TableCell className="text-foreground/60">
                             {FIELD_TYPES.find(f => f.value === def.field_type)?.label || def.field_type}
                           </TableCell>
                           <TableCell>
                             {def.required ? (
                               <Badge className="bg-destructive/10 text-destructive border-destructive/20">Sim</Badge>
                             ) : (
-                              <Badge variant="outline" className="text-white/20">Não</Badge>
+                              <Badge variant="outline" className="text-foreground/20">Não</Badge>
                             )}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="icon" className="text-white/20 hover:text-white" onClick={() => handleEdit(def)}>
+                              <Button variant="ghost" size="icon" className="text-foreground/20 hover:text-foreground" onClick={() => handleEdit(def)}>
                                 <Settings className="h-4 w-4" />
                               </Button>
-                              <Button variant="ghost" size="icon" className="text-white/20 hover:text-destructive" onClick={() => deleteDefinition.mutate(def.id)}>
+                              <Button variant="ghost" size="icon" className="text-foreground/20 hover:text-destructive" onClick={() => deleteDefinition.mutate(def.id)}>
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
@@ -204,10 +204,10 @@ export default function CustomFieldsAdmin() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-[#0a0a0a] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-popover border-border text-foreground max-w-md">
           <DialogHeader>
             <DialogTitle>{editingId ? 'Editar Campo' : 'Novo Campo Customizado'}</DialogTitle>
-            <DialogDescription className="text-white/40">
+            <DialogDescription className="text-foreground/40">
               Configure como o campo aparecerá para os usuários.
             </DialogDescription>
           </DialogHeader>
@@ -219,10 +219,10 @@ export default function CustomFieldsAdmin() {
                 value={formData.entity_type} 
                 onValueChange={(val: EntityType) => setFormData({ ...formData, entity_type: val })}
               >
-                <SelectTrigger className="bg-card/5 border-white/10">
+                <SelectTrigger className="bg-card/5 border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#111] border-white/10 text-white">
+                <SelectContent className="bg-popover border-border text-foreground">
                   {ENTITY_TYPES.map((type) => (
                     <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
                   ))}
@@ -237,7 +237,7 @@ export default function CustomFieldsAdmin() {
                   value={formData.label} 
                   onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                   placeholder="Ex: Cor Favorita"
-                  className="bg-card/5 border-white/10"
+                  className="bg-card/5 border-border"
                 />
               </div>
               <div className="space-y-2">
@@ -247,7 +247,7 @@ export default function CustomFieldsAdmin() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Ex: cor_favorita"
                   disabled={!!editingId}
-                  className="bg-card/5 border-white/10"
+                  className="bg-card/5 border-border"
                 />
               </div>
             </div>
@@ -258,10 +258,10 @@ export default function CustomFieldsAdmin() {
                 value={formData.field_type} 
                 onValueChange={(val: FieldType) => setFormData({ ...formData, field_type: val })}
               >
-                <SelectTrigger className="bg-card/5 border-white/10">
+                <SelectTrigger className="bg-card/5 border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#111] border-white/10 text-white">
+                <SelectContent className="bg-popover border-border text-foreground">
                   {FIELD_TYPES.map((type) => (
                     <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
                   ))}
@@ -276,7 +276,7 @@ export default function CustomFieldsAdmin() {
                   value={formData.options} 
                   onChange={(e) => setFormData({ ...formData, options: e.target.value })}
                   placeholder="Azul, Verde, Vermelho"
-                  className="bg-card/5 border-white/10"
+                  className="bg-card/5 border-border"
                 />
               </div>
             )}
@@ -287,7 +287,7 @@ export default function CustomFieldsAdmin() {
                 value={formData.placeholder} 
                 onChange={(e) => setFormData({ ...formData, placeholder: e.target.value })}
                 placeholder="Dica para o usuário"
-                className="bg-card/5 border-white/10"
+                className="bg-card/5 border-border"
               />
             </div>
 
@@ -302,7 +302,7 @@ export default function CustomFieldsAdmin() {
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-white/40">Cancelar</Button>
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-foreground/40">Cancelar</Button>
             <Button onClick={handleSave} className="bg-primary">
               {editingId ? 'Salvar Alterações' : 'Criar Campo'}
             </Button>

@@ -234,7 +234,7 @@ export default function BloqueiosDuplicidade() {
           <div className="flex flex-wrap items-center gap-3">
             <Button 
               variant="outline" 
-              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-card/[0.02] transition-all"
+              className="rounded-xl font-bold h-10 px-6 gap-2 border-border hover:border-primary/50 bg-card/[0.02] transition-all"
               onClick={exportCSV}
               disabled={!bloqueios?.length}
             >
@@ -242,7 +242,7 @@ export default function BloqueiosDuplicidade() {
             </Button>
             <Button 
               variant="outline" 
-              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-card/[0.02] transition-all"
+              className="rounded-xl font-bold h-10 px-6 gap-2 border-border hover:border-primary/50 bg-card/[0.02] transition-all"
               onClick={exportPDF}
               disabled={!bloqueios?.length}
             >
@@ -262,7 +262,7 @@ export default function BloqueiosDuplicidade() {
 
         {/* Real-time Insights Matrix */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-8 border border-white/10 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+          <Card className="p-8 border border-border bg-gradient-to-br from-primary/10 via-primary/5 to-transparent backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
                <Coins className="h-16 w-16 text-primary" />
              </div>
@@ -276,9 +276,9 @@ export default function BloqueiosDuplicidade() {
              </div>
           </Card>
 
-          <Card className="p-8 border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+          <Card className="p-8 border border-border bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
-               <ShieldAlert className="h-16 w-16 text-white" />
+               <ShieldAlert className="h-16 w-16 text-foreground" />
              </div>
              <div className="space-y-2 relative z-10">
                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Bloqueios Realizados</p>
@@ -287,9 +287,9 @@ export default function BloqueiosDuplicidade() {
              </div>
           </Card>
 
-          <Card className="p-8 border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+          <Card className="p-8 border border-border bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
-               <User className="h-16 w-16 text-white" />
+               <User className="h-16 w-16 text-foreground" />
              </div>
              <div className="space-y-2 relative z-10">
                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Fornecedor Crítico</p>
@@ -302,7 +302,7 @@ export default function BloqueiosDuplicidade() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="p-6 border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem]">
+          <Card className="p-6 border border-border bg-card/[0.02] backdrop-blur-xl rounded-[2.5rem]">
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <div className="relative group md:col-span-1.5">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
@@ -380,7 +380,7 @@ export default function BloqueiosDuplicidade() {
 
 
         <motion.div variants={itemVariants}>
-          <Card className="border border-white/10 bg-card/[0.01] backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden">
+          <Card className="border border-border bg-card/[0.01] backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-white/5 bg-card/[0.02]">
@@ -417,7 +417,7 @@ export default function BloqueiosDuplicidade() {
                   <TableRow key={b.id} className="hover:bg-card/[0.03] transition-colors group">
                     <TableCell className="p-6">
                       <div className="flex flex-col">
-                        <span className="font-bold text-sm text-white/90">
+                        <span className="font-bold text-sm text-foreground/90">
                           {format(new Date(b.created_at), "dd MMM yyyy", { locale: ptBR })}
                         </span>
                         <span className="text-[11px] font-mono text-primary flex items-center gap-1">
@@ -445,7 +445,7 @@ export default function BloqueiosDuplicidade() {
                           <ShieldAlert className="h-3.5 w-3.5 text-destructive" />
                         </div>
                         <div className="space-y-1">
-                          <p className="text-sm font-bold text-white/80 leading-snug">{b.motivo_bloqueio}</p>
+                          <p className="text-sm font-bold text-foreground/80 leading-snug">{b.motivo_bloqueio}</p>
                           <div className="flex items-center gap-2">
                              <span className="text-[11px] font-black text-primary">{formatCurrency(b.valor_bloqueado)}</span>
                              {b.match_type === 'fuzzy' && (
@@ -512,7 +512,7 @@ export default function BloqueiosDuplicidade() {
         </motion.div>
 
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="p-8 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-xl rounded-[2rem] flex items-center gap-6 group hover:border-primary/30 transition-all">
+          <Card className="p-8 border border-border bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-xl rounded-[2rem] flex items-center gap-6 group hover:border-primary/30 transition-all">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
               <Bell className="h-8 w-8 text-primary" />
             </div>
@@ -525,7 +525,7 @@ export default function BloqueiosDuplicidade() {
             </div>
           </Card>
 
-          <Card className="p-8 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-xl rounded-[2rem] flex items-center gap-6 group hover:border-blue-500/30 transition-all">
+          <Card className="p-8 border border-border bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-xl rounded-[2rem] flex items-center gap-6 group hover:border-blue-500/30 transition-all">
             <div className="h-16 w-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
               <CheckCircle2 className="h-8 w-8 text-blue-400" />
             </div>
@@ -542,7 +542,7 @@ export default function BloqueiosDuplicidade() {
 
         {/* Details & Idempotency Dialog */}
         <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-          <DialogContent className="max-w-2xl bg-[#0A0D14]/95 border-white/10 backdrop-blur-2xl rounded-[2.5rem] p-8">
+          <DialogContent className="max-w-2xl bg-popover/95 border-border backdrop-blur-2xl rounded-[2.5rem] p-8">
             <DialogHeader>
               <DialogTitle className="text-2xl font-black flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center">

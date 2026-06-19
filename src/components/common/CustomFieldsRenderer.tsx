@@ -42,7 +42,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 placeholder={field.placeholder || ''}
                 value={values[field.name] || ''}
                 onChange={(e) => onChange(field.name, e.target.value)}
-                className="bg-card/5 border-white/10"
+                className="bg-card/5 border-border"
               />
             )}
 
@@ -53,7 +53,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 placeholder={field.placeholder || ''}
                 value={values[field.name] || ''}
                 onChange={(e) => onChange(field.name, Number(e.target.value))}
-                className="bg-card/5 border-white/10"
+                className="bg-card/5 border-border"
               />
             )}
 
@@ -63,7 +63,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 type="date"
                 value={values[field.name] || ''}
                 onChange={(e) => onChange(field.name, e.target.value)}
-                className="bg-card/5 border-white/10"
+                className="bg-card/5 border-border"
               />
             )}
 
@@ -74,7 +74,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                   checked={!!values[field.name]}
                   onChange={(e) => onChange(field.name, e.target.checked)}
                 />
-                <Label htmlFor={field.name} className="text-sm font-normal text-white/60">
+                <Label htmlFor={field.name} className="text-sm font-normal text-foreground/60">
                   {field.placeholder || 'Ativado'}
                 </Label>
               </div>
@@ -85,10 +85,10 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 value={values[field.name] || ''}
                 onValueChange={(val) => onChange(field.name, val)}
               >
-                <SelectTrigger className="bg-card/5 border-white/10">
+                <SelectTrigger className="bg-card/5 border-border">
                   <SelectValue placeholder={field.placeholder || 'Selecione...'} />
                 </SelectTrigger>
-                <SelectContent className="bg-[#111] border-white/10 text-white">
+                <SelectContent className="bg-popover border-border text-foreground">
                   {field.options.map((opt) => (
                     <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                   ))}

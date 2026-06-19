@@ -41,7 +41,7 @@ export const StartupDiagnostic: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-[#020202] flex flex-col items-center justify-center p-6">
+    <div className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center p-6">
       {/* Background decoration */}
       <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[140px] pointer-events-none" />
       <div className="absolute bottom-[10%] right-[-15%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
@@ -55,14 +55,14 @@ export const StartupDiagnostic: React.FC<{ children: React.ReactNode }> = ({ chi
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider mb-2">
             Verificação de Integridade
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight">Promo Finance</h1>
-          <p className="text-white/40 text-sm">Validando infraestrutura neural e conectividade...</p>
+          <h1 className="text-3xl font-black text-foreground tracking-tight">Promo Finance</h1>
+          <p className="text-foreground/40 text-sm">Validando infraestrutura neural e conectividade...</p>
         </div>
 
-        <Card className="bg-card/5 border-white/10 backdrop-blur-xl overflow-hidden">
+        <Card className="bg-card/5 border-border backdrop-blur-xl overflow-hidden">
           <CardContent className="p-6 space-y-6">
             <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-white/40">
+              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-foreground/40">
                 <span>Progresso</span>
                 <span>{Math.round(progress)}%</span>
               </div>
@@ -86,9 +86,9 @@ export const StartupDiagnostic: React.FC<{ children: React.ReactNode }> = ({ chi
                       {getIcon(result.id, result.status)}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white/90">{result.name}</p>
+                      <p className="text-sm font-bold text-foreground/90">{result.name}</p>
                       {result.message && (
-                        <p className={`text-[11px] ${result.status === 'error' ? 'text-destructive' : 'text-white/40'}`}>
+                        <p className={`text-[11px] ${result.status === 'error' ? 'text-destructive' : 'text-foreground/40'}`}>
                           {result.message}
                         </p>
                       )}
@@ -120,7 +120,7 @@ export const StartupDiagnostic: React.FC<{ children: React.ReactNode }> = ({ chi
                     <RefreshCcw className="mr-2 h-4 w-4 group-hover:rotate-180 transition-transform duration-500" />
                     Tentar Novamente
                   </Button>
-                  <p className="text-center text-[10px] text-white/20 mt-4 italic">
+                  <p className="text-center text-[10px] text-foreground/20 mt-4 italic">
                     Se o problema persistir, entre em contato com o suporte técnico.
                   </p>
                 </motion.div>
