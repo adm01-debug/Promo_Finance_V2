@@ -161,9 +161,9 @@ export default function Conciliacao() {
               <p className="text-muted-foreground mt-1">Reconcilie transações bancárias com lançamentos do sistema</p>
             </div>
             
-            <div className="flex items-center gap-3 bg-white/5 p-2 rounded-2xl border border-white/10 backdrop-blur-sm">
+            <div className="flex items-center gap-3 bg-card/5 p-2 rounded-2xl border border-white/10 backdrop-blur-sm">
               <EmpresaSwitcher />
-              <div className="w-px h-6 bg-white/10 mx-1" />
+              <div className="w-px h-6 bg-card/10 mx-1" />
               <BankAccountSwitcher />
             </div>
           </div>

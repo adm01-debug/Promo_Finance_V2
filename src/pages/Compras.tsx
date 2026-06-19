@@ -115,7 +115,7 @@ export default function Compras() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-white/[0.02] border-b border-white/5">
+                    <tr className="bg-card/[0.02] border-b border-white/5">
                       <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">ID / Data</th>
                       <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Fornecedor</th>
                       <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Itens</th>
@@ -126,7 +126,7 @@ export default function Compras() {
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {pedidos.map((pedido) => (
-                      <tr key={pedido.id} className="hover:bg-white/[0.02] transition-colors group">
+                      <tr key={pedido.id} className="hover:bg-card/[0.02] transition-colors group">
                         <td className="p-6">
                           <div className="font-black text-sm">#{pedido.id}</div>
                           <div className="text-[10px] text-muted-foreground">{pedido.data}</div>

@@ -92,7 +92,7 @@ export default function Logistica() {
               </div>
 
               <StandardTableCard>
-                <div className="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/[0.02]">
+                <div className="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card/[0.02]">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
                     <Input 
@@ -100,7 +100,7 @@ export default function Logistica() {
                       className="pl-10 h-11 bg-background/20 border-white/10 rounded-xl focus:ring-primary/20 transition-all"
                     />
                   </div>
-                  <Button variant="outline" className="h-11 px-4 rounded-xl border-white/10 bg-background/20 gap-2 font-bold hover:bg-white/5 transition-all">
+                  <Button variant="outline" className="h-11 px-4 rounded-xl border-white/10 bg-background/20 gap-2 font-bold hover:bg-card/5 transition-all">
                     <Filter className="h-4 w-4" /> Filtros
                   </Button>
                 </div>
@@ -108,7 +108,7 @@ export default function Logistica() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-white/[0.01]">
+                      <tr className="bg-card/[0.01]">
                         <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Objeto / Rastreio</th>
                         <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Destinatário</th>
                         <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Status</th>
@@ -122,7 +122,7 @@ export default function Logistica() {
                         { id: 'BR987654321', cliente: 'Maria Oliveira', status: 'entregue', data: '2024-05-21 09:15' },
                         { id: 'BR456789123', cliente: 'Empresa ABC', status: 'pendente', data: '2024-05-22 08:00' },
                       ].map((item, i) => (
-                        <tr key={i} className="hover:bg-white/[0.02] transition-all duration-300 group">
+                        <tr key={i} className="hover:bg-card/[0.02] transition-all duration-300 group">
                           <td className="p-6">
                             <div className="font-black text-sm tracking-tight">{item.id}</div>
                             <div className="text-[10px] text-muted-foreground font-medium uppercase">Correios SEDEX</div>

@@ -37,7 +37,7 @@ export const PixelPerfectOverlay = ({ referenceImageUrl }: PixelPerfectOverlayPr
   return (
     <>
       {/* Overlay Control Panel */}
-      <div className="fixed bottom-6 right-6 z-[9999] bg-white border shadow-2xl rounded-xl p-4 w-80 space-y-4 pointer-events-auto">
+      <div className="fixed bottom-6 right-6 z-[9999] bg-card border shadow-2xl rounded-xl p-4 w-80 space-y-4 pointer-events-auto">
         <div className="flex items-center justify-between border-b pb-2">
           <div className="flex items-center space-x-2">
             <Layers className="w-4 h-4 text-primary" />

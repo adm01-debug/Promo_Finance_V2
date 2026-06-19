@@ -42,7 +42,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 placeholder={field.placeholder || ''}
                 value={values[field.name] || ''}
                 onChange={(e) => onChange(field.name, e.target.value)}
-                className="bg-white/5 border-white/10"
+                className="bg-card/5 border-white/10"
               />
             )}
 
@@ -53,7 +53,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 placeholder={field.placeholder || ''}
                 value={values[field.name] || ''}
                 onChange={(e) => onChange(field.name, Number(e.target.value))}
-                className="bg-white/5 border-white/10"
+                className="bg-card/5 border-white/10"
               />
             )}
 
@@ -63,7 +63,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 type="date"
                 value={values[field.name] || ''}
                 onChange={(e) => onChange(field.name, e.target.value)}
-                className="bg-white/5 border-white/10"
+                className="bg-card/5 border-white/10"
               />
             )}
 
@@ -85,7 +85,7 @@ export function CustomFieldsRenderer({ entityType, values, onChange, errors }: C
                 value={values[field.name] || ''}
                 onValueChange={(val) => onChange(field.name, val)}
               >
-                <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectTrigger className="bg-card/5 border-white/10">
                   <SelectValue placeholder={field.placeholder || 'Selecione...'} />
                 </SelectTrigger>
                 <SelectContent className="bg-[#111] border-white/10 text-white">

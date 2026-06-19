@@ -64,7 +64,7 @@ export default function Categorias() {
               onValueChange={(v) => setActiveTab(v as any)} 
               className="w-full md:w-auto"
             >
-              <TabsList className="grid grid-cols-2 w-full md:w-[300px] h-10 bg-white/5 border-white/10 rounded-xl">
+              <TabsList className="grid grid-cols-2 w-full md:w-[300px] h-10 bg-card/5 border-white/10 rounded-xl">
                 <TabsTrigger value="despesa" className="gap-2 rounded-lg">
                   <ArrowUpDown className="h-4 w-4 text-destructive" />
                   Despesas

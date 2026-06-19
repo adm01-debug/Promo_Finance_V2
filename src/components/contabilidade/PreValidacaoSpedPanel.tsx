@@ -75,7 +75,7 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
           <div className="flex items-center gap-5">
             <div className={cn(
               "p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500",
-              podeGerar ? "bg-success/20 text-success" : "bg-white/5 text-white/20"
+              podeGerar ? "bg-success/20 text-success" : "bg-card/5 text-white/20"
             )}>
               {podeGerar ? <ShieldCheck className="h-8 w-8" /> : <ShieldAlert className="h-8 w-8" />}
             </div>
@@ -165,7 +165,7 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
                     <div className="flex-1 space-y-2">
                       <div className="flex flex-wrap items-center gap-3">
                         <span className="font-black uppercase tracking-tight text-sm text-foreground/80">{a.titulo}</span>
-                        <Badge variant="outline" className="text-[9px] font-black uppercase border-white/10 bg-white/5 opacity-60">
+                        <Badge variant="outline" className="text-[9px] font-black uppercase border-white/10 bg-card/5 opacity-60">
                           {CATEGORIA_LABEL[a.categoria] ?? a.categoria}
                         </Badge>
                         <Badge
@@ -208,7 +208,7 @@ function ResumoBox({ label, value, highlight, icon: Icon }: { label: string; val
   return (
     <div
       className={cn(
-        'rounded-2xl border bg-white/[0.03] p-5 transition-all duration-500 hover:bg-white/[0.06] shadow-xl group/box relative overflow-hidden',
+        'rounded-2xl border bg-card/[0.03] p-5 transition-all duration-500 hover:bg-card/[0.06] shadow-xl group/box relative overflow-hidden',
         highlight ? 'border-destructive/40 bg-destructive/5 ring-1 ring-destructive/20' : 'border-white/5',
       )}
     >

@@ -179,7 +179,7 @@ export default function Clientes() {
                     <TabsTrigger value="lista" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes')}>Lista Geral</TabsTrigger>
                     <TabsTrigger value="scoring" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes#scoring')}>Scoring & Risco</TabsTrigger>
                   </TabsList>
-                  <div className="h-8 w-px bg-white/10 mx-1" />
+                  <div className="h-8 w-px bg-card/10 mx-1" />
                   <ExportMenu
                     data={filteredClientes}
                     columns={clientesColumns}

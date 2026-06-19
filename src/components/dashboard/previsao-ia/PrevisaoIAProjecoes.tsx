@@ -44,7 +44,7 @@ export function PrevisaoIAProjecoes({ projecao, recomendacoes, parseValor }: Pro
                     <span className="flex h-2 w-2 rounded-full bg-destructive animate-ping" />
                   </div>
                 )}
-                <CardHeader className="bg-white/5 py-3 border-b border-white/5">
+                <CardHeader className="bg-card/5 py-3 border-b border-white/5">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">
                     {periodo === 'proximos_7_dias' ? 'Short Term (7d)' : periodo === 'proximos_30_dias' ? 'Mid Term (30d)' : 'Long Term (90d)'}
                   </CardTitle>
@@ -98,7 +98,7 @@ export function PrevisaoIAProjecoes({ projecao, recomendacoes, parseValor }: Pro
                   initial={{ opacity: 0, x: -10 }} 
                   animate={{ opacity: 1, x: 0 }} 
                   transition={{ delay: i * 0.05 }} 
-                  className="group flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all cursor-default"
+                  className="group flex items-start gap-4 p-4 rounded-2xl bg-card/5 border border-white/5 hover:bg-card/10 hover:border-white/10 transition-all cursor-default"
                 >
                   <div className="mt-1 h-6 w-6 rounded-lg bg-success/20 flex items-center justify-center shrink-0">
                     <CheckCircle2 className="h-4 w-4 text-success" />

@@ -73,7 +73,7 @@ export function PlanoContasTab({ empresaId }: Props) {
               variant="outline" 
               onClick={() => setHistoryOpen(true)} 
               disabled={!empresaId}
-              className="h-12 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold px-5 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+              className="h-12 rounded-2xl border-white/10 bg-card/5 hover:bg-card/10 font-bold px-5 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
             >
               <History className="h-4 w-4 mr-2 text-primary" />
               Histórico
@@ -87,7 +87,7 @@ export function PlanoContasTab({ empresaId }: Props) {
               variant="outline" 
               onClick={() => setAuditOpen(true)} 
               disabled={!empresaId}
-              className="h-12 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold px-5 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+              className="h-12 rounded-2xl border-white/10 bg-card/5 hover:bg-card/10 font-bold px-5 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
             >
               <ShieldCheck className="h-4 w-4 mr-2 text-success" />
               Auditar CFC
@@ -115,22 +115,22 @@ export function PlanoContasTab({ empresaId }: Props) {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Código Estrutural</Label>
-                    <Input value={form.codigo} onChange={e => setForm({ ...form, codigo: e.target.value })} placeholder="1.1.01.001" className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                    <Input value={form.codigo} onChange={e => setForm({ ...form, codigo: e.target.value })} placeholder="1.1.01.001" className="h-12 bg-card/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Cód. Referencial CFC</Label>
-                    <Input value={form.codigo_referencial} onChange={e => setForm({ ...form, codigo_referencial: e.target.value })} placeholder="1.01.01.01.01" className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                    <Input value={form.codigo_referencial} onChange={e => setForm({ ...form, codigo_referencial: e.target.value })} placeholder="1.01.01.01.01" className="h-12 bg-card/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Descrição da Conta</Label>
-                  <Input value={form.descricao} onChange={e => setForm({ ...form, descricao: e.target.value })} className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                  <Input value={form.descricao} onChange={e => setForm({ ...form, descricao: e.target.value })} className="h-12 bg-card/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Natureza</Label>
                     <Select value={form.natureza} onValueChange={v => setForm({ ...form, natureza: v })}>
-                      <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-12 rounded-xl border-white/10 bg-card/5 font-bold"><SelectValue /></SelectTrigger>
                       <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                         <SelectItem value="ativo">Ativo</SelectItem>
                         <SelectItem value="passivo">Passivo</SelectItem>
@@ -144,7 +144,7 @@ export function PlanoContasTab({ empresaId }: Props) {
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Tipo</Label>
                     <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
-                      <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-12 rounded-xl border-white/10 bg-card/5 font-bold"><SelectValue /></SelectTrigger>
                       <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                         <SelectItem value="sintetica">Sintética</SelectItem>
                         <SelectItem value="analitica">Analítica</SelectItem>
@@ -169,7 +169,7 @@ export function PlanoContasTab({ empresaId }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <motion.div 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+            className="p-4 rounded-3xl bg-card/5 border border-white/5 flex items-center gap-4 group/stat"
           >
             <div className="p-3 rounded-2xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
               <BookOpen className="h-5 w-5" />
@@ -181,7 +181,7 @@ export function PlanoContasTab({ empresaId }: Props) {
           </motion.div>
           <motion.div 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+            className="p-4 rounded-3xl bg-card/5 border border-white/5 flex items-center gap-4 group/stat"
           >
             <div className="p-3 rounded-2xl bg-purple-500/10 text-purple-400 group-hover:scale-110 transition-transform">
               <Layers className="h-5 w-5" />
@@ -193,7 +193,7 @@ export function PlanoContasTab({ empresaId }: Props) {
           </motion.div>
           <motion.div 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+            className="p-4 rounded-3xl bg-card/5 border border-white/5 flex items-center gap-4 group/stat"
           >
             <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
               <TrendingUp className="h-5 w-5" />
@@ -205,7 +205,7 @@ export function PlanoContasTab({ empresaId }: Props) {
           </motion.div>
           <motion.div 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+            className="p-4 rounded-3xl bg-card/5 border border-white/5 flex items-center gap-4 group/stat"
           >
             <div className="p-3 rounded-2xl bg-success/10 text-success group-hover:scale-110 transition-transform">
               <CheckCircle className="h-5 w-5" />
@@ -224,13 +224,13 @@ export function PlanoContasTab({ empresaId }: Props) {
               placeholder="Buscar por código, descrição ou referencial..." 
               value={busca} 
               onChange={e => setBusca(e.target.value)} 
-              className="h-14 pl-12 bg-white/5 border-white/10 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
+              className="h-14 pl-12 bg-card/5 border-white/10 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
             />
           </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5 cursor-help">
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-card/5 px-5 py-4 rounded-2xl border border-white/5 cursor-help">
                   {filtered.length} / {contas.length} registros
                 </div>
               </TooltipTrigger>
@@ -247,9 +247,9 @@ export function PlanoContasTab({ empresaId }: Props) {
             <span className="font-black uppercase tracking-widest text-xs">Mapeando estrutura...</span>
           </div>
         ) : (
-          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-card/[0.01] shadow-inner">
             <Table>
-              <TableHeader className="bg-white/5">
+              <TableHeader className="bg-card/5">
                 <TableRow className="border-white/5 hover:bg-transparent">
                   <TableHead className="w-40 text-[10px] font-black uppercase tracking-widest p-6">Código</TableHead>
                   <TableHead className="text-[10px] font-black uppercase tracking-widest">Descrição</TableHead>
@@ -266,7 +266,7 @@ export function PlanoContasTab({ empresaId }: Props) {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.005 }}
-                      className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                      className="border-white/5 hover:bg-card/5 transition-colors group/row"
                     >
                       <TableCell className="p-6">
                         <Badge variant="outline" className="font-mono font-black text-xs border-none bg-primary/10 text-primary px-3 py-1 rounded-lg">

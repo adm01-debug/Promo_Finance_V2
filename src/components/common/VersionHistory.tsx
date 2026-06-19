@@ -75,7 +75,7 @@ export function VersionHistory({ open, onOpenChange, recordId, tableName }: Vers
               {logs.map((log) => (
                 <div key={log.id} className="relative pl-10">
                   <div className="absolute left-2 top-1.5 w-4 h-4 rounded-full bg-background border-2 border-primary z-10" />
-                  <Card className="border-white/5 bg-white/5 shadow-none hover:bg-white/10 transition-colors">
+                  <Card className="border-white/5 bg-card/5 shadow-none hover:bg-card/10 transition-colors">
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <Badge variant="outline" className="text-[10px] uppercase font-bold">

@@ -92,7 +92,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
     <div className="w-full overflow-x-auto">
       <Table className="min-w-[1200px]">
         <TableHeader>
-          <tr className="bg-white/[0.02] border-b border-white/5">
+          <tr className="bg-card/[0.02] border-b border-white/5">
             <th className="w-16 p-6 text-center">
               <Checkbox 
                 checked={isAllSelected}

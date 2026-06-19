@@ -103,8 +103,8 @@ export function RegrasDuplicidadeTab() {
   return (
     <motion.div className="space-y-6" variants={containerVariants} initial="hidden" animate="visible">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2rem] overflow-hidden">
-          <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
+        <Card className="lg:col-span-2 border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2rem] overflow-hidden">
+          <CardHeader className="bg-card/[0.02] border-b border-white/5 p-8">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <CardTitle className="text-2xl font-black flex items-center gap-2">
@@ -120,7 +120,7 @@ export function RegrasDuplicidadeTab() {
           <CardContent className="p-8 space-y-8">
             <div className="grid gap-6">
               {fields.map((field) => (
-                <div key={field.id} className="flex items-start justify-between p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] transition-all border border-white/5 group">
+                <div key={field.id} className="flex items-start justify-between p-5 rounded-2xl bg-card/[0.03] hover:bg-card/[0.06] transition-all border border-white/5 group">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Checkbox 
@@ -144,7 +144,7 @@ export function RegrasDuplicidadeTab() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-              <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
+              <div className="p-6 rounded-2xl bg-card/[0.03] border border-white/5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <Label className="text-sm font-bold flex items-center gap-2">
@@ -159,7 +159,7 @@ export function RegrasDuplicidadeTab() {
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
+              <div className="p-6 rounded-2xl bg-card/[0.03] border border-white/5 space-y-4">
                 <div className="space-y-1">
                   <Label className="text-sm font-bold flex items-center gap-2">
                     <Sliders className="h-4 w-4 text-primary" /> Tolerância (Dias)
@@ -168,7 +168,7 @@ export function RegrasDuplicidadeTab() {
                 </div>
                 <Input 
                   type="number"
-                  className="h-10 bg-white/5 border-white/5 rounded-xl font-bold"
+                  className="h-10 bg-card/5 border-white/5 rounded-xl font-bold"
                   value={toleranciaDias}
                   onChange={(e) => setToleranciaDias(Number(e.target.value))}
                 />
@@ -202,14 +202,14 @@ export function RegrasDuplicidadeTab() {
               <Button 
                 onClick={() => saveMutation.mutate({ fields: selectedFields, fuzzy: fuzzyMatching, tolerance: toleranciaDias })}
                 disabled={saveMutation.isPending}
-                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-xl gap-2 shadow-lg"
+                className="w-full h-14 bg-card text-primary hover:bg-card/90 font-black rounded-xl gap-2 shadow-lg"
               >
                 <Save className="h-5 w-5" /> Salvar & Versionar
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2rem]">
+          <Card className="border border-white/10 bg-card/[0.02] backdrop-blur-xl rounded-[2rem]">
             <CardHeader className="p-6 pb-2">
               <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <History className="h-4 w-4" /> Histórico de Regras
@@ -221,7 +221,7 @@ export function RegrasDuplicidadeTab() {
                    <span className="text-muted-foreground">v{config?.versao || 1} (Atual)</span>
                    <span className="font-bold">{config?.created_at ? format(new Date(config.created_at), 'dd/MM/yy') : '--/--'}</span>
                  </div>
-                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                 <div className="h-1.5 w-full bg-card/5 rounded-full overflow-hidden">
                    <div className="h-full w-full bg-primary" />
                  </div>
                  <p className="text-[10px] text-muted-foreground italic">

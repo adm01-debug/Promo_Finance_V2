@@ -94,7 +94,7 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
               <Button
                 size="sm"
                 variant="outline"
-                className="rounded-xl font-bold gap-2 border-white/10 bg-white/5 hover:bg-white/10"
+                className="rounded-xl font-bold gap-2 border-white/10 bg-card/5 hover:bg-card/10"
                 onClick={() => exportAuditoriaCFCCSV(resultado, empresa)}
                 disabled={tudoOk}
               >
@@ -103,7 +103,7 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
               <Button
                 size="sm"
                 variant="outline"
-                className="rounded-xl font-bold gap-2 border-white/10 bg-white/5 hover:bg-white/10"
+                className="rounded-xl font-bold gap-2 border-white/10 bg-card/5 hover:bg-card/10"
                 onClick={() => exportAuditoriaCFCPDF(resultado, empresa)}
                 disabled={tudoOk}
               >
@@ -221,7 +221,7 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
             )}
 
             <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-              <TabsList className="grid grid-cols-4 w-full h-12 bg-white/5 rounded-2xl p-1">
+              <TabsList className="grid grid-cols-4 w-full h-12 bg-card/5 rounded-2xl p-1">
                 <TabsTrigger value="formato" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Formato
                   <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
@@ -338,7 +338,7 @@ function KPI({ label, value, tone, icon: Icon, trend }: { label: string; value: 
     <motion.div
       whileHover={{ y: -2, scale: 1.02 }}
       className={cn(
-        'rounded-[1.5rem] border bg-white/[0.03] p-5 shadow-sm transition-all group/kpi relative overflow-hidden',
+        'rounded-[1.5rem] border bg-card/[0.03] p-5 shadow-sm transition-all group/kpi relative overflow-hidden',
         tone === 'success' && 'border-success/20 bg-success/5 shadow-success/10',
         tone === 'warning' && 'border-warning/20 bg-warning/5 shadow-warning/10',
         !tone && 'border-white/5'

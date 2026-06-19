@@ -89,7 +89,7 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
           className="flex flex-col items-center justify-center flex-1 py-2 min-w-0"
         >
           <motion.div
-            className="flex flex-col items-center gap-2 px-5 py-3 rounded-2xl text-muted-foreground/60 hover:bg-white/5 transition-all duration-500"
+            className="flex flex-col items-center gap-2 px-5 py-3 rounded-2xl text-muted-foreground/60 hover:bg-card/5 transition-all duration-500"
             whileTap={{ scale: 0.85, y: -4 }}
           >
             <div className="relative">

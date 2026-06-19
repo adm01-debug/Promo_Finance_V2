@@ -72,7 +72,7 @@ export function PlanosAcaoPanel() {
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-white/5 font-bold gap-2">
+                <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-card/5 font-bold gap-2">
                   <Filter className="h-4 w-4" />
                   {filtroStatus === 'todos' ? 'Todos' : STATUS_CONFIG[filtroStatus as keyof typeof STATUS_CONFIG].label}
                 </Button>
@@ -97,7 +97,7 @@ export function PlanosAcaoPanel() {
           <AnimatePresence mode="popLayout">
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-24 w-full rounded-2xl bg-white/5 animate-pulse" />
+                <div key={i} className="h-24 w-full rounded-2xl bg-card/5 animate-pulse" />
               ))
             ) : !planosFiltrados || planosFiltrados.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 opacity-40 italic">
@@ -115,7 +115,7 @@ export function PlanosAcaoPanel() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}
                     className={cn(
-                      "group relative p-5 rounded-2xl border border-white/5 bg-white/[0.03] transition-all hover:bg-white/[0.07]",
+                      "group relative p-5 rounded-2xl border border-white/5 bg-card/[0.03] transition-all hover:bg-card/[0.07]",
                       plano.status === 'concluido' && "opacity-60"
                     )}
                   >
@@ -167,7 +167,7 @@ export function PlanosAcaoPanel() {
                           )}
                           
                           <div className="flex-1 min-w-[120px] max-w-[200px] flex items-center gap-3 ml-auto">
-                            <Progress value={plano.progresso} className="h-1.5 bg-white/5" />
+                            <Progress value={plano.progresso} className="h-1.5 bg-card/5" />
                             <span className="text-[10px] font-black text-primary w-8">{plano.progresso}%</span>
                           </div>
                         </div>

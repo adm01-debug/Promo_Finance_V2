@@ -13,7 +13,7 @@ const URGENCIA_CONFIG: Record<AcaoRecomendada["urgencia"], { label: string; icon
   critica: { label: "Crítica", icon: AlertOctagon, variant: "destructive", color: "text-rose-600" },
   alta: { label: "Alta", icon: AlertTriangle, variant: "destructive", color: "text-rose-600" },
   media: { label: "Média", icon: Info, variant: "secondary", color: "text-amber-600" },
-  baixa: { label: "Baixa", icon: CheckCircle2, variant: "outline", color: "text-[#64748b]" },
+  baixa: { label: "Baixa", icon: CheckCircle2, variant: "outline", color: "text-muted-foreground" },
 };
 
 interface Props {
@@ -24,15 +24,15 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
   const { data: acoes, isLoading, regenerar } = useAcoesRecomendadas(empresaId);
 
   return (
-    <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden group">
+    <Card className="border border-border bg-card shadow-sm rounded-xl overflow-hidden group">
       <CardHeader className="flex flex-row items-center justify-between gap-6 p-6 pb-4">
         <div className="flex items-center gap-4">
           <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-primary group-hover:scale-105 transition-all">
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <CardTitle className="text-lg font-bold text-[#1a1c21]">Ações Prioritárias</CardTitle>
-            <CardDescription className="text-xs text-[#64748b]">
+            <CardTitle className="text-lg font-bold text-foreground">Ações Prioritárias</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
               Recomendações baseadas em inteligência financeira
             </CardDescription>
           </div>
@@ -42,7 +42,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
           size="icon"
           onClick={() => regenerar.mutate()}
           disabled={regenerar.isPending}
-          className="h-9 w-9 rounded-md text-[#64748b] hover:bg-[#f1f3f9]"
+          className="h-9 w-9 rounded-md text-muted-foreground hover:bg-muted/50"
         >
           {regenerar.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -55,7 +55,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
         {isLoading && (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 w-full rounded-lg bg-[#f1f3f9]" />
+              <Skeleton key={i} className="h-20 w-full rounded-lg bg-muted/50" />
             ))}
           </div>
         )}
@@ -65,8 +65,8 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
             <div className="p-3 rounded-full bg-emerald-50 text-emerald-600 w-fit mx-auto mb-4">
               <CheckCircle2 className="h-8 w-8" />
             </div>
-            <p className="text-sm font-bold text-[#1a1c21]">Tudo em dia!</p>
-            <p className="text-xs text-[#64748b] mt-1 max-w-[200px] mx-auto leading-relaxed">
+            <p className="text-sm font-bold text-foreground">Tudo em dia!</p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-[200px] mx-auto leading-relaxed">
               Nenhuma ação crítica pendente no momento.
             </p>
           </div>
@@ -91,16 +91,16 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="rounded-lg border border-border bg-[#f8f9fc] p-4 transition-all hover:bg-white hover:shadow-sm"
+                  className="rounded-lg border border-border bg-muted/30 p-4 transition-all hover:bg-card hover:shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <div className={cn("p-1.5 rounded-md bg-white border border-border mt-0.5", cfg.color)}>
+                      <div className={cn("p-1.5 rounded-md bg-card border border-border mt-0.5", cfg.color)}>
                         <UrgIcon className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="text-sm font-bold text-[#1a1c21]">{acao.titulo}</span>
+                          <span className="text-sm font-bold text-foreground">{acao.titulo}</span>
                           <Badge variant={cfg.variant} className="text-[9px] font-bold px-1.5 h-auto rounded-sm border-none uppercase">
                             {cfg.label}
                           </Badge>
@@ -110,7 +110,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-[#64748b] line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                           {acao.descricao}
                         </p>
                       </div>

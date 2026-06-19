@@ -294,13 +294,13 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
               placeholder="Buscar por histórico ou conta..." 
               value={busca} 
               onChange={e => setBusca(e.target.value)} 
-              className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
+              className="h-14 pl-12 bg-card/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
             />
           </div>
 
           <div className="flex items-center gap-3">
             <Select value={preset} onValueChange={(v) => handlePreset(v as DatePreset)}>
-              <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-card/5 font-bold"><SelectValue /></SelectTrigger>
               <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                 <SelectItem value="ano">Ano de {ano}</SelectItem>
                 <SelectItem value="all">Todo o período</SelectItem>
@@ -314,7 +314,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataInicio && 'text-muted-foreground')}>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold', !dataInicio && 'text-muted-foreground')}>
                   <CalendarIcon className="h-4 w-4 text-primary" />
                   {dataInicio ? format(new Date(`${dataInicio}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
                 </Button>
@@ -332,7 +332,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataFim && 'text-muted-foreground')}>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold', !dataFim && 'text-muted-foreground')}>
                   <CalendarIcon className="h-4 w-4 text-primary" />
                   {dataFim ? format(new Date(`${dataFim}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
                 </Button>
@@ -350,7 +350,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
           </div>
 
           <Select value={contaId} onValueChange={setContaId}>
-            <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-white/5 font-bold">
+            <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-card/5 font-bold">
               <SelectValue placeholder="Todas as contas" />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
@@ -371,14 +371,14 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
             ]}
           />
 
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5 ml-auto">
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-card/5 px-5 py-4 rounded-2xl border border-white/5 ml-auto">
             {modo === 'diario'
               ? `${diario.length.toLocaleString('pt-BR')} partidas`
               : `${razao.length.toLocaleString('pt-BR')} contas`}
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-6 bg-white/[0.03] p-4 rounded-3xl border border-white/5">
+        <div className="flex flex-wrap items-center justify-between gap-6 bg-card/[0.03] p-4 rounded-3xl border border-white/5">
           <div className="flex items-center gap-4">
             <FilterPresetsManager 
               entityType="razao-diario"
@@ -400,13 +400,13 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-white/5 hover:bg-white/10 px-6 transition-all hover:translate-y-[-2px]">
+              <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-card/5 hover:bg-card/10 px-6 transition-all hover:translate-y-[-2px]">
                 <Download className="h-4 w-4 text-primary" /> Exportar Livros
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
               <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40 px-3 py-2">Selecionar Formato</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuSeparator className="bg-card/5" />
               <DropdownMenuItem onClick={() => exportar('csv')} className="rounded-xl gap-3 py-3 cursor-pointer">
                 <div className="p-2 bg-success/20 rounded-lg">
                   <FileSpreadsheet className="h-4 w-4 text-success" />
@@ -441,14 +441,14 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
           </div>
         ) : modo === 'diario' ? (
           diario.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-card/[0.02]">
               <Activity className="h-10 w-10 opacity-20 mb-4" />
               <p className="text-sm font-bold uppercase tracking-widest">Nenhuma partida no período</p>
             </div>
           ) : (
-            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-card/[0.01] shadow-inner">
               <Table>
-                <TableHeader className="bg-white/5">
+                <TableHeader className="bg-card/5">
                   <TableRow className="border-white/5 hover:bg-transparent">
                     <TableHead className="text-[10px] font-black uppercase tracking-widest p-6">Data</TableHead>
                     <TableHead className="text-[10px] font-black uppercase tracking-widest">Nº</TableHead>
@@ -466,7 +466,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: (i % 20) * 0.005 }}
-                        className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                        className="border-white/5 hover:bg-card/5 transition-colors group/row"
                       >
                         <TableCell className="p-6 text-[10px] font-black uppercase tracking-widest opacity-60">
                           {format(new Date(`${p.data}T00:00:00`), 'dd/MM/yyyy')}
@@ -533,7 +533,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
             </Table>
           </div>
         )) : razao.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-card/[0.02]">
             <Activity className="h-10 w-10 opacity-20 mb-4" />
             <p className="text-sm font-bold uppercase tracking-widest">Nenhuma conta com movimento</p>
           </div>
@@ -570,9 +570,9 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: (idx % 10) * 0.05 }}
-                    className="border-none bg-white/[0.02] shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/5 group/card"
+                    className="border-none bg-card/[0.02] shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/5 group/card"
                   >
-                    <div className="bg-white/5 p-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/5">
+                    <div className="bg-card/5 p-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/5">
                       <div className="flex items-center gap-4">
                         <div className="p-3 bg-primary/20 rounded-2xl group-hover/card:scale-110 transition-transform">
                           <BookOpen className="h-5 w-5 text-primary" />
@@ -582,13 +582,13 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                           <p className="text-sm font-black uppercase tracking-widest opacity-80">{g.nome}</p>
                         </div>
                       </div>
-                      <Badge variant="outline" className="h-10 rounded-xl font-mono font-black border-none bg-white/5 px-4 text-xs">
+                      <Badge variant="outline" className="h-10 rounded-xl font-mono font-black border-none bg-card/5 px-4 text-xs">
                         Saldo Inicial: {formatCurrency(g.saldo_inicial)}
                       </Badge>
                     </div>
                     <div className="overflow-hidden">
                       <Table>
-                        <TableHeader className="bg-white/[0.01]">
+                        <TableHeader className="bg-card/[0.01]">
                           <TableRow className="border-white/5 hover:bg-transparent">
                             <TableHead className="text-[9px] font-black uppercase tracking-widest p-4 pl-6">Data</TableHead>
                             <TableHead className="text-[9px] font-black uppercase tracking-widest">Histórico</TableHead>

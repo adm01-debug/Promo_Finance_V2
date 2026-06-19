@@ -18,11 +18,11 @@ export const AlertasOrcamento = () => {
     .filter(b => b.percent_used >= 80)
     .sort((a, b) => b.percent_used - a.percent_used);
 
-  if (isLoading) return <Card className="bg-white/5 border-white/10 animate-pulse"><CardContent className="h-40" /></Card>;
+  if (isLoading) return <Card className="bg-card/5 border-white/10 animate-pulse"><CardContent className="h-40" /></Card>;
 
   if (criticalBudgets.length === 0) {
     return (
-      <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+      <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
             <Target className="h-4 w-4 text-primary" />
@@ -45,7 +45,7 @@ export const AlertasOrcamento = () => {
   }
 
   return (
-    <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+    <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-orange-500" />
@@ -66,7 +66,7 @@ export const AlertasOrcamento = () => {
                 </div>
                 <Progress 
                   value={Math.min(budget.percent_used, 100)} 
-                  className={cn("h-1 bg-white/5", isOver ? "bg-red-500" : "bg-orange-500")} 
+                  className={cn("h-1 bg-card/5", isOver ? "bg-red-500" : "bg-orange-500")} 
                 />
                 <div className="flex justify-between text-[10px] text-white/40">
                   <span>Gasto: {formatCurrency(budget.actual_spent)}</span>
@@ -78,7 +78,7 @@ export const AlertasOrcamento = () => {
           
           <Link 
             to="/orcamentos" 
-            className="flex items-center justify-center w-full py-2 mt-2 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/60 hover:bg-white/5 transition-colors group"
+            className="flex items-center justify-center w-full py-2 mt-2 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/60 hover:bg-card/5 transition-colors group"
           >
             Gerenciar Orçamentos
             <ArrowRight className="h-3 w-3 ml-2 group-hover:translate-x-1 transition-transform" />

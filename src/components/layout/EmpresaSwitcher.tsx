@@ -84,7 +84,7 @@ export function EmpresaSwitcher() {
   return (
     <div className="flex items-center gap-2">
       {/* Quick switch pills - 4 empresas do Grupo Promo Brindes */}
-      <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+      <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-2xl bg-card/5 border border-white/10 backdrop-blur-sm">
         {quickAccess.map((v) => {
           const label = v.empresa.nome_fantasia || v.empresa.razao_social;
           const isActive = v.empresa_id === currentId;
@@ -100,7 +100,7 @@ export function EmpresaSwitcher() {
                     'relative h-9 px-3 rounded-xl flex items-center gap-2 text-[10px] font-black transition-all duration-500 border group',
                     isActive
                       ? 'bg-primary text-primary-foreground border-primary shadow-[0_8px_20px_-4px_rgba(var(--primary),0.4)] scale-105 z-10'
-                      : 'bg-transparent text-white/40 border-transparent hover:bg-white/10 hover:text-white hover:border-white/10',
+                      : 'bg-transparent text-white/40 border-transparent hover:bg-card/10 hover:text-white hover:border-white/10',
                   )}
                 >
                   <span className="tracking-tighter uppercase whitespace-nowrap">
@@ -131,7 +131,7 @@ export function EmpresaSwitcher() {
         })}
       </div>
 
-      <div className="hidden lg:block w-px h-6 bg-white/10 mx-1" />
+      <div className="hidden lg:block w-px h-6 bg-card/10 mx-1" />
 
 
       {/* Dropdown completo (sempre visível) */}
@@ -140,7 +140,7 @@ export function EmpresaSwitcher() {
           <Button
             variant="outline"
             role="combobox"
-            className="gap-2 max-w-[260px] h-10 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all duration-300"
+            className="gap-2 max-w-[260px] h-10 rounded-xl border-white/10 bg-card/5 hover:bg-card/10 text-white transition-all duration-300"
             aria-label="Selecionar empresa"
           >
             <Building2 className="h-4 w-4 shrink-0 text-primary" />
@@ -198,13 +198,13 @@ export function EmpresaSwitcher() {
                       key={v.empresa_id}
                       className={cn(
                         "p-3 rounded-xl m-1 transition-all duration-300 cursor-pointer group",
-                        isActive ? "bg-primary/10" : "hover:bg-white/5"
+                        isActive ? "bg-primary/10" : "hover:bg-card/5"
                       )}
                       onSelect={() => switchTo(v.empresa_id)}
                     >
                       <div className={cn(
                         "h-8 w-8 rounded-lg flex items-center justify-center mr-3 font-black text-xs transition-colors",
-                        isActive ? "bg-primary text-primary-foreground" : "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white"
+                        isActive ? "bg-primary text-primary-foreground" : "bg-card/5 text-white/40 group-hover:bg-card/10 group-hover:text-white"
                       )}>
                         {getInitials(label)}
                       </div>

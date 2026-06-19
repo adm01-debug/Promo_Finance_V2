@@ -77,15 +77,15 @@ export default function ContasReceber() {
         <BankAccountSwitcher />
       </div>
       <div className="flex items-center gap-1 bg-black/20 rounded-xl p-1 shadow-inner">
-        <Button variant={viewMode === 'table' ? 'default' : 'ghost'} size="icon" onClick={() => setViewMode('table')} className={cn("h-10 w-10 rounded-lg transition-all", viewMode === 'table' ? "bg-white text-primary shadow-lg" : "text-muted-foreground")}>
+        <Button variant={viewMode === 'table' ? 'default' : 'ghost'} size="icon" onClick={() => setViewMode('table')} className={cn("h-10 w-10 rounded-lg transition-all", viewMode === 'table' ? "bg-card text-primary shadow-lg" : "text-muted-foreground")}>
           <TableIcon className="h-5 w-5" />
         </Button>
-        <Button variant={viewMode === 'kanban' ? 'default' : 'ghost'} size="icon" onClick={() => setViewMode('kanban')} className={cn("h-10 w-10 rounded-lg transition-all", viewMode === 'kanban' ? "bg-white text-primary shadow-lg" : "text-muted-foreground")}>
+        <Button variant={viewMode === 'kanban' ? 'default' : 'ghost'} size="icon" onClick={() => setViewMode('kanban')} className={cn("h-10 w-10 rounded-lg transition-all", viewMode === 'kanban' ? "bg-card text-primary shadow-lg" : "text-muted-foreground")}>
           <LayoutGrid className="h-5 w-5" />
         </Button>
       </div>
       
-      <div className="w-px h-8 bg-white/10 mx-2" />
+      <div className="w-px h-8 bg-card/10 mx-2" />
 
       <div className="flex items-center gap-3">
         <ExportMenu 
@@ -172,7 +172,7 @@ export default function ContasReceber() {
               >
                 <Table>
                   <TableHeader>
-                    <tr className="bg-white/[0.02] border-b border-white/5">
+                    <tr className="bg-card/[0.02] border-b border-white/5">
                       <th className="w-16 p-6 text-center"><Checkbox checked={isAllSelected} onClick={selectAll} /></th>
                       <th className="w-[300px] p-6"><SortableHeader label="Entity / Client" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                       <th className="p-6 text-caption text-left">Reference Description</th>

@@ -70,11 +70,11 @@ const BarcodeVisual = ({ code }: { code: string }) => {
   });
 
   return (
-    <div className="flex items-end h-16 bg-white p-2 rounded">
+    <div className="flex items-end h-16 bg-card p-2 rounded">
       {bars.map((bar, i) => (
         <div
           key={i}
-          className={bar.isBlack ? 'bg-black' : 'bg-white'}
+          className={bar.isBlack ? 'bg-black' : 'bg-card'}
           style={{ width: `${bar.width}px`, height: '100%' }}
         />
       ))}
@@ -194,7 +194,7 @@ export default function Boletos() {
                 className="cursor-pointer"
               >
                 <Card className={cn(
-                  "stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full border-white/5 bg-white/[0.02]",
+                  "stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full border-white/5 bg-card/[0.02]",
                   statusFilter === kpi.filter && "ring-2 ring-primary/50 bg-primary/5"
                 )}>
                   <CardContent className="p-3 sm:p-5">

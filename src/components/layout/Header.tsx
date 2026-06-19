@@ -185,11 +185,11 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                     alertas.slice(0, 5).map((alerta) => (
                       <DropdownMenuItem key={alerta.id} className="p-4 cursor-pointer border-b last:border-0 flex flex-col items-start gap-1">
                         <span className="font-semibold text-xs">{alerta.titulo}</span>
-                        <p className="text-[11px] text-[#64748b] line-clamp-2">{alerta.mensagem}</p>
+                        <p className="text-[11px] text-muted-foreground line-clamp-2">{alerta.mensagem}</p>
                       </DropdownMenuItem>
                     ))
                   ) : (
-                    <div className="p-8 text-center text-xs text-[#94a3b8]">Sem notificações</div>
+                    <div className="p-8 text-center text-xs text-muted-foreground">Sem notificações</div>
                   )}
                 </div>
                 <DropdownMenuSeparator />
@@ -225,8 +225,8 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="font-normal p-4">
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-bold text-[#1a1c21]">{displayName}</p>
-                  <p className="text-xs text-[#64748b]">{user?.email}</p>
+                  <p className="text-sm font-bold text-foreground">{displayName}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

@@ -123,11 +123,11 @@ const Demonstrativos = () => {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 bg-white/[0.03] p-5 rounded-[2.5rem] border border-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
+            <div className="flex flex-wrap items-center gap-6 bg-card/[0.03] p-5 rounded-[2.5rem] border border-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
               <div className="flex items-center gap-3 px-4 border-r border-white/10 pr-6">
                 <Building2 className="h-5 w-5 text-primary" />
                 <Select value={empresaId} onValueChange={handleSetEmpresaId}>
-                  <SelectTrigger className="w-[200px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-semibold text-sm">
+                  <SelectTrigger className="w-[200px] border-none bg-transparent hover:bg-card/5 transition-all h-10 font-semibold text-sm">
                     <SelectValue placeholder="Empresa" />
                   </SelectTrigger>
                   <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
@@ -145,7 +145,7 @@ const Demonstrativos = () => {
                 <Calendar className="h-5 w-5 text-muted-foreground/60 ml-2" />
                 <div className="flex items-center gap-1">
                   <Select value={periodo} onValueChange={handleSetPeriodo}>
-                    <SelectTrigger className="w-[110px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-medium">
+                    <SelectTrigger className="w-[110px] border-none bg-transparent hover:bg-card/5 transition-all h-10 font-medium">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
@@ -157,7 +157,7 @@ const Demonstrativos = () => {
 
                   {periodo === 'mensal' && (
                     <Select value={mes} onValueChange={handleSetMes}>
-                      <SelectTrigger className="w-[120px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-medium">
+                      <SelectTrigger className="w-[120px] border-none bg-transparent hover:bg-card/5 transition-all h-10 font-medium">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
@@ -169,7 +169,7 @@ const Demonstrativos = () => {
                   )}
 
                   <Select value={ano} onValueChange={handleSetAno}>
-                    <SelectTrigger className="w-[85px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-medium">
+                    <SelectTrigger className="w-[85px] border-none bg-transparent hover:bg-card/5 transition-all h-10 font-medium">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
@@ -210,16 +210,16 @@ const Demonstrativos = () => {
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-12">
               <div className="flex justify-center">
-                <TabsList className="inline-flex h-16 items-center justify-center rounded-[2rem] bg-white/[0.03] p-2 text-muted-foreground w-full max-w-[700px] border border-white/10 backdrop-blur-3xl shadow-2xl ring-1 ring-white/10">
-                  <TabsTrigger value="dre" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
+                <TabsList className="inline-flex h-16 items-center justify-center rounded-[2rem] bg-card/[0.03] p-2 text-muted-foreground w-full max-w-[700px] border border-white/10 backdrop-blur-3xl shadow-2xl ring-1 ring-white/10">
+                  <TabsTrigger value="dre" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
                     <TrendingUp className="h-4.5 w-4.5" />
                     <span>DRE Analytical</span>
                   </TabsTrigger>
-                  <TabsTrigger value="balanco" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
+                  <TabsTrigger value="balanco" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
                     <Scale className="h-4.5 w-4.5" />
                     <span>Balanço Patrimonial</span>
                   </TabsTrigger>
-                  <TabsTrigger value="fluxo" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
+                  <TabsTrigger value="fluxo" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
                     <Wallet className="h-4.5 w-4.5" />
                     <span>Cash Flow</span>
                   </TabsTrigger>

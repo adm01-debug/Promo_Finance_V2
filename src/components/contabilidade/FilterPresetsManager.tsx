@@ -77,14 +77,14 @@ export function FilterPresetsManager({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-10 rounded-xl border-white/10 bg-white/5 gap-2 px-4 font-bold">
+          <Button variant="outline" size="sm" className="h-10 rounded-xl border-white/10 bg-card/5 gap-2 px-4 font-bold">
             <FolderOpen className="h-4 w-4 text-primary" />
             <span className="hidden sm:inline">Presets</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl" align="end">
           <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40">Meus Presets</DropdownMenuLabel>
-          <DropdownMenuSeparator className="bg-white/5" />
+          <DropdownMenuSeparator className="bg-card/5" />
           
           {presets.length === 0 ? (
             <div className="px-2 py-4 text-center text-xs text-muted-foreground italic">
@@ -114,7 +114,7 @@ export function FilterPresetsManager({
             ))
           )}
           
-          <DropdownMenuSeparator className="bg-white/5" />
+          <DropdownMenuSeparator className="bg-card/5" />
           <DropdownMenuItem 
             className="rounded-xl cursor-pointer text-primary focus:text-primary gap-2"
             onClick={() => setIsDialogOpen(true)}
@@ -135,7 +135,7 @@ export function FilterPresetsManager({
               placeholder="Ex: Fechamento Mensal, Auditoria Anual..."
               value={newPresetName}
               onChange={(e) => setNewPresetName(e.target.value)}
-              className="h-12 bg-white/5 border-white/10 rounded-xl font-bold"
+              className="h-12 bg-card/5 border-white/10 rounded-xl font-bold"
             />
           </div>
           <DialogFooter>

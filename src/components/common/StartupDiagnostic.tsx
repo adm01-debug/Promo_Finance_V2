@@ -59,14 +59,14 @@ export const StartupDiagnostic: React.FC<{ children: React.ReactNode }> = ({ chi
           <p className="text-white/40 text-sm">Validando infraestrutura neural e conectividade...</p>
         </div>
 
-        <Card className="bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden">
+        <Card className="bg-card/5 border-white/10 backdrop-blur-xl overflow-hidden">
           <CardContent className="p-6 space-y-6">
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-white/40">
                 <span>Progresso</span>
                 <span>{Math.round(progress)}%</span>
               </div>
-              <Progress value={progress} className="h-1.5 bg-white/10" />
+              <Progress value={progress} className="h-1.5 bg-card/10" />
             </div>
 
             <div className="space-y-4">
@@ -75,13 +75,13 @@ export const StartupDiagnostic: React.FC<{ children: React.ReactNode }> = ({ chi
                   key={result.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5"
+                  className="flex items-center justify-between p-3 rounded-xl bg-card/[0.03] border border-white/5"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${
                       result.status === 'success' ? 'bg-success/10' : 
                       result.status === 'error' ? 'bg-destructive/10' : 
-                      'bg-white/5'
+                      'bg-card/5'
                     }`}>
                       {getIcon(result.id, result.status)}
                     </div>

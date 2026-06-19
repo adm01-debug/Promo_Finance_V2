@@ -340,7 +340,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         </DialogHeader>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl group/stat">
+          <div className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl group/stat">
             <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Erros</div>
             <div
               data-testid="contador-erros"
@@ -349,7 +349,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               {erros.length}
             </div>
           </div>
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl group/stat">
+          <div className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl group/stat">
             <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Avisos</div>
             <div
               data-testid="contador-avisos"
@@ -359,7 +359,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             </div>
           </div>
           <div 
-            className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl flex flex-col justify-center overflow-hidden group/stat cursor-pointer relative"
+            className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl flex flex-col justify-center overflow-hidden group/stat cursor-pointer relative"
             onClick={copyHash}
           >
             <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors flex items-center justify-center gap-1">
@@ -391,7 +391,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar nas validações (ex: código de conta, descrição)..."
-              className="h-14 pl-12 pr-12 text-sm font-bold bg-white/[0.03] border-white/5 focus-visible:ring-1 focus-visible:ring-primary/40 transition-all rounded-2xl shadow-inner placeholder:text-white/20 text-white"
+              className="h-14 pl-12 pr-12 text-sm font-bold bg-card/[0.03] border-white/5 focus-visible:ring-1 focus-visible:ring-primary/40 transition-all rounded-2xl shadow-inner placeholder:text-white/20 text-white"
             />
             {busca && (
               <button
@@ -433,7 +433,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               {agrupados.map(({ categoria, erros: catErros, avisos: catAvisos, total }) => {
                 const isOpen = expandedCats.has(categoria.id);
                 return (
-                  <div key={categoria.id} className={cn("border rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl", isOpen ? "bg-white/[0.03] border-primary/30 ring-1 ring-primary/20" : "bg-white/[0.01] border-white/5 hover:border-primary/20")}>
+                  <div key={categoria.id} className={cn("border rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl", isOpen ? "bg-card/[0.03] border-primary/30 ring-1 ring-primary/20" : "bg-card/[0.01] border-white/5 hover:border-primary/20")}>
                     <button
                       onClick={() => toggleCategoria(categoria.id)}
                       className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors text-left"

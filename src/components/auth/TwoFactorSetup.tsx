@@ -143,7 +143,7 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
                   Escaneie o QR Code com seu aplicativo autenticador
                 </p>
                 {qrCode && (
-                  <div className="bg-white p-4 rounded-lg inline-block">
+                  <div className="bg-card p-4 rounded-lg inline-block">
                     <img src={qrCode} alt="QR Code 2FA" className="w-48 h-48" />
                   </div>
                 )}

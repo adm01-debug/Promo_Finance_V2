@@ -30,7 +30,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   return (
-    <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_-24px_rgba(0,0,0,0.6)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative group/card">
+    <Card className="border-none bg-card/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_-24px_rgba(0,0,0,0.6)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative group/card">
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 pointer-events-none" />
       
@@ -52,8 +52,8 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
             </div>
           </div>
           
-          <div className="flex items-center gap-6 flex-wrap bg-white/[0.03] p-3.5 rounded-[2.5rem] border border-white/10 backdrop-blur-md shadow-2xl ring-1 ring-white/10">
-            <div className="flex items-center gap-3 px-6 py-2 rounded-[1.5rem] bg-white/5 border border-white/10">
+          <div className="flex items-center gap-6 flex-wrap bg-card/[0.03] p-3.5 rounded-[2.5rem] border border-white/10 backdrop-blur-md shadow-2xl ring-1 ring-white/10">
+            <div className="flex items-center gap-3 px-6 py-2 rounded-[1.5rem] bg-card/5 border border-white/10">
               <span className="text-xs font-bold uppercase tracking-widest opacity-50">Regime</span>
               <Badge variant="outline" className="text-[10px] font-black py-0.5 px-2 rounded-md border-primary/40 bg-primary/10 text-primary uppercase">
                 {origem === 'competencia' ? 'Competência' : 'Caixa'}
@@ -133,15 +133,15 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
 
         {isLoading ? (
           <div className="space-y-4">
-            <Skeleton className="h-20 w-full rounded-2xl bg-white/5" />
-            <Skeleton className="h-96 w-full rounded-2xl bg-white/5" />
+            <Skeleton className="h-20 w-full rounded-2xl bg-card/5" />
+            <Skeleton className="h-96 w-full rounded-2xl bg-card/5" />
           </div>
         ) : (
           <div className="rounded-[2.5rem] border border-white/10 overflow-hidden bg-black/40 shadow-[0_24px_48px_rgba(0,0,0,0.4)] backdrop-blur-2xl">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-white/[0.02] border-b border-white/5">
+                  <tr className="bg-card/[0.02] border-b border-white/5">
                     <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Ref.</th>
                     <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Descrição Detalhada</th>
                     <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Valor Realizado</th>
@@ -160,8 +160,8 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
                         ease: [0.23, 1, 0.32, 1]
                       }}
                       className={cn(
-                        "group transition-all duration-300 hover:bg-white/[0.03]",
-                        linha.nivel === 0 ? "bg-white/[0.02] font-black" : "font-medium",
+                        "group transition-all duration-300 hover:bg-card/[0.03]",
+                        linha.nivel === 0 ? "bg-card/[0.02] font-black" : "font-medium",
                         linha.codigo === '11' ? "bg-primary/5 border-l-4 border-l-primary" : "",
                         linha.codigo === '99' ? "bg-warning/5 border-l-4 border-l-warning" : ""
                       )}
@@ -194,7 +194,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
                       </td>
                       <td className="p-6 text-right">
                         <div className="flex items-center justify-end gap-3">
-                          <div className="w-16 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                          <div className="w-16 h-1.5 rounded-full bg-card/5 overflow-hidden">
                             <motion.div 
                               initial={{ width: 0 }}
                               animate={{ width: `${Math.min(linha.percentual, 100)}%` }}
@@ -218,8 +218,8 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
           </div>
         )}
 
-        <div className="mt-8 flex items-center gap-3 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-          <div className="p-2 rounded-lg bg-white/5">
+        <div className="mt-8 flex items-center gap-3 p-6 rounded-2xl bg-card/[0.02] border border-white/5">
+          <div className="p-2 rounded-lg bg-card/5">
             <Settings2 className="h-4 w-4 text-muted-foreground" />
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">

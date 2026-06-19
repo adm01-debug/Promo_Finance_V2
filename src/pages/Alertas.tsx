@@ -91,7 +91,7 @@ export default function Alertas() {
               <h1 className="text-2xl sm:text-3xl font-display font-bold tracking-tight">Central de Alertas</h1>
               <div className="flex items-center gap-2 mt-1">
                 {alertasNaoLidos.length > 0 ? (
-                  <Badge variant="destructive" className="gap-1 text-xs"><span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />{alertasNaoLidos.length} não {alertasNaoLidos.length === 1 ? 'lido' : 'lidos'}</Badge>
+                  <Badge variant="destructive" className="gap-1 text-xs"><span className="h-1.5 w-1.5 rounded-full bg-card animate-pulse" />{alertasNaoLidos.length} não {alertasNaoLidos.length === 1 ? 'lido' : 'lidos'}</Badge>
                 ) : (
                   <Badge variant="outline" className="gap-1 text-xs text-success border-success/30"><CheckCircle2 className="h-3 w-3" />Tudo em dia</Badge>
                 )}

@@ -36,7 +36,7 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
             Neural Matrix: Performance KPIs
           </h3>
           <div className="grid gap-4 grid-cols-2 md:grid-cols-5">
-            <Card className="relative group overflow-hidden border-white/5 bg-white/5 backdrop-blur-xl transition-all hover:scale-105">
+            <Card className="relative group overflow-hidden border-white/5 bg-card/5 backdrop-blur-xl transition-all hover:scale-105">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100" />
               <CardContent className="p-4 flex flex-col items-center justify-center text-center relative z-10">
                 <Clock className="h-5 w-5 text-primary mb-2 opacity-60" />
@@ -45,7 +45,7 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
               </CardContent>
             </Card>
 
-            <Card className="relative group overflow-hidden border-white/5 bg-white/5 backdrop-blur-xl transition-all hover:scale-105">
+            <Card className="relative group overflow-hidden border-white/5 bg-card/5 backdrop-blur-xl transition-all hover:scale-105">
               <div className="absolute inset-0 bg-gradient-to-br from-streak/5 to-transparent opacity-0 group-hover:opacity-100" />
               <CardContent className="p-4 flex flex-col items-center justify-center text-center relative z-10">
                 <Clock className="h-5 w-5 text-streak mb-2 opacity-60" />
@@ -54,7 +54,7 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
               </CardContent>
             </Card>
 
-            <Card className="relative group overflow-hidden border-white/5 bg-white/5 backdrop-blur-xl transition-all hover:scale-105">
+            <Card className="relative group overflow-hidden border-white/5 bg-card/5 backdrop-blur-xl transition-all hover:scale-105">
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100" />
               <CardContent className="p-4 flex flex-col items-center justify-center text-center relative z-10">
                 <Activity className="h-5 w-5 text-secondary mb-2 opacity-60" />
@@ -63,7 +63,7 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
               </CardContent>
             </Card>
 
-            <Card className="relative group overflow-hidden border-white/5 bg-white/5 backdrop-blur-xl transition-all hover:scale-105">
+            <Card className="relative group overflow-hidden border-white/5 bg-card/5 backdrop-blur-xl transition-all hover:scale-105">
               <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-transparent opacity-0 group-hover:opacity-100" />
               <CardContent className="p-4 flex flex-col items-center justify-center text-center relative z-10">
                 <Wallet className="h-5 w-5 text-success mb-2 opacity-60" />
@@ -72,7 +72,7 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
               </CardContent>
             </Card>
 
-            <Card className="relative group overflow-hidden border-white/5 bg-white/5 backdrop-blur-xl transition-all hover:scale-105 md:col-span-1">
+            <Card className="relative group overflow-hidden border-white/5 bg-card/5 backdrop-blur-xl transition-all hover:scale-105 md:col-span-1">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100" />
               <CardContent className="p-4 flex flex-col items-center justify-center text-center relative z-10">
                 <DollarSign className="h-5 w-5 text-blue-500 mb-2 opacity-60" />
@@ -119,7 +119,7 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
                     <Badge 
                       key={i} 
                       variant="outline" 
-                      className="bg-white/5 border-white/10 text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-lg hover:bg-white/10 transition-colors cursor-default"
+                      className="bg-card/5 border-white/10 text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-lg hover:bg-card/10 transition-colors cursor-default"
                     >
                       {cliente}
                     </Badge>

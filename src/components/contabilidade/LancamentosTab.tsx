@@ -154,7 +154,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+          className="bg-card/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
         >
           <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
             <Activity className="h-20 w-20 text-primary" />
@@ -170,7 +170,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+          className="bg-card/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
         >
           <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
             <Zap className="h-20 w-20 text-success" />
@@ -243,12 +243,12 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Data do Fato Contábil</Label>
                       <div className="relative">
                         <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-40" />
-                        <Input type="date" value={data} onChange={e => setData(e.target.value)} className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" />
+                        <Input type="date" value={data} onChange={e => setData(e.target.value)} className="h-14 pl-12 bg-card/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Histórico Narrativo</Label>
-                      <Input value={historico} onChange={e => setHistorico(e.target.value)} placeholder="Ex: Recebimento duplicata nº 552..." className="h-14 bg-white/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" />
+                      <Input value={historico} onChange={e => setHistorico(e.target.value)} placeholder="Ex: Recebimento duplicata nº 552..." className="h-14 bg-card/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" />
                     </div>
                   </div>
 
@@ -270,10 +270,10 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 20 }}
-                          className="grid grid-cols-[1fr_140px_180px_50px] gap-4 items-center group/item p-2 rounded-2xl hover:bg-white/[0.02] transition-colors"
+                          className="grid grid-cols-[1fr_140px_180px_50px] gap-4 items-center group/item p-2 rounded-2xl hover:bg-card/[0.02] transition-colors"
                         >
                           <Select value={p.conta_id} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, conta_id: v } : x))}>
-                            <SelectTrigger className="h-14 rounded-2xl border-white/5 bg-white/5 font-bold transition-all focus:ring-primary/20">
+                            <SelectTrigger className="h-14 rounded-2xl border-white/5 bg-card/5 font-bold transition-all focus:ring-primary/20">
                               <SelectValue placeholder="Conta Analítica" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
@@ -285,7 +285,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                             </SelectContent>
                           </Select>
                           <Select value={p.tipo} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, tipo: v as 'D' | 'C' } : x))}>
-                            <SelectTrigger className="h-14 rounded-2xl border-white/5 bg-white/5 font-bold transition-all focus:ring-primary/20">
+                            <SelectTrigger className="h-14 rounded-2xl border-white/5 bg-card/5 font-bold transition-all focus:ring-primary/20">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
@@ -300,7 +300,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                               step="0.01" 
                               value={p.valor} 
                               onChange={e => setPartidas(partidas.map((x, j) => j === i ? { ...x, valor: Number(e.target.value) } : x))} 
-                              className="h-14 pl-10 bg-white/5 border-white/5 rounded-2xl font-mono text-right font-black transition-all focus:ring-primary/20" 
+                              className="h-14 pl-10 bg-card/5 border-white/5 rounded-2xl font-mono text-right font-black transition-all focus:ring-primary/20" 
                             />
                           </div>
                           <Button size="icon" variant="ghost" onClick={() => setPartidas(partidas.filter((_, j) => j !== i))} className="h-12 w-12 rounded-2xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all">
@@ -365,13 +365,13 @@ export function LancamentosTab({ empresaId, ano }: Props) {
               placeholder="Buscar por histórico ou nº do lançamento..." 
               value={busca} 
               onChange={e => setBusca(e.target.value)} 
-              className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
+              className="h-14 pl-12 bg-card/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
             />
           </div>
           
           <div className="flex items-center gap-3">
             <Select value={preset} onValueChange={v => handlePreset(v as DatePreset)}>
-              <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-card/5 font-bold"><SelectValue /></SelectTrigger>
               <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                 <SelectItem value="all">Todo o período</SelectItem>
                 <SelectItem value="today">Hoje</SelectItem>
@@ -385,7 +385,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataInicio && 'text-muted-foreground')}>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold', !dataInicio && 'text-muted-foreground')}>
                   <CalendarIcon className="h-4 w-4 text-primary" />
                   {dataInicio ? format(dataInicio, 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
                 </Button>
@@ -397,7 +397,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataFim && 'text-muted-foreground')}>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold', !dataFim && 'text-muted-foreground')}>
                   <CalendarIcon className="h-4 w-4 text-primary" />
                   {dataFim ? format(dataFim, 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
                 </Button>
@@ -419,7 +419,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
             ]}
           />
 
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5 ml-auto">
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-card/5 px-5 py-4 rounded-2xl border border-white/5 ml-auto">
             {lancsFiltrados.length} / {lancs.length} registros
           </div>
         </div>
@@ -430,15 +430,15 @@ export function LancamentosTab({ empresaId, ano }: Props) {
             <span className="font-black uppercase tracking-widest text-xs">Acessando razão contábil...</span>
           </div>
         ) : lancsFiltrados.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-card/[0.02]">
             <Search className="h-10 w-10 opacity-20 mb-4" />
             <p className="text-sm font-bold uppercase tracking-widest">Nenhum lançamento encontrado</p>
             <p className="text-[10px] opacity-50 mt-1 uppercase tracking-widest">Ajuste os filtros para ampliar a busca</p>
           </div>
         ) : (
-          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-card/[0.01] shadow-inner">
             <Table>
-              <TableHeader className="bg-white/5">
+              <TableHeader className="bg-card/5">
                 <TableRow className="border-white/5 hover:bg-transparent">
                   <TableHead className="w-24 text-[10px] font-black uppercase tracking-widest p-6">Nº Lanc.</TableHead>
                   <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
@@ -456,7 +456,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.005 }}
-                      className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                      className="border-white/5 hover:bg-card/5 transition-colors group/row"
                     >
                       <TableCell className="p-6">
                         <Badge variant="outline" className="font-mono text-[11px] font-black border-none bg-primary/10 text-primary px-2.5 py-0.5 rounded-lg">
@@ -476,7 +476,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="capitalize border-none bg-white/5 text-[10px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 w-fit">
+                        <Badge variant="outline" className="capitalize border-none bg-card/5 text-[10px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 w-fit">
                           <Zap className="h-3 w-3 text-primary opacity-60" />
                           {l.origem}
                         </Badge>

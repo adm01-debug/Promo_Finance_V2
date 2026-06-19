@@ -46,7 +46,7 @@ export function BIDrillDown({ isOpen, onClose, title, data, type }: BIDrillDownP
         <ScrollArea className="flex-1 px-6 pb-6">
           <div className="rounded-2xl border border-white/10 overflow-hidden">
             <Table>
-              <TableHeader className="bg-white/5">
+              <TableHeader className="bg-card/5">
                 <TableRow className="border-white/10 hover:bg-transparent">
                   <TableHead className="font-bold uppercase text-[10px] tracking-widest">Documento / Cliente</TableHead>
                   <TableHead className="font-bold uppercase text-[10px] tracking-widest">Data</TableHead>
@@ -63,7 +63,7 @@ export function BIDrillDown({ isOpen, onClose, title, data, type }: BIDrillDownP
                   </TableRow>
                 ) : (
                   data.map((item) => (
-                    <TableRow key={item.id} className="border-white/5 hover:bg-white/5 transition-colors">
+                    <TableRow key={item.id} className="border-white/5 hover:bg-card/5 transition-colors">
                       <TableCell>
                         <div className="flex flex-col">
                           <span className="font-bold text-sm">{item.cliente_nome || item.fornecedor_nome || 'Lançamento Direto'}</span>

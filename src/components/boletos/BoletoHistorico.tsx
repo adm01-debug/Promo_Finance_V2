@@ -50,7 +50,7 @@ export function BoletoHistorico({ boletoId }: BoletoHistoricoProps) {
   };
 
   return (
-    <Card className="border-white/5 bg-white/[0.02] overflow-hidden">
+    <Card className="border-white/5 bg-card/[0.02] overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
           <History className="h-4 w-4 text-primary" />
@@ -63,16 +63,16 @@ export function BoletoHistorico({ boletoId }: BoletoHistoricoProps) {
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
                 <div key={i} className="flex gap-4 animate-pulse">
-                  <div className="h-8 w-8 rounded-full bg-white/5" />
+                  <div className="h-8 w-8 rounded-full bg-card/5" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-white/5 rounded w-3/4" />
-                    <div className="h-3 bg-white/5 rounded w-1/4" />
+                    <div className="h-4 bg-card/5 rounded w-3/4" />
+                    <div className="h-3 bg-card/5 rounded w-1/4" />
                   </div>
                 </div>
               ))}
             </div>
           ) : historico && historico.length > 0 ? (
-            <div className="relative space-y-6 before:absolute before:left-4 before:top-2 before:bottom-2 before:w-px before:bg-white/5">
+            <div className="relative space-y-6 before:absolute before:left-4 before:top-2 before:bottom-2 before:w-px before:bg-card/5">
               {historico.map((item, index) => (
                 <motion.div 
                   key={item.id}
@@ -91,7 +91,7 @@ export function BoletoHistorico({ boletoId }: BoletoHistoricoProps) {
                       {new Date(item.created_at).toLocaleString('pt-BR')}
                     </span>
                     {item.metadados && Object.keys(item.metadados).length > 0 && (
-                      <div className="mt-2 p-2 rounded-lg bg-white/[0.03] border border-white/5 text-[10px] font-mono text-muted-foreground break-all">
+                      <div className="mt-2 p-2 rounded-lg bg-card/[0.03] border border-white/5 text-[10px] font-mono text-muted-foreground break-all">
                         {JSON.stringify(item.metadados, null, 2)}
                       </div>
                     )}

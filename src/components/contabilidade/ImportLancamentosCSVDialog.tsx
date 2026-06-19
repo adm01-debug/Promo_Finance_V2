@@ -234,7 +234,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
             <div
               className={cn(
                 'border-2 border-dashed rounded-[2.5rem] p-12 text-center transition-all duration-700 cursor-pointer group/dropzone relative overflow-hidden',
-                'border-white/10 bg-white/[0.02] hover:border-primary/40 hover:bg-primary/5 hover:shadow-2xl',
+                'border-white/10 bg-card/[0.02] hover:border-primary/40 hover:bg-primary/5 hover:shadow-2xl',
               )}
               onClick={() => inputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
@@ -274,25 +274,25 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
+              <Card className="bg-card/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-card/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Lançamentos</div>
                 <div className="text-xl font-bold">{parseResult.lancamentos.length}</div>
               </CardContent></Card>
-              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
+              <Card className="bg-card/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-card/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Partidas</div>
                 <div className="text-xl font-bold">{parseResult.totalPartidas}</div>
               </CardContent></Card>
-              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
+              <Card className="bg-card/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-card/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Total D = C</div>
                 <div className="text-sm font-mono font-bold">{formatCurrency(totalDebito)}</div>
               </CardContent></Card>
-              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
+              <Card className="bg-card/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-card/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Erros</div>
                 <div className={cn('text-xl font-bold', parseResult.errors.length > 0 ? 'text-destructive' : 'text-success')}>
                   {parseResult.errors.length}
                 </div>
               </CardContent></Card>
-              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
+              <Card className="bg-card/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-card/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Avisos</div>
                 <div className={cn('text-xl font-bold', parseResult.warnings.length > 0 ? 'text-warning' : 'text-muted-foreground')}>
                   {parseResult.warnings.length}

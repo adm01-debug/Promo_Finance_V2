@@ -64,7 +64,7 @@ export function PrevisaoIAAlertas({ alertas }: Props) {
                     initial={{ opacity: 0, x: -10 }} 
                     animate={{ opacity: 1, x: 0 }} 
                     transition={{ delay: i * 0.1 }} 
-                    className="group relative rounded-2xl border border-white/5 bg-white/5 p-5 hover:bg-white/10 transition-all overflow-hidden"
+                    className="group relative rounded-2xl border border-white/5 bg-card/5 p-5 hover:bg-card/10 transition-all overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                       <ShieldAlert className="h-12 w-12 text-primary" />
