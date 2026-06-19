@@ -92,7 +92,8 @@ test.describe('Login › validação do formulário', () => {
     await page.goto('/auth');
     await page.locator('#login-email').fill('inexistente@exemplo.com');
     await page.locator('#login-password').fill('SenhaErrada123!');
-    await page.getByRole('button', { name: /Acessar Plataforma/i }).click();
+    // Submit via form (evita overlays do preview interceptarem o click)
+    await page.locator('#login-password').press('Enter');
 
     // Toast (sonner) OU mensagem inline
     const toast = page.locator('li[data-sonner-toast], [role="status"], [role="alert"]');
