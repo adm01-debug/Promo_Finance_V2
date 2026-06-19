@@ -24,7 +24,7 @@ export const AlertasOrcamento = () => {
     return (
       <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+          <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
             <Target className="h-4 w-4 text-primary" />
             Saúde Orçamentária
           </CardTitle>
@@ -47,7 +47,7 @@ export const AlertasOrcamento = () => {
   return (
     <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+        <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-orange-500" />
           Alertas de Orçamento
         </CardTitle>

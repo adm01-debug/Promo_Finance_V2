@@ -152,7 +152,7 @@ export default function Relatorios() {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
         >
           <div>
-            <h1 className="text-4xl font-black tracking-tight text-white mb-2">Relatórios & BI</h1>
+            <h1 className="text-4xl font-black tracking-tight text-foreground mb-2">Relatórios & BI</h1>
             <p className="text-foreground/60 font-medium">Ecossistema Central de Inteligência e Exportação Avançada</p>
           </div>
           <div className="flex gap-2">

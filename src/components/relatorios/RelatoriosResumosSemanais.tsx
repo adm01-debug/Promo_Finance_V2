@@ -63,7 +63,7 @@ export function RelatoriosResumosSemanais() {
                       </Badge>
                     )}
                   </div>
-                  <h4 className="text-white font-bold text-sm truncate">Resumo Executivo Quantum</h4>
+                  <h4 className="text-foreground font-bold text-sm truncate">Resumo Executivo Quantum</h4>
                   <div className="flex items-center gap-2 mt-2 text-[10px] text-foreground/40">
                     <Calendar className="h-3 w-3" />
                     {format(new Date(resumo.created_at), "PPP", { locale: ptBR })}
@@ -90,7 +90,7 @@ export function RelatoriosResumosSemanais() {
                 <CardHeader className="border-b border-white/10 flex-shrink-0">
                   <div className="flex justify-between items-center">
                     <div>
-                      <CardTitle className="text-white flex items-center gap-2">
+                      <CardTitle className="text-foreground flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-primary" />
                         Resumo Semanal
                       </CardTitle>
@@ -99,11 +99,11 @@ export function RelatoriosResumosSemanais() {
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-white">
+                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-foreground">
                         <Download className="h-4 w-4 mr-2" />
                         PDF
                       </Button>
-                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-white">
+                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-foreground">
                         <Mail className="h-4 w-4 mr-2" />
                         Reenviar
                       </Button>

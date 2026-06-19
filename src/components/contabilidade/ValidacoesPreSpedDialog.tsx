@@ -391,7 +391,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar nas validações (ex: código de conta, descrição)..."
-              className="h-14 pl-12 pr-12 text-sm font-bold bg-card/[0.03] border-white/5 focus-visible:ring-1 focus-visible:ring-primary/40 transition-all rounded-2xl shadow-inner placeholder:text-foreground/20 text-white"
+              className="h-14 pl-12 pr-12 text-sm font-bold bg-card/[0.03] border-white/5 focus-visible:ring-1 focus-visible:ring-primary/40 transition-all rounded-2xl shadow-inner placeholder:text-foreground/20 text-foreground"
             />
             {busca && (
               <button

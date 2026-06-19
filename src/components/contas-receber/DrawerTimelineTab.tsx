@@ -95,7 +95,7 @@ export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory:
                     <p className="font-black text-primary uppercase tracking-widest opacity-60">Evidência Bancária</p>
                     <div className="flex justify-between">
                       <span className="text-foreground/60">{item.metadata.transacao_banco.descricao}</span>
-                      <span className="font-black text-white">{formatCurrency(item.metadata.transacao_banco.valor)}</span>
+                      <span className="font-black text-foreground">{formatCurrency(item.metadata.transacao_banco.valor)}</span>
                     </div>
                   </div>
                 )}
