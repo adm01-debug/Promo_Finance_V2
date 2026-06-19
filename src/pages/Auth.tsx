@@ -388,13 +388,13 @@ export default function Auth() {
   // Main Auth View
   return (
     <div className="min-h-screen relative overflow-hidden flex">
-      <div className="hidden lg:flex w-1/2 bg-[#f1f3f9] items-center justify-center border-r border-border">
+      <div className="hidden lg:flex w-1/2 bg-muted/30 items-center justify-center border-r border-border">
         <div className="max-w-md text-center space-y-4">
           <div className="h-16 w-16 bg-primary rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-primary/20">
-            <Shield className="h-8 w-8 text-white" />
+            <Shield className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-[#1a1c21]">Promo Finance</h2>
-          <p className="text-[#64748b] text-lg font-medium leading-relaxed">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Promo Finance</h2>
+          <p className="text-muted-foreground text-lg font-medium leading-relaxed">
             Sua plataforma de inteligência financeira premium.
           </p>
         </div>
@@ -402,7 +402,7 @@ export default function Auth() {
 
 
       <div className="w-full lg:w-1/2 relative">
-        <div className="absolute inset-0 bg-[#ffffff] pointer-events-none" />
+        <div className="absolute inset-0 bg-background pointer-events-none" />
         
         <div className="relative z-10 min-h-screen flex items-center justify-center p-4 lg:p-8">
           <motion.div
@@ -418,12 +418,12 @@ export default function Auth() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="border border-border bg-white shadow-xl shadow-black/5 rounded-2xl overflow-hidden">
+              <Card className="border border-border bg-card shadow-xl shadow-foreground/5 rounded-2xl overflow-hidden">
                 <CardHeader className="text-center p-8 pb-2">
-                  <CardTitle className="text-2xl font-bold tracking-tight text-[#1a1c21]">
+                  <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
                     Bem-vindo de volta
                   </CardTitle>
-                  <CardDescription className="text-sm font-medium text-[#64748b]">
+                  <CardDescription className="text-sm font-medium text-muted-foreground">
                     Acesse sua conta para continuar
                   </CardDescription>
                 </CardHeader>
@@ -437,10 +437,10 @@ export default function Auth() {
                     />
                   )}
                   <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-[#f1f3f9] p-1 rounded-lg border border-border" variant="bordered">
+                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted p-1 rounded-lg border border-border" variant="bordered">
                       <TabsTrigger 
                         value="login" 
-                        className="gap-2 rounded-md py-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                        className="gap-2 rounded-md py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
 
                       >
                         <LogIn className="h-4 w-4" />
@@ -448,7 +448,7 @@ export default function Auth() {
                       </TabsTrigger>
                       <TabsTrigger 
                         value="register" 
-                        className="gap-2 rounded-md py-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                        className="gap-2 rounded-md py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
                       >
                         <UserPlus className="h-4 w-4" />
                         Criar Conta
