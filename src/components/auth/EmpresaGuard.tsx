@@ -1,32 +1,27 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
-import {
-  useUserEmpresas,
-  getCurrentEmpresaId,
-  setCurrentEmpresaId,
-} from '@/hooks/useUserEmpresas';
+import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { EmpresaSelectionGate } from './EmpresaSelectionGate';
+import { EmpresaScopeProvider } from '@/contexts/EmpresaScopeContext';
 
 interface EmpresaGuardProps {
   children: ReactNode;
 }
 
+/**
+ * EmpresaGuard — refatorado para arquitetura multi-empresa consolidada.
+ *
+ * Não bloqueia mais quando há N vínculos. O acesso só é interrompido
+ * quando o usuário NÃO tem nenhum vínculo ativo (caso em que mostramos
+ * a tela de "sem vínculos" via EmpresaSelectionGate).
+ *
+ * Toda escolha de escopo (consolidado vs focado, multi-select de CNPJs)
+ * passa a ser feita pelo `EmpresaScopeProvider` injetado aqui, com
+ * persistência própria em localStorage e retrocompatibilidade da chave
+ * legada `pf:current-empresa-id`.
+ */
 export function EmpresaGuard({ children }: EmpresaGuardProps) {
   const { data: vinculos = [], isLoading } = useUserEmpresas();
-  const [confirmed, setConfirmed] = useState(false);
-
-  // Auto-seleção quando há um único vínculo
-  useEffect(() => {
-    if (isLoading || confirmed) return;
-    if (vinculos.length === 1) {
-      const only = vinculos[0];
-      const current = getCurrentEmpresaId();
-      if (current !== only.empresa_id) {
-        setCurrentEmpresaId(only.empresa_id);
-      }
-      setConfirmed(true);
-    }
-  }, [vinculos, isLoading, confirmed]);
 
   if (isLoading) {
     return (
@@ -39,23 +34,11 @@ export function EmpresaGuard({ children }: EmpresaGuardProps) {
     );
   }
 
-  // 0 vínculos → tela de "sem vínculos"
+  // 0 vínculos → bloquear (única razão válida)
   if (vinculos.length === 0) {
-    return <EmpresaSelectionGate onSelected={() => setConfirmed(true)} />;
+    return <EmpresaSelectionGate onSelected={() => { /* re-render automático via query */ }} />;
   }
 
-  // 1 vínculo → já tratado pelo useEffect
-  if (vinculos.length === 1) {
-    return <>{children}</>;
-  }
-
-  // N vínculos: precisa de escolha persistida que aponte para um vínculo válido
-  const currentId = getCurrentEmpresaId();
-  const validCurrent = currentId && vinculos.some((v) => v.empresa_id === currentId);
-
-  if (!confirmed && !validCurrent) {
-    return <EmpresaSelectionGate onSelected={() => setConfirmed(true)} />;
-  }
-
-  return <>{children}</>;
+  // 1+ vínculos → segue para o app, com escopo gerenciado pelo provider
+  return <EmpresaScopeProvider>{children}</EmpresaScopeProvider>;
 }
