@@ -13,7 +13,44 @@
 }
 
 @layer base {
-  :root {
+  :root,
+  .light {
+    --font-body: Inter, system-ui, sans-serif;
+    --font-heading: Outfit, Inter, system-ui, sans-serif;
+
+    --background: 210 40% 98%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 210 40% 98%;
+    --warning: 37.7 92.1% 50.2%;
+    --warning-foreground: 222.2 47.4% 11.2%;
+    --info: 199.9 89.1% 48.4%;
+    --info-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217.2 91.2% 59.8%;
+    --radius: 0.75rem;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+  }
+
+  .dark {
+    --font-body: Inter, system-ui, sans-serif;
+    --font-heading: Outfit, Inter, system-ui, sans-serif;
+
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -30,10 +67,36 @@
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 210 40% 98%;
+    --warning: 37.7 92.1% 50.2%;
+    --warning-foreground: 222.2 47.4% 11.2%;
+    --info: 199.9 89.1% 48.4%;
+    --info-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
     --radius: 0.75rem;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .text-display-xl {
+    @apply text-5xl font-black leading-none tracking-normal md:text-6xl;
+  }
+
+  .text-display-lg {
+    @apply text-4xl font-bold leading-tight tracking-normal md:text-5xl;
+  }
+
+  .text-display-md {
+    @apply text-3xl font-bold leading-tight tracking-normal md:text-4xl;
   }
 }
 
