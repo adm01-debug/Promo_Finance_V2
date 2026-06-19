@@ -34,7 +34,7 @@ import { useTranslation } from 'react-i18next';
 import { useAlertas } from '@/hooks/useAlertas';
 import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
-import { EmpresaSwitcher } from './EmpresaSwitcher';
+import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface HeaderProps {
@@ -133,7 +133,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <EmpresaSwitcher />
+            <EmpresaScopeBar />
             
             <div className="w-px h-4 bg-border mx-1 hidden lg:block" />
 

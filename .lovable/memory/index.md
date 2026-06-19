@@ -69,3 +69,4 @@ type: reference
 - [Auditoria Testes P15](mem://quality/auditoria-testes-p15) — Baseline 1.012 testes (100%), 0 erros TS, 4 RLS críticas corrigidas (notas_fiscais_ocr, resumos_executivos, acoes_recomendadas, storage relatorios-tributarios)
 - [Dedup e Auditoria Notificações](mem://features/saved-filter-dedup-audit) — Helper savedFilterDedup (Set + last_seen_at) + view vw_notification_history_duplicates
 - [Revogação Permissões Filtros](mem://features/saved-filter-permission-revocation) — Trigger fn_revoke_orphan_saved_filter_subscriptions + guarda permission_revoked no helper de dedup
+- [Multi-Empresa Consolidada](mem://architecture/multi-empresa-consolidada) — Grupo com vários CNPJs/regimes: EmpresaScopeContext + EmpresaScopeBar (⌘E) + EmpresaBadge (sigla/cor chart-1..8) + EmpresaActionPicker com sugestão IA (recomendar-empresa.ts) + RLS multi-empresa em contas_receber/contas_pagar/clientes/boletos
