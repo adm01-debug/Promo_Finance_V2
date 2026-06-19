@@ -61,18 +61,21 @@ export function EmpresaActionPicker({
     try {
       const aceitouRecomendacao = empresaId === recomendadaId;
       const rec = ranking.find((r) => r.empresaId === empresaId);
-      await supabase.from('audit_logs').insert({
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from('audit_logs').insert([{
+        user_id: user?.id ?? null,
         action: 'empresa_action_pick',
         table_name: 'empresas',
+        record_id: empresaId,
         details: `Operação ${contexto.tipo} por ${empresaId}${aceitouRecomendacao ? ' (aceitou sugestão IA)' : ' (rejeitou sugestão IA)'}`,
         new_data: {
           empresa_id: empresaId,
           recomendada_id: recomendadaId,
           aceitou_recomendacao: aceitouRecomendacao,
           score: rec?.score,
-          contexto,
+          contexto: contexto as unknown as Record<string, unknown>,
         },
-      });
+      }]);
     } catch (err) {
       logger.warn('[EmpresaActionPicker] falha ao auditar escolha', err);
     }

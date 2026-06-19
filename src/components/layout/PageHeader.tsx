@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
-import { EmpresaSwitcher } from './EmpresaSwitcher';
+import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
 import { VisualValidator } from '@/components/ui/ux-validator';
 
 interface PageHeaderProps {
@@ -69,7 +69,7 @@ export const PageHeader = ({
       <div className="flex flex-col sm:flex-row items-center gap-3 bg-background/40 p-2 rounded-2xl md:rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
         {showEmpresaSwitcher && (
           <div className="hidden lg:flex items-center gap-3 pr-3 border-r border-white/10">
-            <EmpresaSwitcher />
+            <EmpresaScopeBar />
           </div>
         )}
         {showUxValidator && <VisualValidator />}

@@ -133,7 +133,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <EmpresaSwitcher />
+            <EmpresaScopeBar />
             
             <div className="w-px h-4 bg-border mx-1 hidden lg:block" />
 
