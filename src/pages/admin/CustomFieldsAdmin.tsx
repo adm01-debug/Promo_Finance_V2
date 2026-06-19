@@ -138,7 +138,7 @@ export default function CustomFieldsAdmin() {
           </PageHeader>
 
           <div className="grid grid-cols-1 gap-6">
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+            <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
               <CardHeader>
                 <CardTitle className="text-white">Dicionário de Dados Customizados</CardTitle>
                 <CardDescription>
@@ -164,7 +164,7 @@ export default function CustomFieldsAdmin() {
                       <TableRow><TableCell colSpan={6} className="text-center py-12 text-white/20">Nenhum campo customizado definido.</TableCell></TableRow>
                     ) : (
                       definitions.map((def) => (
-                        <TableRow key={def.id} className="border-white/5 hover:bg-white/5 transition-colors">
+                        <TableRow key={def.id} className="border-white/5 hover:bg-card/5 transition-colors">
                           <TableCell>
                             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
                               {ENTITY_TYPES.find(e => e.value === def.entity_type)?.label || def.entity_type}
@@ -219,7 +219,7 @@ export default function CustomFieldsAdmin() {
                 value={formData.entity_type} 
                 onValueChange={(val: EntityType) => setFormData({ ...formData, entity_type: val })}
               >
-                <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectTrigger className="bg-card/5 border-white/10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#111] border-white/10 text-white">
@@ -237,7 +237,7 @@ export default function CustomFieldsAdmin() {
                   value={formData.label} 
                   onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                   placeholder="Ex: Cor Favorita"
-                  className="bg-white/5 border-white/10"
+                  className="bg-card/5 border-white/10"
                 />
               </div>
               <div className="space-y-2">
@@ -247,7 +247,7 @@ export default function CustomFieldsAdmin() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Ex: cor_favorita"
                   disabled={!!editingId}
-                  className="bg-white/5 border-white/10"
+                  className="bg-card/5 border-white/10"
                 />
               </div>
             </div>
@@ -258,7 +258,7 @@ export default function CustomFieldsAdmin() {
                 value={formData.field_type} 
                 onValueChange={(val: FieldType) => setFormData({ ...formData, field_type: val })}
               >
-                <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectTrigger className="bg-card/5 border-white/10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#111] border-white/10 text-white">
@@ -276,7 +276,7 @@ export default function CustomFieldsAdmin() {
                   value={formData.options} 
                   onChange={(e) => setFormData({ ...formData, options: e.target.value })}
                   placeholder="Azul, Verde, Vermelho"
-                  className="bg-white/5 border-white/10"
+                  className="bg-card/5 border-white/10"
                 />
               </div>
             )}
@@ -287,7 +287,7 @@ export default function CustomFieldsAdmin() {
                 value={formData.placeholder} 
                 onChange={(e) => setFormData({ ...formData, placeholder: e.target.value })}
                 placeholder="Dica para o usuário"
-                className="bg-white/5 border-white/10"
+                className="bg-card/5 border-white/10"
               />
             </div>
 

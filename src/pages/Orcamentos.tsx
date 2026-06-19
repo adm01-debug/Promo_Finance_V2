@@ -148,7 +148,7 @@ const Orcamentos = () => {
                 type="month" 
                 value={selectedPeriod} 
                 onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="w-40 bg-white/5 border-white/10 text-white"
+                className="w-40 bg-card/5 border-white/10 text-white"
               />
               <Button onClick={() => {
                 setEditingBudget(null);
@@ -163,7 +163,7 @@ const Orcamentos = () => {
 
           {/* KPIs */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+            <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 bg-blue-500/10 rounded-lg">
@@ -178,7 +178,7 @@ const Orcamentos = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+            <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 bg-orange-500/10 rounded-lg">
@@ -193,7 +193,7 @@ const Orcamentos = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+            <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 bg-green-500/10 rounded-lg">
@@ -208,7 +208,7 @@ const Orcamentos = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+            <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 bg-primary/10 rounded-lg">
@@ -219,14 +219,14 @@ const Orcamentos = () => {
                   </Badge>
                 </div>
                 <div className="text-2xl font-black text-white">{totals.percent.toFixed(0)}%</div>
-                <Progress value={totals.percent} className="h-2 mt-3 bg-white/5" />
+                <Progress value={totals.percent} className="h-2 mt-3 bg-card/5" />
               </CardContent>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-white">Orçamentos por Categoria</CardTitle>
                   <CardDescription>Acompanhe o status de cada categoria individualmente.</CardDescription>
@@ -243,7 +243,7 @@ const Orcamentos = () => {
                         const textColor = budget.percent_used > 100 ? 'text-red-500' : budget.percent_used > 85 ? 'text-yellow-500' : 'text-green-500';
 
                         return (
-                          <div key={budget.id} className="group p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
+                          <div key={budget.id} className="group p-4 rounded-2xl bg-card/5 border border-white/5 hover:border-white/10 transition-all">
                             <div className="flex justify-between items-start mb-4">
                               <div>
                                 <h4 className="font-bold text-white flex items-center gap-2">
@@ -279,7 +279,7 @@ const Orcamentos = () => {
                               </div>
                             </div>
 
-                            <Progress value={Math.min(budget.percent_used, 100)} className={`h-1.5 bg-white/10 ${statusColor}`} />
+                            <Progress value={Math.min(budget.percent_used, 100)} className={`h-1.5 bg-card/10 ${statusColor}`} />
                           </div>
                         );
                       })
@@ -290,7 +290,7 @@ const Orcamentos = () => {
             </div>
 
             <div className="space-y-6">
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-white">Análise de Gastos</CardTitle>
                 </CardHeader>
@@ -354,7 +354,7 @@ const Orcamentos = () => {
                 value={form.values.category} 
                 onValueChange={(val) => form.setFieldValue('category', val)}
               >
-                <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectTrigger className="bg-card/5 border-white/10">
                   <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#111] border-white/10 text-white">
@@ -372,7 +372,7 @@ const Orcamentos = () => {
                 type="number" 
                 step="0.01"
                 {...form.getFieldProps('budgeted_amount')}
-                className="bg-white/5 border-white/10"
+                className="bg-card/5 border-white/10"
                 placeholder="0,00"
               />
               {form.errors.budgeted_amount && <p className="text-xs text-red-500">{form.errors.budgeted_amount}</p>}
@@ -383,7 +383,7 @@ const Orcamentos = () => {
               <Input 
                 type="month" 
                 {...form.getFieldProps('period')}
-                className="bg-white/5 border-white/10"
+                className="bg-card/5 border-white/10"
               />
               {form.errors.period && <p className="text-xs text-red-500">{form.errors.period}</p>}
             </div>
