@@ -132,7 +132,7 @@ function AppRoutes() {
         <SkipLinks />
         <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
-        <VisualValidator />
+        {new URLSearchParams(window.location.search).has('visualDebug') && <VisualValidator />}
         <VisualCorrectionOverlay />
         <Suspense fallback={<PageLoading />}>
           <Routes>
