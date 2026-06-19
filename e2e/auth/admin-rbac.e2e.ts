@@ -15,14 +15,26 @@ import { test, expect, type Page } from '@playwright/test';
  * permitindo que a parte não-autenticada rode em qualquer ambiente (CI sem secrets).
  */
 
-const ADMIN_ROUTES = [
+const ADMIN_ONLY_ROUTES = [
   '/admin/telemetria',
   '/admin/edge-health',
   '/admin/system-health',
   '/admin/sso',
-  '/admin/insights-ia',
+  '/admin/sso-jit-events',
+  '/admin/scim-audit',
+  '/admin/sso-events',
   '/admin/compliance',
+  '/admin/filtros-compartilhados',
+  '/admin/api',
+  '/admin/campos-customizados',
 ] as const;
+
+const ADMIN_OR_FINANCEIRO_ROUTES = [
+  '/admin/insights-ia',
+  '/admin/auditoria-ia',
+] as const;
+
+const ADMIN_ROUTES = [...ADMIN_ONLY_ROUTES, ...ADMIN_OR_FINANCEIRO_ROUTES] as const;
 
 // --- Helpers ----------------------------------------------------------------
 
@@ -153,7 +165,7 @@ test.describe('RBAC › usuário autenticado sem perfil admin', () => {
     }
   });
 
-  for (const route of ADMIN_ROUTES) {
+  for (const route of ADMIN_ONLY_ROUTES) {
     test(`não-admin é barrado em ${route} com card "Acesso restrito"`, async ({ page }) => {
       await loginAs(page, process.env.E2E_NONADMIN_EMAIL!, process.env.E2E_NONADMIN_PASSWORD!);
       await page.goto(route);
