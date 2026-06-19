@@ -44,7 +44,7 @@ export function useRealtimeAlertas() {
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
-          console.log('[Realtime] Subscribed to alertas changes');
+          if (import.meta.env.DEV) console.log('[Realtime] Subscribed to alertas changes');
         }
       });
 
