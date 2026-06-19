@@ -39,12 +39,7 @@ export function useSsoDomainResolver(email: string, debounceMs = 400): ResolverS
 
     setState((s) => ({ ...s, loading: true, domain: dom }));
     const t = setTimeout(async () => {
-      const { data } = await (supabase as any)
-        .from('sso_providers')
-        .select('id,nome,tipo,preset,allowed_domains,force_sso_for_domains,ordem')
-        .eq('ativo', true)
-        .contains('allowed_domains', [dom])
-        .order('ordem', { ascending: true });
+      const { data } = await supabase.rpc('resolve_sso_providers_for_domain', { p_domain: dom });
 
       const providers = (data ?? []) as ResolvedSsoProvider[];
       const autoRedirectProvider = providers.find((p) => p.force_sso_for_domains) ?? null;
