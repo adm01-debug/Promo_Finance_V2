@@ -162,9 +162,14 @@ export function EmpresaScopeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toggleEmpresa = useCallback((empresaId: string) => {
-    setSelectedIdsState((prev) =>
-      prev.includes(empresaId) ? prev.filter((id) => id !== empresaId) : [...prev, empresaId],
-    );
+    setSelectedIdsState((prev) => {
+      if (prev.includes(empresaId)) {
+        // Guarda: nunca permitir escopo vazio — bloqueia desmarcar a última.
+        if (prev.length === 1) return prev;
+        return prev.filter((id) => id !== empresaId);
+      }
+      return [...prev, empresaId];
+    });
   }, []);
 
   const selectAll = useCallback(() => {
