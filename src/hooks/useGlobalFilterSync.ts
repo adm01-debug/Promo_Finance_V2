@@ -27,7 +27,7 @@ export function useGlobalFilterSync() {
 
       // Ao trocar de empresa, podemos querer limpar alguns filtros específicos de dados
       // mas manter os de período e visualização.
-      console.log(`[FilterSync] Empresa alterada para ${detail}. Sincronizando estados...`);
+      if (import.meta.env.DEV) console.log(`[FilterSync] Empresa alterada para ${detail}. Sincronizando estados...`);
       
       // Feedback visual para o usuário
       toast.info('Filtros sincronizados', {

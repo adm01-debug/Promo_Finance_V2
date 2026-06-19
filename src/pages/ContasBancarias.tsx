@@ -264,7 +264,7 @@ export default function ContasBancarias() {
           open={importarOpen} 
           onOpenChange={setImportarOpen} 
           onImportSuccess={(extrato) => {
-            console.log('Extrato importado:', extrato);
+            if (import.meta.env.DEV) console.log('Extrato importado:', extrato);
             toast.success(`${extrato.transacoes.length} transações importadas com sucesso para processamento.`);
             setImportarOpen(false);
             queryClient.invalidateQueries({ queryKey: ['extratos-bancarios'] });

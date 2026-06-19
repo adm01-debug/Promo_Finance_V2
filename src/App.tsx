@@ -198,17 +198,17 @@ function AppRoutes() {
             <Route path="/pix-hub" element={<ProtectedRoute><PixHub /></ProtectedRoute>} />
             <Route path="/orcamento-evento" element={<ProtectedRoute><OrcamentoEvento /></ProtectedRoute>} />
             <Route path="/benchmarking" element={<ProtectedRoute><BenchmarkingSetorial /></ProtectedRoute>} />
-            <Route path="/admin/telemetria" element={<ProtectedRoute><AdminTelemetria /></ProtectedRoute>} />
-            <Route path="/admin/edge-health" element={<ProtectedRoute><AdminEdgeHealth /></ProtectedRoute>} />
-            <Route path="/admin/system-health" element={<ProtectedRoute><AdminSystemHealth /></ProtectedRoute>} />
-            <Route path="/admin/sso" element={<ProtectedRoute><SSOAdmin /></ProtectedRoute>} />
+            <Route path="/admin/telemetria" element={<ProtectedRoute requiredRoles={['admin']}><AdminTelemetria /></ProtectedRoute>} />
+            <Route path="/admin/edge-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminEdgeHealth /></ProtectedRoute>} />
+            <Route path="/admin/system-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminSystemHealth /></ProtectedRoute>} />
+            <Route path="/admin/sso" element={<ProtectedRoute requiredRoles={['admin']}><SSOAdmin /></ProtectedRoute>} />
             <Route path="/admin/sso-jit-events" element={<ProtectedRoute requiredRoles={['admin']}><SSOJitEvents /></ProtectedRoute>} />
             <Route path="/admin/scim-audit" element={<ProtectedRoute requiredRoles={['admin']}><ScimAudit /></ProtectedRoute>} />
             <Route path="/audit-sso-profile-sync" element={<ProtectedRoute requiredRoles={['admin']}><AuditSsoProfileSync /></ProtectedRoute>} />
             <Route path="/admin/sso-events" element={<ProtectedRoute requiredRoles={['admin']}><SsoEvents /></ProtectedRoute>} />
-            <Route path="/admin/insights-ia" element={<ProtectedRoute><InsightsIA /></ProtectedRoute>} />
-            <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute><AnomaliaDetalhe /></ProtectedRoute>} />
-            <Route path="/admin/compliance" element={<ProtectedRoute><ComplianceAuditoria /></ProtectedRoute>} />
+            <Route path="/admin/insights-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><InsightsIA /></ProtectedRoute>} />
+            <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AnomaliaDetalhe /></ProtectedRoute>} />
+            <Route path="/admin/compliance" element={<ProtectedRoute requiredRoles={['admin']}><ComplianceAuditoria /></ProtectedRoute>} />
             <Route path="/admin/auditoria-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AuditoriaIA /></ProtectedRoute>} />
             <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
             <Route path="/configuracoes/filtros-salvos" element={<ProtectedRoute><FiltrosSalvos /></ProtectedRoute>} />
