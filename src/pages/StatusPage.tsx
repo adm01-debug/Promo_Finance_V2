@@ -78,7 +78,7 @@ export default function StatusPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020202] text-white selection:bg-primary/30">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
       {/* Premium Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[140px]" />
@@ -97,50 +97,50 @@ export default function StatusPage() {
             Todos os sistemas operacionais
           </motion.div>
           <h1 className="text-5xl font-black tracking-tight">Status do Sistema</h1>
-          <p className="text-white/40 text-lg">Monitoramento neural de infraestrutura em tempo real.</p>
+          <p className="text-foreground/40 text-lg">Monitoramento neural de infraestrutura em tempo real.</p>
         </div>
 
         {/* Uptime Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
+          <Card className="bg-card/5 border-border backdrop-blur-xl">
             <CardContent className="pt-6">
-              <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">Uptime (90 dias)</p>
+              <p className="text-foreground/40 text-xs font-bold uppercase tracking-wider mb-1">Uptime (90 dias)</p>
               <div className="text-3xl font-black text-primary">{metrics?.uptime90d}%</div>
               <Progress value={99.98} className="h-1 mt-4 bg-card/10" />
             </CardContent>
           </Card>
-          <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
+          <Card className="bg-card/5 border-border backdrop-blur-xl">
             <CardContent className="pt-6">
-              <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">Latência Média</p>
-              <div className="text-3xl font-black text-white">{metrics?.latencyMs}ms</div>
+              <p className="text-foreground/40 text-xs font-bold uppercase tracking-wider mb-1">Latência Média</p>
+              <div className="text-3xl font-black text-foreground">{metrics?.latencyMs}ms</div>
               <p className="text-[10px] text-success font-bold mt-2 flex items-center gap-1">
                 <Zap className="h-3 w-3" /> Excelente
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
+          <Card className="bg-card/5 border-border backdrop-blur-xl">
             <CardContent className="pt-6">
-              <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">Incidentes (24h)</p>
-              <div className="text-3xl font-black text-white">{metrics?.incidents24h}</div>
-              <p className="text-[10px] text-white/40 mt-2 italic">Nenhum problema detectado</p>
+              <p className="text-foreground/40 text-xs font-bold uppercase tracking-wider mb-1">Incidentes (24h)</p>
+              <div className="text-3xl font-black text-foreground">{metrics?.incidents24h}</div>
+              <p className="text-[10px] text-foreground/40 mt-2 italic">Nenhum problema detectado</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Services Status */}
-        <Card className="bg-card/5 border-white/10 backdrop-blur-xl mb-12 overflow-hidden">
-          <div className="p-6 border-b border-white/10 flex justify-between items-center bg-card/5">
+        <Card className="bg-card/5 border-border backdrop-blur-xl mb-12 overflow-hidden">
+          <div className="p-6 border-b border-border flex justify-between items-center bg-card/5">
             <h3 className="font-bold text-lg flex items-center gap-2">
               <Globe className="h-5 w-5 text-primary" />
               Status por Serviço
             </h3>
-            <Badge variant="outline" className="border-white/20 text-white/40">Atualizado agora</Badge>
+            <Badge variant="outline" className="border-white/20 text-foreground/40">Atualizado agora</Badge>
           </div>
           <CardContent className="p-0">
             <div className="divide-y divide-white/5">
               {dynamicServices.map((service) => (
                 <div key={service.id} className="p-6 flex justify-between items-center hover:bg-card/[0.02] transition-colors">
-                  <span className="font-medium text-white/80">{service.name}</span>
+                  <span className="font-medium text-foreground/80">{service.name}</span>
                   <div className="flex items-center gap-3">
                     <Badge className={getStatusColor(service.status)}>
                       {service.status === 'operational' ? 'Operacional' : 
@@ -162,7 +162,7 @@ export default function StatusPage() {
               <ShieldCheck className="h-6 w-6 text-primary" />
               SLA Enterprise
             </h4>
-            <p className="text-white/60 text-sm leading-relaxed">
+            <p className="text-foreground/60 text-sm leading-relaxed">
               O Promo Finance garante um tempo de atividade (uptime) de <strong>99.5%</strong> mensal. Em caso de descumprimento, créditos de serviço são aplicados automaticamente conforme nossa política de SLA.
             </p>
             <Button variant="link" className="text-primary p-0 h-auto gap-2">
@@ -170,8 +170,8 @@ export default function StatusPage() {
             </Button>
           </div>
           <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 border-dashed">
-            <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-4">Relatório Semanal</p>
-            <p className="text-sm italic text-white/60">
+            <p className="text-foreground/40 text-xs font-bold uppercase tracking-wider mb-4">Relatório Semanal</p>
+            <p className="text-sm italic text-foreground/60">
               "A infraestrutura do Promo Finance demonstrou estabilidade absoluta na última semana, com 100% de sucesso nas rotinas de conciliação neural."
             </p>
             <div className="mt-4 text-[10px] font-black text-primary uppercase">Quantum SRE Insight</div>
@@ -179,9 +179,9 @@ export default function StatusPage() {
         </div>
 
         {/* Footer */}
-        <div className="pt-12 border-t border-white/10 text-center">
+        <div className="pt-12 border-t border-border text-center">
           <Link to="/">
-            <Button variant="ghost" className="text-white/40 hover:text-white">
+            <Button variant="ghost" className="text-foreground/40 hover:text-foreground">
               Voltar para o App
             </Button>
           </Link>

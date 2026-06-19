@@ -172,7 +172,7 @@ export default function BI() {
 
   return (
     <MainLayout>
-      <motion.div className={cn("space-y-6 p-6 min-h-screen transition-all duration-1000 relative", futuristicMode ? "bg-[#020617] text-white" : "bg-background")} variants={containerVariants} initial="hidden" animate="visible">
+      <motion.div className={cn("space-y-6 p-6 min-h-screen transition-all duration-1000 relative", futuristicMode ? "bg-background text-foreground" : "bg-background")} variants={containerVariants} initial="hidden" animate="visible">
         {futuristicMode && (
           <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />
@@ -183,7 +183,7 @@ export default function BI() {
         
         <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div>
-            <h1 className={cn("text-3xl font-bold tracking-tight flex items-center gap-3", futuristicMode ? "text-white drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]" : "bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent")}>
+            <h1 className={cn("text-3xl font-bold tracking-tight flex items-center gap-3", futuristicMode ? "text-foreground drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]" : "bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent")}>
               Business Intelligence
               {empresaId !== 'todas' && <Badge variant="outline" className="text-[10px] uppercase tracking-widest border-primary/30 text-primary">CNPJ: {empresas.find(e => e.id === empresaId)?.cnpj}</Badge>}
             </h1>
@@ -203,21 +203,21 @@ export default function BI() {
               />
             </div>
             <Select value={empresaId} onValueChange={setEmpresaId}>
-              <SelectTrigger className="w-[200px] bg-background/50 backdrop-blur-sm border-white/10"><Building2 className="w-4 h-4 mr-2" /><SelectValue placeholder="Empresa" /></SelectTrigger>
+              <SelectTrigger className="w-[200px] bg-background/50 backdrop-blur-sm border-border"><Building2 className="w-4 h-4 mr-2" /><SelectValue placeholder="Empresa" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todas">Todas as Empresas</SelectItem>
                 {empresas.filter(e => e.ativo).map(empresa => <SelectItem key={empresa.id} value={empresa.id}>{empresa.nome_fantasia || empresa.razao_social}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filters?.centroCustoId || "todos"} onValueChange={(val) => setFilters(f => ({...f, centroCustoId: val}))}>
-              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-white/10"><LayoutGrid className="w-4 h-4 mr-2" /><SelectValue placeholder="Centro de Custo" /></SelectTrigger>
+              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-border"><LayoutGrid className="w-4 h-4 mr-2" /><SelectValue placeholder="Centro de Custo" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os Centros</SelectItem>
                 {centrosCusto?.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filters?.contaBancariaId || "todos"} onValueChange={(val) => setFilters(f => ({...f, contaBancariaId: val}))}>
-              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-white/10"><Wallet className="w-4 h-4 mr-2" /><SelectValue placeholder="Conta Bancária" /></SelectTrigger>
+              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-border"><Wallet className="w-4 h-4 mr-2" /><SelectValue placeholder="Conta Bancária" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todas as Contas</SelectItem>
                 {contasBancarias?.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
@@ -225,7 +225,7 @@ export default function BI() {
             </Select>
 
             <Select value={usarPeriodoCustom ? "custom" : periodo} onValueChange={(val) => { if (val === "custom") { setUsarPeriodoCustom(true); } else { setUsarPeriodoCustom(false); setPeriodo(val); setDataInicio(undefined); setDataFim(undefined); } }}>
-              <SelectTrigger className="w-[160px] bg-background/50 backdrop-blur-sm border-white/10"><Calendar className="w-4 h-4 mr-2" /><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-[160px] bg-background/50 backdrop-blur-sm border-border"><Calendar className="w-4 h-4 mr-2" /><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="3">3 meses</SelectItem>
                 <SelectItem value="6">6 meses</SelectItem>
@@ -238,7 +238,7 @@ export default function BI() {
                 {[{ state: dataInicio, setter: setDataInicio, label: "Início" }, { state: dataFim, setter: setDataFim, label: "Fim" }].map((item) => (
                   <Popover key={item.label}>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className={cn("w-[130px] justify-start text-left font-normal bg-background/50 backdrop-blur-sm border-white/10", !item.state && "text-muted-foreground")}>
+                      <Button variant="outline" className={cn("w-[130px] justify-start text-left font-normal bg-background/50 backdrop-blur-sm border-border", !item.state && "text-muted-foreground")}>
                         <CalendarIcon className="mr-2 h-4 w-4" />{item.state ? format(item.state, "dd/MM/yyyy") : item.label}
                       </Button>
                     </PopoverTrigger>
@@ -251,7 +251,7 @@ export default function BI() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="bg-background/50 backdrop-blur-sm border-white/10 gap-2">
+            <Button variant="outline" size="sm" className="bg-background/50 backdrop-blur-sm border-border gap-2">
               <Download className="w-4 h-4" /> Exportar BI
             </Button>
           </div>
@@ -285,7 +285,7 @@ export default function BI() {
         )}
 
         <motion.div variants={itemVariants} className="mt-6 relative z-10">
-          <Card className={cn("transition-all duration-500", futuristicMode ? "premium-card border-white/10 bg-card/40 backdrop-blur-xl" : "")}>
+          <Card className={cn("transition-all duration-500", futuristicMode ? "premium-card border-border bg-card/40 backdrop-blur-xl" : "")}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" />Inadimplência Segmentada</CardTitle>
               <CardDescription>Análise de inadimplência por ramo de atividade e vendedor</CardDescription>
@@ -295,13 +295,13 @@ export default function BI() {
         </motion.div>
         
         <motion.div variants={itemVariants} className="mt-6 relative z-10">
-          <div className={cn("transition-all duration-500", futuristicMode ? "premium-card p-0 border-white/10 overflow-hidden bg-card/40 backdrop-blur-xl" : "")}>
+          <div className={cn("transition-all duration-500", futuristicMode ? "premium-card p-0 border-border overflow-hidden bg-card/40 backdrop-blur-xl" : "")}>
             <BenchmarkingSetorial />
           </div>
         </motion.div>
         
         <motion.div variants={itemVariants} className="mt-6 relative z-10">
-          <div className={cn("transition-all duration-500", futuristicMode ? "premium-card p-0 border-white/10 overflow-hidden bg-card/40 backdrop-blur-xl" : "")}>
+          <div className={cn("transition-all duration-500", futuristicMode ? "premium-card p-0 border-border overflow-hidden bg-card/40 backdrop-blur-xl" : "")}>
             <HistoricoAnalisesPreditivasPanel />
           </div>
         </motion.div>

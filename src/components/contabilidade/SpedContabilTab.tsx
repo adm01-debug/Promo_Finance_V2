@@ -146,7 +146,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
       case 'processing':
         return { icon: <Loader2 className="mr-2 h-4 w-4 animate-spin" />, label: 'Processando…', disabled: true, variant: 'secondary' as const, className: cn(base, 'bg-primary/10 text-primary') };
       case 'done':
-        return { icon: <CheckCircle2 className="mr-2 h-4 w-4" />, label: 'Concluído', disabled: false, variant: 'default' as const, className: cn(base, 'bg-success hover:bg-success text-white') };
+        return { icon: <CheckCircle2 className="mr-2 h-4 w-4" />, label: 'Concluído', disabled: false, variant: 'default' as const, className: cn(base, 'bg-success hover:bg-success text-primary-foreground') };
       case 'error':
         return { icon: <AlertTriangle className="mr-2 h-4 w-4" />, label: 'Falhou — tentar novamente', disabled: false, variant: 'destructive' as const, className: base };
       default:

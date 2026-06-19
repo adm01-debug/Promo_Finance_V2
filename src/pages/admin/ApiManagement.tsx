@@ -102,7 +102,7 @@ export default function ApiManagement() {
             gradientTo="to-indigo-500"
           >
             <div className="flex items-center gap-3">
-              <Button variant="outline" className="bg-card/5 border-white/10 text-white gap-2">
+              <Button variant="outline" className="bg-card/5 border-border text-foreground gap-2">
                 <Book className="h-4 w-4" />
                 Documentação API
               </Button>
@@ -115,9 +115,9 @@ export default function ApiManagement() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-border backdrop-blur-xl">
                 <CardHeader>
-                  <CardTitle className="text-white">Suas Chaves de API</CardTitle>
+                  <CardTitle className="text-foreground">Suas Chaves de API</CardTitle>
                   <CardDescription>
                     Chaves ativas para integração com sistemas externos. Nunca compartilhe suas chaves secretas.
                   </CardDescription>
@@ -125,35 +125,35 @@ export default function ApiManagement() {
                 <CardContent>
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-white/10">
-                        <TableHead className="text-white/40">Nome</TableHead>
-                        <TableHead className="text-white/40">Prefixo</TableHead>
-                        <TableHead className="text-white/40">Último Uso</TableHead>
-                        <TableHead className="text-white/40">Criada em</TableHead>
-                        <TableHead className="text-right text-white/40">Ações</TableHead>
+                      <TableRow className="border-border">
+                        <TableHead className="text-foreground/40">Nome</TableHead>
+                        <TableHead className="text-foreground/40">Prefixo</TableHead>
+                        <TableHead className="text-foreground/40">Último Uso</TableHead>
+                        <TableHead className="text-foreground/40">Criada em</TableHead>
+                        <TableHead className="text-right text-foreground/40">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {isLoading ? (
-                        <TableRow><TableCell colSpan={5} className="text-center py-8 text-white/40">Carregando...</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={5} className="text-center py-8 text-foreground/40">Carregando...</TableCell></TableRow>
                       ) : apiKeys.length === 0 ? (
-                        <TableRow><TableCell colSpan={5} className="text-center py-12 text-white/20">Nenhuma chave de API gerada.</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={5} className="text-center py-12 text-foreground/20">Nenhuma chave de API gerada.</TableCell></TableRow>
                       ) : (
                         apiKeys.map((key) => (
                           <TableRow key={key.id} className="border-white/5 hover:bg-card/5 transition-colors">
-                            <TableCell className="font-bold text-white">{key.name}</TableCell>
+                            <TableCell className="font-bold text-foreground">{key.name}</TableCell>
                             <TableCell><code className="bg-card/10 px-2 py-0.5 rounded text-xs text-primary">{key.key_prefix}...</code></TableCell>
-                            <TableCell className="text-white/60 text-xs">
+                            <TableCell className="text-foreground/60 text-xs">
                               {key.last_used_at ? format(new Date(key.last_used_at), 'dd/MM/yy HH:mm') : 'Nunca usada'}
                             </TableCell>
-                            <TableCell className="text-white/60 text-xs">
+                            <TableCell className="text-foreground/60 text-xs">
                               {format(new Date(key.created_at), 'dd/MM/yyyy')}
                             </TableCell>
                             <TableCell className="text-right">
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="text-white/20 hover:text-destructive"
+                                className="text-foreground/20 hover:text-destructive"
                                 onClick={() => revokeApiKey.mutate({ id: key.id, empresa_id: currentEmpresaId || '' })}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -167,17 +167,17 @@ export default function ApiManagement() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-border backdrop-blur-xl">
                 <CardHeader>
-                  <CardTitle className="text-white">Configuração de Webhooks</CardTitle>
+                  <CardTitle className="text-foreground">Configuração de Webhooks</CardTitle>
                   <CardDescription>
                     Receba notificações em tempo real no seu servidor quando eventos ocorrerem.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col items-center justify-center py-12 text-white/20">
+                <CardContent className="flex flex-col items-center justify-center py-12 text-foreground/20">
                   <Zap className="h-12 w-12 mb-4 opacity-10" />
                   <p className="mb-4">Nenhum webhook configurado.</p>
-                  <Button variant="outline" className="border-white/10 text-white">Adicionar Endpoint</Button>
+                  <Button variant="outline" className="border-border text-foreground">Adicionar Endpoint</Button>
                 </CardContent>
               </Card>
             </div>
@@ -185,12 +185,12 @@ export default function ApiManagement() {
             <div className="space-y-6">
               <Card className="bg-primary/5 border-primary/20 backdrop-blur-xl border-dashed">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <ShieldCheck className="h-5 w-5 text-primary" />
                     Segurança de API
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="text-sm text-white/60 space-y-4">
+                <CardContent className="text-sm text-foreground/60 space-y-4">
                   <p>
                     As chaves de API têm as mesmas permissões que um usuário administrador no Promo Finance.
                   </p>
@@ -202,18 +202,18 @@ export default function ApiManagement() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/5 border-white/10 backdrop-blur-xl">
+              <Card className="bg-card/5 border-border backdrop-blur-xl">
                 <CardHeader>
-                  <CardTitle className="text-white">Quick Start</CardTitle>
+                  <CardTitle className="text-foreground">Quick Start</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-3 bg-black/40 rounded-lg border border-white/10">
+                  <div className="p-3 bg-black/40 rounded-lg border border-border">
                     <p className="text-[10px] text-primary font-black uppercase mb-2">Endpoint Base</p>
-                    <code className="text-xs text-white/80">https://api.promofinance.com/v1</code>
+                    <code className="text-xs text-foreground/80">https://api.promofinance.com/v1</code>
                   </div>
-                  <div className="p-3 bg-black/40 rounded-lg border border-white/10">
+                  <div className="p-3 bg-black/40 rounded-lg border border-border">
                     <p className="text-[10px] text-primary font-black uppercase mb-2">Autenticação</p>
-                    <code className="text-xs text-white/80 break-all">Authorization: Bearer pf_live_...</code>
+                    <code className="text-xs text-foreground/80 break-all">Authorization: Bearer pf_live_...</code>
                   </div>
                   <Button variant="link" className="text-primary p-0 h-auto text-xs gap-1">
                     Ver exemplos de código <ExternalLink className="h-3 w-3" />
@@ -226,10 +226,10 @@ export default function ApiManagement() {
       </div>
 
       <Dialog open={isCreateDialogOpen} onOpenChange={(open) => !open && closeDialog()}>
-        <DialogContent className="bg-[#0a0a0a] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-popover border-border text-foreground max-w-md">
           <DialogHeader>
             <DialogTitle>{generatedKey ? 'Chave de API Gerada' : 'Criar Nova Chave API'}</DialogTitle>
-            <DialogDescription className="text-white/40">
+            <DialogDescription className="text-foreground/40">
               {generatedKey 
                 ? 'Certifique-se de copiar sua chave agora. Você não poderá vê-la novamente por motivos de segurança.' 
                 : 'Defina o nome e as permissões para a nova chave.'}
@@ -244,7 +244,7 @@ export default function ApiManagement() {
                   value={newKeyName} 
                   onChange={(e) => setNewKeyName(e.target.value)}
                   placeholder="Ex: Integração ERP"
-                  className="bg-card/5 border-white/10"
+                  className="bg-card/5 border-border"
                 />
               </div>
 
@@ -285,7 +285,7 @@ export default function ApiManagement() {
                   {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
-              <p className="text-xs text-white/40 leading-relaxed italic">
+              <p className="text-xs text-foreground/40 leading-relaxed italic">
                 <AlertTriangle className="h-3 w-3 inline mr-1 text-warning" />
                 Aviso: O Promo Finance não armazena sua chave privada. Se você perdê-la, terá que gerar uma nova chave e atualizar suas integrações.
               </p>

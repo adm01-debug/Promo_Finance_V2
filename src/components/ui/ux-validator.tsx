@@ -303,7 +303,7 @@ export const VisualValidator = () => {
       >
         <Button 
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full shadow-2xl bg-black text-white hover:bg-zinc-900 border border-white/10 premium-button"
+          className="h-14 w-14 rounded-full shadow-2xl bg-black text-foreground hover:bg-zinc-900 border border-border premium-button"
         >
           <Zap className="h-6 w-6" />
         </Button>
@@ -318,7 +318,7 @@ export const VisualValidator = () => {
             exit={{ opacity: 0 }}
           >
             <motion.div 
-              className="bg-[#0c0c0e] border border-white/10 rounded-2xl w-full max-w-6xl h-[90vh] shadow-3xl overflow-hidden flex flex-col"
+              className="bg-popover border border-border rounded-2xl w-full max-w-6xl h-[90vh] shadow-3xl overflow-hidden flex flex-col"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
@@ -329,15 +329,15 @@ export const VisualValidator = () => {
                     <CheckCircle2 className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">UX Quality Assurance</h2>
-                    <p className="text-xs text-white/40 font-medium uppercase tracking-widest">Validação Pixel-Perfect & Auditoria</p>
+                    <h2 className="text-xl font-black text-foreground tracking-tight">UX Quality Assurance</h2>
+                    <p className="text-xs text-foreground/40 font-medium uppercase tracking-widest">Validação Pixel-Perfect & Auditoria</p>
                   </div>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => setIsOpen(false)}
-                  className="text-white/40 hover:text-white hover:bg-card/5"
+                  className="text-foreground/40 hover:text-foreground hover:bg-card/5"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -356,14 +356,14 @@ export const VisualValidator = () => {
                       <div className="grid md:grid-cols-3 gap-6">
                         <Card className="bg-card/5 border-white/5 premium-card">
                           <CardHeader className="p-4">
-                            <CardTitle className="text-sm text-white">Referência</CardTitle>
+                            <CardTitle className="text-sm text-foreground">Referência</CardTitle>
                           </CardHeader>
                           <CardContent className="p-4 pt-0 space-y-4">
-                            <div className="aspect-video rounded-lg bg-black border border-white/10 flex items-center justify-center overflow-hidden relative group">
+                            <div className="aspect-video rounded-lg bg-black border border-border flex items-center justify-center overflow-hidden relative group">
                               {referenceImage ? (
                                 <img src={referenceImage} alt="Ref" className="w-full h-full object-cover" />
                               ) : (
-                                <Layers className="h-8 w-8 text-white/10" />
+                                <Layers className="h-8 w-8 text-foreground/10" />
                               )}
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <label className="cursor-pointer bg-card text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
@@ -377,14 +377,14 @@ export const VisualValidator = () => {
 
                         <Card className="bg-card/5 border-white/5 premium-card">
                           <CardHeader className="p-4">
-                            <CardTitle className="text-sm text-white">Atual</CardTitle>
+                            <CardTitle className="text-sm text-foreground">Atual</CardTitle>
                           </CardHeader>
                           <CardContent className="p-4 pt-0 space-y-4">
-                            <div className="aspect-video rounded-lg bg-black border border-white/10 flex items-center justify-center overflow-hidden relative group">
+                            <div className="aspect-video rounded-lg bg-black border border-border flex items-center justify-center overflow-hidden relative group">
                               {currentScreenshot ? (
                                 <img src={currentScreenshot} alt="Current" className="w-full h-full object-cover" />
                               ) : (
-                                <Camera className="h-8 w-8 text-white/10" />
+                                <Camera className="h-8 w-8 text-foreground/10" />
                               )}
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Button size="sm" onClick={handleCapture} disabled={isProcessing} className="bg-card text-black hover:bg-card/90">
@@ -397,7 +397,7 @@ export const VisualValidator = () => {
 
                         <Card className="bg-card/5 border-white/5 premium-card">
                           <CardHeader className="p-4">
-                            <CardTitle className="text-sm text-white">Ferramentas de Comparação</CardTitle>
+                            <CardTitle className="text-sm text-foreground">Ferramentas de Comparação</CardTitle>
                           </CardHeader>
                           <CardContent className="p-4 pt-0 space-y-4">
                             <div className="grid grid-cols-1 gap-2">
@@ -462,13 +462,13 @@ export const VisualValidator = () => {
                           <div className="grid grid-cols-2 gap-4 h-full">
                             <div className="space-y-2">
                               <Badge variant="outline" className="text-[10px] uppercase">Referência</Badge>
-                              <div className="border border-white/10 rounded-xl overflow-hidden aspect-video">
+                              <div className="border border-border rounded-xl overflow-hidden aspect-video">
                                 {referenceImage ? <img src={referenceImage} className="w-full" alt="Reference" /> : <PlaceholderView />}
                               </div>
                             </div>
                             <div className="space-y-2">
                               <Badge variant="outline" className="text-[10px] uppercase">Interface Atual</Badge>
-                              <div className="border border-white/10 rounded-xl overflow-hidden aspect-video">
+                              <div className="border border-border rounded-xl overflow-hidden aspect-video">
                                 {currentScreenshot ? <img src={currentScreenshot} className="w-full" alt="Current" /> : <PlaceholderView />}
                               </div>
                             </div>
@@ -476,7 +476,7 @@ export const VisualValidator = () => {
                         )}
 
                         {viewMode === 'overlay' && (
-                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-900">
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-border bg-zinc-900">
                              {currentScreenshot && <img src={currentScreenshot} className="absolute inset-0 w-full" alt="Actual" />}
                              {referenceImage && (
                                <img 
@@ -487,14 +487,14 @@ export const VisualValidator = () => {
                                />
                              )}
                              {!currentScreenshot && !referenceImage && <PlaceholderView />}
-                             <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-[10px] text-white/60">
+                             <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-border text-[10px] text-foreground/60">
                                 Modo Diferença: Transparência em 0 indica pixels idênticos
                              </div>
                           </div>
                         )}
 
                         {viewMode === 'split' && (
-                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-900 group select-none">
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-border bg-zinc-900 group select-none">
                              {/* Original / Actual */}
                              <div className="absolute inset-0 w-full h-full">
                                {currentScreenshot ? <img src={currentScreenshot} className="w-full h-full object-cover" alt="Actual" /> : <PlaceholderView />}
@@ -514,7 +514,7 @@ export const VisualValidator = () => {
                                  />
                                ) : (
                                  <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
-                                   <Layers className="h-8 w-8 text-white/20" />
+                                   <Layers className="h-8 w-8 text-foreground/20" />
                                  </div>
                                )}
                              </div>
@@ -524,7 +524,7 @@ export const VisualValidator = () => {
                                className="absolute inset-y-0 z-20 w-1 bg-primary cursor-col-resize group-active:scale-x-150 transition-transform"
                                style={{ left: `${splitPosition}%` }}
                              >
-                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl">
+                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary text-foreground flex items-center justify-center shadow-2xl">
                                  <RefreshCw className="h-4 w-4" />
                                </div>
                              </div>
@@ -539,17 +539,17 @@ export const VisualValidator = () => {
                                className="absolute inset-0 w-full h-full opacity-0 cursor-col-resize z-30"
                              />
 
-                             <div className="absolute top-4 left-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-caption border border-white/10">
+                             <div className="absolute top-4 left-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-caption border border-border">
                                Referência
                              </div>
-                             <div className="absolute top-4 right-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-caption border border-white/10">
+                             <div className="absolute top-4 right-4 z-40 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-caption border border-border">
                                Atual
                              </div>
                           </div>
                         )}
 
                         {viewMode === 'diff' && (
-                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-900 flex items-center justify-center">
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-border bg-zinc-900 flex items-center justify-center">
                              {currentScreenshot && <img src={currentScreenshot} className="absolute inset-0 w-full opacity-30" alt="Base" />}
                              {diffImage ? (
                                <img 
@@ -559,8 +559,8 @@ export const VisualValidator = () => {
                                />
                              ) : (
                                <div className="text-center p-8">
-                                 <AlertCircle className="h-12 w-12 text-white/10 mx-auto mb-4" />
-                                 <p className="text-white/40 text-sm">Capture o screenshot atual e carregue uma referência para gerar o heatmap.</p>
+                                 <AlertCircle className="h-12 w-12 text-foreground/10 mx-auto mb-4" />
+                                 <p className="text-foreground/40 text-sm">Capture o screenshot atual e carregue uma referência para gerar o heatmap.</p>
                                </div>
                              )}
                              <div className="absolute bottom-4 left-4 bg-primary/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-primary/30 text-[10px] text-primary font-bold">
@@ -570,7 +570,7 @@ export const VisualValidator = () => {
                         )}
 
                         {viewMode === 'heatmap' && (
-                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-950 flex items-center justify-center">
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-border bg-zinc-950 flex items-center justify-center">
                              {currentScreenshot && <img src={currentScreenshot} className="absolute inset-0 w-full opacity-40 grayscale" alt="Base" />}
                              {diffImage ? (
                                <div className="absolute inset-0 z-10" style={{ filter: `blur(8px) contrast(2) brightness(1.5)` }}>
@@ -584,13 +584,13 @@ export const VisualValidator = () => {
                              ) : (
                                <div className="text-center p-8">
                                  <Zap className="h-12 w-12 text-primary/20 mx-auto mb-4" />
-                                 <p className="text-white/40 text-sm">Aguardando dados de comparação para gerar heatmap térmico.</p>
+                                 <p className="text-foreground/40 text-sm">Aguardando dados de comparação para gerar heatmap térmico.</p>
                                </div>
                              )}
                              <div className="absolute top-4 right-4 flex flex-col gap-1 items-end">
                                <div className="flex items-center gap-2">
                                  <div className="h-2 w-10 bg-gradient-to-r from-blue-500 via-yellow-500 to-red-500 rounded-full" />
-                                 <span className="text-[10px] text-white/40 font-bold">GRADIENTE DE DESVIO</span>
+                                 <span className="text-[10px] text-foreground/40 font-bold">GRADIENTE DE DESVIO</span>
                                </div>
                              </div>
                           </div>
@@ -602,7 +602,7 @@ export const VisualValidator = () => {
                   {activeTab === 'audit' && (
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-6">
-                        <h3 className="text-white font-bold flex items-center gap-2">
+                        <h3 className="text-foreground font-bold flex items-center gap-2">
                           <Palette className="h-5 w-5 text-primary" /> Tokens de Design Atuais
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
@@ -612,7 +612,7 @@ export const VisualValidator = () => {
                           <TokenItem name="Card" value="hsl(222.2 84% 4.9%)" type="color" />
                         </div>
                         
-                        <h3 className="text-white font-bold flex items-center gap-2 pt-4">
+                        <h3 className="text-foreground font-bold flex items-center gap-2 pt-4">
                           <Type className="h-5 w-5 text-primary" /> Tipografia & Escala
                         </h3>
                         <div className="space-y-3 bg-card/5 p-4 rounded-xl border border-white/5">
@@ -626,7 +626,7 @@ export const VisualValidator = () => {
                       <div className="space-y-6">
                         <Card className="bg-primary/5 border-primary/20 premium-card">
                           <CardHeader>
-                            <CardTitle className="text-white text-lg">Checklist de Auditoria</CardTitle>
+                            <CardTitle className="text-foreground text-lg">Checklist de Auditoria</CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-4">
                              <CheckItem checked label="Margens laterais (layout-container)" />
@@ -650,7 +650,7 @@ export const VisualValidator = () => {
 
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-white font-bold tracking-tight">Roteiro de Validação Pixel-Perfect</h3>
+                          <h3 className="text-foreground font-bold tracking-tight">Roteiro de Validação Pixel-Perfect</h3>
                           <Button 
                             size="sm" 
                             onClick={() => {
@@ -668,12 +668,12 @@ export const VisualValidator = () => {
                           {validationSteps.map((step) => (
                             <div key={step.id} className="flex items-center justify-between p-4 bg-card/5 rounded-xl border border-white/5">
                               <div className="flex items-center gap-4">
-                                <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center text-white/40 font-bold text-xs">
+                                <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center text-foreground/40 font-bold text-xs">
                                   {step.id.slice(0, 1).toUpperCase()}
                                 </div>
                                 <div>
-                                  <p className="text-sm font-bold text-white">{step.name}</p>
-                                  <p className="text-caption text-white/30 lowercase">{step.path}</p>
+                                  <p className="text-sm font-bold text-foreground">{step.name}</p>
+                                  <p className="text-caption text-foreground/30 lowercase">{step.path}</p>
                                 </div>
                               </div>
                               <div className="flex items-center gap-6">
@@ -682,7 +682,7 @@ export const VisualValidator = () => {
                                   <DeviceIndicator icon={Tablet} status={step.status} />
                                   <DeviceIndicator icon={Monitor} status={step.status} />
                                 </div>
-                                <Button variant="ghost" size="sm" className="h-8 text-white/40 hover:text-white">Detalhes</Button>
+                                <Button variant="ghost" size="sm" className="h-8 text-foreground/40 hover:text-foreground">Detalhes</Button>
                               </div>
                             </div>
                           ))}
@@ -698,7 +698,7 @@ export const VisualValidator = () => {
                   Status: Sistema em Conformidade Total (100%)
                 </p>
                 <div className="flex items-center gap-3">
-                   <Button variant="outline" className="text-xs h-9 bg-transparent border-white/10 text-white/60 hover:text-white">
+                   <Button variant="outline" className="text-xs h-9 bg-transparent border-border text-foreground/60 hover:text-foreground">
                     Exportar Relatório PDF
                    </Button>
                    <Button className="text-xs h-9 font-bold bg-primary hover:bg-primary/90">
@@ -730,26 +730,26 @@ export const VisualValidator = () => {
                     <ClipboardCheck className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-white">Relatório de Conformidade</h2>
-                    <p className="text-white/40 text-sm font-medium">Análise Final: 10/10 Pixel-Perfect</p>
+                    <h2 className="text-2xl font-black text-foreground">Relatório de Conformidade</h2>
+                    <p className="text-foreground/40 text-sm font-medium">Análise Final: 10/10 Pixel-Perfect</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setShowReport(false)} className="text-white/20 hover:text-white">
+                <Button variant="ghost" size="icon" onClick={() => setShowReport(false)} className="text-foreground/20 hover:text-foreground">
                   <X className="h-6 w-6" />
                 </Button>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-card/5 p-6 rounded-2xl border border-white/5">
-                  <p className="text-[10px] font-black text-white/20 uppercase mb-2">Páginas</p>
-                  <p className="text-3xl font-black text-white">08/08</p>
+                  <p className="text-[10px] font-black text-foreground/20 uppercase mb-2">Páginas</p>
+                  <p className="text-3xl font-black text-foreground">08/08</p>
                 </div>
                 <div className="bg-card/5 p-6 rounded-2xl border border-white/5">
-                  <p className="text-[10px] font-black text-white/20 uppercase mb-2">Breakpoints</p>
-                  <p className="text-3xl font-black text-white">24/24</p>
+                  <p className="text-[10px] font-black text-foreground/20 uppercase mb-2">Breakpoints</p>
+                  <p className="text-3xl font-black text-foreground">24/24</p>
                 </div>
                 <div className="bg-card/5 p-6 rounded-2xl border border-white/5">
-                  <p className="text-[10px] font-black text-white/20 uppercase mb-2">Status Geral</p>
+                  <p className="text-[10px] font-black text-foreground/20 uppercase mb-2">Status Geral</p>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-6 w-6 text-green-500" />
                     <p className="text-3xl font-black text-green-500">APROVADO</p>
@@ -769,8 +769,8 @@ export const VisualValidator = () => {
                             <AlertCircle className="h-5 w-5 text-red-500" />
                           )}
                           <div>
-                            <span className="text-sm font-black text-white">{step.name}</span>
-                            <p className="text-[10px] text-white/40 uppercase tracking-tighter">Desvio médio: {step.diffScore?.toFixed(2)}%</p>
+                            <span className="text-sm font-black text-foreground">{step.name}</span>
+                            <p className="text-[10px] text-foreground/40 uppercase tracking-tighter">Desvio médio: {step.diffScore?.toFixed(2)}%</p>
                           </div>
                         </div>
                         <Badge variant="outline" className={cn("text-[10px]", step.status === 'success' ? "text-green-500 border-green-500/30" : "text-red-500 border-red-500/30")}>
@@ -781,16 +781,16 @@ export const VisualValidator = () => {
                       <div className="flex items-center gap-4 bg-zinc-900/30 p-2 rounded-lg border border-white/5 mb-2 overflow-x-auto">
                         <div className="flex -space-x-2">
                            {['desktop', 'tablet', 'mobile'].map((bp) => (
-                             <div key={bp} className="h-8 w-12 rounded border border-white/10 bg-black overflow-hidden relative group/thumb cursor-pointer">
+                             <div key={bp} className="h-8 w-12 rounded border border-border bg-black overflow-hidden relative group/thumb cursor-pointer">
                                <img src={(step.screenshots as any)?.[bp]} className="w-full h-full object-cover" alt={bp} />
                                <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center">
-                                 <Eye className="h-3 w-3 text-white" />
+                                 <Eye className="h-3 w-3 text-foreground" />
                                </div>
                              </div>
                            ))}
                         </div>
                         <div className="h-4 w-px bg-card/10" />
-                        <div className="text-[10px] text-white/60 font-medium">Overlay Diff Master</div>
+                        <div className="text-[10px] text-foreground/60 font-medium">Overlay Diff Master</div>
                         <div className="flex-1" />
                         <Button variant="ghost" size="sm" className="h-7 text-[9px] font-black uppercase tracking-tighter hover:bg-card/5">Auto-Fix Ref</Button>
                       </div>
@@ -799,12 +799,12 @@ export const VisualValidator = () => {
                         {['desktop', 'tablet', 'mobile'].map((bp) => (
                           <div key={bp} className="space-y-2 group">
                             <div className="flex items-center justify-between px-1">
-                              <p className="text-[9px] text-white/30 font-black uppercase tracking-widest">{bp}</p>
+                              <p className="text-[9px] text-foreground/30 font-black uppercase tracking-widest">{bp}</p>
                               {step.diffScore && step.diffScore > 2 && (
                                 <span className="text-[8px] font-black text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded">DRIFT DETECTADO</span>
                               )}
                             </div>
-                            <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-black shadow-2xl transition-all group-hover:border-primary/50">
+                            <div className="relative aspect-video rounded-xl overflow-hidden border border-border bg-black shadow-2xl transition-all group-hover:border-primary/50">
                               {/* Actual Screenshot */}
                               <img 
                                 src={(step.screenshots as any)?.[bp]} 
@@ -824,10 +824,10 @@ export const VisualValidator = () => {
                                       <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5">
                                           <div className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
-                                          <span className="text-[8px] font-black text-white uppercase">Heatmap Ativo</span>
+                                          <span className="text-[8px] font-black text-foreground uppercase">Heatmap Ativo</span>
                                         </div>
                                         <div className="h-6 w-6 rounded-full bg-card/10 backdrop-blur-md flex items-center justify-center">
-                                          <Maximize2 className="h-3 w-3 text-white" />
+                                          <Maximize2 className="h-3 w-3 text-foreground" />
                                         </div>
                                       </div>
                                     </div>
@@ -846,7 +846,7 @@ export const VisualValidator = () => {
                 <Button className="flex-1 bg-card text-black font-black uppercase tracking-widest h-12 rounded-xl hover:bg-zinc-200">
                   BAIXAR CERTIFICADO DE QUALIDADE
                 </Button>
-                <Button variant="outline" className="flex-1 border-white/10 bg-transparent text-white font-black uppercase tracking-widest h-12 rounded-xl hover:bg-card/5" onClick={() => window.location.href = '/design-system-debug'}>
+                <Button variant="outline" className="flex-1 border-border bg-transparent text-foreground font-black uppercase tracking-widest h-12 rounded-xl hover:bg-card/5" onClick={() => window.location.href = '/design-system-debug'}>
                   VER AUDITORIA COMPLETA
                 </Button>
               </div>
@@ -865,7 +865,7 @@ const TabButton = ({ active, onClick, icon: Icon, label }: any) => (
     onClick={onClick}
     className={cn(
       "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all",
-      active ? "bg-card/10 text-white" : "text-white/40 hover:text-white/60"
+      active ? "bg-card/10 text-foreground" : "text-foreground/40 hover:text-foreground/60"
     )}
   >
     <Icon className="h-4 w-4" /> {label}
@@ -874,10 +874,10 @@ const TabButton = ({ active, onClick, icon: Icon, label }: any) => (
 
 const TokenItem = ({ name, value, type }: any) => (
   <div className="p-3 bg-card/5 border border-white/5 rounded-xl flex items-center gap-3">
-    {type === 'color' && <div className="h-8 w-8 rounded-lg border border-white/10" style={{ backgroundColor: value }} />}
+    {type === 'color' && <div className="h-8 w-8 rounded-lg border border-border" style={{ backgroundColor: value }} />}
     <div>
       <p className="text-caption leading-none mb-1">{name}</p>
-      <code className="text-xs text-white/90 font-mono">{value}</code>
+      <code className="text-xs text-foreground/90 font-mono">{value}</code>
     </div>
   </div>
 );
@@ -885,7 +885,7 @@ const TokenItem = ({ name, value, type }: any) => (
 const TypographyRow = ({ label, value, sub }: any) => (
   <div className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
     <div>
-      <p className="text-xs font-bold text-white leading-none mb-1">{label}</p>
+      <p className="text-xs font-bold text-foreground leading-none mb-1">{label}</p>
       <p className="text-caption !text-primary/40">{sub}</p>
     </div>
     <code className="text-[11px] text-primary font-mono">{value}</code>
@@ -896,11 +896,11 @@ const CheckItem = ({ checked, label }: any) => (
   <div className="flex items-center gap-3">
     <div className={cn(
       "h-5 w-5 rounded border flex items-center justify-center transition-colors",
-      checked ? "bg-green-500 border-green-500 text-white" : "border-white/20 bg-card/5 text-transparent"
+      checked ? "bg-green-500 border-green-500 text-foreground" : "border-white/20 bg-card/5 text-transparent"
     )}>
       <Check className="h-3 w-3" />
     </div>
-    <span className={cn("text-xs font-medium", checked ? "text-white/80" : "text-white/40")}>{label}</span>
+    <span className={cn("text-xs font-medium", checked ? "text-foreground/80" : "text-foreground/40")}>{label}</span>
   </div>
 );
 
@@ -909,7 +909,7 @@ const DeviceToggle = ({ icon: Icon, label, active, onClick }: any) => (
     onClick={onClick}
     className={cn(
       "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-      active ? "bg-card text-black" : "text-white/40 hover:bg-card/5"
+      active ? "bg-card text-black" : "text-foreground/40 hover:bg-card/5"
     )}
   >
     <Icon className="h-4 w-4" /> {label}
@@ -919,14 +919,14 @@ const DeviceToggle = ({ icon: Icon, label, active, onClick }: any) => (
 const DeviceIndicator = ({ icon: Icon, status }: any) => (
   <div className={cn(
     "h-6 w-6 rounded flex items-center justify-center",
-    status === 'success' ? "bg-green-500/20 text-green-500" : "bg-card/5 text-white/20"
+    status === 'success' ? "bg-green-500/20 text-green-500" : "bg-card/5 text-foreground/20"
   )}>
     <Icon className="h-3 w-3" />
   </div>
 );
 
 const PlaceholderView = () => (
-  <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-white/10">
+  <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-foreground/10">
     <EyeOff className="h-8 w-8" />
     <span className="text-[10px] uppercase font-black tracking-widest">Sem Imagem</span>
   </div>

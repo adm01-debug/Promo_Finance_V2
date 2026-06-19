@@ -331,7 +331,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
             variant={item.highlight ? "default" : "secondary"}
             className={cn(
               "ml-auto text-[10px] h-5 px-1.5 font-bold tabular-nums",
-              item.highlight && "bg-primary text-white border-none shadow-sm"
+              item.highlight && "bg-primary text-primary-foreground border-none shadow-sm"
             )}
           >
             {badge}

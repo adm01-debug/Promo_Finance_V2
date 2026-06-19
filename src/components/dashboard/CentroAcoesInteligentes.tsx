@@ -116,7 +116,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                       </div>
                     </div>
                     {acao.link_resolucao && (
-                      <Button asChild size="sm" className="h-8 rounded-md bg-primary text-white font-bold px-4 text-xs shrink-0">
+                      <Button asChild size="sm" className="h-8 rounded-md bg-primary text-primary-foreground font-bold px-4 text-xs shrink-0">
                         <Link to={acao.link_resolucao}>
                           Resolver <ArrowRight className="ml-1.5 h-3 w-3" />
                         </Link>

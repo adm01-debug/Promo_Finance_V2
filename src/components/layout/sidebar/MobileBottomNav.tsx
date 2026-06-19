@@ -95,7 +95,7 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
             <div className="relative">
               <Menu className="h-6 w-6" />
               {aprovacoesPendentes > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 h-5 w-5 bg-destructive text-white rounded-full text-[10px] flex items-center justify-center font-black shadow-lg ring-2 ring-background">
+                <span className="absolute -top-1.5 -right-1.5 h-5 w-5 bg-destructive text-primary-foreground rounded-full text-[10px] flex items-center justify-center font-black shadow-lg ring-2 ring-background">
                   {aprovacoesPendentes > 9 ? '9+' : aprovacoesPendentes}
                 </span>
               )}

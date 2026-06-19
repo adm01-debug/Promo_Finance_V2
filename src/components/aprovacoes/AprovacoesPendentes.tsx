@@ -323,7 +323,7 @@ export const AprovacoesPendentes = () => {
             <Button
               variant="outline"
               onClick={() => setRejectDialog({ open: true, solicitacao: detailsDialog.solicitacao })}
-              className="text-destructive hover:bg-destructive hover:text-white"
+              className="text-destructive hover:bg-destructive hover:text-primary-foreground"
             >
               Rejeitar Título
             </Button>

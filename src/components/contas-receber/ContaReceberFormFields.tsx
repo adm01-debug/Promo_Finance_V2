@@ -216,7 +216,7 @@ export function ContaReceberFormFields({
                 return (
                   <Button key={option.value} type="button" variant={isSelected ? 'default' : 'outline'} size="sm"
                     onClick={() => field.onChange(option.value)}
-                    className={cn('h-10 px-4 rounded-xl gap-2 transition-all border-white/10', isSelected ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-card/5 hover:bg-card/10 text-muted-foreground')}>
+                    className={cn('h-10 px-4 rounded-xl gap-2 transition-all border-white/10', isSelected ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'bg-card/5 hover:bg-card/10 text-muted-foreground')}>
                     <Icon className="h-4 w-4" /> <span className="text-[10px] font-black uppercase tracking-widest">{option.label}</span>
                   </Button>
                 );

@@ -106,7 +106,7 @@ export const DesignSystemAudit = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white p-6 md:p-12 font-sans selection:bg-primary/30">
+    <div className="min-h-screen bg-background text-foreground p-6 md:p-12 font-sans selection:bg-primary/30">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -118,16 +118,16 @@ export const DesignSystemAudit = () => {
               <Badge variant="outline" className="border-primary/20 text-primary uppercase tracking-widest text-[10px] font-black">Design Audit v2.0</Badge>
             </div>
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
-              PIXEL PERFECT<br/><span className="text-white/20">VALIDATION</span>
+              PIXEL PERFECT<br/><span className="text-foreground/20">VALIDATION</span>
             </h1>
-            <p className="text-white/40 max-w-xl text-lg font-medium leading-relaxed">
+            <p className="text-foreground/40 max-w-xl text-lg font-medium leading-relaxed">
               Relatório detalhado de consistência visual. Analisamos tokens de design, escalas tipográficas e espaçamentos em tempo real.
             </p>
           </div>
           
-          <div className="bg-card/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center min-w-[240px] shadow-2xl backdrop-blur-xl">
-             <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2">Conformidade</div>
-             <div className="text-7xl font-black text-white leading-none">{auditResults.score}%</div>
+          <div className="bg-card/5 border border-border rounded-3xl p-8 flex flex-col items-center justify-center min-w-[240px] shadow-2xl backdrop-blur-xl">
+             <div className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30 mb-2">Conformidade</div>
+             <div className="text-7xl font-black text-foreground leading-none">{auditResults.score}%</div>
              <div className="mt-4 flex items-center gap-2 text-success text-xs font-bold bg-success/10 px-3 py-1 rounded-full">
                <CheckCircle2 className="h-3 w-3" />
                SISTEMA BLINDADO
@@ -152,9 +152,9 @@ export const DesignSystemAudit = () => {
           </TabsList>
 
           <TabsContent value="typography" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <Card className="bg-card/5 border-white/10 overflow-hidden rounded-3xl premium-card">
+            <Card className="bg-card/5 border-border overflow-hidden rounded-3xl premium-card">
               <CardContent className="p-0">
-                <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-white/20 p-6 bg-card/[0.02]">
+                <div className="grid grid-cols-1 md:grid-cols-12 border-b border-border text-[10px] font-black uppercase tracking-widest text-foreground/20 p-6 bg-card/[0.02]">
                   <div className="md:col-span-3">Token & Usage</div>
                   <div className="md:col-span-5">Visual Spec</div>
                   <div className="md:col-span-2">Size / Line-Height</div>
@@ -163,7 +163,7 @@ export const DesignSystemAudit = () => {
                 {auditResults.typography.map((item: any, idx: number) => (
                   <div key={idx} className="grid grid-cols-1 md:grid-cols-12 items-center p-8 border-b border-white/5 last:border-0 group hover:bg-card/[0.02] transition-colors">
                     <div className="md:col-span-3">
-                      <p className="text-xs font-black text-white mb-1">{item.name}</p>
+                      <p className="text-xs font-black text-foreground mb-1">{item.name}</p>
                       <p className="text-[10px] font-medium text-primary uppercase tracking-tighter">{item.usage}</p>
                     </div>
                     <div className="md:col-span-5 py-4">
@@ -174,12 +174,12 @@ export const DesignSystemAudit = () => {
                     <div className="md:col-span-2">
                       <div className="flex flex-col gap-1">
                         <code className="text-[11px] text-primary bg-primary/10 px-2 py-1 rounded-lg font-mono w-fit">{item.size} / {item.px}</code>
-                        <span className="text-[10px] text-white/20 font-mono">LH: {item.lh}</span>
+                        <span className="text-[10px] text-foreground/20 font-mono">LH: {item.lh}</span>
                       </div>
                     </div>
                     <div className="md:col-span-2">
-                      <p className="text-[11px] font-bold text-white/60">{item.weight}</p>
-                      <p className="text-[10px] text-white/20">{item.family}</p>
+                      <p className="text-[11px] font-bold text-foreground/60">{item.weight}</p>
+                      <p className="text-[10px] text-foreground/20">{item.family}</p>
                     </div>
                   </div>
                 ))}
@@ -190,8 +190,8 @@ export const DesignSystemAudit = () => {
           <TabsContent value="colors" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {auditResults.colors.map((color: any, idx: number) => (
-                <Card key={idx} className="bg-card/5 border-white/10 rounded-3xl overflow-hidden premium-card">
-                  <div className="h-32 w-full border-b border-white/10" style={{ backgroundColor: `hsl(${color.value})` }} />
+                <Card key={idx} className="bg-card/5 border-border rounded-3xl overflow-hidden premium-card">
+                  <div className="h-32 w-full border-b border-border" style={{ backgroundColor: `hsl(${color.value})` }} />
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-black uppercase tracking-widest">{color.name}</h4>
@@ -203,11 +203,11 @@ export const DesignSystemAudit = () => {
                     </div>
                     <div className="space-y-2">
                        <div className="flex justify-between text-[10px] font-mono">
-                         <span className="text-white/40">HSL</span>
+                         <span className="text-foreground/40">HSL</span>
                          <span>{color.value || 'N/A'}</span>
                        </div>
                        <div className="flex justify-between text-[10px] font-mono">
-                         <span className="text-white/40">Contrast (W)</span>
+                         <span className="text-foreground/40">Contrast (W)</span>
                          <span className="text-success">AA Passed</span>
                        </div>
                     </div>
@@ -218,18 +218,18 @@ export const DesignSystemAudit = () => {
           </TabsContent>
 
           <TabsContent value="spacing" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <Card className="bg-card/5 border-white/10 rounded-3xl premium-card">
+             <Card className="bg-card/5 border-border rounded-3xl premium-card">
                 <CardContent className="p-8 space-y-8">
                   {auditResults.spacing.map((s: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-8 group">
-                      <div className="w-24 text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-primary transition-colors">
+                      <div className="w-24 text-[10px] font-black uppercase tracking-widest text-foreground/20 group-hover:text-primary transition-colors">
                         {s.name}
                       </div>
                       <div className="flex-1 h-12 bg-card/5 rounded-2xl relative overflow-hidden flex items-center px-4 border border-white/5">
                          <div className="absolute left-0 top-0 bottom-0 bg-primary/20 border-r border-primary/30" style={{ width: s.value }} />
-                         <span className="relative z-10 text-[10px] font-mono text-white/40">{s.px} / {s.value}</span>
+                         <span className="relative z-10 text-[10px] font-mono text-foreground/40">{s.px} / {s.value}</span>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-white/10 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+                      <ArrowRight className="h-4 w-4 text-foreground/10 group-hover:text-foreground transition-all transform group-hover:translate-x-1" />
                     </div>
                   ))}
                 </CardContent>
@@ -241,13 +241,13 @@ export const DesignSystemAudit = () => {
         <footer className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
            <div className="flex items-center gap-4">
               <div className="h-3 w-3 rounded-full bg-success animate-pulse" />
-              <p className="text-xs font-bold text-white/60 tracking-tight">AUDITORIA EM TEMPO REAL ATIVA</p>
+              <p className="text-xs font-bold text-foreground/60 tracking-tight">AUDITORIA EM TEMPO REAL ATIVA</p>
            </div>
            <div className="flex gap-4">
               <Button 
                 variant="outline" 
                 onClick={() => window.print()}
-                className="rounded-2xl px-8 h-12 border-white/10 bg-transparent text-white font-black uppercase text-[10px] tracking-widest hover:bg-card/5"
+                className="rounded-2xl px-8 h-12 border-border bg-transparent text-foreground font-black uppercase text-[10px] tracking-widest hover:bg-card/5"
               >
                 Download PDF Report
               </Button>
@@ -274,11 +274,11 @@ export const DesignSystemAudit = () => {
 };
 
 const StatCard = ({ label, value, icon: Icon, color }: any) => (
-  <Card className="bg-card/5 border-white/10 rounded-3xl premium-card">
+  <Card className="bg-card/5 border-border rounded-3xl premium-card">
     <CardContent className="p-6 flex items-center justify-between">
       <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">{label}</p>
-        <p className="text-2xl font-black text-white">{value}</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/20 mb-1">{label}</p>
+        <p className="text-2xl font-black text-foreground">{value}</p>
       </div>
       <div className={cn(
         "p-3 rounded-2xl",

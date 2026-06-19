@@ -204,7 +204,7 @@ export function EmpresaSwitcher() {
                     >
                       <div className={cn(
                         "h-8 w-8 rounded-lg flex items-center justify-center mr-3 font-black text-xs transition-colors",
-                        isActive ? "bg-primary text-primary-foreground" : "bg-card/5 text-white/40 group-hover:bg-card/10 group-hover:text-white"
+                        isActive ? "bg-primary text-primary-foreground" : "bg-card/5 text-primary-foreground/40 group-hover:bg-card/10 group-hover:text-primary-foreground"
                       )}>
                         {getInitials(label)}
                       </div>
