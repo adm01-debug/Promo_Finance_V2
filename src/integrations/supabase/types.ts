@@ -12166,6 +12166,18 @@ export type Database = {
             Returns: undefined
           }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
+      resolve_sso_providers_for_domain: {
+        Args: { p_domain: string }
+        Returns: {
+          allowed_domains: string[]
+          force_sso_for_domains: boolean
+          id: string
+          nome: string
+          ordem: number
+          preset: string
+          tipo: string
+        }[]
+      }
       run_daily_cleanup: { Args: never; Returns: Json }
       run_daily_cleanup_with_logging: { Args: never; Returns: undefined }
       use_reset_token: {
