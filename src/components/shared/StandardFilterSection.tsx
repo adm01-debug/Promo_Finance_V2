@@ -22,7 +22,7 @@ export function StandardFilterSection({
   className,
 }: StandardFilterSectionProps) {
   return (
-    <Card className={cn("border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
+    <Card className={cn("border-none bg-card/[0.03] backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
       <CardContent className="p-6 sm:p-8 space-y-6">
         {/* Search Command */}
         <div className="relative group">
@@ -32,7 +32,7 @@ export function StandardFilterSection({
             placeholder={searchPlaceholder}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-16 bg-white/[0.03] border-white/5 focus:bg-background/80 focus:border-primary/40 h-16 rounded-[1.5rem] transition-all duration-700 font-bold text-sm shadow-inner"
+            className="pl-16 bg-card/[0.03] border-white/5 focus:bg-background/80 focus:border-primary/40 h-16 rounded-[1.5rem] transition-all duration-700 font-bold text-sm shadow-inner"
           />
         </div>
         

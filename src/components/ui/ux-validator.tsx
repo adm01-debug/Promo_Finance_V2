@@ -337,7 +337,7 @@ export const VisualValidator = () => {
                   variant="ghost" 
                   size="icon" 
                   onClick={() => setIsOpen(false)}
-                  className="text-white/40 hover:text-white hover:bg-white/5"
+                  className="text-white/40 hover:text-white hover:bg-card/5"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -354,7 +354,7 @@ export const VisualValidator = () => {
                   {activeTab === 'regression' && (
                     <div className="space-y-8">
                       <div className="grid md:grid-cols-3 gap-6">
-                        <Card className="bg-white/5 border-white/5 premium-card">
+                        <Card className="bg-card/5 border-white/5 premium-card">
                           <CardHeader className="p-4">
                             <CardTitle className="text-sm text-white">Referência</CardTitle>
                           </CardHeader>
@@ -366,7 +366,7 @@ export const VisualValidator = () => {
                                 <Layers className="h-8 w-8 text-white/10" />
                               )}
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <label className="cursor-pointer bg-white text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
+                                <label className="cursor-pointer bg-card text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
                                   Upload Ref
                                   <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                                 </label>
@@ -375,7 +375,7 @@ export const VisualValidator = () => {
                           </CardContent>
                         </Card>
 
-                        <Card className="bg-white/5 border-white/5 premium-card">
+                        <Card className="bg-card/5 border-white/5 premium-card">
                           <CardHeader className="p-4">
                             <CardTitle className="text-sm text-white">Atual</CardTitle>
                           </CardHeader>
@@ -387,7 +387,7 @@ export const VisualValidator = () => {
                                 <Camera className="h-8 w-8 text-white/10" />
                               )}
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <Button size="sm" onClick={handleCapture} disabled={isProcessing} className="bg-white text-black hover:bg-white/90">
+                                <Button size="sm" onClick={handleCapture} disabled={isProcessing} className="bg-card text-black hover:bg-card/90">
                                   {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Capturar Agora"}
                                 </Button>
                               </div>
@@ -395,7 +395,7 @@ export const VisualValidator = () => {
                           </CardContent>
                         </Card>
 
-                        <Card className="bg-white/5 border-white/5 premium-card">
+                        <Card className="bg-card/5 border-white/5 premium-card">
                           <CardHeader className="p-4">
                             <CardTitle className="text-sm text-white">Ferramentas de Comparação</CardTitle>
                           </CardHeader>
@@ -449,7 +449,7 @@ export const VisualValidator = () => {
                                     if (viewMode === 'heatmap') setHeatmapIntensity(val);
                                     else setOverlayOpacity(val);
                                   }}
-                                  className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                                  className="w-full h-1 bg-card/10 rounded-lg appearance-none cursor-pointer accent-primary"
                                 />
                               </div>
                             </div>
@@ -615,7 +615,7 @@ export const VisualValidator = () => {
                         <h3 className="text-white font-bold flex items-center gap-2 pt-4">
                           <Type className="h-5 w-5 text-primary" /> Tipografia & Escala
                         </h3>
-                        <div className="space-y-3 bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div className="space-y-3 bg-card/5 p-4 rounded-xl border border-white/5">
                           <TypographyRow label="Display XL" value="4rem / 64px" sub="Tracking: -0.05em" />
                           <TypographyRow label="Heading L1" value="2.25rem / 36px" sub="Tracking: -0.025em" />
                           <TypographyRow label="Body Base" value="0.875rem / 14px" sub="Leading: 1.5" />
@@ -642,7 +642,7 @@ export const VisualValidator = () => {
 
                   {activeTab === 'breakpoints' && (
                     <div className="space-y-8">
-                      <div className="flex items-center gap-4 bg-white/5 p-2 rounded-xl border border-white/5 w-fit">
+                      <div className="flex items-center gap-4 bg-card/5 p-2 rounded-xl border border-white/5 w-fit">
                         <DeviceToggle icon={Smartphone} label="Mobile (375px)" active={activeBreakpoint === 'mobile'} onClick={() => setActiveBreakpoint('mobile')} />
                         <DeviceToggle icon={Tablet} label="Tablet (768px)" active={activeBreakpoint === 'tablet'} onClick={() => setActiveBreakpoint('tablet')} />
                         <DeviceToggle icon={Monitor} label="Desktop (1440px)" active={activeBreakpoint === 'desktop'} onClick={() => setActiveBreakpoint('desktop')} />
@@ -657,7 +657,7 @@ export const VisualValidator = () => {
                               runValidationRoadmap().then(() => setShowReport(true));
                             }}
                             disabled={isProcessing}
-                            className="bg-white text-black text-xs font-black px-8 py-5 rounded-xl hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95"
+                            className="bg-card text-black text-xs font-black px-8 py-5 rounded-xl hover:bg-card/90 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95"
                           >
                             {isProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Zap className="h-4 w-4 mr-2" />}
                             EXECUTAR ROTEIRO COMPLETO
@@ -666,7 +666,7 @@ export const VisualValidator = () => {
                         
                         <div className="grid gap-3">
                           {validationSteps.map((step) => (
-                            <div key={step.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                            <div key={step.id} className="flex items-center justify-between p-4 bg-card/5 rounded-xl border border-white/5">
                               <div className="flex items-center gap-4">
                                 <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center text-white/40 font-bold text-xs">
                                   {step.id.slice(0, 1).toUpperCase()}
@@ -740,15 +740,15 @@ export const VisualValidator = () => {
               </div>
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/5">
+                <div className="bg-card/5 p-6 rounded-2xl border border-white/5">
                   <p className="text-[10px] font-black text-white/20 uppercase mb-2">Páginas</p>
                   <p className="text-3xl font-black text-white">08/08</p>
                 </div>
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/5">
+                <div className="bg-card/5 p-6 rounded-2xl border border-white/5">
                   <p className="text-[10px] font-black text-white/20 uppercase mb-2">Breakpoints</p>
                   <p className="text-3xl font-black text-white">24/24</p>
                 </div>
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/5">
+                <div className="bg-card/5 p-6 rounded-2xl border border-white/5">
                   <p className="text-[10px] font-black text-white/20 uppercase mb-2">Status Geral</p>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-6 w-6 text-green-500" />
@@ -760,7 +760,7 @@ export const VisualValidator = () => {
               <ScrollArea className="h-[450px] mb-8 pr-4">
                 <div className="space-y-6">
                   {validationSteps.filter(s => s.status !== 'pending').map(step => (
-                    <div key={step.id} className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-4">
+                    <div key={step.id} className="p-4 bg-card/5 rounded-2xl border border-white/5 space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           {step.status === 'success' ? (
@@ -789,10 +789,10 @@ export const VisualValidator = () => {
                              </div>
                            ))}
                         </div>
-                        <div className="h-4 w-px bg-white/10" />
+                        <div className="h-4 w-px bg-card/10" />
                         <div className="text-[10px] text-white/60 font-medium">Overlay Diff Master</div>
                         <div className="flex-1" />
-                        <Button variant="ghost" size="sm" className="h-7 text-[9px] font-black uppercase tracking-tighter hover:bg-white/5">Auto-Fix Ref</Button>
+                        <Button variant="ghost" size="sm" className="h-7 text-[9px] font-black uppercase tracking-tighter hover:bg-card/5">Auto-Fix Ref</Button>
                       </div>
 
                       <div className="grid grid-cols-3 gap-3">
@@ -826,7 +826,7 @@ export const VisualValidator = () => {
                                           <div className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
                                           <span className="text-[8px] font-black text-white uppercase">Heatmap Ativo</span>
                                         </div>
-                                        <div className="h-6 w-6 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+                                        <div className="h-6 w-6 rounded-full bg-card/10 backdrop-blur-md flex items-center justify-center">
                                           <Maximize2 className="h-3 w-3 text-white" />
                                         </div>
                                       </div>
@@ -843,10 +843,10 @@ export const VisualValidator = () => {
               </ScrollArea>
 
               <div className="flex gap-4">
-                <Button className="flex-1 bg-white text-black font-black uppercase tracking-widest h-12 rounded-xl hover:bg-zinc-200">
+                <Button className="flex-1 bg-card text-black font-black uppercase tracking-widest h-12 rounded-xl hover:bg-zinc-200">
                   BAIXAR CERTIFICADO DE QUALIDADE
                 </Button>
-                <Button variant="outline" className="flex-1 border-white/10 bg-transparent text-white font-black uppercase tracking-widest h-12 rounded-xl hover:bg-white/5" onClick={() => window.location.href = '/design-system-debug'}>
+                <Button variant="outline" className="flex-1 border-white/10 bg-transparent text-white font-black uppercase tracking-widest h-12 rounded-xl hover:bg-card/5" onClick={() => window.location.href = '/design-system-debug'}>
                   VER AUDITORIA COMPLETA
                 </Button>
               </div>
@@ -865,7 +865,7 @@ const TabButton = ({ active, onClick, icon: Icon, label }: any) => (
     onClick={onClick}
     className={cn(
       "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all",
-      active ? "bg-white/10 text-white" : "text-white/40 hover:text-white/60"
+      active ? "bg-card/10 text-white" : "text-white/40 hover:text-white/60"
     )}
   >
     <Icon className="h-4 w-4" /> {label}
@@ -873,7 +873,7 @@ const TabButton = ({ active, onClick, icon: Icon, label }: any) => (
 );
 
 const TokenItem = ({ name, value, type }: any) => (
-  <div className="p-3 bg-white/5 border border-white/5 rounded-xl flex items-center gap-3">
+  <div className="p-3 bg-card/5 border border-white/5 rounded-xl flex items-center gap-3">
     {type === 'color' && <div className="h-8 w-8 rounded-lg border border-white/10" style={{ backgroundColor: value }} />}
     <div>
       <p className="text-caption leading-none mb-1">{name}</p>
@@ -896,7 +896,7 @@ const CheckItem = ({ checked, label }: any) => (
   <div className="flex items-center gap-3">
     <div className={cn(
       "h-5 w-5 rounded border flex items-center justify-center transition-colors",
-      checked ? "bg-green-500 border-green-500 text-white" : "border-white/20 bg-white/5 text-transparent"
+      checked ? "bg-green-500 border-green-500 text-white" : "border-white/20 bg-card/5 text-transparent"
     )}>
       <Check className="h-3 w-3" />
     </div>
@@ -909,7 +909,7 @@ const DeviceToggle = ({ icon: Icon, label, active, onClick }: any) => (
     onClick={onClick}
     className={cn(
       "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-      active ? "bg-white text-black" : "text-white/40 hover:bg-white/5"
+      active ? "bg-card text-black" : "text-white/40 hover:bg-card/5"
     )}
   >
     <Icon className="h-4 w-4" /> {label}
@@ -919,7 +919,7 @@ const DeviceToggle = ({ icon: Icon, label, active, onClick }: any) => (
 const DeviceIndicator = ({ icon: Icon, status }: any) => (
   <div className={cn(
     "h-6 w-6 rounded flex items-center justify-center",
-    status === 'success' ? "bg-green-500/20 text-green-500" : "bg-white/5 text-white/20"
+    status === 'success' ? "bg-green-500/20 text-green-500" : "bg-card/5 text-white/20"
   )}>
     <Icon className="h-3 w-3" />
   </div>

@@ -40,7 +40,7 @@ function Badge({ className, variant, removable, onRemove, children, ...props }: 
             e.stopPropagation();
             onRemove();
           }}
-          className="ml-1 p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+          className="ml-1 p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-card/10 transition-colors"
         >
           <X className="h-3 w-3" />
         </button>

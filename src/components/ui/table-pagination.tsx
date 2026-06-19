@@ -39,7 +39,7 @@ export function TablePagination({
           value={pageSize.toString()}
           onValueChange={(value) => onPageSizeChange(Number(value))}
         >
-          <SelectTrigger className="h-10 w-[80px] rounded-xl bg-white/5 border-white/10">
+          <SelectTrigger className="h-10 w-[80px] rounded-xl bg-card/5 border-white/10">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -65,7 +65,7 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="hidden sm:flex h-10 w-10 rounded-xl bg-white/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="hidden sm:flex h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(1)}
           disabled={currentPage <= 1}
         >
@@ -74,14 +74,14 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-10 w-10 rounded-xl bg-white/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
-        <div className="flex items-center gap-1 px-4 bg-white/5 h-10 rounded-xl border border-white/10">
+        <div className="flex items-center gap-1 px-4 bg-card/5 h-10 rounded-xl border border-white/10">
           <span className="text-xs sm:text-sm whitespace-nowrap font-black">
             <span className="text-primary">{currentPage}</span>
             <span className="text-muted-foreground/40 mx-1">/</span>
@@ -92,7 +92,7 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-10 w-10 rounded-xl bg-white/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
         >
@@ -101,7 +101,7 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="hidden sm:flex h-10 w-10 rounded-xl bg-white/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="hidden sm:flex h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage >= totalPages}
         >

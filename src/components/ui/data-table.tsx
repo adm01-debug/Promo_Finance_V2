@@ -101,7 +101,7 @@ export function DataTable<T>({
     <div className={cn('bg-background/20 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden', className)}>
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-white/[0.02] border-b border-white/5">
+          <thead className="bg-card/[0.02] border-b border-white/5">
             <tr>
               {selectable && (
                 <th className="w-12 px-4 py-3">
@@ -112,7 +112,7 @@ export function DataTable<T>({
               {columns.map((column) => (
                 <th key={column.key} className={cn('px-6 h-14 text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] whitespace-nowrap',
                   column.align === 'center' && 'text-center', column.align === 'right' && 'text-right', column.align !== 'center' && column.align !== 'right' && 'text-left',
-                  sortable && column.sortable && 'cursor-pointer select-none hover:bg-white/5', column.headerClassName)}
+                  sortable && column.sortable && 'cursor-pointer select-none hover:bg-card/5', column.headerClassName)}
                   style={{ width: column.width }} onClick={() => sortable && column.sortable && handleSort(column.key)}>
                   <div className={cn('flex items-center gap-1', column.align === 'center' && 'justify-center', column.align === 'right' && 'justify-end')}>
                     {column.header}{getSortIcon(column)}
@@ -134,7 +134,7 @@ export function DataTable<T>({
               const key = keyExtractor(row);
               const isSelected = selectedKeys.has(key);
               return (
-                <tr key={key} className={cn('group transition-all duration-300 hover:bg-white/[0.04]', striped && rowIndex % 2 === 1 && 'bg-white/[0.01]', isSelected && 'bg-primary/10', onRowClick && 'cursor-pointer', rowClassName?.(row))} onClick={() => onRowClick?.(row)}>
+                <tr key={key} className={cn('group transition-all duration-300 hover:bg-card/[0.04]', striped && rowIndex % 2 === 1 && 'bg-card/[0.01]', isSelected && 'bg-primary/10', onRowClick && 'cursor-pointer', rowClassName?.(row))} onClick={() => onRowClick?.(row)}>
                   {selectable && (
                     <td className="w-12 px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={isSelected} onChange={() => handleSelectRow(row)} className="h-4 w-4 rounded border-border text-primary focus:ring-primary" />

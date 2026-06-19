@@ -237,7 +237,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
               <div 
                 className={cn(
                   "border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer",
-                  dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-white/10 hover:border-primary/50 hover:bg-white/5"
+                  dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-white/10 hover:border-primary/50 hover:bg-card/5"
                 )}
                 onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}
                 onClick={() => document.getElementById('retorno-upload')?.click()}
@@ -340,7 +340,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
                 <p className="text-sm text-muted-foreground mt-1">
                   {summary.processados} títulos liquidados com sucesso.
                 </p>
-                <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5 inline-block">
+                <div className="mt-4 p-4 rounded-2xl bg-card/5 border border-white/5 inline-block">
                   <p className="text-[10px] uppercase font-black tracking-widest opacity-40">Volume Recuperado</p>
                   <p className="text-2xl font-black text-primary">{formatCurrency(summary.valor)}</p>
                 </div>

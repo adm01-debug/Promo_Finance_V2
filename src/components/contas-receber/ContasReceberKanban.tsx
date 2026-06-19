@@ -55,7 +55,7 @@ export function ContasReceberKanban({ contas, onSelectConta }: ContasReceberKanb
                       {col.label}
                     </CardTitle>
                   </div>
-                  <Badge variant="outline" className="text-[10px] font-black border-white/10 bg-white/5 rounded-md px-2 py-0.5">
+                  <Badge variant="outline" className="text-[10px] font-black border-white/10 bg-card/5 rounded-md px-2 py-0.5">
                     {items.length}
                   </Badge>
                 </div>

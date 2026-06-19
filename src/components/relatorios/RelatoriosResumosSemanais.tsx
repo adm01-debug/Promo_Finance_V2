@@ -50,7 +50,7 @@ export function RelatoriosResumosSemanais() {
                   className={`w-full text-left p-4 rounded-xl border transition-all ${
                     selectedResumo?.id === resumo.id
                       ? 'bg-primary/10 border-primary/30 ring-1 ring-primary/20'
-                      : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
+                      : 'bg-card/5 border-white/10 hover:border-white/20 hover:bg-card/10'
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
@@ -86,7 +86,7 @@ export function RelatoriosResumosSemanais() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl h-[600px] flex flex-col">
+              <Card className="bg-card/5 border-white/10 backdrop-blur-xl h-[600px] flex flex-col">
                 <CardHeader className="border-b border-white/10 flex-shrink-0">
                   <div className="flex justify-between items-center">
                     <div>
@@ -99,11 +99,11 @@ export function RelatoriosResumosSemanais() {
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="bg-white/5 border-white/10 text-white">
+                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-white">
                         <Download className="h-4 w-4 mr-2" />
                         PDF
                       </Button>
-                      <Button variant="outline" size="sm" className="bg-white/5 border-white/10 text-white">
+                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-white">
                         <Mail className="h-4 w-4 mr-2" />
                         Reenviar
                       </Button>

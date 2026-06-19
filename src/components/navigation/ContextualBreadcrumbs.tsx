@@ -113,7 +113,7 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn("mb-6 flex items-center gap-4 px-4 py-2 rounded-lg bg-white border border-border shadow-sm", className)}
+      className={cn("mb-6 flex items-center gap-4 px-4 py-2 rounded-lg bg-card border border-border shadow-sm", className)}
       ref={ref}
     >
       {/* Back Button integrated with breadcrumbs */}

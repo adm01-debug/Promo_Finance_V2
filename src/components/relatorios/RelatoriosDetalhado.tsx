@@ -77,11 +77,11 @@ export function RelatoriosDetalhado({ transacoes, isLoading }: RelatoriosDetalha
                   </TableRow>
                 ) : (
                   filteredTransacoes.map((item) => (
-                    <TableRow key={item.id} className="hover:bg-white/5 transition-colors border-white/5">
+                    <TableRow key={item.id} className="hover:bg-card/5 transition-colors border-white/5">
                       <TableCell><Checkbox className="border-white/20" /></TableCell>
                       <TableCell className="font-medium text-muted-foreground">{new Date(item.data).toLocaleDateString('pt-BR')}</TableCell>
                       <TableCell className="font-bold">{item.descricao}</TableCell>
-                      <TableCell><Badge variant="outline" className="border-white/10 bg-white/5">{item.categoria}</Badge></TableCell>
+                      <TableCell><Badge variant="outline" className="border-white/10 bg-card/5">{item.categoria}</Badge></TableCell>
                       <TableCell>
                         <Badge 
                           variant={item.tipo === 'Receita' ? 'default' : 'secondary'} 

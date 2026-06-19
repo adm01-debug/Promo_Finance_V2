@@ -114,7 +114,7 @@ export const ContasPagarTableRow = memo(({
       
       <TableCell className="p-6">
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-[1rem] bg-white/5 border border-white/10 flex items-center justify-center relative shadow-sm transition-transform group-hover:scale-110 duration-500">
+          <div className="h-12 w-12 rounded-[1rem] bg-card/5 border border-white/10 flex items-center justify-center relative shadow-sm transition-transform group-hover:scale-110 duration-500">
             <Building2 className="h-6 w-6 text-secondary/60" />
           </div>
           <div className="min-w-0">
@@ -162,7 +162,7 @@ export const ContasPagarTableRow = memo(({
               </Badge>
             )}
             {conta.numero_documento && (
-              <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-white/5 text-muted-foreground/60 tracking-wider">REF: {conta.numero_documento}</Badge>
+              <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-card/5 text-muted-foreground/60 tracking-wider">REF: {conta.numero_documento}</Badge>
             )}
           </div>
         </div>
@@ -184,7 +184,7 @@ export const ContasPagarTableRow = memo(({
         <div className="flex items-center gap-3">
           <div className={cn(
             "h-10 w-10 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-sm",
-            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/20 text-destructive" : "bg-white/5 border-white/10 text-muted-foreground/40"
+            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/20 text-destructive" : "bg-card/5 border-white/10 text-muted-foreground/40"
           )}>
             <Calendar className="h-5 w-5" />
           </div>
@@ -201,7 +201,7 @@ export const ContasPagarTableRow = memo(({
 
       <TableCell className="p-6">
         {conta.centro_custo_nome || conta.centros_custo?.nome ? (
-          <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 border-white/5 bg-white/5 px-2 py-0.5">
+          <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 border-white/5 bg-card/5 px-2 py-0.5">
             {conta.centro_custo_nome || conta.centros_custo?.nome}
           </Badge>
         ) : (
@@ -233,7 +233,7 @@ export const ContasPagarTableRow = memo(({
       <TableCell className="p-6 text-right">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/5">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-card/5">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -271,7 +271,7 @@ export const ContasPagarTableRow = memo(({
               </DropdownMenuItem>
             )}
 
-            <DropdownMenuSeparator className="bg-white/5" />
+            <DropdownMenuSeparator className="bg-card/5" />
             <DropdownMenuItem onClick={onDelete} className="gap-2 text-destructive focus:text-destructive focus:bg-destructive/10">
               <Trash2 className="h-4 w-4" /> Purge Record
             </DropdownMenuItem>
@@ -289,7 +289,7 @@ export const ContasPagarTableRow = memo(({
 
   if (isVirtual) {
     return (
-      <tr className="group hover:bg-white/[0.03] transition-all duration-300 border-none">
+      <tr className="group hover:bg-card/[0.03] transition-all duration-300 border-none">
         {Content}
       </tr>
     );
@@ -302,7 +302,7 @@ export const ContasPagarTableRow = memo(({
     return (
       <motion.tr 
         {...animation}
-        className="group hover:bg-white/[0.03] transition-all duration-300 border-none"
+        className="group hover:bg-card/[0.03] transition-all duration-300 border-none"
       >
         {Content}
       </motion.tr>
@@ -310,7 +310,7 @@ export const ContasPagarTableRow = memo(({
   }
 
   return (
-    <tr className="group hover:bg-white/[0.03] transition-all duration-300 border-none">
+    <tr className="group hover:bg-card/[0.03] transition-all duration-300 border-none">
       {Content}
     </tr>
   );

@@ -94,7 +94,7 @@ export function WebhookConfigPanel() {
         
         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
           {logs.length === 0 && !isLoading ? (
-            <div className="p-8 text-center bg-white/5 rounded-xl border border-white/5">
+            <div className="p-8 text-center bg-card/5 rounded-xl border border-white/5">
               <Braces className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
               <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Nenhum evento capturado</p>
             </div>
@@ -104,8 +104,8 @@ export function WebhookConfigPanel() {
                 <div 
                   onClick={() => setExpandedLogId(expandedLogId === log.id ? null : log.id)}
                   className={cn(
-                    "p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs transition-all hover:bg-white/10 cursor-pointer",
-                    expandedLogId === log.id && "bg-white/10 border-primary/20"
+                    "p-3 rounded-xl bg-card/5 border border-white/5 flex items-center justify-between text-xs transition-all hover:bg-card/10 cursor-pointer",
+                    expandedLogId === log.id && "bg-card/10 border-primary/20"
                   )}
                 >
                   <div className="flex items-center gap-3">

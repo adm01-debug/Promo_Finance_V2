@@ -69,7 +69,7 @@ export function ContasReceberFilters({
       <div className="flex items-center gap-2 flex-1 min-w-[140px]">
         <Tag className="h-4 w-4 text-primary/40 shrink-0" />
         <Select value={statusFilter} onValueChange={onStatusChange}>
-          <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-12 rounded-xl font-bold text-xs focus:ring-0 transition-all">
+          <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-12 rounded-xl font-bold text-xs focus:ring-0 transition-all">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -87,7 +87,7 @@ export function ContasReceberFilters({
         <div className="flex items-center gap-2 flex-1 min-w-[180px]">
           <Building2 className="h-4 w-4 text-primary/40 shrink-0" />
           <Select value={empresaFilter || 'all'} onValueChange={onEmpresaChange}>
-            <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+            <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Empresa" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -104,7 +104,7 @@ export function ContasReceberFilters({
         <div className="flex items-center gap-2 flex-1 min-w-[140px]">
           <CreditCard className="h-4 w-4 text-primary/40 shrink-0" />
           <Select value={formaFilter || 'all'} onValueChange={onFormaChange}>
-            <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+            <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Forma" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -123,7 +123,7 @@ export function ContasReceberFilters({
         <div className="flex items-center gap-2 flex-1 min-w-[160px]">
           <Banknote className="h-4 w-4 text-primary/40 shrink-0" />
           <Select value={contaBancariaFilter || 'all'} onValueChange={onContaBancariaChange}>
-            <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+            <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Conta Bancária" />
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -139,7 +139,7 @@ export function ContasReceberFilters({
       <div className="flex items-center gap-2 flex-1 min-w-[140px]">
         <Target className="h-4 w-4 text-primary/40 shrink-0" />
         <Select value={centroCustoFilter} onValueChange={onCentroCustoChange}>
-          <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+          <SelectTrigger className="border-none bg-transparent hover:bg-card/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
             <SelectValue placeholder="Centro Custo" />
           </SelectTrigger>
           <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">

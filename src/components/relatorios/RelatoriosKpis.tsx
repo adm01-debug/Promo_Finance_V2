@@ -119,7 +119,7 @@ export function RelatoriosKpiCards({
                 <div className="space-y-1">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{card.label}</p>
                   {card.loading ? (
-                    <Skeleton className="h-10 w-32 bg-white/5" />
+                    <Skeleton className="h-10 w-32 bg-card/5" />
                   ) : (
                     <div className="flex items-baseline gap-1">
                       <p className={cn(

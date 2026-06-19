@@ -243,7 +243,7 @@ export function ContaReceberDetailDrawer({
                 {boletos.length > 0 ? (
                   <div className="space-y-3">
                     {boletos.map((b: any) => (
-                      <Card key={b.id} className="p-4 border-white/5 bg-white/[0.02]">
+                      <Card key={b.id} className="p-4 border-white/5 bg-card/[0.02]">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <p className="text-sm font-black tabular-nums tracking-tight">#{b.numero}</p>

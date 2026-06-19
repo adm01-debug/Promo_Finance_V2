@@ -96,7 +96,7 @@ export function ContasReceberKPIs({
             >
               <Card
                 className={cn(
-                  "border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700",
+                  "border-none bg-card/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700",
                   onKpiClick && "cursor-pointer hover:ring-primary/40 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
                 )}
                 onClick={() => onKpiClick?.(kpi.filter)}
@@ -149,7 +149,7 @@ export function ContasReceberKPIs({
           transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 24 }}
         >
           <Card className={cn(
-            "border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700 hover:ring-primary/40",
+            "border-none bg-card/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700 hover:ring-primary/40",
             taxaInadimplencia > 10 ? "relative" : ""
           )}>
             {taxaInadimplencia > 10 && (
@@ -194,7 +194,7 @@ export function ContasReceberKPIs({
                     aria-valuenow={Math.round(taxaInadimplencia)}
                     aria-valuemin={0}
                     aria-valuemax={100}
-                    className="h-2 rounded-full bg-white/5 overflow-hidden ring-1 ring-white/5"
+                    className="h-2 rounded-full bg-card/5 overflow-hidden ring-1 ring-white/5"
                   >
                     <motion.div
                       initial={{ width: 0 }}
