@@ -15,9 +15,9 @@ const buttonVariants = cva(
         secondary: "bg-secondary/50 backdrop-blur-sm text-secondary-foreground hover:bg-secondary/80 hover:shadow-md",
         ghost: "hover:bg-primary/5 hover:text-primary active:bg-primary/10",
         link: "text-primary underline-offset-4 hover:underline",
-        success: "bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/20",
-        warning: "bg-amber-500 text-white hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/20",
-        premium: "bg-gradient-to-br from-zinc-900 via-zinc-800 to-black text-white hover:shadow-2xl hover:shadow-black/40 hover:-translate-y-1 border border-white/10 dark:from-white dark:via-zinc-100 dark:to-zinc-200 dark:text-black",
+        success: "bg-success text-success-foreground hover:bg-success/90 hover:shadow-lg hover:shadow-success/20",
+        warning: "bg-warning text-warning-foreground hover:bg-warning/90 hover:shadow-lg hover:shadow-warning/20",
+        premium: "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 border border-primary/20",
         glow: "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] hover:-translate-y-0.5",
       },
       size: {
