@@ -148,7 +148,7 @@ export function ContasReceberTableRow({
           </div>
           <div>
             <p className="font-black text-lg tracking-tight text-white group-hover:text-primary transition-colors">{conta.cliente_nome}</p>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mt-1">{clienteData?.nome_fantasia || '-'}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 mt-1">{clienteData?.nome_fantasia || '-'}</p>
           </div>
         </div>
       </TableCell>

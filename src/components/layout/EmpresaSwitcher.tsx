@@ -100,7 +100,7 @@ export function EmpresaSwitcher() {
                     'relative h-9 px-3 rounded-xl flex items-center gap-2 text-[10px] font-black transition-all duration-500 border group',
                     isActive
                       ? 'bg-primary text-primary-foreground border-primary shadow-[0_8px_20px_-4px_rgba(var(--primary),0.4)] scale-105 z-10'
-                      : 'bg-transparent text-white/40 border-transparent hover:bg-card/10 hover:text-white hover:border-white/10',
+                      : 'bg-transparent text-foreground/40 border-transparent hover:bg-card/10 hover:text-white hover:border-white/10',
                   )}
                 >
                   <span className="tracking-tighter uppercase whitespace-nowrap">

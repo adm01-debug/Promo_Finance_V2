@@ -264,7 +264,7 @@ export function ContaReceberDetailDrawer({
                   </div>
                 ) : (
                   <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-white/5 bg-black/10">
-                    <Banknote className="h-8 w-8 text-white/5 mx-auto mb-3" />
+                    <Banknote className="h-8 w-8 text-foreground/5 mx-auto mb-3" />
                     <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/30">Nenhum boleto gerado</p>
                   </div>
                 )}

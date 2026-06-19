@@ -27,7 +27,7 @@ export function StandardFilterSection({
         {/* Search Command */}
         <div className="relative group">
           <div className="absolute inset-0 bg-primary/5 rounded-2xl -m-1 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-white/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-foreground/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
           <Input
             placeholder={searchPlaceholder}
             value={searchTerm}

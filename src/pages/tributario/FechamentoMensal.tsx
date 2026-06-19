@@ -28,7 +28,7 @@ export default function FechamentoMensalPage() {
             gradientVia="via-primary"
             gradientTo="to-blue-500"
           >
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-card/5 border border-white/10 text-white/60 text-xs font-bold uppercase tracking-widest">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-card/5 border border-white/10 text-foreground/60 text-xs font-bold uppercase tracking-widest">
               <Sparkles className="h-3 w-3 text-primary animate-pulse" />
               Quantum AI Assistant
             </div>

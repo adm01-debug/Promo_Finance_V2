@@ -89,12 +89,12 @@ export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory:
                   <p className={cn("font-black text-[10px] uppercase tracking-[0.15em]", config.color)}>{config.label}</p>
                   <span className="text-[10px] text-muted-foreground/40">• {formatDateTime(item.timestamp)}</span>
                 </div>
-                <p className="text-white/80 font-medium mt-1 leading-relaxed">{item.message}</p>
+                <p className="text-foreground/80 font-medium mt-1 leading-relaxed">{item.message}</p>
                 {item.metadata?.transacao_banco && (
                   <div className="mt-2 p-3 rounded-xl bg-primary/5 border border-primary/10 text-[10px] space-y-1">
                     <p className="font-black text-primary uppercase tracking-widest opacity-60">Evidência Bancária</p>
                     <div className="flex justify-between">
-                      <span className="text-white/60">{item.metadata.transacao_banco.descricao}</span>
+                      <span className="text-foreground/60">{item.metadata.transacao_banco.descricao}</span>
                       <span className="font-black text-white">{formatCurrency(item.metadata.transacao_banco.valor)}</span>
                     </div>
                   </div>
