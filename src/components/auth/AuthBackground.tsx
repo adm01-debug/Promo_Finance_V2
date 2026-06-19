@@ -91,14 +91,13 @@ export function AuthSocialProof() {
               initial={{ scale: 0, x: -20 }}
               animate={{ scale: 1, x: 0 }}
               transition={{ delay: 0.7 + i * 0.1, type: 'spring' }}
-              className="h-10 w-10 rounded-full bg-muted border-2 border-[#02040a] flex items-center justify-center text-xs font-bold shadow-lg"
-              style={{ backgroundColor: `hsl(221, 83%, ${30 + i * 10}%)`, color: 'white' }}
+              className="h-10 w-10 rounded-full bg-primary text-primary-foreground border-2 border-background flex items-center justify-center text-xs font-bold shadow-lg"
             >
               {String.fromCharCode(64 + i)}
             </motion.div>
           ))}
         </div>
-        <span className="text-sm font-semibold text-white/70">
+        <span className="text-sm font-semibold text-foreground/70">
           +500 empresas usando
         </span>
       </div>
@@ -129,7 +128,7 @@ export function AuthSocialProof() {
 
 export function AuthLeftPanel() {
   return (
-    <div className="hidden lg:flex lg:w-1/2 relative bg-[#02040a] overflow-hidden">
+    <div className="hidden lg:flex lg:w-1/2 relative bg-background overflow-hidden">
       {/* Dynamic Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/5 opacity-40" />
@@ -147,7 +146,7 @@ export function AuthLeftPanel() {
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent skew-x-12"
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/20 to-transparent skew-x-12"
         />
       </div>
       
@@ -160,14 +159,14 @@ export function AuthLeftPanel() {
           transition={{ delay: 0.4 }}
           className="space-y-4 mb-12"
         >
-          <h1 className="text-5xl font-black tracking-tight text-white flex flex-col">
+          <h1 className="text-5xl font-black tracking-normal text-foreground flex flex-col">
             <span className="text-display-lg opacity-90 font-light">Bem-vindo ao</span>
             <span className="gradient-text text-display-xl drop-shadow-2xl">Promo Finance</span>
           </h1>
           
           <div className="h-1 w-24 bg-gradient-to-r from-primary to-accent mx-auto rounded-full" />
           
-          <p className="text-xl text-white/60 font-medium max-w-sm mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed">
             A inteligência financeira definitiva para empresas que buscam o próximo nível de eficiência.
           </p>
         </motion.div>
@@ -179,7 +178,7 @@ export function AuthLeftPanel() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.4 }}
           transition={{ delay: 1.5 }}
-          className="absolute bottom-12 text-[10px] text-white uppercase tracking-[0.2em] font-bold"
+          className="absolute bottom-12 text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-bold"
         >
           Tecnologia Proprietária &copy; 2026 Promo Finance
         </motion.div>
