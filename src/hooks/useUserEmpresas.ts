@@ -1,18 +1,62 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database, Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { useAuth } from './useAuth';
-import { differenceInDays, parseISO } from 'date-fns';
+import { logger } from '@/lib/logger';
+
+type AppRole = Extract<Database['public']['Enums']['app_role'], 'admin' | 'financeiro' | 'operacional' | 'visualizador'>;
+type ProvisionedVia = 'manual' | 'sso' | 'scim';
+
+interface EmpresaSummary {
+  id: string;
+  razao_social: string;
+  nome_fantasia: string | null;
+  cnpj: string;
+}
+
+interface UserEmpresaQueryRow {
+  id: string;
+  empresa_id: string;
+  role: Database['public']['Enums']['app_role'];
+  is_default: boolean;
+  provisioned_via: string;
+  ativo: boolean;
+  empresa: EmpresaSummary | EmpresaSummary[] | null;
+}
 
 export interface UserEmpresaLink {
   id: string;
   empresa_id: string;
-  role: 'admin' | 'financeiro' | 'operacional' | 'visualizador';
+  role: AppRole;
   is_default: boolean;
-  provisioned_via: 'manual' | 'sso' | 'scim';
+  provisioned_via: ProvisionedVia;
   ativo: boolean;
-  empresa: { id: string; razao_social: string; nome_fantasia: string | null; cnpj: string };
+  empresa: EmpresaSummary;
+}
+
+const APP_ROLES: readonly AppRole[] = ['admin', 'financeiro', 'operacional', 'visualizador'];
+const PROVISIONING_MODES: readonly ProvisionedVia[] = ['manual', 'sso', 'scim'];
+
+function normalizeProvisionedVia(value: string): ProvisionedVia {
+  return PROVISIONING_MODES.includes(value as ProvisionedVia) ? (value as ProvisionedVia) : 'manual';
+}
+
+function normalizeUserEmpresa(row: UserEmpresaQueryRow): UserEmpresaLink | null {
+  if (!APP_ROLES.includes(row.role as AppRole)) return null;
+  const empresa = Array.isArray(row.empresa) ? row.empresa[0] : row.empresa;
+  if (!empresa) return null;
+
+  return {
+    id: row.id,
+    empresa_id: row.empresa_id,
+    role: row.role as AppRole,
+    is_default: row.is_default,
+    provisioned_via: normalizeProvisionedVia(row.provisioned_via),
+    ativo: row.ativo,
+    empresa,
+  };
 }
 
 export function useUserEmpresas() {
@@ -21,45 +65,21 @@ export function useUserEmpresas() {
     queryKey: ['user-empresas', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      let links: UserEmpresaLink[] = [];
-      try {
-        const { data, error } = await (supabase as any)
-          .from('user_empresas')
-          .select('id, empresa_id, role, is_default, provisioned_via, ativo, empresa:empresas(id,razao_social,nome_fantasia,cnpj)')
-          .eq('user_id', user.id)
-          .eq('ativo', true)
-          .order('is_default', { ascending: false });
-        // Tabela inexistente / RLS / coluna ausente → cai no fallback abaixo
-        if (!error) {
-          links = (data ?? []) as UserEmpresaLink[];
-        }
-      } catch {
-        // segue para o fallback
+      const { data, error } = await supabase
+        .from('user_empresas')
+        .select('id, empresa_id, role, is_default, provisioned_via, ativo, empresa:empresas(id,razao_social,nome_fantasia,cnpj)')
+        .eq('user_id', user.id)
+        .eq('ativo', true)
+        .order('is_default', { ascending: false });
+
+      if (error) {
+        logger.warn('[useUserEmpresas] Falha ao carregar vínculos de empresa', error);
+        return [];
       }
 
-      // Fallback: sistema exclusivo Grupo Promo Brindes — usuário autenticado
-      // sem vínculos específicos recebe acesso automático a todas as empresas ativas do grupo.
-      if (links.length === 0) {
-        const { data: empresasData } = await (supabase as any)
-          .from('empresas')
-          .select('id, razao_social, nome_fantasia, cnpj')
-          .eq('ativo', true)
-          .order('nome_fantasia', { ascending: true });
-
-        const empresas = (empresasData ?? []) as Array<{ id: string; razao_social: string; nome_fantasia: string | null; cnpj: string }>;
-        const defaultId = localStorage.getItem(STORAGE_KEY);
-        return empresas.map((e, idx) => ({
-          id: `auto-${e.id}`,
-          empresa_id: e.id,
-          role: 'admin' as const,
-          is_default: defaultId ? e.id === defaultId : idx === 0,
-          provisioned_via: 'manual' as const,
-          ativo: true,
-          empresa: e,
-        })) as UserEmpresaLink[];
-      }
-
-      return links;
+      return ((data ?? []) as UserEmpresaQueryRow[])
+        .map(normalizeUserEmpresa)
+        .filter((link): link is UserEmpresaLink => link !== null);
     },
     enabled: !!user,
     retry: 1,
@@ -93,7 +113,7 @@ export async function setCurrentEmpresaId(id: string) {
 
       // Use safe RPC call with fallback
       try {
-        await (supabase as any).rpc('registrar_auditoria_config', {
+        await supabase.rpc('registrar_auditoria_config', {
           _tipo_acao: 'troca_empresa',
           _empresa_id: id,
           _detalhes: {
@@ -102,10 +122,10 @@ export async function setCurrentEmpresaId(id: string) {
             new_empresa_nome: nomeEmpresa,
             timestamp: new Date().toISOString(),
             context: 'EmpresaSwitcher QuickSwitch'
-          }
+          } satisfies Json
         });
       } catch (rpcErr) {
-        console.warn('RPC registrar_auditoria_config not available, skipping audit log:', rpcErr);
+        logger.warn('[useUserEmpresas] Auditoria de troca de empresa indisponível', rpcErr);
       }
 
       // Notificar o usuário sobre a mudança crítica
@@ -119,7 +139,7 @@ export async function setCurrentEmpresaId(id: string) {
       });
     }
   } catch (err) {
-    console.error('Erro ao auditar troca de empresa:', err);
+    logger.error('[useUserEmpresas] Erro ao auditar troca de empresa', err);
   }
 
   // Notificar outras partes do sistema para manter filtros sincronizados
@@ -143,13 +163,13 @@ export function useDefinirEmpresaPadrao() {
     mutationFn: async (linkId: string) => {
       if (!user) throw new Error('Usuário não autenticado');
       // Zera o flag para todos os vínculos do usuário
-      const { error: e1 } = await (supabase as any)
+      const { error: e1 } = await supabase
         .from('user_empresas')
         .update({ is_default: false })
         .eq('user_id', user.id);
       if (e1) throw e1;
       // Marca o vínculo selecionado
-      const { error: e2 } = await (supabase as any)
+      const { error: e2 } = await supabase
         .from('user_empresas')
         .update({ is_default: true })
         .eq('id', linkId);
