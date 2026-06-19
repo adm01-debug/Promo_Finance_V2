@@ -12096,6 +12096,15 @@ export type Database = {
         Args: { p_empresa_id?: string; p_simulate?: boolean }
         Returns: Json
       }
+      profile_sensitive_fields_unchanged: {
+        Args: {
+          _empresa_id: string
+          _profile_id: string
+          _role: string
+          _user_id: string
+        }
+        Returns: boolean
+      }
       record_failed_login: {
         Args: { p_email: string; p_ip_address?: unknown }
         Returns: {
