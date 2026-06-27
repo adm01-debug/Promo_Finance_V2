@@ -17,6 +17,9 @@ import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
 import { VisualValidator } from '@/components/ui/ux-validator';
 import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOverlay';
+import { TransitionProvider } from '@/components/layout/transitions';
+
+
 
 
 
@@ -258,7 +261,9 @@ function App() {
             <AuthProvider>
               <StartupDiagnostic>
                 <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                  <AppRoutes />
+                  <TransitionProvider>
+                    <AppRoutes />
+                  </TransitionProvider>
                 </BrowserRouter>
               </StartupDiagnostic>
             </AuthProvider>
