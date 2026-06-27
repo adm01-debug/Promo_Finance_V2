@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,9 +8,8 @@ import { format } from 'date-fns';
 import { formatDate } from '@/lib/formatters';
 import { maskIp } from '@/lib/ip-mask';
 import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
+import { useVirtualRows } from '@/hooks/useVirtualRows';
 import { AuditDiffView } from './AuditDiffView';
-
-type AuditAction = string;
 
 interface AuditLog {
   id: string;
@@ -55,64 +53,104 @@ interface Props {
   logs: AuditLog[];
 }
 
+function Row({ log, maskIpsEnabled }: { log: AuditLog; maskIpsEnabled: boolean }) {
+  return (
+    <TableRow>
+      <TableCell className="text-sm">
+        <div className="flex items-center gap-1.5"><Clock className="h-3 w-3 text-muted-foreground" />{formatDate(log.created_at)}</div>
+        <span className="text-xs text-muted-foreground">{format(new Date(log.created_at), 'HH:mm:ss')}</span>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-1.5"><User className="h-3 w-3 text-muted-foreground" /><span className="text-sm truncate max-w-[150px]">{log.user_email || 'Sistema'}</span></div>
+        {log.ip_address && <span className="text-xs text-muted-foreground">{maskIp(log.ip_address, maskIpsEnabled)}</span>}
+      </TableCell>
+      <TableCell><Badge variant="outline" className={actionConfig[log.action]?.color}>{actionConfig[log.action]?.label || log.action}</Badge></TableCell>
+      <TableCell className="text-sm">{log.table_name ? (tableNameLabels[log.table_name] || log.table_name) : '-'}</TableCell>
+      <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{log.details || '-'}</TableCell>
+      <TableCell>
+        <Dialog>
+          <DialogTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8"><Eye className="h-4 w-4" /></Button></DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[80vh]">
+            <DialogHeader><DialogTitle>Detalhes do Log</DialogTitle></DialogHeader>
+            <ScrollArea className="max-h-[60vh]">
+              <div className="space-y-4 text-sm">
+                <div className="grid grid-cols-2 gap-4">
+                  <div><p className="text-muted-foreground">Ação</p><Badge variant="outline" className={actionConfig[log.action]?.color}>{actionConfig[log.action]?.label}</Badge></div>
+                  <div><p className="text-muted-foreground">Tabela</p><p>{log.table_name ? (tableNameLabels[log.table_name] || log.table_name) : '-'}</p></div>
+                  <div><p className="text-muted-foreground">Usuário</p><p>{log.user_email || 'Sistema'}</p></div>
+                  <div><p className="text-muted-foreground">IP</p><p>{maskIp(log.ip_address, maskIpsEnabled)}</p></div>
+                </div>
+                {log.details && <div><p className="text-muted-foreground">Detalhes</p><p>{log.details}</p></div>}
+                {(log.old_data || log.new_data) && (
+                  <div>
+                    <p className="text-muted-foreground mb-2">Comparação antes/depois</p>
+                    <AuditDiffView old={log.old_data} new={log.new_data} action={log.action} />
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 export function AuditLogTable({ logs }: Props) {
   const { enabled: maskIpsEnabled } = useIpMaskPreference();
+  const { parentRef, virtualizer, enabled } = useVirtualRows({ count: logs.length, estimateSize: 64 });
+
+  const header = (
+    <TableHeader>
+      <TableRow>
+        <TableHead className="w-[180px]">Data/Hora</TableHead>
+        <TableHead>Usuário</TableHead>
+        <TableHead>Ação</TableHead>
+        <TableHead>Tabela</TableHead>
+        <TableHead>Detalhes</TableHead>
+        <TableHead className="w-[80px]">Ver</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+
+  if (!enabled) {
+    return (
+      <ScrollArea className="h-[500px]">
+        <Table>
+          {header}
+          <TableBody>
+            {logs.map((log) => <Row key={log.id} log={log} maskIpsEnabled={maskIpsEnabled} />)}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+    );
+  }
+
+  const items = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
+  const paddingTop = items.length > 0 ? items[0].start : 0;
+  const paddingBottom = items.length > 0 ? totalSize - items[items.length - 1].end : 0;
+
   return (
-    <ScrollArea className="h-[500px]">
+    <div ref={parentRef} className="h-[500px] overflow-auto">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[180px]">Data/Hora</TableHead>
-            <TableHead>Usuário</TableHead>
-            <TableHead>Ação</TableHead>
-            <TableHead>Tabela</TableHead>
-            <TableHead>Detalhes</TableHead>
-            <TableHead className="w-[80px]">Ver</TableHead>
-          </TableRow>
-        </TableHeader>
+        {header}
         <TableBody>
-          {logs.map((log) => (
-            <TableRow key={log.id}>
-              <TableCell className="text-sm">
-                <div className="flex items-center gap-1.5"><Clock className="h-3 w-3 text-muted-foreground" />{formatDate(log.created_at)}</div>
-                <span className="text-xs text-muted-foreground">{format(new Date(log.created_at), 'HH:mm:ss')}</span>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1.5"><User className="h-3 w-3 text-muted-foreground" /><span className="text-sm truncate max-w-[150px]">{log.user_email || 'Sistema'}</span></div>
-                {log.ip_address && <span className="text-xs text-muted-foreground">{maskIp(log.ip_address, maskIpsEnabled)}</span>}
-              </TableCell>
-              <TableCell><Badge variant="outline" className={actionConfig[log.action]?.color}>{actionConfig[log.action]?.label || log.action}</Badge></TableCell>
-              <TableCell className="text-sm">{log.table_name ? (tableNameLabels[log.table_name] || log.table_name) : '-'}</TableCell>
-              <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{log.details || '-'}</TableCell>
-              <TableCell>
-                <Dialog>
-                  <DialogTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8"><Eye className="h-4 w-4" /></Button></DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[80vh]">
-                    <DialogHeader><DialogTitle>Detalhes do Log</DialogTitle></DialogHeader>
-                    <ScrollArea className="max-h-[60vh]">
-                      <div className="space-y-4 text-sm">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div><p className="text-muted-foreground">Ação</p><Badge variant="outline" className={actionConfig[log.action]?.color}>{actionConfig[log.action]?.label}</Badge></div>
-                          <div><p className="text-muted-foreground">Tabela</p><p>{log.table_name ? (tableNameLabels[log.table_name] || log.table_name) : '-'}</p></div>
-                          <div><p className="text-muted-foreground">Usuário</p><p>{log.user_email || 'Sistema'}</p></div>
-                          <div><p className="text-muted-foreground">IP</p><p>{maskIp(log.ip_address, maskIpsEnabled)}</p></div>
-                        </div>
-                        {log.details && <div><p className="text-muted-foreground">Detalhes</p><p>{log.details}</p></div>}
-                        {(log.old_data || log.new_data) && (
-                          <div>
-                            <p className="text-muted-foreground mb-2">Comparação antes/depois</p>
-                            <AuditDiffView old={log.old_data} new={log.new_data} action={log.action} />
-                          </div>
-                        )}
-                      </div>
-                    </ScrollArea>
-                  </DialogContent>
-                </Dialog>
-              </TableCell>
-            </TableRow>
+          {paddingTop > 0 && (
+            <tr aria-hidden style={{ height: paddingTop }}>
+              <td colSpan={6} />
+            </tr>
+          )}
+          {items.map((vi) => (
+            <Row key={logs[vi.index].id} log={logs[vi.index]} maskIpsEnabled={maskIpsEnabled} />
           ))}
+          {paddingBottom > 0 && (
+            <tr aria-hidden style={{ height: paddingBottom }}>
+              <td colSpan={6} />
+            </tr>
+          )}
         </TableBody>
       </Table>
-    </ScrollArea>
+    </div>
   );
 }
