@@ -3,6 +3,14 @@ import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from 'lovable-tagger';
 
+/**
+ * Performance: build configurado para SPA grande (100+ rotas).
+ * - SWC + esbuild minify para builds rápidos
+ * - manualChunks por vendor para cache HTTP estável
+ * - reportCompressedSize:false economiza ~30-50% no tempo de build
+ * - assetsInlineLimit baixo evita inflar HTML/CSS com base64
+ * - drop console/debugger em produção
+ */
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
@@ -18,7 +26,19 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       target: 'es2020',
     },
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@tanstack/react-query',
+      '@supabase/supabase-js',
+      'date-fns',
+      'framer-motion',
+    ],
   },
+  esbuild: mode === 'production'
+    ? { drop: ['console', 'debugger'], legalComments: 'none' }
+    : undefined,
   build: {
     rollupOptions: {
       output: {
@@ -43,12 +63,14 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1200,
     sourcemap: 'hidden',
     minify: 'esbuild',
     target: 'es2020',
     cssMinify: true,
-    reportCompressedSize: true,
+    cssCodeSplit: true,
+    assetsInlineLimit: 2048,
+    reportCompressedSize: false,
   },
   server: {
     host: '::',
