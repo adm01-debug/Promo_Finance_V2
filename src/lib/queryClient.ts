@@ -9,7 +9,6 @@ export const queryClient = new QueryClient({
       gcTime: 10 * 60 * 1000,
       // Retry com backoff exponencial
       retry: (failureCount, error: unknown) => {
-        // Não retry em erros 4xx
         const httpError = error as { status?: number };
         if (httpError?.status && httpError.status >= 400 && httpError.status < 500) {
           return false;
@@ -17,18 +16,25 @@ export const queryClient = new QueryClient({
         return failureCount < 3;
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      // Refetch automático
       refetchOnWindowFocus: false,
+      // Performance: evita refetch ao remontar quando os dados ainda estão frescos.
+      // Combinado com placeholderData abaixo, garante navegação SPA instantânea
+      // sem piscar telas de loading entre rotas.
+      refetchOnMount: false,
       refetchOnReconnect: true,
-      // Placeholder data para melhor UX
+      // structuralSharing está ativo por padrão — preserva referências e evita
+      // re-renderizações desnecessárias em consumidores que usam selectors.
       placeholderData: (previousData: unknown) => previousData,
+      networkMode: 'online',
     },
     mutations: {
       retry: 1,
       retryDelay: 1000,
+      networkMode: 'online',
     },
   },
 });
+
 
 export const STALE_TIMES = {
   // Dados que mudam raramente (10 min)
