@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: 'hidden',
     minify: 'esbuild',
     target: 'es2020',
-    cssMinify: 'lightningcss' as unknown as boolean,
+    cssMinify: true,
     cssCodeSplit: true,
     assetsInlineLimit: 2048,
     reportCompressedSize: false,
