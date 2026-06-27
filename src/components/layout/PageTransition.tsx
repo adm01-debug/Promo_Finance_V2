@@ -1,62 +1,17 @@
-import { motion, AnimatePresence, Transition, Variants } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
-import { ReactNode, forwardRef } from 'react';
+/**
+ * Re-export compatível com a API legada.
+ * A implementação real vive em `./transitions/`.
+ */
+import type { Variants } from 'framer-motion';
+export { PageTransition } from './transitions';
+export type { PageTransitionProps } from './transitions';
 
-interface PageTransitionProps {
-  children: ReactNode;
-}
-
-const pageVariants: Variants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-    scale: 0.99,
-    filter: 'blur(4px)',
-  },
-  in: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: 'blur(0px)',
-  },
-  out: {
-    opacity: 0,
-    y: -20,
-    scale: 0.99,
-    filter: 'blur(4px)',
-  },
+export const pageVariants: Variants = {
+  initial: { opacity: 0, y: 20, scale: 0.99, filter: 'blur(4px)' },
+  in: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' },
+  out: { opacity: 0, y: -20, scale: 0.99, filter: 'blur(4px)' },
 };
 
-const pageTransition: Transition = {
-  type: 'tween',
-  ease: 'anticipate' as const,
-  duration: 0.35,
-};
-
-export const PageTransition = forwardRef<HTMLDivElement, PageTransitionProps>(
-  function PageTransition({ children }, ref) {
-    const location = useLocation();
-
-    return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          ref={ref}
-          key={location.pathname}
-          initial="initial"
-          animate="in"
-          exit="out"
-          variants={pageVariants}
-          transition={pageTransition}
-          className="w-full"
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
-);
-
-// Variantes alternativas para diferentes tipos de transição
 export const slideVariants: Variants = {
   initial: { opacity: 0, x: -30 },
   in: { opacity: 1, x: 0 },
@@ -75,7 +30,7 @@ export const scaleVariants: Variants = {
   out: { opacity: 0, scale: 1.1 },
 };
 
-// Hook para usar variantes customizadas
+/** @deprecated Use `useTransition` de `./transitions` para resolver presets dinamicamente. */
 export function usePageTransition(variant: 'default' | 'slide' | 'fade' | 'scale' = 'default') {
   const variants: Record<string, Variants> = {
     default: pageVariants,
@@ -83,9 +38,8 @@ export function usePageTransition(variant: 'default' | 'slide' | 'fade' | 'scale
     fade: fadeVariants,
     scale: scaleVariants,
   };
-
   return {
     variants: variants[variant],
-    transition: pageTransition,
+    transition: { type: 'tween' as const, ease: 'anticipate' as const, duration: 0.35 },
   };
 }
