@@ -39,7 +39,8 @@ function assertSupabaseEnv(mode: string, env: Record<string, string>) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   assertSupabaseEnv(mode, env);
-  return ({
+  return {
+
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
@@ -104,5 +105,7 @@ export default defineConfig(({ mode }) => {
     host: '::',
     port: 8080,
   },
-  });
+  };
 });
+
+
