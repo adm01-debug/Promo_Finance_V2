@@ -27,11 +27,18 @@ export const useStartupDiagnostic = () => {
     setIsComplete(false);
     setHasError(false);
 
+    // 0. Detect session up-front. Sem usuário autenticado, as policies RLS
+    // bloqueiam diversos endpoints com 401 e poluem o console. Nesse caso
+    // apenas validamos conectividade pública e marcamos os demais como ok.
+    const { data: { session } } = await supabase.auth.getSession();
+    const isAuthenticated = !!session?.user;
+
     // 1. Connection Check
     updateStatus('connection', 'loading');
     try {
       const { error } = await supabase.from('profiles').select('id').limit(1);
-      if (error && error.code !== 'PGRST116') { // PGRST116 is just empty result, which is fine
+      // PGRST116 = empty result; 401/PGRST301 = anônimo sem permissão (esperado pré-login)
+      if (error && error.code !== 'PGRST116' && error.code !== 'PGRST301' && (error as any).status !== 401) {
          throw error;
       }
       updateStatus('connection', 'success');
@@ -41,46 +48,52 @@ export const useStartupDiagnostic = () => {
       setHasError(true);
     }
 
-    // 2. Tables Check
+    // 2. Tables Check — só roda autenticado (RLS bloqueia anônimos)
     updateStatus('tables', 'loading');
-    try {
-      const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'active_tracking', 'empresas'];
-      
-      const missingTables = [];
-      for (const table of essentialTables) {
-        const { error: tableError } = await supabase.from(table as any).select('count', { count: 'exact', head: true }).limit(0);
-        if (tableError && (tableError.code === '42P01' || (tableError.message && tableError.message.includes('does not exist')))) {
-          missingTables.push(table);
-        }
-      }
+    if (!isAuthenticated) {
+      updateStatus('tables', 'success', 'Validação completa será feita após login.');
+    } else {
+      try {
+        const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'active_tracking', 'empresas'];
 
-      if (missingTables.length > 0) {
-        updateStatus('tables', 'error', `Tabelas ausentes: ${missingTables.join(', ')}`);
+        const missingTables = [];
+        for (const table of essentialTables) {
+          const { error: tableError } = await supabase.from(table as any).select('count', { count: 'exact', head: true }).limit(0);
+          if (tableError && (tableError.code === '42P01' || (tableError.message && tableError.message.includes('does not exist')))) {
+            missingTables.push(table);
+          }
+        }
+
+        if (missingTables.length > 0) {
+          updateStatus('tables', 'error', `Tabelas ausentes: ${missingTables.join(', ')}`);
+          setHasError(true);
+        } else {
+          updateStatus('tables', 'success');
+        }
+      } catch (error) {
+        logger.error('Diagnostic Error (tables):', error);
+        updateStatus('tables', 'error', 'Erro ao validar estrutura de tabelas.');
         setHasError(true);
-      } else {
-        updateStatus('tables', 'success');
       }
-    } catch (error) {
-      logger.error('Diagnostic Error (tables):', error);
-      updateStatus('tables', 'error', 'Erro ao validar estrutura de tabelas.');
-      setHasError(true);
     }
 
-    // 3. RPCs Check
+    // 3. RPCs Check — também requer auth
     updateStatus('rpcs', 'loading');
-    try {
+    if (!isAuthenticated) {
+      updateStatus('rpcs', 'success', 'Validação completa será feita após login.');
+    } else try {
       const essentialRPCs = ['has_role', 'get_user_roles', 'get_user_permissions'];
       const missingRPCs = [];
 
       for (const rpc of essentialRPCs) {
-        // Parameter names must match the SQL function signatures exactly.
-        // has_role(_user_id, _role) uses underscore-prefixed params;
-        // get_user_roles/get_user_permissions use `user_id`.
+        // Assinaturas: has_role(_user_id uuid, _role app_role);
+        // get_user_roles(user_id uuid); get_user_permissions(user_id uuid).
+        // Valor de role precisa existir no enum app_role ('admin','manager','operator','viewer').
         let params: any;
         if (rpc === 'has_role') {
-          params = { _user_id: '00000000-0000-0000-0000-000000000000', _role: 'visualizador' };
+          params = { _user_id: session!.user.id, _role: 'viewer' };
         } else {
-          params = { user_id: '00000000-0000-0000-0000-000000000000' };
+          params = { user_id: session!.user.id };
         }
 
         const { error: rpcError } = await supabase.rpc(rpc as any, params);
@@ -93,6 +106,7 @@ export const useStartupDiagnostic = () => {
         updateStatus('rpcs', 'error', `Funções ausentes: ${missingRPCs.join(', ')}`);
         setHasError(true);
       } else {
+
         updateStatus('rpcs', 'success');
       }
     } catch (error) {
