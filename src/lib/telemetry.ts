@@ -48,6 +48,16 @@ async function flushQueues(): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
+    // RLS exige usuário autenticado para inserts nessas tabelas.
+    // Quando anônimo, descarta a fila para evitar 401 em loop no console.
+    if (!user) {
+      errorQueue.length = 0;
+      perfQueue.length = 0;
+      return;
+    }
+
+
+
     // 1. Process errors
     if (errorQueue.length > 0) {
       const batch = errorQueue.splice(0, errorQueue.length);
