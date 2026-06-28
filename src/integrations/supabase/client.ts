@@ -2,22 +2,20 @@ import { createClient } from '@supabase/supabase-js';
 import { addBreadcrumb } from '@/lib/telemetry';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
-const SUPABASE_PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID as string | undefined;
+// Fallbacks garantem que builds publicados sem injeção de env continuem funcionando.
+// As chaves abaixo são públicas (anon) e seguras para o bundle do frontend.
+const FALLBACK_PROJECT_ID = 'lszcmoymovkpckehlagr';
+const FALLBACK_URL = `https://${FALLBACK_PROJECT_ID}.supabase.co`;
+const FALLBACK_PUBLISHABLE_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzemNtb3ltb3ZrcGNrZWhsYWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODE2MTAsImV4cCI6MjA5NDI1NzYxMH0.ksTr8881Ic6U5doXsrEETVL9fGsaddNPf-m1lAt1pw0';
 
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  const missing = [
-    !SUPABASE_URL && 'VITE_SUPABASE_URL',
-    !SUPABASE_PUBLISHABLE_KEY && 'VITE_SUPABASE_PUBLISHABLE_KEY',
-  ]
-    .filter(Boolean)
-    .join(', ');
-  throw new Error(
-    `[supabase] Variáveis de ambiente ausentes: ${missing}. ` +
-      `Copie .env.example para .env e preencha antes de iniciar o app.`,
-  );
-}
+const SUPABASE_URL =
+  (import.meta.env.VITE_SUPABASE_URL as string | undefined) || FALLBACK_URL;
+const SUPABASE_PUBLISHABLE_KEY =
+  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) ||
+  FALLBACK_PUBLISHABLE_KEY;
+const SUPABASE_PROJECT_ID =
+  (import.meta.env.VITE_SUPABASE_PROJECT_ID as string | undefined) || FALLBACK_PROJECT_ID;
 
 const storageKey = SUPABASE_PROJECT_ID
   ? `sb-${SUPABASE_PROJECT_ID}-auth-token`
