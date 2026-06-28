@@ -73,10 +73,15 @@ export const useStartupDiagnostic = () => {
       const missingRPCs = [];
 
       for (const rpc of essentialRPCs) {
-        // Use parameter names that exist in the database (without underscores)
-        const params: any = { user_id: '00000000-0000-0000-0000-000000000000' };
-        if (rpc === 'has_role') params.role = 'visualizador';
-        if (rpc === 'has_permission') params._permission_name = 'test'; // if it uses underscore
+        // Parameter names must match the SQL function signatures exactly.
+        // has_role(_user_id, _role) uses underscore-prefixed params;
+        // get_user_roles/get_user_permissions use `user_id`.
+        let params: any;
+        if (rpc === 'has_role') {
+          params = { _user_id: '00000000-0000-0000-0000-000000000000', _role: 'visualizador' };
+        } else {
+          params = { user_id: '00000000-0000-0000-0000-000000000000' };
+        }
 
         const { error: rpcError } = await supabase.rpc(rpc as any, params);
         if (rpcError && rpcError.message && rpcError.message.includes('function') && rpcError.message.includes('does not exist')) {
