@@ -36,7 +36,10 @@ function assertSupabaseEnv(mode: string, env: Record<string, string>) {
  * - assetsInlineLimit baixo evita inflar HTML/CSS com base64
  * - drop console/debugger em produção
  */
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  assertSupabaseEnv(mode, env);
+  return ({
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
