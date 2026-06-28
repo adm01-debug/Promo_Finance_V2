@@ -1,7 +1,32 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from 'lovable-tagger';
+
+/**
+ * Valida que as variáveis VITE_SUPABASE_* estão presentes em builds de produção.
+ * Falha cedo, com mensagem clara, evitando publicar um bundle quebrado.
+ */
+function assertSupabaseEnv(mode: string, env: Record<string, string>) {
+  if (mode !== 'production') return;
+  const required = [
+    'VITE_SUPABASE_URL',
+    'VITE_SUPABASE_PUBLISHABLE_KEY',
+    'VITE_SUPABASE_PROJECT_ID',
+  ] as const;
+  const missing = required.filter((k) => !env[k] || !env[k].trim());
+  if (missing.length > 0) {
+    const msg = [
+      '',
+      '✖ [promo-finance] Build abortado: variáveis de ambiente ausentes.',
+      `  Faltando: ${missing.join(', ')}`,
+      '  Defina-as no ambiente de build (ex.: .env.production ou Settings → Build Secrets)',
+      '  antes de rodar `vite build`. Veja .env.example para referência.',
+      '',
+    ].join('\n');
+    throw new Error(msg);
+  }
+}
 
 /**
  * Performance: build configurado para SPA grande (100+ rotas).
