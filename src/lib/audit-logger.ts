@@ -8,9 +8,9 @@ interface AuditParams {
   userId: string;
   actionType: AuditActionType;
   entityType?: string;
-  oldValue?: any;
-  newValue?: any;
-  metadata?: any;
+  oldValue?: unknown;
+  newValue?: unknown;
+  metadata?: Record<string, unknown>;
 }
 
 /**
