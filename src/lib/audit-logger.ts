@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
 
 export type AuditActionType = 'preference_change' | 'filter_change' | 'preset_saved' | 'preset_loaded' | 'filters_reset';
