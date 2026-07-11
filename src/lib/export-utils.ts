@@ -59,7 +59,7 @@ export function exportToPDF<T extends object>(
   data: T[],
   columns: ExportColumn<T>[],
   title: string,
-  options?: { empresa?: any; kpis?: any }
+  options?: { empresa?: { nome?: string; cnpj?: string } & Record<string, unknown>; kpis?: Record<string, unknown> }
 ): void {
   // Criar HTML para impressão
   const printWindow = window.open('', '_blank');
