@@ -49,7 +49,7 @@ export async function validateContract<T>(schema: z.ZodSchema<T>, payload: unkno
 /**
  * Standard response helper
  */
-export function contractSuccess(data: any) {
+export function contractSuccess(data: unknown) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: { "Content-Type": "application/json" }
