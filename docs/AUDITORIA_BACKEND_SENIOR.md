@@ -201,11 +201,14 @@ Faltando:
 | 12 | Versionar funções SQL | ✅ | `db/functions/` estruturado |
 | 13 | Consolidar Edge Functions (alertas) | ✅ | `gerar-alertas-dispatcher` |
 | 14 | Particionamento mensal `audit_logs` / `frontend_error_logs` | ✅ | migration 2026-07-11 — `ensure_monthly_partitions` + cron mensal `maintain-monthly-partitions` |
+| 15 | `FORCE ROW LEVEL SECURITY` em 14 tabelas sensíveis (defense in depth) | ✅ | migration 2026-07-11 |
+| 16 | pgTAP para partições, DLQ, FORCE RLS e funções de manutenção | ✅ | `supabase/tests/sql/infra.test.sql` (24 testes) |
+| 17 | `no-explicit-any: error` em zonas limpas (progressivo) | ✅ | `eslint.config.js` override strict + `relatorio-pdf.ts` tipado |
 
 **Pendentes de decisão externa** (requerem ação fora do escopo deste repositório):
 
 - Role `crm_reader` no projeto Supabase externo (isolamento total do `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY`). Mitigado neste repo pelo guard `scripts/check-external-secret-isolation.sh`.
-- Elevação de `@typescript-eslint/no-explicit-any` de `warn` para `error` — depende de refactor progressivo de ~50 arquivos legados (issue rastreada; regra `max-lines: 400` já ativa).
+- Elevação global de `@typescript-eslint/no-explicit-any` para `error` — depende de refactor progressivo de ~50 arquivos legados (parcialmente entregue no item 17).
 - Warm-pool de Edge Functions — depende de plano Supabase.
 
 ---
