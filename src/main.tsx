@@ -35,4 +35,30 @@ if (!rootElement) {
     '[promo-finance] Elemento #root não encontrado no index.html — não é possível montar a aplicação.',
   );
 }
-createRoot(rootElement).render(<App />);
+
+// Health-check pós-boot: valida que o backend responde antes de montar a
+// árvore React. Se falhar (URL/anon key erradas, projeto pausado, offline
+// total), renderiza tela de erro em vez de app quebrado silencioso.
+(async () => {
+  const { verifySupabaseHealth } = await import("@/integrations/supabase/client");
+  const health = await verifySupabaseHealth();
+  if (!health.ok) {
+    logger.warn("[boot] Supabase health-check falhou", health);
+    // Só bloqueia se claramente não é offline transitório: status 401/403/404
+    // indicam configuração incorreta; ausência de status (network) deixa passar
+    // para não quebrar PWA offline.
+    const isConfigError = typeof health.status === "number" && health.status >= 400;
+    if (isConfigError) {
+      rootElement.innerHTML = `
+        <div style="max-width:640px;margin:80px auto;padding:24px;font-family:system-ui,sans-serif;color:#0f172a">
+          <h1 style="font-size:20px;margin:0 0 12px">Erro de configuração do backend</h1>
+          <p style="margin:0 0 8px">Não foi possível conectar ao Supabase (status <b>${health.status}</b>).</p>
+          <p style="margin:0 0 8px">Verifique <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> no ambiente de build.</p>
+          <p style="margin:16px 0 0;color:#64748b;font-size:13px">Se você é usuário final, contate o administrador.</p>
+        </div>`;
+      return;
+    }
+  }
+  createRoot(rootElement).render(<App />);
+})();
+

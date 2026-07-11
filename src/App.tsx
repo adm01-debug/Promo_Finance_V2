@@ -18,6 +18,7 @@ import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
 import { VisualValidator } from '@/components/ui/ux-validator';
 import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOverlay';
 import { TransitionProvider } from '@/components/layout/transitions';
+import { useSelectiveEmpresaInvalidation } from '@/hooks/useSelectiveEmpresaInvalidation';
 
 
 
@@ -128,6 +129,10 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 function AppRoutes() {
+  // Sprint 2.3: invalidação seletiva do cache ao trocar de empresa
+  // (evita refetch storm de `queryClient.clear()`).
+  useSelectiveEmpresaInvalidation();
+
   return (
     <KeyboardShortcutsProvider>
       <DataPrefetcher>
