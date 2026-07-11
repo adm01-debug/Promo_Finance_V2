@@ -30,6 +30,11 @@ jobs:
       - name: Security scan
         run: bun audit || echo "::warning::bun audit reported vulnerabilities — see logs"
 
+      - name: External secret isolation guard
+        # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
+        # Edge Function `external-data`. Ver docs/AUDITORIA_BACKEND_SENIOR.md.
+        run: bash scripts/check-external-secret-isolation.sh
+
       - name: Lint check
         run: bun run lint
 
