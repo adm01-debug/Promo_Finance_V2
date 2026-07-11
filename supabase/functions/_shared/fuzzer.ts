@@ -1,5 +1,11 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
+// Payload arbitrário produzido/consumido pelo fuzzer. Preferimos `unknown` a `any`
+// para forçar checagens explícitas nos consumidores.
+export type FuzzPayload = unknown;
+type ZodAnyObject = z.ZodObject<z.ZodRawShape>;
+type ZodAnyField = z.ZodTypeAny;
+
 /**
  * Fuzzer utility to generate "bad" payloads for testing robustness.
  */
@@ -7,7 +13,7 @@ export const Fuzzer = {
   /**
    * Generates a variety of invalid payloads based on common failure modes.
    */
-  generateGeneralInvalidPayloads(): any[] {
+  generateGeneralInvalidPayloads(): FuzzPayload[] {
     return [
       {}, // Empty
       { unexpected_field: "malicious_data" }, // Unknown field
@@ -26,13 +32,13 @@ export const Fuzzer = {
   /**
    * Generates invalid payloads specifically targeting a Zod schema's fields.
    */
-  generateSchemaSpecificInvalidPayloads(schema: z.ZodObject<any>): any[] {
-    const shape = schema.shape;
-    const payloads: any[] = [];
+  generateSchemaSpecificInvalidPayloads(schema: ZodAnyObject): FuzzPayload[] {
+    const shape = schema.shape as Record<string, ZodAnyField>;
+    const payloads: FuzzPayload[] = [];
 
     // 1. Missing required fields
     for (const key of Object.keys(shape)) {
-      const payload: any = {};
+      const payload: Record<string, unknown> = {};
       for (const otherKey of Object.keys(shape)) {
         if (otherKey !== key) {
           payload[otherKey] = this.getSampleValidValue(shape[otherKey]);
@@ -43,7 +49,7 @@ export const Fuzzer = {
 
     // 2. Wrong types for fields
     for (const key of Object.keys(shape)) {
-      const payload: any = {};
+      const payload: Record<string, unknown> = {};
       for (const k of Object.keys(shape)) {
         payload[k] = k === key ? this.getWrongTypeValue(shape[k]) : this.getSampleValidValue(shape[k]);
       }
@@ -53,7 +59,7 @@ export const Fuzzer = {
     return payloads;
   },
 
-  getSampleValidValue(field: any): any {
+  getSampleValidValue(field: ZodAnyField): unknown {
     if (field instanceof z.ZodString) return "test-string";
     if (field instanceof z.ZodNumber) return 123;
     if (field instanceof z.ZodBoolean) return true;
@@ -64,7 +70,7 @@ export const Fuzzer = {
     return "test";
   },
 
-  getWrongTypeValue(field: any): any {
+  getWrongTypeValue(field: ZodAnyField): unknown {
     if (field instanceof z.ZodString) return 12345;
     if (field instanceof z.ZodNumber) return "not-a-number";
     if (field instanceof z.ZodBoolean) return "not-a-boolean";
@@ -73,4 +79,3 @@ export const Fuzzer = {
     return null;
   }
 };
-

@@ -203,7 +203,7 @@ Faltando:
 | 14 | Particionamento mensal `audit_logs` / `frontend_error_logs` | ✅ | migration 2026-07-11 — `ensure_monthly_partitions` + cron mensal `maintain-monthly-partitions` |
 | 15 | `FORCE ROW LEVEL SECURITY` em 14 tabelas sensíveis (defense in depth) | ✅ | migration 2026-07-11 |
 | 16 | pgTAP para partições, DLQ, FORCE RLS e funções de manutenção | ✅ | `supabase/tests/sql/infra.test.sql` (24 testes) |
-| 17 | `no-explicit-any: error` em zonas limpas (progressivo) | ✅ | `eslint.config.js` strict override + `relatorio-pdf.ts`, `telemetry.ts`, `audit-logger.ts`, `export-utils.ts`, `ofx-parser.ts` tipados |
+| 17 | `no-explicit-any: error` em zonas limpas (progressivo) | ✅ | `eslint.config.js` — 27 arquivos sob zona strict (todo `_shared` das Edge Functions + 15 módulos `src/lib` saneados: `logger`, `validation`, `fuzzer`, `load-tester`, `contract-validator`, `console-guard`, `auth-cleanup`, `ip-mask`, `masks`, `validators`, `haptic-feedback`, `sound-feedback`, `queryClient`, `adaptive-chunk`, `audit-diff`, `audit-priority`, `barcode-parser`, `cfc-validator`, `format-filter-value`, `persisted-ui-state`, `pdf-layout`, `relatorio-pdf`, `telemetry`, `audit-logger`, `export-utils`, `ofx-parser`) |
 
 **Pendentes de decisão externa** (requerem ação fora do escopo deste repositório):
 

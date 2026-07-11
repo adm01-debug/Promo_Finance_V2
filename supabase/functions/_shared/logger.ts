@@ -17,6 +17,7 @@ export enum LogLevel {
 export class Logger {
   private functionName: string;
   private requestId?: string;
+  private defaultContext: Record<string, unknown> = {};
 
   constructor(functionName: string, requestId?: string) {
     this.functionName = functionName;
@@ -26,8 +27,7 @@ export class Logger {
   /** Cria um logger derivado com contexto adicional (ex.: userId, orderId). */
   child(extra: Record<string, unknown>): Logger {
     const child = new Logger(this.functionName, this.requestId);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (child as any).defaultContext = { ...(this as any).defaultContext, ...extra };
+    child.defaultContext = { ...this.defaultContext, ...extra };
     return child;
   }
 
@@ -38,8 +38,7 @@ export class Logger {
       function: this.functionName,
       request_id: this.requestId,
       message,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...((this as any).defaultContext ?? {}),
+      ...this.defaultContext,
       ...context
     };
 
@@ -49,6 +48,7 @@ export class Logger {
       console.log(JSON.stringify(payload));
     }
   }
+
 
   debug(message: string, context?: Record<string, unknown>) { this.log(LogLevel.DEBUG, message, context); }
   info(message: string, context?: Record<string, unknown>) { this.log(LogLevel.INFO, message, context); }

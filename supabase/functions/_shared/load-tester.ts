@@ -7,7 +7,7 @@ export async function runLoadTest(url: string, options: {
   durationMs: number,
   method?: string,
   headers?: Record<string, string>,
-  body?: any
+  body?: unknown
 }) {
   const { concurrency, durationMs, method = "POST", headers = {}, body } = options;
   const startTime = Date.now();

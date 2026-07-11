@@ -38,7 +38,7 @@ export function buildCorsHeaders(req: Request): Record<string, string> {
 
 const logger = createLogger("Validation");
 
-export function validatePayload<T>(schema: z.ZodSchema<T>, payload: unknown, functionName = "unknown"): { success: true; data: T } | { success: false; error: string; details: any } {
+export function validatePayload<T>(schema: z.ZodSchema<T>, payload: unknown, functionName = "unknown"): { success: true; data: T } | { success: false; error: string; details: unknown } {
   const result = schema.safeParse(payload);
   if (result.success) {
     return { success: true, data: result.data };
@@ -56,7 +56,7 @@ export function validatePayload<T>(schema: z.ZodSchema<T>, payload: unknown, fun
   };
 }
 
-export function createErrorResponse(message: string, status = 400, details?: any) {
+export function createErrorResponse(message: string, status = 400, details?: unknown) {
   return new Response(
     JSON.stringify({
       error: message,
@@ -69,6 +69,7 @@ export function createErrorResponse(message: string, status = 400, details?: any
     }
   );
 }
+
 
 
 /**
