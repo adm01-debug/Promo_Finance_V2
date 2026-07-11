@@ -17,26 +17,23 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(24);
+SELECT plan(21);
 
 -- ---------------------------------------------------------------------------
--- 1) Existência e assinaturas exatas das sobrecargas de confirmar_conciliacao
+-- 1) Após consolidação (2026-07-11), existe apenas 1 versão canônica
+--    de confirmar_conciliacao e desfazer_conciliacao.
 -- ---------------------------------------------------------------------------
 SELECT has_function(
-  'public', 'confirmar_conciliacao', ARRAY['uuid', 'uuid'],
-  'confirmar_conciliacao(uuid, uuid) deve existir'
+  'public', 'confirmar_conciliacao',
+  ARRAY['uuid', 'uuid', 'uuid', 'uuid', 'uuid', 'numeric'],
+  'confirmar_conciliacao canônica (6 args) deve existir'
 );
-SELECT has_function(
-  'public', 'confirmar_conciliacao', ARRAY['uuid', 'uuid', 'uuid'],
-  'confirmar_conciliacao(uuid, uuid, uuid) deve existir'
-);
-SELECT has_function(
-  'public', 'confirmar_conciliacao', ARRAY['uuid', 'uuid', 'uuid', 'uuid', 'uuid'],
-  'confirmar_conciliacao(uuid, uuid, uuid, uuid, uuid) deve existir'
-);
-SELECT has_function(
-  'public', 'confirmar_conciliacao', ARRAY['uuid', 'uuid', 'uuid', 'uuid', 'uuid', 'numeric'],
-  'confirmar_conciliacao(uuid, uuid, uuid, uuid, uuid, numeric) deve existir'
+SELECT is(
+  (SELECT count(*)::int FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname='public' AND p.proname='confirmar_conciliacao'),
+  1,
+  'existe apenas 1 sobrecarga de confirmar_conciliacao'
 );
 
 -- Todas SECURITY DEFINER
@@ -46,24 +43,24 @@ SELECT is(
    JOIN pg_namespace n ON n.oid = p.pronamespace
    WHERE n.nspname = 'public' AND p.proname = 'confirmar_conciliacao'),
   true,
-  'todas as sobrecargas de confirmar_conciliacao são SECURITY DEFINER'
+  'confirmar_conciliacao permanece SECURITY DEFINER'
 );
 
 -- ---------------------------------------------------------------------------
--- 2) Existência das sobrecargas de desfazer_conciliacao
+-- 2) desfazer_conciliacao consolidada em uma única assinatura
 -- ---------------------------------------------------------------------------
 SELECT has_function(
-  'public', 'desfazer_conciliacao', ARRAY['uuid'],
-  'desfazer_conciliacao(uuid) deve existir'
-);
-SELECT has_function(
-  'public', 'desfazer_conciliacao', ARRAY['uuid', 'uuid'],
-  'desfazer_conciliacao(uuid, uuid) deve existir'
-);
-SELECT has_function(
   'public', 'desfazer_conciliacao', ARRAY['uuid', 'uuid', 'uuid'],
-  'desfazer_conciliacao(uuid, uuid, uuid) deve existir'
+  'desfazer_conciliacao canônica (3 args) deve existir'
 );
+SELECT is(
+  (SELECT count(*)::int FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname='public' AND p.proname='desfazer_conciliacao'),
+  1,
+  'existe apenas 1 sobrecarga de desfazer_conciliacao'
+);
+
 
 -- ---------------------------------------------------------------------------
 -- 3) Existência das sobrecargas de registrar_evento_receber
@@ -118,7 +115,7 @@ BEGIN
   PERFORM ok(v_after >= 1, 'registrar_evento_receber(4 args, com tipo) cria log');
 END $$;
 
--- 4b) desfazer_conciliacao(uuid) apaga a linha correspondente
+-- 4b) desfazer_conciliacao(uuid, uuid, uuid) apaga a linha correspondente
 DO $$
 DECLARE
   v_id uuid;
@@ -127,12 +124,12 @@ BEGIN
   INSERT INTO public.conciliacoes (status)
   VALUES ('pendente')
   RETURNING id INTO v_id;
-  PERFORM public.desfazer_conciliacao(v_id);
+  PERFORM public.desfazer_conciliacao(v_id, NULL, NULL);
   SELECT count(*) INTO v_count FROM public.conciliacoes WHERE id = v_id;
-  PERFORM ok(v_count = 0, 'desfazer_conciliacao(uuid) remove a linha');
+  PERFORM ok(v_count = 0, 'desfazer_conciliacao canônica remove a linha');
 END $$;
 
--- 4c) confirmar_conciliacao(uuid, uuid) marca como confirmado
+-- 4c) confirmar_conciliacao canônica marca como confirmado
 DO $$
 DECLARE
   v_id uuid;
@@ -140,10 +137,11 @@ DECLARE
   v_user uuid := gen_random_uuid();
 BEGIN
   INSERT INTO public.conciliacoes (status) VALUES ('pendente') RETURNING id INTO v_id;
-  PERFORM public.confirmar_conciliacao(v_id, v_user);
+  PERFORM public.confirmar_conciliacao(v_id, v_user, NULL, NULL, NULL, 0);
   SELECT status INTO v_status FROM public.conciliacoes WHERE id = v_id;
-  PERFORM ok(v_status = 'confirmado', 'confirmar_conciliacao(uuid, uuid) marca confirmado');
+  PERFORM ok(v_status = 'confirmado', 'confirmar_conciliacao canônica marca confirmado');
 END $$;
+
 
 ROLLBACK TO SAVEPOINT tests_data;
 

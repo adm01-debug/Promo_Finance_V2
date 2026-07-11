@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { addBreadcrumb } from '@/lib/telemetry';
+import { getCorrelationId } from '@/lib/correlation-id';
 import type { Database } from './types';
 
 /**
@@ -64,9 +65,21 @@ const supabaseProxyHandler: ProxyHandler<any> = {
           if (fnProp === 'invoke' && typeof fnValue === 'function') {
             const invokeFn = (...args: any[]) => {
               const fnName = args[0];
-              const options = args[1];
-              addBreadcrumb(`Supabase: Invoking Edge Function ${fnName}`, { options });
-              return fnValue.apply(fnTarget, args);
+              const options = (args[1] ?? {}) as {
+                headers?: Record<string, string>;
+                [k: string]: unknown;
+              };
+              // Sprint 3.2: propagar x-request-id em toda invocação de
+              // Edge Function para permitir tracing end-to-end (client → fn → DB).
+              const rid = getCorrelationId();
+              const nextOptions = {
+                ...options,
+                headers: { 'x-request-id': rid, ...(options.headers ?? {}) },
+              };
+              addBreadcrumb(`Supabase: Invoking Edge Function ${fnName}`, {
+                requestId: rid,
+              });
+              return fnValue.apply(fnTarget, [fnName, nextOptions]);
             };
             return invokeFn;
           }
@@ -82,3 +95,32 @@ export const supabase = new Proxy(
   supabaseInstance,
   supabaseProxyHandler,
 ) as unknown as typeof supabaseInstance;
+
+/**
+ * Health-check pós-boot: valida que a URL/anon key apontam para um projeto
+ * Supabase real e acessível. Retorna { ok, status, error } — nunca lança.
+ * Timeout curto para não travar o boot em ambientes offline (PWA).
+ */
+export async function verifySupabaseHealth(
+  timeoutMs = 3000,
+): Promise<{ ok: boolean; status?: number; error?: string }> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+      method: 'GET',
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY as string,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      signal: controller.signal,
+    });
+    // PostgREST responde 200 na raiz; 401/404 indicam credenciais/URL erradas.
+    return { ok: res.status >= 200 && res.status < 400, status: res.status };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+

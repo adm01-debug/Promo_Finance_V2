@@ -11899,40 +11899,17 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
-      confirmar_conciliacao:
-        | {
-            Args: { p_conciliacao_id: string; p_user_id: string }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_conciliacao_id: string
-              p_transacao_id?: string
-              p_user_id: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_conciliacao_id: string
-              p_conta_pagar_id?: string
-              p_conta_receber_id?: string
-              p_transacao_id?: string
-              p_user_id: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_ajuste_centavos?: number
-              p_conciliacao_id: string
-              p_conta_pagar_id?: string
-              p_conta_receber_id?: string
-              p_transacao_id?: string
-              p_user_id: string
-            }
-            Returns: undefined
-          }
+      confirmar_conciliacao: {
+        Args: {
+          p_ajuste_centavos?: number
+          p_conciliacao_id: string
+          p_conta_pagar_id?: string
+          p_conta_receber_id?: string
+          p_transacao_id?: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       confirmar_conciliacao_manual: {
         Args: {
           p_ajuste_centavos?: number
@@ -11952,20 +11929,14 @@ export type Database = {
         }
         Returns: undefined
       }
-      desfazer_conciliacao:
-        | { Args: { p_conciliacao_id: string }; Returns: undefined }
-        | {
-            Args: { p_conciliacao_id: string; p_transacao_id?: string }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_conciliacao_id: string
-              p_transacao_id?: string
-              p_user_id?: string
-            }
-            Returns: undefined
-          }
+      desfazer_conciliacao: {
+        Args: {
+          p_conciliacao_id: string
+          p_transacao_id?: string
+          p_user_id?: string
+        }
+        Returns: undefined
+      }
       desfazer_conciliacao_manual: {
         Args: { p_transacao_id: string }
         Returns: undefined
