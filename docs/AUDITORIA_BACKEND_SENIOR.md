@@ -183,4 +183,32 @@ Faltando:
 
 ---
 
+## 6. Status de Entrega (2026-07-11)
+
+| # | Item | Status | Migration/Arquivo |
+|---|------|--------|-------------------|
+| 1 | Remover fallback hardcoded Supabase + fail-fast | ✅ | `src/integrations/supabase/client.ts` |
+| 2 | Validação IP/Geo server-side | ✅ | `supabase/functions/validate-ip-geo/` |
+| 3 | Auditoria GRANT/RLS (menor privilégio) | ✅ | migration 20260711145322 |
+| 4 | pgTAP para sobrecargas SQL | ✅ | `supabase/tests/sql/overloads.test.sql` |
+| 5 | CI supabase--linter | ✅ | `.github/workflows/supabase-linter.yml` |
+| 6 | Índice `auth_logs(ip_address, created_at)` | ✅ | migration 20260711145611 |
+| 7 | Alertas queries lentas (pg_stat_statements) | ✅ | migration 20260711153324 — `capture_slow_queries` + cron 15min |
+| 8 | DLQ webhooks (3 falhas → dead-letter) | ✅ | migration 20260711153501 — `webhook_dlq` + `enqueue_webhook_retry` + `reprocess_dlq` |
+| 9 | Retenção automática de logs | ✅ | migration 20260711153640 — `cleanup_log_tables` + cron diário |
+| 10 | Correlation ID end-to-end | ✅ | `src/lib/correlation-id.ts` + `_shared/correlation.ts` + logger com `request_id` |
+| 11 | ESLint `max-lines: 400` | ✅ | `eslint.config.js` |
+| 12 | Versionar funções SQL | ✅ | `db/functions/` estruturado |
+| 13 | Consolidar Edge Functions (alertas) | ✅ | `gerar-alertas-dispatcher` |
+
+**Pendentes de decisão de produto** (invasivos, requerem janela dedicada):
+
+- Particionamento nativo mensal de `audit_logs` / `frontend_error_logs` (retenção já mitiga).
+- Isolamento total do `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY` com role `crm_reader` no projeto externo.
+- Elevação de `@typescript-eslint/no-explicit-any` de `warn` para `error` (bloqueado por dívida técnica em ~50 arquivos legados).
+- Warm-pool / consolidação de todas as 60+ Edge Functions.
+
+---
+
 *Este relatório é vivo — cada item deve virar issue rastreável no board de engenharia.*
+
