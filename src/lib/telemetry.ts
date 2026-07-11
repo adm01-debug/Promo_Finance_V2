@@ -12,10 +12,11 @@ import { logger } from '@/lib/logger';
 import { onCLS, onFID, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
 
 // Breadcrumbs para rastreamento de ações do usuário e chamadas Supabase
-const breadcrumbs: Array<{ message: string; timestamp: string; data?: any }> = [];
+type BreadcrumbData = Record<string, unknown> | undefined;
+const breadcrumbs: Array<{ message: string; timestamp: string; data?: BreadcrumbData }> = [];
 const MAX_BREADCRUMBS = 20;
 
-export function addBreadcrumb(message: string, data?: any) {
+export function addBreadcrumb(message: string, data?: BreadcrumbData) {
   breadcrumbs.push({ message, data, timestamp: new Date().toISOString() });
   if (breadcrumbs.length > MAX_BREADCRUMBS) breadcrumbs.shift();
 }
