@@ -12011,6 +12011,7 @@ export type Database = {
         }[]
       }
       cleanup_expired_tokens: { Args: never; Returns: number }
+      cleanup_log_tables: { Args: never; Returns: Json }
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
