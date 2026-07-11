@@ -84,7 +84,7 @@ async function flushQueues(): Promise<void> {
         rating: m.rating,
         url: window.location.href,
         user_agent: navigator.userAgent,
-        navigation_type: (m as any).navigationType || 'navigate',
+        navigation_type: (m as Metric & { navigationType?: string }).navigationType || 'navigate',
       }));
       await supabase.from('frontend_performance_logs').insert(rows);
     }
