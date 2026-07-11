@@ -100,4 +100,23 @@ export default tseslint.config(
       "no-console": "off",
     },
   },
+  {
+    // Zonas "strict TS" — código novo ou já saneado. `no-explicit-any` é ERRO.
+    // Ao encostar em qualquer arquivo destes diretórios você DEVE tipar
+    // corretamente. Expansão progressiva conforme código legado é refatorado.
+    files: [
+      "src/lib/tributario/**/*.{ts,tsx}",
+      "src/lib/correlation-id.ts",
+      "src/lib/audit-logger.ts",
+      "src/lib/logger.ts",
+      "src/hooks/useSelectiveEmpresaInvalidation.ts",
+      "supabase/functions/_shared/**/*.ts",
+      "supabase/functions/gerar-alertas-dispatcher/**/*.ts",
+      "supabase/functions/validate-ip-geo/**/*.ts",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "error",
+    },
+  },
 );
+
