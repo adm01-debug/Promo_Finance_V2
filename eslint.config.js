@@ -72,6 +72,25 @@ export default tseslint.config(
       "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+
+      // Modularização: alertar em arquivos > 400 linhas (excluindo brancos/comentários).
+      // Warning (não error) para não bloquear build em arquivos legados;
+      // `lint:strict` (npm run) trata warnings como error.
+      "max-lines": [
+        "warn",
+        { max: 400, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
+  {
+    // Arquivos gerados ou de configuração — sem limite de tamanho
+    files: [
+      "src/integrations/**/*.{ts,tsx}",
+      "src/components/ui/**/*.{ts,tsx}",
+      "tailwind.config.{ts,js}",
+    ],
+    rules: {
+      "max-lines": "off",
     },
   },
   {

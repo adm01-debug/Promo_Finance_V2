@@ -9393,6 +9393,48 @@ export type Database = {
           },
         ]
       }
+      slow_query_alerts: {
+        Row: {
+          calls: number
+          captured_at: string
+          created_at: string
+          id: string
+          max_exec_ms: number
+          mean_exec_ms: number
+          query_normalized: string
+          queryid: number
+          rows_returned: number
+          severity: string
+          total_exec_ms: number
+        }
+        Insert: {
+          calls?: number
+          captured_at?: string
+          created_at?: string
+          id?: string
+          max_exec_ms?: number
+          mean_exec_ms?: number
+          query_normalized: string
+          queryid: number
+          rows_returned?: number
+          severity?: string
+          total_exec_ms?: number
+        }
+        Update: {
+          calls?: number
+          captured_at?: string
+          created_at?: string
+          id?: string
+          max_exec_ms?: number
+          mean_exec_ms?: number
+          query_normalized?: string
+          queryid?: number
+          rows_returned?: number
+          severity?: string
+          total_exec_ms?: number
+        }
+        Relationships: []
+      }
       solicitacoes_aprovacao: {
         Row: {
           aprovado_em: string | null
@@ -10771,6 +10813,60 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_dlq: {
+        Row: {
+          attempts: number
+          created_at: string
+          error_message: string | null
+          event_type: string | null
+          external_id: string | null
+          first_failed_at: string
+          headers: Json | null
+          id: string
+          last_attempt_at: string
+          notes: string | null
+          payload: Json
+          resolved_at: string | null
+          resolved_by: string | null
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          error_message?: string | null
+          event_type?: string | null
+          external_id?: string | null
+          first_failed_at?: string
+          headers?: Json | null
+          id?: string
+          last_attempt_at?: string
+          notes?: string | null
+          payload?: Json
+          resolved_at?: string | null
+          resolved_by?: string | null
+          source: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          error_message?: string | null
+          event_type?: string | null
+          external_id?: string | null
+          first_failed_at?: string
+          headers?: Json | null
+          id?: string
+          last_attempt_at?: string
+          notes?: string | null
+          payload?: Json
+          resolved_at?: string | null
+          resolved_by?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       webhook_events: {
         Row: {
           error_message: string | null
@@ -10898,30 +10994,42 @@ export type Database = {
       }
       webhooks_log: {
         Row: {
+          attempts: number
           created_at: string
           error_message: string | null
           event_type: string | null
+          external_id: string | null
           id: string
+          last_error_at: string | null
+          next_retry_at: string | null
           payload: Json | null
           response: Json | null
           source: string | null
           status: string | null
         }
         Insert: {
+          attempts?: number
           created_at?: string
           error_message?: string | null
           event_type?: string | null
+          external_id?: string | null
           id?: string
+          last_error_at?: string | null
+          next_retry_at?: string | null
           payload?: Json | null
           response?: Json | null
           source?: string | null
           status?: string | null
         }
         Update: {
+          attempts?: number
           created_at?: string
           error_message?: string | null
           event_type?: string | null
+          external_id?: string | null
           id?: string
+          last_error_at?: string | null
+          next_retry_at?: string | null
           payload?: Json | null
           response?: Json | null
           source?: string | null
@@ -11877,6 +11985,13 @@ export type Database = {
       }
     }
     Functions: {
+      capture_slow_queries: {
+        Args: { threshold_ms?: number }
+        Returns: {
+          captured: number
+          deleted_old: number
+        }[]
+      }
       check_login_lockout: {
         Args: { p_email: string }
         Returns: {
@@ -11896,6 +12011,7 @@ export type Database = {
         }[]
       }
       cleanup_expired_tokens: { Args: never; Returns: number }
+      cleanup_log_tables: { Args: never; Returns: Json }
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
@@ -11940,6 +12056,22 @@ export type Database = {
       desfazer_conciliacao_manual: {
         Args: { p_transacao_id: string }
         Returns: undefined
+      }
+      enqueue_webhook_retry: {
+        Args: {
+          p_error: string
+          p_event_type: string
+          p_external_id: string
+          p_headers?: Json
+          p_log_id: string
+          p_payload: Json
+          p_source: string
+        }
+        Returns: {
+          action: string
+          attempts: number
+          next_retry_at: string
+        }[]
       }
       export_asaas_audit_csv: {
         Args: { p_empresa_id: string }
@@ -12152,6 +12284,10 @@ export type Database = {
             }
             Returns: undefined
           }
+      reprocess_dlq: {
+        Args: { p_dlq_id: string; p_notes?: string }
+        Returns: string
+      }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
       resolve_sso_providers_for_domain: {
         Args: { p_domain: string }
