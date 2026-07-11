@@ -116,3 +116,6 @@ verify_jwt = false
 
 [functions.scim-server]
 verify_jwt = false
+
+[functions.validate-ip-geo]
+verify_jwt = false

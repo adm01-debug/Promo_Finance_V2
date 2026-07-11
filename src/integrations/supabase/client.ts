@@ -2,24 +2,37 @@ import { createClient } from '@supabase/supabase-js';
 import { addBreadcrumb } from '@/lib/telemetry';
 import type { Database } from './types';
 
-// Fallbacks garantem que builds publicados sem injeção de env continuem funcionando.
-// As chaves abaixo são públicas (anon) e seguras para o bundle do frontend.
-const FALLBACK_PROJECT_ID = 'lszcmoymovkpckehlagr';
-const FALLBACK_URL = `https://${FALLBACK_PROJECT_ID}.supabase.co`;
-const FALLBACK_PUBLISHABLE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzemNtb3ltb3ZrcGNrZWhsYWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODE2MTAsImV4cCI6MjA5NDI1NzYxMH0.ksTr8881Ic6U5doXsrEETVL9fGsaddNPf-m1lAt1pw0';
+/**
+ * Variáveis de ambiente obrigatórias. Sem fallback hardcoded:
+ * builds sem injeção falham cedo com mensagem clara em vez de
+ * silenciosamente apontar para um projeto Supabase antigo.
+ */
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
+  | string
+  | undefined;
+const SUPABASE_PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID as
+  | string
+  | undefined;
 
-const SUPABASE_URL =
-  (import.meta.env.VITE_SUPABASE_URL as string | undefined) || FALLBACK_URL;
-const SUPABASE_PUBLISHABLE_KEY =
-  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) ||
-  FALLBACK_PUBLISHABLE_KEY;
-const SUPABASE_PROJECT_ID =
-  (import.meta.env.VITE_SUPABASE_PROJECT_ID as string | undefined) || FALLBACK_PROJECT_ID;
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY || !SUPABASE_PROJECT_ID) {
+  const missing = [
+    !SUPABASE_URL && 'VITE_SUPABASE_URL',
+    !SUPABASE_PUBLISHABLE_KEY && 'VITE_SUPABASE_PUBLISHABLE_KEY',
+    !SUPABASE_PROJECT_ID && 'VITE_SUPABASE_PROJECT_ID',
+  ]
+    .filter(Boolean)
+    .join(', ');
+  const msg =
+    `[promo-finance] Configuração Supabase ausente: ${missing}. ` +
+    `Defina essas variáveis no ambiente de build (.env ou Build Secrets) ` +
+    `antes de publicar. Veja .env.example.`;
+  // Falha explícita — melhor um erro de boot legível do que um bundle
+  // apontando para credenciais erradas.
+  throw new Error(msg);
+}
 
-const storageKey = SUPABASE_PROJECT_ID
-  ? `sb-${SUPABASE_PROJECT_ID}-auth-token`
-  : 'sb-promo-finance-auth-token';
+const storageKey = `sb-${SUPABASE_PROJECT_ID}-auth-token`;
 
 const supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
@@ -58,11 +71,14 @@ const supabaseProxyHandler: ProxyHandler<any> = {
             return invokeFn;
           }
           return fnValue;
-        }
+        },
       });
     }
     return value;
-  }
+  },
 };
 
-export const supabase = new Proxy(supabaseInstance, supabaseProxyHandler) as unknown as typeof supabaseInstance;
+export const supabase = new Proxy(
+  supabaseInstance,
+  supabaseProxyHandler,
+) as unknown as typeof supabaseInstance;
