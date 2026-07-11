@@ -204,6 +204,7 @@ Faltando:
 | 15 | `FORCE ROW LEVEL SECURITY` em 14 tabelas sensíveis (defense in depth) | ✅ | migration 2026-07-11 |
 | 16 | pgTAP para partições, DLQ, FORCE RLS e funções de manutenção | ✅ | `supabase/tests/sql/infra.test.sql` (24 testes) |
 | 17 | `no-explicit-any: error` em zonas limpas (progressivo) | ✅ | `eslint.config.js` — 27 arquivos sob zona strict (todo `_shared` das Edge Functions + 15 módulos `src/lib` saneados: `logger`, `validation`, `fuzzer`, `load-tester`, `contract-validator`, `console-guard`, `auth-cleanup`, `ip-mask`, `masks`, `validators`, `haptic-feedback`, `sound-feedback`, `queryClient`, `adaptive-chunk`, `audit-diff`, `audit-priority`, `barcode-parser`, `cfc-validator`, `format-filter-value`, `persisted-ui-state`, `pdf-layout`, `relatorio-pdf`, `telemetry`, `audit-logger`, `export-utils`, `ofx-parser`) |
+| 18 | Menor privilégio em funções `SECURITY DEFINER` internas — `REVOKE EXECUTE` de `PUBLIC`/`anon`/`authenticated`, `GRANT` apenas a `service_role` | ✅ | migration 2026-07-11 — 34 funções endurecidas (triggers, `cleanup_*`, `capture_slow_queries`, `ensure_monthly_partitions`, helpers server-side de auth/geo/IP, `log_audit`, `enqueue_webhook_retry`). Linter Supabase: **96 → 57 issues** (-39 warnings `authenticated_security_definer_function_executable`). |
 
 **Pendentes de decisão externa** (requerem ação fora do escopo deste repositório):
 
