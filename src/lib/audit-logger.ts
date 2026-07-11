@@ -5,13 +5,21 @@ import { logger } from '@/lib/logger';
 
 export type AuditActionType = 'preference_change' | 'filter_change' | 'preset_saved' | 'preset_loaded' | 'filters_reset';
 
+type JsonLike =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JsonLike | undefined }
+  | JsonLike[];
+
 interface AuditParams {
   userId: string;
   actionType: AuditActionType;
   entityType?: string;
-  oldValue?: Json;
-  newValue?: Json;
-  metadata?: Json;
+  oldValue?: JsonLike;
+  newValue?: JsonLike;
+  metadata?: JsonLike;
 }
 
 /**
