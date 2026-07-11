@@ -264,7 +264,7 @@ export function parseExcel(content: ArrayBuffer, fileName: string): ResultadoImp
     const workbook = XLSX.read(content, { type: 'array' });
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
-    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+    const rows = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1 });
 
     if (rows.length < 2) {
       return { sucesso: false, erro: 'Arquivo Excel vazio ou com poucas linhas', avisos };
