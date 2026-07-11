@@ -203,7 +203,7 @@ Faltando:
 | 14 | Particionamento mensal `audit_logs` / `frontend_error_logs` | ✅ | migration 2026-07-11 — `ensure_monthly_partitions` + cron mensal `maintain-monthly-partitions` |
 | 15 | `FORCE ROW LEVEL SECURITY` em 14 tabelas sensíveis (defense in depth) | ✅ | migration 2026-07-11 |
 | 16 | pgTAP para partições, DLQ, FORCE RLS e funções de manutenção | ✅ | `supabase/tests/sql/infra.test.sql` (24 testes) |
-| 17 | `no-explicit-any: error` em zonas limpas (progressivo) | ✅ | `eslint.config.js` override strict + `relatorio-pdf.ts` tipado |
+| 17 | `no-explicit-any: error` em zonas limpas (progressivo) | ✅ | `eslint.config.js` strict override + `relatorio-pdf.ts`, `telemetry.ts`, `audit-logger.ts`, `export-utils.ts`, `ofx-parser.ts` tipados |
 
 **Pendentes de decisão externa** (requerem ação fora do escopo deste repositório):
 
