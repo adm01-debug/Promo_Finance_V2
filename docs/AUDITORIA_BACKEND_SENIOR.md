@@ -200,15 +200,16 @@ Faltando:
 | 11 | ESLint `max-lines: 400` | ✅ | `eslint.config.js` |
 | 12 | Versionar funções SQL | ✅ | `db/functions/` estruturado |
 | 13 | Consolidar Edge Functions (alertas) | ✅ | `gerar-alertas-dispatcher` |
+| 14 | Particionamento mensal `audit_logs` / `frontend_error_logs` | ✅ | migration 2026-07-11 — `ensure_monthly_partitions` + cron mensal `maintain-monthly-partitions` |
 
-**Pendentes de decisão de produto** (invasivos, requerem janela dedicada):
+**Pendentes de decisão externa** (requerem ação fora do escopo deste repositório):
 
-- Particionamento nativo mensal de `audit_logs` / `frontend_error_logs` (retenção já mitiga).
-- Isolamento total do `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY` com role `crm_reader` no projeto externo.
-- Elevação de `@typescript-eslint/no-explicit-any` de `warn` para `error` (bloqueado por dívida técnica em ~50 arquivos legados).
-- Warm-pool / consolidação de todas as 60+ Edge Functions.
+- Role `crm_reader` no projeto Supabase externo (isolamento total do `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY`). Mitigado neste repo pelo guard `scripts/check-external-secret-isolation.sh`.
+- Elevação de `@typescript-eslint/no-explicit-any` de `warn` para `error` — depende de refactor progressivo de ~50 arquivos legados (issue rastreada; regra `max-lines: 400` já ativa).
+- Warm-pool de Edge Functions — depende de plano Supabase.
 
 ---
 
 *Este relatório é vivo — cada item deve virar issue rastreável no board de engenharia.*
+
 
