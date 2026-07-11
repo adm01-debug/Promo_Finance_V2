@@ -65,58 +65,47 @@ export function useAuthValidation() {
   }, []);
 
   const validateIp = useCallback(async (): Promise<ValidationResult> => {
-    if (!geoData.ip) {
-      return { allowed: true };
-    }
-
+    // Validação IP/Geo agora é feita 100% no servidor pela edge function
+    // `validate-ip-geo`, que resolve o IP real via headers do proxy e
+    // aplica as regras de allowed_ips / allowed_countries / blocked_ips.
+    // Este hook mantém a interface por compatibilidade com o fluxo de login.
     try {
-      const { data, error } = await supabase.rpc('is_ip_allowed_for_login', {
-        _ip: geoData.ip,
+      const { data, error } = await supabase.functions.invoke('validate-ip-geo', {
+        body: {},
       });
-
       if (error) throw error;
-
-      if (!data) {
-        setIpBlocked(true);
+      if (data && data.allowed === false) {
+        if (data.reason === 'blocked_ip' || data.reason === 'ip_not_allowlisted') {
+          setIpBlocked(true);
+        }
+        if (data.reason === 'country_not_allowlisted') {
+          setGeoBlocked(true);
+        }
         return {
           allowed: false,
-          reason: `IP ${geoData.ip} não autorizado para acesso`,
+          reason:
+            data.reason === 'blocked_ip'
+              ? 'IP bloqueado por atividade suspeita'
+              : data.reason === 'ip_not_allowlisted'
+              ? `IP ${data.ip ?? ''} não autorizado para acesso`
+              : data.reason === 'country_not_allowlisted'
+              ? `Acesso não permitido do país: ${data.country ?? ''}`
+              : 'Acesso negado pela política de segurança',
         };
       }
-
       return { allowed: true };
     } catch (error: unknown) {
-      logger.error('Erro ao validar IP:', error);
+      logger.error('Erro ao validar IP/Geo (servidor):', error);
+      // Fail-open para não travar login em caso de indisponibilidade da função.
       return { allowed: true };
     }
-  }, [geoData.ip]);
+  }, []);
 
   const validateGeo = useCallback(async (): Promise<ValidationResult> => {
-    if (!geoData.country) {
-      return { allowed: true };
-    }
+    // Coberto por validateIp (mesma edge function faz IP + Geo em uma chamada).
+    return { allowed: true };
+  }, []);
 
-    try {
-      const { data, error } = await supabase.rpc('is_country_allowed_for_login', {
-        _country: geoData.country,
-      });
-
-      if (error) throw error;
-
-      if (!data) {
-        setGeoBlocked(true);
-        return {
-          allowed: false,
-          reason: `Acesso não permitido do país: ${geoData.country}`,
-        };
-      }
-
-      return { allowed: true };
-    } catch (error: unknown) {
-      logger.error('Erro ao validar localização:', error);
-      return { allowed: true };
-    }
-  }, [geoData.country]);
 
   const checkBlockedIp = useCallback(async (): Promise<boolean> => {
     if (!geoData.ip) return false;
