@@ -135,19 +135,19 @@ export function exportToPDF<T extends object>(
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
           <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
             <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Total a Receber</p>
-            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold;">${formatCurrency(options.kpis.totalReceber)}</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold;">${formatCurrency(options.kpis.totalReceber ?? 0)}</p>
           </div>
           <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
             <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Vencido</p>
-            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold; color: #dc2626;">${formatCurrency(options.kpis.totalVencido)}</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold; color: #dc2626;">${formatCurrency(options.kpis.totalVencido ?? 0)}</p>
           </div>
           <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
             <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Recebido (Mês)</p>
-            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold; color: #16a34a;">${formatCurrency(options.kpis.totalRecebidoMes)}</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold; color: #16a34a;">${formatCurrency(options.kpis.totalRecebidoMes ?? 0)}</p>
           </div>
           <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
             <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Inadimplência</p>
-            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold;">${options.kpis.taxaInadimplencia.toFixed(1)}%</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold;">${(options.kpis.taxaInadimplencia ?? 0).toFixed(1)}%</p>
           </div>
         </div>
       ` : ''}
