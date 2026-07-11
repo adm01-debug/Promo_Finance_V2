@@ -473,7 +473,16 @@ export function baixarRelatorioPdf(opts: OpcoesRelatorio) {
 /**
  * Gera e baixa PDF de auditoria de créditos sugeridos
  */
-export function baixarRelatorioAuditoriaCreditos(empresaNome: string, creditos: any[]) {
+export interface CreditoAuditoriaItem {
+  ncm: string;
+  cst_csosn: string;
+  valor_credito_calculado: number;
+  score_confianca?: number;
+  status_aprovacao: string;
+  metodologia_aplicada: string;
+}
+
+export function baixarRelatorioAuditoriaCreditos(empresaNome: string, creditos: CreditoAuditoriaItem[]) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   
