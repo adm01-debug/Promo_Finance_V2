@@ -9393,6 +9393,48 @@ export type Database = {
           },
         ]
       }
+      slow_query_alerts: {
+        Row: {
+          calls: number
+          captured_at: string
+          created_at: string
+          id: string
+          max_exec_ms: number
+          mean_exec_ms: number
+          query_normalized: string
+          queryid: number
+          rows_returned: number
+          severity: string
+          total_exec_ms: number
+        }
+        Insert: {
+          calls?: number
+          captured_at?: string
+          created_at?: string
+          id?: string
+          max_exec_ms?: number
+          mean_exec_ms?: number
+          query_normalized: string
+          queryid: number
+          rows_returned?: number
+          severity?: string
+          total_exec_ms?: number
+        }
+        Update: {
+          calls?: number
+          captured_at?: string
+          created_at?: string
+          id?: string
+          max_exec_ms?: number
+          mean_exec_ms?: number
+          query_normalized?: string
+          queryid?: number
+          rows_returned?: number
+          severity?: string
+          total_exec_ms?: number
+        }
+        Relationships: []
+      }
       solicitacoes_aprovacao: {
         Row: {
           aprovado_em: string | null
@@ -11877,6 +11919,13 @@ export type Database = {
       }
     }
     Functions: {
+      capture_slow_queries: {
+        Args: { threshold_ms?: number }
+        Returns: {
+          captured: number
+          deleted_old: number
+        }[]
+      }
       check_login_lockout: {
         Args: { p_email: string }
         Returns: {
