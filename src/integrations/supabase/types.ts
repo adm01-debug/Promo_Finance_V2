@@ -13375,6 +13375,17 @@ export type Database = {
         Args: { _detalhes?: Json; _empresa_id?: string; _tipo_acao: string }
         Returns: undefined
       }
+      registrar_evento_cobranca: {
+        Args: {
+          p_canal?: string
+          p_conta_id: string
+          p_destinatario?: string
+          p_evento: string
+          p_mensagem?: string
+          p_metadata?: Json
+        }
+        Returns: string
+      }
       registrar_evento_pagar: {
         Args: {
           p_conta_id: string
@@ -13399,24 +13410,6 @@ export type Database = {
         | {
             Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
             Returns: string
-          }
-        | {
-            Args: {
-              p_conta_id: string
-              p_detalhes?: Json
-              p_evento: string
-              p_tipo?: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_conta_id: string
-              p_mensagem: string
-              p_metadata?: Json
-              p_tipo: string
-            }
-            Returns: undefined
           }
       reprocess_dlq: {
         Args: { p_dlq_id: string; p_notes?: string }
