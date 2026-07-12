@@ -86,7 +86,7 @@ export function PerformanceAlertsWeeklyTrend() {
     return isSeverity(stored) ? stored : "all";
   });
 
-  const handleSeverityChange = (v: SeverityFilter) => {
+  const handleSeverityChange = useCallback((v: SeverityFilter) => {
     setSeverityFilter(v);
     try {
       window.localStorage.setItem("perf-alerts-severity-filter", v);
@@ -97,7 +97,25 @@ export function PerformanceAlertsWeeklyTrend() {
     } catch {
       /* storage/history indisponível — ignora */
     }
-  };
+  }, []);
+
+  // Hotkeys: 1=Todos, 2=Crítico, 3=Aviso, 4=Info. Ignora se focus em input/textarea/contenteditable.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      const tag = t?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || t?.isContentEditable) return;
+      const map: Record<string, SeverityFilter> = { "1": "all", "2": "critical", "3": "warning", "4": "info" };
+      const next = map[e.key];
+      if (next) {
+        e.preventDefault();
+        handleSeverityChange(next);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleSeverityChange]);
 
   const filteredData = useMemo(
     () => (severityFilter === "all" ? data : data.filter((r) => r.severity === severityFilter)),
