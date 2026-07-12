@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw, ShieldAlert, Info } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface AlertRow {
   id: string;
@@ -63,6 +64,27 @@ export function PerformanceAlertsPanel() {
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
+
+  // Toast on new critical alerts (dedup by id across refetches)
+  const seenIds = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    if (!data.length) return;
+    if (seenIds.current === null) {
+      // First load: prime cache silently, don't toast historical alerts
+      seenIds.current = new Set(data.map((a) => a.id));
+      return;
+    }
+    const fresh = data.filter((a) => a.severity === "critical" && !seenIds.current!.has(a.id));
+    fresh.forEach((a) => {
+      toast.error(`🚨 Regressão crítica detectada`, {
+        description: a.reason || a.alert_key,
+        duration: 10_000,
+      });
+      seenIds.current!.add(a.id);
+    });
+    // Also track non-critical to avoid re-toasting if severity changes
+    data.forEach((a) => seenIds.current!.add(a.id));
+  }, [data]);
 
   const counts = data.reduce(
     (acc, r) => {
