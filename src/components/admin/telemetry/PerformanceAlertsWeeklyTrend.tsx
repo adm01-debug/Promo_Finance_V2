@@ -365,6 +365,12 @@ export function PerformanceAlertsWeeklyTrend() {
     }
   }, [filteredData, severityFilter]);
 
+  // Contagem global de alertas críticos (todas as semanas) — usada no badge do header
+  const criticalTotal = useMemo(
+    () => data.reduce((acc, r) => (r.severity === "critical" ? acc + r.alert_count : acc), 0),
+    [data],
+  );
+
 
   return (
     <Card>
@@ -372,6 +378,16 @@ export function PerformanceAlertsWeeklyTrend() {
         <CardTitle className="text-base flex items-center gap-2">
           <LineChart className="h-4 w-4 text-primary" />
           Tendência Semanal de Regressões (12 semanas)
+          {criticalTotal > 0 && (
+            <Badge
+              variant="destructive"
+              className="text-[10px] tabular-nums"
+              aria-label={`${criticalTotal} alertas críticos nas últimas 12 semanas`}
+              title="Total de alertas críticos (12 semanas)"
+            >
+              {criticalTotal} crítico{criticalTotal > 1 ? "s" : ""}
+            </Badge>
+          )}
         </CardTitle>
         <div className="flex items-center gap-2">
           <ToggleGroup
