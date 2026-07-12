@@ -15,6 +15,7 @@ import {
 import { Download, DollarSign, Clock, MapPin, Package, TrendingUp, CheckCircle2, RotateCcw } from 'lucide-react';
 import { useDeliveryReports, type DeliveryReportFilters } from '@/hooks/useDeliveryReports';
 import { exportToCSV } from '@/lib/export-utils';
+import { DeliveryHeatmap } from '@/components/relatorios/DeliveryHeatmap';
 
 const STATUS_OPTIONS = ['ALL', 'PENDING', 'MATCHED', 'ON_GOING', 'PICKED_UP', 'COMPLETED', 'CANCELLED', 'REJECTED', 'EXPIRED'] as const;
 const CHART_COLORS = ['hsl(var(--primary))', 'hsl(var(--success))', 'hsl(var(--warning))', 'hsl(var(--destructive))', 'hsl(var(--accent))', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1'];
@@ -260,6 +261,22 @@ export default function RelatoriosEntregas() {
 
         {/* GEOGRAFIA */}
         <TabsContent value="geografia" className="space-y-4">
+          <ChartCard title="Mapa de densidade de entregas" loading={isLoading}>
+            <DeliveryHeatmap
+              loading={isLoading}
+              points={(data ?? [])
+                .filter((o) => o.delivery_latitude != null && o.delivery_longitude != null)
+                .map((o) => ({
+                  id: o.id,
+                  lat: Number(o.delivery_latitude),
+                  lng: Number(o.delivery_longitude),
+                  cost: Number(o.total_cost || 0),
+                  status: o.status,
+                  customer: o.customer_name,
+                }))}
+            />
+          </ChartCard>
+
           <ChartCard title="Top 15 regiões por volume" loading={isLoading}>
             <ResponsiveContainer width="100%" height={380}>
               <BarChart data={analytics.regionSeries} layout="vertical" margin={{ left: 100 }}>
