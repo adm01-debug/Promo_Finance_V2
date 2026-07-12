@@ -9,8 +9,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import {
   type SeverityFilter,
-  isSeverity,
-  isIsoDate,
   readSeverityFromLocation,
   readWeekFromLocation,
   buildUrlWithParams,
