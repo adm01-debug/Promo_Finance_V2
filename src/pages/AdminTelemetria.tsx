@@ -289,6 +289,10 @@ export default function AdminTelemetriaPage() {
         {/* Alertas de Regressão */}
         <PerformanceAlertsPanel />
 
+        {/* Tendência Semanal */}
+        <PerformanceAlertsWeeklyTrend />
+
+
 
         {/* Top Offenders */}
         <TelemetriaTopOffenders topOffenders={topOffenders} formatDuration={formatDuration} />
