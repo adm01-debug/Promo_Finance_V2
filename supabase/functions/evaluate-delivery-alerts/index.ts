@@ -121,7 +121,7 @@ Deno.serve(async (req) => {
       if (!order || !driver) continue;
 
       const orderRef = order.internal_order_id || order.lalamove_id || order.id;
-      const driverName = driver.full_name || "motorista";
+      const driverName = driver.name || "motorista";
 
       // RULE 1: DRIVER_STOPPED
       if ((t as any).is_stopped && (t as any).stopped_since) {
