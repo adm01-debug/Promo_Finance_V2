@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, ShieldAlert, Info } from "lucide-react";
+import { AlertTriangle, RefreshCw, ShieldAlert, Info, Radio } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -47,6 +47,8 @@ function severityBadge(sev: string) {
 
 export function PerformanceAlertsPanel() {
   const [days, setDays] = useState(1);
+  const [realtimeOn, setRealtimeOn] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data = [], isLoading, refetch, isRefetching } = useQuery<AlertRow[]>({
     queryKey: ["performance-alerts", days],
@@ -86,6 +88,40 @@ export function PerformanceAlertsPanel() {
     data.forEach((a) => seenIds.current!.add(a.id));
   }, [data]);
 
+  // Realtime: escuta INSERTs em performance_alerts para notificação instantânea
+  useEffect(() => {
+    const channel = supabase
+      .channel("performance-alerts-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "performance_alerts" },
+        (payload) => {
+          const row = payload.new as Partial<AlertRow>;
+          if (row?.severity === "critical") {
+            toast.error("🚨 Regressão crítica em tempo real", {
+              description: row.reason || row.alert_key || "Nova regressão detectada",
+              duration: 12_000,
+            });
+          } else if (row?.severity === "warning") {
+            toast.warning("⚠️ Novo aviso de performance", {
+              description: row.reason || row.alert_key || "Aviso detectado",
+              duration: 6_000,
+            });
+          }
+          if (row?.id) seenIds.current?.add(row.id);
+          queryClient.invalidateQueries({ queryKey: ["performance-alerts"] });
+        },
+      )
+      .subscribe((status) => {
+        setRealtimeOn(status === "SUBSCRIBED");
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+
   const counts = data.reduce(
     (acc, r) => {
       acc[r.severity] = (acc[r.severity] || 0) + 1;
@@ -100,6 +136,14 @@ export function PerformanceAlertsPanel() {
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 text-primary" />
           <CardTitle className="text-base">Alertas de Performance</CardTitle>
+          <Badge
+            variant="outline"
+            className={`text-[10px] gap-1 ${realtimeOn ? "border-green-500/40 text-green-600" : "border-muted text-muted-foreground"}`}
+            title={realtimeOn ? "Realtime conectado" : "Realtime desconectado"}
+          >
+            <Radio className={`h-3 w-3 ${realtimeOn ? "animate-pulse" : ""}`} />
+            {realtimeOn ? "Live" : "Offline"}
+          </Badge>
           <div className="flex gap-1 ml-2">
             {counts.critical ? (
               <Badge variant="destructive" className="text-[10px]">
