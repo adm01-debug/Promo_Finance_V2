@@ -89,6 +89,13 @@ export function PerformanceAlertsWeeklyTrend() {
       .map(([, v]) => v);
   }, [data]);
 
+  const baseline = useMemo(() => {
+    if (!chartData.length) return 0;
+    const totals = chartData.map((d) => d.critical + d.warning + d.info);
+    const sum = totals.reduce((a, b) => a + b, 0);
+    return sum / totals.length;
+  }, [chartData]);
+
   const handleExportCSV = () => {
     if (!data.length) return;
     const headers = [
