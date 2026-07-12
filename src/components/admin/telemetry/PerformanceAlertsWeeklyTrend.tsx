@@ -152,6 +152,27 @@ export function PerformanceAlertsWeeklyTrend() {
     return sum / totals.length;
   }, [chartData]);
 
+  // Sparklines por origem (pg_stat vs telemetry) — respeitam filtro de severidade
+  const sparklineBySource = useMemo(() => {
+    const bySource = new Map<string, Map<string, number>>();
+    for (const r of filteredData) {
+      const src = r.source;
+      if (!bySource.has(src)) bySource.set(src, new Map());
+      const wk = bySource.get(src)!;
+      wk.set(r.week_start, (wk.get(r.week_start) ?? 0) + r.alert_count);
+    }
+    return Array.from(bySource.entries()).map(([source, weeks]) => {
+      const series = Array.from(weeks.entries())
+        .sort(([a], [b]) => (a < b ? -1 : 1))
+        .map(([week, count]) => ({ week, count }));
+      const total = series.reduce((a, b) => a + b.count, 0);
+      const last = series[series.length - 1]?.count ?? 0;
+      const prev = series[series.length - 2]?.count ?? 0;
+      const delta = prev > 0 ? ((last - prev) / prev) * 100 : null;
+      return { source, series, total, last, delta };
+    });
+  }, [filteredData]);
+
   const handleExportCSV = () => {
     if (!filteredData.length) return;
     const headers = [
