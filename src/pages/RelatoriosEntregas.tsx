@@ -160,7 +160,7 @@ export default function RelatoriosEntregas() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="custo" className="w-full">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)} className="w-full">
         <TabsList className="grid w-full grid-cols-3 md:w-auto">
           <TabsTrigger value="custo">Custo</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
