@@ -7718,6 +7718,7 @@ export type Database = {
       metas_financeiras: {
         Row: {
           ano: number
+          ativo: boolean
           created_at: string | null
           empresa_id: string | null
           id: string
@@ -7729,6 +7730,7 @@ export type Database = {
         }
         Insert: {
           ano: number
+          ativo?: boolean
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -7740,6 +7742,7 @@ export type Database = {
         }
         Update: {
           ano?: number
+          ativo?: boolean
           created_at?: string | null
           empresa_id?: string | null
           id?: string
