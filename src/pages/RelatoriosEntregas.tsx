@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -11,27 +12,71 @@ import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, Legend, CartesianGrid, ComposedChart,
 } from 'recharts';
-import { Download, DollarSign, Clock, MapPin, Package, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { Download, DollarSign, Clock, MapPin, Package, TrendingUp, CheckCircle2, RotateCcw } from 'lucide-react';
 import { useDeliveryReports, type DeliveryReportFilters } from '@/hooks/useDeliveryReports';
 import { exportToCSV } from '@/lib/export-utils';
 
 const STATUS_OPTIONS = ['ALL', 'PENDING', 'MATCHED', 'ON_GOING', 'PICKED_UP', 'COMPLETED', 'CANCELLED', 'REJECTED', 'EXPIRED'] as const;
 const CHART_COLORS = ['hsl(var(--primary))', 'hsl(var(--success))', 'hsl(var(--warning))', 'hsl(var(--destructive))', 'hsl(var(--accent))', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1'];
+const TAB_VALUES = ['custo', 'performance', 'geografia'] as const;
+type TabValue = typeof TAB_VALUES[number];
 
 const brl = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const nfmt = (n: number, digits = 0) => n.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 
-export default function RelatoriosEntregas() {
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+function getDefaultFilters(): DeliveryReportFilters {
   const today = new Date();
   const past = new Date(); past.setDate(past.getDate() - 30);
-
-  const [filters, setFilters] = useState<DeliveryReportFilters>({
+  return {
     from: past.toISOString().slice(0, 10),
     to: today.toISOString().slice(0, 10),
     status: 'ALL',
     customer: '',
     region: '',
-  });
+  };
+}
+
+function parseFilters(sp: URLSearchParams): DeliveryReportFilters {
+  const def = getDefaultFilters();
+  const from = sp.get('from');
+  const to = sp.get('to');
+  const status = sp.get('status');
+  return {
+    from: from && ISO_DATE.test(from) ? from : def.from,
+    to: to && ISO_DATE.test(to) ? to : def.to,
+    status: status && (STATUS_OPTIONS as readonly string[]).includes(status) ? status : def.status,
+    customer: sp.get('customer') ?? '',
+    region: sp.get('region') ?? '',
+  };
+}
+
+export default function RelatoriosEntregas() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialFilters = useMemo(() => parseFilters(searchParams), []); // eslint-disable-line react-hooks/exhaustive-deps
+  const initialTab = useMemo<TabValue>(() => {
+    const t = searchParams.get('tab');
+    return (TAB_VALUES as readonly string[]).includes(t ?? '') ? (t as TabValue) : 'custo';
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [filters, setFilters] = useState<DeliveryReportFilters>(initialFilters);
+  const [tab, setTab] = useState<TabValue>(initialTab);
+
+  // Sincroniza estado -> query string (replace para não poluir histórico)
+  useEffect(() => {
+    const def = getDefaultFilters();
+    const next = new URLSearchParams();
+    if (filters.from !== def.from) next.set('from', filters.from);
+    if (filters.to !== def.to) next.set('to', filters.to);
+    if (filters.status !== def.status) next.set('status', filters.status);
+    if (filters.customer.trim()) next.set('customer', filters.customer.trim());
+    if (filters.region.trim()) next.set('region', filters.region.trim());
+    if (tab !== 'custo') next.set('tab', tab);
+    setSearchParams(next, { replace: true });
+  }, [filters, tab, setSearchParams]);
+
+  const resetFilters = useCallback(() => setFilters(getDefaultFilters()), []);
 
   const { data, isLoading, analytics, refetch, isFetching } = useDeliveryReports(filters);
   const kpis = analytics.kpis;
