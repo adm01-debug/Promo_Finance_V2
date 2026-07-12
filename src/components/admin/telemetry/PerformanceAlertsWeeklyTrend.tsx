@@ -66,6 +66,27 @@ export function PerformanceAlertsWeeklyTrend() {
     staleTime: 5 * 60_000,
   });
 
+  // Agrega por semana: {week, critical, warning, info}
+  const chartData = useMemo(() => {
+    const map = new Map<string, { week: string; critical: number; warning: number; info: number }>();
+    for (const r of data) {
+      const key = r.week_start;
+      const label = new Date(r.week_start).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+      });
+      const entry = map.get(key) ?? { week: label, critical: 0, warning: 0, info: 0 };
+      if (r.severity === "critical") entry.critical += r.alert_count;
+      else if (r.severity === "warning") entry.warning += r.alert_count;
+      else entry.info += r.alert_count;
+      map.set(key, entry);
+    }
+    // Ordena crescente (semanas antigas → recentes) para o gráfico
+    return Array.from(map.entries())
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([, v]) => v);
+  }, [data]);
+
   return (
     <Card>
       <CardHeader className="pb-3">
