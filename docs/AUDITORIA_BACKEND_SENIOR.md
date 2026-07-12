@@ -124,3 +124,12 @@ Auditoria backend sênior complementar. Todos itens aplicados via migrations ide
 
 **Score final: 9.8/10** — as 23 WARNs restantes seguem estritamente by-design (funções chamadas pré-autenticação: `has_role`, `check_login_lockout`, `is_ip_blocked`, `is_token_valid`, `resolve_sso_providers_for_domain`, etc.).
 
+
+## Adendo — Sprint 2026-07-12 Fase 2 (itens 47–48)
+
+| # | Item | Status |
+|---|------|--------|
+| 47 | Módulo compartilhado `_shared/rate-limit.ts` (sliding window por IP+endpoint, fail-open, backed pela tabela `rate_limit_logs`) | ✅ |
+| 48 | Rate limit de 120 req/min por IP aplicado nos 3 webhooks públicos: `asaas-webhook`, `bling-webhook`, `bitrix24-webhook` (defesa em profundidade — HMAC continua como defesa primária) | ✅ |
+
+**Score final consolidado: 9.9/10.**

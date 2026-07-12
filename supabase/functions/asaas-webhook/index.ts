@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { validatePayload, createErrorResponse, AsaasWebhookSchema, corsHeaders, isWebhookProcessed } from '../_shared/validation.ts'
 import { createLogger } from '../_shared/logger.ts'
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
 
 const logger = createLogger('asaas-webhook')
 
@@ -44,6 +45,20 @@ Deno.serve(async (req) => {
       return createErrorResponse('Configuração do servidor incompleta', 500)
     }
     const supabase = createClient(supabaseUrl, serviceRoleKey)
+
+    // Rate limit: 120 req/min por IP (defesa em profundidade — HMAC token continua sendo a defesa primária)
+    const rl = await checkRateLimit(supabase, {
+      endpoint: 'asaas-webhook',
+      ip: ip_origem.split(',')[0].trim(),
+      limit: 120,
+      windowSeconds: 60,
+      userAgent: req.headers.get('user-agent'),
+    })
+    if (!rl.allowed) {
+      logger.warn('Rate limit atingido', { ip_origem, correlation_id })
+      return rateLimitResponse(rl, corsHeaders)
+    }
+
 
     // Idempotency check
     if (body.id) {
