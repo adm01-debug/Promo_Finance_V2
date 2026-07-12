@@ -175,6 +175,7 @@ export function PerformanceAlertsWeeklyTrend() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </CardContent>
     </Card>
