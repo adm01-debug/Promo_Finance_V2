@@ -218,7 +218,7 @@ export function PerformanceAlertsWeeklyTrend() {
                 </tr>
               </thead>
               <tbody>
-                {data.slice(0, 60).map((r, idx) => (
+                {filteredData.slice(0, 60).map((r, idx) => (
                   <tr key={`${r.week_start}-${r.source}-${r.severity}-${idx}`} className="border-b border-muted/40">
                     <td className="py-2 tabular-nums">
                       {new Date(r.week_start).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
