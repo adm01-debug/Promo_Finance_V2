@@ -136,6 +136,14 @@ export function PerformanceAlertsPanel() {
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 text-primary" />
           <CardTitle className="text-base">Alertas de Performance</CardTitle>
+          <Badge
+            variant="outline"
+            className={`text-[10px] gap-1 ${realtimeOn ? "border-green-500/40 text-green-600" : "border-muted text-muted-foreground"}`}
+            title={realtimeOn ? "Realtime conectado" : "Realtime desconectado"}
+          >
+            <Radio className={`h-3 w-3 ${realtimeOn ? "animate-pulse" : ""}`} />
+            {realtimeOn ? "Live" : "Offline"}
+          </Badge>
           <div className="flex gap-1 ml-2">
             {counts.critical ? (
               <Badge variant="destructive" className="text-[10px]">
