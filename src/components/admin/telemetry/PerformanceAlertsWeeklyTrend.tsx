@@ -88,13 +88,47 @@ export function PerformanceAlertsWeeklyTrend() {
       .map(([, v]) => v);
   }, [data]);
 
+  const handleExportCSV = () => {
+    if (!data.length) return;
+    const headers = [
+      "week_start","source","severity","alert_count","distinct_keys",
+      "avg_current_ms","max_current_ms","avg_ratio","max_ratio","total_samples","delta_pct_vs_prev_week",
+    ];
+    const escape = (v: unknown) => {
+      if (v == null) return "";
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = data.map((r) => headers.map((h) => escape((r as any)[h])).join(","));
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `performance-alerts-weekly-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Card>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 flex flex-row items-center justify-between gap-2 space-y-0">
         <CardTitle className="text-base flex items-center gap-2">
           <LineChart className="h-4 w-4 text-primary" />
           Tendência Semanal de Regressões (12 semanas)
         </CardTitle>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleExportCSV}
+          disabled={isLoading || data.length === 0}
+          className="h-8 gap-1.5"
+        >
+          <Download className="h-3.5 w-3.5" />
+          CSV
+        </Button>
       </CardHeader>
       <CardContent>
         {isLoading ? (
