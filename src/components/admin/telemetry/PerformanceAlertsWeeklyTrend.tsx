@@ -277,6 +277,17 @@ export function PerformanceAlertsWeeklyTrend() {
           <Button
             size="sm"
             variant="outline"
+            onClick={handleCopyLink}
+            className="h-8 gap-1.5"
+            title="Copiar link com filtro e semana atuais"
+            aria-label="Copiar link compartilhável"
+          >
+            <Link2 className="h-3.5 w-3.5" />
+            Link
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
             onClick={handleExportCSV}
             disabled={isLoading || filteredData.length === 0}
             className="h-8 gap-1.5"
