@@ -37,8 +37,9 @@ export default function RelatoriosEntregas() {
   const kpis = analytics.kpis;
 
   const handleExport = () => {
-    if (!data) return;
-    exportToCSV(data as unknown as Record<string, unknown>[], `relatorio-entregas-${filters.from}_${filters.to}`);
+    if (!data?.length) return;
+    const columns = Object.keys(data[0]).map((k) => ({ key: k as keyof typeof data[0], header: k }));
+    exportToCSV(data as unknown as Record<string, unknown>[], columns as never, `relatorio-entregas-${filters.from}_${filters.to}`);
   };
 
   return (
