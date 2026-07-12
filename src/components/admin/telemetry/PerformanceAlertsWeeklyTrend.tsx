@@ -227,6 +227,33 @@ export function PerformanceAlertsWeeklyTrend() {
     URL.revokeObjectURL(url);
   };
 
+  const handleCopyLink = useCallback(async () => {
+    const href = window.location.href;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(href);
+      } else {
+        // Fallback para contextos sem Clipboard API (http, iframes antigos)
+        const ta = document.createElement("textarea");
+        ta.value = href;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "absolute";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      toast.success("Link copiado", {
+        description: "Filtro e semana selecionada preservados no link.",
+      });
+    } catch {
+      toast.error("Não foi possível copiar o link", {
+        description: "Copie manualmente da barra de endereço.",
+      });
+    }
+  }, []);
+
   return (
     <Card>
       <CardHeader className="pb-3 flex flex-row items-center justify-between gap-2 space-y-0">
