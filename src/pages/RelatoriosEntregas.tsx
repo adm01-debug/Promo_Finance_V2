@@ -83,6 +83,17 @@ export default function RelatoriosEntregas() {
   const { data, isLoading, analytics, refetch, isFetching } = useDeliveryReports(filters);
   const kpis = analytics.kpis;
 
+  const [drill, setDrill] = useState<{ title: string; subtitle?: string; orders: DrilldownOrder[] } | null>(null);
+  const openDrill = useCallback(
+    (title: string, predicate: (o: typeof data extends readonly (infer U)[] | undefined ? U : never) => boolean, subtitle?: string) => {
+      const all = (data ?? []) as unknown as DrilldownOrder[];
+      const filtered = all.filter((o) => predicate(o as never));
+      setDrill({ title, subtitle, orders: filtered });
+    },
+    [data],
+  );
+  const periodLabel = `${filters.from} → ${filters.to}`;
+
   const handleExport = () => {
     if (!data?.length) return;
     const columns = Object.keys(data[0]).map((k) => ({ key: k as keyof typeof data[0], header: k }));
