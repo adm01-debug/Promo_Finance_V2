@@ -7,8 +7,10 @@ import { AlertTriangle, RefreshCw, ShieldAlert, Info } from "lucide-react";
 import { useState } from "react";
 
 interface AlertRow {
+  id: string;
   source: string;
   alert_key: string;
+  alert_hour: string;
   severity: "critical" | "warning" | "info" | string;
   reason: string | null;
   current_value: number | null;
@@ -16,9 +18,8 @@ interface AlertRow {
   ratio: number | null;
   sample_count: number | null;
   query_snippet: string | null;
-  first_seen_at: string;
-  last_seen_at: string;
-  occurrences: number;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
 }
 
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
