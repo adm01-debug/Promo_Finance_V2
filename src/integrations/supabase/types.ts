@@ -12433,6 +12433,27 @@ export type Database = {
           },
         ]
       }
+      v_table_bloat: {
+        Row: {
+          analyze_count: number | null
+          autoanalyze_count: number | null
+          autovacuum_count: number | null
+          dead_ratio_pct: number | null
+          dead_rows: number | null
+          last_analyze: string | null
+          last_autoanalyze: string | null
+          last_autovacuum: string | null
+          last_vacuum: string | null
+          live_rows: number | null
+          schemaname: unknown
+          table_name: unknown
+          table_size_pretty: string | null
+          total_size_bytes: number | null
+          total_size_pretty: string | null
+          vacuum_count: number | null
+        }
+        Relationships: []
+      }
       vw_contas_pagar_painel: {
         Row: {
           anexo_url: string | null
@@ -13055,6 +13076,7 @@ export type Database = {
         Returns: undefined
       }
       maintain_monthly_partitions: { Args: never; Returns: Json }
+      monitor_table_bloat: { Args: never; Returns: Json }
       processar_regua_cobranca: {
         Args: { p_empresa_id?: string; p_simulate?: boolean }
         Returns: Json
