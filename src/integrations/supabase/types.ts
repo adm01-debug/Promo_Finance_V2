@@ -4605,26 +4605,41 @@ export type Database = {
       dispositivos_conhecidos: {
         Row: {
           browser: string | null
+          device_fingerprint: string | null
           device_name: string | null
+          device_type: string | null
           id: string
           is_trusted: boolean | null
           last_login: string | null
+          last_seen_at: string | null
+          os: string | null
+          user_agent: string | null
           user_id: string | null
         }
         Insert: {
           browser?: string | null
+          device_fingerprint?: string | null
           device_name?: string | null
+          device_type?: string | null
           id?: string
           is_trusted?: boolean | null
           last_login?: string | null
+          last_seen_at?: string | null
+          os?: string | null
+          user_agent?: string | null
           user_id?: string | null
         }
         Update: {
           browser?: string | null
+          device_fingerprint?: string | null
           device_name?: string | null
+          device_type?: string | null
           id?: string
           is_trusted?: boolean | null
           last_login?: string | null
+          last_seen_at?: string | null
+          os?: string | null
+          user_agent?: string | null
           user_id?: string | null
         }
         Relationships: []
