@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus, LineChart, Download } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, LineChart, Download, Link2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -226,6 +227,33 @@ export function PerformanceAlertsWeeklyTrend() {
     URL.revokeObjectURL(url);
   };
 
+  const handleCopyLink = useCallback(async () => {
+    const href = window.location.href;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(href);
+      } else {
+        // Fallback para contextos sem Clipboard API (http, iframes antigos)
+        const ta = document.createElement("textarea");
+        ta.value = href;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "absolute";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      toast.success("Link copiado", {
+        description: "Filtro e semana selecionada preservados no link.",
+      });
+    } catch {
+      toast.error("Não foi possível copiar o link", {
+        description: "Copie manualmente da barra de endereço.",
+      });
+    }
+  }, []);
+
   return (
     <Card>
       <CardHeader className="pb-3 flex flex-row items-center justify-between gap-2 space-y-0">
@@ -246,6 +274,17 @@ export function PerformanceAlertsWeeklyTrend() {
             <ToggleGroupItem value="warning" title="Atalho: 3" className="h-7 px-2 text-[11px]">Aviso</ToggleGroupItem>
             <ToggleGroupItem value="info" title="Atalho: 4" className="h-7 px-2 text-[11px]">Info</ToggleGroupItem>
           </ToggleGroup>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleCopyLink}
+            className="h-8 gap-1.5"
+            title="Copiar link com filtro e semana atuais"
+            aria-label="Copiar link compartilhável"
+          >
+            <Link2 className="h-3.5 w-3.5" />
+            Link
+          </Button>
           <Button
             size="sm"
             variant="outline"
