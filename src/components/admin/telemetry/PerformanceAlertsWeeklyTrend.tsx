@@ -73,7 +73,22 @@ export function PerformanceAlertsWeeklyTrend() {
   });
 
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
-  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>(() => {
+    if (typeof window === "undefined") return "all";
+    const stored = window.localStorage.getItem("perf-alerts-severity-filter");
+    return stored === "critical" || stored === "warning" || stored === "info" || stored === "all"
+      ? (stored as SeverityFilter)
+      : "all";
+  });
+
+  const handleSeverityChange = (v: SeverityFilter) => {
+    setSeverityFilter(v);
+    try {
+      window.localStorage.setItem("perf-alerts-severity-filter", v);
+    } catch {
+      /* storage indisponível — ignora */
+    }
+  };
 
   const filteredData = useMemo(
     () => (severityFilter === "all" ? data : data.filter((r) => r.severity === severityFilter)),
