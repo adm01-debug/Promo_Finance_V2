@@ -12310,6 +12310,23 @@ export type Database = {
           },
         ]
       }
+      mv_performance_alerts_weekly: {
+        Row: {
+          alert_count: number | null
+          avg_current_ms: number | null
+          avg_ratio: number | null
+          delta_pct_vs_prev_week: number | null
+          distinct_keys: number | null
+          max_current_ms: number | null
+          max_ratio: number | null
+          refreshed_at: string | null
+          severity: string | null
+          source: string | null
+          total_samples: number | null
+          week_start: string | null
+        }
+        Relationships: []
+      }
       orders_operator_view: {
         Row: {
           actual_delivery: string | null
@@ -13219,6 +13236,23 @@ export type Database = {
           source: string
         }[]
       }
+      get_performance_alerts_weekly: {
+        Args: { p_weeks?: number }
+        Returns: {
+          alert_count: number
+          avg_current_ms: number
+          avg_ratio: number
+          delta_pct_vs_prev_week: number
+          distinct_keys: number
+          max_current_ms: number
+          max_ratio: number
+          refreshed_at: string
+          severity: string
+          source: string
+          total_samples: number
+          week_start: string
+        }[]
+      }
       get_retencoes_pendentes_count: {
         Args: { p_empresa_id: string }
         Returns: number
@@ -13336,6 +13370,7 @@ export type Database = {
           lockout_seconds: number
         }[]
       }
+      refresh_performance_alerts_weekly: { Args: never; Returns: Json }
       registrar_auditoria_config: {
         Args: { _detalhes?: Json; _empresa_id?: string; _tipo_acao: string }
         Returns: undefined
