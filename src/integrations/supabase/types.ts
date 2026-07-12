@@ -8455,6 +8455,54 @@ export type Database = {
           },
         ]
       }
+      performance_alerts: {
+        Row: {
+          alert_hour: string
+          alert_key: string
+          baseline_value: number | null
+          created_at: string
+          current_value: number
+          id: string
+          metadata: Json
+          query_snippet: string | null
+          ratio: number | null
+          reason: string
+          sample_count: number | null
+          severity: string
+          source: string
+        }
+        Insert: {
+          alert_hour?: string
+          alert_key: string
+          baseline_value?: number | null
+          created_at?: string
+          current_value: number
+          id?: string
+          metadata?: Json
+          query_snippet?: string | null
+          ratio?: number | null
+          reason: string
+          sample_count?: number | null
+          severity: string
+          source: string
+        }
+        Update: {
+          alert_hour?: string
+          alert_key?: string
+          baseline_value?: number | null
+          created_at?: string
+          current_value?: number
+          id?: string
+          metadata?: Json
+          query_snippet?: string | null
+          ratio?: number | null
+          reason?: string
+          sample_count?: number | null
+          severity?: string
+          source?: string
+        }
+        Relationships: []
+      }
       permissions: {
         Row: {
           action: string
@@ -12981,6 +13029,7 @@ export type Database = {
         Args: { p_transacao_id: string }
         Returns: undefined
       }
+      detect_query_regressions: { Args: never; Returns: Json }
       enqueue_webhook_retry: {
         Args: {
           p_error: string
@@ -13079,6 +13128,24 @@ export type Database = {
           is_locked: boolean
           lockout_count: number
           remaining_minutes: number
+        }[]
+      }
+      get_performance_alerts: {
+        Args: { p_days?: number; p_severity?: string; p_source?: string }
+        Returns: {
+          alert_hour: string
+          alert_key: string
+          baseline_value: number
+          created_at: string
+          current_value: number
+          id: string
+          metadata: Json
+          query_snippet: string
+          ratio: number
+          reason: string
+          sample_count: number
+          severity: string
+          source: string
         }[]
       }
       get_retencoes_pendentes_count: {
