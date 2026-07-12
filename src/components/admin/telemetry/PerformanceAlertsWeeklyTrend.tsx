@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus, LineChart } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, LineChart, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 import {
   ResponsiveContainer,
