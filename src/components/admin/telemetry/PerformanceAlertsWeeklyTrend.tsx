@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import {
   type SeverityFilter,
   readSeverityFromLocation,
@@ -83,6 +83,8 @@ export function PerformanceAlertsWeeklyTrend() {
     if (typeof window === "undefined") return null;
     return readWeekFromLocation(window.location.search);
   });
+  const chartRef = useRef<HTMLDivElement | null>(null);
+
 
   const setSelectedWeek = useCallback((wk: string | null) => {
     setSelectedWeekState(wk);
@@ -291,6 +293,29 @@ export function PerformanceAlertsWeeklyTrend() {
       );
       y += 18;
 
+      // Snapshot do gráfico (opcional — falha silenciosamente se indisponível)
+      if (chartRef.current) {
+        try {
+          const { default: html2canvas } = await import("html2canvas");
+          const canvas = await html2canvas(chartRef.current, {
+            backgroundColor: "#ffffff",
+            scale: 2,
+            logging: false,
+            useCORS: true,
+          });
+          const imgData = canvas.toDataURL("image/png");
+          const maxW = pageWidth - marginX * 2;
+          const ratio = canvas.height / canvas.width;
+          const imgW = maxW;
+          const imgH = Math.min(220, imgW * ratio);
+          doc.addImage(imgData, "PNG", marginX, y, imgW, imgH, undefined, "FAST");
+          y += imgH + 16;
+        } catch {
+          /* segue sem imagem */
+        }
+      }
+
+
       // Cabeçalho da tabela
       const headers = ["Semana", "Origem", "Sev.", "Alertas", "Chaves", "P95 med", "Ratio max", "Δ %"];
       const colWidths = [70, 70, 55, 60, 60, 70, 70, 60];
@@ -460,7 +485,7 @@ export function PerformanceAlertsWeeklyTrend() {
                 })}
               </div>
             )}
-            <div className="h-56 mb-4">
+            <div className="h-56 mb-4" ref={chartRef}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={chartData}
