@@ -47,6 +47,8 @@ function severityBadge(sev: string) {
 
 export function PerformanceAlertsPanel() {
   const [days, setDays] = useState(1);
+  const [realtimeOn, setRealtimeOn] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data = [], isLoading, refetch, isRefetching } = useQuery<AlertRow[]>({
     queryKey: ["performance-alerts", days],
