@@ -152,7 +152,15 @@ export function PerformanceAlertsWeeklyTrend() {
           <>
             <div className="h-56 mb-4">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
+                  onClick={(e: any) => {
+                    const payload = e?.activePayload?.[0]?.payload;
+                    if (payload?.weekKey) setSelectedWeek(payload.weekKey);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.4} />
                   <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                   <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
