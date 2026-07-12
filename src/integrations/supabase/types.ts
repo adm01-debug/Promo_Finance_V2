@@ -7905,6 +7905,110 @@ export type Database = {
           },
         ]
       }
+      n8n_dispatch_logs: {
+        Row: {
+          attempt: number
+          config_id: string | null
+          created_at: string
+          duration_ms: number | null
+          error: string | null
+          event_type: string
+          id: string
+          payload: Json
+          response_body: string | null
+          response_status: number | null
+          risk_score: number | null
+          success: boolean
+        }
+        Insert: {
+          attempt?: number
+          config_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          event_type: string
+          id?: string
+          payload: Json
+          response_body?: string | null
+          response_status?: number | null
+          risk_score?: number | null
+          success?: boolean
+        }
+        Update: {
+          attempt?: number
+          config_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          risk_score?: number | null
+          success?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "n8n_dispatch_logs_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "n8n_workflow_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      n8n_workflow_configs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          enabled: boolean
+          event_type: string
+          filters: Json
+          headers: Json
+          id: string
+          max_risk_score: number
+          min_risk_score: number
+          name: string
+          retry_count: number
+          timeout_ms: number
+          updated_at: string
+          webhook_url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          event_type: string
+          filters?: Json
+          headers?: Json
+          id?: string
+          max_risk_score?: number
+          min_risk_score?: number
+          name: string
+          retry_count?: number
+          timeout_ms?: number
+          updated_at?: string
+          webhook_url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          event_type?: string
+          filters?: Json
+          headers?: Json
+          id?: string
+          max_risk_score?: number
+          min_risk_score?: number
+          name?: string
+          retry_count?: number
+          timeout_ms?: number
+          updated_at?: string
+          webhook_url?: string
+        }
+        Relationships: []
+      }
       negativacoes: {
         Row: {
           bureau: string | null
