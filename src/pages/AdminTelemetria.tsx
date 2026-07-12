@@ -11,6 +11,7 @@ import { TelemetriaStatsCards } from "@/components/admin/telemetry/TelemetriaSta
 import { TelemetriaFilters } from "@/components/admin/telemetry/TelemetriaFilters";
 import { TelemetriaTopOffenders } from "@/components/admin/telemetry/TelemetriaTopOffenders";
 import { PerformanceMetrics } from "@/components/admin/telemetry/PerformanceMetrics";
+import { PerformanceAlertsPanel } from "@/components/admin/telemetry/PerformanceAlertsPanel";
 
 import { toast } from "sonner";
 import { format } from "date-fns";
