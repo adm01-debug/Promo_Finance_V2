@@ -256,6 +256,21 @@ export function PerformanceAlertsWeeklyTrend() {
     }
   }, []);
 
+  const handleResetFilters = useCallback(() => {
+    setSeverityFilter("all");
+    setSelectedWeek(null);
+    try {
+      window.localStorage.removeItem("perf-alerts-severity-filter");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("severity");
+      url.searchParams.delete("week");
+      window.history.replaceState({}, "", url.toString());
+    } catch {
+      /* storage/history indisponível — ignora */
+    }
+    toast.success("Filtros resetados");
+  }, [setSelectedWeek]);
+
   const handleExportPDF = useCallback(async () => {
     if (!filteredData.length) return;
     try {
