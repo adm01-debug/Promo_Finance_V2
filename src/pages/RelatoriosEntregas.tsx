@@ -198,7 +198,12 @@ export default function RelatoriosEntregas() {
                   <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v: number, n) => n === 'cost' ? brl(v) : nfmt(v)} />
                   <Legend />
-                  <Bar yAxisId="left" dataKey="cost" name="Custo" fill="hsl(var(--primary))" />
+                  <Bar yAxisId="left" dataKey="cost" name="Custo" fill="hsl(var(--primary))" cursor="pointer"
+                    onClick={(p) => {
+                      const day = (p as { day?: string })?.day;
+                      if (day) openDrill(`Entregas em ${day}`, (o) => o.scheduled_at.slice(0, 10) === day, 'Custo diário');
+                    }}
+                  />
                   <Line yAxisId="right" dataKey="orders" name="Pedidos" stroke="hsl(var(--warning))" strokeWidth={2} />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -211,7 +216,12 @@ export default function RelatoriosEntregas() {
                   <XAxis dataKey="key" tick={{ fontSize: 11 }} />
                   <YAxis tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v: number) => brl(v)} />
-                  <Bar dataKey="cost" name="Custo" fill="hsl(var(--primary))" />
+                  <Bar dataKey="cost" name="Custo" fill="hsl(var(--primary))" cursor="pointer"
+                    onClick={(p) => {
+                      const key = (p as { key?: string })?.key;
+                      if (key) openDrill(`Veículo: ${key}`, (o) => o.vehicle_type === key, periodLabel);
+                    }}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -220,6 +230,7 @@ export default function RelatoriosEntregas() {
           <ChartCard title="Top centros de custo" loading={isLoading}>
             <TableSimple
               rows={analytics.costByCostCenter}
+              onRowClick={(r) => openDrill(`Centro de custo: ${r.key}`, (o) => (o.cost_center || 'Não atribuído') === r.key, periodLabel)}
               columns={[
                 { key: 'key', label: 'Centro de custo' },
                 { key: 'orders', label: 'Pedidos', align: 'right', render: (r) => nfmt(r.orders) },
