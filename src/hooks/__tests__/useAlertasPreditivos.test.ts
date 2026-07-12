@@ -23,7 +23,9 @@ vi.mock('@/lib/logger', () => ({
 import { useAlertasPreditivos } from '../useAlertasPreditivos';
 
 describe('useAlertasPreditivos', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it('gera alerta de ruptura quando saldo projetado fica negativo', async () => {
     const { result } = renderHook(() => useAlertasPreditivos());

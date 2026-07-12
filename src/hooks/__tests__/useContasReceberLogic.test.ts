@@ -157,13 +157,13 @@ describe('useContasReceberLogic - KPI calculation', () => {
     });
 
     it('KPI "vencido" define status para vencido', () => {
-      const filter = 'vencido';
+      const filter: string = 'vencido';
       const statusFilter = filter === 'all' ? 'all' : filter;
       expect(statusFilter).toBe('vencido');
     });
 
     it('KPI "pago" define status para pago', () => {
-      const filter = 'pago';
+      const filter: string = 'pago';
       const statusFilter = filter === 'all' ? 'all' : filter;
       expect(statusFilter).toBe('pago');
     });

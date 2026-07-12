@@ -32,15 +32,15 @@ describe('fator-r — calcularFolha12m', () => {
     const hist: FolhaMes[] = Array.from({ length: 12 }, (_, i) => ({
       ano: 2024,
       mes: i + 1,
-      total_folha: 10_000,
+      salarios: 8000, pro_labore: 1000, encargos: 1000, total_folha: 10_000,
     }));
     expect(calcularFolha12m(hist, 2025, 1)).toBe(120_000);
   });
 
   it('proporcionaliza para empresa em início de atividade', () => {
     const hist: FolhaMes[] = [
-      { ano: 2024, mes: 11, total_folha: 5_000 },
-      { ano: 2024, mes: 12, total_folha: 5_000 },
+      { ano: 2024, mes: 11, salarios: 4000, pro_labore: 500, encargos: 500, total_folha: 5_000 },
+      { ano: 2024, mes: 12, salarios: 4000, pro_labore: 500, encargos: 500, total_folha: 5_000 },
     ];
     // média 5k * 12 = 60k
     expect(calcularFolha12m(hist, 2025, 1)).toBe(60_000);
@@ -48,8 +48,8 @@ describe('fator-r — calcularFolha12m', () => {
 
   it('ignora meses futuros em relação à referência', () => {
     const hist: FolhaMes[] = [
-      { ano: 2025, mes: 5, total_folha: 99_999 }, // futuro
-      { ano: 2024, mes: 12, total_folha: 1_000 },
+      { ano: 2025, mes: 5, salarios: 80000, pro_labore: 10000, encargos: 9999, total_folha: 99_999 }, // futuro
+      { ano: 2024, mes: 12, salarios: 800, pro_labore: 100, encargos: 100, total_folha: 1_000 },
     ];
     // só o de dez/2024 conta → 1k * 12
     expect(calcularFolha12m(hist, 2025, 1)).toBe(12_000);
@@ -197,7 +197,7 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
     const folhaMensal: FolhaMes[] = Array.from({ length: 12 }, (_, i) => ({
       ano: 2024,
       mes: i + 1,
-      total_folha: 20_000, // 240k/ano
+      salarios: 16000, pro_labore: 2000, encargos: 2000, total_folha: 20_000, // 240k/ano
     }));
     const r = simularSimples(
       {
