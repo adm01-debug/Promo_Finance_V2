@@ -182,13 +182,13 @@ export function DeliveryHeatmap({ points, loading }: Props) {
       });
       map.on('click', 'clusters', (e) => {
         const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-        const clusterId = features[0]?.properties?.cluster_id;
+        const clusterId = features[0]?.properties?.cluster_id as number | undefined;
         const source = map.getSource('deliveries') as mapboxgl.GeoJSONSource;
-        if (clusterId != null) {
-          source.getClusterExpansionZoom(clusterId).then((zoom) => {
-            map.easeTo({ center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number], zoom });
-          }).catch(() => {});
-        }
+        if (clusterId == null) return;
+        source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err || zoom == null) return;
+          map.easeTo({ center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number], zoom });
+        });
       });
       map.on('mouseenter', 'clusters', () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', 'clusters', () => (map.getCanvas().style.cursor = ''));
