@@ -151,6 +151,7 @@ const navGroups: NavGroup[] = [
       { label: 'Retenções na Fonte', icon: Receipt, href: '/tributario/retencoes' },
       { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
+      { label: 'Relatórios de Entregas', icon: FileText, href: '/relatorios/entregas', highlight: true },
       { label: 'Simulação de Regimes', icon: Calculator, href: '/tributario/simulacao-regimes', highlight: true },
       { label: 'Oportunidades de Elisão', icon: Sparkles, href: '/tributario/oportunidades-elisao', highlight: true },
       { label: 'Projeção 2026-2033', icon: BarChart3, href: '/tributario/projecao-reforma', highlight: true },
