@@ -419,6 +419,18 @@ export function PerformanceAlertsWeeklyTrend() {
           </ToggleGroup>
           <Button
             size="sm"
+            variant="ghost"
+            onClick={handleResetFilters}
+            disabled={severityFilter === "all" && !selectedWeek}
+            className="h-8 gap-1.5"
+            title="Resetar severidade e semana selecionada"
+            aria-label="Resetar filtros"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Reset
+          </Button>
+          <Button
+            size="sm"
             variant="outline"
             onClick={handleCopyLink}
             className="h-8 gap-1.5"
