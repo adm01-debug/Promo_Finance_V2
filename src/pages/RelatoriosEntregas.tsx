@@ -260,6 +260,22 @@ export default function RelatoriosEntregas() {
 
         {/* GEOGRAFIA */}
         <TabsContent value="geografia" className="space-y-4">
+          <ChartCard title="Mapa de densidade de entregas" loading={isLoading}>
+            <DeliveryHeatmap
+              loading={isLoading}
+              points={(data ?? [])
+                .filter((o) => o.delivery_latitude != null && o.delivery_longitude != null)
+                .map((o) => ({
+                  id: o.id,
+                  lat: Number(o.delivery_latitude),
+                  lng: Number(o.delivery_longitude),
+                  cost: Number(o.total_cost || 0),
+                  status: o.status,
+                  customer: o.customer_name,
+                }))}
+            />
+          </ChartCard>
+
           <ChartCard title="Top 15 regiões por volume" loading={isLoading}>
             <ResponsiveContainer width="100%" height={380}>
               <BarChart data={analytics.regionSeries} layout="vertical" margin={{ left: 100 }}>
