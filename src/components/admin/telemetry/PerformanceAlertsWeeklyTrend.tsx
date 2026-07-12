@@ -7,8 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useMemo, useState, useEffect, useCallback } from "react";
-
-type SeverityFilter = "all" | "critical" | "warning" | "info";
+import {
+  type SeverityFilter,
+  readSeverityFromLocation,
+  readWeekFromLocation,
+  buildUrlWithParams,
+} from "./performance-alerts-deeplink";
 import {
   ResponsiveContainer,
   BarChart,
@@ -74,46 +78,33 @@ export function PerformanceAlertsWeeklyTrend() {
     staleTime: 5 * 60_000,
   });
 
-  const isIsoDate = (v: string | null): v is string => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
-
   const [selectedWeek, setSelectedWeekState] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
-    const wk = new URLSearchParams(window.location.search).get("week");
-    return isIsoDate(wk) ? wk : null;
+    return readWeekFromLocation(window.location.search);
   });
 
   const setSelectedWeek = useCallback((wk: string | null) => {
     setSelectedWeekState(wk);
     try {
-      const url = new URL(window.location.href);
-      if (wk) url.searchParams.set("week", wk);
-      else url.searchParams.delete("week");
-      window.history.replaceState({}, "", url.toString());
+      const next = buildUrlWithParams(window.location.href, { week: wk });
+      window.history.replaceState({}, "", next);
     } catch {
       /* history indisponível — ignora */
     }
   }, []);
 
-  const isSeverity = (v: string | null): v is SeverityFilter =>
-    v === "all" || v === "critical" || v === "warning" || v === "info";
-
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>(() => {
     if (typeof window === "undefined") return "all";
-    // URL tem prioridade sobre localStorage (deep-link compartilhável)
-    const urlParam = new URLSearchParams(window.location.search).get("severity");
-    if (isSeverity(urlParam)) return urlParam;
     const stored = window.localStorage.getItem("perf-alerts-severity-filter");
-    return isSeverity(stored) ? stored : "all";
+    return readSeverityFromLocation(window.location.search, stored);
   });
 
   const handleSeverityChange = useCallback((v: SeverityFilter) => {
     setSeverityFilter(v);
     try {
       window.localStorage.setItem("perf-alerts-severity-filter", v);
-      const url = new URL(window.location.href);
-      if (v === "all") url.searchParams.delete("severity");
-      else url.searchParams.set("severity", v);
-      window.history.replaceState({}, "", url.toString());
+      const next = buildUrlWithParams(window.location.href, { severity: v });
+      window.history.replaceState({}, "", next);
     } catch {
       /* storage/history indisponível — ignora */
     }
