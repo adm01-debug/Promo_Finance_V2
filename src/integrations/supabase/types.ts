@@ -2773,6 +2773,51 @@ export type Database = {
         }
         Relationships: []
       }
+      bloat_snapshots: {
+        Row: {
+          autovacuum_count: number
+          created_at: string
+          dead_ratio_pct: number
+          dead_rows: number
+          id: string
+          last_autovacuum: string | null
+          last_vacuum: string | null
+          live_rows: number
+          snapshot_date: string
+          table_name: string
+          total_size_bytes: number
+          total_size_pretty: string | null
+        }
+        Insert: {
+          autovacuum_count?: number
+          created_at?: string
+          dead_ratio_pct?: number
+          dead_rows?: number
+          id?: string
+          last_autovacuum?: string | null
+          last_vacuum?: string | null
+          live_rows?: number
+          snapshot_date?: string
+          table_name: string
+          total_size_bytes?: number
+          total_size_pretty?: string | null
+        }
+        Update: {
+          autovacuum_count?: number
+          created_at?: string
+          dead_ratio_pct?: number
+          dead_rows?: number
+          id?: string
+          last_autovacuum?: string | null
+          last_vacuum?: string | null
+          live_rows?: number
+          snapshot_date?: string
+          table_name?: string
+          total_size_bytes?: number
+          total_size_pretty?: string | null
+        }
+        Relationships: []
+      }
       blocked_ips: {
         Row: {
           attempts_count: number | null
@@ -12997,6 +13042,20 @@ export type Database = {
           table_name: string
         }[]
       }
+      get_bloat_snapshots: {
+        Args: { p_days?: number; p_table_name?: string }
+        Returns: {
+          autovacuum_count: number
+          dead_ratio_pct: number
+          dead_rows: number
+          last_autovacuum: string
+          live_rows: number
+          snapshot_date: string
+          table_name: string
+          total_size_bytes: number
+          total_size_pretty: string
+        }[]
+      }
       get_cron_jobs: {
         Args: never
         Returns: {
@@ -13205,6 +13264,7 @@ export type Database = {
       }
       run_daily_cleanup: { Args: never; Returns: Json }
       run_daily_cleanup_with_logging: { Args: never; Returns: undefined }
+      snapshot_table_bloat: { Args: never; Returns: Json }
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
         Returns: boolean
