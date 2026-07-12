@@ -109,8 +109,8 @@ export function useAuditoriaIA() {
       return rows.map((r) => {
         const profile = r.aprovado_por ? profileMap.get(r.aprovado_por) : undefined;
         const tx = r.transacao_bancaria_id ? txMap.get(r.transacao_bancaria_id) : undefined;
-        const conta = (tx as any)?.conta_bancaria_id ? contaMap.get((tx as any).conta_bancaria_id) : undefined;
-        const empresa = (conta as any)?.empresa_id ? empresaMap.get((conta as any).empresa_id) : undefined;
+        const conta = tx?.conta_bancaria_id ? contaMap.get(tx.conta_bancaria_id) : undefined;
+        const empresa = conta?.empresa_id ? empresaMap.get(conta.empresa_id) : undefined;
         return {
           id: r.id,
           created_at: r.created_at,
@@ -124,14 +124,14 @@ export function useAuditoriaIA() {
           conta_pagar_id: r.conta_pagar_id,
           conta_receber_id: r.conta_receber_id,
           aprovado_por: r.aprovado_por,
-          user_email: (profile as any)?.email ?? null,
-          user_full_name: (profile as any)?.full_name ?? null,
-          empresa_id: (empresa as any)?.id ?? null,
-          empresa_cnpj: (empresa as any)?.cnpj ?? null,
-          empresa_razao_social: (empresa as any)?.razao_social ?? null,
-          transacao_descricao: (tx as any)?.descricao ?? null,
-          transacao_valor: (tx as any)?.valor ?? null,
-          transacao_data: (tx as any)?.data ?? null,
+          user_email: profile?.email ?? null,
+          user_full_name: profile?.full_name ?? null,
+          empresa_id: empresa?.id ?? null,
+          empresa_cnpj: empresa?.cnpj ?? null,
+          empresa_razao_social: empresa?.razao_social ?? null,
+          transacao_descricao: tx?.descricao ?? null,
+          transacao_valor: tx?.valor ?? null,
+          transacao_data: tx?.data ?? null,
           motivo_rejeicao: r.transacao_bancaria_id ? (motivoMap.get(r.transacao_bancaria_id) ?? null) : null,
         } satisfies AuditoriaIARow;
       });
