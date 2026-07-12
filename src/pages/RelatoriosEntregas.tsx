@@ -13,8 +13,9 @@ import {
   XAxis, YAxis, Tooltip, Legend, CartesianGrid, ComposedChart,
 } from 'recharts';
 import { Download, DollarSign, Clock, MapPin, Package, TrendingUp, CheckCircle2, RotateCcw } from 'lucide-react';
-import { useDeliveryReports, type DeliveryReportFilters } from '@/hooks/useDeliveryReports';
+import { useDeliveryReports, extractRegion, type DeliveryReportFilters } from '@/hooks/useDeliveryReports';
 import { exportToCSV } from '@/lib/export-utils';
+import { DeliveryDrilldownDialog, type DrilldownOrder } from '@/components/relatorios/DeliveryDrilldownDialog';
 import { DeliveryHeatmap } from '@/components/relatorios/DeliveryHeatmap';
 
 const STATUS_OPTIONS = ['ALL', 'PENDING', 'MATCHED', 'ON_GOING', 'PICKED_UP', 'COMPLETED', 'CANCELLED', 'REJECTED', 'EXPIRED'] as const;
@@ -81,6 +82,17 @@ export default function RelatoriosEntregas() {
 
   const { data, isLoading, analytics, refetch, isFetching } = useDeliveryReports(filters);
   const kpis = analytics.kpis;
+
+  const [drill, setDrill] = useState<{ title: string; subtitle?: string; orders: DrilldownOrder[] } | null>(null);
+  const openDrill = useCallback(
+    (title: string, predicate: (o: typeof data extends readonly (infer U)[] | undefined ? U : never) => boolean, subtitle?: string) => {
+      const all = (data ?? []) as unknown as DrilldownOrder[];
+      const filtered = all.filter((o) => predicate(o as never));
+      setDrill({ title, subtitle, orders: filtered });
+    },
+    [data],
+  );
+  const periodLabel = `${filters.from} → ${filters.to}`;
 
   const handleExport = () => {
     if (!data?.length) return;
@@ -150,14 +162,20 @@ export default function RelatoriosEntregas() {
         </CardContent>
       </Card>
 
-      {/* KPIs */}
+      {/* KPIs — clique para drill-down */}
       <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
-        <KpiCard icon={<Package className="h-4 w-4" />} label="Pedidos" value={nfmt(kpis.total)} loading={isLoading} />
-        <KpiCard icon={<CheckCircle2 className="h-4 w-4" />} label="Concluídos" value={`${nfmt(kpis.completionRate, 1)}%`} loading={isLoading} />
-        <KpiCard icon={<Clock className="h-4 w-4" />} label="No prazo" value={`${nfmt(kpis.onTimeRate, 1)}%`} loading={isLoading} />
-        <KpiCard icon={<DollarSign className="h-4 w-4" />} label="Custo total" value={brl(kpis.totalCost)} loading={isLoading} />
-        <KpiCard icon={<TrendingUp className="h-4 w-4" />} label="Ticket médio" value={brl(kpis.avgCost)} loading={isLoading} />
-        <KpiCard icon={<MapPin className="h-4 w-4" />} label="R$/km" value={brl(kpis.costPerKm)} loading={isLoading} />
+        <KpiCard icon={<Package className="h-4 w-4" />} label="Pedidos" value={nfmt(kpis.total)} loading={isLoading}
+          onClick={() => openDrill('Todos os pedidos', () => true, periodLabel)} />
+        <KpiCard icon={<CheckCircle2 className="h-4 w-4" />} label="Concluídos" value={`${nfmt(kpis.completionRate, 1)}%`} loading={isLoading}
+          onClick={() => openDrill('Pedidos concluídos', (o) => o.status === 'COMPLETED', periodLabel)} />
+        <KpiCard icon={<Clock className="h-4 w-4" />} label="No prazo" value={`${nfmt(kpis.onTimeRate, 1)}%`} loading={isLoading}
+          onClick={() => openDrill('Entregas no prazo', (o) => o.status === 'COMPLETED' && (o.delay_minutes ?? 0) <= 0, periodLabel)} />
+        <KpiCard icon={<DollarSign className="h-4 w-4" />} label="Custo total" value={brl(kpis.totalCost)} loading={isLoading}
+          onClick={() => openDrill('Pedidos com custo', (o) => Number(o.total_cost || 0) > 0, periodLabel)} />
+        <KpiCard icon={<TrendingUp className="h-4 w-4" />} label="Ticket médio" value={brl(kpis.avgCost)} loading={isLoading}
+          onClick={() => openDrill('Todos os pedidos', () => true, periodLabel)} />
+        <KpiCard icon={<MapPin className="h-4 w-4" />} label="R$/km" value={brl(kpis.costPerKm)} loading={isLoading}
+          onClick={() => openDrill('Pedidos com distância', (o) => Number(o.distance_meters || 0) > 0, periodLabel)} />
       </div>
 
       {/* Tabs */}
@@ -180,7 +198,12 @@ export default function RelatoriosEntregas() {
                   <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v: number, n) => n === 'cost' ? brl(v) : nfmt(v)} />
                   <Legend />
-                  <Bar yAxisId="left" dataKey="cost" name="Custo" fill="hsl(var(--primary))" />
+                  <Bar yAxisId="left" dataKey="cost" name="Custo" fill="hsl(var(--primary))" cursor="pointer"
+                    onClick={(p) => {
+                      const day = (p as { day?: string })?.day;
+                      if (day) openDrill(`Entregas em ${day}`, (o) => o.scheduled_at.slice(0, 10) === day, 'Custo diário');
+                    }}
+                  />
                   <Line yAxisId="right" dataKey="orders" name="Pedidos" stroke="hsl(var(--warning))" strokeWidth={2} />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -193,7 +216,12 @@ export default function RelatoriosEntregas() {
                   <XAxis dataKey="key" tick={{ fontSize: 11 }} />
                   <YAxis tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v: number) => brl(v)} />
-                  <Bar dataKey="cost" name="Custo" fill="hsl(var(--primary))" />
+                  <Bar dataKey="cost" name="Custo" fill="hsl(var(--primary))" cursor="pointer"
+                    onClick={(p) => {
+                      const key = (p as { key?: string })?.key;
+                      if (key) openDrill(`Veículo: ${key}`, (o) => o.vehicle_type === key, periodLabel);
+                    }}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -202,6 +230,7 @@ export default function RelatoriosEntregas() {
           <ChartCard title="Top centros de custo" loading={isLoading}>
             <TableSimple
               rows={analytics.costByCostCenter}
+              onRowClick={(r) => openDrill(`Centro de custo: ${r.key}`, (o) => (o.cost_center || 'Não atribuído') === r.key, periodLabel)}
               columns={[
                 { key: 'key', label: 'Centro de custo' },
                 { key: 'orders', label: 'Pedidos', align: 'right', render: (r) => nfmt(r.orders) },
@@ -214,9 +243,12 @@ export default function RelatoriosEntregas() {
         {/* PERFORMANCE */}
         <TabsContent value="performance" className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-3">
-            <KpiCard label="Atraso médio" value={`${nfmt(kpis.avgDelay, 1)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />} />
-            <KpiCard label="Duração média" value={`${nfmt(kpis.avgDuration, 0)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />} />
-            <KpiCard label="Cancelamentos" value={nfmt(kpis.cancelled)} loading={isLoading} icon={<Package className="h-4 w-4" />} />
+            <KpiCard label="Atraso médio" value={`${nfmt(kpis.avgDelay, 1)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />}
+              onClick={() => openDrill('Pedidos atrasados (>0 min)', (o) => (o.delay_minutes ?? 0) > 0, periodLabel)} />
+            <KpiCard label="Duração média" value={`${nfmt(kpis.avgDuration, 0)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />}
+              onClick={() => openDrill('Pedidos com duração registrada', (o) => o.duration_minutes != null, periodLabel)} />
+            <KpiCard label="Cancelamentos" value={nfmt(kpis.cancelled)} loading={isLoading} icon={<Package className="h-4 w-4" />}
+              onClick={() => openDrill('Cancelamentos', (o) => ['CANCELLED', 'REJECTED', 'EXPIRED'].includes(o.status), periodLabel)} />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
@@ -227,7 +259,17 @@ export default function RelatoriosEntregas() {
                   <XAxis dataKey="day" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v: number) => `${nfmt(v, 1)} min`} />
-                  <Line dataKey="avgDelay" name="Atraso médio" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                  <Line dataKey="avgDelay" name="Atraso médio"
+                    stroke="hsl(var(--destructive))" strokeWidth={2}
+                    dot={{ r: 3, cursor: 'pointer' }}
+                    activeDot={{
+                      r: 5, cursor: 'pointer',
+                      onClick: (_, payload) => {
+                        const day = (payload as { payload?: { day?: string } })?.payload?.day;
+                        if (day) openDrill(`Entregas em ${day}`, (o) => o.scheduled_at.slice(0, 10) === day, `Atraso médio no dia`);
+                      },
+                    }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -235,7 +277,13 @@ export default function RelatoriosEntregas() {
             <ChartCard title="Distribuição por status" loading={isLoading}>
               <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
-                  <Pie data={analytics.statusDistribution} dataKey="value" nameKey="key" cx="50%" cy="50%" outerRadius={100} label>
+                  <Pie data={analytics.statusDistribution} dataKey="value" nameKey="key" cx="50%" cy="50%" outerRadius={100} label
+                    onClick={(payload) => {
+                      const key = (payload as { key?: string })?.key;
+                      if (key) openDrill(`Pedidos com status ${key}`, (o) => o.status === key, periodLabel);
+                    }}
+                    cursor="pointer"
+                  >
                     {analytics.statusDistribution.map((_, i) => (
                       <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                     ))}
@@ -250,6 +298,7 @@ export default function RelatoriosEntregas() {
           <ChartCard title="Top clientes por custo" loading={isLoading}>
             <TableSimple
               rows={analytics.topCustomers}
+              onRowClick={(r) => openDrill(`Cliente: ${r.key}`, (o) => (o.customer_name || 'Sem cliente') === r.key, periodLabel)}
               columns={[
                 { key: 'key', label: 'Cliente' },
                 { key: 'orders', label: 'Pedidos', align: 'right', render: (r) => nfmt(r.orders) },
@@ -285,7 +334,12 @@ export default function RelatoriosEntregas() {
                 <YAxis type="category" dataKey="key" tick={{ fontSize: 11 }} width={120} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="orders" name="Pedidos" fill="hsl(var(--primary))" />
+                <Bar dataKey="orders" name="Pedidos" fill="hsl(var(--primary))" cursor="pointer"
+                  onClick={(p) => {
+                    const key = (p as { key?: string })?.key;
+                    if (key) openDrill(`Região: ${key}`, (o) => extractRegion(o.delivery_address) === key, periodLabel);
+                  }}
+                />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -293,6 +347,7 @@ export default function RelatoriosEntregas() {
           <ChartCard title="Detalhamento por região" loading={isLoading}>
             <TableSimple
               rows={analytics.regionSeries}
+              onRowClick={(r) => openDrill(`Região: ${r.key}`, (o) => extractRegion(o.delivery_address) === r.key, periodLabel)}
               columns={[
                 { key: 'key', label: 'Região' },
                 { key: 'orders', label: 'Pedidos', align: 'right', render: (r) => nfmt(r.orders) },
@@ -310,16 +365,31 @@ export default function RelatoriosEntregas() {
           </ChartCard>
         </TabsContent>
       </Tabs>
+
+      <DeliveryDrilldownDialog
+        open={!!drill}
+        onOpenChange={(v) => { if (!v) setDrill(null); }}
+        title={drill?.title ?? ''}
+        subtitle={drill?.subtitle}
+        orders={drill?.orders ?? []}
+      />
     </div>
   );
 }
 
 // ---------- Sub-componentes ----------
 
-interface KpiCardProps { label: string; value: string; loading: boolean; icon?: React.ReactNode }
-function KpiCard({ label, value, loading, icon }: KpiCardProps) {
+interface KpiCardProps { label: string; value: string; loading: boolean; icon?: React.ReactNode; onClick?: () => void }
+function KpiCard({ label, value, loading, icon, onClick }: KpiCardProps) {
+  const interactive = !!onClick && !loading;
   return (
-    <Card>
+    <Card
+      onClick={interactive ? onClick : undefined}
+      className={interactive ? 'cursor-pointer transition-colors hover:border-primary/40 hover:bg-muted/30' : ''}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={interactive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } } : undefined}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between text-muted-foreground">
           <span className="text-xs">{label}</span>
@@ -346,7 +416,8 @@ function ChartCard({ title, loading, children }: ChartCardProps) {
 }
 
 interface Column<T> { key: keyof T | string; label: string; align?: 'left' | 'right'; render?: (row: T) => React.ReactNode }
-function TableSimple<T extends Record<string, unknown>>({ rows, columns }: { rows: T[]; columns: Column<T>[] }) {
+interface TableSimpleProps<T> { rows: T[]; columns: Column<T>[]; onRowClick?: (row: T) => void }
+function TableSimple<T extends Record<string, unknown>>({ rows, columns, onRowClick }: TableSimpleProps<T>) {
   if (!rows.length) return <p className="py-4 text-center text-sm text-muted-foreground">Sem dados no período</p>;
   return (
     <div className="overflow-x-auto">
@@ -360,7 +431,11 @@ function TableSimple<T extends Record<string, unknown>>({ rows, columns }: { row
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className="border-b last:border-0 hover:bg-muted/40">
+            <tr
+              key={i}
+              onClick={onRowClick ? () => onRowClick(r) : undefined}
+              className={`border-b last:border-0 hover:bg-muted/40 ${onRowClick ? 'cursor-pointer' : ''}`}
+            >
               {columns.map((c) => (
                 <td key={String(c.key)} className={`py-2 pr-4 ${c.align === 'right' ? 'text-right' : ''}`}>
                   {c.render ? c.render(r) : String(r[c.key as keyof T] ?? '')}
