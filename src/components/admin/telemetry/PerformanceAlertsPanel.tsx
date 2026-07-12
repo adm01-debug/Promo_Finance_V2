@@ -164,7 +164,7 @@ export function PerformanceAlertsPanel() {
                       {r.ratio != null ? `${Number(r.ratio).toFixed(2)}x` : "—"}
                     </td>
                     <td className="py-2 text-right tabular-nums">{r.sample_count ?? "—"}</td>
-                    <td className="py-2 text-right tabular-nums">{r.occurrences}</td>
+                    <td className="py-2 text-right tabular-nums text-muted-foreground text-[10px]">{new Date(r.created_at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</td>
                   </tr>
                 ))}
               </tbody>
