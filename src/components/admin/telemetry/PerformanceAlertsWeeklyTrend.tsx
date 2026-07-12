@@ -99,7 +99,7 @@ export function PerformanceAlertsWeeklyTrend() {
     return Array.from(map.entries())
       .sort(([a], [b]) => (a < b ? -1 : 1))
       .map(([, v]) => v);
-  }, [data]);
+  }, [filteredData]);
 
   const baseline = useMemo(() => {
     if (!chartData.length) return 0;
