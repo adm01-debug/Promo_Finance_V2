@@ -159,7 +159,7 @@ export function PerformanceAlertsWeeklyTrend() {
             type="single"
             size="sm"
             value={severityFilter}
-            onValueChange={(v) => v && setSeverityFilter(v as SeverityFilter)}
+            onValueChange={(v) => v && handleSeverityChange(v as SeverityFilter)}
             className="h-8"
           >
             <ToggleGroupItem value="all" className="h-7 px-2 text-[11px]">Todos</ToggleGroupItem>
