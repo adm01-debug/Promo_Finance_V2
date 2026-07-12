@@ -7,8 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useMemo, useState, useEffect, useCallback } from "react";
-
-type SeverityFilter = "all" | "critical" | "warning" | "info";
+import {
+  type SeverityFilter,
+  isSeverity,
+  isIsoDate,
+  readSeverityFromLocation,
+  readWeekFromLocation,
+  buildUrlWithParams,
+} from "./performance-alerts-deeplink";
 import {
   ResponsiveContainer,
   BarChart,
