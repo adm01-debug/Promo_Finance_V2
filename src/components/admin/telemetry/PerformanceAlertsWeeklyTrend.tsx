@@ -119,7 +119,7 @@ export function PerformanceAlertsWeeklyTrend() {
       const s = String(v);
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const rows = data.map((r) => headers.map((h) => escape((r as any)[h])).join(","));
+    const rows = filteredData.map((r) => headers.map((h) => escape((r as any)[h])).join(","));
     const csv = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
