@@ -354,10 +354,17 @@ export default function RelatoriosEntregas() {
 
 // ---------- Sub-componentes ----------
 
-interface KpiCardProps { label: string; value: string; loading: boolean; icon?: React.ReactNode }
-function KpiCard({ label, value, loading, icon }: KpiCardProps) {
+interface KpiCardProps { label: string; value: string; loading: boolean; icon?: React.ReactNode; onClick?: () => void }
+function KpiCard({ label, value, loading, icon, onClick }: KpiCardProps) {
+  const interactive = !!onClick && !loading;
   return (
-    <Card>
+    <Card
+      onClick={interactive ? onClick : undefined}
+      className={interactive ? 'cursor-pointer transition-colors hover:border-primary/40 hover:bg-muted/30' : ''}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={interactive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } } : undefined}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between text-muted-foreground">
           <span className="text-xs">{label}</span>
@@ -384,7 +391,8 @@ function ChartCard({ title, loading, children }: ChartCardProps) {
 }
 
 interface Column<T> { key: keyof T | string; label: string; align?: 'left' | 'right'; render?: (row: T) => React.ReactNode }
-function TableSimple<T extends Record<string, unknown>>({ rows, columns }: { rows: T[]; columns: Column<T>[] }) {
+interface TableSimpleProps<T> { rows: T[]; columns: Column<T>[]; onRowClick?: (row: T) => void }
+function TableSimple<T extends Record<string, unknown>>({ rows, columns, onRowClick }: TableSimpleProps<T>) {
   if (!rows.length) return <p className="py-4 text-center text-sm text-muted-foreground">Sem dados no período</p>;
   return (
     <div className="overflow-x-auto">
@@ -398,7 +406,11 @@ function TableSimple<T extends Record<string, unknown>>({ rows, columns }: { row
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className="border-b last:border-0 hover:bg-muted/40">
+            <tr
+              key={i}
+              onClick={onRowClick ? () => onRowClick(r) : undefined}
+              className={`border-b last:border-0 hover:bg-muted/40 ${onRowClick ? 'cursor-pointer' : ''}`}
+            >
               {columns.map((c) => (
                 <td key={String(c.key)} className={`py-2 pr-4 ${c.align === 'right' ? 'text-right' : ''}`}>
                   {c.render ? c.render(r) : String(r[c.key as keyof T] ?? '')}
