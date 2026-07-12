@@ -69,9 +69,11 @@ export function PerformanceAlertsWeeklyTrend() {
     staleTime: 5 * 60_000,
   });
 
-  // Agrega por semana: {week, critical, warning, info}
+  const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+
+  // Agrega por semana: {week, weekKey, critical, warning, info}
   const chartData = useMemo(() => {
-    const map = new Map<string, { week: string; critical: number; warning: number; info: number }>();
+    const map = new Map<string, { week: string; weekKey: string; critical: number; warning: number; info: number }>();
     for (const r of data) {
       const key = r.week_start;
       const label = new Date(r.week_start).toLocaleDateString("pt-BR", {
