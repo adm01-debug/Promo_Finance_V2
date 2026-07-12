@@ -5,7 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, LineChart, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useMemo, useState } from "react";
+
+type SeverityFilter = "all" | "critical" | "warning" | "info";
 import {
   ResponsiveContainer,
   BarChart,
@@ -70,11 +73,17 @@ export function PerformanceAlertsWeeklyTrend() {
   });
 
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+
+  const filteredData = useMemo(
+    () => (severityFilter === "all" ? data : data.filter((r) => r.severity === severityFilter)),
+    [data, severityFilter],
+  );
 
   // Agrega por semana: {week, weekKey, critical, warning, info}
   const chartData = useMemo(() => {
     const map = new Map<string, { week: string; weekKey: string; critical: number; warning: number; info: number }>();
-    for (const r of data) {
+    for (const r of filteredData) {
       const key = r.week_start;
       const label = new Date(r.week_start).toLocaleDateString("pt-BR", {
         day: "2-digit",
@@ -90,7 +99,7 @@ export function PerformanceAlertsWeeklyTrend() {
     return Array.from(map.entries())
       .sort(([a], [b]) => (a < b ? -1 : 1))
       .map(([, v]) => v);
-  }, [data]);
+  }, [filteredData]);
 
   const baseline = useMemo(() => {
     if (!chartData.length) return 0;
@@ -100,7 +109,7 @@ export function PerformanceAlertsWeeklyTrend() {
   }, [chartData]);
 
   const handleExportCSV = () => {
-    if (!data.length) return;
+    if (!filteredData.length) return;
     const headers = [
       "week_start","source","severity","alert_count","distinct_keys",
       "avg_current_ms","max_current_ms","avg_ratio","max_ratio","total_samples","delta_pct_vs_prev_week",
@@ -110,7 +119,7 @@ export function PerformanceAlertsWeeklyTrend() {
       const s = String(v);
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const rows = data.map((r) => headers.map((h) => escape((r as any)[h])).join(","));
+    const rows = filteredData.map((r) => headers.map((h) => escape((r as any)[h])).join(","));
     const csv = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -130,16 +139,30 @@ export function PerformanceAlertsWeeklyTrend() {
           <LineChart className="h-4 w-4 text-primary" />
           Tendência Semanal de Regressões (12 semanas)
         </CardTitle>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleExportCSV}
-          disabled={isLoading || data.length === 0}
-          className="h-8 gap-1.5"
-        >
-          <Download className="h-3.5 w-3.5" />
-          CSV
-        </Button>
+        <div className="flex items-center gap-2">
+          <ToggleGroup
+            type="single"
+            size="sm"
+            value={severityFilter}
+            onValueChange={(v) => v && setSeverityFilter(v as SeverityFilter)}
+            className="h-8"
+          >
+            <ToggleGroupItem value="all" className="h-7 px-2 text-[11px]">Todos</ToggleGroupItem>
+            <ToggleGroupItem value="critical" className="h-7 px-2 text-[11px]">Crítico</ToggleGroupItem>
+            <ToggleGroupItem value="warning" className="h-7 px-2 text-[11px]">Aviso</ToggleGroupItem>
+            <ToggleGroupItem value="info" className="h-7 px-2 text-[11px]">Info</ToggleGroupItem>
+          </ToggleGroup>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExportCSV}
+            disabled={isLoading || filteredData.length === 0}
+            className="h-8 gap-1.5"
+          >
+            <Download className="h-3.5 w-3.5" />
+            CSV
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -209,7 +232,7 @@ export function PerformanceAlertsWeeklyTrend() {
                 </tr>
               </thead>
               <tbody>
-                {data.slice(0, 60).map((r, idx) => (
+                {filteredData.slice(0, 60).map((r, idx) => (
                   <tr key={`${r.week_start}-${r.source}-${r.severity}-${idx}`} className="border-b border-muted/40">
                     <td className="py-2 tabular-nums">
                       {new Date(r.week_start).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
