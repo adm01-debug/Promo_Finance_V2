@@ -7,7 +7,7 @@ export function useMetasFinanceiras(ano?: number, mes?: number) {
   return useQuery({
     queryKey: ['metas-financeiras', ano, mes],
     queryFn: async () => {
-      let query = supabase.from('metas_financeiras').select('*').eq('ativo', true).order('ano', { ascending: false }).order('mes');
+      let query = supabase.from('metas_financeiras' as never).select('*').eq('ativo', true).order('ano', { ascending: false }).order('mes');
       if (ano) query = query.eq('ano', ano);
       if (mes) query = query.eq('mes', mes);
       const { data, error } = await query;
