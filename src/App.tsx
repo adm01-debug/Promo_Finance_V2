@@ -35,6 +35,7 @@ const BI = lazy(() => import('./pages/BI'));
 const NotasFiscais = lazy(() => import('./pages/NotasFiscais'));
 const FluxoCaixa = lazy(() => import('./pages/FluxoCaixa'));
 const Relatorios = lazy(() => import('./pages/Relatorios'));
+const RelatoriosEntregas = lazy(() => import('./pages/RelatoriosEntregas'));
 const Expert = lazy(() => import('./pages/Expert'));
 const Conciliacao = lazy(() => import('./pages/Conciliacao'));
 const Cobrancas = lazy(() => import('./pages/Cobrancas'));
@@ -163,6 +164,7 @@ function AppRoutes() {
             <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
             <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
             <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+            <Route path="/relatorios/entregas" element={<ProtectedRoute><RelatoriosEntregas /></ProtectedRoute>} />
             <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
             <Route path="/conciliacao" element={<ProtectedRoute><Conciliacao /></ProtectedRoute>} />
             <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
