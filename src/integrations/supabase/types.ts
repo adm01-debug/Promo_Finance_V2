@@ -8530,6 +8530,54 @@ export type Database = {
         }
         Relationships: []
       }
+      pg_stat_statements_baseline: {
+        Row: {
+          calls: number | null
+          captured_at: string
+          created_at: string
+          id: string
+          label: string
+          max_exec_time: number | null
+          mean_exec_time: number | null
+          query: string | null
+          queryid: number | null
+          rows: number | null
+          shared_blks_hit: number | null
+          shared_blks_read: number | null
+          total_exec_time: number | null
+        }
+        Insert: {
+          calls?: number | null
+          captured_at?: string
+          created_at?: string
+          id?: string
+          label: string
+          max_exec_time?: number | null
+          mean_exec_time?: number | null
+          query?: string | null
+          queryid?: number | null
+          rows?: number | null
+          shared_blks_hit?: number | null
+          shared_blks_read?: number | null
+          total_exec_time?: number | null
+        }
+        Update: {
+          calls?: number | null
+          captured_at?: string
+          created_at?: string
+          id?: string
+          label?: string
+          max_exec_time?: number | null
+          mean_exec_time?: number | null
+          query?: string | null
+          queryid?: number | null
+          rows?: number | null
+          shared_blks_hit?: number | null
+          shared_blks_read?: number | null
+          total_exec_time?: number | null
+        }
+        Relationships: []
+      }
       pix_templates: {
         Row: {
           ativo: boolean
@@ -12957,6 +13005,14 @@ export type Database = {
       }
     }
     Functions: {
+      capture_pg_stat_statements_baseline: {
+        Args: { p_label: string }
+        Returns: {
+          captured_at: string
+          captured_rows: number
+          label: string
+        }[]
+      }
       capture_slow_queries: {
         Args: { threshold_ms?: number }
         Returns: {
@@ -12987,6 +13043,21 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
+      compare_pg_stat_baseline: {
+        Args: { p_label?: string }
+        Returns: {
+          baseline_calls: number
+          baseline_mean_ms: number
+          baseline_total_ms: number
+          calls_delta: number
+          current_calls: number
+          current_mean_ms: number
+          current_total_ms: number
+          mean_delta_pct: number
+          query: string
+          queryid: number
+        }[]
+      }
       confirmar_conciliacao: {
         Args: {
           p_ajuste_centavos?: number
