@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { BlingWebhookSchema, corsHeaders, validatePayload, createErrorResponse, isWebhookProcessed } from '../_shared/validation.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 
 
 export const handler = async (req: Request) => {
@@ -16,6 +17,17 @@ export const handler = async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    // Rate limit: 120 req/min por IP (webhook público — HMAC continua sendo defesa primária)
+    const ip = (req.headers.get('x-forwarded-for') || '0.0.0.0').split(',')[0].trim();
+    const rl = await checkRateLimit(supabase, {
+      endpoint: 'bling-webhook',
+      ip,
+      limit: 120,
+      windowSeconds: 60,
+      userAgent: req.headers.get('user-agent'),
+    });
+    if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
     const body = await req.json();
     console.log("Bling webhook received:", JSON.stringify(body));
