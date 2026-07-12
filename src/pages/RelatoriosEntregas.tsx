@@ -162,14 +162,20 @@ export default function RelatoriosEntregas() {
         </CardContent>
       </Card>
 
-      {/* KPIs */}
+      {/* KPIs — clique para drill-down */}
       <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
-        <KpiCard icon={<Package className="h-4 w-4" />} label="Pedidos" value={nfmt(kpis.total)} loading={isLoading} />
-        <KpiCard icon={<CheckCircle2 className="h-4 w-4" />} label="Concluídos" value={`${nfmt(kpis.completionRate, 1)}%`} loading={isLoading} />
-        <KpiCard icon={<Clock className="h-4 w-4" />} label="No prazo" value={`${nfmt(kpis.onTimeRate, 1)}%`} loading={isLoading} />
-        <KpiCard icon={<DollarSign className="h-4 w-4" />} label="Custo total" value={brl(kpis.totalCost)} loading={isLoading} />
-        <KpiCard icon={<TrendingUp className="h-4 w-4" />} label="Ticket médio" value={brl(kpis.avgCost)} loading={isLoading} />
-        <KpiCard icon={<MapPin className="h-4 w-4" />} label="R$/km" value={brl(kpis.costPerKm)} loading={isLoading} />
+        <KpiCard icon={<Package className="h-4 w-4" />} label="Pedidos" value={nfmt(kpis.total)} loading={isLoading}
+          onClick={() => openDrill('Todos os pedidos', () => true, periodLabel)} />
+        <KpiCard icon={<CheckCircle2 className="h-4 w-4" />} label="Concluídos" value={`${nfmt(kpis.completionRate, 1)}%`} loading={isLoading}
+          onClick={() => openDrill('Pedidos concluídos', (o) => o.status === 'COMPLETED', periodLabel)} />
+        <KpiCard icon={<Clock className="h-4 w-4" />} label="No prazo" value={`${nfmt(kpis.onTimeRate, 1)}%`} loading={isLoading}
+          onClick={() => openDrill('Entregas no prazo', (o) => o.status === 'COMPLETED' && (o.delay_minutes ?? 0) <= 0, periodLabel)} />
+        <KpiCard icon={<DollarSign className="h-4 w-4" />} label="Custo total" value={brl(kpis.totalCost)} loading={isLoading}
+          onClick={() => openDrill('Pedidos com custo', (o) => Number(o.total_cost || 0) > 0, periodLabel)} />
+        <KpiCard icon={<TrendingUp className="h-4 w-4" />} label="Ticket médio" value={brl(kpis.avgCost)} loading={isLoading}
+          onClick={() => openDrill('Todos os pedidos', () => true, periodLabel)} />
+        <KpiCard icon={<MapPin className="h-4 w-4" />} label="R$/km" value={brl(kpis.costPerKm)} loading={isLoading}
+          onClick={() => openDrill('Pedidos com distância', (o) => Number(o.distance_meters || 0) > 0, periodLabel)} />
       </div>
 
       {/* Tabs */}
