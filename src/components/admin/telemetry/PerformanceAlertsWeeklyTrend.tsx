@@ -80,7 +80,7 @@ export function PerformanceAlertsWeeklyTrend() {
         day: "2-digit",
         month: "2-digit",
       });
-      const entry = map.get(key) ?? { week: label, critical: 0, warning: 0, info: 0 };
+      const entry = map.get(key) ?? { week: label, weekKey: key, critical: 0, warning: 0, info: 0 };
       if (r.severity === "critical") entry.critical += r.alert_count;
       else if (r.severity === "warning") entry.warning += r.alert_count;
       else entry.info += r.alert_count;
