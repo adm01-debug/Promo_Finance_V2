@@ -35,6 +35,7 @@ const BI = lazy(() => import('./pages/BI'));
 const NotasFiscais = lazy(() => import('./pages/NotasFiscais'));
 const FluxoCaixa = lazy(() => import('./pages/FluxoCaixa'));
 const Relatorios = lazy(() => import('./pages/Relatorios'));
+const RelatoriosEntregas = lazy(() => import('./pages/RelatoriosEntregas'));
 const Expert = lazy(() => import('./pages/Expert'));
 const Conciliacao = lazy(() => import('./pages/Conciliacao'));
 const Cobrancas = lazy(() => import('./pages/Cobrancas'));
