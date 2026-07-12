@@ -12986,6 +12986,17 @@ export type Database = {
         }[]
       }
       get_asaas_payment_stats: { Args: { p_empresa_id: string }; Returns: Json }
+      get_bloat_history: {
+        Args: { p_days?: number }
+        Returns: {
+          created_at: string
+          dead_ratio_pct: number
+          details: string
+          id: string
+          severity: string
+          table_name: string
+        }[]
+      }
       get_cron_jobs: {
         Args: never
         Returns: {
@@ -13014,6 +13025,27 @@ export type Database = {
       get_retencoes_pendentes_count: {
         Args: { p_empresa_id: string }
         Returns: number
+      }
+      get_table_bloat: {
+        Args: never
+        Returns: {
+          analyze_count: number
+          autoanalyze_count: number
+          autovacuum_count: number
+          dead_ratio_pct: number
+          dead_rows: number
+          last_analyze: string
+          last_autoanalyze: string
+          last_autovacuum: string
+          last_vacuum: string
+          live_rows: number
+          schemaname: unknown
+          table_name: unknown
+          table_size_pretty: string
+          total_size_bytes: number
+          total_size_pretty: string
+          vacuum_count: number
+        }[]
       }
       get_user_permissions: { Args: { user_id: string }; Returns: string[] }
       get_user_roles: { Args: { user_id: string }; Returns: string[] }
