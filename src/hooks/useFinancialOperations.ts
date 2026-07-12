@@ -24,7 +24,7 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
     queryKey: ['movimentacoes', contaBancariaId, filters],
     queryFn: async () => {
       let query = supabase
-        .from('movimentacoes')
+        .from('movimentacoes' as never)
         .select('*')
         .is('deleted_at', null)
         .order('data_movimentacao', { ascending: false });
@@ -172,7 +172,7 @@ export function useFormasPagamento(tipo?: 'entrada' | 'saida' | 'ambos') {
     queryKey: ['formas-pagamento', tipo],
     queryFn: async () => {
       let query = supabase
-        .from('formas_pagamento')
+        .from('formas_pagamento' as never)
         .select('*')
         .eq('ativo', true)
         .order('nome');
