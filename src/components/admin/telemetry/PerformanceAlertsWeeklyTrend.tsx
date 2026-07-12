@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus, LineChart, Download, Link2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, LineChart, Download, Link2, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -254,6 +254,93 @@ export function PerformanceAlertsWeeklyTrend() {
     }
   }, []);
 
+  const handleExportPDF = useCallback(async () => {
+    if (!filteredData.length) return;
+    try {
+      const [{ default: jsPDF }] = await Promise.all([import("jspdf")]);
+      const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const marginX = 40;
+      let y = 40;
+
+      doc.setFontSize(14);
+      doc.text("Tendencia Semanal de Regressoes (12 semanas)", marginX, y);
+      y += 16;
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      const filterLabel = severityFilter === "all" ? "todas severidades" : `severidade: ${severityFilter}`;
+      doc.text(`Gerado em ${new Date().toLocaleString("pt-BR")} | ${filterLabel} | ${filteredData.length} linhas`, marginX, y);
+      doc.setTextColor(0);
+      y += 18;
+
+      // Totais por severidade
+      const totals = filteredData.reduce(
+        (acc, r) => {
+          if (r.severity === "critical") acc.critical += r.alert_count;
+          else if (r.severity === "warning") acc.warning += r.alert_count;
+          else acc.info += r.alert_count;
+          return acc;
+        },
+        { critical: 0, warning: 0, info: 0 },
+      );
+      doc.setFontSize(10);
+      doc.text(
+        `Critico: ${totals.critical}   Aviso: ${totals.warning}   Info: ${totals.info}   Total: ${totals.critical + totals.warning + totals.info}`,
+        marginX,
+        y,
+      );
+      y += 18;
+
+      // Cabeçalho da tabela
+      const headers = ["Semana", "Origem", "Sev.", "Alertas", "Chaves", "P95 med", "Ratio max", "Δ %"];
+      const colWidths = [70, 70, 55, 60, 60, 70, 70, 60];
+      doc.setFontSize(9);
+      doc.setFillColor(240, 240, 240);
+      doc.rect(marginX, y - 10, pageWidth - marginX * 2, 14, "F");
+      let x = marginX + 4;
+      headers.forEach((h, i) => {
+        doc.text(h, x, y);
+        x += colWidths[i];
+      });
+      y += 8;
+      doc.setDrawColor(220);
+      doc.line(marginX, y, pageWidth - marginX, y);
+      y += 10;
+
+      const rows = filteredData.slice(0, 200);
+      for (const r of rows) {
+        if (y > 540) {
+          doc.addPage();
+          y = 40;
+        }
+        const cells = [
+          new Date(r.week_start).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" }),
+          r.source === "pg_stat_statements" ? "pg_stat" : "telemetry",
+          r.severity,
+          String(r.alert_count),
+          String(r.distinct_keys),
+          r.avg_current_ms != null ? `${Math.round(r.avg_current_ms)}ms` : "-",
+          r.max_ratio != null ? `${Number(r.max_ratio).toFixed(2)}x` : "-",
+          r.delta_pct_vs_prev_week != null ? `${r.delta_pct_vs_prev_week > 0 ? "+" : ""}${r.delta_pct_vs_prev_week.toFixed(1)}%` : "-",
+        ];
+        x = marginX + 4;
+        cells.forEach((c, i) => {
+          doc.text(String(c), x, y);
+          x += colWidths[i];
+        });
+        y += 14;
+      }
+
+      doc.save(`performance-alerts-weekly-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success("PDF exportado");
+    } catch (err) {
+      toast.error("Falha ao gerar PDF", {
+        description: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }, [filteredData, severityFilter]);
+
+
   return (
     <Card>
       <CardHeader className="pb-3 flex flex-row items-center justify-between gap-2 space-y-0">
@@ -295,6 +382,18 @@ export function PerformanceAlertsWeeklyTrend() {
             <Download className="h-3.5 w-3.5" />
             CSV
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExportPDF}
+            disabled={isLoading || filteredData.length === 0}
+            className="h-8 gap-1.5"
+            aria-label="Exportar PDF"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            PDF
+          </Button>
+
         </div>
       </CardHeader>
       <CardContent>
