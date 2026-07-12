@@ -103,7 +103,31 @@ export function PerformanceAlertsWeeklyTrend() {
             ✅ Sem regressões registradas nas últimas 12 semanas.
           </p>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="h-56 mb-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.4} />
+                  <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                  <Tooltip
+                    contentStyle={{
+                      background: "hsl(var(--popover))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: 6,
+                      fontSize: 12,
+                    }}
+                    labelStyle={{ color: "hsl(var(--foreground))" }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Bar dataKey="critical" name="Crítico" stackId="a" fill="hsl(var(--destructive))" />
+                  <Bar dataKey="warning" name="Aviso" stackId="a" fill="hsl(45 93% 47%)" />
+                  <Bar dataKey="info" name="Info" stackId="a" fill="hsl(var(--muted-foreground))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="overflow-x-auto">
+
             <table className="w-full text-xs">
               <thead className="text-muted-foreground border-b">
                 <tr>
