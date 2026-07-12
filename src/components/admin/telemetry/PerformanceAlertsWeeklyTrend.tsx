@@ -485,7 +485,7 @@ export function PerformanceAlertsWeeklyTrend() {
                 })}
               </div>
             )}
-            <div className="h-56 mb-4">
+            <div className="h-56 mb-4" ref={chartRef}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={chartData}
