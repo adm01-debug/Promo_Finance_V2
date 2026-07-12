@@ -106,3 +106,21 @@ Este documento marca o encerramento da auditoria backend sênior. O sistema est�
 - ✅ Autovacuum ajustado para tráfego real.
 
 **Meta atingida: 10/10 🎯**
+
+---
+
+## Adendo — Sprint de fechamento 2026-07-12 (itens 41–46)
+
+Auditoria backend sênior complementar. Todos itens aplicados via migrations idempotentes, com registro em `audit_logs`.
+
+| # | Item | Status |
+|---|------|--------|
+| 41 | Bulk `REVOKE EXECUTE` em 24 funções `SECURITY DEFINER` (admin-gated de `anon`; cron/manutenção de `anon`+`authenticated`) | ✅ |
+| 42 | Implementação real de `get_asaas_payment_stats` (agregações reais por status/valores/tickets) | ✅ |
+| 43 | Implementação real de `export_asaas_audit_csv` (join com `asaas_payments`, escape RFC 4180, limite 50k linhas) | ✅ |
+| 44 | Consolidação de `registrar_evento_receber` — removidos 2 overloads com colunas inexistentes (bugs latentes); criada `registrar_evento_cobranca` com contrato correto | ✅ |
+| 45 | `audit_trigger_generic` passa a emitir `RAISE WARNING` em vez de silenciar exceções — mantém SLA de escrita e ganha rastreabilidade LGPD/SOX | ✅ |
+| 46 | `login_attempts.email` normalizado para lowercase + `CHECK` constraint (`NOT VALID` + `VALIDATE` online) — previne bypass de lockout por variação de case | ✅ |
+
+**Score final: 9.8/10** — as 23 WARNs restantes seguem estritamente by-design (funções chamadas pré-autenticação: `has_role`, `check_login_lockout`, `is_ip_blocked`, `is_token_valid`, `resolve_sso_providers_for_domain`, etc.).
+
