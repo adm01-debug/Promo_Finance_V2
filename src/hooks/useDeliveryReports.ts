@@ -151,7 +151,7 @@ function groupBy<T>(arr: T[], key: (x: T) => string): Record<string, T[]> {
   return out;
 }
 
-function extractRegion(address: string | null | undefined): string {
+export function extractRegion(address: string | null | undefined): string {
   if (!address) return 'Não informado';
   const ufMatch = address.match(/\b(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)\b/);
   if (ufMatch) {
