@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
       .select(`
         id, order_id, driver_id, is_on_route, is_stopped, stopped_since, eta_minutes, last_updated,
         lalamove_orders:order_id ( id, lalamove_id, internal_order_id, status, customer_name, scheduled_at, estimated_delivery ),
-        drivers:driver_id ( id, full_name, phone )
+        drivers:driver_id ( id, name, phone )
       `)
       .eq("tracking_status", "ACTIVE");
     if (trErr) throw trErr;
