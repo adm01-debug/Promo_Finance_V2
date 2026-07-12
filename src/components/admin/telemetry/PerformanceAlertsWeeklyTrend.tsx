@@ -19,6 +19,8 @@ import {
   Tooltip,
   Legend,
   ReferenceLine,
+  LineChart as ReLineChart,
+  Line,
 } from "recharts";
 
 interface WeeklyRow {
@@ -150,6 +152,27 @@ export function PerformanceAlertsWeeklyTrend() {
     return sum / totals.length;
   }, [chartData]);
 
+  // Sparklines por origem (pg_stat vs telemetry) — respeitam filtro de severidade
+  const sparklineBySource = useMemo(() => {
+    const bySource = new Map<string, Map<string, number>>();
+    for (const r of filteredData) {
+      const src = r.source;
+      if (!bySource.has(src)) bySource.set(src, new Map());
+      const wk = bySource.get(src)!;
+      wk.set(r.week_start, (wk.get(r.week_start) ?? 0) + r.alert_count);
+    }
+    return Array.from(bySource.entries()).map(([source, weeks]) => {
+      const series = Array.from(weeks.entries())
+        .sort(([a], [b]) => (a < b ? -1 : 1))
+        .map(([week, count]) => ({ week, count }));
+      const total = series.reduce((a, b) => a + b.count, 0);
+      const last = series[series.length - 1]?.count ?? 0;
+      const prev = series[series.length - 2]?.count ?? 0;
+      const delta = prev > 0 ? ((last - prev) / prev) * 100 : null;
+      return { source, series, total, last, delta };
+    });
+  }, [filteredData]);
+
   const handleExportCSV = () => {
     if (!filteredData.length) return;
     const headers = [
@@ -215,6 +238,61 @@ export function PerformanceAlertsWeeklyTrend() {
           </p>
         ) : (
           <>
+            {sparklineBySource.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                {sparklineBySource.map((s) => {
+                  const label = s.source === "pg_stat_statements" ? "pg_stat" : "telemetry";
+                  const deltaColor =
+                    s.delta == null
+                      ? "text-muted-foreground"
+                      : s.delta > 0
+                        ? "text-destructive"
+                        : s.delta < 0
+                          ? "text-green-600"
+                          : "text-muted-foreground";
+                  return (
+                    <div
+                      key={s.source}
+                      className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-2"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                            {label}
+                          </span>
+                          <span className={`text-[10px] tabular-nums ${deltaColor}`}>
+                            {s.delta == null
+                              ? "—"
+                              : `${s.delta > 0 ? "+" : ""}${s.delta.toFixed(1)}%`}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-lg font-semibold tabular-nums">{s.last}</span>
+                          <span className="text-[10px] text-muted-foreground">últ. semana</span>
+                          <span className="text-[10px] text-muted-foreground ml-auto">
+                            total {s.total}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="h-10 w-24 shrink-0">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <ReLineChart data={s.series} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+                            <Line
+                              type="monotone"
+                              dataKey="count"
+                              stroke="hsl(var(--primary))"
+                              strokeWidth={1.5}
+                              dot={false}
+                              isAnimationActive={false}
+                            />
+                          </ReLineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             <div className="h-56 mb-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
