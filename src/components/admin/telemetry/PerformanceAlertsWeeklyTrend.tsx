@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown, Minus, LineChart, Download } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 
 type SeverityFilter = "all" | "critical" | "warning" | "info";
 import {
@@ -86,7 +86,7 @@ export function PerformanceAlertsWeeklyTrend() {
     return isSeverity(stored) ? stored : "all";
   });
 
-  const handleSeverityChange = (v: SeverityFilter) => {
+  const handleSeverityChange = useCallback((v: SeverityFilter) => {
     setSeverityFilter(v);
     try {
       window.localStorage.setItem("perf-alerts-severity-filter", v);
@@ -97,7 +97,25 @@ export function PerformanceAlertsWeeklyTrend() {
     } catch {
       /* storage/history indisponível — ignora */
     }
-  };
+  }, []);
+
+  // Hotkeys: 1=Todos, 2=Crítico, 3=Aviso, 4=Info. Ignora se focus em input/textarea/contenteditable.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      const tag = t?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || t?.isContentEditable) return;
+      const map: Record<string, SeverityFilter> = { "1": "all", "2": "critical", "3": "warning", "4": "info" };
+      const next = map[e.key];
+      if (next) {
+        e.preventDefault();
+        handleSeverityChange(next);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleSeverityChange]);
 
   const filteredData = useMemo(
     () => (severityFilter === "all" ? data : data.filter((r) => r.severity === severityFilter)),
@@ -171,10 +189,10 @@ export function PerformanceAlertsWeeklyTrend() {
             onValueChange={(v) => v && handleSeverityChange(v as SeverityFilter)}
             className="h-8"
           >
-            <ToggleGroupItem value="all" className="h-7 px-2 text-[11px]">Todos</ToggleGroupItem>
-            <ToggleGroupItem value="critical" className="h-7 px-2 text-[11px]">Crítico</ToggleGroupItem>
-            <ToggleGroupItem value="warning" className="h-7 px-2 text-[11px]">Aviso</ToggleGroupItem>
-            <ToggleGroupItem value="info" className="h-7 px-2 text-[11px]">Info</ToggleGroupItem>
+            <ToggleGroupItem value="all" title="Atalho: 1" className="h-7 px-2 text-[11px]">Todos</ToggleGroupItem>
+            <ToggleGroupItem value="critical" title="Atalho: 2" className="h-7 px-2 text-[11px]">Crítico</ToggleGroupItem>
+            <ToggleGroupItem value="warning" title="Atalho: 3" className="h-7 px-2 text-[11px]">Aviso</ToggleGroupItem>
+            <ToggleGroupItem value="info" title="Atalho: 4" className="h-7 px-2 text-[11px]">Info</ToggleGroupItem>
           </ToggleGroup>
           <Button
             size="sm"
