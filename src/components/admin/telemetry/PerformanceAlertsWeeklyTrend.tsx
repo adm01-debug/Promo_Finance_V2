@@ -109,7 +109,7 @@ export function PerformanceAlertsWeeklyTrend() {
   }, [chartData]);
 
   const handleExportCSV = () => {
-    if (!data.length) return;
+    if (!filteredData.length) return;
     const headers = [
       "week_start","source","severity","alert_count","distinct_keys",
       "avg_current_ms","max_current_ms","avg_ratio","max_ratio","total_samples","delta_pct_vs_prev_week",
