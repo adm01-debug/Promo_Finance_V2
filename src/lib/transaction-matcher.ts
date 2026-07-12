@@ -16,6 +16,8 @@ export interface LancamentoSistema {
   numeroDocumento?: string;
   centro_custo_nome?: string;
   centro_custo_id?: string;
+  empresaId?: string;
+  contaBancariaId?: string;
 }
 
 export interface MatchSugestao {
