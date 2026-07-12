@@ -139,16 +139,30 @@ export function PerformanceAlertsWeeklyTrend() {
           <LineChart className="h-4 w-4 text-primary" />
           Tendência Semanal de Regressões (12 semanas)
         </CardTitle>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleExportCSV}
-          disabled={isLoading || data.length === 0}
-          className="h-8 gap-1.5"
-        >
-          <Download className="h-3.5 w-3.5" />
-          CSV
-        </Button>
+        <div className="flex items-center gap-2">
+          <ToggleGroup
+            type="single"
+            size="sm"
+            value={severityFilter}
+            onValueChange={(v) => v && setSeverityFilter(v as SeverityFilter)}
+            className="h-8"
+          >
+            <ToggleGroupItem value="all" className="h-7 px-2 text-[11px]">Todos</ToggleGroupItem>
+            <ToggleGroupItem value="critical" className="h-7 px-2 text-[11px]">Crítico</ToggleGroupItem>
+            <ToggleGroupItem value="warning" className="h-7 px-2 text-[11px]">Aviso</ToggleGroupItem>
+            <ToggleGroupItem value="info" className="h-7 px-2 text-[11px]">Info</ToggleGroupItem>
+          </ToggleGroup>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExportCSV}
+            disabled={isLoading || filteredData.length === 0}
+            className="h-8 gap-1.5"
+          >
+            <Download className="h-3.5 w-3.5" />
+            CSV
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
