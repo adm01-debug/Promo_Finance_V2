@@ -73,6 +73,12 @@ export function PerformanceAlertsWeeklyTrend() {
   });
 
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+
+  const filteredData = useMemo(
+    () => (severityFilter === "all" ? data : data.filter((r) => r.severity === severityFilter)),
+    [data, severityFilter],
+  );
 
   // Agrega por semana: {week, weekKey, critical, warning, info}
   const chartData = useMemo(() => {
