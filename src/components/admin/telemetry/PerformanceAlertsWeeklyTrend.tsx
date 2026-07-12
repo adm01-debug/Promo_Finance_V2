@@ -119,13 +119,33 @@ export function PerformanceAlertsWeeklyTrend() {
     }
   }, []);
 
-  // Hotkeys: 1=Todos, 2=Crítico, 3=Aviso, 4=Info. Ignora se focus em input/textarea/contenteditable.
+  // Semanas únicas ordenadas (crescente) — usada pela navegação ←/→ no dialog
+  const weekKeys = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of data) set.add(r.week_start);
+    return Array.from(set).sort();
+  }, [data]);
+
+  // Hotkeys: 1-4 = severidade; ←/→ = navegar semanas no dialog. Ignora inputs/textarea/contenteditable.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
       const tag = t?.tagName?.toLowerCase();
       if (tag === "input" || tag === "textarea" || tag === "select" || t?.isContentEditable) return;
+
+      // Navegação de semanas quando o dialog está aberto
+      if (selectedWeek && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        const idx = weekKeys.indexOf(selectedWeek);
+        if (idx === -1) return;
+        const nextIdx = e.key === "ArrowLeft" ? idx - 1 : idx + 1;
+        if (nextIdx >= 0 && nextIdx < weekKeys.length) {
+          e.preventDefault();
+          setSelectedWeek(weekKeys[nextIdx]);
+        }
+        return;
+      }
+
       const map: Record<string, SeverityFilter> = { "1": "all", "2": "critical", "3": "warning", "4": "info" };
       const next = map[e.key];
       if (next) {
@@ -135,7 +155,7 @@ export function PerformanceAlertsWeeklyTrend() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [handleSeverityChange]);
+  }, [handleSeverityChange, selectedWeek, weekKeys, setSelectedWeek]);
 
   const filteredData = useMemo(
     () => (severityFilter === "all" ? data : data.filter((r) => r.severity === severityFilter)),
