@@ -13059,6 +13059,7 @@ export type Database = {
       cleanup_log_tables: { Args: never; Returns: Json }
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
+      cleanup_pgss_baseline: { Args: { p_days?: number }; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
       compare_pg_stat_baseline: {
         Args: { p_label?: string }
