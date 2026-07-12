@@ -36,7 +36,7 @@ async function fetchOrders(f: DeliveryReportFilters): Promise<OrderRow[]> {
     .order('scheduled_at', { ascending: false })
     .limit(5000);
 
-  if (f.status && f.status !== 'ALL') q = q.eq('status', f.status);
+  if (f.status && f.status !== 'ALL') q = q.eq('status', f.status as OrderRow['status']);
   if (f.customer) q = q.ilike('customer_name', `%${f.customer}%`);
   if (f.region) q = q.ilike('delivery_address', `%${f.region}%`);
 
