@@ -15,6 +15,7 @@ import {
 import { Download, DollarSign, Clock, MapPin, Package, TrendingUp, CheckCircle2, RotateCcw } from 'lucide-react';
 import { useDeliveryReports, type DeliveryReportFilters } from '@/hooks/useDeliveryReports';
 import { exportToCSV } from '@/lib/export-utils';
+import { DeliveryDrilldownDialog, type DrilldownOrder } from '@/components/relatorios/DeliveryDrilldownDialog';
 import { DeliveryHeatmap } from '@/components/relatorios/DeliveryHeatmap';
 
 const STATUS_OPTIONS = ['ALL', 'PENDING', 'MATCHED', 'ON_GOING', 'PICKED_UP', 'COMPLETED', 'CANCELLED', 'REJECTED', 'EXPIRED'] as const;
