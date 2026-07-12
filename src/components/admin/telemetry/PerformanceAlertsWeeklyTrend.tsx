@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown, Minus, LineChart, Download } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 
 type SeverityFilter = "all" | "critical" | "warning" | "info";
 import {
