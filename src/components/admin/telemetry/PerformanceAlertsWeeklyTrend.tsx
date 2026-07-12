@@ -83,6 +83,8 @@ export function PerformanceAlertsWeeklyTrend() {
     if (typeof window === "undefined") return null;
     return readWeekFromLocation(window.location.search);
   });
+  const chartRef = useRef<HTMLDivElement | null>(null);
+
 
   const setSelectedWeek = useCallback((wk: string | null) => {
     setSelectedWeekState(wk);
