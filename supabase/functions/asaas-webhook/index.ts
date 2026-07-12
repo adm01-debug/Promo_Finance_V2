@@ -46,6 +46,20 @@ Deno.serve(async (req) => {
     }
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
+    // Rate limit: 120 req/min por IP (defesa em profundidade — HMAC token continua sendo a defesa primária)
+    const rl = await checkRateLimit(supabase, {
+      endpoint: 'asaas-webhook',
+      ip: ip_origem.split(',')[0].trim(),
+      limit: 120,
+      windowSeconds: 60,
+      userAgent: req.headers.get('user-agent'),
+    })
+    if (!rl.allowed) {
+      logger.warn('Rate limit atingido', { ip_origem, correlation_id })
+      return rateLimitResponse(rl, corsHeaders)
+    }
+
+
     // Idempotency check
     if (body.id) {
       const isProcessed = await isWebhookProcessed(supabase, 'webhooks_log', 'asaas_event_id', body.id, 'asaas');
