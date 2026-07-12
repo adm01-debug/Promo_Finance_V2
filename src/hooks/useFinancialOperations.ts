@@ -24,7 +24,7 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
     queryKey: ['movimentacoes', contaBancariaId, filters],
     queryFn: async () => {
       let query = supabase
-        .from('movimentacoes' as any)
+        .from('movimentacoes')
         .select('*')
         .is('deleted_at', null)
         .order('data_movimentacao', { ascending: false });
@@ -47,7 +47,7 @@ export function useCreateMovimentacao() {
   return useMutation({
     mutationFn: async (input: MovimentacaoInput) => {
       const { data, error } = await supabase
-        .from('movimentacoes' as any)
+        .from('movimentacoes')
         .insert(input)
         .select()
         .single();
@@ -72,7 +72,7 @@ export function useDeleteMovimentacao() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('movimentacoes' as any)
+        .from('movimentacoes')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
@@ -104,7 +104,7 @@ export function useTransferencias(empresaId?: string) {
     queryKey: ['transferencias', empresaId],
     queryFn: async () => {
       let query = supabase
-        .from('transferencias' as any)
+        .from('transferencias')
         .select('*')
         .order('data_transferencia', { ascending: false });
 
@@ -124,7 +124,7 @@ export function useCreateTransferencia() {
   return useMutation({
     mutationFn: async (input: TransferenciaInput) => {
       const { data, error } = await supabase
-        .from('transferencias' as any)
+        .from('transferencias')
         .insert({ ...input, status: 'realizado' })
         .select()
         .single();
@@ -150,7 +150,7 @@ export function useCancelTransferencia() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('transferencias' as any)
+        .from('transferencias')
         .update({ status: 'cancelado', cancelado_em: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
@@ -172,7 +172,7 @@ export function useFormasPagamento(tipo?: 'entrada' | 'saida' | 'ambos') {
     queryKey: ['formas-pagamento', tipo],
     queryFn: async () => {
       let query = supabase
-        .from('formas_pagamento' as any)
+        .from('formas_pagamento')
         .select('*')
         .eq('ativo', true)
         .order('nome');
@@ -194,7 +194,7 @@ export function usePlanoContas() {
     queryKey: ['plano-contas'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('plano_contas' as any)
+        .from('plano_contas')
         .select('*')
         .eq('ativo', true)
         .order('codigo');
