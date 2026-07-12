@@ -131,7 +131,7 @@ export function PerformanceAlertsPanel() {
                   <th className="text-right py-2 font-medium">Baseline</th>
                   <th className="text-right py-2 font-medium">Ratio</th>
                   <th className="text-right py-2 font-medium">Amostras</th>
-                  <th className="text-right py-2 font-medium">Ocorrências</th>
+                  <th className="text-right py-2 font-medium">Quando</th>
                 </tr>
               </thead>
               <tbody>
