@@ -232,9 +232,12 @@ export default function RelatoriosEntregas() {
         {/* PERFORMANCE */}
         <TabsContent value="performance" className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-3">
-            <KpiCard label="Atraso médio" value={`${nfmt(kpis.avgDelay, 1)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />} />
-            <KpiCard label="Duração média" value={`${nfmt(kpis.avgDuration, 0)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />} />
-            <KpiCard label="Cancelamentos" value={nfmt(kpis.cancelled)} loading={isLoading} icon={<Package className="h-4 w-4" />} />
+            <KpiCard label="Atraso médio" value={`${nfmt(kpis.avgDelay, 1)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />}
+              onClick={() => openDrill('Pedidos atrasados (>0 min)', (o) => (o.delay_minutes ?? 0) > 0, periodLabel)} />
+            <KpiCard label="Duração média" value={`${nfmt(kpis.avgDuration, 0)} min`} loading={isLoading} icon={<Clock className="h-4 w-4" />}
+              onClick={() => openDrill('Pedidos com duração registrada', (o) => o.duration_minutes != null, periodLabel)} />
+            <KpiCard label="Cancelamentos" value={nfmt(kpis.cancelled)} loading={isLoading} icon={<Package className="h-4 w-4" />}
+              onClick={() => openDrill('Cancelamentos', (o) => ['CANCELLED', 'REJECTED', 'EXPIRED'].includes(o.status), periodLabel)} />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
@@ -245,7 +248,17 @@ export default function RelatoriosEntregas() {
                   <XAxis dataKey="day" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v: number) => `${nfmt(v, 1)} min`} />
-                  <Line dataKey="avgDelay" name="Atraso médio" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                  <Line dataKey="avgDelay" name="Atraso médio"
+                    stroke="hsl(var(--destructive))" strokeWidth={2}
+                    dot={{ r: 3, cursor: 'pointer' }}
+                    activeDot={{
+                      r: 5, cursor: 'pointer',
+                      onClick: (_, payload) => {
+                        const day = (payload as { payload?: { day?: string } })?.payload?.day;
+                        if (day) openDrill(`Entregas em ${day}`, (o) => o.scheduled_at.slice(0, 10) === day, `Atraso médio no dia`);
+                      },
+                    }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -253,7 +266,13 @@ export default function RelatoriosEntregas() {
             <ChartCard title="Distribuição por status" loading={isLoading}>
               <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
-                  <Pie data={analytics.statusDistribution} dataKey="value" nameKey="key" cx="50%" cy="50%" outerRadius={100} label>
+                  <Pie data={analytics.statusDistribution} dataKey="value" nameKey="key" cx="50%" cy="50%" outerRadius={100} label
+                    onClick={(payload) => {
+                      const key = (payload as { key?: string })?.key;
+                      if (key) openDrill(`Pedidos com status ${key}`, (o) => o.status === key, periodLabel);
+                    }}
+                    cursor="pointer"
+                  >
                     {analytics.statusDistribution.map((_, i) => (
                       <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                     ))}
@@ -268,6 +287,7 @@ export default function RelatoriosEntregas() {
           <ChartCard title="Top clientes por custo" loading={isLoading}>
             <TableSimple
               rows={analytics.topCustomers}
+              onRowClick={(r) => openDrill(`Cliente: ${r.key}`, (o) => (o.customer_name || 'Sem cliente') === r.key, periodLabel)}
               columns={[
                 { key: 'key', label: 'Cliente' },
                 { key: 'orders', label: 'Pedidos', align: 'right', render: (r) => nfmt(r.orders) },
