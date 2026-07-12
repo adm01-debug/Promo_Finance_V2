@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, LineChart, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMemo } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   BarChart,
