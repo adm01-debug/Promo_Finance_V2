@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { validatePayload, createErrorResponse, AsaasWebhookSchema, corsHeaders, isWebhookProcessed } from '../_shared/validation.ts'
 import { createLogger } from '../_shared/logger.ts'
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
 
 const logger = createLogger('asaas-webhook')
 
