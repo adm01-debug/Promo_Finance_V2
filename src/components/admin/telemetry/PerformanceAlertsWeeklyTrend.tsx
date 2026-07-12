@@ -73,20 +73,29 @@ export function PerformanceAlertsWeeklyTrend() {
   });
 
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+
+  const isSeverity = (v: string | null): v is SeverityFilter =>
+    v === "all" || v === "critical" || v === "warning" || v === "info";
+
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>(() => {
     if (typeof window === "undefined") return "all";
+    // URL tem prioridade sobre localStorage (deep-link compartilhável)
+    const urlParam = new URLSearchParams(window.location.search).get("severity");
+    if (isSeverity(urlParam)) return urlParam;
     const stored = window.localStorage.getItem("perf-alerts-severity-filter");
-    return stored === "critical" || stored === "warning" || stored === "info" || stored === "all"
-      ? (stored as SeverityFilter)
-      : "all";
+    return isSeverity(stored) ? stored : "all";
   });
 
   const handleSeverityChange = (v: SeverityFilter) => {
     setSeverityFilter(v);
     try {
       window.localStorage.setItem("perf-alerts-severity-filter", v);
+      const url = new URL(window.location.href);
+      if (v === "all") url.searchParams.delete("severity");
+      else url.searchParams.set("severity", v);
+      window.history.replaceState({}, "", url.toString());
     } catch {
-      /* storage indisponível — ignora */
+      /* storage/history indisponível — ignora */
     }
   };
 
