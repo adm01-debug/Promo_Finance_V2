@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Feature, FeatureCollection, Point } from 'geojson';
+import type { FeatureCollection, Point } from 'geojson';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Skeleton } from '@/components/ui/skeleton';
