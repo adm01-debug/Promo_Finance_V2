@@ -74,7 +74,25 @@ export function PerformanceAlertsWeeklyTrend() {
     staleTime: 5 * 60_000,
   });
 
-  const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+  const isIsoDate = (v: string | null): v is string => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
+
+  const [selectedWeek, setSelectedWeekState] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    const wk = new URLSearchParams(window.location.search).get("week");
+    return isIsoDate(wk) ? wk : null;
+  });
+
+  const setSelectedWeek = useCallback((wk: string | null) => {
+    setSelectedWeekState(wk);
+    try {
+      const url = new URL(window.location.href);
+      if (wk) url.searchParams.set("week", wk);
+      else url.searchParams.delete("week");
+      window.history.replaceState({}, "", url.toString());
+    } catch {
+      /* history indisponível — ignora */
+    }
+  }, []);
 
   const isSeverity = (v: string | null): v is SeverityFilter =>
     v === "all" || v === "critical" || v === "warning" || v === "info";
