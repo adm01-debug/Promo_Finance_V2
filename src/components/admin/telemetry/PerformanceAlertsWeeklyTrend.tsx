@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus, LineChart, Download, Link2, FileText } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, LineChart, Download, Link2, FileText, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -256,6 +256,21 @@ export function PerformanceAlertsWeeklyTrend() {
     }
   }, []);
 
+  const handleResetFilters = useCallback(() => {
+    setSeverityFilter("all");
+    setSelectedWeek(null);
+    try {
+      window.localStorage.removeItem("perf-alerts-severity-filter");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("severity");
+      url.searchParams.delete("week");
+      window.history.replaceState({}, "", url.toString());
+    } catch {
+      /* storage/history indisponível — ignora */
+    }
+    toast.success("Filtros resetados");
+  }, [setSelectedWeek]);
+
   const handleExportPDF = useCallback(async () => {
     if (!filteredData.length) return;
     try {
@@ -402,6 +417,18 @@ export function PerformanceAlertsWeeklyTrend() {
             <ToggleGroupItem value="warning" title="Atalho: 3" className="h-7 px-2 text-[11px]">Aviso</ToggleGroupItem>
             <ToggleGroupItem value="info" title="Atalho: 4" className="h-7 px-2 text-[11px]">Info</ToggleGroupItem>
           </ToggleGroup>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleResetFilters}
+            disabled={severityFilter === "all" && !selectedWeek}
+            className="h-8 gap-1.5"
+            title="Resetar severidade e semana selecionada"
+            aria-label="Resetar filtros"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Reset
+          </Button>
           <Button
             size="sm"
             variant="outline"
