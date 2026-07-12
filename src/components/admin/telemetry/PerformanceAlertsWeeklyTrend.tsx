@@ -166,6 +166,19 @@ export function PerformanceAlertsWeeklyTrend() {
                   <Bar dataKey="critical" name="Crítico" stackId="a" fill="hsl(var(--destructive))" />
                   <Bar dataKey="warning" name="Aviso" stackId="a" fill="hsl(45 93% 47%)" />
                   <Bar dataKey="info" name="Info" stackId="a" fill="hsl(var(--muted-foreground))" />
+                  {baseline > 0 && (
+                    <ReferenceLine
+                      y={baseline}
+                      stroke="hsl(var(--primary))"
+                      strokeDasharray="4 4"
+                      label={{
+                        value: `média ${baseline.toFixed(1)}`,
+                        position: "insideTopRight",
+                        fill: "hsl(var(--primary))",
+                        fontSize: 10,
+                      }}
+                    />
+                  )}
                 </BarChart>
               </ResponsiveContainer>
             </div>
