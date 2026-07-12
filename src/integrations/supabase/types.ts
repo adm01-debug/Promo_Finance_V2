@@ -12943,29 +12943,15 @@ export type Database = {
         Args: { p_empresa_id: string }
         Returns: string
       }
-      generate_reconciliation_suggestions:
-        | {
-            Args: {
-              p_empresa_id: string
-              p_transaction_date: string
-              p_transaction_id?: string
-              p_transaction_value: number
-            }
-            Returns: Json
-          }
-        | { Args: { p_sessao_id: string }; Returns: undefined }
-        | {
-            Args: { p_empresa_id?: string; p_sessao_id: string }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_empresa_id?: string
-              p_sessao_id: string
-              p_transaction_date?: string
-            }
-            Returns: undefined
-          }
+      generate_reconciliation_suggestions: {
+        Args: {
+          p_empresa_id: string
+          p_transaction_date: string
+          p_transaction_id?: string
+          p_transaction_value: number
+        }
+        Returns: Json
+      }
       gerar_numero_acordo: { Args: never; Returns: string }
       gerar_sigla_empresa: { Args: { _nome: string }; Returns: string }
       get_active_uapi_token: {
