@@ -138,7 +138,10 @@ export default function RelatoriosEntregas() {
                 value={filters.region} onChange={(e) => setFilters((f) => ({ ...f, region: e.target.value }))} />
             </div>
           </div>
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="ghost" onClick={resetFilters} disabled={isFetching}>
+              <RotateCcw className="mr-2 h-4 w-4" /> Limpar
+            </Button>
             <Button onClick={() => refetch()} disabled={isFetching}>
               {isFetching ? 'Atualizando...' : 'Aplicar filtros'}
             </Button>
