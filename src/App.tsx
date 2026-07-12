@@ -164,6 +164,7 @@ function AppRoutes() {
             <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
             <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
             <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+            <Route path="/relatorios/entregas" element={<ProtectedRoute><RelatoriosEntregas /></ProtectedRoute>} />
             <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
             <Route path="/conciliacao" element={<ProtectedRoute><Conciliacao /></ProtectedRoute>} />
             <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
