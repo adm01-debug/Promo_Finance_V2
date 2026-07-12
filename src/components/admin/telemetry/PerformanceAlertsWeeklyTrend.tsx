@@ -83,7 +83,7 @@ export function PerformanceAlertsWeeklyTrend() {
   // Agrega por semana: {week, weekKey, critical, warning, info}
   const chartData = useMemo(() => {
     const map = new Map<string, { week: string; weekKey: string; critical: number; warning: number; info: number }>();
-    for (const r of data) {
+    for (const r of filteredData) {
       const key = r.week_start;
       const label = new Date(r.week_start).toLocaleDateString("pt-BR", {
         day: "2-digit",
