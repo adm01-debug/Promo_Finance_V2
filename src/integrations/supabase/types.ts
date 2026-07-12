@@ -13089,20 +13089,15 @@ export type Database = {
         Args: { _detalhes?: Json; _empresa_id?: string; _tipo_acao: string }
         Returns: undefined
       }
-      registrar_evento_pagar:
-        | {
-            Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_conta_id: string
-              p_mensagem: string
-              p_metadata?: Json
-              p_tipo: string
-            }
-            Returns: undefined
-          }
+      registrar_evento_pagar: {
+        Args: {
+          p_conta_id: string
+          p_mensagem: string
+          p_metadata?: Json
+          p_tipo: string
+        }
+        Returns: undefined
+      }
       registrar_evento_receber:
         | {
             Args: {
