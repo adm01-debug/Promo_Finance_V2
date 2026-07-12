@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, LineChart, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMemo } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -68,16 +69,18 @@ export function PerformanceAlertsWeeklyTrend() {
     staleTime: 5 * 60_000,
   });
 
-  // Agrega por semana: {week, critical, warning, info}
+  const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+
+  // Agrega por semana: {week, weekKey, critical, warning, info}
   const chartData = useMemo(() => {
-    const map = new Map<string, { week: string; critical: number; warning: number; info: number }>();
+    const map = new Map<string, { week: string; weekKey: string; critical: number; warning: number; info: number }>();
     for (const r of data) {
       const key = r.week_start;
       const label = new Date(r.week_start).toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "2-digit",
       });
-      const entry = map.get(key) ?? { week: label, critical: 0, warning: 0, info: 0 };
+      const entry = map.get(key) ?? { week: label, weekKey: key, critical: 0, warning: 0, info: 0 };
       if (r.severity === "critical") entry.critical += r.alert_count;
       else if (r.severity === "warning") entry.warning += r.alert_count;
       else entry.info += r.alert_count;
@@ -149,7 +152,15 @@ export function PerformanceAlertsWeeklyTrend() {
           <>
             <div className="h-56 mb-4">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
+                  onClick={(e: any) => {
+                    const payload = e?.activePayload?.[0]?.payload;
+                    if (payload?.weekKey) setSelectedWeek(payload.weekKey);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.4} />
                   <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                   <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
@@ -234,6 +245,73 @@ export function PerformanceAlertsWeeklyTrend() {
           </>
         )}
       </CardContent>
+
+      <Dialog open={!!selectedWeek} onOpenChange={(o) => !o && setSelectedWeek(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>
+              Detalhe da semana{" "}
+              {selectedWeek
+                ? new Date(selectedWeek).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })
+                : ""}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="overflow-x-auto max-h-[60vh]">
+            <table className="w-full text-xs">
+              <thead className="text-muted-foreground border-b sticky top-0 bg-background">
+                <tr>
+                  <th className="text-left py-2 font-medium">Origem</th>
+                  <th className="text-left py-2 font-medium">Severidade</th>
+                  <th className="text-right py-2 font-medium">Alertas</th>
+                  <th className="text-right py-2 font-medium">Chaves</th>
+                  <th className="text-right py-2 font-medium">P95 médio</th>
+                  <th className="text-right py-2 font-medium">P95 máx</th>
+                  <th className="text-right py-2 font-medium">Ratio máx</th>
+                  <th className="text-right py-2 font-medium">Δ semana ant.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data
+                  .filter((r) => r.week_start === selectedWeek)
+                  .map((r, idx) => (
+                    <tr key={idx} className="border-b border-muted/40">
+                      <td className="py-2 text-muted-foreground">
+                        {r.source === "pg_stat_statements" ? "pg_stat" : "telemetry"}
+                      </td>
+                      <td className="py-2">
+                        {r.severity === "critical" ? (
+                          <Badge variant="destructive" className="text-[10px]">Crítico</Badge>
+                        ) : r.severity === "warning" ? (
+                          <Badge className="bg-yellow-500/15 text-yellow-600 border-yellow-500/30 text-[10px]">Aviso</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-[10px]">Info</Badge>
+                        )}
+                      </td>
+                      <td className="py-2 text-right tabular-nums">{r.alert_count}</td>
+                      <td className="py-2 text-right tabular-nums text-muted-foreground">{r.distinct_keys}</td>
+                      <td className="py-2 text-right tabular-nums">
+                        {r.avg_current_ms != null ? `${Math.round(r.avg_current_ms)}ms` : "—"}
+                      </td>
+                      <td className="py-2 text-right tabular-nums">
+                        {r.max_current_ms != null ? `${Math.round(r.max_current_ms)}ms` : "—"}
+                      </td>
+                      <td className="py-2 text-right tabular-nums">
+                        {r.max_ratio != null ? `${Number(r.max_ratio).toFixed(2)}x` : "—"}
+                      </td>
+                      <td className="py-2 text-right">
+                        <DeltaBadge delta={r.delta_pct_vs_prev_week} />
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
