@@ -560,17 +560,17 @@ export function useDashboardKPIs(empresaId?: string) {
   return useQuery({
     queryKey: ['dashboard-kpis', empresaId],
     queryFn: async () => {
-      const boletosPromise = (supabase as any)
+      const boletosPromise = supabase
         .from('boletos')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'PENDING')
-        .eq('empresa_id', empresaId);
+        .eq('empresa_id', empresaId ?? '');
 
-      const divergenciasPromise = (supabase as any)
+      const divergenciasPromise = supabase
         .from('divergencias_conciliacao')
         .select('*', { count: 'exact', head: true })
         .eq('resolvido', false)
-        .eq('empresa_id', empresaId);
+        .eq('empresa_id', empresaId ?? '');
 
       const [boletos, divergencias] = await Promise.all([boletosPromise, divergenciasPromise]);
 

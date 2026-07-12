@@ -4605,26 +4605,41 @@ export type Database = {
       dispositivos_conhecidos: {
         Row: {
           browser: string | null
+          device_fingerprint: string | null
           device_name: string | null
+          device_type: string | null
           id: string
           is_trusted: boolean | null
           last_login: string | null
+          last_seen_at: string | null
+          os: string | null
+          user_agent: string | null
           user_id: string | null
         }
         Insert: {
           browser?: string | null
+          device_fingerprint?: string | null
           device_name?: string | null
+          device_type?: string | null
           id?: string
           is_trusted?: boolean | null
           last_login?: string | null
+          last_seen_at?: string | null
+          os?: string | null
+          user_agent?: string | null
           user_id?: string | null
         }
         Update: {
           browser?: string | null
+          device_fingerprint?: string | null
           device_name?: string | null
+          device_type?: string | null
           id?: string
           is_trusted?: boolean | null
           last_login?: string | null
+          last_seen_at?: string | null
+          os?: string | null
+          user_agent?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -7703,6 +7718,7 @@ export type Database = {
       metas_financeiras: {
         Row: {
           ano: number
+          ativo: boolean
           created_at: string | null
           empresa_id: string | null
           id: string
@@ -7714,6 +7730,7 @@ export type Database = {
         }
         Insert: {
           ano: number
+          ativo?: boolean
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -7725,6 +7742,7 @@ export type Database = {
         }
         Update: {
           ano?: number
+          ativo?: boolean
           created_at?: string | null
           empresa_id?: string | null
           id?: string

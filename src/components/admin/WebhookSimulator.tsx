@@ -23,14 +23,14 @@ export function WebhookSimulator() {
       if (!user) throw new Error('Usuário não autenticado');
 
       // 1. Criar a rodada
-      const { data: run, error: runError } = await (supabase
-        .from('webhook_simulation_runs' as any)
+      const { data: run, error: runError } = await supabase
+        .from('webhook_simulation_runs')
         .insert({
           status: 'pending',
           created_by: user.id
         } as any)
         .select()
-        .single() as any);
+        .single();
 
       if (runError || !run) throw runError || new Error('Falha ao criar rodada');
       const runData = run as any;
@@ -60,19 +60,19 @@ export function WebhookSimulator() {
 
   const pollResults = async (runId: string) => {
     const interval = setInterval(async () => {
-      const { data: run } = await (supabase
-        .from('webhook_simulation_runs' as any)
+      const { data: run } = await supabase
+        .from('webhook_simulation_runs')
         .select('*')
         .eq('id', runId)
-        .single() as any);
+        .single();
 
       const runData = run as any;
 
-      const { data: resultsData } = await (supabase
-        .from('webhook_simulation_results' as any)
+      const { data: resultsData } = await supabase
+        .from('webhook_simulation_results')
         .select('*')
         .eq('run_id', runId)
-        .order('created_at', { ascending: false }) as any);
+        .order('created_at', { ascending: false });
 
       if (resultsData) {
         setResults(resultsData);

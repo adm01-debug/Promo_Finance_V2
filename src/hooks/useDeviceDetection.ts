@@ -88,12 +88,12 @@ export function useDeviceDetection() {
     try {
       const deviceInfo = generateDeviceFingerprint();
       
-      const { data: existingDevice, error: checkError } = await (supabase
-        .from('dispositivos_conhecidos' as any)
+      const { data: existingDevice, error: checkError } = await supabase
+        .from('dispositivos_conhecidos')
         .select('id, last_seen_at')
         .eq('user_id', userId)
         .eq('device_fingerprint', deviceInfo.fingerprint)
-        .maybeSingle() as any);
+        .maybeSingle();
       
       if (checkError) {
         logger.error('[useDeviceDetection] Error checking device:', checkError);
@@ -101,17 +101,17 @@ export function useDeviceDetection() {
       }
       
       if (existingDevice) {
-        await (supabase
-          .from('dispositivos_conhecidos' as any)
+        await supabase
+          .from('dispositivos_conhecidos')
           .update({ last_seen_at: new Date().toISOString() })
-          .eq('id', existingDevice.id) as any);
+          .eq('id', existingDevice.id);
         
         setIsNewDevice(false);
         return false;
       }
       
-      const { data: newDevice, error: insertError } = await (supabase
-        .from('dispositivos_conhecidos' as any)
+      const { data: newDevice, error: insertError } = await supabase
+        .from('dispositivos_conhecidos')
         .insert({
           user_id: userId,
           device_fingerprint: deviceInfo.fingerprint,
@@ -121,20 +121,20 @@ export function useDeviceDetection() {
           device_type: deviceInfo.deviceType
         })
         .select('id')
-        .single() as any);
+        .single();
       
       if (insertError) {
         logger.error('[useDeviceDetection] Error registering device:', insertError);
         return false;
       }
       
-      await (supabase
-        .from('new_device_alerts' as any)
+      await supabase
+        .from('new_device_alerts')
         .insert({
           user_id: userId,
           device_id: newDevice.id,
           user_agent: deviceInfo.userAgent
-        }) as any);
+        });
       
       setIsNewDevice(true);
       
@@ -167,11 +167,11 @@ export function useDeviceDetection() {
   }, []);
 
   const getKnownDevices = useCallback(async (userId: string) => {
-    const { data, error } = await (supabase
-      .from('dispositivos_conhecidos' as any)
+    const { data, error } = await supabase
+      .from('dispositivos_conhecidos')
       .select('*')
       .eq('user_id', userId)
-      .order('last_seen_at', { ascending: false }) as any);
+      .order('last_seen_at', { ascending: false });
     
     if (error) {
       logger.error('[useDeviceDetection] Error fetching devices:', error);
@@ -182,10 +182,10 @@ export function useDeviceDetection() {
   }, []);
 
   const removeDevice = useCallback(async (deviceId: string) => {
-    const { error } = await (supabase
-      .from('dispositivos_conhecidos' as any)
+    const { error } = await supabase
+      .from('dispositivos_conhecidos')
       .delete()
-      .eq('id', deviceId) as any);
+      .eq('id', deviceId);
     
     if (error) {
       toast.error('Erro ao remover dispositivo');
@@ -197,10 +197,10 @@ export function useDeviceDetection() {
   }, []);
 
   const trustDevice = useCallback(async (deviceId: string, trusted: boolean) => {
-    const { error } = await (supabase
-      .from('dispositivos_conhecidos' as any)
+    const { error } = await supabase
+      .from('dispositivos_conhecidos')
       .update({ is_trusted: trusted })
-      .eq('id', deviceId) as any);
+      .eq('id', deviceId);
     
     if (error) {
       toast.error('Erro ao atualizar dispositivo');
