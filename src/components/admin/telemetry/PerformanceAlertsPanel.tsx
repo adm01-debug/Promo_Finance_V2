@@ -88,6 +88,40 @@ export function PerformanceAlertsPanel() {
     data.forEach((a) => seenIds.current!.add(a.id));
   }, [data]);
 
+  // Realtime: escuta INSERTs em performance_alerts para notificação instantânea
+  useEffect(() => {
+    const channel = supabase
+      .channel("performance-alerts-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "performance_alerts" },
+        (payload) => {
+          const row = payload.new as Partial<AlertRow>;
+          if (row?.severity === "critical") {
+            toast.error("🚨 Regressão crítica em tempo real", {
+              description: row.reason || row.alert_key || "Nova regressão detectada",
+              duration: 12_000,
+            });
+          } else if (row?.severity === "warning") {
+            toast.warning("⚠️ Novo aviso de performance", {
+              description: row.reason || row.alert_key || "Aviso detectado",
+              duration: 6_000,
+            });
+          }
+          if (row?.id) seenIds.current?.add(row.id);
+          queryClient.invalidateQueries({ queryKey: ["performance-alerts"] });
+        },
+      )
+      .subscribe((status) => {
+        setRealtimeOn(status === "SUBSCRIBED");
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+
   const counts = data.reduce(
     (acc, r) => {
       acc[r.severity] = (acc[r.severity] || 0) + 1;
