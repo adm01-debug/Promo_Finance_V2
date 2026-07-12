@@ -25,12 +25,14 @@ interface OrderRow {
   actual_delivery: string | null;
   cost_center: string | null;
   outcome: string | null;
+  delivery_latitude: number | null;
+  delivery_longitude: number | null;
 }
 
 async function fetchOrders(f: DeliveryReportFilters): Promise<OrderRow[]> {
   let q = supabase
     .from('lalamove_orders')
-    .select('id,status,customer_name,delivery_address,pickup_address,vehicle_type,total_cost,distance_meters,delay_minutes,duration_minutes,scheduled_at,actual_delivery,cost_center,outcome')
+    .select('id,status,customer_name,delivery_address,pickup_address,vehicle_type,total_cost,distance_meters,delay_minutes,duration_minutes,scheduled_at,actual_delivery,cost_center,outcome,delivery_latitude,delivery_longitude')
     .gte('scheduled_at', f.from)
     .lte('scheduled_at', `${f.to}T23:59:59`)
     .order('scheduled_at', { ascending: false })
