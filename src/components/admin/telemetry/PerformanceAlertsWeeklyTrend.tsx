@@ -382,6 +382,18 @@ export function PerformanceAlertsWeeklyTrend() {
             <Download className="h-3.5 w-3.5" />
             CSV
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExportPDF}
+            disabled={isLoading || filteredData.length === 0}
+            className="h-8 gap-1.5"
+            aria-label="Exportar PDF"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            PDF
+          </Button>
+
         </div>
       </CardHeader>
       <CardContent>
