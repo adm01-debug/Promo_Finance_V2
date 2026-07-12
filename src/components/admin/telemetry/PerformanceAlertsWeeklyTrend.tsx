@@ -506,7 +506,37 @@ export function PerformanceAlertsWeeklyTrend() {
                 );
               })()}
             </DialogTitle>
+            {selectedWeek && (() => {
+              const rows = data.filter((r) => r.week_start === selectedWeek);
+              const totals = rows.reduce(
+                (acc, r) => {
+                  if (r.severity === "critical") acc.critical += r.alert_count;
+                  else if (r.severity === "warning") acc.warning += r.alert_count;
+                  else acc.info += r.alert_count;
+                  return acc;
+                },
+                { critical: 0, warning: 0, info: 0 },
+              );
+              const total = totals.critical + totals.warning + totals.info;
+              return (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1" aria-label="Totais por severidade">
+                  <Badge variant="destructive" className="text-[10px] tabular-nums">
+                    Crítico: {totals.critical}
+                  </Badge>
+                  <Badge className="bg-yellow-500/15 text-yellow-600 border-yellow-500/30 text-[10px] tabular-nums">
+                    Aviso: {totals.warning}
+                  </Badge>
+                  <Badge variant="secondary" className="text-[10px] tabular-nums">
+                    Info: {totals.info}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] tabular-nums ml-auto">
+                    Total: {total}
+                  </Badge>
+                </div>
+              );
+            })()}
           </DialogHeader>
+
           <div className="overflow-x-auto max-h-[60vh]">
             <table className="w-full text-xs">
               <thead className="text-muted-foreground border-b sticky top-0 bg-background">
