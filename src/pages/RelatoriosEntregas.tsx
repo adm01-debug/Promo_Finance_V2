@@ -334,7 +334,12 @@ export default function RelatoriosEntregas() {
                 <YAxis type="category" dataKey="key" tick={{ fontSize: 11 }} width={120} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="orders" name="Pedidos" fill="hsl(var(--primary))" />
+                <Bar dataKey="orders" name="Pedidos" fill="hsl(var(--primary))" cursor="pointer"
+                  onClick={(p) => {
+                    const key = (p as { key?: string })?.key;
+                    if (key) openDrill(`Região: ${key}`, (o) => extractRegion(o.delivery_address) === key, periodLabel);
+                  }}
+                />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -342,6 +347,7 @@ export default function RelatoriosEntregas() {
           <ChartCard title="Detalhamento por região" loading={isLoading}>
             <TableSimple
               rows={analytics.regionSeries}
+              onRowClick={(r) => openDrill(`Região: ${r.key}`, (o) => extractRegion(o.delivery_address) === r.key, periodLabel)}
               columns={[
                 { key: 'key', label: 'Região' },
                 { key: 'orders', label: 'Pedidos', align: 'right', render: (r) => nfmt(r.orders) },
@@ -359,6 +365,14 @@ export default function RelatoriosEntregas() {
           </ChartCard>
         </TabsContent>
       </Tabs>
+
+      <DeliveryDrilldownDialog
+        open={!!drill}
+        onOpenChange={(v) => { if (!v) setDrill(null); }}
+        title={drill?.title ?? ''}
+        subtitle={drill?.subtitle}
+        orders={drill?.orders ?? []}
+      />
     </div>
   );
 }
