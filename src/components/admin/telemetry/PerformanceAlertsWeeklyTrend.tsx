@@ -430,15 +430,51 @@ export function PerformanceAlertsWeeklyTrend() {
       <Dialog open={!!selectedWeek} onOpenChange={(o) => !o && setSelectedWeek(null)}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>
-              Detalhe da semana{" "}
-              {selectedWeek
-                ? new Date(selectedWeek).toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                : ""}
+            <DialogTitle className="flex items-center justify-between gap-3">
+              <span>
+                Detalhe da semana{" "}
+                {selectedWeek
+                  ? new Date(selectedWeek).toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })
+                  : ""}
+              </span>
+              {selectedWeek && (() => {
+                const idx = weekKeys.indexOf(selectedWeek);
+                const hasPrev = idx > 0;
+                const hasNext = idx >= 0 && idx < weekKeys.length - 1;
+                return (
+                  <span className="flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 w-7 p-0"
+                      disabled={!hasPrev}
+                      onClick={() => hasPrev && setSelectedWeek(weekKeys[idx - 1])}
+                      title="Semana anterior (←)"
+                      aria-label="Semana anterior"
+                    >
+                      ←
+                    </Button>
+                    <span className="tabular-nums px-1">
+                      {idx + 1}/{weekKeys.length}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 w-7 p-0"
+                      disabled={!hasNext}
+                      onClick={() => hasNext && setSelectedWeek(weekKeys[idx + 1])}
+                      title="Próxima semana (→)"
+                      aria-label="Próxima semana"
+                    >
+                      →
+                    </Button>
+                  </span>
+                );
+              })()}
             </DialogTitle>
           </DialogHeader>
           <div className="overflow-x-auto max-h-[60vh]">
