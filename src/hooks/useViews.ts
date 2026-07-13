@@ -115,12 +115,13 @@ export function useTransferenciasPainel() {
     queryKey: ['views', 'transferencias-painel'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_transferencias_painel' as any)
+        .from('vw_transferencias_painel' as never)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
       if (error) throw error;
-      return (data || []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
+
     },
     staleTime: STALE_TIMES.financial,
   });

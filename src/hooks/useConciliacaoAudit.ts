@@ -11,13 +11,20 @@ export function useConciliacaoAudit(empresaId?: string) {
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       
-      const { data: pendentes } = await (supabase
-        .from('transacoes_bancarias' as any)
+      const { data: pendentes } = await supabase
+        .from('transacoes_bancarias')
         .select('*, contas_bancarias(empresa_id)')
         .eq('conciliada', false)
-        .lt('data', threeDaysAgo.toISOString()) as any);
+        .lt('data', threeDaysAgo.toISOString());
 
-      const pendentesDaEmpresa = pendentes?.filter(p => p.contas_bancarias?.empresa_id === empresaId) || [];
+      const pendentesDaEmpresa = (pendentes ?? []).filter((p) => {
+        const cb = (p as { contas_bancarias?: { empresa_id?: string } | { empresa_id?: string }[] | null }).contas_bancarias;
+        const empresa = Array.isArray(cb) ? cb[0]?.empresa_id : cb?.empresa_id;
+        return empresa === empresaId;
+      });
+
+
+
 
       if (pendentesDaEmpresa.length > 0) {
         await supabase.from('alertas').insert({
@@ -28,7 +35,7 @@ export function useConciliacaoAudit(empresaId?: string) {
           mensagem: `Existem ${pendentesDaEmpresa.length} transações bancárias pendentes de conciliação há mais de 3 dias.`,
           status: 'pendente',
           metadata: { count: pendentesDaEmpresa.length }
-        } as any);
+        } as never);
       }
 
       // 2. Buscar divergências de saldo registradas
