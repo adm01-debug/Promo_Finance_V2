@@ -69,7 +69,7 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
       if (!selectedContaId) return;
       const { error } = await supabase
         .from('contas_bancarias')
-        .update({ configuracoes_conciliacao: config as unknown as Record<string, unknown> })
+        .update({ configuracoes_conciliacao: config as unknown as import('@/integrations/supabase/types').Json })
         .eq('id', selectedContaId);
       if (error) throw error;
     },
