@@ -20,8 +20,32 @@ const TABELA_POR_TIPO: Record<TrilhaTipo, { table: string; dateCol: string; user
   conformidade: { table: "verificacoes_conformidade", dateCol: "created_at" },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function aplicarFiltros(q: any, tipo: TrilhaTipo, f: TrilhaFiltros) {
+/**
+ * A trilha combina 4 tabelas heterogêneas (auditoria_financeira, auditoria_tributaria,
+ * audit_logs, verificacoes_conformidade). `.from()` do supabase-js é fortemente
+ * tipado por nome de tabela via generics — chamá-lo com uma string dinâmica
+ * exige um único ponto de cast. Encapsulamos aqui para evitar `(supabase as any)`
+ * espalhado pelo código e restringir o escopo do unsafe a uma função pequena.
+ */
+type QueryBuilder = {
+  select(cols: string, opts?: { count?: "exact" | "planned" | "estimated"; head?: boolean }): QueryBuilder;
+  order(col: string, opts?: { ascending?: boolean }): QueryBuilder;
+  limit(n: number): QueryBuilder;
+  range(from: number, to: number): QueryBuilder;
+  gte(col: string, val: string): QueryBuilder;
+  lte(col: string, val: string): QueryBuilder;
+  eq(col: string, val: string): QueryBuilder;
+  or(expr: string): QueryBuilder;
+  not(col: string, op: string, val: unknown): QueryBuilder;
+  then: PromiseLike<{ data: unknown[] | null; error: { message: string } | null; count?: number | null }>["then"];
+};
+
+function fromDynamic(table: string): QueryBuilder {
+  // supabase.from é sobrecarregado por nome de tabela; cast único evita `any` global.
+  return (supabase.from as unknown as (t: string) => QueryBuilder)(table);
+}
+
+function aplicarFiltros(q: QueryBuilder, tipo: TrilhaTipo, f: TrilhaFiltros): QueryBuilder {
   const cfg = TABELA_POR_TIPO[tipo];
   if (f.inicio) q = q.gte(cfg.dateCol, `${f.inicio}T00:00:00`);
   if (f.fim) q = q.lte(cfg.dateCol, `${f.fim}T23:59:59`);
@@ -58,15 +82,12 @@ export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}
       porPagina,
     ],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let q: any = (supabase as any)
-        .from(cfg.table)
+      let q = fromDynamic(cfg.table)
         .select("*", { count: "exact" })
         .order(cfg.dateCol, { ascending: false });
       q = aplicarFiltros(q, tipo, filtros);
       const from = (pagina - 1) * porPagina;
       q = q.range(from, from + porPagina - 1);
-
       const { data, error, count } = await q;
       if (error) throw error;
       return { rows: (data ?? []) as Record<string, unknown>[], total: count ?? 0 };
@@ -78,9 +99,7 @@ const EXPORT_CAP = 5000;
 
 export async function fetchTrilhaCompleto(tipo: TrilhaTipo, filtros: TrilhaFiltros) {
   const cfg = TABELA_POR_TIPO[tipo];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let q: any = (supabase as any)
-    .from(cfg.table)
+  let q = fromDynamic(cfg.table)
     .select("*")
     .order(cfg.dateCol, { ascending: false })
     .limit(EXPORT_CAP);
@@ -97,9 +116,7 @@ export async function fetchTrilhaCompleto(tipo: TrilhaTipo, filtros: TrilhaFiltr
 export async function fetchUsuariosTrilha(tipo: TrilhaTipo): Promise<string[]> {
   const cfg = TABELA_POR_TIPO[tipo];
   if (!cfg.userCol) return [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
-    .from(cfg.table)
+  const { data, error } = await fromDynamic(cfg.table)
     .select(cfg.userCol)
     .not(cfg.userCol, "is", null)
     .order(cfg.dateCol, { ascending: false })
