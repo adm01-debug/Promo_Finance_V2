@@ -87,7 +87,7 @@ export function useSavedFilterSubscriptions() {
    */
   useEffect(() => {
     if (!user) return;
-    const ch = 
+    const ch = supabase
       .channel(`saved-filter-permissions-${user.id}`)
       .on(
         "postgres_changes",

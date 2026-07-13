@@ -309,7 +309,7 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
 
   useEffect(() => {
     if (!user) return;
-    const channel = 
+    const channel = supabase
       .channel(config.channel)
       .on(
         "postgres_changes",
