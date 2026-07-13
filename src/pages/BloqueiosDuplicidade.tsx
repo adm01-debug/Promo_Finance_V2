@@ -55,6 +55,27 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 
+interface BloqueioRow {
+  id: string;
+  created_at: string;
+  tabela: string;
+  motivo_bloqueio: string;
+  valor_bloqueado: number | null;
+  match_type: string | null;
+  campos_conflitantes: unknown;
+  dados_tentativa: {
+    fornecedor_nome?: string;
+    cnpj_fornecedor?: string;
+    numero_documento?: string;
+    idempotency_key?: string;
+    mes_vencimento?: string;
+    [k: string]: unknown;
+  } | null;
+  perfil?: { display_name?: string; avatar_url?: string } | null;
+  usuario_id?: string | null;
+  empresa_id?: string | null;
+}
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
