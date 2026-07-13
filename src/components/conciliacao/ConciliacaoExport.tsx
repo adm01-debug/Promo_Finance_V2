@@ -248,7 +248,7 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
           headStyles: { fillColor: [59, 130, 246] },
         });
 
-        const finalY = (doc as any).lastAutoTable?.finalY || 100;
+        const finalY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || 100;
         doc.setFontSize(12);
         doc.text('Transações e Compensações', 14, finalY + 12);
 
