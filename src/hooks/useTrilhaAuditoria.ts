@@ -20,41 +20,50 @@ const TABELA_POR_TIPO: Record<TrilhaTipo, { table: string; dateCol: string; user
   conformidade: { table: "verificacoes_conformidade", dateCol: "created_at" },
 };
 
-// Query builder é heterogêneo entre 4 tabelas — usamos um tipo estrutural mínimo
-// em vez de `any`, mantendo tipagem nos métodos de filtro do PostgREST.
-interface FilterQuery {
-  gte(col: string, val: string): FilterQuery;
-  lte(col: string, val: string): FilterQuery;
-  eq(col: string, val: string): FilterQuery;
-  or(expr: string): FilterQuery;
-  range(from: number, to: number): FilterQuery;
+/**
+ * A trilha combina 4 tabelas heterogêneas (auditoria_financeira, auditoria_tributaria,
+ * audit_logs, verificacoes_conformidade). `.from()` do supabase-js é fortemente
+ * tipado por nome de tabela via generics — chamá-lo com uma string dinâmica
+ * exige um único ponto de cast. Encapsulamos aqui para evitar `(supabase as any)`
+ * espalhado pelo código e restringir o escopo do unsafe a uma função pequena.
+ */
+type QueryBuilder = {
+  select(cols: string, opts?: { count?: "exact" | "planned" | "estimated"; head?: boolean }): QueryBuilder;
+  order(col: string, opts?: { ascending?: boolean }): QueryBuilder;
+  limit(n: number): QueryBuilder;
+  range(from: number, to: number): QueryBuilder;
+  gte(col: string, val: string): QueryBuilder;
+  lte(col: string, val: string): QueryBuilder;
+  eq(col: string, val: string): QueryBuilder;
+  or(expr: string): QueryBuilder;
+  not(col: string, op: string, val: unknown): QueryBuilder;
+  then: PromiseLike<{ data: unknown[] | null; error: { message: string } | null; count?: number | null }>["then"];
+};
+
+function fromDynamic(table: string): QueryBuilder {
+  // supabase.from é sobrecarregado por nome de tabela; cast único evita `any` global.
+  return (supabase.from as unknown as (t: string) => QueryBuilder)(table);
 }
 
-function aplicarFiltros<Q extends FilterQuery>(q: Q, tipo: TrilhaTipo, f: TrilhaFiltros): Q {
+function aplicarFiltros(q: QueryBuilder, tipo: TrilhaTipo, f: TrilhaFiltros): QueryBuilder {
   const cfg = TABELA_POR_TIPO[tipo];
-  if (f.inicio) q = q.gte(cfg.dateCol, `${f.inicio}T00:00:00`) as Q;
-  if (f.fim) q = q.lte(cfg.dateCol, `${f.fim}T23:59:59`) as Q;
+  if (f.inicio) q = q.gte(cfg.dateCol, `${f.inicio}T00:00:00`);
+  if (f.fim) q = q.lte(cfg.dateCol, `${f.fim}T23:59:59`);
   if (f.acao && f.acao !== "todas") {
-    if (tipo === "financeira") q = q.eq("operacao", f.acao) as Q;
-    else if (tipo === "tributaria") q = q.eq("acao", f.acao) as Q;
-    else if (tipo === "sistema") q = q.eq("action", f.acao) as Q;
+    if (tipo === "financeira") q = q.eq("operacao", f.acao);
+    else if (tipo === "tributaria") q = q.eq("acao", f.acao);
+    else if (tipo === "sistema") q = q.eq("action", f.acao);
   }
   if (f.usuario && cfg.userCol) {
-    q = q.eq(cfg.userCol, f.usuario) as Q;
+    q = q.eq(cfg.userCol, f.usuario);
   }
   if (f.busca) {
-    if (tipo === "financeira") q = q.or(`tabela.ilike.%${f.busca}%,acao.ilike.%${f.busca}%`) as Q;
-    else if (tipo === "tributaria") q = q.or(`entidade_tipo.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%`) as Q;
+    if (tipo === "financeira") q = q.or(`tabela.ilike.%${f.busca}%,acao.ilike.%${f.busca}%`);
+    else if (tipo === "tributaria") q = q.or(`entidade_tipo.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%`);
     else if (tipo === "sistema")
-      q = q.or(`details.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%,table_name.ilike.%${f.busca}%`) as Q;
+      q = q.or(`details.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%,table_name.ilike.%${f.busca}%`);
   }
   return q;
-}
-
-// Nome da tabela é dinâmico entre 4 fontes de trilha. Encapsula o `from`
-// tipado do client num acesso não-genérico, evitando `(supabase as any)`.
-function fromTrilha(table: string): FilterQuery & PromiseLike<{ data: unknown[] | null; error: { message: string } | null; count?: number | null }> {
-  return (supabase.from as unknown as (t: string) => FilterQuery & PromiseLike<{ data: unknown[] | null; error: { message: string } | null; count?: number | null }>)(table);
 }
 
 export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}) {
@@ -73,24 +82,15 @@ export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}
       porPagina,
     ],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let q = supabase
-        .from(cfg.table as TrilhaTable)
+      let q = fromDynamic(cfg.table)
         .select("*", { count: "exact" })
-        .order(cfg.dateCol, { ascending: false }) as unknown as FilterQuery & {
-          then: PromiseLike<{ data: unknown[]; error: unknown; count: number | null }>["then"];
-        };
+        .order(cfg.dateCol, { ascending: false });
       q = aplicarFiltros(q, tipo, filtros);
       const from = (pagina - 1) * porPagina;
-      q = q.range(from, from + porPagina - 1) as typeof q;
-
-      const { data, error, count } = (await q) as unknown as {
-        data: Record<string, unknown>[] | null;
-        error: { message: string } | null;
-        count: number | null;
-      };
+      q = q.range(from, from + porPagina - 1);
+      const { data, error, count } = await q;
       if (error) throw error;
-      return { rows: data ?? [], total: count ?? 0 };
+      return { rows: (data ?? []) as Record<string, unknown>[], total: count ?? 0 };
     },
   });
 }
@@ -99,18 +99,12 @@ const EXPORT_CAP = 5000;
 
 export async function fetchTrilhaCompleto(tipo: TrilhaTipo, filtros: TrilhaFiltros) {
   const cfg = TABELA_POR_TIPO[tipo];
-  let q = supabase
-    .from(cfg.table as TrilhaTable)
+  let q = fromDynamic(cfg.table)
     .select("*")
     .order(cfg.dateCol, { ascending: false })
-    .limit(EXPORT_CAP) as unknown as FilterQuery & {
-      then: PromiseLike<{ data: unknown[]; error: unknown }>["then"];
-    };
+    .limit(EXPORT_CAP);
   q = aplicarFiltros(q, tipo, filtros);
-  const { data, error } = (await q) as unknown as {
-    data: Record<string, unknown>[] | null;
-    error: { message: string } | null;
-  };
+  const { data, error } = await q;
   if (error) throw error;
   return {
     rows: (data ?? []) as Record<string, unknown>[],
@@ -122,9 +116,7 @@ export async function fetchTrilhaCompleto(tipo: TrilhaTipo, filtros: TrilhaFiltr
 export async function fetchUsuariosTrilha(tipo: TrilhaTipo): Promise<string[]> {
   const cfg = TABELA_POR_TIPO[tipo];
   if (!cfg.userCol) return [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
-    .from(cfg.table)
+  const { data, error } = await fromDynamic(cfg.table)
     .select(cfg.userCol)
     .not(cfg.userCol, "is", null)
     .order(cfg.dateCol, { ascending: false })
