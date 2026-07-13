@@ -68,9 +68,9 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
             entidade_id: entidadeId,
             entidade_tipo: entidadeTipo,
             nome_arquivo: file.name,
-            tipo_arquivo: file.type,
+            mime_type: file.type,
             tamanho_bytes: file.size,
-            storage_path: filePath,
+            url: publicUrl,
             url_publica: publicUrl,
           });
 
