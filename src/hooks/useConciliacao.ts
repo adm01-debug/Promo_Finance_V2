@@ -157,7 +157,7 @@ export function useConciliacao() {
     }>) => {
       const { data, error } = await supabase
         .from('transacoes_bancarias')
-        .insert(transacoes as any)
+        .insert(transacoes as never)
         .select();
 
       if (error) throw error;
