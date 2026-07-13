@@ -128,7 +128,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
         .eq('empresa_id', empresaId)
         .order('nome');
       if (error) throw error;
-      return (data as any[]) ?? [];
+      return data ?? [];
     },
     enabled: !!empresaId,
   });
@@ -406,7 +406,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                       <Label>Tipo de evento</Label>
                       <Select
                         value={simForm.tipo_evento}
-                        onValueChange={(v) => setSimForm({ ...simForm, tipo_evento: v as any })}
+                        onValueChange={(v) => setSimForm({ ...simForm, tipo_evento: v as Regra['tipo_evento'] })}
                       >
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
