@@ -31,7 +31,7 @@ export function RegrasConciliacaoPanel() {
   const { data: regras, isLoading } = useQuery({
     queryKey: ['regras-conciliacao', currentEmpresaId],
     queryFn: async () => {
-      let query = (supabase as any)
+      let query = supabase
         .from('regras_conciliacao')
         .select('*')
         .order('vezes_aplicada', { ascending: false });
