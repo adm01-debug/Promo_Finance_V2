@@ -103,15 +103,16 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
       const content = await file.text();
       clearInterval(progressInterval); setProgress(80);
       
-      let mapeamento = undefined;
+      let mapeamento: Record<string, string> | undefined = undefined;
       if (contaBancariaId) {
-        const { data: conta } = await (supabase as any)
+        const { data: conta } = await supabase
           .from('contas_bancarias')
-          .select('mapeamento_extrato')
+          .select('configuracoes_conciliacao')
           .eq('id', contaBancariaId)
           .maybeSingle();
-        if (conta?.mapeamento_extrato) {
-          mapeamento = conta.mapeamento_extrato as Record<string, string>;
+        const cfg = conta?.configuracoes_conciliacao as { mapeamento_extrato?: Record<string, string> } | null;
+        if (cfg?.mapeamento_extrato) {
+          mapeamento = cfg.mapeamento_extrato;
         }
       }
 
