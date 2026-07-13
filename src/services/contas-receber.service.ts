@@ -116,10 +116,13 @@ export const contasReceberService = {
   },
 
   async update(id: string, input: Partial<ContaReceberInput>) {
-    const updateData: Record<string, unknown> = { ...input, updated_at: new Date().toISOString() };
+    const updateData: Database['public']['Tables']['contas_receber']['Update'] = {
+      ...input,
+      updated_at: new Date().toISOString(),
+    };
     const { data, error } = await supabase
       .from('contas_receber')
-      .update(updateData as any)
+      .update(updateData)
       .eq('id', id)
       .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .single();
