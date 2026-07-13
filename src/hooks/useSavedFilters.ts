@@ -98,8 +98,7 @@ export function useSavedFilters<T = unknown>(entityType: string) {
     queryKey,
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await supabaseDyn
         .from("saved_filters")
         .select("*")
         .eq("entity_type", entityType)
@@ -139,8 +138,7 @@ export function useSavedFilters<T = unknown>(entityType: string) {
         tenantRoles,
       });
 
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filters")
         .upsert(
           {
@@ -170,8 +168,7 @@ export function useSavedFilters<T = unknown>(entityType: string) {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filters")
         .delete()
         .eq("id", id);
@@ -186,8 +183,7 @@ export function useSavedFilters<T = unknown>(entityType: string) {
 
   const setDefault = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filters")
         .update({ is_default: true })
         .eq("id", id);
@@ -238,8 +234,7 @@ export function useSavedFilters<T = unknown>(entityType: string) {
         empresa_id: normalized.empresaId,
       };
 
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filters")
         .update(newSnapshot)
         .eq("id", input.id);

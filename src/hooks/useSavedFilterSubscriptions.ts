@@ -69,8 +69,7 @@ export function useSavedFilterSubscriptions() {
     queryKey,
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await supabaseDyn
         .from("saved_filter_subscriptions")
         .select("*");
       if (error) throw error;
@@ -128,8 +127,7 @@ export function useSavedFilterSubscriptions() {
       rateLimitWindowMin?: number;
     }) => {
       if (!user) throw new Error("Sessão expirada");
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filter_subscriptions")
         .upsert(
           {
@@ -194,8 +192,7 @@ export function useSavedFilterSubscriptions() {
       if (input.frequencia !== undefined || input.horarioPreferido !== undefined) {
         patch.next_dispatch_at = null;
       }
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filter_subscriptions")
         .update(patch)
         .eq("id", input.id);
@@ -209,8 +206,7 @@ export function useSavedFilterSubscriptions() {
 
   const unsubscribe = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filter_subscriptions")
         .delete()
         .eq("id", id);
@@ -226,8 +222,7 @@ export function useSavedFilterSubscriptions() {
   /** Marca o "visto até agora" para evitar notificar registros antigos. */
   const markSeen = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await supabaseDyn
         .from("saved_filter_subscriptions")
         .update({ last_seen_at: new Date().toISOString() })
         .eq("id", id);
