@@ -362,7 +362,7 @@ export function useRelatorioDetalhado(periodoInicio: string, periodoFim: string,
           id: r.id,
           data: r.data_recebimento || r.data_vencimento,
           descricao: r.cliente_nome,
-          categoria: (r.centros_custo as any)?.nome || 'Sem Categoria',
+          categoria: (r.centros_custo as { nome?: string } | null)?.nome || 'Sem Categoria',
           tipo: 'Receita',
           valor: r.valor,
           status: r.status === 'pago' ? 'Conciliado' : 'Pendente'
