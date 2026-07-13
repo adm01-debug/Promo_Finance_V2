@@ -58,7 +58,7 @@ export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
       if (filters.batchId) q = q.eq('batch_id', filters.batchId);
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as unknown as SandboxRun[]]) as SandboxRun[];
+      return (data ?? []) as unknown as SandboxRun[];
     },
   });
 }
