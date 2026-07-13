@@ -86,7 +86,7 @@ export function useInadimplenciaPorRamo() {
         dias_atraso_total: number;
       }>();
 
-      (contas as any[] | null)?.forEach((conta) => {
+      (contas as Array<Record<string, any>> | null)?.forEach((conta) => {
         const ramo = conta.clientes?.ramo_atividade || "Não informado";
         const valorPendente = conta.valor - (conta.valor_recebido || 0);
         const isVencido = conta.data_vencimento < hoje;
