@@ -79,7 +79,7 @@ export function useSSOLoginAttempts(limit = 50) {
   return useQuery({
     queryKey: ['sso-login-attempts', limit],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('sso_login_attempts')
         .select('*')
         .order('created_at', { ascending: false })
