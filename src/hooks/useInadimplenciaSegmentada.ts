@@ -273,7 +273,7 @@ export function usePrevisoesInadimplencia() {
         impacto_estimado: item.valor_estimado,
         data_previsao: item.data_prevista,
         prioridade: item.probabilidade > 80 ? 'alta' : item.probabilidade > 50 ? 'media' : 'baixa',
-        status: item.status as any
+        status: item.status as string
       })) as PredicaoInadimplencia[];
     },
   });
