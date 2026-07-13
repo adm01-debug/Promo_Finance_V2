@@ -51,9 +51,11 @@ function aplicarFiltros<Q extends FilterQuery>(q: Q, tipo: TrilhaTipo, f: Trilha
   return q;
 }
 
-// Nome da tabela vem de config estática; cast para o union de tabelas conhecidas
-// evita `(supabase as any)` e mantém a rota tipada no client.
-type TrilhaTable = "auditoria_financeira" | "auditoria_tributaria" | "audit_logs" | "verificacoes_conformidade";
+// Nome da tabela é dinâmico entre 4 fontes de trilha. Encapsula o `from`
+// tipado do client num acesso não-genérico, evitando `(supabase as any)`.
+function fromTrilha(table: string): FilterQuery & PromiseLike<{ data: unknown[] | null; error: { message: string } | null; count?: number | null }> {
+  return (supabase.from as unknown as (t: string) => FilterQuery & PromiseLike<{ data: unknown[] | null; error: { message: string } | null; count?: number | null }>)(table);
+}
 
 export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}) {
   const { pagina = 1, porPagina = 50 } = filtros;
