@@ -17,8 +17,8 @@ export function useLogAudit() {
         p_action: params.action,
         p_table_name: params.tableName || null,
         p_record_id: params.recordId || null,
-        p_old_data: params.oldData ? (params.oldData as any) : null,
-        p_new_data: params.newData ? (params.newData as any) : null,
+        p_old_data: (params.oldData ?? null) as never,
+        p_new_data: (params.newData ?? null) as never,
         p_details: params.details || null,
       });
       if (error) throw error;
