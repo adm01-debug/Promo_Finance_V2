@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { toast } from 'sonner';
 
 export type SSOTipo = 'oidc' | 'saml';
@@ -95,7 +96,7 @@ export function useSSORoleMappings(providerId?: string) {
     queryKey: ['sso-role-mappings', providerId],
     queryFn: async () => {
       if (!providerId) return [];
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabaseDyn
         .from('sso_role_mappings')
         .select('*')
         .eq('provider_id', providerId)
@@ -190,9 +191,9 @@ export function useSaveSSORoleMappings() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ providerId, mappings }: { providerId: string; mappings: Array<{ idp_group: string; app_role: AppRole }> }) => {
-      await (supabase as any).from('sso_role_mappings').delete().eq('provider_id', providerId);
+      await supabaseDyn.from('sso_role_mappings').delete().eq('provider_id', providerId);
       if (mappings.length) {
-        const { error } = await (supabase as any).from('sso_role_mappings').insert(
+        const { error } = await supabaseDyn.from('sso_role_mappings').insert(
           mappings.map((m, i) => ({ ...m, provider_id: providerId, ordem: i }))
         );
         if (error) throw error;
