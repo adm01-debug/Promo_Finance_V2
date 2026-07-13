@@ -837,7 +837,7 @@ export const VisualValidator = () => {
                               )}
                             </div>
                           </div>
-                        ))}
+                        );})}
                       </div>
                     </div>
                   ))}
