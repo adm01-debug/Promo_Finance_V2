@@ -478,7 +478,7 @@ export default function Asaas() {
                       <CardDescription>Monitoramento de retentativas automáticas</CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => (simularBackoff as any).mutate()} disabled={(simularBackoff as any).isPending}>
+                      <Button variant="outline" size="sm" onClick={() => simularBackoff.mutate()} disabled={simularBackoff.isPending}>
                         <PlayCircle className="h-4 w-4 mr-2" /> Simular
                       </Button>
                       <DropdownMenu>
