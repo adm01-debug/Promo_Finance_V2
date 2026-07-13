@@ -4,24 +4,38 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Sparkles } from 'lucide-react';
+import type { Database } from '@/integrations/supabase/types';
 
+type ContaPagar = Database['public']['Tables']['contas_pagar']['Row'];
+type Profile = Database['public']['Tables']['profiles']['Row'];
+type SolicitacaoAprovacao = Pick<
+  Database['public']['Tables']['solicitacoes_aprovacao']['Row'],
+  'id' | 'conta_pagar_id' | 'status' | 'solicitado_em' | 'solicitado_por' | 'aprovado_em' | 'aprovado_por' | 'motivo_rejeicao' | 'observacoes'
+>;
+
+interface ApprovalStatus {
+  estaAprovado: boolean;
+  temSolicitacaoPendente: boolean;
+  foiRejeitado: boolean;
+  aguardandoSolicitacao: boolean;
+}
 
 interface ContasPagarListProps {
-  contas: any[];
+  contas: ContaPagar[];
   isLoading: boolean;
   isAllSelected: boolean;
   selectAll: (checked: boolean) => void;
   isSelected: (id: string) => boolean;
   toggleSelect: (id: string) => void;
-  onEdit: (conta: any) => void;
-  onDelete: (conta: any) => void;
-  onRegistrarPagamento: (conta: any) => void;
-  onSolicitarAprovacao: (conta: any) => void;
-  getApprovalStatus: (conta: any) => any;
-  historicoAprovacaoPorConta: Map<string, any[]>;
-  profilesMap: Map<string, any>;
+  onEdit: (conta: ContaPagar) => void;
+  onDelete: (conta: ContaPagar) => void;
+  onRegistrarPagamento: (conta: ContaPagar) => void;
+  onSolicitarAprovacao: (conta: ContaPagar) => void;
+  getApprovalStatus: (conta: ContaPagar) => ApprovalStatus;
+  historicoAprovacaoPorConta: Map<string, SolicitacaoAprovacao[]>;
+  profilesMap: Map<string, Profile>;
   valorMinimoAprovacao: number;
-  getRowAnimation: (index: number) => any;
+  getRowAnimation: (index: number) => Record<string, unknown>;
 }
 
 export const ContasPagarList: React.FC<ContasPagarListProps> = ({
