@@ -72,17 +72,23 @@ export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}
     ],
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let q: any = (supabase as any)
-        .from(cfg.table)
+      let q = supabase
+        .from(cfg.table as TrilhaTable)
         .select("*", { count: "exact" })
-        .order(cfg.dateCol, { ascending: false });
+        .order(cfg.dateCol, { ascending: false }) as unknown as FilterQuery & {
+          then: PromiseLike<{ data: unknown[]; error: unknown; count: number | null }>["then"];
+        };
       q = aplicarFiltros(q, tipo, filtros);
       const from = (pagina - 1) * porPagina;
-      q = q.range(from, from + porPagina - 1);
+      q = q.range(from, from + porPagina - 1) as typeof q;
 
-      const { data, error, count } = await q;
+      const { data, error, count } = (await q) as unknown as {
+        data: Record<string, unknown>[] | null;
+        error: { message: string } | null;
+        count: number | null;
+      };
       if (error) throw error;
-      return { rows: (data ?? []) as Record<string, unknown>[], total: count ?? 0 };
+      return { rows: data ?? [], total: count ?? 0 };
     },
   });
 }
@@ -91,14 +97,18 @@ const EXPORT_CAP = 5000;
 
 export async function fetchTrilhaCompleto(tipo: TrilhaTipo, filtros: TrilhaFiltros) {
   const cfg = TABELA_POR_TIPO[tipo];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let q: any = (supabase as any)
-    .from(cfg.table)
+  let q = supabase
+    .from(cfg.table as TrilhaTable)
     .select("*")
     .order(cfg.dateCol, { ascending: false })
-    .limit(EXPORT_CAP);
+    .limit(EXPORT_CAP) as unknown as FilterQuery & {
+      then: PromiseLike<{ data: unknown[]; error: unknown }>["then"];
+    };
   q = aplicarFiltros(q, tipo, filtros);
-  const { data, error } = await q;
+  const { data, error } = (await q) as unknown as {
+    data: Record<string, unknown>[] | null;
+    error: { message: string } | null;
+  };
   if (error) throw error;
   return {
     rows: (data ?? []) as Record<string, unknown>[],
