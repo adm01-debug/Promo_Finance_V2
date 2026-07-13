@@ -259,7 +259,7 @@ export function useConciliacaoPage() {
               await supabase.from('webhooks_log').insert({
                 event_type: 'reconciliation.failed',
                 status: 'error',
-                payload: { transacao, match: melhorMatch, error: err } as any,
+                payload: { transacao, match: melhorMatch, error: String(err?.message ?? err) } as never,
                 erro_mensagem: `Falha na conciliação automática: ${err.message}`,
                 provider: 'Internal System'
               });
