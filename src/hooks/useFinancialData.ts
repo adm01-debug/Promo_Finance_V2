@@ -319,13 +319,13 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery as any]);
+      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
 
       if (countResult.error) throw countResult.error;
       if (dataResult.error) throw dataResult.error;
 
       return {
-        data: (dataResult.data || []) as any[],
+        data: dataResult.data ?? [],
         totalCount: countResult.count || 0,
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
@@ -412,13 +412,13 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
         dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery as any]);
+      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
 
       if (countResult.error) throw countResult.error;
       if (dataResult.error) throw dataResult.error;
 
       return {
-        data: (dataResult.data || []) as any[],
+        data: dataResult.data ?? [],
         totalCount: countResult.count || 0,
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };

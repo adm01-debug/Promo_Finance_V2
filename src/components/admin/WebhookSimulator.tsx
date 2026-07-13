@@ -28,17 +28,16 @@ export function WebhookSimulator() {
         .insert({
           status: 'pending',
           created_by: user.id
-        } as any)
+        })
         .select()
         .single();
 
       if (runError || !run) throw runError || new Error('Falha ao criar rodada');
-      const runData = run as any;
 
       // 2. Chamar a Edge Function
       const { error: funcError } = await supabase.functions.invoke('webhook-simulator', {
         body: { 
-          run_id: runData.id, 
+          run_id: run.id, 
           target_function: 'asaas-webhook',
           scenarios_count: 50
         }
@@ -49,7 +48,7 @@ export function WebhookSimulator() {
       toast.success('Simulação iniciada com sucesso!');
       
       // 3. Monitorar resultados
-      pollResults(runData.id);
+      pollResults(run.id);
 
     } catch (error: any) {
       console.error('Erro na simulação:', error);
@@ -66,8 +65,6 @@ export function WebhookSimulator() {
         .eq('id', runId)
         .single();
 
-      const runData = run as any;
-
       const { data: resultsData } = await supabase
         .from('webhook_simulation_results')
         .select('*')
@@ -76,7 +73,7 @@ export function WebhookSimulator() {
 
       if (resultsData) {
         setResults(resultsData);
-        const success = resultsData.filter((r: any) => r.success).length;
+        const success = resultsData.filter((r) => r.success).length;
         setStats({
           total: resultsData.length,
           success,
@@ -84,10 +81,10 @@ export function WebhookSimulator() {
         });
       }
 
-      if (runData && (runData.status === 'completed' || runData.status === 'failed')) {
+      if (run && (run.status === 'completed' || run.status === 'failed')) {
         clearInterval(interval);
         setIsRunning(false);
-        if (runData.status === 'completed') {
+        if (run.status === 'completed') {
           toast.success('Simulação finalizada!');
         } else {
           toast.error('Simulação falhou no processamento.');

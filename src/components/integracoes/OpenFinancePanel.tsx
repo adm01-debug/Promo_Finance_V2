@@ -45,12 +45,12 @@ export const OpenFinancePanel = () => {
         .from('contas_bancarias')
         .select('id, banco, agencia, conta, empresa_id, empresas(razao_social)')
         .eq('ativo', true)
-        .order('banco') as any;
+        .order('banco');
 
       if (error) throw error;
       
       // Map relationship array to single object for the frontend component
-      return (data || []).map((item: any) => ({
+      return (data ?? []).map((item) => ({
         ...item,
         empresas: Array.isArray(item.empresas) ? item.empresas[0] : item.empresas
       }));

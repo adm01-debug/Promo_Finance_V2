@@ -262,7 +262,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         },
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      cursorY = (doc as any).lastAutoTable?.finalY + 6 || cursorY + 6;
+      cursorY = (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 6 || cursorY + 6;
 
       if (apenasFiltrados) {
         doc.setFont('helvetica', 'italic');
@@ -302,7 +302,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             margin: margins,
           });
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          cursorY = (doc as any).lastAutoTable.finalY + 6;
+          cursorY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
         });
       }
 

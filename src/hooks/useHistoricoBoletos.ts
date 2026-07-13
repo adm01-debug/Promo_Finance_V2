@@ -30,11 +30,11 @@ export function useHistoricoBoletos() {
 
       if (error) throw error;
 
-      return (data as any[]).map(item => ({
+      return ((data ?? []) as unknown as Array<{ boletos?: { numero?: string; sacado_nome?: string } } & Record<string, unknown>>).map((item) => ({
         ...item,
-        boleto_numero: item.boletos.numero,
-        sacado_nome: item.boletos.sacado_nome
-      })) as HistoricoEvento[];
+        boleto_numero: item.boletos?.numero,
+        sacado_nome: item.boletos?.sacado_nome,
+      })) as unknown as HistoricoEvento[];
     },
   });
 }

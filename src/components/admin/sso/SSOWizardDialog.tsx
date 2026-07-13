@@ -125,7 +125,7 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
   };
 
   const handleSave = async () => {
-    const saved = await save.mutateAsync(form as any);
+    const saved = await save.mutateAsync(form as Partial<SSOProvider> & { nome: string; tipo: NonNullable<typeof form.tipo> });
     if (saved?.id) {
       await saveMappings.mutateAsync({ providerId: saved.id, mappings: roleMappings });
     }
