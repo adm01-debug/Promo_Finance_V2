@@ -8,7 +8,10 @@ import type { Database } from '@/integrations/supabase/types';
 
 type ContaPagar = Database['public']['Tables']['contas_pagar']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
-type SolicitacaoAprovacao = Database['public']['Tables']['solicitacoes_aprovacao']['Row'];
+type SolicitacaoAprovacao = Pick<
+  Database['public']['Tables']['solicitacoes_aprovacao']['Row'],
+  'id' | 'conta_pagar_id' | 'status' | 'solicitado_em' | 'solicitado_por' | 'aprovado_em' | 'aprovado_por' | 'motivo_rejeicao' | 'observacoes'
+>;
 
 interface ApprovalStatus {
   estaAprovado: boolean;
