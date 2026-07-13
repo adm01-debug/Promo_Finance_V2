@@ -212,9 +212,12 @@ export function createLazyComponent<T extends ComponentType<Record<string, unkno
 
     if (!shouldRender) return fallback || <DefaultFallback />;
 
+    // LazyComponent é resolvido dinamicamente — o cast preserva a passagem
+    // de props sem introduzir `any` explícito nos consumidores do wrapper.
+    const Comp = LazyComponent as unknown as React.ComponentType<Record<string, unknown>>;
     return (
       <Suspense fallback={fallback || <DefaultFallback />}>
-        <LazyComponent {...(props as Record<string, unknown>)} />
+        <Comp {...props} />
       </Suspense>
     );
   }
