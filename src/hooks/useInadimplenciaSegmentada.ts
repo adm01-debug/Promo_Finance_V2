@@ -213,7 +213,7 @@ export function useInadimplenciaPorVendedor() {
 
       const resultado: InadimplenciaPorVendedor[] = [];
       
-      (vendedores as any[] | null)?.forEach((vendedor) => {
+      (vendedores as Array<Record<string, any>> | null)?.forEach((vendedor) => {
         const stats = porVendedor.get(vendedor.id) || {
           total_contas: 0,
           total_vencido: 0,
