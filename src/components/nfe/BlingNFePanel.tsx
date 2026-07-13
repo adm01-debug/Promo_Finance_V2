@@ -51,12 +51,12 @@ export function BlingNFePanel() {
 
   /** Gap #8: Server-side filtering via API params */
   const handleBuscar = () => {
-    const filtros: Record<string, unknown> = {};
+    const filtros: import('@/hooks/useBlingNFe').BlingNFeFilters = {};
     if (filtroSituacao !== 'todos') filtros.situacao = Number(filtroSituacao);
     if (filtroTipo !== 'todos') filtros.tipo = Number(filtroTipo);
     if (dataInicial) filtros.dataEmissaoInicial = dataInicial;
     if (dataFinal) filtros.dataEmissaoFinal = dataFinal;
-    listarNFe(filtros as any);
+    listarNFe(filtros);
   };
 
   const filtered = notas.filter(n => {
