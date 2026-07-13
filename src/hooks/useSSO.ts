@@ -102,7 +102,7 @@ export function useSSORoleMappings(providerId?: string) {
         .eq('provider_id', providerId)
         .order('ordem');
       if (error) throw error;
-      return (data ?? []) as SSORoleMapping[];
+      return (data ?? []) as unknown as SSORoleMapping[];
     },
     enabled: !!providerId,
   });
