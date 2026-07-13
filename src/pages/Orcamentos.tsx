@@ -71,7 +71,7 @@ const Orcamentos = () => {
   const deleteBudget = useDeleteBudget();
 
   const form = useZodForm({
-    schema: budgetSchema as any,
+    schema: budgetSchema,
     initialValues: {
       category: '',
       budgeted_amount: 0,
