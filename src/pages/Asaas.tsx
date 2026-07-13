@@ -488,10 +488,10 @@ export default function Asaas() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => (exportarAuditoria as any).mutate()}>
+                          <DropdownMenuItem onClick={() => exportarAuditoria.mutate()}>
                             CSV
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => (exportarAuditoriaPDF as any)()}>
+                          <DropdownMenuItem onClick={() => exportarAuditoriaPDF()}>
                             PDF
                           </DropdownMenuItem>
                         </DropdownMenuContent>
