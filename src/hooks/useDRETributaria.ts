@@ -34,12 +34,12 @@ export function useDRETributaria(empresaId?: string, periodo?: string) {
     queryKey: ["dre-tributaria", empresaId, periodo],
     queryFn: async () => {
       if (!empresaId || !periodo) return null;
-      const { data, error } = await (supabase.functions as any).invoke(
+      const { data, error } = await supabase.functions.invoke(
         "gerar-dre-tributaria",
         { body: { empresa_id: empresaId, periodo } },
       );
       if (error) throw error;
-      return (data as any)?.dre ?? null;
+      return (data as { dre?: DRETributaria } | null)?.dre ?? null;
     },
     enabled: !!empresaId && !!periodo,
     staleTime: 30 * 60 * 1000,

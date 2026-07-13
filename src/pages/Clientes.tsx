@@ -300,11 +300,11 @@ export default function Clientes() {
           setFormOpen(open);
           if (!open) setEditingCliente(null);
         }}
-        cliente={editingCliente as any}
+        cliente={editingCliente as unknown as Parameters<typeof ClienteForm>[0]['cliente']}
       />
 
       <ClienteDetailDialog
-        cliente={viewingCliente as any}
+        cliente={viewingCliente}
         open={detailOpen}
         onOpenChange={(open) => {
           setDetailOpen(open);

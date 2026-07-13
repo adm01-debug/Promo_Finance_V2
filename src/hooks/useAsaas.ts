@@ -263,7 +263,19 @@ export function useAsaas(empresaId?: string) {
         .maybeSingle();
       if (error) throw error;
       
-      const conf = (data?.configuracoes as any) || {};
+      const conf = (data?.configuracoes ?? {}) as {
+        retry_limit?: number;
+        retry_interval_minutes?: number;
+        backoff_multiplier?: number;
+        default_fine_percent?: number;
+        default_interest_percent?: number;
+        alert_email_enabled?: boolean;
+        alert_whatsapp_enabled?: boolean;
+        alert_email_address?: string;
+        alert_whatsapp_number?: string;
+        failure_threshold?: number;
+        bitrix_trigger_stage?: string;
+      };
       
       return {
         ...data,
@@ -291,7 +303,7 @@ export function useAsaas(empresaId?: string) {
         .select('configuracoes')
         .eq('empresa_id', empresaId)
         .maybeSingle();
-      const mergedConfig = { ...(current?.configuracoes as any || {}), ...payload };
+      const mergedConfig = { ...((current?.configuracoes as Record<string, unknown> | null) || {}), ...payload };
       const { error } = await supabase.from('asaas_config').upsert({
         empresa_id: empresaId, configuracoes: mergedConfig, updated_at: new Date().toISOString()
       }, { onConflict: 'empresa_id' });

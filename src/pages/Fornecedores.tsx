@@ -296,7 +296,7 @@ export default function Fornecedores() {
             setFormOpen(open);
             if (!open) setEditingFornecedor(null);
           }}
-          fornecedor={editingFornecedor as any}
+          fornecedor={editingFornecedor as unknown as React.ComponentProps<typeof FornecedorForm>['fornecedor']}
         />
 
         <FornecedorDetailDialog

@@ -176,7 +176,7 @@ export default function ContasPagar() {
                 onSolicitarAprovacao={logic.abrirModalAprovacao}
                 getApprovalStatus={logic.getApprovalStatus}
                 historicoAprovacaoPorConta={logic.historicoAprovacaoPorConta}
-                profilesMap={logic.profilesMap as any}
+                profilesMap={logic.profilesMap as unknown as React.ComponentProps<typeof ContasPagarList>['profilesMap']}
                 valorMinimoAprovacao={logic.valorMinimoAprovacao}
                 getRowAnimation={logic.getRowAnimation}
               />
@@ -189,7 +189,7 @@ export default function ContasPagar() {
               logic.setFormOpen(open);
               if (!open) logic.setEditingConta(null);
             }}
-            conta={logic.editingConta as any}
+            conta={logic.editingConta as unknown as React.ComponentProps<typeof ContaPagarForm>['conta']}
           />
 
           <RegistrarPagamentoDialog 

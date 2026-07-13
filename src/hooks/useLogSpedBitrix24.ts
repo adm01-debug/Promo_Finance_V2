@@ -32,7 +32,7 @@ interface LogSpedBitrixResponse {
 export function useLogSpedBitrix24() {
   return useMutation<LogSpedBitrixResponse, Error, LogSpedBitrixParams>({
     mutationFn: async (params) => {
-      const { data, error } = await (supabase.functions.invoke as any)(
+      const { data, error } = await supabase.functions.invoke<LogSpedBitrixResponse>(
         'log-sped-bitrix24',
         { body: params },
       );

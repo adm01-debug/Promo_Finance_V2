@@ -54,7 +54,17 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
 
   useEffect(() => {
     if (prefillData) {
-      const data = prefillData as any;
+      const data = prefillData as {
+        type: 'receber' | 'pagar';
+        cliente_nome?: string;
+        fornecedor_nome?: string;
+        valor: number;
+        data_vencimento: string;
+        empresa_id: string;
+        descricao?: string;
+        id: string;
+        conta_bancaria_id?: string | null;
+      };
       setFormData(prev => ({
         ...prev,
         sacado_nome: data.type === 'receber' ? data.cliente_nome : data.fornecedor_nome,
