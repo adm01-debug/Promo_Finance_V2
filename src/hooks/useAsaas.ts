@@ -303,7 +303,7 @@ export function useAsaas(empresaId?: string) {
         .select('configuracoes')
         .eq('empresa_id', empresaId)
         .maybeSingle();
-      const mergedConfig = { ...(current?.configuracoes as any || {}), ...payload };
+      const mergedConfig = { ...((current?.configuracoes as Record<string, unknown> | null) || {}), ...payload };
       const { error } = await supabase.from('asaas_config').upsert({
         empresa_id: empresaId, configuracoes: mergedConfig, updated_at: new Date().toISOString()
       }, { onConflict: 'empresa_id' });
