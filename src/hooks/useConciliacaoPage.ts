@@ -204,7 +204,7 @@ export function useConciliacaoPage() {
       .eq('id', selectedBanco)
       .single();
     
-    const config = (contaInfo?.configuracoes_conciliacao as any) || { 
+    const config = (contaInfo?.configuracoes_conciliacao as { tolerancia_centavos?: number; aceite_automatico?: boolean; alertas_inadimplencia?: unknown; alertas_conciliacao?: unknown } | null) || { 
       tolerancia_centavos: TOLERANCIA_CENTAVOS, 
       aceite_automatico: true,
       alertas_inadimplencia: { threshold: 10, interval: 'weekly', channel: 'email', active: false },
