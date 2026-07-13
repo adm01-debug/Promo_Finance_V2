@@ -61,7 +61,7 @@ export default function Categorias() {
           >
             <Tabs 
               value={activeTab} 
-              onValueChange={(v) => setActiveTab(v as any)} 
+              onValueChange={(v) => setActiveTab(v as 'despesa' | 'receita')} 
               className="w-full md:w-auto"
             >
               <TabsList className="grid grid-cols-2 w-full md:w-[300px] h-10 bg-card/5 border-white/10 rounded-xl">

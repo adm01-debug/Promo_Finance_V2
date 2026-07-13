@@ -23,7 +23,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { usePlanosAcao, useUpdatePlanoAcao, useCreatePlanoAcao } from '@/hooks/useInteligenciaOperacional';
+import { usePlanosAcao, useUpdatePlanoAcao, useCreatePlanoAcao, type PlanoAcao } from '@/hooks/useInteligenciaOperacional';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -50,9 +50,9 @@ export function PlanosAcaoPanel() {
   const planosFiltrados = planos?.filter(p => filtroStatus === 'todos' || p.status === filtroStatus);
 
   const handleToggleStatus = (id: string, currentStatus: string) => {
-    const nextStatus = currentStatus === 'concluido' ? 'pendente' : 'concluido';
+    const nextStatus: PlanoAcao['status'] = currentStatus === 'concluido' ? 'pendente' : 'concluido';
     const progresso = nextStatus === 'concluido' ? 100 : 0;
-    updatePlano.mutate({ id, status: nextStatus as any, progresso });
+    updatePlano.mutate({ id, status: nextStatus, progresso });
   };
 
   return (

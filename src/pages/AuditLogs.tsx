@@ -76,7 +76,7 @@ export default function AuditLogs() {
   const { data: logs, isLoading, refetch } = useQuery({
     queryKey: ['audit-logs', actionFilter, tableFilter, userFilter, dateRange],
     queryFn: async () => {
-      let query = (supabase as any).from('audit_logs').select('*').order('created_at', { ascending: false }).limit(500);
+      let query = supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(500);
       if (actionFilter !== 'all') query = query.eq('action', actionFilter);
       if (tableFilter !== 'all') query = query.eq('table_name', tableFilter);
       if (userFilter !== 'all') query = query.eq('user_email', userFilter);
@@ -84,7 +84,7 @@ export default function AuditLogs() {
       if (dateRange?.to) query = query.lte('created_at', endOfDay(dateRange.to).toISOString());
       const { data, error } = await query;
       if (error) throw error;
-      return data as AuditLog[];
+      return data as unknown as AuditLog[];
     },
   });
 

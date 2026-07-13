@@ -174,7 +174,7 @@ export function useWebAuthn() {
           public_key: publicKey,
           counter: 0,
           device_name: deviceName || detectDeviceName(),
-        } as any);
+        });
 
       if (error) {
         logger.error('[WebAuthn] Error storing credential:', error);
@@ -215,7 +215,7 @@ export function useWebAuthn() {
       const { data: rawCredentials, error: fetchError } = await supabase
         .rpc('get_webauthn_credential_by_email' as any, { p_email: userEmail });
 
-      if (fetchError || !rawCredentials || (rawCredentials as any[]).length === 0) {
+      if (fetchError || !rawCredentials || (rawCredentials as unknown[]).length === 0) {
         toast.error('Nenhuma biometria registrada para este email');
         return { success: false };
       }
@@ -265,7 +265,7 @@ export function useWebAuthn() {
 
       await supabase
         .from('webauthn_credentials')
-        .update({ counter, last_used_at: new Date().toISOString() } as any)
+        .update({ counter, last_used_at: new Date().toISOString() })
         .eq('credential_id', assertionCredentialId);
 
       logger.debug('[WebAuthn] Authentication successful');
