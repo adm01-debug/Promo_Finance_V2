@@ -253,7 +253,7 @@ export function usePrevisoesInadimplencia() {
     queryKey: ["previsoes-inadimplencia"],
     queryFn: async () => {
       // Prioriza dados reais da tabela de alertas_preditivos (Predictive Engine 10/10)
-      const { data, error } = await (supabase
+      const { data, error } = await supabase
         .from("alertas_preditivos")
         .select("*")
         .eq("tipo", "inadimplencia")
