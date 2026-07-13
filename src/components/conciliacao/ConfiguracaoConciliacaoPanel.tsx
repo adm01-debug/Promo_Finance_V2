@@ -206,7 +206,7 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
                         <Label className="text-[10px]">Canal</Label>
                         <Select 
                           value={config.alertas_conciliacao?.channel} 
-                          onValueChange={v => setConfig({...config, alertas_conciliacao: {...config.alertas_conciliacao!, channel: v as any}})}
+                          onValueChange={v => setConfig({...config, alertas_conciliacao: {...config.alertas_conciliacao!, channel: v as AlertaConfig['channel']}})}
                         >
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
