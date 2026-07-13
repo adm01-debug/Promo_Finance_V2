@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { toast } from 'sonner';
 
 export interface ApiKey {
@@ -17,14 +18,14 @@ export function useApiKeys(empresaId?: string) {
     queryKey: ['api-keys', empresaId],
     queryFn: async () => {
       if (!empresaId) return [];
-      const { data, error } = await supabase
-        .from('api_keys' as any)
+      const { data, error } = await supabaseDyn
+        .from('api_keys')
         .select('*')
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return (data as any) as ApiKey[];
+      return (data ?? []) as unknown as ApiKey[];
 
     },
     enabled: !!empresaId,
@@ -57,8 +58,8 @@ export function useRevokeApiKey() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, empresa_id }: { id: string; empresa_id: string }) => {
-      const { error } = await supabase
-        .from('api_keys' as any)
+      const { error } = await supabaseDyn
+        .from('api_keys')
         .delete()
         .eq('id', id);
 

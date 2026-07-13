@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -97,9 +98,8 @@ export function useSavedFilters<T = unknown>(entityType: string) {
     queryKey,
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filters" as any)
+      const { data, error } = await supabaseDyn
+        .from("saved_filters")
         .select("*")
         .eq("entity_type", entityType)
         .order("is_default", { ascending: false })
@@ -138,9 +138,8 @@ export function useSavedFilters<T = unknown>(entityType: string) {
         tenantRoles,
       });
 
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filters" as any)
+      const { error } = await supabaseDyn
+        .from("saved_filters")
         .upsert(
           {
             user_id: user.id,
@@ -169,9 +168,8 @@ export function useSavedFilters<T = unknown>(entityType: string) {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filters" as any)
+      const { error } = await supabaseDyn
+        .from("saved_filters")
         .delete()
         .eq("id", id);
       if (error) throw error;
@@ -185,9 +183,8 @@ export function useSavedFilters<T = unknown>(entityType: string) {
 
   const setDefault = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filters" as any)
+      const { error } = await supabaseDyn
+        .from("saved_filters")
         .update({ is_default: true })
         .eq("id", id);
       if (error) throw error;
@@ -237,9 +234,8 @@ export function useSavedFilters<T = unknown>(entityType: string) {
         empresa_id: normalized.empresaId,
       };
 
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filters" as any)
+      const { error } = await supabaseDyn
+        .from("saved_filters")
         .update(newSnapshot)
         .eq("id", input.id);
       if (error) throw error;

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -276,9 +277,8 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
     }
     // Avança last_seen_at + recalcula próximo dispatch
     const next = computeNextDispatch(sub.frequencia, sub.horario_preferido);
-    supabase
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .from("saved_filter_subscriptions" as any)
+    supabaseDyn
+      .from("saved_filter_subscriptions")
       .update({
         last_seen_at: new Date().toISOString(),
         next_dispatch_at: next ? next.toISOString() : null,
@@ -371,9 +371,8 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
                   sub.horario_preferido,
                 );
                 if (next) {
-                  supabase
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .from("saved_filter_subscriptions" as any)
+                  supabaseDyn
+                    .from("saved_filter_subscriptions")
                     .update({ next_dispatch_at: next.toISOString() })
                     .eq("id", sub.id)
                     .then(({ error }) => {

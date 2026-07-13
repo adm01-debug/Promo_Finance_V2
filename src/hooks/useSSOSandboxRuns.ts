@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { startOfDay, endOfDay } from 'date-fns';
 import type { SandboxOutcome, SandboxResult } from '@/components/admin/sso/sandbox/outcome';
 
@@ -44,7 +45,7 @@ export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
       filters.batchId ?? null,
     ],
     queryFn: async () => {
-      let q = (supabase as any)
+      let q = supabaseDyn
         .from('sso_sandbox_runs')
         .select('*')
         .order('created_at', { ascending: false })
@@ -57,7 +58,7 @@ export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
       if (filters.batchId) q = q.eq('batch_id', filters.batchId);
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as SandboxRun[];
+      return (data ?? []) as unknown as SandboxRun[];
     },
   });
 }
@@ -94,7 +95,7 @@ export function useSaveSSOSandboxRun() {
         has_errors: (payload.result.errors?.length ?? 0) > 0,
         batch_id: payload.batchId ?? null,
       };
-      const { error } = await (supabase as any).from('sso_sandbox_runs').insert(row);
+      const { error } = await supabaseDyn.from('sso_sandbox_runs').insert(row);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sso-sandbox-runs'] }),
@@ -105,7 +106,7 @@ export function useDeleteSSOSandboxRun() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any).from('sso_sandbox_runs').delete().eq('id', id);
+      const { error } = await supabaseDyn.from('sso_sandbox_runs').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sso-sandbox-runs'] }),

@@ -27,13 +27,28 @@ export function useSsoUserGroups(userId?: string | null) {
     staleTime: 30_000,
     queryFn: async (): Promise<SsoUserGroupsRow[]> => {
       if (!userId) return [];
-      const { data, error } = await (supabase as any)
+      // Tabela `sso_user_groups` existe no banco mas não está nos tipos gerados.
+      // Cast único e localizado via `unknown` para preservar type-safety adiante.
+      const client = supabase as unknown as {
+        from: (t: string) => {
+          select: (s: string) => {
+            eq: (c: string, v: string) => {
+              order: (c: string, o: { ascending: boolean }) => Promise<{
+                data: Array<SsoUserGroupsRow & { sso_providers?: { nome: string } }> | null;
+                error: { message: string } | null;
+              }>;
+            };
+          };
+        };
+      };
+      const { data, error } = await client
         .from('sso_user_groups')
         .select('*, sso_providers:provider_id(nome)')
         .eq('user_id', userId)
         .order('last_synced_at', { ascending: false });
       if (error) throw error;
-      return ((data ?? []) as Array<SsoUserGroupsRow & { sso_providers?: { nome: string } }>).map(
+      return (data ?? []).map(
+
         (row) => ({
           ...row,
           provider_nome: row.sso_providers?.nome ?? null,

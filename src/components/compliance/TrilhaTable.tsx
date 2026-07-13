@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
 import { AuditDetailDialog } from "./AuditDetailDialog";
 import {
@@ -99,8 +100,7 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
       if (local) {
         setDetalhe(local);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: row, error } = await (supabase as any)
+        const { data: row, error } = await supabaseDyn
           .from(TIPO_TABLE[tipo])
           .select("*")
           .eq("id", recordId)

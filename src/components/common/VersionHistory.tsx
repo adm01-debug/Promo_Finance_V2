@@ -39,7 +39,7 @@ export function VersionHistory({ open, onOpenChange, recordId, tableName }: Vers
     enabled: open && !!recordId,
   });
 
-  const formatValue = (val: any) => {
+  const formatValue = (val: unknown) => {
     if (val === null) return 'null';
     if (typeof val === 'object') return JSON.stringify(val);
     return String(val);
@@ -95,8 +95,10 @@ export function VersionHistory({ open, onOpenChange, recordId, tableName }: Vers
                       {log.action === 'UPDATE' && log.new_data && log.old_data && (
                         <div className="space-y-2 mt-2">
                           {Object.keys(log.new_data as object).map(key => {
-                            const oldVal = (log.old_data as any)[key];
-                            const newVal = (log.new_data as any)[key];
+                            const oldData = log.old_data as Record<string, unknown>;
+                            const newData = log.new_data as Record<string, unknown>;
+                            const oldVal = oldData[key];
+                            const newVal = newData[key];
                             if (oldVal === newVal) return null;
                             
                             return (

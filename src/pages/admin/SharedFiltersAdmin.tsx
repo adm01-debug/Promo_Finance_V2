@@ -59,6 +59,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
@@ -138,9 +139,8 @@ export default function SharedFiltersAdmin() {
     queryKey,
     enabled: !!user,
     queryFn: async (): Promise<SharedFilterRow[]> => {
-      const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { data, error } = await supabaseDyn
+        .from('saved_filters')
         .select(
           'id,user_id,created_by,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at',
         )
@@ -200,9 +200,8 @@ export default function SharedFiltersAdmin() {
       nextRoles: AppRole[];
     }) => {
       const { row, nextRoles } = input;
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { error } = await supabaseDyn
+        .from('saved_filters')
         .update({ shared_with_roles: nextRoles })
         .eq('id', row.id);
       if (error) throw error;
@@ -223,9 +222,8 @@ export default function SharedFiltersAdmin() {
 
   const revokeAll = useMutation({
     mutationFn: async (row: SharedFilterRow) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { error } = await supabaseDyn
+        .from('saved_filters')
         .update({
           is_shared: false,
           shared_with_roles: [],
@@ -328,9 +326,8 @@ export default function SharedFiltersAdmin() {
           continue;
         }
 
-        const { error } = await supabase
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .from('saved_filters' as any)
+        const { error } = await supabaseDyn
+          .from('saved_filters')
           .upsert(
             {
               user_id: user.id,

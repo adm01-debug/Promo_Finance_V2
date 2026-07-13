@@ -66,9 +66,9 @@ export function AutomacoesTab() {
     queryKey: ["p13-cron-runs"],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_cron_run_history", {
-        p_job_name: null as any,
+        p_job_name: null,
         p_limit: 100,
-      } as any);
+      });
       if (error) throw error;
       const runsArray = (data || []) as unknown as CronRun[];
       return runsArray.filter((r) => P13_JOB_NAMES.includes(r.jobname));
