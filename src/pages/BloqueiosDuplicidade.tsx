@@ -163,7 +163,7 @@ export default function BloqueiosDuplicidade() {
     totalValue: bloqueios?.reduce((acc, b) => acc + (Number(b.valor_bloqueado) || 0), 0) || 0,
     totalCount: bloqueios?.length || 0,
     mostTargeted: bloqueios?.reduce((acc: Record<string, number>, b) => {
-      const name = (b.dados_tentativa as any)?.fornecedor_nome || "N/D";
+      const name = b.dados_tentativa?.fornecedor_nome || "N/D";
       acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {}) || {},
@@ -177,11 +177,11 @@ export default function BloqueiosDuplicidade() {
     const headers = ["Data", "Usuário", "Tabela", "Motivo", "Valor Bloqueado", "Documento", "Tipo Match", "Campos Conflitantes"];
     const rows = bloqueios.map(b => [
       format(new Date(b.created_at), "dd/MM/yyyy HH:mm"),
-      (b as any).perfil?.display_name || "Sistema",
+      b.perfil?.display_name || "Sistema",
       b.tabela,
       b.motivo_bloqueio,
       b.valor_bloqueado || 0,
-      (b.dados_tentativa as any)?.numero_documento || "N/D",
+      b.dados_tentativa?.numero_documento || "N/D",
       b.match_type || "exact",
       JSON.stringify(b.campos_conflitantes)
     ]);
@@ -212,10 +212,10 @@ export default function BloqueiosDuplicidade() {
 
     const tableData = bloqueios.map(b => [
       format(new Date(b.created_at), "dd/MM/yy HH:mm"),
-      (b as any).perfil?.display_name || "Sistema",
+      b.perfil?.display_name || "Sistema",
       b.motivo_bloqueio,
       formatCurrency(b.valor_bloqueado || 0),
-      (b.dados_tentativa as any)?.numero_documento || "N/D"
+      b.dados_tentativa?.numero_documento || "N/D"
     ]);
 
     autoTable(doc, {
@@ -453,7 +453,7 @@ export default function BloqueiosDuplicidade() {
                           <User className="h-5 w-5 text-primary" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-bold text-sm">{(b as any).perfil?.display_name || "Sistema Externo"}</span>
+                          <span className="font-bold text-sm">{b.perfil?.display_name || "Sistema Externo"}</span>
                           <Badge variant="outline" className="text-[8px] h-4 w-fit px-1 uppercase tracking-tighter bg-card/5 border-none">
                             Origin: {b.tabela.replace('_', ' ')}
                           </Badge>
@@ -496,13 +496,13 @@ export default function BloqueiosDuplicidade() {
                       </div>
                     </TableCell>
                     <TableCell className="p-6 text-center">
-                      {(b.dados_tentativa as any)?.idempotency_key ? (
+                      {b.dados_tentativa?.idempotency_key ? (
                         <div className="flex flex-col items-center gap-1 group/key cursor-help" onClick={() => {
-                          navigator.clipboard.writeText((b.dados_tentativa as any).idempotency_key);
+                          navigator.clipboard.writeText(b.dados_tentativa.idempotency_key);
                           toast.success("Chave copiada para o clipboard!");
                         }}>
                           <Badge className="bg-streak/20 text-streak text-[9px] border-none font-mono">
-                            {(b.dados_tentativa as any).idempotency_key.substring(0, 12)}...
+                            {b.dados_tentativa.idempotency_key.substring(0, 12)}...
                           </Badge>
                           <span className="text-[8px] text-muted-foreground uppercase opacity-0 group-hover/key:opacity-100 transition-opacity">Copy Key</span>
                         </div>
