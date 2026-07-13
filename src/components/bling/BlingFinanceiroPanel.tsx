@@ -93,7 +93,7 @@ export function BlingFinanceiroPanel() {
                     <TableBody>
                       {contas.map((c: any) => {
                         const sitLabel = c.situacao === 1 ? 'Em aberto' : c.situacao === 2 ? (tipo === 'receber' ? 'Recebido' : 'Pago') : c.situacao === 3 ? 'Parcial' : c.situacao === 4 ? 'Vencido' : c.situacao === 5 ? 'Cancelado' : c.situacao === 6 ? 'Inadimplente' : `#${c.situacao}`;
-                        const sitVariant = c.situacao === 1 ? 'outline' : c.situacao === 2 ? 'default' : c.situacao === 4 || c.situacao === 6 ? 'destructive' : 'secondary';
+                        const sitVariant: 'outline' | 'default' | 'destructive' | 'secondary' = c.situacao === 1 ? 'outline' : c.situacao === 2 ? 'default' : c.situacao === 4 || c.situacao === 6 ? 'destructive' : 'secondary';
                         return (
                           <TableRow key={c.id}>
                             <TableCell>{c.vencimento ? new Date(c.vencimento).toLocaleDateString('pt-BR') : '-'}</TableCell>
