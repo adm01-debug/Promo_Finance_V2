@@ -258,7 +258,7 @@ export function usePrevisoesInadimplencia() {
         .select("*")
         .eq("tipo", "inadimplencia")
         .eq("status", "pendente")
-        .order("probabilidade", { ascending: false }) as any);
+        .order("probabilidade", { ascending: false });
 
       if (error) throw error;
       
