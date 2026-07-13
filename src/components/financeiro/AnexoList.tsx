@@ -62,8 +62,8 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
           .getPublicUrl(filePath);
 
         // 3. Save to Database
-        const { error: dbError } = await (supabase
-          .from('anexos_financeiros') as any)
+        const { error: dbError } = await supabase
+          .from('anexos_financeiros')
           .insert({
             entidade_id: entidadeId,
             entidade_tipo: entidadeTipo,

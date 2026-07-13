@@ -124,7 +124,7 @@ export function useOfflineSync() {
 
     setState(prev => ({ ...prev, isSyncing: true }));
 
-    const { supabase } = await import('@/integrations/supabase/client');
+    const { supabaseDyn } = await import('@/lib/supabase-dynamic');
     const successfulIds: string[] = [];
     const failedMutations: PendingMutation[] = [];
 
@@ -132,17 +132,17 @@ export function useOfflineSync() {
       try {
         switch (mutation.type) {
           case 'create':
-            await (supabase.from(mutation.table as any) as any).insert(mutation.data);
+            await supabaseDyn.from(mutation.table).insert(mutation.data as Record<string, unknown>);
             break;
           case 'update':
-            await (supabase.from(mutation.table as any) as any)
-              .update(mutation.data.updates)
-              .eq('id', mutation.data.id);
+            await supabaseDyn.from(mutation.table)
+              .update((mutation.data as { updates: Record<string, unknown> }).updates)
+              .eq('id', (mutation.data as { id: string }).id);
             break;
           case 'delete':
-            await (supabase.from(mutation.table as any) as any)
+            await supabaseDyn.from(mutation.table)
               .delete()
-              .eq('id', mutation.data.id);
+              .eq('id', (mutation.data as { id: string }).id);
             break;
         }
         successfulIds.push(mutation.id);
