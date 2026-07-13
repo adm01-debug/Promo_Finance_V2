@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
@@ -157,7 +158,7 @@ export function usePushNotifications() {
       }
 
       // Save subscription to database
-      const { error } = await supabase.from('push_subscriptions' as any).upsert({
+      const { error } = await supabaseDyn.from('push_subscriptions').upsert({
         user_id: user.id,
         endpoint: subscription.endpoint,
         p256dh: arrayBufferToBase64(p256dhKey),
@@ -171,7 +172,7 @@ export function usePushNotifications() {
       if (error) {
         logger.error('Error saving subscription:', error);
         // Try without onConflict
-        await supabase.from('push_subscriptions' as any).insert({
+        await supabaseDyn.from('push_subscriptions').insert({
           user_id: user.id,
           endpoint: subscription.endpoint,
           p256dh: arrayBufferToBase64(p256dhKey),
@@ -204,8 +205,8 @@ export function usePushNotifications() {
 
         // Remove from database
         if (user) {
-          await supabase
-            .from('push_subscriptions' as any)
+          await supabaseDyn
+            .from('push_subscriptions')
             .delete()
             .eq('user_id', user.id)
             .eq('endpoint', subscription.endpoint);

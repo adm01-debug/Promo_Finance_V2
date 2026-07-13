@@ -1,6 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { toast } from 'sonner';
 
 async function blingAction(action: string, params: Record<string, any> = {}) {
@@ -524,8 +525,8 @@ export function useBlingSyncLogs() {
   return useQuery({
     queryKey: ['bling-sync-logs'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('bling_sync_logs' as any)
+      const { data, error } = await supabaseDyn
+        .from('bling_sync_logs')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
@@ -540,8 +541,8 @@ export function useBlingWebhookEvents() {
   return useQuery({
     queryKey: ['bling-webhook-events'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('bling_webhook_events' as any)
+      const { data, error } = await supabaseDyn
+        .from('bling_webhook_events')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
