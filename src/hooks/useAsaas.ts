@@ -263,7 +263,7 @@ export function useAsaas(empresaId?: string) {
         .maybeSingle();
       if (error) throw error;
       
-      const conf = (data?.configuracoes as any) || {};
+      const conf = (data?.configuracoes as Record<string, unknown> | null) || {};
       
       return {
         ...data,
