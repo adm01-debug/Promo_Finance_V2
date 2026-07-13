@@ -20,27 +20,40 @@ const TABELA_POR_TIPO: Record<TrilhaTipo, { table: string; dateCol: string; user
   conformidade: { table: "verificacoes_conformidade", dateCol: "created_at" },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function aplicarFiltros(q: any, tipo: TrilhaTipo, f: TrilhaFiltros) {
+// Query builder é heterogêneo entre 4 tabelas — usamos um tipo estrutural mínimo
+// em vez de `any`, mantendo tipagem nos métodos de filtro do PostgREST.
+interface FilterQuery {
+  gte(col: string, val: string): FilterQuery;
+  lte(col: string, val: string): FilterQuery;
+  eq(col: string, val: string): FilterQuery;
+  or(expr: string): FilterQuery;
+  range(from: number, to: number): FilterQuery;
+}
+
+function aplicarFiltros<Q extends FilterQuery>(q: Q, tipo: TrilhaTipo, f: TrilhaFiltros): Q {
   const cfg = TABELA_POR_TIPO[tipo];
-  if (f.inicio) q = q.gte(cfg.dateCol, `${f.inicio}T00:00:00`);
-  if (f.fim) q = q.lte(cfg.dateCol, `${f.fim}T23:59:59`);
+  if (f.inicio) q = q.gte(cfg.dateCol, `${f.inicio}T00:00:00`) as Q;
+  if (f.fim) q = q.lte(cfg.dateCol, `${f.fim}T23:59:59`) as Q;
   if (f.acao && f.acao !== "todas") {
-    if (tipo === "financeira") q = q.eq("operacao", f.acao);
-    else if (tipo === "tributaria") q = q.eq("acao", f.acao);
-    else if (tipo === "sistema") q = q.eq("action", f.acao);
+    if (tipo === "financeira") q = q.eq("operacao", f.acao) as Q;
+    else if (tipo === "tributaria") q = q.eq("acao", f.acao) as Q;
+    else if (tipo === "sistema") q = q.eq("action", f.acao) as Q;
   }
   if (f.usuario && cfg.userCol) {
-    q = q.eq(cfg.userCol, f.usuario);
+    q = q.eq(cfg.userCol, f.usuario) as Q;
   }
   if (f.busca) {
-    if (tipo === "financeira") q = q.or(`tabela.ilike.%${f.busca}%,acao.ilike.%${f.busca}%`);
-    else if (tipo === "tributaria") q = q.or(`entidade_tipo.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%`);
+    if (tipo === "financeira") q = q.or(`tabela.ilike.%${f.busca}%,acao.ilike.%${f.busca}%`) as Q;
+    else if (tipo === "tributaria") q = q.or(`entidade_tipo.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%`) as Q;
     else if (tipo === "sistema")
-      q = q.or(`details.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%,table_name.ilike.%${f.busca}%`);
+      q = q.or(`details.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%,table_name.ilike.%${f.busca}%`) as Q;
   }
   return q;
 }
+
+// Nome da tabela vem de config estática; cast para o union de tabelas conhecidas
+// evita `(supabase as any)` e mantém a rota tipada no client.
+type TrilhaTable = "auditoria_financeira" | "auditoria_tributaria" | "audit_logs" | "verificacoes_conformidade";
 
 export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}) {
   const { pagina = 1, porPagina = 50 } = filtros;
