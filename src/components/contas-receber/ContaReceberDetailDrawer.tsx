@@ -298,7 +298,7 @@ export function ContaReceberDetailDrawer({
             </TabsContent>
 
             <TabsContent value="anexos" className="mt-0 space-y-3">
-              <DrawerAnexosTab anexos={anexos as any} />
+              <DrawerAnexosTab anexos={anexos} />
             </TabsContent>
           </ScrollArea>
         </Tabs>
