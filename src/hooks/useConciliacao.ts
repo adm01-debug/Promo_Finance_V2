@@ -228,7 +228,7 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { error } = await (supabase.rpc as any)('desfazer_conciliacao_manual', {
+      const { error } = await supabase.rpc('desfazer_conciliacao_manual', {
         p_transacao_id: transacaoId
       });
 
