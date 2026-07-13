@@ -35,7 +35,7 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
 
       const { data, error } = await query.limit(500);
       if (error) throw error;
-      return (data || []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -112,7 +112,7 @@ export function useTransferencias(empresaId?: string) {
 
       const { data, error } = await query.limit(200);
       if (error) throw error;
-      return (data || []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -183,7 +183,7 @@ export function useFormasPagamento(tipo?: 'entrada' | 'saida' | 'ambos') {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data || []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
     },
     staleTime: 10 * 60 * 1000,
   });
@@ -200,7 +200,7 @@ export function usePlanoContas() {
         .order('codigo');
 
       if (error) throw error;
-      return (data || []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
     },
     staleTime: 10 * 60 * 1000,
   });
