@@ -31,7 +31,7 @@ export function ConviteUsuarioDialog({ open, onOpenChange }: ConviteUsuarioDialo
       // Use Supabase invite (admin API via edge function would be needed for real invites)
       // For now, create a placeholder invite record
       const { error } = await supabase.from('audit_logs').insert({
-        action: 'INVITE_USER' as any,
+        action: 'INVITE_USER',
         details: `Convite enviado para ${email} com perfil ${role}`,
         table_name: 'user_invites',
         user_id: (await supabase.auth.getUser()).data.user?.id,

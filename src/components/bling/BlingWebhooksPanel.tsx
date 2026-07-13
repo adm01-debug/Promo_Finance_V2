@@ -6,9 +6,32 @@ import { RefreshCw, CheckCircle2, AlertTriangle, Clock } from 'lucide-react';
 import { useBlingWebhookEvents, useBlingSyncLogs } from '@/hooks/useBling';
 import { LoadingSkeleton } from './BlingShared';
 
+interface BlingWebhookEvent {
+  id: string;
+  received_at: string;
+  module: string;
+  event_type: string;
+  resource_id?: string | null;
+  retries?: number | null;
+  processed?: boolean | null;
+  error_message?: string | null;
+}
+
+interface BlingSyncLog {
+  id: string;
+  created_at: string;
+  modulo: string;
+  tipo: string;
+  registros_processados: number;
+  registros_com_erro: number;
+  status: string;
+}
+
 export function BlingWebhooksPanel() {
   const { data: events, isLoading } = useBlingWebhookEvents();
   const { data: logs } = useBlingSyncLogs();
+  const eventList = (events ?? []) as unknown as BlingWebhookEvent[];
+  const logList = (logs ?? []) as unknown as BlingSyncLog[];
 
   return (
     <div className="space-y-6">
@@ -34,7 +57,7 @@ export function BlingWebhooksPanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {(events as any[]).map((e: any) => (
+                  {eventList.map((e: BlingWebhookEvent) => (
                     <TableRow key={e.id}>
                       <TableCell className="text-xs">{new Date(e.received_at).toLocaleString('pt-BR')}</TableCell>
                       <TableCell><Badge variant="outline">{e.module}</Badge></TableCell>
@@ -59,7 +82,7 @@ export function BlingWebhooksPanel() {
         </CardContent>
       </Card>
 
-      {logs && (logs as any[]).length > 0 && (
+      {logs && logList.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><RefreshCw className="h-5 w-5" /> Logs de Sincronização</CardTitle>
@@ -78,7 +101,7 @@ export function BlingWebhooksPanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {(logs as any[]).map((l: any) => (
+                  {logList.map((l: BlingSyncLog) => (
                     <TableRow key={l.id}>
                       <TableCell className="text-xs">{new Date(l.created_at).toLocaleString('pt-BR')}</TableCell>
                       <TableCell>{l.modulo}</TableCell>

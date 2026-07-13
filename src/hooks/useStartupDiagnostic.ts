@@ -38,7 +38,7 @@ export const useStartupDiagnostic = () => {
     try {
       const { error } = await supabase.from('profiles').select('id').limit(1);
       // PGRST116 = empty result; 401/PGRST301 = anônimo sem permissão (esperado pré-login)
-      if (error && error.code !== 'PGRST116' && error.code !== 'PGRST301' && (error as any).status !== 401) {
+      if (error && error.code !== 'PGRST116' && error.code !== 'PGRST301' && (error as { status?: number }).status !== 401) {
          throw error;
       }
       updateStatus('connection', 'success');
@@ -54,11 +54,12 @@ export const useStartupDiagnostic = () => {
       updateStatus('tables', 'success', 'Validação completa será feita após login.');
     } else {
       try {
-        const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'active_tracking', 'empresas'];
+        const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'active_tracking', 'empresas'] as const;
+        type Essential = typeof essentialTables[number];
 
-        const missingTables = [];
+        const missingTables: string[] = [];
         for (const table of essentialTables) {
-          const { error: tableError } = await supabase.from(table as any).select('count', { count: 'exact', head: true }).limit(0);
+          const { error: tableError } = await supabase.from(table as Essential).select('count', { count: 'exact', head: true }).limit(0);
           if (tableError && (tableError.code === '42P01' || (tableError.message && tableError.message.includes('does not exist')))) {
             missingTables.push(table);
           }
@@ -82,21 +83,21 @@ export const useStartupDiagnostic = () => {
     if (!isAuthenticated) {
       updateStatus('rpcs', 'success', 'Validação completa será feita após login.');
     } else try {
-      const essentialRPCs = ['has_role', 'get_user_roles', 'get_user_permissions'];
-      const missingRPCs = [];
+      const essentialRPCs = ['has_role', 'get_user_roles', 'get_user_permissions'] as const;
+      type EssentialRpc = typeof essentialRPCs[number];
+      const missingRPCs: string[] = [];
 
       for (const rpc of essentialRPCs) {
         // Assinaturas: has_role(_user_id uuid, _role app_role);
         // get_user_roles(user_id uuid); get_user_permissions(user_id uuid).
         // Valor de role precisa existir no enum app_role ('admin','manager','operator','viewer').
-        let params: any;
-        if (rpc === 'has_role') {
-          params = { _user_id: session!.user.id, _role: 'viewer' };
-        } else {
-          params = { user_id: session!.user.id };
-        }
+        const params: Record<string, string> =
+          rpc === 'has_role'
+            ? { _user_id: session!.user.id, _role: 'viewer' }
+            : { user_id: session!.user.id };
 
-        const { error: rpcError } = await supabase.rpc(rpc as any, params);
+        // RPC name é dinâmico dentro de um subconjunto conhecido em types.ts.
+        const { error: rpcError } = await supabase.rpc(rpc as EssentialRpc, params as never);
         if (rpcError && rpcError.message && rpcError.message.includes('function') && rpcError.message.includes('does not exist')) {
           missingRPCs.push(rpc);
         }

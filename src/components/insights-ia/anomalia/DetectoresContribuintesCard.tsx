@@ -12,8 +12,7 @@ interface Detector {
 }
 
 function buildDetectores(a: Anomalia): Detector[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const d = (a.dados ?? {}) as any;
+  const d = (a.dados ?? {}) as Record<string, unknown>;
   switch (a.tipo_anomalia) {
     case "movimentacao_outlier":
       return [
@@ -30,7 +29,7 @@ function buildDetectores(a: Anomalia): Detector[] {
         {
           nome: "Chave duplicada",
           regra: "fornecedor + valor + vencimento idênticos em 7d",
-          observado: `${(d.ids ?? []).length} ocorrências`,
+          observado: `${(Array.isArray(d.ids) ? d.ids : []).length} ocorrências`,
           esperado: "1 ocorrência",
           contribuicao: 100,
         },

@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useCreateCategoria, useUpdateCategoria, CATEGORY_COLORS, CATEGORY_ICONS } from '@/hooks/useCategorias';
+import { useCreateCategoria, useUpdateCategoria, CATEGORY_COLORS, CATEGORY_ICONS, type CategoriaInput } from '@/hooks/useCategorias';
 import { useEffect } from 'react';
 import * as Icons from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -60,10 +60,18 @@ export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'de
   }, [categoria, open, form, defaultType]);
 
   const onSubmit = async (data: CategoriaFormData) => {
+    // zodResolver garante nome/tipo presentes em runtime; o tipo inferido do
+    // useForm marca como opcional, então normalizamos aqui antes do mutate.
+    const payload: CategoriaInput = {
+      nome: data.nome!,
+      tipo: data.tipo!,
+      cor: data.cor,
+      icone: data.icone,
+    };
     if (categoria) {
-      await updateMutation.mutateAsync({ id: categoria.id, data: data as any });
+      await updateMutation.mutateAsync({ id: categoria.id, data: payload });
     } else {
-      await createMutation.mutateAsync(data as any);
+      await createMutation.mutateAsync(payload);
     }
     onOpenChange(false);
   };

@@ -33,11 +33,11 @@ export function useScimTokens(empresaId?: string) {
     queryKey: ['scim-tokens', empresaId],
     queryFn: async () => {
       if (!empresaId) return [];
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('scim_tokens').select('*').eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data ?? []) as ScimToken[];
+      return (data ?? []) as unknown as ScimToken[];
     },
     enabled: !!empresaId,
   });
@@ -50,7 +50,7 @@ export function useCreateScimToken() {
       const token = generateToken();
       const token_hash = await sha256Hex(token);
       const token_prefix = token.slice(0, 12);
-      const { data, error } = await (supabase as any).from('scim_tokens').insert({
+      const { data, error } = await supabase.from('scim_tokens').insert({
         empresa_id: input.empresa_id,
         nome: input.nome,
         provider_id: input.provider_id ?? null,
@@ -59,7 +59,7 @@ export function useCreateScimToken() {
         token_hash, token_prefix,
       }).select().single();
       if (error) throw error;
-      return { ...(data as ScimToken), token }; // token só retornado uma vez
+      return { ...(data as unknown as ScimToken), token }; // token só retornado uma vez
     },
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ['scim-tokens', vars.empresa_id] });
@@ -73,7 +73,7 @@ export function useRevokeScimToken() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any).from('scim_tokens').update({ ativo: false }).eq('id', id);
+      const { error } = await supabase.from('scim_tokens').update({ ativo: false }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
