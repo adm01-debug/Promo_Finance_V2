@@ -86,7 +86,7 @@ export function useInadimplenciaPorRamo() {
         dias_atraso_total: number;
       }>();
 
-      (contas as any[] | null)?.forEach((conta) => {
+      (contas as Array<Record<string, any>> | null)?.forEach((conta) => {
         const ramo = conta.clientes?.ramo_atividade || "Não informado";
         const valorPendente = conta.valor - (conta.valor_recebido || 0);
         const isVencido = conta.data_vencimento < hoje;
@@ -213,7 +213,7 @@ export function useInadimplenciaPorVendedor() {
 
       const resultado: InadimplenciaPorVendedor[] = [];
       
-      (vendedores as any[] | null)?.forEach((vendedor) => {
+      (vendedores as Array<Record<string, any>> | null)?.forEach((vendedor) => {
         const stats = porVendedor.get(vendedor.id) || {
           total_contas: 0,
           total_vencido: 0,
@@ -253,12 +253,12 @@ export function usePrevisoesInadimplencia() {
     queryKey: ["previsoes-inadimplencia"],
     queryFn: async () => {
       // Prioriza dados reais da tabela de alertas_preditivos (Predictive Engine 10/10)
-      const { data, error } = await (supabase
+      const { data, error } = await supabase
         .from("alertas_preditivos")
         .select("*")
         .eq("tipo", "inadimplencia")
         .eq("status", "pendente")
-        .order("probabilidade", { ascending: false }) as any);
+        .order("probabilidade", { ascending: false });
 
       if (error) throw error;
       
@@ -273,7 +273,7 @@ export function usePrevisoesInadimplencia() {
         impacto_estimado: item.valor_estimado,
         data_previsao: item.data_prevista,
         prioridade: item.probabilidade > 80 ? 'alta' : item.probabilidade > 50 ? 'media' : 'baixa',
-        status: item.status as any
+        status: item.status as string
       })) as PredicaoInadimplencia[];
     },
   });

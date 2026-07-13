@@ -153,14 +153,14 @@ export function useConciliacaoPage() {
 
           // Adicionar alerta automático no sistema
           await supabase.from('alertas').insert({
-            empresa_id: (contasBancarias?.find(c => c.id === selectedBanco) as any)?.empresa_id,
+            empresa_id: contasBancarias?.find(c => c.id === selectedBanco)?.empresa_id,
             tipo: 'divergencia_conciliacao',
             prioridade: 'critica',
             titulo: 'Divergência de Saldo Bancário',
             mensagem: `O saldo final do extrato ${extrato.nomeArquivo} (R$ ${extrato.conta.saldoFinal.toFixed(2)}) não confere com o cálculo dos lançamentos. Diferença de R$ ${(extrato.conta.saldoFinal - saldoCalculado).toFixed(2)}.`,
             status: 'pendente',
             metadata: { conta_bancaria_id: selectedBanco, extrato: extrato.nomeArquivo }
-          } as any);
+          } as never);
         }
       }
     }
@@ -204,7 +204,7 @@ export function useConciliacaoPage() {
       .eq('id', selectedBanco)
       .single();
     
-    const config = (contaInfo?.configuracoes_conciliacao as any) || { 
+    const config = (contaInfo?.configuracoes_conciliacao as { tolerancia_centavos?: number; aceite_automatico?: boolean; alertas_inadimplencia?: unknown; alertas_conciliacao?: unknown } | null) || { 
       tolerancia_centavos: TOLERANCIA_CENTAVOS, 
       aceite_automatico: true,
       alertas_inadimplencia: { threshold: 10, interval: 'weekly', channel: 'email', active: false },
@@ -259,7 +259,7 @@ export function useConciliacaoPage() {
               await supabase.from('webhooks_log').insert({
                 event_type: 'reconciliation.failed',
                 status: 'error',
-                payload: { transacao, match: melhorMatch, error: err } as any,
+                payload: { transacao, match: melhorMatch, error: String(err?.message ?? err) } as never,
                 erro_mensagem: `Falha na conciliação automática: ${err.message}`,
                 provider: 'Internal System'
               });
