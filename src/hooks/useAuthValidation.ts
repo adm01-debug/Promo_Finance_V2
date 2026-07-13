@@ -135,12 +135,12 @@ export function useAuthValidation() {
     blockedReason?: string
   ) => {
     try {
-      await (supabase.from('login_attempts') as any).insert({
+      await supabase.from('login_attempts').insert({
         email: email,
         ip_address: geoData.ip,
         user_agent: navigator.userAgent,
         success,
-        blocked_reason: blockedReason || null
+        blocked_reason: blockedReason || null,
       });
     } catch (error: unknown) {
       logger.error('Erro ao registrar tentativa de login:', error);

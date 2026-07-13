@@ -74,13 +74,13 @@ export function useAlertasTributarios(empresaId?: string) {
   const { data: alertas = [], isLoading, refetch } = useQuery({
     queryKey: ['alertas-tributarios', empresaId],
     queryFn: async () => {
-      const { data, error } = await (supabase
+      const { data, error } = await supabase
         .from('alertas_tributarios')
         .select('*')
         .eq('resolvido', false)
         .eq('empresa_id', empresaId || '')
         .order('prioridade', { ascending: false })
-        .order('data_vencimento', { ascending: true }) as any);
+        .order('data_vencimento', { ascending: true });
 
       if (error) throw error;
       return (data || []) as AlertaTributario[];
@@ -193,9 +193,9 @@ export function useAlertasTributarios(empresaId?: string) {
     const alertasParaCriar: Omit<AlertaTributario, 'id' | 'created_at' | 'lido' | 'resolvido'>[] = [];
 
     // Verificar DARFs pendentes
-    const { data: darfsPendentes } = await (supabase
+    const { data: darfsPendentes } = await supabase
       .from('darfs')
-      .select('id, data_vencimento, codigo_receita, descricao_receita, valor_total') as any)
+      .select('id, data_vencimento, codigo_receita, descricao_receita, valor_total')
       .eq('empresa_id', empresaId)
       .eq('status', 'gerado');
 
@@ -235,9 +235,9 @@ export function useAlertasTributarios(empresaId?: string) {
     }
 
     // Verificar créditos próximos de expirar
-    const { data: creditos } = await (supabase
+    const { data: creditos } = await supabase
       .from('creditos_tributarios')
-      .select('id, data_vencimento, valor') as any)
+      .select('id, data_origem, saldo_disponivel, tipo_tributo, competencia_origem')
       .eq('empresa_id', empresaId)
       .eq('status', 'disponivel');
 

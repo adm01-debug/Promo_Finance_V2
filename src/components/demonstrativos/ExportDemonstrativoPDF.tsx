@@ -186,7 +186,7 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
           margin: margins,
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cursorY = (doc as any).lastAutoTable?.finalY + 4 || cursorY + 4;
+        cursorY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 4 || cursorY + 4;
       }
 
       // Main table

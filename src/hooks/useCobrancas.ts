@@ -249,7 +249,7 @@ export function useTopDevedores(limit: number = 10) {
       }, {});
 
       return (Object.values(devedoresPorCliente) as TopDevedor[])
-        .sort((a, b) => (b as any).valor_total - (a as any).valor_total)
+        .sort((a, b) => b.valor_total - a.valor_total)
         .slice(0, limit);
     },
   });
@@ -315,8 +315,8 @@ export function useUpdateEtapaCobranca() {
         empresa_id: conta?.empresa_id || currentEmpresaId,
         etapa_atual: etapa || 'preventiva',
         status_cobranca: 'pendente',
-        updated_at: new Date().toISOString()
-      } as any, { onConflict: 'conta_receber_id' });
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'conta_receber_id' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-vencidas'] });

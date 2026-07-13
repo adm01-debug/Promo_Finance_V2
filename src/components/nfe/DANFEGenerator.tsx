@@ -136,7 +136,7 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
       });
 
       // Totais
-      const finalY = (doc as any).lastAutoTable?.finalY || 200;
+      const finalY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || 200;
       doc.rect(10, finalY + 2, pageWidth - 20, 25);
       doc.setFontSize(7);
       doc.text('CÁLCULO DO IMPOSTO', 14, finalY + 7);

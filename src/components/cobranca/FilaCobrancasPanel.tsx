@@ -23,7 +23,9 @@ export function FilaCobrancasPanel() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
   const { data: filaData, isLoading: loadingFila } = useFilaCobrancas(statusFilter);
   const { data: execucoesData, isLoading: loadingExec } = useExecucoesCobranca();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fila = (filaData || []) as any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const execucoes = (execucoesData || []) as any[];
   const { data: metricas } = useMetricasCobranca();
   const processarRegua = useProcessarRegua();
