@@ -85,7 +85,7 @@ export function useSSOLoginAttempts(limit = 50) {
         .order('created_at', { ascending: false })
         .limit(limit);
       if (error) throw error;
-      return (data ?? []) as SSOLoginAttempt[];
+      return (data ?? []) as unknown as SSOLoginAttempt[];
     },
   });
 }
