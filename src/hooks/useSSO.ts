@@ -65,7 +65,7 @@ export function useSSOProviders() {
   return useQuery({
     queryKey: ['sso-providers'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('sso_providers')
         .select('*')
         .order('ordem', { ascending: true });
@@ -79,13 +79,13 @@ export function useSSOLoginAttempts(limit = 50) {
   return useQuery({
     queryKey: ['sso-login-attempts', limit],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('sso_login_attempts')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(limit);
       if (error) throw error;
-      return (data ?? []) as SSOLoginAttempt[];
+      return (data ?? []) as unknown as SSOLoginAttempt[];
     },
   });
 }
@@ -113,11 +113,11 @@ export function useSaveSSOProvider() {
     mutationFn: async (provider: Partial<SSOProvider> & { nome: string; tipo: SSOTipo }) => {
       const { id, ...rest } = provider;
       if (id) {
-        const { data, error } = await (supabase as any).from('sso_providers').update(rest).eq('id', id).select().maybeSingle();
+        const { data, error } = await supabase.from('sso_providers').update(rest as never).eq('id', id).select().maybeSingle();
         if (error) throw error;
         return data;
       }
-      const { data, error } = await (supabase as any).from('sso_providers').insert(rest).select().maybeSingle();
+      const { data, error } = await supabase.from('sso_providers').insert(rest as never).select().maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -133,7 +133,7 @@ export function useDeleteSSOProvider() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any).from('sso_providers').delete().eq('id', id);
+      const { error } = await supabase.from('sso_providers').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -148,7 +148,7 @@ export function useToggleSSOProvider() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await (supabase as any).from('sso_providers').update({ ativo }).eq('id', id);
+      const { error } = await supabase.from('sso_providers').update({ ativo } as never).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sso-providers'] }),
