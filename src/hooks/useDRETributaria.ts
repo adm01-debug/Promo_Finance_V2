@@ -39,7 +39,7 @@ export function useDRETributaria(empresaId?: string, periodo?: string) {
         { body: { empresa_id: empresaId, periodo } },
       );
       if (error) throw error;
-      return (data as { dre?: unknown } | null)?.dre ?? null;
+      return (data as { dre?: DRETributaria } | null)?.dre ?? null;
     },
     enabled: !!empresaId && !!periodo,
     staleTime: 30 * 60 * 1000,
