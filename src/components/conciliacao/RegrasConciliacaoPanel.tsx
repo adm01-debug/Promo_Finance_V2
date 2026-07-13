@@ -31,7 +31,7 @@ export function RegrasConciliacaoPanel() {
   const { data: regras, isLoading } = useQuery({
     queryKey: ['regras-conciliacao', currentEmpresaId],
     queryFn: async () => {
-      let query = (supabase as any)
+      let query = supabase
         .from('regras_conciliacao')
         .select('*')
         .order('vezes_aplicada', { ascending: false });
@@ -240,7 +240,7 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
         empresa_id: currentEmpresaId,
         created_by: user?.id,
         nome: `Regra ${padrao}`,
-      } as any);
+      });
       if (error) throw error;
     },
     onSuccess: () => {

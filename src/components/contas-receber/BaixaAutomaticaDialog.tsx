@@ -143,7 +143,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           
           // Registra transação bancária confirmada para conciliação
           await supabase.from('transacoes_bancarias').insert({
-            conta_bancaria_id: m.transacao.conta_bancaria_id || '', // idealmente passar o ID da conta
+            conta_bancaria_id: m.transacao.conta_bancaria_id || '',
             data: m.transacao.data.toISOString().split('T')[0],
             descricao: `BAIXA AUT LOTE: ${m.cliente} - ${m.transacao.descricao}`,
             valor: m.valor,
@@ -151,8 +151,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
             conciliada: true,
             status: 'confirmado',
             data_confirmacao: new Date().toISOString(),
-            conta_receber_id: m.contaId,
-          } as any);
+          });
 
           // Registra evidência no log
           await supabase.rpc('registrar_evento_receber', {
@@ -165,31 +164,31 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
       }
 
       // Registra alertas para divergências (itens não encontrados)
-      for (const t of unmatched) {
-        await supabase.from('alertas').insert({
-          empresa_id: empresaId,
-          tipo: 'divergencia_baixa',
-          prioridade: 'alta',
-          titulo: 'Divergência na Baixa Automática',
-          mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro. Recomendação: Verifique se o título já foi liquidado manualmente ou se o valor está divergente.`,
-          status: 'pendente',
-          metadata: { 
-            transacao: t, 
-            arquivo: resultado?.extrato?.nomeArquivo,
-            recomendacao: 'Acessar Conciliação Bancária para vinculação manual.'
-          }
-        } as any);
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        for (const t of unmatched) {
+          await supabase.from('alertas').insert({
+            user_id: user.id,
+            tipo: 'divergencia_baixa',
+            prioridade: 'alta',
+            titulo: 'Divergência na Baixa Automática',
+            mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
+          });
+        }
 
-      // Registra log global da importação
-      await (supabase.from('logs_baixa_automatica') as any).insert({
-        empresa_id: empresaId,
-        arquivo_nome: resultado?.extrato?.nomeArquivo || 'unknown',
-        total_registros: resultado?.extrato?.transacoes.length || 0,
-        sucesso_count: successCount,
-        falha_count: matches.length - successCount,
-        matching_info: { matches }
-      });
+        // Registra log global da importação
+        await supabase.from('logs_baixa_automatica').insert([{
+          user_id: user.id,
+          resultado: `Arquivo ${resultado?.extrato?.nomeArquivo || 'unknown'}: ${successCount}/${matches.length} sucesso`,
+          mensagem: `Importação concluída`,
+          detalhes: {
+            arquivo_nome: resultado?.extrato?.nomeArquivo ?? null,
+            total_registros: resultado?.extrato?.transacoes.length || 0,
+            sucesso_count: successCount,
+            falha_count: matches.length - successCount,
+          },
+        }]);
+      }
 
       setSuccessSummary({ processados: successCount, valor: totalValue });
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });

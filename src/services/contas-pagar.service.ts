@@ -114,10 +114,13 @@ export const contasPagarService = {
   },
 
   async update(id: string, input: Partial<ContaPagarInput>) {
-    const updateData: Record<string, unknown> = { ...input, updated_at: new Date().toISOString() };
+    const updateData: Database['public']['Tables']['contas_pagar']['Update'] = {
+      ...input,
+      updated_at: new Date().toISOString(),
+    };
     const { data, error } = await supabase
       .from('contas_pagar')
-      .update(updateData as any)
+      .update(updateData)
       .eq('id', id)
       .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
@@ -229,10 +232,13 @@ export const contasPagarService = {
   },
 
   async bulkUpdate(ids: string[], updates: Partial<ContaPagarInput>) {
-    const updateData: Record<string, unknown> = { ...updates, updated_at: new Date().toISOString() };
+    const updateData: Database['public']['Tables']['contas_pagar']['Update'] = {
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
     const { data, error } = await supabase
       .from('contas_pagar')
-      .update(updateData as any)
+      .update(updateData)
       .in('id', ids)
       .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)');
 

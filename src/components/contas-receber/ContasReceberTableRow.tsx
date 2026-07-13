@@ -259,7 +259,7 @@ export function ContasReceberTableRow({
       {showEmpresa && (
         <TableCell className="p-6">
           <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 leading-tight">
-            {(conta as any).empresas?.nome_fantasia || (conta as any).empresas?.razao_social || 'GLOBAL'}
+            {conta.empresas?.nome_fantasia || conta.empresas?.razao_social || 'GLOBAL'}
           </p>
         </TableCell>
       )}
@@ -328,7 +328,7 @@ export function ContasReceberTableRow({
               <DuplicateButton 
                 data={conta} 
                 onDuplicate={(duplicated) => {
-                  onEdit(duplicated as any);
+                  onEdit(duplicated as ContaReceberWithRelations);
                   toast.success('Registro clonado. Revise os dados e salve.');
                 }}
                 label="Analisar Duplicação"
