@@ -277,8 +277,7 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
     }
     // Avança last_seen_at + recalcula próximo dispatch
     const next = computeNextDispatch(sub.frequencia, sub.horario_preferido);
-    
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    supabaseDyn
       .from("saved_filter_subscriptions")
       .update({
         last_seen_at: new Date().toISOString(),
@@ -372,8 +371,7 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
                   sub.horario_preferido,
                 );
                 if (next) {
-                  
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  supabaseDyn
                     .from("saved_filter_subscriptions")
                     .update({ next_dispatch_at: next.toISOString() })
                     .eq("id", sub.id)
