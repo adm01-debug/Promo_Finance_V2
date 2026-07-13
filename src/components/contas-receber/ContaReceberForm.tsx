@@ -93,7 +93,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         centro_custo_id: conta.centro_custo_id || undefined,
         categoria_id: conta.categoria_id || undefined,
         conta_bancaria_id: conta.conta_bancaria_id || undefined,
-        tipo_cobranca: conta.tipo_cobranca as any,
+        tipo_cobranca: conta.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
       });
       if (conta.cliente_id) setShowClienteSelect(true);
     } else if (!conta && open) {

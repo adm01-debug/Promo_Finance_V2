@@ -156,7 +156,7 @@ export default function ContasReceber() {
 
           <motion.div variants={itemVariants} className="min-h-[600px]">
             {viewMode === 'kanban' ? (
-              <ContasReceberKanban contas={sortedContas as any} onSelectConta={handleViewConta} />
+              <ContasReceberKanban contas={sortedContas as unknown as React.ComponentProps<typeof ContasReceberKanban>['contas']} onSelectConta={handleViewConta} />
             ) : (
               <StandardTableCard
                 isLoading={isLoading}
@@ -203,7 +203,7 @@ export default function ContasReceber() {
                     ) : sortedContas.map((conta, index) => (
                       <ContasReceberTableRow
                         key={conta.id}
-                        conta={conta as any}
+                        conta={conta as unknown as React.ComponentProps<typeof ContasReceberTableRow>['conta']}
                         index={index}
                         isSelected={isSelected(conta.id)}
                         onToggleSelect={toggleSelect}
@@ -223,7 +223,7 @@ export default function ContasReceber() {
             )}
           </motion.div>
 
-          <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta as any} />
+          <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta as unknown as React.ComponentProps<typeof ContaReceberForm>['conta']} />
           <RegistrarRecebimentoDialog conta={selectedConta} open={recebimentoDialogOpen} onOpenChange={setRecebimentoDialogOpen} />
           <ContaReceberDetailDrawer
             conta={detailConta} open={detailDrawerOpen} onOpenChange={setDetailDrawerOpen}

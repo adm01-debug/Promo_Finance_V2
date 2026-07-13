@@ -418,7 +418,7 @@ export default function OportunidadesElisao() {
                     </div>
                     <div>
                       <span className="text-muted-foreground block text-[10px] uppercase font-semibold">CST Origem (XML)</span>
-                      <span className="font-semibold">{((c.nota?.dados_extraidos as any)?.cst) || 'N/D'}</span>
+                      <span className="font-semibold">{((c.nota?.dados_extraidos as Record<string, unknown> | undefined)?.cst as string | undefined) || 'N/D'}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Identificado em</span>
@@ -433,7 +433,7 @@ export default function OportunidadesElisao() {
                         Divergências Encontradas
                       </div>
                       <ul className="space-y-1">
-                        {(c.divergencias_detectadas as any[]).map((d: any, idx: number) => (
+                        {(c.divergencias_detectadas as Array<{ campo: string; mensagem: string }>).map((d, idx: number) => (
                           <li key={idx} className="text-xs flex items-start gap-2">
                             <span className="text-destructive">•</span>
                             <span>{d.campo}: {d.mensagem}</span>
@@ -508,13 +508,13 @@ export default function OportunidadesElisao() {
                     </div>
                   )}
                   
-                  {Array.isArray(c.historico_decisoes) && (c.historico_decisoes as any[]).length > 0 && (
+                  {Array.isArray(c.historico_decisoes) && (c.historico_decisoes as Array<{ data: string; status: string }>).length > 0 && (
                     <div className="text-[10px] text-muted-foreground border-t pt-2 mt-2">
                       <div className="flex items-center gap-1 mb-1">
                         <History className="h-3 w-3" />
                         <span>Histórico de decisões</span>
                       </div>
-                      {(c.historico_decisoes as any[]).map((h: any, i: number) => (
+                      {(c.historico_decisoes as Array<{ data: string; status: string }>).map((h, i: number) => (
                         <div key={i}>
                           • {new Date(h.data).toLocaleString()} - Alterado para {h.status}
                         </div>
