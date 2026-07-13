@@ -68,7 +68,11 @@ export const useIncrementTemplateUso = () => {
 
   return useMutation({
     mutationFn: async (templateId: string) => {
-      const { error } = await supabase.rpc('increment_pix_template_uso' as any, { p_template_id: templateId });
+      const rpc = supabase.rpc as unknown as (
+        fn: 'increment_pix_template_uso',
+        args: { p_template_id: string },
+      ) => Promise<{ error: { message: string } | null }>;
+      const { error } = await rpc('increment_pix_template_uso', { p_template_id: templateId });
       // Fallback if RPC doesn't exist - direct update
       if (error) {
         const { data: current } = await supabase.from('pix_templates').select('uso_count').eq('id', templateId).maybeSingle();
