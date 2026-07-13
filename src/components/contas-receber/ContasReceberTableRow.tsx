@@ -328,7 +328,7 @@ export function ContasReceberTableRow({
               <DuplicateButton 
                 data={conta} 
                 onDuplicate={(duplicated) => {
-                  onEdit(duplicated as any);
+                  onEdit(duplicated as ContaReceberWithRelations);
                   toast.success('Registro clonado. Revise os dados e salve.');
                 }}
                 label="Analisar Duplicação"
