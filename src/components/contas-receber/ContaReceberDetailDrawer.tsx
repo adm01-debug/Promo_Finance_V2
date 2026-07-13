@@ -230,7 +230,25 @@ export function ContaReceberDetailDrawer({
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-0 space-y-4">
-              <DrawerTimelineTab auditHistory={auditHistory as any} events={(conta.metadata as any)?.events as any[]} />
+              <DrawerTimelineTab
+                auditHistory={auditHistory.map((a) => ({
+                  id: a.id,
+                  operacao: a.operacao,
+                  created_at: a.created_at,
+                  dados_novos: (a.dados_novos as Record<string, unknown> | null) ?? null,
+                }))}
+                events={
+                  conta.metadata && typeof conta.metadata === 'object' && !Array.isArray(conta.metadata)
+                    ? ((conta.metadata as Record<string, unknown>).events as Array<{
+                        id: string;
+                        type: string;
+                        message: string;
+                        timestamp: string;
+                        metadata?: unknown;
+                      }> | undefined) ?? []
+                    : []
+                }
+              />
             </TabsContent>
 
             <TabsContent value="boletos" className="mt-0">
