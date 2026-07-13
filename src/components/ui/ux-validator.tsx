@@ -796,7 +796,9 @@ export const VisualValidator = () => {
                       </div>
 
                       <div className="grid grid-cols-3 gap-3">
-                        {['desktop', 'tablet', 'mobile'].map((bp) => (
+                        {(['desktop', 'tablet', 'mobile'] as const).map((bp) => {
+                          const diffKey = `diff${bp.charAt(0).toUpperCase() + bp.slice(1)}` as 'diffDesktop' | 'diffTablet' | 'diffMobile';
+                          return (
                           <div key={bp} className="space-y-2 group">
                             <div className="flex items-center justify-between px-1">
                               <p className="text-[9px] text-foreground/30 font-black uppercase tracking-widest">{bp}</p>
@@ -807,16 +809,16 @@ export const VisualValidator = () => {
                             <div className="relative aspect-video rounded-xl overflow-hidden border border-border bg-black shadow-2xl transition-all group-hover:border-primary/50">
                               {/* Actual Screenshot */}
                               <img 
-                                src={(step.screenshots as any)?.[bp]} 
+                                src={step.screenshots?.[bp]} 
                                 className="w-full h-full object-cover" 
                                 alt={bp} 
                               />
                               {/* Overlay Heatmap / Diff Component */}
-                              {(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`] && (
+                              {step.screenshots?.[diffKey] && (
                                 <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-[2px]">
                                    {/* The Diff image blended in */}
                                    <img 
-                                      src={(step.screenshots as any)?.[`diff${bp.charAt(0).toUpperCase() + bp.slice(1)}`]} 
+                                      src={step.screenshots?.[diffKey]} 
                                       className="w-full h-full object-cover mix-blend-screen bg-rose-600/20" 
                                       alt="diff-overlay" 
                                     />
