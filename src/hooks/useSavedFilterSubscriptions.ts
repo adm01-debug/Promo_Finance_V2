@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -68,9 +69,9 @@ export function useSavedFilterSubscriptions() {
     queryKey,
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filter_subscriptions" as any)
+        .from("saved_filter_subscriptions")
         .select("*");
       if (error) throw error;
       return (data ?? []) as unknown as SavedFilterSubscription[];
@@ -87,7 +88,7 @@ export function useSavedFilterSubscriptions() {
    */
   useEffect(() => {
     if (!user) return;
-    const ch = supabase
+    const ch = 
       .channel(`saved-filter-permissions-${user.id}`)
       .on(
         "postgres_changes",
@@ -127,9 +128,9 @@ export function useSavedFilterSubscriptions() {
       rateLimitWindowMin?: number;
     }) => {
       if (!user) throw new Error("Sessão expirada");
-      const { error } = await supabase
+      const { error } = await 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filter_subscriptions" as any)
+        .from("saved_filter_subscriptions")
         .upsert(
           {
             user_id: user.id,
@@ -193,9 +194,9 @@ export function useSavedFilterSubscriptions() {
       if (input.frequencia !== undefined || input.horarioPreferido !== undefined) {
         patch.next_dispatch_at = null;
       }
-      const { error } = await supabase
+      const { error } = await 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filter_subscriptions" as any)
+        .from("saved_filter_subscriptions")
         .update(patch)
         .eq("id", input.id);
       if (error) throw error;
@@ -208,9 +209,9 @@ export function useSavedFilterSubscriptions() {
 
   const unsubscribe = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filter_subscriptions" as any)
+        .from("saved_filter_subscriptions")
         .delete()
         .eq("id", id);
       if (error) throw error;
@@ -225,9 +226,9 @@ export function useSavedFilterSubscriptions() {
   /** Marca o "visto até agora" para evitar notificar registros antigos. */
   const markSeen = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filter_subscriptions" as any)
+        .from("saved_filter_subscriptions")
         .update({ last_seen_at: new Date().toISOString() })
         .eq("id", id);
       if (error) throw error;
