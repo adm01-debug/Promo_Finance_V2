@@ -139,7 +139,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
     
     contasPagarFiltradas.forEach(c => {
       const ccId = c.centro_custo_id || 'sem-cc';
-      const ccNome = (c as any).centro_custo || (c as any).centros_custo?.nome || 'Sem Centro de Custo';
+      const ccNome = (c as { centro_custo?: string; centros_custo?: { nome?: string } }).centro_custo || (c as { centros_custo?: { nome?: string } }).centros_custo?.nome || 'Sem Centro de Custo';
       if (!map.has(ccId)) {
         map.set(ccId, { nome: ccNome, pagar: 0, receber: 0, saldo: 0 });
       }
