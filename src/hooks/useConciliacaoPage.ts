@@ -153,7 +153,7 @@ export function useConciliacaoPage() {
 
           // Adicionar alerta automático no sistema
           await supabase.from('alertas').insert({
-            empresa_id: (contasBancarias?.find(c => c.id === selectedBanco) as any)?.empresa_id,
+            empresa_id: contasBancarias?.find(c => c.id === selectedBanco)?.empresa_id,
             tipo: 'divergencia_conciliacao',
             prioridade: 'critica',
             titulo: 'Divergência de Saldo Bancário',
