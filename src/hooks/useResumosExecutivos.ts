@@ -21,9 +21,9 @@ export function useResumosExecutivos(empresaId?: string) {
   const lista = useQuery({
     queryKey: ['resumos-executivos', empresaId],
     queryFn: async (): Promise<ResumoExecutivo[]> => {
-      let q = supabase.from('resumos_executivos_semanais' as never)
+      let q = supabaseDyn.from('resumos_executivos_semanais')
         .select('*').order('semana_inicio', { ascending: false }).limit(20);
-      if (empresaId) q = (q as any).eq('empresa_id', empresaId);
+      if (empresaId) q = q.eq('empresa_id', empresaId);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as unknown as ResumoExecutivo[];

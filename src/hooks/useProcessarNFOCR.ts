@@ -54,12 +54,12 @@ export function useProcessarNFOCR(empresaId?: string) {
   const lista = useQuery({
     queryKey: ['notas-fiscais-ocr', empresaId],
     queryFn: async () => {
-      let q = supabase.from('notas_fiscais_ocr' as never)
+      let q = supabaseDyn.from('notas_fiscais_ocr')
         .select('*').order('created_at', { ascending: false }).limit(10);
-      if (empresaId) q = (q as any).eq('empresa_id', empresaId);
+      if (empresaId) q = q.eq('empresa_id', empresaId);
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as any[];
+      return (data ?? []) as Array<Record<string, unknown>>;
     },
     staleTime: 30_000,
   });
