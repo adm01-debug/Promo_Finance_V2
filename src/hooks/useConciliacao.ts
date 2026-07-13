@@ -31,7 +31,7 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       
       // Usando a nova RPC manual para conciliação direta
-      const { error } = await (supabase.rpc as any)('confirmar_conciliacao_manual', {
+      const { error } = await supabase.rpc('confirmar_conciliacao_manual', {
         p_transacao_id: transacaoId,
         p_conta_pagar_id: contaPagarId || null,
         p_conta_receber_id: contaReceberId || null,
