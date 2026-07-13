@@ -780,9 +780,9 @@ export const VisualValidator = () => {
                       
                       <div className="flex items-center gap-4 bg-zinc-900/30 p-2 rounded-lg border border-white/5 mb-2 overflow-x-auto">
                         <div className="flex -space-x-2">
-                           {['desktop', 'tablet', 'mobile'].map((bp) => (
+                           {(['desktop', 'tablet', 'mobile'] as const).map((bp) => (
                              <div key={bp} className="h-8 w-12 rounded border border-border bg-black overflow-hidden relative group/thumb cursor-pointer">
-                               <img src={(step.screenshots as any)?.[bp]} className="w-full h-full object-cover" alt={bp} />
+                               <img src={step.screenshots?.[bp]} className="w-full h-full object-cover" alt={bp} />
                                <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center">
                                  <Eye className="h-3 w-3 text-foreground" />
                                </div>
