@@ -291,7 +291,7 @@ export function ContaReceberDetailDrawer({
 
             <TabsContent value="cobrancas" className="mt-0 space-y-3">
               <DrawerCobrancasTab
-                cobrancas={cobrancas as any}
+                cobrancas={cobrancas}
                 canEnviar={conta.status !== 'pago' && conta.status !== 'cancelado'}
                 onEnviarCobranca={() => onEnviarCobranca(conta)}
               />
