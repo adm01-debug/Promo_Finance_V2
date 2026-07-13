@@ -212,8 +212,12 @@ export function useWebAuthn() {
 
     try {
       // Get user's registered credentials using RPC function
-      const { data: rawCredentials, error: fetchError } = await supabase
-        .rpc('get_webauthn_credential_by_email' as any, { p_email: userEmail });
+      const { data: rawCredentials, error: fetchError } = await (
+        supabase.rpc as unknown as (
+          fn: 'get_webauthn_credential_by_email',
+          args: { p_email: string },
+        ) => Promise<{ data: unknown; error: { message: string } | null }>
+      )('get_webauthn_credential_by_email', { p_email: userEmail });
 
       if (fetchError || !rawCredentials || (rawCredentials as unknown[]).length === 0) {
         toast.error('Nenhuma biometria registrada para este email');

@@ -99,8 +99,7 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
       if (local) {
         setDetalhe(local);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: row, error } = await (supabase as any)
+        const { data: row, error } = await supabaseDyn
           .from(TIPO_TABLE[tipo])
           .select("*")
           .eq("id", recordId)
