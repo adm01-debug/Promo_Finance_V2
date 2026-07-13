@@ -234,10 +234,13 @@ export const contasReceberService = {
   },
 
   async bulkUpdate(ids: string[], updates: Partial<ContaReceberInput>) {
-    const updateData: Record<string, unknown> = { ...updates, updated_at: new Date().toISOString() };
+    const updateData: Database['public']['Tables']['contas_receber']['Update'] = {
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
     const { data, error } = await supabase
       .from('contas_receber')
-      .update(updateData as any)
+      .update(updateData)
       .in('id', ids)
       .select('*, cliente:clientes(id, razao_social, cnpj_cpf)');
 
