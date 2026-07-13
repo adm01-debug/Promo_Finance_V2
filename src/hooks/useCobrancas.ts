@@ -315,8 +315,8 @@ export function useUpdateEtapaCobranca() {
         empresa_id: conta?.empresa_id || currentEmpresaId,
         etapa_atual: etapa || 'preventiva',
         status_cobranca: 'pendente',
-        updated_at: new Date().toISOString()
-      } as any, { onConflict: 'conta_receber_id' });
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'conta_receber_id' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-vencidas'] });
