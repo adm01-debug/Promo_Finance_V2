@@ -100,7 +100,7 @@ export function BlingFinanceiroPanel() {
                             <TableCell>{c.contato?.nome || '-'}</TableCell>
                             <TableCell>{c.historico || c.numeroDocumento || '-'}</TableCell>
                             <TableCell className="text-right font-semibold">R$ {Number(c.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                            <TableCell><Badge variant={sitVariant as any}>{sitLabel}</Badge></TableCell>
+                            <TableCell><Badge variant={sitVariant}>{sitLabel}</Badge></TableCell>
                             <TableCell>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
