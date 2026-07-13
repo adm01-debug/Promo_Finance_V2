@@ -93,14 +93,14 @@ export function BlingFinanceiroPanel() {
                     <TableBody>
                       {contas.map((c: any) => {
                         const sitLabel = c.situacao === 1 ? 'Em aberto' : c.situacao === 2 ? (tipo === 'receber' ? 'Recebido' : 'Pago') : c.situacao === 3 ? 'Parcial' : c.situacao === 4 ? 'Vencido' : c.situacao === 5 ? 'Cancelado' : c.situacao === 6 ? 'Inadimplente' : `#${c.situacao}`;
-                        const sitVariant = c.situacao === 1 ? 'outline' : c.situacao === 2 ? 'default' : c.situacao === 4 || c.situacao === 6 ? 'destructive' : 'secondary';
+                        const sitVariant: 'outline' | 'default' | 'destructive' | 'secondary' = c.situacao === 1 ? 'outline' : c.situacao === 2 ? 'default' : c.situacao === 4 || c.situacao === 6 ? 'destructive' : 'secondary';
                         return (
                           <TableRow key={c.id}>
                             <TableCell>{c.vencimento ? new Date(c.vencimento).toLocaleDateString('pt-BR') : '-'}</TableCell>
                             <TableCell>{c.contato?.nome || '-'}</TableCell>
                             <TableCell>{c.historico || c.numeroDocumento || '-'}</TableCell>
                             <TableCell className="text-right font-semibold">R$ {Number(c.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                            <TableCell><Badge variant={sitVariant as any}>{sitLabel}</Badge></TableCell>
+                            <TableCell><Badge variant={sitVariant}>{sitLabel}</Badge></TableCell>
                             <TableCell>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>

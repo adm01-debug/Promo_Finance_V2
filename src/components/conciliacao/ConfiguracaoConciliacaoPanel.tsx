@@ -69,7 +69,7 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
       if (!selectedContaId) return;
       const { error } = await supabase
         .from('contas_bancarias')
-        .update({ configuracoes_conciliacao: config as any })
+        .update({ configuracoes_conciliacao: config as unknown as import('@/integrations/supabase/types').Json })
         .eq('id', selectedContaId);
       if (error) throw error;
     },
@@ -168,7 +168,7 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
                         <Label className="text-[10px]">Intervalo</Label>
                         <Select 
                           value={config.alertas_inadimplencia?.interval} 
-                          onValueChange={v => setConfig({...config, alertas_inadimplencia: {...config.alertas_inadimplencia!, interval: v as any}})}
+                          onValueChange={v => setConfig({...config, alertas_inadimplencia: {...config.alertas_inadimplencia!, interval: v as AlertaConfig['interval']}})}
                         >
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -206,7 +206,7 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
                         <Label className="text-[10px]">Canal</Label>
                         <Select 
                           value={config.alertas_conciliacao?.channel} 
-                          onValueChange={v => setConfig({...config, alertas_conciliacao: {...config.alertas_conciliacao!, channel: v as any}})}
+                          onValueChange={v => setConfig({...config, alertas_conciliacao: {...config.alertas_conciliacao!, channel: v as AlertaConfig['channel']}})}
                         >
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>

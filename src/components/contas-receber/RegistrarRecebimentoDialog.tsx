@@ -136,8 +136,7 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
             conciliada: true,
             status: 'confirmado',
             data_confirmacao: new Date().toISOString(),
-            conta_receber_id: conta.id,
-          } as any);
+          });
         
         if (matchError) logger.warn('Erro ao criar evidência de conciliação:', matchError);
       }
