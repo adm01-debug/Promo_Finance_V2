@@ -65,7 +65,7 @@ export function useSSOProviders() {
   return useQuery({
     queryKey: ['sso-providers'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('sso_providers')
         .select('*')
         .order('ordem', { ascending: true });
