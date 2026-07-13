@@ -39,7 +39,7 @@ export function VersionHistory({ open, onOpenChange, recordId, tableName }: Vers
     enabled: open && !!recordId,
   });
 
-  const formatValue = (val: any) => {
+  const formatValue = (val: unknown) => {
     if (val === null) return 'null';
     if (typeof val === 'object') return JSON.stringify(val);
     return String(val);
