@@ -160,7 +160,7 @@ export function useConciliacaoPage() {
             mensagem: `O saldo final do extrato ${extrato.nomeArquivo} (R$ ${extrato.conta.saldoFinal.toFixed(2)}) não confere com o cálculo dos lançamentos. Diferença de R$ ${(extrato.conta.saldoFinal - saldoCalculado).toFixed(2)}.`,
             status: 'pendente',
             metadata: { conta_bancaria_id: selectedBanco, extrato: extrato.nomeArquivo }
-          } as any);
+          } as never);
         }
       }
     }
