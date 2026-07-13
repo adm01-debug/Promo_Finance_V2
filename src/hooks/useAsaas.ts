@@ -263,7 +263,19 @@ export function useAsaas(empresaId?: string) {
         .maybeSingle();
       if (error) throw error;
       
-      const conf = ((data?.configuracoes as Record<string, string | number | boolean> | null) || {}) as Record<string, string | number | boolean>;
+      const conf = (data?.configuracoes ?? {}) as {
+        retry_limit?: number;
+        retry_interval_minutes?: number;
+        backoff_multiplier?: number;
+        default_fine_percent?: number;
+        default_interest_percent?: number;
+        alert_email_enabled?: boolean;
+        alert_whatsapp_enabled?: boolean;
+        alert_email_address?: string;
+        alert_whatsapp_number?: string;
+        failure_threshold?: number;
+        bitrix_trigger_stage?: string;
+      };
       
       return {
         ...data,
