@@ -177,18 +177,17 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
         }
 
         // Registra log global da importação
-        await supabase.from('logs_baixa_automatica').insert({
+        await supabase.from('logs_baixa_automatica').insert([{
           user_id: user.id,
           resultado: `Arquivo ${resultado?.extrato?.nomeArquivo || 'unknown'}: ${successCount}/${matches.length} sucesso`,
           mensagem: `Importação concluída`,
           detalhes: {
-            arquivo_nome: resultado?.extrato?.nomeArquivo,
+            arquivo_nome: resultado?.extrato?.nomeArquivo ?? null,
             total_registros: resultado?.extrato?.transacoes.length || 0,
             sucesso_count: successCount,
             falha_count: matches.length - successCount,
-            matching_info: { matches },
           },
-        });
+        }]);
       }
 
       setSuccessSummary({ processados: successCount, valor: totalValue });
