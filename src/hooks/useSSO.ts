@@ -148,7 +148,7 @@ export function useToggleSSOProvider() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await (supabase as any).from('sso_providers').update({ ativo }).eq('id', id);
+      const { error } = await supabase.from('sso_providers').update({ ativo } as never).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sso-providers'] }),
