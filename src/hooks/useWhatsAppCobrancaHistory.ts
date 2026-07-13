@@ -19,7 +19,7 @@ export function useWhatsAppCobrancaHistory(contaReceberId?: string) {
 
       const { data, error } = await query.limit(200);
       if (error) throw error;
-      return (data || []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
     },
   });
 }
@@ -42,7 +42,7 @@ export function useCreateWhatsAppCobranca() {
           status: 'enviado',
           enviado_em: new Date().toISOString(),
           created_by: (await supabase.auth.getUser()).data.user?.id,
-        } as any)
+        } as never)
         .select()
         .single();
       if (error) throw error;

@@ -298,11 +298,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Best-effort: marca a sessão atual como revogada no banco antes do signOut.
     if (user) {
       try {
-        await (supabase.from('user_sessions') as any)
+        await (supabase.from('user_sessions') as unknown as {
+          update: (v: Record<string, unknown>) => {
+            eq: (c: string, v: unknown) => {
+              eq: (c: string, v: unknown) => {
+                eq: (c: string, v: unknown) => Promise<unknown>;
+              };
+            };
+          };
+        })
           .update({ revoked: true, revoked_at: new Date().toISOString() })
           .eq('user_id', user.id)
           .eq('is_current', true)
           .eq('revoked', false);
+
+
+
       } catch (e) {
         logger.warn('[useAuth] Falha ao revogar user_session — seguindo', e);
       }

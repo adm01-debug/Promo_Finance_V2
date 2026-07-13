@@ -210,23 +210,24 @@ export function useBoletos() {
     },
     onSuccess: async (data) => {
       // Registrar evento de envio de boleto
-      if (data && (data as any).conta_receber_id) {
+      if (data?.conta_receber_id) {
         await supabase.rpc('registrar_evento_receber', {
-          p_conta_id: (data as any).conta_receber_id,
+          p_conta_id: data.conta_receber_id,
           p_tipo: 'envio_boleto',
-          p_mensagem: `Boleto #${(data as any).numero} gerado e enviado para o cliente.`,
-          p_metadata: { boleto_id: (data as any).id, numero: (data as any).numero }
+          p_mensagem: `Boleto #${data.numero} gerado e enviado para o cliente.`,
+          p_metadata: { boleto_id: data.id, numero: data.numero }
         });
       }
 
-      if (data && (data as any).conta_pagar_id) {
+      if (data?.conta_pagar_id) {
         await supabase.rpc('registrar_evento_pagar', {
-          p_conta_id: (data as any).conta_pagar_id,
+          p_conta_id: data.conta_pagar_id,
           p_tipo: 'envio_boleto',
-          p_mensagem: `Boleto #${(data as any).numero} gerado para pagamento de fornecedor.`,
-          p_metadata: { boleto_id: (data as any).id, numero: (data as any).numero }
+          p_mensagem: `Boleto #${data.numero} gerado para pagamento de fornecedor.`,
+          p_metadata: { boleto_id: data.id, numero: data.numero }
         });
       }
+
 
       queryClient.invalidateQueries({ queryKey: ['boletos'] });
       toast({
