@@ -237,7 +237,7 @@ export function useAlertasTributarios(empresaId?: string) {
     // Verificar créditos próximos de expirar
     const { data: creditos } = await supabase
       .from('creditos_tributarios')
-      .select('id, data_vencimento, valor, data_origem')
+      .select('id, data_origem, saldo_disponivel, tipo_tributo, competencia_origem')
       .eq('empresa_id', empresaId)
       .eq('status', 'disponivel');
 
