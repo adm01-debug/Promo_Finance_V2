@@ -65,7 +65,7 @@ export function useConciliacaoIA() {
         documento: l.numeroDocumento
       }));
 
-      const { data, error } = await (supabase.functions.invoke as any)('conciliacao-ia', {
+      const { data, error } = await supabase.functions.invoke('conciliacao-ia', {
         body: { 
           transacoes: transacoesData, 
           lancamentos: lancamentosData,
