@@ -23,8 +23,8 @@ export function FilaCobrancasPanel() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
   const { data: filaData, isLoading: loadingFila } = useFilaCobrancas(statusFilter);
   const { data: execucoesData, isLoading: loadingExec } = useExecucoesCobranca();
-  const fila = (filaData || []) as any[];
-  const execucoes = (execucoesData || []) as any[];
+  const fila = (filaData || []) as Array<Record<string, unknown>>;
+  const execucoes = (execucoesData || []) as Array<Record<string, unknown>>;
   const { data: metricas } = useMetricasCobranca();
   const processarRegua = useProcessarRegua();
   const processarFila = useProcessarFila();
