@@ -249,7 +249,7 @@ export function useTopDevedores(limit: number = 10) {
       }, {});
 
       return (Object.values(devedoresPorCliente) as TopDevedor[])
-        .sort((a, b) => (b as any).valor_total - (a as any).valor_total)
+        .sort((a, b) => b.valor_total - a.valor_total)
         .slice(0, limit);
     },
   });
