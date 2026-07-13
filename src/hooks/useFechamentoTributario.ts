@@ -52,7 +52,7 @@ export function useFechamentoTributario(empresaId?: string, ano?: number, mes?: 
       justificativa?: string;
       observacoes?: string;
     }) => {
-      const { data, error } = await (supabase.functions as any).invoke(
+      const { data, error } = await supabase.functions.invoke(
         "executar-fechamento-tributario",
         { body: payload },
       );
