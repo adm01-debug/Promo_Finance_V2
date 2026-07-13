@@ -168,7 +168,7 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
                         <Label className="text-[10px]">Intervalo</Label>
                         <Select 
                           value={config.alertas_inadimplencia?.interval} 
-                          onValueChange={v => setConfig({...config, alertas_inadimplencia: {...config.alertas_inadimplencia!, interval: v as any}})}
+                          onValueChange={v => setConfig({...config, alertas_inadimplencia: {...config.alertas_inadimplencia!, interval: v as AlertaConfig['interval']}})}
                         >
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
