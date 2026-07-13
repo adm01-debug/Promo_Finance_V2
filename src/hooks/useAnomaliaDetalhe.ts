@@ -30,8 +30,14 @@ async function carregarEntidade(
   };
   const cfg = tabelaPorTipo[tipo];
   if (!cfg) return { tipo, encontrada: false, registro: null };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  type DynamicClient = {
+    from: (table: string) => {
+      select: (cols: string) => {
+        eq: (col: string, v: string) => { maybeSingle: () => Promise<{ data: Record<string, unknown> | null }> };
+      };
+    };
+  };
+  const { data } = await (supabase as unknown as DynamicClient)
     .from(cfg.table)
     .select("*")
     .eq("id", id)
