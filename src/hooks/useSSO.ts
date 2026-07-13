@@ -113,11 +113,11 @@ export function useSaveSSOProvider() {
     mutationFn: async (provider: Partial<SSOProvider> & { nome: string; tipo: SSOTipo }) => {
       const { id, ...rest } = provider;
       if (id) {
-        const { data, error } = await (supabase as any).from('sso_providers').update(rest).eq('id', id).select().maybeSingle();
+        const { data, error } = await supabase.from('sso_providers').update(rest as never).eq('id', id).select().maybeSingle();
         if (error) throw error;
         return data;
       }
-      const { data, error } = await (supabase as any).from('sso_providers').insert(rest).select().maybeSingle();
+      const { data, error } = await supabase.from('sso_providers').insert(rest as never).select().maybeSingle();
       if (error) throw error;
       return data;
     },
