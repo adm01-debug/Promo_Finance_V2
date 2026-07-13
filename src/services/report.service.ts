@@ -148,7 +148,7 @@ export const reportService = {
     let grandTotal = 0;
 
     (data || []).forEach(conta => {
-      const categoria = (conta as any).tipo_cobranca || 'Sem categoria';
+      const categoria = conta.tipo_cobranca || 'Sem categoria';
       const existing = categoriaMap.get(categoria) || { total: 0, quantidade: 0 };
       existing.total += conta.valor || 0;
       existing.quantidade += 1;
@@ -175,7 +175,7 @@ export const reportService = {
     let grandTotal = 0;
 
     (data || []).forEach(conta => {
-      const categoria = (conta as any).tipo_cobranca || 'Sem categoria';
+      const categoria = conta.tipo_cobranca || 'Sem categoria';
       const existing = categoriaMap.get(categoria) || { total: 0, quantidade: 0 };
       existing.total += conta.valor || 0;
       existing.quantidade += 1;
