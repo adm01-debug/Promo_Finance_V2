@@ -90,9 +90,8 @@ export default function MinhasPreferencias() {
     enabled: !!user?.id,
     queryFn: async (): Promise<PreferenciaRow[]> => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { data, error } = await supabaseDyn
+        .from('saved_filters')
         .select(
           'id,user_id,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,updated_at',
         )
