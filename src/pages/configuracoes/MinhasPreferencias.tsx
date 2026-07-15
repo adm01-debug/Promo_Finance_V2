@@ -108,9 +108,8 @@ export default function MinhasPreferencias() {
     mutationFn: async (row: PreferenciaRow) => {
       // Limpa default antigo da mesma entidade do usuário; trigger ensure_single_default_filter
       // já cuida disso, mas garantimos via update direto.
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { error } = await supabaseDyn
+        .from('saved_filters')
         .update({ is_default: !row.is_default })
         .eq('id', row.id);
       if (error) throw new Error(error.message);
