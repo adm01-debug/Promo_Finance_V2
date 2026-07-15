@@ -267,7 +267,7 @@ export function useContasPagar(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
