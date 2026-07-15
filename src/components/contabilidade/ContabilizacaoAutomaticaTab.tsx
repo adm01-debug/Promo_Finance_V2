@@ -1019,6 +1019,18 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
           )}
         </CardContent>
       </Card>
+      <ConfirmDialog
+        open={!!confirmDeleteRegraId}
+        onOpenChange={(o) => !o && setConfirmDeleteRegraId(null)}
+        title="Remover regra"
+        description="Deseja remover esta regra de contabilização? Esta ação não pode ser desfeita."
+        confirmText="Remover"
+        variant="danger"
+        onConfirm={() => {
+          if (confirmDeleteRegraId) deleteRegra.mutate(confirmDeleteRegraId);
+          setConfirmDeleteRegraId(null);
+        }}
+      />
     </motion.div>
   );
 }
