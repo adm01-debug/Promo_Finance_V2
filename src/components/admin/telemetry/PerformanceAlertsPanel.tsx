@@ -53,7 +53,7 @@ export function PerformanceAlertsPanel() {
   const { data = [], isLoading, refetch, isRefetching } = useQuery<AlertRow[]>({
     queryKey: ["performance-alerts", days],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_performance_alerts" as any, {
+      const { data, error } = await supabaseDyn.rpc<AlertRow[]>("get_performance_alerts", {
         p_days: days,
         p_severity: null,
         p_source: null,

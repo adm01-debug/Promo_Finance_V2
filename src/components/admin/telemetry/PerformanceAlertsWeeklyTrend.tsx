@@ -70,7 +70,7 @@ export function PerformanceAlertsWeeklyTrend() {
   const { data = [], isLoading } = useQuery<WeeklyRow[]>({
     queryKey: ["performance-alerts-weekly", 12],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_performance_alerts_weekly" as any, {
+      const { data, error } = await supabaseDyn.rpc<WeeklyRow[]>("get_performance_alerts_weekly", {
         p_weeks: 12,
       });
       if (error) throw error;
