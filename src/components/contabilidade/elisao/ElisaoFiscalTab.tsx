@@ -135,7 +135,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     enabled: !!empresaId
   });
 
-  const economiaTotal = oportunidades.reduce((acc: number, curr: any) => acc + (curr.valor_estimado || 0), 0);
+  const economiaTotal = oportunidades.reduce((acc, curr) => acc + (curr.valor_estimado || 0), 0);
 
   return (
     <div className="space-y-6">
