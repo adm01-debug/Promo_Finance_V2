@@ -46,7 +46,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
@@ -89,9 +89,8 @@ export default function MinhasPreferencias() {
     enabled: !!user?.id,
     queryFn: async (): Promise<PreferenciaRow[]> => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { data, error } = await supabaseDyn
+        .from('saved_filters')
         .select(
           'id,user_id,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,updated_at',
         )
@@ -108,9 +107,8 @@ export default function MinhasPreferencias() {
     mutationFn: async (row: PreferenciaRow) => {
       // Limpa default antigo da mesma entidade do usuário; trigger ensure_single_default_filter
       // já cuida disso, mas garantimos via update direto.
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { error } = await supabaseDyn
+        .from('saved_filters')
         .update({ is_default: !row.is_default })
         .eq('id', row.id);
       if (error) throw new Error(error.message);
@@ -124,9 +122,8 @@ export default function MinhasPreferencias() {
 
   const stopSharing = useMutation({
     mutationFn: async (row: PreferenciaRow) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { error } = await supabaseDyn
+        .from('saved_filters')
         .update({ is_shared: false, shared_with_roles: [] })
         .eq('id', row.id);
       if (error) throw new Error(error.message);
@@ -140,9 +137,8 @@ export default function MinhasPreferencias() {
 
   const remove = useMutation({
     mutationFn: async (row: PreferenciaRow) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { error } = await supabaseDyn
+        .from('saved_filters')
         .delete()
         .eq('id', row.id);
       if (error) throw new Error(error.message);

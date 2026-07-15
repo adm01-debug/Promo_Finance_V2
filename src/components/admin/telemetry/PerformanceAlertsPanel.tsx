@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,7 +54,7 @@ export function PerformanceAlertsPanel() {
   const { data = [], isLoading, refetch, isRefetching } = useQuery<AlertRow[]>({
     queryKey: ["performance-alerts", days],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_performance_alerts" as any, {
+      const { data, error } = await supabaseDyn.rpc<AlertRow[]>("get_performance_alerts", {
         p_days: days,
         p_severity: null,
         p_source: null,

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -102,7 +103,7 @@ export function CronJobsPanel() {
   const { data: jobs, isLoading, error, refetch } = useQuery({
     queryKey: ['cron-jobs'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_cron_jobs' as any);
+      const { data, error } = await supabaseDyn.rpc<CronJob[]>('get_cron_jobs');
       
       if (error) {
         // Se a função não existir, tentar query direta
@@ -121,9 +122,9 @@ export function CronJobsPanel() {
       const action = active ? 'cron.schedule' : 'cron.unschedule';
       
       // Para ativar/desativar, precisamos usar uma edge function ou SQL direto
-      const { error } = await supabase.rpc('toggle_cron_job' as any, { 
-        job_id: jobId, 
-        is_active: active 
+      const { error } = await supabaseDyn.rpc('toggle_cron_job', {
+        job_id: jobId,
+        is_active: active,
       });
       
       if (error) throw error;
@@ -141,7 +142,7 @@ export function CronJobsPanel() {
   // Deletar job
   const deleteJobMutation = useMutation({
     mutationFn: async (jobId: number) => {
-      const { error } = await supabase.rpc('delete_cron_job' as any, { job_id: jobId });
+      const { error } = await supabaseDyn.rpc('delete_cron_job', { job_id: jobId });
       if (error) throw error;
     },
     onSuccess: () => {

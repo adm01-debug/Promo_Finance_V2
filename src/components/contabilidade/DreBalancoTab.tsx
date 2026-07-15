@@ -165,7 +165,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     setDrillDown(state);
     // Persist basic state (whether it's open)
     updatePrefs.mutate({
-      drill_down_estado: { ...state } as any
+      drill_down_estado: { ...state } as unknown as Record<string, boolean>,
     });
   };
 

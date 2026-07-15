@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -81,8 +82,8 @@ export default function HistoricoNotificacoes() {
     queryKey,
     enabled: !!user,
     queryFn: async (): Promise<NotificationRow[]> => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let q = (supabase.from("notification_history" as any) as any)
+      let q = supabaseDyn
+        .from<NotificationRow>("notification_history")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(200);
@@ -116,9 +117,8 @@ export default function HistoricoNotificacoes() {
 
   const markRead = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("notification_history" as any)
+      const { error } = await supabaseDyn
+        .from("notification_history")
         .update({ read_at: new Date().toISOString() })
         .eq("id", id);
       if (error) throw error;
@@ -130,9 +130,8 @@ export default function HistoricoNotificacoes() {
   const markAllRead = useMutation({
     mutationFn: async () => {
       if (!user) return;
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("notification_history" as any)
+      const { error } = await supabaseDyn
+        .from("notification_history")
         .update({ read_at: new Date().toISOString() })
         .eq("user_id", user.id)
         .is("read_at", null);

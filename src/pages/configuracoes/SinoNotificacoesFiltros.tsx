@@ -14,7 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { useAuth } from "@/hooks/useAuth";
 import {
   useSavedFilterSubscriptions,
@@ -100,9 +100,8 @@ export default function SinoNotificacoesFiltros() {
     queryKey: ["sino-saved-filters", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("saved_filters" as any)
+      const { data, error } = await supabaseDyn
+        .from("saved_filters")
         .select("id,name,entity_type,is_default,is_shared,updated_at")
         .order("entity_type", { ascending: true })
         .order("is_default", { ascending: false })

@@ -8,6 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useFilaCobrancas, useExecucoesCobranca, useProcessarRegua, useProcessarFila } from '@/hooks/useReguaCobranca';
 import { useMetricasCobranca } from '@/hooks/useViews';
 import { formatCurrency, formatDate } from '@/lib/formatters';
+import type { Tables } from '@/integrations/supabase/types';
+
+type FilaRow = Tables<'fila_cobrancas'> & { cliente_nome?: string | null };
+type ExecucaoRow = Tables<'execucoes_cobranca'> & { cliente_nome?: string | null; provider?: string | null };
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   pendente: { icon: Clock, color: 'text-warning', label: 'Pendente' },
@@ -23,10 +27,8 @@ export function FilaCobrancasPanel() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
   const { data: filaData, isLoading: loadingFila } = useFilaCobrancas(statusFilter);
   const { data: execucoesData, isLoading: loadingExec } = useExecucoesCobranca();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fila = (filaData || []) as any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const execucoes = (execucoesData || []) as any[];
+  const fila = (filaData || []) as FilaRow[];
+  const execucoes = (execucoesData || []) as ExecucaoRow[];
   const { data: metricas } = useMetricasCobranca();
   const processarRegua = useProcessarRegua();
   const processarFila = useProcessarFila();
