@@ -569,20 +569,17 @@ export function useDashboardKPIs(empresaId?: string) {
   return useQuery({
     queryKey: ['dashboard-kpis', empresaId],
     queryFn: async () => {
-      const boletosPromise = supabase
+      const boletos = await supabaseDyn
         .from('boletos')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'PENDING')
         .eq('empresa_id', empresaId ?? '');
 
-      const divergenciasPromise = supabase
+      const divergencias = await supabaseDyn
         .from('divergencias_conciliacao')
         .select('*', { count: 'exact', head: true })
         .eq('resolvido', false)
         .eq('empresa_id', empresaId ?? '');
-
-      const boletos = await boletosPromise;
-      const divergencias = await divergenciasPromise;
 
       return {
         boletosAbertos: boletos.count || 0,
