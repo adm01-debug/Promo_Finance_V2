@@ -128,5 +128,5 @@ export function reportErrorToTracker(error: Error, componentStack?: string) {
 export function initSentry(dsn: string, environment: string = 'production') {
   // This would be called when Sentry is set up
   // The actual Sentry initialization script would need to be added to index.html
-  console.info('[ErrorTracker] Ready for Sentry initialization with DSN');
+  if (import.meta.env.DEV) console.info('[ErrorTracker] Ready for Sentry initialization with DSN');
 }
