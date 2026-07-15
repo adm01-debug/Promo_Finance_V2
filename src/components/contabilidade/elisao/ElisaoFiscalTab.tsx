@@ -336,7 +336,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                 <CardDescription>Consolidado por Categoria</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {oportunidades.map((op: any, i: number) => (
+                {oportunidades.map((op, i) => (
                   <div key={i} className="flex flex-col p-3 rounded-lg border bg-muted/20">
                     <div className="flex justify-between items-start mb-1">
                       <span className="text-xs font-bold">{op.tipo_oportunidade}</span>
