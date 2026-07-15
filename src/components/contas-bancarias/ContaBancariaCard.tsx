@@ -31,17 +31,19 @@ interface Props {
 
 export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: BancoIcon, bancoColor, onDelete }: Props) {
   const [showMapping, setShowMapping] = useState(false);
-  const [mapping, setMapping] = useState<Record<string, string>>((conta as any).mapeamento_extrato || {
-    data: 'Data',
-    descricao: 'Descrição',
-    valor: 'Valor',
-    tipo: 'Tipo'
-  });
+  const [mapping, setMapping] = useState<Record<string, string>>(
+    (conta as { mapeamento_extrato?: Record<string, string> }).mapeamento_extrato || {
+      data: 'Data',
+      descricao: 'Descrição',
+      valor: 'Valor',
+      tipo: 'Tipo',
+    },
+  );
 
   const saveMapping = async () => {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('contas_bancarias')
-      .update({ mapeamento_extrato: mapping })
+      .update({ mapeamento_extrato: mapping } as never)
       .eq('id', conta.id);
     
     if (error) toast.error('Erro ao salvar mapeamento');
