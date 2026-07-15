@@ -66,6 +66,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const [editingRegra, setEditingRegra] = useState<Regra | null>(null);
   const [originalRegra, setOriginalRegra] = useState<Regra | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [confirmDeleteRegraId, setConfirmDeleteRegraId] = useState<string | null>(null);
   
   const [simulating, setSimulating] = useState(false);
   const [simForm, setSimForm] = useState({
