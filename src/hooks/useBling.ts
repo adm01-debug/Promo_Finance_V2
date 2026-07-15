@@ -86,13 +86,13 @@ export function useBlingContatoMutations() {
   const queryClient = useQueryClient();
 
   const criarContato = useMutation({
-    mutationFn: (data: any) => blingAction('criar_contato', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_contato', { data }),
     onSuccess: () => { toast.success('Contato criado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-contatos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const atualizarContato = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => blingAction('atualizar_contato', { id, data }),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('atualizar_contato', { id, data }),
     onSuccess: () => { toast.success('Contato atualizado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-contatos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -104,7 +104,7 @@ export function useBlingContatoMutations() {
   });
 
   const alterarSituacaoContato = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => blingAction('alterar_situacao_contato', { id, data }),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('alterar_situacao_contato', { id, data }),
     onSuccess: () => { toast.success('Situação alterada'); queryClient.invalidateQueries({ queryKey: ['bling-contatos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -133,13 +133,13 @@ export function useBlingPedidoMutations() {
   const queryClient = useQueryClient();
 
   const criarPedido = useMutation({
-    mutationFn: (data: any) => blingAction('criar_pedido', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_pedido', { data }),
     onSuccess: () => { toast.success('Pedido criado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const atualizarPedido = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => blingAction('atualizar_pedido', { id, data }),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('atualizar_pedido', { id, data }),
     onSuccess: () => { toast.success('Pedido atualizado'); queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -216,13 +216,13 @@ export function useBlingProdutoMutations() {
   const queryClient = useQueryClient();
 
   const criarProduto = useMutation({
-    mutationFn: (data: any) => blingAction('criar_produto', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_produto', { data }),
     onSuccess: () => { toast.success('Produto criado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-produtos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const atualizarProduto = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => blingAction('atualizar_produto', { id, data }),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('atualizar_produto', { id, data }),
     onSuccess: () => { toast.success('Produto atualizado'); queryClient.invalidateQueries({ queryKey: ['bling-produtos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -249,13 +249,13 @@ export function useBlingVariacoesMutations() {
   const queryClient = useQueryClient();
 
   const criarVariacoes = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => blingAction('criar_variacoes', { id, data }),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('criar_variacoes', { id, data }),
     onSuccess: () => { toast.success('Variações criadas'); queryClient.invalidateQueries({ queryKey: ['bling-variacoes'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const gerarCombinacoes = useMutation({
-    mutationFn: (data: any) => blingAction('gerar_combinacoes', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('gerar_combinacoes', { data }),
     onSuccess: () => toast.success('Combinações geradas'),
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -284,13 +284,13 @@ export function useBlingEstoqueMutations() {
   const queryClient = useQueryClient();
 
   const lancarEstoque = useMutation({
-    mutationFn: (data: any) => blingAction('lancar_estoque', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('lancar_estoque', { data }),
     onSuccess: () => { toast.success('Movimentação de estoque lançada'); queryClient.invalidateQueries({ queryKey: ['bling-estoque'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const criarDeposito = useMutation({
-    mutationFn: (data: any) => blingAction('criar_deposito', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_deposito', { data }),
     onSuccess: () => { toast.success('Depósito criado'); queryClient.invalidateQueries({ queryKey: ['bling-depositos'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -312,25 +312,25 @@ export function useBlingFinanceiroMutations() {
   const queryClient = useQueryClient();
 
   const criarContaReceber = useMutation({
-    mutationFn: (data: any) => blingAction('criar_conta_receber', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_conta_receber', { data }),
     onSuccess: () => { toast.success('Conta a receber criada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const criarContaPagar = useMutation({
-    mutationFn: (data: any) => blingAction('criar_conta_pagar', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_conta_pagar', { data }),
     onSuccess: () => { toast.success('Conta a pagar criada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const darBaixaReceber = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => blingAction('baixa_conta_receber', { id, data }),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('baixa_conta_receber', { id, data }),
     onSuccess: () => { toast.success('Baixa registrada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const darBaixaPagar = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => blingAction('baixa_conta_pagar', { id, data }),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('baixa_conta_pagar', { id, data }),
     onSuccess: () => { toast.success('Baixa registrada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -419,7 +419,7 @@ export function useBlingNFeMutations() {
   const queryClient = useQueryClient();
 
   const criarNFe = useMutation({
-    mutationFn: (data: any) => blingAction('criar_nfe', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_nfe', { data }),
     onSuccess: () => { toast.success('NF-e criada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-nfe'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
@@ -500,13 +500,13 @@ export function useBlingLogisticaMutations() {
   const queryClient = useQueryClient();
 
   const criarRemessa = useMutation({
-    mutationFn: (data: any) => blingAction('criar_remessa', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('criar_remessa', { data }),
     onSuccess: () => { toast.success('Remessa criada'); queryClient.invalidateQueries({ queryKey: ['bling-remessas'] }); },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const gerarEtiqueta = useMutation({
-    mutationFn: (data: any) => blingAction('gerar_etiqueta', { data }),
+    mutationFn: (data: Record<string, unknown>) => blingAction('gerar_etiqueta', { data }),
     onSuccess: () => toast.success('Etiqueta gerada'),
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });

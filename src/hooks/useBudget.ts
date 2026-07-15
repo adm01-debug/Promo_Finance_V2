@@ -30,7 +30,7 @@ export function useBudgets(period?: string) {
       if (period) {
         query = query.eq('period', period);
       }
-      const { data, error } = await query as { data: Budget[] | null, error: any };
+      const { data, error } = await query as { data: Budget[] | null, error: unknown };
       if (error) throw error;
       return data || [];
     },
@@ -51,7 +51,7 @@ export function useBudgetsWithSpent(period: string, companyId?: string) {
         query = query.eq('company_id', companyId);
       }
       
-      const { data: budgets, error: budgetError } = await query as { data: Budget[] | null, error: any };
+      const { data: budgets, error: budgetError } = await query as { data: Budget[] | null, error: unknown };
       
       if (budgetError) throw budgetError;
       if (!budgets) return [];
@@ -68,14 +68,15 @@ export function useBudgetsWithSpent(period: string, companyId?: string) {
         spentQuery = spentQuery.eq('empresa_id', companyId);
       }
 
-      const { data: spentData, error: spentError } = await spentQuery as { data: any[] | null, error: any };
+      const { data: spentData, error: spentError } = await spentQuery as { data: Array<Record<string, unknown>> | null, error: unknown };
 
       if (spentError) throw spentError;
 
       // Group spent data by category
       const spentByCategory: Record<string, number> = {};
-      spentData?.forEach((item: any) => {
-        const catName = item.categoria?.nome || 'Sem Categoria';
+      spentData?.forEach((item) => {
+        const categoria = item.categoria as { nome?: string } | null | undefined;
+        const catName = categoria?.nome || 'Sem Categoria';
         spentByCategory[catName] = (spentByCategory[catName] || 0) + Number(item.valor_pago);
       });
 

@@ -145,7 +145,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     toast.info('Preferências restauradas para o padrão.');
   };
 
-  const handleLoadPreset = (filters: any) => {
+  const handleLoadPreset = (filters: Record<string, any>) => {
     if (filters.modo) setModo(filters.modo);
     if (filters.fonte) setFonte(filters.fonte);
     if (filters.mes !== undefined) setMes(filters.mes);
@@ -926,13 +926,13 @@ function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tipoBp }: 
     const dataRefFim = new Date(ano, mes + 1, 0);
     
     const todasPartidas: any[] = [];
-    lancs.forEach((l: any) => {
+    lancs.forEach((l: Record<string, any>) => {
       const dataL = new Date(l.data_lancamento + 'T00:00:00');
       // Filtro de data: se for BP (saldo acumulado), pega tudo até o fim do mês. Se for DRE, pega só o mês.
       const dataOk = tipoBp ? dataL <= dataRefFim : (dataL >= dataRefInicio && dataL <= dataRefFim);
       
       if (dataOk && l.partidas) {
-        l.partidas.forEach((p: any) => {
+        l.partidas.forEach((p: Record<string, any>) => {
           todasPartidas.push({
             ...p,
             data_lancamento: l.data_lancamento,
