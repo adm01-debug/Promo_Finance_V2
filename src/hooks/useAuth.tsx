@@ -124,21 +124,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     try {
-      // TODO(types): regenerate supabase types so user_empresas is typed.
-      const { data, error } = await (supabase as unknown as {
-        from: (t: string) => {
-          select: (c: string) => {
-            eq: (k: string, v: unknown) => {
-              eq: (k: string, v: unknown) => {
-                eq: (k: string, v: unknown) => Promise<{
-                  data: Array<{ role: string | null }> | null;
-                  error: { message?: string } | null;
-                }>;
-              };
-            };
-          };
-        };
-      }).from('user_empresas')
+      const { data, error } = await supabase
+        .from('user_empresas')
         .select('role')
         .eq('user_id', userId)
         .eq('empresa_id', empresaId)
