@@ -82,8 +82,8 @@ export default function HistoricoNotificacoes() {
     queryKey,
     enabled: !!user,
     queryFn: async (): Promise<NotificationRow[]> => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let q = (supabase.from("notification_history" as any) as any)
+      let q = supabaseDyn
+        .from<NotificationRow>("notification_history")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(200);
