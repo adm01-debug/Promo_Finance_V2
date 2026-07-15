@@ -8,6 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useFilaCobrancas, useExecucoesCobranca, useProcessarRegua, useProcessarFila } from '@/hooks/useReguaCobranca';
 import { useMetricasCobranca } from '@/hooks/useViews';
 import { formatCurrency, formatDate } from '@/lib/formatters';
+import type { Tables } from '@/integrations/supabase/types';
+
+type FilaRow = Tables<'fila_cobrancas'> & { cliente_nome?: string | null };
+type ExecucaoRow = Tables<'execucoes_cobranca'> & { cliente_nome?: string | null; provider?: string | null };
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   pendente: { icon: Clock, color: 'text-warning', label: 'Pendente' },
