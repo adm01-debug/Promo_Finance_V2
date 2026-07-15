@@ -204,15 +204,15 @@ export function useContasBancarias(empresaId?: string) {
       if (!response.ok) throw new Error('Erro ao buscar contas bancárias');
       const data = await response.json();
       
-      const { data: rules } = await (supabase
-        .from('regras_roteamento_financeiro')
+      const { data: rules } = await supabaseDyn
+        .from<RegraRoteamento>('regras_roteamento_financeiro')
         .select('*')
-        .eq('ativo', true) as any);
+        .eq('ativo', true);
 
-      return (data || []).map((conta: any) => ({
+      return ((data || []) as ContaBancaria[]).map((conta) => ({
         ...conta,
-        regras: rules?.filter((r: any) => r.conta_bancaria_id === conta.id) || []
-      })) as any[];
+        regras: (rules || []).filter((r) => r.conta_bancaria_id === conta.id),
+      })) as ContaBancariaComRegras[];
     },
     staleTime: STALE_TIMES.config,
   });
