@@ -581,7 +581,8 @@ export function useDashboardKPIs(empresaId?: string) {
         .eq('resolvido', false)
         .eq('empresa_id', empresaId ?? '');
 
-      const [boletos, divergencias] = await Promise.all([boletosPromise, divergenciasPromise]);
+      const boletos = await boletosPromise;
+      const divergencias = await divergenciasPromise;
 
       return {
         boletosAbertos: boletos.count || 0,
