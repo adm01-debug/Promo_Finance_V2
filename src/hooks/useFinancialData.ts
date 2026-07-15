@@ -254,19 +254,19 @@ export function useContasPagar(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-pagar', empresaId],
     queryFn: async () => {
-      let query = supabase
+      let query = supabaseDyn
         .from('vw_contas_pagar_painel')
-        .select('*')
+        .select(sel('*'))
         .order('data_vencimento', { ascending: true })
         .limit(1000);
-      
+
       if (empresaId && empresaId !== 'all') {
         query = query.eq('empresa_id', empresaId);
       }
 
-      const { data, error } = await (query as any);
+      const { data, error } = await query;
       if (error) throw error;
-      return (data || []) as any[];
+      return data ?? [];
     },
     staleTime: STALE_TIMES.financial,
   });
