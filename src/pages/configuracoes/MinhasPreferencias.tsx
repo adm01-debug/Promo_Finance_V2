@@ -46,7 +46,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { supabase } from '@/integrations/supabase/client';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
