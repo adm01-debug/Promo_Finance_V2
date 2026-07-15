@@ -40,6 +40,7 @@ const consoleTracker: ErrorTracker = {
     logFn(`[ErrorTracker] ${level.toUpperCase()}: ${message}`);
   },
   setUser: (user) => {
+    if (!import.meta.env.DEV) return;
     if (user) {
       console.info('[ErrorTracker] User set:', user.id);
     } else {
@@ -47,6 +48,7 @@ const consoleTracker: ErrorTracker = {
     }
   },
   addBreadcrumb: (breadcrumb) => {
+    if (!import.meta.env.DEV) return;
     console.debug('[ErrorTracker] Breadcrumb:', breadcrumb.category, '-', breadcrumb.message);
   },
 };
@@ -126,5 +128,5 @@ export function reportErrorToTracker(error: Error, componentStack?: string) {
 export function initSentry(dsn: string, environment: string = 'production') {
   // This would be called when Sentry is set up
   // The actual Sentry initialization script would need to be added to index.html
-  console.info('[ErrorTracker] Ready for Sentry initialization with DSN');
+  if (import.meta.env.DEV) console.info('[ErrorTracker] Ready for Sentry initialization with DSN');
 }

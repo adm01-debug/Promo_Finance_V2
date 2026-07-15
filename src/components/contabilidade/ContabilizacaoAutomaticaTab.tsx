@@ -17,6 +17,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from 'sonner';
@@ -65,6 +66,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const [editingRegra, setEditingRegra] = useState<Regra | null>(null);
   const [originalRegra, setOriginalRegra] = useState<Regra | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [confirmDeleteRegraId, setConfirmDeleteRegraId] = useState<string | null>(null);
   
   const [simulating, setSimulating] = useState(false);
   const [simForm, setSimForm] = useState({
@@ -943,12 +945,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8 text-destructive"
-                                onClick={() => {
-                                  // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
-                                  if (window.confirm('Deseja remover esta regra?')) {
-                                    deleteRegra.mutate(r.id);
-                                  }
-                                }}
+                                onClick={() => setConfirmDeleteRegraId(r.id)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -1022,6 +1019,18 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
           )}
         </CardContent>
       </Card>
+      <ConfirmDialog
+        open={!!confirmDeleteRegraId}
+        onOpenChange={(o) => !o && setConfirmDeleteRegraId(null)}
+        title="Remover regra"
+        description="Deseja remover esta regra de contabilização? Esta ação não pode ser desfeita."
+        confirmText="Remover"
+        variant="danger"
+        onConfirm={() => {
+          if (confirmDeleteRegraId) deleteRegra.mutate(confirmDeleteRegraId);
+          setConfirmDeleteRegraId(null);
+        }}
+      />
     </motion.div>
   );
 }

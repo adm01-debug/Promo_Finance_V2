@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { DollarSign, Tag, Receipt, CreditCard, RefreshCw, CheckCircle2, RotateCcw, Trash2, Loader2, MoreHorizontal } from 'lucide-react';
 import {
@@ -38,6 +39,8 @@ export function BlingFinanceiroPanel() {
   const borderos = borderosData?.data || [];
 
   const [baixaForm, setBaixaForm] = useState({ valorRecebido: '', data: todayISOLocal() });
+  const [confirmEstorno, setConfirmEstorno] = useState<{ id: string; tipo: 'receber' | 'pagar' } | null>(null);
+  const [confirmExclusao, setConfirmExclusao] = useState<{ id: string; tipo: 'receber' | 'pagar' } | null>(null);
 
   return (
     <div className="space-y-4">
@@ -114,28 +117,12 @@ export function BlingFinanceiroPanel() {
                                     </DropdownMenuItem>
                                   )}
                                   {c.situacao === 2 && (
-                                    <DropdownMenuItem onClick={() => {
-                                      // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
-                                      if (!window.confirm('Estornar a última baixa?')) return;
-                                      if (tipo === 'receber') {
-                                        estornarBaixaReceber.mutate({ id: String(c.id), baixaId: 'last' });
-                                      } else {
-                                        estornarBaixaPagar.mutate({ id: String(c.id), baixaId: 'last' });
-                                      }
-                                    }}>
+                                    <DropdownMenuItem onClick={() => setConfirmEstorno({ id: String(c.id), tipo })}>
                                       <RotateCcw className="h-4 w-4 mr-2" /> Estornar Baixa
                                     </DropdownMenuItem>
                                   )}
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="text-destructive" onClick={() => {
-                                    // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
-                                    if (!window.confirm('Excluir esta conta?')) return;
-                                    if (tipo === 'receber') {
-                                      excluirContaReceber.mutate(String(c.id));
-                                    } else {
-                                      excluirContaPagar.mutate(String(c.id));
-                                    }
-                                  }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
+                                  <DropdownMenuItem className="text-destructive" onClick={() => setConfirmExclusao({ id: String(c.id), tipo })}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </TableCell>
@@ -283,6 +270,35 @@ export function BlingFinanceiroPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmEstorno}
+        onOpenChange={(o) => !o && setConfirmEstorno(null)}
+        title="Estornar baixa"
+        description="Deseja estornar a última baixa desta conta?"
+        confirmText="Estornar"
+        variant="warning"
+        onConfirm={() => {
+          if (!confirmEstorno) return;
+          const mut = confirmEstorno.tipo === 'receber' ? estornarBaixaReceber : estornarBaixaPagar;
+          mut.mutate({ id: confirmEstorno.id, baixaId: 'last' });
+          setConfirmEstorno(null);
+        }}
+      />
+      <ConfirmDialog
+        open={!!confirmExclusao}
+        onOpenChange={(o) => !o && setConfirmExclusao(null)}
+        title="Excluir conta"
+        description="Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        variant="danger"
+        onConfirm={() => {
+          if (!confirmExclusao) return;
+          const mut = confirmExclusao.tipo === 'receber' ? excluirContaReceber : excluirContaPagar;
+          mut.mutate(confirmExclusao.id);
+          setConfirmExclusao(null);
+        }}
+      />
     </div>
   );
 }
