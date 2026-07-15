@@ -1,11 +1,12 @@
 // @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { STALE_TIMES } from '@/lib/queryClient';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
-import type { Tables, Database } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;
 export type CentroCusto = Tables<'centros_custo'>;
@@ -15,6 +16,15 @@ export type Fornecedor = Tables<'fornecedores'>;
 export type ContaPagar = Tables<'contas_pagar'>;
 export type ContaReceber = Tables<'contas_receber'>;
 export type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
+
+// Helper to keep select strings from being parsed at the type level (perf).
+const sel = (s: string): string => s;
+
+type RegraRoteamento = Tables<'regras_roteamento_financeiro'>;
+type ContaBancariaComRegras = ContaBancaria & {
+  empresas?: { razao_social: string | null; nome_fantasia: string | null } | null;
+  regras: RegraRoteamento[];
+};
 
 // Type for external data coming from the edge function proxy
 export interface ExternalCliente {
@@ -195,15 +205,15 @@ export function useContasBancarias(empresaId?: string) {
       if (!response.ok) throw new Error('Erro ao buscar contas bancárias');
       const data = await response.json();
       
-      const { data: rules } = await (supabase
-        .from('regras_roteamento_financeiro')
+      const { data: rules } = await supabaseDyn
+        .from<RegraRoteamento>('regras_roteamento_financeiro')
         .select('*')
-        .eq('ativo', true) as any);
+        .eq('ativo', true);
 
-      return (data || []).map((conta: any) => ({
+      return ((data || []) as ContaBancaria[]).map((conta) => ({
         ...conta,
-        regras: rules?.filter((r: any) => r.conta_bancaria_id === conta.id) || []
-      })) as any[];
+        regras: (rules || []).filter((r) => r.conta_bancaria_id === conta.id),
+      })) as ContaBancariaComRegras[];
     },
     staleTime: STALE_TIMES.config,
   });
@@ -245,19 +255,19 @@ export function useContasPagar(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-pagar', empresaId],
     queryFn: async () => {
-      let query = supabase
+      let query = supabaseDyn
         .from('vw_contas_pagar_painel')
-        .select('*')
+        .select(sel('*'))
         .order('data_vencimento', { ascending: true })
         .limit(1000);
-      
+
       if (empresaId && empresaId !== 'all') {
         query = query.eq('empresa_id', empresaId);
       }
 
-      const { data, error } = await (query as any);
+      const { data, error } = await query;
       if (error) throw error;
-      return (data || []) as any[];
+      return (data ?? []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
@@ -560,19 +570,17 @@ export function useDashboardKPIs(empresaId?: string) {
   return useQuery({
     queryKey: ['dashboard-kpis', empresaId],
     queryFn: async () => {
-      const boletosPromise = supabase
+      const boletos = await supabaseDyn
         .from('boletos')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'PENDING')
         .eq('empresa_id', empresaId ?? '');
 
-      const divergenciasPromise = supabase
+      const divergencias = await supabaseDyn
         .from('divergencias_conciliacao')
         .select('*', { count: 'exact', head: true })
         .eq('resolvido', false)
         .eq('empresa_id', empresaId ?? '');
-
-      const [boletos, divergencias] = await Promise.all([boletosPromise, divergenciasPromise]);
 
       return {
         boletosAbertos: boletos.count || 0,
