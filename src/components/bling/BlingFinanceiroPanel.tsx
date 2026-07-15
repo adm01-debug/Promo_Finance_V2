@@ -117,28 +117,12 @@ export function BlingFinanceiroPanel() {
                                     </DropdownMenuItem>
                                   )}
                                   {c.situacao === 2 && (
-                                    <DropdownMenuItem onClick={() => {
-                                      // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
-                                      if (!window.confirm('Estornar a última baixa?')) return;
-                                      if (tipo === 'receber') {
-                                        estornarBaixaReceber.mutate({ id: String(c.id), baixaId: 'last' });
-                                      } else {
-                                        estornarBaixaPagar.mutate({ id: String(c.id), baixaId: 'last' });
-                                      }
-                                    }}>
+                                    <DropdownMenuItem onClick={() => setConfirmEstorno({ id: String(c.id), tipo })}>
                                       <RotateCcw className="h-4 w-4 mr-2" /> Estornar Baixa
                                     </DropdownMenuItem>
                                   )}
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="text-destructive" onClick={() => {
-                                    // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
-                                    if (!window.confirm('Excluir esta conta?')) return;
-                                    if (tipo === 'receber') {
-                                      excluirContaReceber.mutate(String(c.id));
-                                    } else {
-                                      excluirContaPagar.mutate(String(c.id));
-                                    }
-                                  }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
+                                  <DropdownMenuItem className="text-destructive" onClick={() => setConfirmExclusao({ id: String(c.id), tipo })}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </TableCell>
