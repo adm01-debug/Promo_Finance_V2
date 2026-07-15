@@ -23,7 +23,7 @@
 ### Fase 1 — Higiene de código
 
 - [ ] **#1** Erradicar `: any` (104 → 0). Substituir por tipos explícitos, `unknown` + narrowing, generics ou tipos do `database.types`.
-- [ ] **#2** Envolver `console.log` remanescentes em `import.meta.env.DEV` ou migrar para `src/lib/logger.ts`.
+- [x] **#2** Envolver `console.log` remanescentes em `import.meta.env.DEV` ou migrar para `src/lib/logger.ts`. — `error-tracking.ts` fallback tracker + `initSentry` agora com guard DEV. Restantes são JSDoc/já guardados.
 - [ ] **#3** Resolver os 5 marcadores TODO/FIXME.
 - [ ] **#4** Modularizar 19 arquivos > 700 linhas. Ordem: `AnomaliasDetectadasPanel` (1210), `Asaas.tsx` (1190), `DreBalancoTab` (1034), `ContabilizacaoAutomaticaTab` (1027), `SpedEcfWizard` (950), `ux-validator` (935), `FiltrosSalvos` (920), demais.
 
