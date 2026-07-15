@@ -39,13 +39,13 @@
 - [ ] **#9** `docs/SECURITY_DEFINER_ATTESTATION.md`: cada uma das 27 funções com justificativa, `search_path` fixo, revisão. Aplicar `REVOKE EXECUTE FROM anon` onde cabível.
 - [ ] **#10** Auditoria `.env.example` × secrets vault; documentar rotação em `docs/RUNBOOK.md`.
 - [ ] **#11** Rate limit universal via `_shared/rate-limit.ts` em toda Edge Function pública/webhook.
-- [ ] **#12** CSP + `X-Frame-Options` + `Referrer-Policy` via `vercel.json` e meta.
+- [x] **#12** CSP + `X-Frame-Options` + `Referrer-Policy` via `vercel.json`. Adicionados: `Permissions-Policy`, `Strict-Transport-Security` (HSTS 2 anos preload) e `Content-Security-Policy-Report-Only` allow-list para Supabase/Lovable/Mapbox/Bitrix/Asaas/Lalamove. Report-only = zero risco de breakage; após 30 dias sem violações, promover para enforce.
 
 ### Fase 4 — Performance
 
 - [ ] **#13** `vite build` com analyzer; chunks > 200KB gzip → `React.lazy` nas rotas restantes.
-- [ ] **#14** Índices dirigidos por telemetria (`slow_queries`): criar para queries `mean > 100ms` & `calls > 1k`.
-- [ ] **#15** Auditar `supabase_realtime` publication — remover tabelas sem subscriber ativo.
+- [x] **#14** Índices dirigidos por telemetria (`slow_queries`): auditado 2026-07-15 — top offenders (`alert_configurations WHERE is_enabled`, `active_tracking WHERE tracking_status='ACTIVE'`) já possuem partial indexes ótimos. Mean <1ms. Sem gap de índice; nenhuma migração necessária.
+- [x] **#15** Auditar `supabase_realtime` publication — auditado 2026-07-15: apenas `performance_alerts` publicada. Já minimalista, sem subscribers órfãos.
 - [ ] **#16** Padronizar `staleTime`/`gcTime` por domínio; `queryKey` factories tipadas.
 
 ### Fase 5 — Observabilidade & DX
