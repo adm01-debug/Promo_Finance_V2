@@ -24,8 +24,7 @@ import {
   CheckSquare,
   Clock
 } from 'lucide-react';
-import { supabase as supabaseTyped } from '@/integrations/supabase/client';
-const supabase = supabaseTyped as any;
+import { supabaseDyn as supabase } from '@/lib/supabase-dynamic';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -110,16 +109,22 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     enabled: !!empresaId
   });
 
-  const { data: oportunidades = [] } = useQuery({
+  interface OportunidadeElisao {
+    tipo_oportunidade?: string;
+    descricao?: string;
+    valor_estimado?: number;
+    ncm_relacionado?: string;
+  }
+  const { data: oportunidades = [] } = useQuery<OportunidadeElisao[]>({
     queryKey: ['elisao_oportunidades_reais', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('calcular_potencial_elisao', {
-        p_empresa_id: empresaId
+      const { data, error } = await supabase.rpc<OportunidadeElisao[]>('calcular_potencial_elisao', {
+        p_empresa_id: empresaId,
       });
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
-    enabled: !!empresaId
+    enabled: !!empresaId,
   });
 
   const { data: gaps = [] } = useQuery({
@@ -136,7 +141,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     enabled: !!empresaId
   });
 
-  const economiaTotal = oportunidades.reduce((acc: number, curr: any) => acc + (curr.valor_estimado || 0), 0);
+  const economiaTotal = oportunidades.reduce((acc, curr) => acc + (curr.valor_estimado || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -331,7 +336,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                 <CardDescription>Consolidado por Categoria</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {oportunidades.map((op: any, i: number) => (
+                {oportunidades.map((op, i) => (
                   <div key={i} className="flex flex-col p-3 rounded-lg border bg-muted/20">
                     <div className="flex justify-between items-start mb-1">
                       <span className="text-xs font-bold">{op.tipo_oportunidade}</span>

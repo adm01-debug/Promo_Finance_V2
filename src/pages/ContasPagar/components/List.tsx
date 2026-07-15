@@ -1,5 +1,5 @@
 import React from 'react';
-import { List as FixedSizeList } from 'react-window';
+import { List as FixedSizeList, type RowComponentProps } from 'react-window';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -68,7 +68,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
     );
   }
 
-  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+  const Row = ({ index, style }: RowComponentProps) => {
     const conta = contas[index];
     const approvalStatus = getApprovalStatus(conta);
     const historico = historicoAprovacaoPorConta.get(conta.id) || [];
@@ -130,7 +130,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
         rowHeight={100} 
         style={{ height: 600, width: '100%' }}
         className="min-w-[1200px] custom-scrollbar"
-        rowComponent={Row as any}
+        rowComponent={Row}
         rowProps={{}}
       />
 
