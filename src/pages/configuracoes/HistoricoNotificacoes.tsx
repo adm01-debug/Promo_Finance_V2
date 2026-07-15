@@ -117,9 +117,8 @@ export default function HistoricoNotificacoes() {
 
   const markRead = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("notification_history" as any)
+      const { error } = await supabaseDyn
+        .from("notification_history")
         .update({ read_at: new Date().toISOString() })
         .eq("id", id);
       if (error) throw error;
