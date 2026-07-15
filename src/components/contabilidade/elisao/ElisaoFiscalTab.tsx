@@ -109,16 +109,22 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     enabled: !!empresaId
   });
 
-  const { data: oportunidades = [] } = useQuery({
+  interface OportunidadeElisao {
+    tipo_oportunidade?: string;
+    descricao?: string;
+    valor_estimado?: number;
+    ncm_relacionado?: string;
+  }
+  const { data: oportunidades = [] } = useQuery<OportunidadeElisao[]>({
     queryKey: ['elisao_oportunidades_reais', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc<Array<{ valor_estimado?: number }>>('calcular_potencial_elisao', {
+      const { data, error } = await supabase.rpc<OportunidadeElisao[]>('calcular_potencial_elisao', {
         p_empresa_id: empresaId,
       });
       if (error) throw error;
       return data ?? [];
     },
-    enabled: !!empresaId
+    enabled: !!empresaId,
   });
 
   const { data: gaps = [] } = useQuery({
