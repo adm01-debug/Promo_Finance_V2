@@ -138,9 +138,8 @@ export default function MinhasPreferencias() {
 
   const remove = useMutation({
     mutationFn: async (row: PreferenciaRow) => {
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('saved_filters' as any)
+      const { error } = await supabaseDyn
+        .from('saved_filters')
         .delete()
         .eq('id', row.id);
       if (error) throw new Error(error.message);
