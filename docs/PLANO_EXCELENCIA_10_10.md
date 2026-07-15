@@ -45,7 +45,7 @@
 
 - [ ] **#13** `vite build` com analyzer; chunks > 200KB gzip → `React.lazy` nas rotas restantes.
 - [x] **#14** Índices dirigidos por telemetria (`slow_queries`): auditado 2026-07-15 — top offenders (`alert_configurations WHERE is_enabled`, `active_tracking WHERE tracking_status='ACTIVE'`) já possuem partial indexes ótimos. Mean <1ms. Sem gap de índice; nenhuma migração necessária.
-- [ ] **#15** Auditar `supabase_realtime` publication — remover tabelas sem subscriber ativo.
+- [x] **#15** Auditar `supabase_realtime` publication — auditado 2026-07-15: apenas `performance_alerts` publicada. Já minimalista, sem subscribers órfãos.
 - [ ] **#16** Padronizar `staleTime`/`gcTime` por domínio; `queryKey` factories tipadas.
 
 ### Fase 5 — Observabilidade & DX
