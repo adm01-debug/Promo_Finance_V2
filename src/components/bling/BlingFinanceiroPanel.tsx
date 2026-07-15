@@ -270,6 +270,35 @@ export function BlingFinanceiroPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmEstorno}
+        onOpenChange={(o) => !o && setConfirmEstorno(null)}
+        title="Estornar baixa"
+        description="Deseja estornar a última baixa desta conta?"
+        confirmText="Estornar"
+        variant="warning"
+        onConfirm={() => {
+          if (!confirmEstorno) return;
+          const mut = confirmEstorno.tipo === 'receber' ? estornarBaixaReceber : estornarBaixaPagar;
+          mut.mutate({ id: confirmEstorno.id, baixaId: 'last' });
+          setConfirmEstorno(null);
+        }}
+      />
+      <ConfirmDialog
+        open={!!confirmExclusao}
+        onOpenChange={(o) => !o && setConfirmExclusao(null)}
+        title="Excluir conta"
+        description="Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        variant="danger"
+        onConfirm={() => {
+          if (!confirmExclusao) return;
+          const mut = confirmExclusao.tipo === 'receber' ? excluirContaReceber : excluirContaPagar;
+          mut.mutate(confirmExclusao.id);
+          setConfirmExclusao(null);
+        }}
+      />
     </div>
   );
 }
