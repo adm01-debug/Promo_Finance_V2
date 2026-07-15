@@ -39,7 +39,7 @@
 - [ ] **#9** `docs/SECURITY_DEFINER_ATTESTATION.md`: cada uma das 27 funções com justificativa, `search_path` fixo, revisão. Aplicar `REVOKE EXECUTE FROM anon` onde cabível.
 - [ ] **#10** Auditoria `.env.example` × secrets vault; documentar rotação em `docs/RUNBOOK.md`.
 - [ ] **#11** Rate limit universal via `_shared/rate-limit.ts` em toda Edge Function pública/webhook.
-- [ ] **#12** CSP + `X-Frame-Options` + `Referrer-Policy` via `vercel.json` e meta.
+- [x] **#12** CSP + `X-Frame-Options` + `Referrer-Policy` via `vercel.json`. Adicionados: `Permissions-Policy`, `Strict-Transport-Security` (HSTS 2 anos preload) e `Content-Security-Policy-Report-Only` allow-list para Supabase/Lovable/Mapbox/Bitrix/Asaas/Lalamove. Report-only = zero risco de breakage; após 30 dias sem violações, promover para enforce.
 
 ### Fase 4 — Performance
 
