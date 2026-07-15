@@ -162,8 +162,8 @@ export default function Asaas() {
       } else {
         toast.error('Comprovante ainda não disponível para esta cobrança');
       }
-    } catch (e: any) {
-      toast.error('Erro ao buscar comprovante: ' + e.message);
+    } catch (e: Record<string, any>) {
+      toast.error('Erro ao buscar comprovante: ' + (e instanceof Error ? e.message : String(e)));
     }
   };
 
@@ -329,7 +329,7 @@ export default function Asaas() {
                       labelFormatter={(label) => `Status: ${statusConfig[label]?.label || label}`}
                     />
                     <Bar dataKey="total_value" radius={[4, 4, 0, 0]} barSize={40}>
-                      {(detailStats || []).map((entry: any, index: number) => (
+                      {(detailStats || []).map((entry: Record<string, any>, index: number) => (
                         <Cell key={`cell-${index}`} fill={
                           entry.status === 'RECEIVED' || entry.status === 'CONFIRMED' ? '#10b981' : 
                           entry.status === 'OVERDUE' ? '#ef4444' : 
@@ -514,7 +514,7 @@ export default function Asaas() {
                           <TableRow><TableCell colSpan={5} className="text-center py-4">Carregando...</TableCell></TableRow>
                         ) : syncQueue.length === 0 ? (
                           <TableRow><TableCell colSpan={5} className="text-center py-4 text-muted-foreground">Fila vazia</TableCell></TableRow>
-                        ) : syncQueue.slice(0, 5).map((item: any) => (
+                        ) : syncQueue.slice(0, 5).map((item: Record<string, any>) => (
                           <TableRow key={item.id}>
                             <TableCell className="font-mono text-xs truncate max-w-[80px]">{item.payment_id.substring(0,8)}</TableCell>
                             <TableCell>{item.attempts}/{item.max_attempts}</TableCell>
@@ -700,8 +700,8 @@ export default function Asaas() {
                             const { data, error } = await supabase.functions.invoke('gerar-resumo-financeiro-diario');
                             if (error) throw error;
                             toast.success('Relatório gerado e enviado com sucesso');
-                          } catch (e: any) {
-                            toast.error('Erro ao gerar relatório: ' + e.message);
+                          } catch (e: Record<string, any>) {
+                            toast.error('Erro ao gerar relatório: ' + (e instanceof Error ? e.message : String(e)));
                           }
                         }}
                       >
@@ -1035,7 +1035,7 @@ export default function Asaas() {
           <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
             {auditTrail
               .filter(a => a.payment_id === selectedPaymentAudit)
-              .map((log: any) => (
+              .map((log: Record<string, any>) => (
                 <div key={log.id} className="border-b pb-2 last:border-0">
                   <div className="flex justify-between items-start mb-1">
                     <Badge variant="outline" className="text-[10px] uppercase">
@@ -1171,7 +1171,7 @@ export default function Asaas() {
         title="Histórico de Falhas (Fila)"
         message={
           <div className="space-y-4 max-h-[350px] overflow-y-auto">
-            {selectedQueueHistory?.map((log: any, i: number) => (
+            {selectedQueueHistory?.map((log: Record<string, any>, i: number) => (
               <div key={i} className="p-3 bg-muted/20 rounded-md border text-xs">
                 <div className="flex justify-between font-bold mb-1">
                   <span>Tentativa #{log.attempt}</span>

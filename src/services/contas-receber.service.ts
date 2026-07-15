@@ -287,9 +287,9 @@ export const contasReceberService = {
     
     return {
       total: contas.reduce((sum, c: any) => sum + (c.valor || 0), 0),
-      pendente: contas.filter((c: any) => c.status === 'pendente').reduce((sum, c: any) => sum + (c.valor || 0), 0),
-      recebido: contas.filter((c: any) => c.status === 'pago').reduce((sum, c: any) => sum + (c.valor || 0), 0),
-      atrasado: contas.filter((c: any) => c.status === 'vencido').reduce((sum, c: any) => sum + (c.valor || 0), 0),
+      pendente: contas.filter((c: Record<string, unknown>) => c.status === 'pendente').reduce((sum, c: any) => sum + (c.valor || 0), 0),
+      recebido: contas.filter((c: Record<string, unknown>) => c.status === 'pago').reduce((sum, c: any) => sum + (c.valor || 0), 0),
+      atrasado: contas.filter((c: Record<string, unknown>) => c.status === 'vencido').reduce((sum, c: any) => sum + (c.valor || 0), 0),
       count: contas.length,
     };
   },
@@ -298,7 +298,7 @@ export const contasReceberService = {
     const contas = await this.getAll(filters);
     
     const headers = ['ID', 'Descrição', 'Valor', 'Vencimento', 'Status', 'Cliente', 'Categoria', 'Data Recebimento'];
-    const rows = contas.map((c: any) => [
+    const rows = contas.map((c: Record<string, unknown>) => [
       c.id,
       c.descricao,
       c.valor?.toString() || '',

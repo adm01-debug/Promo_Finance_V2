@@ -145,7 +145,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     toast.info('Preferências restauradas para o padrão.');
   };
 
-  const handleLoadPreset = (filters: any) => {
+  const handleLoadPreset = (filters: Record<string, unknown>) => {
     if (filters.modo) setModo(filters.modo);
     if (filters.fonte) setFonte(filters.fonte);
     if (filters.mes !== undefined) setMes(filters.mes);
@@ -242,7 +242,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
 
     cursorY += 28;
 
-    const rows: any[] = dreNovo.linhas.map(l => [
+    const rows: Array<Record<string, unknown>> = dreNovo.linhas.map(l => [
       { content: l.descricao, styles: { paddingLeft: l.nivel * 4, fontStyle: l.nivel === 0 ? 'bold' : 'normal' } },
       { content: formatCurrency(l.valor), styles: { halign: 'right', fontStyle: l.nivel === 0 ? 'bold' : 'normal' } },
       { content: `${l.percentual.toFixed(1)}%`, styles: { halign: 'right', textColor: PDF_BRAND.muted } }
@@ -315,12 +315,12 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     );
     cursorY += 18;
 
-    const rowsAtivo: any[] = balancoNovo.ativo.map(a => [
+    const rowsAtivo: Array<Record<string, unknown>> = balancoNovo.ativo.map(a => [
       { content: a.descricao, styles: { paddingLeft: a.nivel * 3, fontStyle: a.nivel === 0 ? 'bold' : 'normal' } },
       { content: formatCurrency(a.valor), styles: { halign: 'right', fontStyle: a.nivel === 0 ? 'bold' : 'normal' } }
     ]);
 
-    const rowsPassivo: any[] = balancoNovo.passivo.map(p => [
+    const rowsPassivo: Array<Record<string, unknown>> = balancoNovo.passivo.map(p => [
       { content: p.descricao, styles: { paddingLeft: p.nivel * 3, fontStyle: p.nivel === 0 ? 'bold' : 'normal' } },
       { content: formatCurrency(p.valor), styles: { halign: 'right', fontStyle: p.nivel === 0 ? 'bold' : 'normal' } }
     ]);
@@ -925,14 +925,14 @@ function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tipoBp }: 
     const dataRefInicio = new Date(ano, mes, 1);
     const dataRefFim = new Date(ano, mes + 1, 0);
     
-    const todasPartidas: any[] = [];
-    lancs.forEach((l: any) => {
+    const todasPartidas: Array<Record<string, unknown>> = [];
+    lancs.forEach((l: Record<string, unknown>) => {
       const dataL = new Date(l.data_lancamento + 'T00:00:00');
       // Filtro de data: se for BP (saldo acumulado), pega tudo até o fim do mês. Se for DRE, pega só o mês.
       const dataOk = tipoBp ? dataL <= dataRefFim : (dataL >= dataRefInicio && dataL <= dataRefFim);
       
       if (dataOk && l.partidas) {
-        l.partidas.forEach((p: any) => {
+        l.partidas.forEach((p: Record<string, unknown>) => {
           todasPartidas.push({
             ...p,
             data_lancamento: l.data_lancamento,

@@ -179,8 +179,8 @@ export function useBlingNFe() {
       setNotas(allItems);
       setTotalItems(allItems.length);
       return allItems;
-    } catch (err: any) {
-      toast.error(`Erro ao listar NF-e: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao listar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
       return [];
     } finally {
       setLoading(false);
@@ -194,8 +194,8 @@ export function useBlingNFe() {
       const data = await callBlingProxy('criar_nfe', { data: nfeData });
       toast.success('NF-e criada no Bling com sucesso!');
       return data;
-    } catch (err: any) {
-      toast.error(`Erro ao criar NF-e: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao criar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
       throw err;
     } finally {
       setSyncing(false);
@@ -209,8 +209,8 @@ export function useBlingNFe() {
       const data = await callBlingProxy('enviar_nfe_sefaz', { id: nfeId, enviarEmail });
       toast.success('NF-e enviada para SEFAZ via Bling!');
       return data;
-    } catch (err: any) {
-      toast.error(`Erro ao enviar NF-e para SEFAZ: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao enviar NF-e para SEFAZ: ${(err instanceof Error ? err.message : String(err))}`);
       throw err;
     } finally {
       setSyncing(false);
@@ -221,8 +221,8 @@ export function useBlingNFe() {
     try {
       const data = await callBlingProxy('buscar_nfe', { id: nfeId });
       return data?.data ? mapNFeItem(data.data) : null;
-    } catch (err: any) {
-      toast.error(`Erro ao buscar NF-e: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao buscar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
       return null;
     }
   }, []);
@@ -232,8 +232,8 @@ export function useBlingNFe() {
     try {
       await callBlingProxy('cancelar_nfe', { ids });
       toast.success('NF-e cancelada no Bling!');
-    } catch (err: any) {
-      toast.error(`Erro ao cancelar NF-e: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao cancelar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
       throw err;
     } finally {
       setSyncing(false);
@@ -244,8 +244,8 @@ export function useBlingNFe() {
     try {
       await callBlingProxy('lancar_estoque_nfe', { id: nfeId });
       toast.success('Estoque lançado!');
-    } catch (err: any) {
-      toast.error(`Erro ao lançar estoque: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao lançar estoque: ${(err instanceof Error ? err.message : String(err))}`);
     }
   }, []);
 
@@ -253,8 +253,8 @@ export function useBlingNFe() {
     try {
       await callBlingProxy('lancar_contas_nfe', { id: nfeId });
       toast.success('Contas lançadas!');
-    } catch (err: any) {
-      toast.error(`Erro ao lançar contas: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao lançar contas: ${(err instanceof Error ? err.message : String(err))}`);
     }
   }, []);
 
@@ -263,8 +263,8 @@ export function useBlingNFe() {
     try {
       await callBlingProxy('revogar_token');
       toast.success('Token Bling revogado com sucesso.');
-    } catch (err: any) {
-      toast.error(`Erro ao revogar token: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`Erro ao revogar token: ${(err instanceof Error ? err.message : String(err))}`);
     }
   }, []);
 
@@ -273,8 +273,8 @@ export function useBlingNFe() {
     try {
       const data = await callBlingProxy('dados_empresa');
       return { ok: true, empresa: data?.data };
-    } catch (err: any) {
-      return { ok: false, error: err.message };
+    } catch (err: unknown) {
+      return { ok: false, error: (err instanceof Error ? err.message : String(err)) };
     }
   }, []);
 

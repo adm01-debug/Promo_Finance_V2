@@ -46,13 +46,13 @@ export interface AsaasPayment {
   created_at: string;
 }
 
-async function invokeAsaas(action: string, data: any) {
+async function invokeAsaas(action: string, data: Record<string, unknown>) {
   const { data: result, error } = await supabase.functions.invoke('asaas-proxy', {
     body: { action, data },
   });
   if (error) throw new Error(error.message);
   if (result?.errors) {
-    throw new Error(result.errors.map((e: any) => e.description).join(', '));
+    throw new Error(result.errors.map((e: { description: string }) => e.description).join(', '));
   }
   if (result?.error) {
     throw new Error(result.error);
@@ -79,21 +79,21 @@ export function useAsaas(empresaId?: string) {
   });
 
   const criarCliente = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('criar_cliente', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('criar_cliente', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
       toast.success('Cliente criado no ASAAS');
     },
-    onError: (e: any) => toast.error('Erro ao criar cliente: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao criar cliente: ' + e.message),
   });
 
   const editarCliente = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('editar_cliente', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('editar_cliente', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
       toast.success('Cliente atualizado');
     },
-    onError: (e: any) => toast.error('Erro ao editar cliente: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao editar cliente: ' + e.message),
   });
 
   const excluirCliente = useMutation({
@@ -102,7 +102,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
       toast.success('Cliente removido');
     },
-    onError: (e: any) => toast.error('Erro ao excluir cliente: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao excluir cliente: ' + e.message),
   });
 
   const { data: payments = [], isLoading: loadingPayments } = useQuery({
@@ -119,7 +119,8 @@ export function useAsaas(empresaId?: string) {
         .order('created_at', { ascending: false });
       if (error) throw error;
       
-      return (data || []).map((p: any) => ({
+      type PaymentRow = { clientes?: { razao_social?: string; cpf_cnpj?: string } | null } & Record<string, unknown>;
+      return (data || []).map((p: PaymentRow) => ({
         ...p,
         sacado_nome: p.clientes?.razao_social,
         sacado_cpf_cnpj: p.clientes?.cpf_cnpj
@@ -129,12 +130,12 @@ export function useAsaas(empresaId?: string) {
   });
 
   const criarCobranca = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('criar_cobranca', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('criar_cobranca', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Cobrança criada com sucesso!');
     },
-    onError: (e: any) => toast.error('Erro ao criar cobrança: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao criar cobrança: ' + e.message),
   });
 
   const cancelarCobranca = useMutation({
@@ -143,39 +144,39 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Cobrança cancelada');
     },
-    onError: (e: any) => toast.error('Erro ao cancelar: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao cancelar: ' + e.message),
   });
 
   const estornarCobranca = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('estornar_cobranca', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('estornar_cobranca', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Estorno realizado com sucesso');
     },
-    onError: (e: any) => toast.error('Erro ao estornar: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao estornar: ' + e.message),
   });
 
   const segundaViaBoleto = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('segunda_via_boleto', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('segunda_via_boleto', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Segunda via gerada com novo vencimento');
     },
-    onError: (e: any) => toast.error('Erro ao gerar segunda via: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao gerar segunda via: ' + e.message),
   });
 
   const buscarPixQrCode = useMutation({
     mutationFn: (asaasId: string) => invokeAsaas('pix_qrcode', { asaas_id: asaasId }),
-    onError: (e: any) => toast.error('Erro ao buscar QR Code: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao buscar QR Code: ' + e.message),
   });
 
   const criarAssinatura = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('criar_assinatura', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('criar_assinatura', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
       toast.success('Assinatura criada com sucesso');
     },
-    onError: (e: any) => toast.error('Erro ao criar assinatura: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao criar assinatura: ' + e.message),
   });
 
   const cancelarAssinatura = useMutation({
@@ -184,7 +185,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
       toast.success('Assinatura cancelada');
     },
-    onError: (e: any) => toast.error('Erro ao cancelar assinatura: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao cancelar assinatura: ' + e.message),
   });
 
   const consultarSaldo = useMutation({
@@ -192,12 +193,12 @@ export function useAsaas(empresaId?: string) {
   });
 
   const transferirPix = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('transferir_pix', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('transferir_pix', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-transfers'] });
       toast.success('Transferência Pix realizada!');
     },
-    onError: (e: any) => toast.error('Erro na transferência: ' + e.message),
+    onError: (e: Error) => toast.error('Erro na transferência: ' + e.message),
   });
 
   const { data: transfers = [], isLoading: loadingTransfers } = useQuery({
@@ -224,32 +225,32 @@ export function useAsaas(empresaId?: string) {
   });
 
   const consultarExtrato = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('extrato', payload),
-    onError: (e: any) => toast.error('Erro ao consultar extrato: ' + e.message),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('extrato', payload),
+    onError: (e: Error) => toast.error('Erro ao consultar extrato: ' + e.message),
   });
 
   const criarLinkPagamento = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('criar_link_pagamento', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('criar_link_pagamento', payload),
     onSuccess: () => {
       toast.success('Link de pagamento criado!');
     },
-    onError: (e: any) => toast.error('Erro ao criar link: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao criar link: ' + e.message),
   });
 
   const excluirLinkPagamento = useMutation({
     mutationFn: (id: string) => invokeAsaas('excluir_link_pagamento', { id }),
     onSuccess: () => toast.success('Link removido'),
-    onError: (e: any) => toast.error('Erro ao remover link: ' + e.message),
+    onError: (e: Error) => toast.error('Erro ao remover link: ' + e.message),
   });
 
   const simularAntecipacao = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('simular_antecipacao', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('simular_antecipacao', payload),
   });
 
   const solicitarAntecipacao = useMutation({
-    mutationFn: (payload: any) => invokeAsaas('solicitar_antecipacao', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('solicitar_antecipacao', payload),
     onSuccess: () => toast.success('Antecipação solicitada com sucesso'),
-    onError: (e: any) => toast.error('Erro na antecipação: ' + e.message),
+    onError: (e: Error) => toast.error('Erro na antecipação: ' + e.message),
   });
 
   const { data: config, isLoading: loadingConfig } = useQuery({
@@ -296,24 +297,25 @@ export function useAsaas(empresaId?: string) {
   });
 
   const salvarConfig = useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload: Record<string, unknown>) => {
       if (!empresaId) return;
       const { data: current } = await supabase
         .from('asaas_config')
         .select('configuracoes')
         .eq('empresa_id', empresaId)
         .maybeSingle();
-      const mergedConfig = { ...((current?.configuracoes as Record<string, unknown> | null) || {}), ...payload };
-      const { error } = await supabase.from('asaas_config').upsert({
-        empresa_id: empresaId, configuracoes: mergedConfig, updated_at: new Date().toISOString()
-      }, { onConflict: 'empresa_id' });
+      const mergedConfig = { ...((current?.configuracoes as Record<string, unknown> | null) || {}), ...payload } as Record<string, unknown>;
+      const { error } = await supabase.from('asaas_config').upsert(
+        { empresa_id: empresaId, configuracoes: mergedConfig as never, updated_at: new Date().toISOString() },
+        { onConflict: 'empresa_id' }
+      );
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-config'] });
       toast.success('Configurações salvas');
     },
-    onError: (e: any) => toast.error('Erro ao salvar: ' + e.message)
+    onError: (e: Error) => toast.error('Erro ao salvar: ' + e.message)
   });
 
   const { data: suggestions = [] } = useQuery({
@@ -332,7 +334,7 @@ export function useAsaas(empresaId?: string) {
   });
 
   const gerarSugestoes = useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload: { date: string; value: number; transaction_id: string }) => {
       if (!empresaId) throw new Error('Empresa não identificada');
       const { error } = await supabase.rpc('generate_reconciliation_suggestions', {
         p_empresa_id: empresaId,
@@ -402,8 +404,8 @@ export function useAsaas(empresaId?: string) {
     detailStats: [],
     syncQueue: [],
     loadingQueue: false,
-    reprocessarManual: { mutateAsync: async (payload: any) => {}, mutate: (payload: any) => {}, isPending: false },
-    exportarAuditoria: { mutate: (payload?: any) => {}, isPending: false },
+    reprocessarManual: { mutateAsync: async (payload: Record<string, unknown>) => {}, mutate: (payload: Record<string, unknown>) => {}, isPending: false },
+    exportarAuditoria: { mutate: (payload?: Record<string, unknown>) => {}, isPending: false },
     exportarAuditoriaPDF: () => {},
     queueStats: { pendentes: 0, falhas: 0, sucesso: 0, total: 0 },
     simularBackoff: { mutate: () => {}, isPending: false },

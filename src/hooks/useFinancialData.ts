@@ -519,7 +519,7 @@ export function useCreateContaPagar() {
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       sounds.success();
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       logger.error('Error creating conta pagar:', error);
       sounds.error();
     },
@@ -537,7 +537,7 @@ export function useUpdateContaPagar() {
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       sounds.success();
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       logger.error('Error updating conta pagar:', error);
       sounds.error();
     },
@@ -556,7 +556,7 @@ export function useDeleteContaPagar() {
       toast.success('Conta excluída com sucesso');
       sounds.success();
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       logger.error('Error deleting conta pagar:', error);
       toast.error('Erro ao excluir conta');
       sounds.error();
