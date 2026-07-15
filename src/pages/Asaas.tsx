@@ -162,7 +162,7 @@ export default function Asaas() {
       } else {
         toast.error('Comprovante ainda não disponível para esta cobrança');
       }
-    } catch (e: Record<string, any>) {
+    } catch (e: any) {
       toast.error('Erro ao buscar comprovante: ' + (e instanceof Error ? e.message : String(e)));
     }
   };
@@ -700,7 +700,7 @@ export default function Asaas() {
                             const { data, error } = await supabase.functions.invoke('gerar-resumo-financeiro-diario');
                             if (error) throw error;
                             toast.success('Relatório gerado e enviado com sucesso');
-                          } catch (e: Record<string, any>) {
+                          } catch (e: any) {
                             toast.error('Erro ao gerar relatório: ' + (e instanceof Error ? e.message : String(e)));
                           }
                         }}
