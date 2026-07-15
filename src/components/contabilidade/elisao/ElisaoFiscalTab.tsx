@@ -24,8 +24,7 @@ import {
   CheckSquare,
   Clock
 } from 'lucide-react';
-import { supabase as supabaseTyped } from '@/integrations/supabase/client';
-const supabase = supabaseTyped as any;
+import { supabaseDyn as supabase } from '@/lib/supabase-dynamic';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
