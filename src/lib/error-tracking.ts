@@ -40,6 +40,7 @@ const consoleTracker: ErrorTracker = {
     logFn(`[ErrorTracker] ${level.toUpperCase()}: ${message}`);
   },
   setUser: (user) => {
+    if (!import.meta.env.DEV) return;
     if (user) {
       console.info('[ErrorTracker] User set:', user.id);
     } else {
@@ -47,6 +48,7 @@ const consoleTracker: ErrorTracker = {
     }
   },
   addBreadcrumb: (breadcrumb) => {
+    if (!import.meta.env.DEV) return;
     console.debug('[ErrorTracker] Breadcrumb:', breadcrumb.category, '-', breadcrumb.message);
   },
 };
