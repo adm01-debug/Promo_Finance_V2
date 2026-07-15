@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { STALE_TIMES } from '@/lib/queryClient';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
-import type { Tables, Database } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;
 export type CentroCusto = Tables<'centros_custo'>;
@@ -15,6 +15,15 @@ export type Fornecedor = Tables<'fornecedores'>;
 export type ContaPagar = Tables<'contas_pagar'>;
 export type ContaReceber = Tables<'contas_receber'>;
 export type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
+
+// Helper to keep select strings from being parsed at the type level (perf).
+const sel = (s: string): string => s;
+
+type RegraRoteamento = Tables<'regras_roteamento_financeiro'>;
+type ContaBancariaComRegras = ContaBancaria & {
+  empresas?: { razao_social: string | null; nome_fantasia: string | null } | null;
+  regras: RegraRoteamento[];
+};
 
 // Type for external data coming from the edge function proxy
 export interface ExternalCliente {
