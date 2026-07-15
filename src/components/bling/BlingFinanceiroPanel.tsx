@@ -39,6 +39,8 @@ export function BlingFinanceiroPanel() {
   const borderos = borderosData?.data || [];
 
   const [baixaForm, setBaixaForm] = useState({ valorRecebido: '', data: todayISOLocal() });
+  const [confirmEstorno, setConfirmEstorno] = useState<{ id: string; tipo: 'receber' | 'pagar' } | null>(null);
+  const [confirmExclusao, setConfirmExclusao] = useState<{ id: string; tipo: 'receber' | 'pagar' } | null>(null);
 
   return (
     <div className="space-y-4">
