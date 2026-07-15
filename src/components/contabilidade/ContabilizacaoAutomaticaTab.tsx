@@ -945,12 +945,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8 text-destructive"
-                                onClick={() => {
-                                  // eslint-disable-next-line no-alert -- TODO: replace with confirm dialog
-                                  if (window.confirm('Deseja remover esta regra?')) {
-                                    deleteRegra.mutate(r.id);
-                                  }
-                                }}
+                                onClick={() => setConfirmDeleteRegraId(r.id)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
