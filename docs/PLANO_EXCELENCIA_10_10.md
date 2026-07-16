@@ -36,7 +36,7 @@
 
 ### Fase 3 — Segurança
 
-- [ ] **#9** `docs/SECURITY_DEFINER_ATTESTATION.md`: cada uma das 27 funções com justificativa, `search_path` fixo, revisão. Aplicar `REVOKE EXECUTE FROM anon` onde cabível.
+- [x] **#9** `docs/SECURITY_DEFINER_ATTESTATION.md` criado (2026-07-16). Auditadas **72 funções** SECURITY DEFINER (números anteriores subestimavam o escopo). Todas com `search_path` fixo (`public, pg_catalog[, extensions]`). Apenas 1 função (`resolve_sso_providers_for_domain`) exposta a `anon`, justificada pela descoberta de IdP pré-login e retornando apenas campos públicos. Documentadas por categoria: RBAC, lockout, tokens, conciliação, régua de cobrança, auditoria, observabilidade, manutenção, integrações e SSO. Comando de auditoria reproduzível incluído para revisões trimestrais.
 - [ ] **#10** Auditoria `.env.example` × secrets vault; documentar rotação em `docs/RUNBOOK.md`.
 - [ ] **#11** Rate limit universal via `_shared/rate-limit.ts` em toda Edge Function pública/webhook.
 - [x] **#12** CSP + `X-Frame-Options` + `Referrer-Policy` via `vercel.json`. Adicionados: `Permissions-Policy`, `Strict-Transport-Security` (HSTS 2 anos preload) e `Content-Security-Policy-Report-Only` allow-list para Supabase/Lovable/Mapbox/Bitrix/Asaas/Lalamove. Report-only = zero risco de breakage; após 30 dias sem violações, promover para enforce.
