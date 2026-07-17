@@ -43,7 +43,7 @@
 
 ### Fase 4 — Performance
 
-- [ ] **#13** `vite build` com analyzer; chunks > 200KB gzip → `React.lazy` nas rotas restantes.
+- [~] **#13** Bundle analyzer instalado (`rollup-plugin-visualizer`). Ativação sob demanda: `ANALYZE=1 bun run build` gera `dist/stats.html` (treemap gzip+brotli). Próximo passo: mapear rotas restantes acima de 200KB e converter para `React.lazy`.
 - [x] **#14** Índices dirigidos por telemetria (`slow_queries`): auditado 2026-07-15 — top offenders (`alert_configurations WHERE is_enabled`, `active_tracking WHERE tracking_status='ACTIVE'`) já possuem partial indexes ótimos. Mean <1ms. Sem gap de índice; nenhuma migração necessária.
 - [x] **#15** Auditar `supabase_realtime` publication — auditado 2026-07-15: apenas `performance_alerts` publicada. Já minimalista, sem subscribers órfãos.
 - [x] **#16** Padronizar `staleTime`/`gcTime` por domínio: `DOMAIN_QUERY_CONFIG` em `src/lib/queryClient.ts` mapeia 15 domínios (CRUD financeiro, cadastros, realtime, catálogos, tributário) para presets `realtime/financial/config/static`. Helper `queryConfig(domain)` retorna `{ staleTime, gcTime }` alinhados; `createQueryOptions({ domain })` aceita override tipado. `queryKey` factories já existentes preservadas.
