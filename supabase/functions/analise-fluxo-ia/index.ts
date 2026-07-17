@@ -39,6 +39,19 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limit: 30 req/min por IP (endpoint IA)
+    const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (supabaseUrl && serviceRoleKey) {
+      const supa = createClient(supabaseUrl, serviceRoleKey);
+      const rl = await checkRateLimit(supa, {
+        endpoint: 'analise-fluxo-ia', ip, limit: 30, windowSeconds: 60,
+        userAgent: req.headers.get('user-agent'),
+      });
+      if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
+    }
+
     const body = await req.json();
     const validation = await validateContract(DadosFluxoSchema, body);
     
