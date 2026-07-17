@@ -51,7 +51,7 @@
 ### Fase 5 — Observabilidade & DX
 
 - [ ] **#17** Consolidar `AdminSystemHealth` + `AdminEdgeHealth` + `AdminTelemetria` numa visão SRE (SLO, error budget, alertas).
-- [ ] **#18** Atualizar `docs/ARCHITECTURE.md`, `RUNBOOK.md`, `TESTING.md`. Catalogar 88 Edge Functions e resumir 356 migrations em ADRs.
+- [~] **#18** Docs — catálogo de Edge Functions gerado em `docs/EDGE_FUNCTIONS_CATALOG.md` (87 funções indexadas com path). Falta: ADR-sumário das 356 migrations e refresh de `ARCHITECTURE.md`/`TESTING.md`.
 
 ---
 
