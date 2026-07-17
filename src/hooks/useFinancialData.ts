@@ -267,7 +267,7 @@ export function useContasPagar(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
     },
     staleTime: STALE_TIMES.financial,
   });
@@ -360,7 +360,7 @@ export function useContasReceber(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as any[];
+      return (data ?? []) as Record<string, unknown>[];
     },
     staleTime: STALE_TIMES.financial,
   });
