@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { WhatsappIaProativoSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 
 interface AlertaProativo {
@@ -24,6 +25,16 @@ serve(async (req) => {
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Rate limit: 30 req/min por IP (endpoint IA)
+    const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+    const rl = await checkRateLimit(supabase, {
+      endpoint: 'whatsapp-ia-proativo', ip, limit: 30, windowSeconds: 60,
+      userAgent: req.headers.get('user-agent'),
+    });
+    if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
+
+
     
     const rawBody = await req.json();
     const validation = validatePayload(WhatsappIaProativoSchema, rawBody, "whatsapp-ia-proativo");
