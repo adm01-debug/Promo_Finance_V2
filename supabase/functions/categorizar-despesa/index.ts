@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { CategorizarDespesaSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 
 interface Despesa {
@@ -25,6 +27,19 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limit: 30 req/min por IP (endpoint de IA com custo)
+    const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (supabaseUrl && serviceRoleKey) {
+      const supa = createClient(supabaseUrl, serviceRoleKey);
+      const rl = await checkRateLimit(supa, {
+        endpoint: 'categorizar-despesa', ip, limit: 30, windowSeconds: 60,
+        userAgent: req.headers.get('user-agent'),
+      });
+      if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
+    }
+
     const rawBody = await req.json();
     const validation = validatePayload(CategorizarDespesaSchema, rawBody, "categorizar-despesa");
     if (!validation.success) {
