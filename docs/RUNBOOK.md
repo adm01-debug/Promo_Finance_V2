@@ -90,8 +90,43 @@ Cada integração tem sua própria estratégia de resiliência (ver `mem://integ
 
 ---
 
+## 6. Rotação de secrets (vault Lovable Cloud)
+
+Secrets em produção **não** vivem em arquivos `.env` — ficam no vault do Lovable Cloud (Backend → Secrets). O `.env.example` documenta apenas o formato para desenvolvimento local.
+
+**Secrets ativos no vault (auditoria 2026-07-17)**:
+
+| Secret | Escopo | Cadência | Como rotacionar |
+|---|---|---|---|
+| `LOVABLE_API_KEY` | AI Gateway (todas Edge Functions de IA) | 90 dias ou incidente | `lovable_api_key--rotate_lovable_api_key` (managed — nunca via `update_secret`) |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | Injetados automaticamente | Não rotacionar manualmente | Gerenciados pela conexão Cloud |
+| `EXTERNAL_SUPABASE_URL` / `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY` | Proxy CRM externo | 180 dias | Gerar nova service_role no projeto externo → `update_secret` no vault |
+| `RESEND_API_KEY` | Envio de email transacional/relatórios | 180 dias | Dashboard Resend → API Keys → Create → revogar antiga → `update_secret` |
+| `MAPBOX_ACCESS_TOKEN` | Geocoding / mapas / heatmap | 365 dias | Dashboard Mapbox → Tokens → Rotate → `update_secret` |
+| `ASAAS_WEBHOOK_TOKEN` | HMAC do webhook Asaas | 90 dias ou incidente | Gerar UUID v4 → configurar no painel Asaas → `update_secret` no mesmo turno |
+| `BLING_WEBHOOK_SECRET` | HMAC do webhook Bling | 90 dias ou incidente | Idem Asaas, no painel Bling |
+| `BITRIX24_WEBHOOK_TOKEN` | HMAC do webhook Bitrix24 | 90 dias ou incidente | Idem, no painel Bitrix24 |
+
+**Procedimento padrão de rotação**:
+1. Gerar novo valor no provedor externo (mantém o antigo ativo).
+2. `update_secret` no vault com o novo valor.
+3. Aguardar propagação (~30s) e testar Edge Function afetada.
+4. Revogar valor antigo no provedor.
+5. Registrar no changelog interno (data, secret, operador).
+
+**Rotação de emergência (secret comprometido)**:
+1. Revogar imediatamente no provedor (invalida o antigo).
+2. `update_secret` com o novo valor.
+3. Auditar `webhook_events`, `webhooks_log`, `auth_logs` das últimas 24h.
+4. Notificar equipe de segurança.
+
+**Nunca**: commitar valores reais em `.env`, colar em chat, expor em logs (`console.log` de secrets já é bloqueado por `console-guard.ts` em produção).
+
+---
+
 ## Contatos
 
-- Banco de dados: painel Supabase do projeto (`iikqosstymnnxaujzadw`).
+- Banco de dados: painel Supabase do projeto.
 - Logs Edge Functions: painel Lovable Cloud → Backend.
 - Suporte interno: equipe DevOps Promo Brindes.
+
