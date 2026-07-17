@@ -58,6 +58,54 @@ export const GC_TIMES = {
   volatile: 5 * 60 * 1000,
 } as const;
 
+/**
+ * Configuração canônica por domínio de negócio.
+ * Use `queryConfig('contasPagar')` para obter `{ staleTime, gcTime }` alinhados.
+ *
+ * Regra:
+ * - `realtime` (30s / 5m): dados que precisam refletir mudanças de outros
+ *   usuários rapidamente (dashboards, saldos ao vivo, alertas).
+ * - `financial` (2m / 10m): default para operações CRUD financeiras.
+ * - `config` (5m / 10m): configurações e preferências raramente alteradas.
+ * - `static` (10m / 30m): catálogos e listas de referência (categorias,
+ *   plano de contas, formas de pagamento).
+ */
+export const DOMAIN_QUERY_CONFIG = {
+  // CRUD financeiro — comportamento default do sistema
+  contasPagar:       { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  contasReceber:     { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  boletos:           { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  movimentacoes:     { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  transferencias:    { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+
+  // Cadastros — mudam pouco
+  fornecedores:      { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
+  clientes:          { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
+
+  // Realtime — dashboards, saldos, alertas
+  dashboard:         { staleTime: STALE_TIMES.dashboard, gcTime: GC_TIMES.volatile },
+  saldos:            { staleTime: STALE_TIMES.realtime,  gcTime: GC_TIMES.volatile },
+  alertas:           { staleTime: STALE_TIMES.realtime,  gcTime: GC_TIMES.volatile },
+  views:             { staleTime: STALE_TIMES.dashboard, gcTime: GC_TIMES.normal },
+
+  // Catálogos estáticos
+  categorias:        { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
+  formasPagamento:   { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
+  planoContas:       { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
+  centrosCusto:      { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
+
+  // Tributário — dados densos, mudam mensalmente
+  tributario:        { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
+  apuracoes:         { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
+} as const satisfies Record<string, { staleTime: number; gcTime: number }>;
+
+export type QueryDomain = keyof typeof DOMAIN_QUERY_CONFIG;
+
+/** Retorna `{ staleTime, gcTime }` padronizado para o domínio. */
+export function queryConfig(domain: QueryDomain): { staleTime: number; gcTime: number } {
+  return DOMAIN_QUERY_CONFIG[domain];
+}
+
 export function createQueryOptions<T>(
   queryKey: readonly unknown[],
   queryFn: () => Promise<T>,
@@ -66,13 +114,15 @@ export function createQueryOptions<T>(
     gcTime?: number;
     enabled?: boolean;
     refetchInterval?: number;
+    domain?: QueryDomain;
   }
 ) {
+  const domainDefaults = options?.domain ? DOMAIN_QUERY_CONFIG[options.domain] : undefined;
   return {
     queryKey,
     queryFn,
-    staleTime: options?.staleTime ?? STALE_TIMES.financial,
-    gcTime: options?.gcTime ?? GC_TIMES.normal,
+    staleTime: options?.staleTime ?? domainDefaults?.staleTime ?? STALE_TIMES.financial,
+    gcTime: options?.gcTime ?? domainDefaults?.gcTime ?? GC_TIMES.normal,
     enabled: options?.enabled,
     refetchInterval: options?.refetchInterval,
   };

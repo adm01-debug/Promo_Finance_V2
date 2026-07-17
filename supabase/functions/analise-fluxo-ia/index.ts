@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -37,6 +39,19 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limit: 30 req/min por IP (endpoint IA)
+    const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (supabaseUrl && serviceRoleKey) {
+      const supa = createClient(supabaseUrl, serviceRoleKey);
+      const rl = await checkRateLimit(supa, {
+        endpoint: 'analise-fluxo-ia', ip, limit: 30, windowSeconds: 60,
+        userAgent: req.headers.get('user-agent'),
+      });
+      if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
+    }
+
     const body = await req.json();
     const validation = await validateContract(DadosFluxoSchema, body);
     

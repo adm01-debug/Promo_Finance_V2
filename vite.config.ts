@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from 'lovable-tagger';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 /**
  * Valida que as variáveis VITE_SUPABASE_* estão presentes em builds de produção.
@@ -44,6 +45,16 @@ export default defineConfig(({ mode }) => {
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
+    // Analisador de bundle sob demanda: `ANALYZE=1 bun run build`
+    // Gera dist/stats.html com treemap gzip/brotli para identificar
+    // chunks acima de 200KB e candidatos a code-splitting.
+    process.env.ANALYZE === '1' && visualizer({
+      filename: 'dist/stats.html',
+      gzipSize: true,
+      brotliSize: true,
+      template: 'treemap',
+      open: false,
+    }),
   ].filter(Boolean),
   resolve: {
     alias: {
