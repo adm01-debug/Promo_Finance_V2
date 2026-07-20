@@ -3,16 +3,33 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 
+export interface MetaFinanceira {
+  id: string;
+  titulo: string;
+  tipo: string;
+  valor_meta: number;
+  ano: number;
+  mes: number;
+  ativo?: boolean;
+  created_by?: string;
+  created_at?: string;
+}
+
 export function useMetasFinanceiras(ano?: number, mes?: number) {
   return useQuery({
     queryKey: ['metas-financeiras', ano, mes],
     queryFn: async () => {
-      let query = supabase.from('metas_financeiras' as never).select('*').eq('ativo', true).order('ano', { ascending: false }).order('mes');
+      let query = supabase
+        .from('metas_financeiras' as never)
+        .select('*')
+        .eq('ativo', true)
+        .order('ano', { ascending: false })
+        .order('mes');
       if (ano) query = query.eq('ano', ano);
       if (mes) query = query.eq('mes', mes);
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      return (data || []) as MetaFinanceira[];
     },
   });
 }
@@ -21,14 +38,25 @@ export function useCreateMeta() {
   const qc = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: async (input: { titulo: string; tipo: string; valor_meta: number; ano: number; mes: number }) => {
-      const { data, error } = await supabase.from('metas_financeiras')
+    mutationFn: async (input: {
+      titulo: string;
+      tipo: string;
+      valor_meta: number;
+      ano: number;
+      mes: number;
+    }) => {
+      const { data, error } = await supabase
+        .from('metas_financeiras')
         .insert({ ...input, created_by: user?.id || '' })
-        .select().single();
+        .select()
+        .single();
       if (error) throw error;
       return data;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['metas-financeiras'] }); toast.success('Meta criada!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['metas-financeiras'] });
+      toast.success('Meta criada!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
@@ -36,11 +64,22 @@ export function useCreateMeta() {
 export function useUpdateMeta() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: string; titulo?: string; valor_meta?: number; ativo?: boolean }) => {
+    mutationFn: async ({
+      id,
+      ...data
+    }: {
+      id: string;
+      titulo?: string;
+      valor_meta?: number;
+      ativo?: boolean;
+    }) => {
       const { error } = await supabase.from('metas_financeiras').update(data).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['metas-financeiras'] }); toast.success('Meta atualizada!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['metas-financeiras'] });
+      toast.success('Meta atualizada!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
@@ -49,10 +88,16 @@ export function useDeleteMeta() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('metas_financeiras').update({ ativo: false }).eq('id', id);
+      const { error } = await supabase
+        .from('metas_financeiras')
+        .update({ ativo: false })
+        .eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['metas-financeiras'] }); toast.success('Meta removida!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['metas-financeiras'] });
+      toast.success('Meta removida!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
