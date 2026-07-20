@@ -2,7 +2,7 @@
 // Cruza NF-e emitidas/recebidas vs cálculos tributários
 
 import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
@@ -34,7 +34,6 @@ export interface ResumoConciliacao {
 }
 
 export function useConciliacaoTributaria(empresaId?: string, competencia?: string) {
-  const queryClient = useQueryClient();
   const [isAnalisando, setIsAnalisando] = useState(false);
   const [divergencias, setDivergencias] = useState<DiferencaConciliacao[]>([]);
 
@@ -114,7 +113,6 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
 
       // Calcular totais esperados das NF-e
       let totalCBSEsperado = 0;
-      let totalIBSEsperado = 0;
 
       nfsDoPerido.forEach(nf => {
         const baseCalculo = nf.valor_total || 0;
@@ -122,7 +120,6 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
         const ibsCalculado = baseCalculo * (aliquotas.ibs / 100);
 
         totalCBSEsperado += cbsCalculado;
-        totalIBSEsperado += ibsCalculado;
 
         // Verificar se valores da NF batem com cálculo esperado
         const valorICMS = nf.valor_icms || 0;

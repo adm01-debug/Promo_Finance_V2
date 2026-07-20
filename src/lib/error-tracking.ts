@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- fallback tracker usa console quando Sentry não está disponível */
 // Error tracking utilities
 // Ready for Sentry integration when API key is provided
 

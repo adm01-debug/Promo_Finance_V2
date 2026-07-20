@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import { 
-  CheckCircle2, AlertTriangle, XCircle, RefreshCw, Plug, Search, 
-  Filter, Activity, Zap, ShieldCheck, ArrowRight, ExternalLink,
-  History, Eye, ShieldAlert, Cpu
+  CheckCircle2, AlertTriangle, RefreshCw, Plug, Search,
+  Filter, Activity, Zap, ShieldCheck, ExternalLink,
+  History, ShieldAlert, Cpu
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { encontrarMatchesParaTransacao, LancamentoSistema } from '../transaction-matcher';
 import { TransacaoOFX } from '../ofx-parser';
 

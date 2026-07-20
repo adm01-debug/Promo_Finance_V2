@@ -2,12 +2,12 @@ import { useMemo, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote,
-  QrCode, Wallet, Link2, User, RefreshCw, Layers, Search, Sparkles
+  Building2, Calendar, FileText, Tag, CreditCard, Banknote,
+  QrCode, Wallet, Link2, User, RefreshCw, Layers, Search
 } from 'lucide-react';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { FieldLabel } from '@/components/ui/info-tooltip';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';

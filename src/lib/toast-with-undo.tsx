@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { toast } from 'sonner';
-import { Undo2 } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
 interface UndoToastOptions {
@@ -30,7 +29,7 @@ export function toastWithUndo({
         try {
           await onUndo();
           toast.success('Ação desfeita', { duration: 2000 });
-        } catch (error: unknown) {
+        } catch {
           toast.error('Erro ao desfazer', {
             description: 'Não foi possível desfazer a ação.',
           });

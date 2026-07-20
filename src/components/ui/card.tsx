@@ -104,7 +104,7 @@ interface TiltCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const TiltCard = React.forwardRef<HTMLDivElement, TiltCardProps>(
-  ({ className, tiltAmount = 10, clickable = true, children, onClick, ...props }, ref) => {
+  ({ className, tiltAmount = 10, clickable = true, children, onClick }, ref) => {
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
@@ -240,7 +240,7 @@ interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const SpotlightCard = React.forwardRef<HTMLDivElement, SpotlightCardProps>(
-  ({ className, spotlightColor = "hsl(var(--primary))", children, ...props }, ref) => {
+  ({ className, spotlightColor = "hsl(var(--primary))", children, ...props }, _ref) => {
     const divRef = React.useRef<HTMLDivElement>(null);
     const [position, setPosition] = React.useState({ x: 0, y: 0 });
     const [opacity, setOpacity] = React.useState(0);

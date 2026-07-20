@@ -3,7 +3,7 @@
 
 import { motion } from 'framer-motion';
 import { 
-  FileText, Calculator, TrendingUp, Shield, AlertTriangle,
+  FileText, Calculator, TrendingUp, Shield,
   Plus, ArrowRight, Lightbulb, Rocket, Target, Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';

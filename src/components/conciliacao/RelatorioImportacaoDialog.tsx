@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -8,7 +6,6 @@ import {
   TrendingUp,
   TrendingDown,
   ArrowRight,
-  Loader2,
 } from 'lucide-react';
 import {
   Dialog,
@@ -23,7 +20,6 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatCurrency } from '@/lib/formatters';
-import { cn } from '@/lib/utils';
 import type { EstatisticasMatch, MatchSugestao } from '@/lib/transaction-matcher';
 import type { TransacaoOFX } from '@/lib/ofx-parser';
 

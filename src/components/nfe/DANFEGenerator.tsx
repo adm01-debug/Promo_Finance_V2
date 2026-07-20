@@ -158,7 +158,7 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
 
       doc.save(`DANFE_${nota.numero}.pdf`);
       toast.success('DANFE gerado com sucesso!');
-    } catch (error) {
+    } catch {
       toast.error('Erro ao gerar DANFE');
     } finally {
       setGenerating(false);

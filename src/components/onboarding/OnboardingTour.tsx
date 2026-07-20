@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
-import { useNavigate } from 'react-router-dom';
 import { useOnboardingProgress } from '@/hooks/useOnboardingProgress';
 
 const STEPS: Step[] = [
@@ -50,7 +49,6 @@ const STEPS: Step[] = [
 ];
 
 export function OnboardingTour() {
-  const navigate = useNavigate();
   const { progress, loading, iniciarTour, completarEtapa, finalizar } = useOnboardingProgress();
   const [run, setRun] = useState(false);
 

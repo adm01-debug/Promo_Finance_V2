@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   AlertTriangle,
   XCircle,
@@ -13,7 +12,6 @@ import {
   BellOff,
   Check,
   Trash2,
-  Eye,
   TrendingUp,
   TrendingDown,
   Minus,
@@ -25,7 +23,6 @@ import {
 import {
   AlertaRejeicao,
   getAlertas,
-  getAlertasNaoLidos,
   marcarAlertaComoLido,
   marcarTodosComoLidos,
   removerAlerta,

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { TrendingUp, TrendingDown, AlertTriangle, ScrollText } from 'lucide-react';
+import { TrendingUp, AlertTriangle, ScrollText } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { projetarReforma, type ParametrosProjecao } from '@/lib/tributario/projecao-reforma';
 import {

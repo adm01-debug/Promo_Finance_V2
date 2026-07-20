@@ -438,7 +438,7 @@ async function processarCancelamento(request: SefazRequest): Promise<SefazRespon
   };
 }
 
-async function processarInutilizacao(request: SefazRequest): Promise<SefazResponse> {
+async function processarInutilizacao(_request: SefazRequest): Promise<SefazResponse> {
   await delay(800 + Math.random() * 1200);
   
   return {

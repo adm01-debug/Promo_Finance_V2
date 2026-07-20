@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { formatCurrency } from '@/lib/formatters';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },

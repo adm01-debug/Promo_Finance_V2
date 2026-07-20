@@ -2,7 +2,7 @@
 // Para bens essenciais (LC 214/2025)
 
 import { useState, useMemo } from 'react';
-import { ALIQUOTAS_TRANSICAO, CASHBACK_PERCENTUAIS } from '@/types/reforma-tributaria';
+import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 
 export type CategoriaCashback = 
   | 'cesta_basica'

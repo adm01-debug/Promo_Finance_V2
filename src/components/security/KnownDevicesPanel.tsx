@@ -8,9 +8,7 @@ import {
   Tablet, 
   Trash2, 
   Shield, 
-  ShieldOff,
-  Chrome,
-  Globe
+  ShieldOff
 } from 'lucide-react';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { useAuth } from '@/hooks/useAuth';
@@ -71,13 +69,6 @@ export function KnownDevicesPanel() {
       case 'tablet': return <Tablet className="h-5 w-5" />;
       default: return <Monitor className="h-5 w-5" />;
     }
-  };
-
-  const getBrowserIcon = (browser: string | null) => {
-    if (browser?.toLowerCase().includes('chrome')) {
-      return <Chrome className="h-4 w-4" />;
-    }
-    return <Globe className="h-4 w-4" />;
   };
 
   if (loading) {

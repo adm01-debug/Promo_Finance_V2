@@ -1,26 +1,18 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import { 
   TrendingDown, 
   Target, 
   BarChart4, 
   ShieldCheck, 
-  AlertCircle, 
-  ArrowRight, 
-  Info, 
   Plus, 
   Calculator,
   Zap,
   FileSearch,
-  CheckCircle2,
   RefreshCcw,
   ClipboardList,
-  Calendar,
-  FileText,
   FileDown,
   ChevronRight,
-  Search,
   CheckSquare,
   Clock
 } from 'lucide-react';
@@ -64,10 +56,9 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     crescimento: 5,
     folha_prolabore: 28
   });
-  const [selectedPeriod, setSelectedPeriod] = useState('anual');
 
   // Queries
-  const { data: simulacoes = [], isLoading: loadingSims } = useQuery({
+  const { data: simulacoes = [] } = useQuery({
     queryKey: ['elisao_simulacoes', empresaId],
     queryFn: async () => {
       const { data, error } = await supabase

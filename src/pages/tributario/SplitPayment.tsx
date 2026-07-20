@@ -2,10 +2,8 @@ import { SplitPaymentPanel } from '@/components/reforma-tributaria/SplitPaymentP
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { ArrowLeftRight } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function SplitPaymentPage() {
-  const { currentEmpresaId } = useAuth();
   
   return (
     <MainLayout>

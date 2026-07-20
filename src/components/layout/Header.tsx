@@ -1,5 +1,4 @@
 import { forwardRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bell,
   Search,
@@ -10,12 +9,10 @@ import {
   User,
   Settings,
   Monitor,
-  Shield,
   Languages,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,7 +59,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
   const { theme, setTheme, isDark } = useTheme();
   const { user, profile, role, roleAtual, currentEmpresaId, signOut } = useAuth();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { data: alertas = [] } = useAlertas();
   const { data: vinculos = [] } = useUserEmpresas();
 
@@ -91,7 +88,6 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
   const ThemeIcon = getThemeIcon();
   const effectiveRole = roleAtual ?? role;
   const roleInfo = effectiveRole ? roleLabels[effectiveRole] : null;
-  const isFallbackGlobal = !roleAtual && !!role;
   const currentEmpresa = useMemo(
     () => vinculos.find((v) => v.empresa_id === currentEmpresaId)?.empresa ?? null,
     [vinculos, currentEmpresaId],

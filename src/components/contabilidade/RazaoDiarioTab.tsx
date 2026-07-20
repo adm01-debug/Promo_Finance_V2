@@ -10,7 +10,7 @@ import {
   endOfDay,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search, Wand2, Filter, ChevronDown, CheckCircle2, AlertTriangle, BookOpen, Activity, ArrowRightLeft } from 'lucide-react';
+import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search, BookOpen, Activity, ArrowRightLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { FilterPresetsManager } from './FilterPresetsManager';

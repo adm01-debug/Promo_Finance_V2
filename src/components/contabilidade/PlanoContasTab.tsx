@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Search, ShieldCheck, History, Wand2, Filter, ChevronDown, CheckCircle2, AlertCircle, TrendingUp, BookOpen, Layers, CheckCircle } from 'lucide-react';
+import { Plus, Search, ShieldCheck, History, Wand2, CheckCircle2, AlertCircle, TrendingUp, BookOpen, Layers, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

@@ -63,7 +63,7 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
       { label: 'Letra maiúscula', met: /[A-Z]/.test(password) },
       { label: 'Letra minúscula', met: /[a-z]/.test(password) },
       { label: 'Número', met: /[0-9]/.test(password) },
-      { label: 'Caractere especial (!@#$%&*)', met: /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]/.test(password), required: true },
+      { label: 'Caractere especial (!@#$%&*)', met: /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/~`]/.test(password), required: true },
     ];
 
     const metCount = criteria.filter(c => c.met).length;

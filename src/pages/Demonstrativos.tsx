@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, TrendingUp, Scale, Wallet, Calendar, Building2 } from 'lucide-react';
+import { TrendingUp, Scale, Wallet, Calendar, Building2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DREStatement } from '@/components/demonstrativos/DREStatement';

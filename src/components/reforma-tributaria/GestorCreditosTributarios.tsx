@@ -2,7 +2,6 @@
 // Controle de créditos IBS/CBS com dados reais
 
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,6 @@ import {
   CheckCircle2,
   Download,
   Plus,
-  RefreshCw,
   AlertCircle,
 } from 'lucide-react';
 import { 
@@ -54,10 +52,7 @@ export function GestorCreditosTributarios() {
   
   const { 
     creditos, 
-    resumoCreditos, 
     isLoading, 
-    criarCredito,
-    gerarCreditosNFe 
   } = useCreditosTributarios(empresaId);
   
   const [filtroTipo, setFiltroTipo] = useState<'todos' | 'CBS' | 'IBS'>('todos');

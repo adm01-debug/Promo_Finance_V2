@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import {
-  Building2, Plus, MoreVertical, Edit, CheckCircle2, XCircle,
+import { Plus, MoreVertical, Edit, CheckCircle2, XCircle,
   FileText, CreditCard, TrendingUp, TrendingDown, Copy, ArrowUpRight, ArrowDownRight,
+  Wallet, Users,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,7 +52,6 @@ interface EmpresaHeroKPIProps {
 }
 
 export function EmpresaHeroKPI({ consolidado, saldoLiquido, totalEmpresas }: EmpresaHeroKPIProps) {
-  const { Wallet, Users } = require('lucide-react');
   return (
     <Card className="relative overflow-hidden border-0" style={{ boxShadow: 'var(--shadow-lg)' }}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/12 via-primary/5 to-secondary/8 dark:from-primary/20 dark:via-primary/8 dark:to-secondary/12" />

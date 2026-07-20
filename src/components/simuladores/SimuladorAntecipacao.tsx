@@ -1,13 +1,11 @@
 import { useState, useMemo } from 'react';
-import { TrendingUp, Calculator, Calendar, DollarSign, Percent, Info, Building2, ArrowRight, CheckCircle2, Star, Sparkles } from 'lucide-react';
+import { TrendingUp, Calculator, Calendar, DollarSign, Percent, Building2, ArrowRight, CheckCircle2, Star, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatCurrency } from '@/lib/formatters';
 import { useQuery } from '@tanstack/react-query';

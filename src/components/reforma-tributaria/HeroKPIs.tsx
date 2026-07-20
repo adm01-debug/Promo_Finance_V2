@@ -3,7 +3,7 @@
 
 import { motion } from 'framer-motion';
 import { 
-  Percent, Receipt, Landmark, DollarSign, TrendingUp, TrendingDown,
+  Percent, Receipt, Landmark, DollarSign,
   AlertTriangle, CheckCircle, Zap
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

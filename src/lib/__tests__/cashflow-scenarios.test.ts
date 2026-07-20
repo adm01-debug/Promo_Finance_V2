@@ -45,8 +45,6 @@ describe('Cashflow Scenarios Engine', () => {
     it('projeção otimista tem saldos mais altos que pessimista (tendência)', () => {
       const otimista = gerarProjecaoCenario(dadosBase, 'otimista', 100000);
       const pessimista = gerarProjecaoCenario(dadosBase, 'pessimista', 100000);
-      const saldoFinalOtimista = otimista[otimista.length - 1].saldo;
-      const saldoFinalPessimista = pessimista[pessimista.length - 1].saldo;
       // Due to random, we just check they have the right cenario label
       expect(otimista[0].cenario).toBe('otimista');
       expect(pessimista[0].cenario).toBe('pessimista');

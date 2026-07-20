@@ -74,7 +74,7 @@ function parseNumber(raw: string | undefined): number {
     .trim()
     .replace(/\s/g, '')
     .replace(/R\$/gi, '')
-    .replace(/[^\d,.\-]/g, '');
+    .replace(/[^\d,.-]/g, '');
   if (!cleaned) return 0;
   // Heurística BR: "1.234,56" → último separador é vírgula
   if (cleaned.includes(',') && cleaned.lastIndexOf(',') > cleaned.lastIndexOf('.')) {

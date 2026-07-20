@@ -2,11 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { 
-  ShieldCheck, ShieldAlert, Shield, 
-  TrendingUp, TrendingDown, ExternalLink, 
+  ShieldCheck,
+  TrendingUp, ExternalLink,
   History, Info, BrainCircuit
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CustomerDeepScoreProps {

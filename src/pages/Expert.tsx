@@ -45,7 +45,7 @@ export default function Expert() {
   const setSearchQuery = (v: string) => expertFilters.setField('searchQuery', v);
   const setDateFilter = (v: string) => expertFilters.setField('dateFilter', v);
   const [showDocumentUpload, setShowDocumentUpload] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showSuggestions] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   

@@ -2,15 +2,14 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 import {
-  Building2, FileText, Calendar, MoreHorizontal, Eye, Edit, Trash2, Send,
-  CheckCircle2, Clock, AlertTriangle, MessageCircle, DollarSign,
+  Building2, Calendar, MoreHorizontal, Eye, Edit, Trash2, Send,
+  CheckCircle2, Clock, AlertTriangle, DollarSign,
   Banknote, QrCode, CreditCard, Wallet, Shield, Scale, Gavel, Tag, History,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,

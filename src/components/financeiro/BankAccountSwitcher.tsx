@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Landmark, Check, ChevronsUpDown, CreditCard, Wallet, Banknote } from 'lucide-react';
+import { Landmark, Check, ChevronsUpDown, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { useBankAccounts, BankAccount } from '@/hooks/useBankAccounts';
+import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters';
 

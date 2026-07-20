@@ -13,7 +13,6 @@ import {
   Calendar, RefreshCw, ExternalLink, BellRing,
 } from 'lucide-react';
 import { format, parseISO, differenceInDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import useAlertasTributarios, { TipoAlerta, PrioridadeAlerta, ALERTA_CONFIG } from '@/hooks/useAlertasTributarios';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
@@ -47,8 +46,8 @@ export function AlertasTributarios() {
 
   const { data: empresas = [] } = useAllEmpresas();
   const {
-    alertas, isLoading, naoLidos, criticos, porTipo, proximosVencimentos,
-    marcarLido, resolverAlerta, gerarAlertasAutomaticos,
+    alertas, naoLidos, criticos, proximosVencimentos,
+    resolverAlerta, gerarAlertasAutomaticos,
   } = useAlertasTributarios(empresaId || undefined);
 
   const alertasFiltrados = alertas.filter(a => {

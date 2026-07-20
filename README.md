@@ -1,86 +1,60 @@
-# Welcome to your Lovable project
+# Promo Finance
 
-## Project info
+Sistema financeiro corporativo multi-empresa: Contas a Pagar, Contas a Receber, Conciliação Bancária, Cobrança, Contabilidade/SPED e Reforma Tributária — construído com Vite + React + TypeScript + Supabase.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
+- **Frontend**: Vite, React 18, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query, React Router
+- **Backend**: Supabase (Postgres + RLS, Auth, Edge Functions em Deno)
+- **Testes**: Vitest + Testing Library (unit/integração), Playwright (E2E)
 
-There are several ways of editing your application.
+## Como rodar localmente
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Pré-requisito: Node.js ≥ 18 (ou Bun ≥ 1.1, usado no CI).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# 1. Clone e entre no diretório
+git clone <URL_DO_REPO>
+cd promo-finance-v2
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# 2. Configure as variáveis de ambiente
+cp .env.example .env   # preencha VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY
 
-# Step 3: Install the necessary dependencies.
-npm i
+# 3. Instale as dependências
+npm install            # ou: bun install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 4. Suba o dev server (porta 8080)
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+O app fica disponível em `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Scripts principais
 
-**Use GitHub Codespaces**
+| Script | Descrição |
+| --- | --- |
+| `npm run dev` | Dev server com HMR (porta 8080) |
+| `npm run build` | Build de produção (`dist/`) |
+| `npm run lint` / `lint:fix` | ESLint (flat config) |
+| `npm run type-check` | `tsc --noEmit` |
+| `npm run test` / `test:run` | Suite Vitest (watch / single run) |
+| `npm run test:coverage` | Cobertura (v8) |
+| `npm run test:e2e` | Playwright E2E (sobe o dev server automaticamente) |
+| `npm run format` | Prettier em `src/` |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Banco de dados
 
-## What technologies are used for this project?
+As migrations vivem em `supabase/migrations/` (fonte da verdade do schema) e as edge functions em `supabase/functions/`. Use `npm run db:migrate` (Supabase CLI) para aplicá-las.
 
-This project is built with:
+> **Nota**: `src/integrations/supabase/types.ts` é gerado a partir do banco. Vários hooks usam `@ts-nocheck` enquanto os types estiverem desatualizados — regenere os types e remova os pragmas.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-
-## Technical Documentation
+## Documentação técnica
 
 A arquitetura do projeto é baseada em princípios de **resiliência, telemetria e segurança multi-empresa**. Para entender os fluxos de dados, padrões de código e responsabilidades de cada camada, consulte a documentação técnica oficial:
 
-### 📖 Guias de Referência
-- **[Arquitetura Principal (Padrões e Camadas)](docs/ARCHITECTURE.md)**: Visão geral da stack, decisões de design e fluxo ponta a ponta.
-- **[Auditoria Técnica e Resiliência](docs/TECHNICAL_AUDIT_RESILIENCE.md)**: Detalhes sobre o sistema de telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.
-- **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: Como rodar e escrever testes garantindo a estabilidade do sistema.
-- **[Acessibilidade](docs/ACCESSIBILITY.md)**: Padrões WCAG seguidos no frontend.
+- **[Arquitetura Principal (Padrões e Camadas)](docs/ARCHITECTURE.md)**: visão geral da stack, decisões de design e fluxo ponta a ponta.
+- **[Auditoria Técnica e Resiliência](docs/TECHNICAL_AUDIT_RESILIENCE.md)**: telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.
+- **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: como rodar e escrever testes.
+- **[Acessibilidade](docs/ACCESSIBILITY.md)**: padrões WCAG seguidos no frontend.
 
-### 🛠️ Consultando a Documentação
 Novos desenvolvedores devem começar pelo `ARCHITECTURE.md` para entender como a comunicação com o Supabase é interceptada para logs e como as permissões de empresa são aplicadas automaticamente em todas as rotas.

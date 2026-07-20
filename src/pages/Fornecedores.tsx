@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
@@ -48,7 +48,7 @@ export default function Fornecedores() {
   const [editingFornecedor, setEditingFornecedor] = useState<ExternalCliente | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingFornecedor, setDeletingFornecedor] = useState<ExternalCliente | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting] = useState(false);
   const [viewingFornecedor, setViewingFornecedor] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   
@@ -134,7 +134,6 @@ export default function Fornecedores() {
   };
 
   // Use server-side paginated data directly
-  const paginatedFornecedores = fornecedores;
 
   // Reset to page 1 when filters change
   const handlePageSizeChange = (size: number) => {

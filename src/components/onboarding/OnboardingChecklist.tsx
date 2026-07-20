@@ -327,7 +327,6 @@ export const OnboardingChecklist = forwardRef<HTMLDivElement, Record<string, nev
             >
               <div className="px-4 pb-4 space-y-2">
                 {checklist.map((item, index) => {
-                  const Icon = item.icon;
                   const isJustDone = justCompleted === item.id;
                   return (
                     <motion.div

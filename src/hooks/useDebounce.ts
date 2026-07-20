@@ -249,7 +249,7 @@ export function useNumericInput(
   setValue: (value: string) => void;
   isValid: boolean;
 } {
-  const { min, max, decimals = 2, delay = 300 } = options;
+  const { min, max, delay = 300 } = options;
   const [value, setValue] = useState(initialValue.toString());
   
   const numericValue = useMemo(() => {
@@ -267,7 +267,7 @@ export function useNumericInput(
 
   const handleSetValue = useCallback((newValue: string) => {
     // Permite apenas números, vírgula e ponto
-    const sanitized = newValue.replace(/[^\d.,\-]/g, '');
+    const sanitized = newValue.replace(/[^\d.,-]/g, '');
     setValue(sanitized);
   }, []);
 

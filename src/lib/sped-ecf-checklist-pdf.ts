@@ -1,5 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+type AutoTableDoc = jsPDF & { lastAutoTable?: { finalY: number } };
 import type { ChecklistItem, SpedEcfValidacaoResult } from '@/hooks/useSpedContabil';
 
 interface ExportArgs {
@@ -44,8 +46,7 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
   });
 
   // KPIs
-  // @ts-expect-error - jspdf-autotable lastAutoTable
-  let cursor = (doc.lastAutoTable?.finalY ?? 50) + 4;
+  let cursor = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? 50) + 4;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.text('Resumo de validação', 14, cursor);
@@ -67,8 +68,7 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
   });
 
   // ECD vinculada
-  // @ts-expect-error
-  cursor = (doc.lastAutoTable?.finalY ?? cursor) + 6;
+  cursor = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? cursor) + 6;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.text('Cross-check com ECD do período', 14, cursor);
@@ -91,8 +91,7 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
   });
 
   // Checklist detalhado
-  // @ts-expect-error
-  cursor = (doc.lastAutoTable?.finalY ?? cursor) + 6;
+  cursor = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? cursor) + 6;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.text('Checklist detalhado', 14, cursor);
@@ -125,8 +124,7 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
 
   // Listas de erros e avisos
   if (erros > 0) {
-    // @ts-expect-error
-    cursor = (doc.lastAutoTable?.finalY ?? cursor) + 6;
+    cursor = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? cursor) + 6;
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(185, 28, 28);
     doc.text(`Erros (${erros})`, 14, cursor);
@@ -141,8 +139,7 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
   }
 
   if (avisos > 0) {
-    // @ts-expect-error
-    cursor = (doc.lastAutoTable?.finalY ?? cursor) + 6;
+    cursor = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? cursor) + 6;
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(161, 98, 7);
     doc.text(`Avisos (${avisos})`, 14, cursor);

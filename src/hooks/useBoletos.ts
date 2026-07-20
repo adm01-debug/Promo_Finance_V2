@@ -47,7 +47,7 @@ export interface NovoBoletoData {
   provider?: 'system' | 'asaas';
 }
 
-function generateLinhaDigitavel(valor: number, vencimento: string): string {
+function generateLinhaDigitavel(valor: number, _vencimento: string): string {
   const valorStr = Math.round(valor * 100).toString().padStart(10, '0');
   const random1 = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
   const random2 = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');

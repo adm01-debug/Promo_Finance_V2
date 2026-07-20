@@ -301,7 +301,7 @@ export function parseExcel(content: ArrayBuffer, fileName: string): ResultadoImp
           valor,
           descricao,
         });
-      } catch (e) {
+      } catch {
         avisos.push(`Linha ${i + 1} ignorada devido a erro de formato.`);
       }
     }

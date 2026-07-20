@@ -35,13 +35,18 @@ export function useApiKeys(empresaId?: string) {
 export function useCreateApiKey() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: { name: string; empresa_id: string; expires_at?: string; scopes: string[] }) => {
+    mutationFn: async (payload: {
+      name: string;
+      empresa_id: string;
+      expires_at?: string;
+      scopes: string[];
+    }) => {
       // In a real app, the key generation and hashing would happen in an Edge Function
       // For this implementation, we'll simulate the process and return a mock key
       // and let the backend (edge function) handle the actual secure storage.
-      
+
       const { data, error } = await supabase.functions.invoke('api-keys-manage', {
-        body: { action: 'create', ...payload }
+        body: { action: 'create', ...payload },
       });
 
       if (error) throw error;

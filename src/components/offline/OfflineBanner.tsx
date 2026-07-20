@@ -20,7 +20,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
   position = 'top',
   showPendingCount = true,
   pendingChanges = 0,
-}: OfflineBannerProps, ref) {
+}: OfflineBannerProps, _ref) {
   const { isOnline } = useNetworkStatus();
   const [wasOffline, setWasOffline] = useState(false);
   const [showReconnected, setShowReconnected] = useState(false);

@@ -66,7 +66,7 @@
   ],
   "env": {
     "VITE_SUPABASE_URL": "@vite_supabase_url",
-    "VITE_SUPABASE_ANON_KEY": "@vite_supabase_anon_key",
-    "VITE_BITRIX24_WEBHOOK_URL": "@vite_bitrix24_webhook_url"
+    "VITE_SUPABASE_PUBLISHABLE_KEY": "@vite_supabase_publishable_key",
+    "VITE_SUPABASE_PROJECT_ID": "@vite_supabase_project_id"
   }
 }

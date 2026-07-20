@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
   FileText, Download, Copy, Check, Printer, Mail, 
-  Building2, FileCode, AlertTriangle, Package, User, Calendar
+  Building2, FileCode, AlertTriangle, Package, User
 } from 'lucide-react';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';

@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Copy, CheckCircle2, Terminal, AlertCircle, Clock, Search, ChevronRight, Braces } from 'lucide-react';
+import { Globe, Copy, CheckCircle2, Terminal, AlertCircle, Clock, ChevronRight, Braces } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';

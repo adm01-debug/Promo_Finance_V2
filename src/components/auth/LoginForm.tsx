@@ -70,7 +70,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
       if (result?.error) {
         toast.error('Erro ao entrar com Google: ' + (result.error as Error).message);
       }
-    } catch (err) {
+    } catch {
       toast.error('Erro ao conectar com Google');
     } finally {
       setGoogleLoading(false);

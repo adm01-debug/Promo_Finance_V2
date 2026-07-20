@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  ShieldCheck, FileText, Download, CreditCard, 
-  Calendar, Clock, CheckCircle2, DollarSign,
+  ShieldCheck, FileText, Download, CreditCard, Clock, CheckCircle2,
   ArrowRight, Mail, Phone, ExternalLink, Building2
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { Separator } from '@/components/ui/separator';
 
 export default function PortalCliente() {
   const [token, setToken] = useState('');

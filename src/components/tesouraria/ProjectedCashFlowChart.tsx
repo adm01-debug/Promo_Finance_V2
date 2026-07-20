@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { formatCurrencyCompact, formatDateShort } from '@/lib/formatters';
-import { addDays, format, isAfter, isBefore, startOfDay } from 'date-fns';
+import { addDays, format, startOfDay } from 'date-fns';
 
 interface ProjectedCashFlowChartProps {
   pagar: any[];

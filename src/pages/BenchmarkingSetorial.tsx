@@ -1,24 +1,17 @@
 import { useState, useMemo } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  BarChart3, TrendingUp, TrendingDown, Target, Award, Sparkles,
-  Loader2, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Minus,
-  Lightbulb, AlertTriangle, Zap, Clock, Trophy, Shield,
+import { TrendingUp, TrendingDown, Target, Sparkles,
+  Loader2, AlertTriangle, Trophy,
 } from 'lucide-react';
-import {
-  ResponsiveContainer, RadarChart, Radar, PolarGrid,
-  PolarAngleAxis, PolarRadiusAxis, BarChart, Bar, XAxis, YAxis,
-  Tooltip as ReTooltip, CartesianGrid, Legend, Cell,
-} from 'recharts';
+
 import { supabase } from '@/integrations/supabase/client';
 import { useContasPagar, useContasReceber, useEmpresas } from '@/hooks/useFinancialData';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -53,18 +46,6 @@ interface BenchmarkResult {
   tendencias_setor: string[];
   resumo_executivo: string;
 }
-
-const posicaoConfig = {
-  acima: { icon: ArrowUp, color: 'text-success', bg: 'bg-success/10', label: 'Acima da média' },
-  na_media: { icon: Minus, color: 'text-warning', bg: 'bg-warning/10', label: 'Na média' },
-  abaixo: { icon: ArrowDown, color: 'text-destructive', bg: 'bg-destructive/10', label: 'Abaixo da média' },
-};
-
-const prazoConfig = {
-  curto: { label: 'Curto prazo', color: 'bg-success/20 text-success' },
-  medio: { label: 'Médio prazo', color: 'bg-warning/20 text-warning' },
-  longo: { label: 'Longo prazo', color: 'bg-primary/20 text-primary' },
-};
 
 export default function BenchmarkingSetorial() {
   const [result, setResult] = useState<BenchmarkResult | null>(null);

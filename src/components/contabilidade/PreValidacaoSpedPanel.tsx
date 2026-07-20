@@ -1,7 +1,7 @@
 // Painel visual de pré-validação cruzada Razão × DRE para SPED ECD/ECF.
 import { 
   AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2, 
-  Activity, ArrowRightLeft, PieChart, ShieldAlert, Zap,
+  Activity, ArrowRightLeft, PieChart, ShieldAlert,
   Search, ShieldCheck, Target, Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

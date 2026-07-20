@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Filter, Calendar, Users, Building2, Clock, Eye, PieChart as PieChartIcon } from "lucide-react";
@@ -19,7 +18,6 @@ import { ClearFiltersButton } from "@/components/filters/ClearFiltersButton";
 import { useAuth } from "@/hooks/useAuth";
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
-const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 interface ReceberFilters extends Record<string, unknown> {
   empresaId: string;
@@ -49,7 +47,7 @@ export default function DashboardReceber() {
     defaults: RECEBER_DEFAULTS,
     localStorageKey: "app-dashboard-receber-filters",
   });
-  const { user, currentEmpresaId } = useAuth();
+  const { currentEmpresaId } = useAuth();
   const { empresaId, vendedorId, ramoAtividade, statusFilter, clienteId, periodo, dataInicioIso, dataFimIso } = filtersController.values;
 
   // Sincroniza com empresa ativa do sistema
@@ -92,7 +90,8 @@ export default function DashboardReceber() {
   }, [contasReceber, empresaId, vendedorId, clienteId, statusFilter, ramoAtividade, dataInicio, dataFim, clientes]);
 
   const kpis = useMemo(() => {
-    const hoje = new Date(); const hojeStr = format(hoje, "yyyy-MM-dd");
+    const hoje = new Date();
+    const hojeStr = format(hoje, "yyyy-MM-dd");
     const em7dias = format(addDays(hoje, 7), "yyyy-MM-dd"); const em30dias = format(addDays(hoje, 30), "yyyy-MM-dd");
     const inicioMes = format(startOfMonth(hoje), "yyyy-MM-dd"); const fimMes = format(endOfMonth(hoje), "yyyy-MM-dd");
     const pendentes = filteredContas.filter(c => ["pendente", "vencido", "parcial"].includes(c.status));
@@ -106,7 +105,7 @@ export default function DashboardReceber() {
   }, [filteredContas]);
 
   const agingData = useMemo(() => {
-    const hoje = new Date(); const hojeStr = format(hoje, "yyyy-MM-dd");
+    const hoje = new Date();
     const pendentes = filteredContas.filter(c => ["pendente", "vencido", "parcial"].includes(c.status));
     const calc = (pred: (dias: number) => boolean) => pendentes.filter(c => { const d = differenceInDays(hoje, parseISO(c.data_vencimento)); return pred(d); }).reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
     return [

@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 /**
@@ -38,5 +37,5 @@ export function useGlobalFilterSync() {
 
     window.addEventListener('current-empresa-changed', handleEmpresaChange);
     return () => window.removeEventListener('current-empresa-changed', handleEmpresaChange);
-  }, [location.pathname]);
+  }, []);
 }

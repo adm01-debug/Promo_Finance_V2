@@ -5,12 +5,6 @@ import { Gauge, Zap, Layout, MousePointer2, Timer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface PerfMetric {
-  metric_name: string;
-  avg_value: number;
-  count: number;
-}
-
 export function PerformanceMetrics() {
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["frontend-performance-summary"],

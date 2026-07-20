@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback, useRef, useEffect, ReactNode } from 'react';
-import { ChevronUp, ChevronDown, ChevronsUpDown, Search, Filter, Download, MoreHorizontal, CheckSquare, Square, Columns, RefreshCw } from 'lucide-react';
+import { useState, useMemo, useCallback, useRef, ReactNode } from 'react';
+import { ChevronUp, ChevronDown, ChevronsUpDown, Filter, Download, CheckSquare, Square, Columns, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type SortDirection = 'asc' | 'desc' | null;

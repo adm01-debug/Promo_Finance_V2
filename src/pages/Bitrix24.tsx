@@ -1,59 +1,27 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Zap,
   RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  AlertTriangle,
-  ArrowRight,
   ArrowLeftRight,
   Settings,
   History,
-  Database,
   Users,
   DollarSign,
-  Building2,
   Link2,
-  Unlink,
-  ExternalLink,
-  Filter,
-  Download,
-  Play
+  Unlink
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
+
+
+
+
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { formatCurrency } from '@/lib/formatters';
 import { useBitrix24 } from '@/hooks/useBitrix24';
-import { BitrixWebhookPanel } from '@/components/integracoes/BitrixWebhookPanel';
 import { BitrixKpiCards } from '@/components/bitrix/BitrixKpis';
 import { BitrixDealsTab } from '@/components/bitrix/BitrixDealsTab';
 import { BitrixSyncLogsTab } from '@/components/bitrix/BitrixSyncLogsTab';
@@ -61,19 +29,6 @@ import { BitrixClientsTab } from '@/components/bitrix/BitrixClientsTab';
 import { BitrixMappingTab } from '@/components/bitrix/BitrixMappingTab';
 import { BitrixConfigTab } from '@/components/bitrix/BitrixConfigTab';
 import { logger } from '@/lib/logger';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05 }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 }
-};
 
 export default function Bitrix24() {
   const { toast } = useToast();
@@ -129,24 +84,6 @@ export default function Bitrix24() {
     if (diffMins < 60) return `${diffMins}min atrás`;
     if (diffHours < 24) return `${diffHours}h atrás`;
     return date.toLocaleDateString('pt-BR');
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'sucesso': return 'bg-success/10';
-      case 'erro': return 'bg-destructive/10';
-      case 'parcial': return 'bg-warning/10';
-      default: return 'bg-secondary/10';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'sucesso': return <CheckCircle2 className="h-5 w-5 text-success" />;
-      case 'erro': return <XCircle className="h-5 w-5 text-destructive" />;
-      case 'parcial': return <AlertTriangle className="h-5 w-5 text-warning" />;
-      default: return <Clock className="h-5 w-5 text-secondary" />;
-    }
   };
 
   return (

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Scale } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/formatters';
-import usePerDcomp, { TipoPedido, TipoCreditoOrigem } from '@/hooks/usePerDcomp';
+import usePerDcomp from '@/hooks/usePerDcomp';
 import { useCreditosTributarios } from '@/hooks/useCreditosTributarios';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { PerDcompStats } from './per-dcomp/PerDcompStats';

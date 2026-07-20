@@ -109,7 +109,7 @@ export function detectarAlertasRuptura(
   projecoes: Record<CenarioTipo, ProjecaoCenario[]>,
   limiteRupturaTotal: number = 0,
   limiteRiscoAlto: number = 50000,
-  limiteRiscoMedio: number = 100000
+  _limiteRiscoMedio: number = 100000
 ): AlertaRuptura[] {
   const alertas: AlertaRuptura[] = [];
   const hoje = new Date();

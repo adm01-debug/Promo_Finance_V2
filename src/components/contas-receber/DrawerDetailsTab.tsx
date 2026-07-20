@@ -1,14 +1,11 @@
 
 import {
-  Building2, Calendar, DollarSign, FileText, Copy, ExternalLink,
-  Banknote, QrCode, CreditCard, Wallet, Users, Shield,
+  Building2, Copy, Shield,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
 import { CalculadoraJurosMulta } from './CalculadoraJurosMulta';
-import { formatCurrency, formatDate } from '@/lib/formatters';
+import { formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { ContaReceberWithRelations } from './ContasReceberTableRow';
@@ -20,7 +17,7 @@ interface Props {
   acordos: any[];
 }
 
-export function DrawerDetailsTab({ conta, overdueDays, boletos, acordos }: Props) {
+export function DrawerDetailsTab({ conta, overdueDays }: Props) {
   const handleCopyPix = () => {
     if (conta.chave_pix) {
       navigator.clipboard.writeText(conta.chave_pix);

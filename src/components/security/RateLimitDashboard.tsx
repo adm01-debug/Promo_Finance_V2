@@ -10,7 +10,7 @@ import { useSecurityAlerts } from '@/hooks/useSecurityAlerts';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Shield, AlertTriangle, Ban, Activity, Globe, Clock, Loader2, Search, Trash2, CheckCircle2, Bell } from 'lucide-react';
+import { AlertTriangle, Ban, Activity, Globe, Clock, Loader2, Search, Trash2, CheckCircle2, Bell } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';

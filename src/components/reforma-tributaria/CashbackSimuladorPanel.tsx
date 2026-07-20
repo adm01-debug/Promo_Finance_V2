@@ -1,6 +1,6 @@
 // COMPONENTE: SIMULADOR DE CASHBACK
 
-import { Wallet, ShoppingBasket } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +14,7 @@ export function CashbackSimuladorPanel() {
   const { 
     rendaFamiliar, setRendaFamiliar,
     inscritoCadUnico, setInscritoCadUnico,
-    elegivel, resumoMensal, projecaoAnual, categoriasDisponiveis
+    elegivel, resumoMensal, projecaoAnual
   } = useCashbackSimulador();
 
   const chartData = resumoMensal.porCategoria.filter(c => c.totalCashback > 0).map(c => ({

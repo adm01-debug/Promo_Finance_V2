@@ -2,10 +2,9 @@ import { useState, useMemo } from 'react';
 import { format, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
-  Plus, Trash2, Search, CalendarIcon, Wand2, Filter, 
-  ChevronDown, CheckCircle2, AlertTriangle, Activity, 
-  BookOpen, Clock, ArrowUpRight, ArrowDownRight, 
-  ShieldCheck, Zap, Info, MoreHorizontal, Eye,
+  Plus, Trash2, Search, CalendarIcon, Wand2, CheckCircle2, AlertTriangle, Activity,
+  BookOpen, Clock, ArrowUpRight,
+  ShieldCheck, Zap, Eye,
   LayoutGrid
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
