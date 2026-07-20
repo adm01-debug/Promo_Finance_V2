@@ -118,20 +118,6 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     enabled: !!empresaId,
   });
 
-  const { data: gaps = [] } = useQuery({
-    queryKey: ['elisao_gap', empresaId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('elisao_analise_gap')
-        .select('*')
-        .eq('empresa_id', empresaId)
-        .order('periodo_referencia', { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!empresaId
-  });
-
   const economiaTotal = oportunidades.reduce((acc, curr) => acc + (curr.valor_estimado || 0), 0);
 
   return (

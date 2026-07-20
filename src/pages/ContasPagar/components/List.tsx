@@ -2,7 +2,7 @@ import React from 'react';
 import { List as FixedSizeList, type RowComponentProps } from 'react-window';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableHeader } from '@/components/ui/table';
 import { Sparkles } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 

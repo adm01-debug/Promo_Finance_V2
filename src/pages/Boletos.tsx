@@ -53,26 +53,6 @@ const statusConfig = {
   cancelado: { label: 'Cancelado', color: 'bg-muted text-muted-foreground border-muted', icon: AlertCircle }
 };
 
-// Barcode component
-const BarcodeVisual = ({ code }: { code: string }) => {
-  const bars = code.split('').map((char, i) => {
-    const width = parseInt(char) % 2 === 0 ? 2 : 1;
-    const isBlack = i % 2 === 0;
-    return { width, isBlack };
-  });
-
-  return (
-    <div className="flex items-end h-16 bg-card p-2 rounded">
-      {bars.map((bar, i) => (
-        <div
-          key={i}
-          className={bar.isBlack ? 'bg-black' : 'bg-card'}
-          style={{ width: `${bar.width}px`, height: '100%' }}
-        />
-      ))}
-    </div>
-  );
-};
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
 import { BoletoGlobalHistory } from '@/components/boletos/BoletoGlobalHistory';

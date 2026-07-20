@@ -42,11 +42,7 @@ export function useRealtimeAlertas() {
           }
         }
       )
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          if (import.meta.env.DEV) console.log('[Realtime] Subscribed to alertas changes');
-        }
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);

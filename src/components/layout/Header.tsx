@@ -32,7 +32,6 @@ import { useAlertas } from '@/hooks/useAlertas';
 import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
 import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface HeaderProps {
   sidebarCollapsed?: boolean;

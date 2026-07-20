@@ -40,7 +40,6 @@ import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConcili
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { useConciliacaoPage } from '@/hooks/useConciliacaoPage';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
-import { useAuth } from '@/hooks/useAuth';
 import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher';
 import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
 

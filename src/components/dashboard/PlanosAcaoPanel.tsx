@@ -22,7 +22,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { usePlanosAcao, useUpdatePlanoAcao, useCreatePlanoAcao, type PlanoAcao } from '@/hooks/useInteligenciaOperacional';
+import { usePlanosAcao, useUpdatePlanoAcao, type PlanoAcao } from '@/hooks/useInteligenciaOperacional';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

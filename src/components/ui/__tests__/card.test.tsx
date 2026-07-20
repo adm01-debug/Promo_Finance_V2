@@ -45,7 +45,7 @@ describe('CardTitle', () => {
 });
 
 describe('CardDescription', () => {
-  it('has text-sm text-muted-foreground', () => {
+  it('has text-sm text-muted-foreground/70', () => {
     render(<CardDescription>Desc</CardDescription>);
     const el = screen.getByText('Desc');
     expect(el).toHaveClass('text-sm', 'text-muted-foreground/70');

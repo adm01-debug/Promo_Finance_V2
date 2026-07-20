@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { Clock, Send, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Eye, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Clock, Send, CheckCircle2, XCircle, RefreshCw, Eye, Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFilaCobrancas, useExecucoesCobranca, useProcessarRegua, useProcessarFila } from '@/hooks/useReguaCobranca';
 import { useMetricasCobranca } from '@/hooks/useViews';
-import { formatCurrency, formatDate } from '@/lib/formatters';
+import { formatDate } from '@/lib/formatters';
 import type { Tables } from '@/integrations/supabase/types';
 
 type FilaRow = Tables<'fila_cobrancas'> & { cliente_nome?: string | null };

@@ -56,13 +56,19 @@ export function useCreateApiKey() {
       qc.invalidateQueries({ queryKey: ['api-keys', vars.empresa_id] });
       toast.success('Chave de API criada com sucesso');
     },
+    onError: () => {
+      // A edge function `api-keys-manage` ainda não foi implantada — ver docs/FUNCIONALIDADES_SEM_UI.md
+      toast.error('Não foi possível criar a chave de API', {
+        description: 'O serviço de gestão de chaves não está disponível.',
+      });
+    },
   });
 }
 
 export function useRevokeApiKey() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, empresa_id }: { id: string; empresa_id: string }) => {
+    mutationFn: async ({ id }: { id: string; empresa_id: string }) => {
       const { error } = await supabaseDyn
         .from('api_keys')
         .delete()
