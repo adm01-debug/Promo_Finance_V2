@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { 
   Link2, Zap, Phone, Globe, Package, CreditCard, 
-  RefreshCw, CheckCircle2, AlertTriangle, ShieldCheck,
+  RefreshCw, CheckCircle2, ShieldCheck,
   ExternalLink, Code2, Database, Key, Beaker
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';

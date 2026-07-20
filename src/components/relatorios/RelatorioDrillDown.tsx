@@ -4,15 +4,11 @@ import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
   ChevronRight, 
-  ChevronDown, 
   TrendingUp, 
   TrendingDown, 
   Building2, 
-  User, 
   Calendar,
-  DollarSign,
-  ArrowLeft,
-  Filter
+  ArrowLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';

@@ -23,7 +23,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
 
-import { differenceInDays, subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
+import { subMonths, isSameDay, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
 type ContaPagarType = ContaPagar;
 
 export function useContasPagarLogic() {
@@ -46,14 +46,14 @@ export function useContasPagarLogic() {
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingConta, setDeletingConta] = useState<ContaPagarType | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting] = useState(false);
 
   useEffect(() => {
     const handleSync = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (!detail) return;
       
-      const { empresaId, bankAccountId } = detail;
+      const { empresaId } = detail;
       if (empresaId && empresaId !== 'all') {
         setAdvancedFilters(prev => ({ ...prev, empresaId }));
         setCurrentPage(1);
@@ -117,7 +117,6 @@ export function useContasPagarLogic() {
 
   // Maps
   const profilesMap = useMemo(() => new Map(profiles.map(p => [p.id, p])), [profiles]);
-  const solicitacoesMap = useMemo(() => new Map(solicitacoesAprovacao.map(s => [s.conta_pagar_id, s])), [solicitacoesAprovacao]);
   const aprovacaoStatusMap = useMemo(() => 
     new Map(solicitacoesAprovacao.filter(s => s.status === 'pendente' || s.status === 'rejeitada').map(s => [s.conta_pagar_id, s.status])),
     [solicitacoesAprovacao]
@@ -341,7 +340,7 @@ export function useContasPagarLogic() {
       setAprovacaoDialogOpen(false);
       setContaParaAprovacao(null);
       setObservacoesAprovacao('');
-    } catch (error: unknown) {
+    } catch {
       toast.error('Erro ao solicitar aprovação');
     }
   };

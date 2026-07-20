@@ -67,7 +67,7 @@ export const DashboardConfigDialog = forwardRef<HTMLDivElement, DashboardConfigD
     onToggleWidget,
     onResizeWidget,
     onResetToDefault,
-  }, ref) {
+  }, _ref) {
   const visibleCount = widgets.filter(w => w.visible).length;
 
   return (

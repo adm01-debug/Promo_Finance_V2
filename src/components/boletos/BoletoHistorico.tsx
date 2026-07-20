@@ -1,14 +1,10 @@
 import { motion } from 'framer-motion';
 import { 
   History, Clock, CheckCircle2, AlertTriangle, 
-  Send, Eye, Download, Printer, Filter
+  Send, Eye
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { formatCurrency, formatDate } from '@/lib/formatters';
-import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 

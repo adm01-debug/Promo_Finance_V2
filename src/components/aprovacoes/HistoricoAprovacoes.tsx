@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSolicitacoesAprovacao, SolicitacaoAprovacao } from '@/hooks/useAprovacoes';
-import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
+import { formatCurrency, formatDateTime } from '@/lib/formatters';
 
 const getStatusConfig = (status: SolicitacaoAprovacao['status']) => {
   switch (status) {

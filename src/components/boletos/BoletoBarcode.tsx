@@ -59,7 +59,7 @@ function gerarLinhaDigitavel(codigoBarras: string): string {
   return `${campo1.substring(0,5)}.${campo1.substring(5)} ${campo2.substring(0,5)}.${campo2.substring(5)} ${campo3.substring(0,5)}.${campo3.substring(5)} ${campo4} ${campo5}`;
 }
 
-export function BoletoBarcode({ banco, valor, vencimento, cedenteCnpj, numero }: BoletoBarcodeProps) {
+export function BoletoBarcode({ banco, valor, vencimento, numero }: BoletoBarcodeProps) {
   const [copied, setCopied] = useState<'barras' | 'linha' | null>(null);
 
   const { codigoBarras, linhaDigitavel } = useMemo(() => {

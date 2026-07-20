@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, DollarSign, Users, Save, AlertTriangle, Plus, Trash2, GripVertical, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Settings, DollarSign, Users, Save, Plus, Trash2, GripVertical, CheckCircle2, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useConfiguracaoAprovacao, useUpdateConfiguracaoAprovacao, useFluxosNiveis, useUpdateFluxoNivel, FluxoNivel } from '@/hooks/useAprovacoes';
+import { useConfiguracaoAprovacao, useUpdateConfiguracaoAprovacao, useFluxosNiveis } from '@/hooks/useAprovacoes';
 import { formatCurrency } from '@/lib/formatters';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';

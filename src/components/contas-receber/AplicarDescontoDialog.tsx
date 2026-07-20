@@ -9,7 +9,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 interface AplicarDescontoDialogProps {
   conta: { id: string; descricao: string; valor: number; valor_desconto?: number | null; cliente_nome: string } | null;

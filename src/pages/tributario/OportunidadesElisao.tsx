@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // PÁGINA: Oportunidades de Elisão Fiscal
 
 import { useState } from 'react';
@@ -21,19 +21,13 @@ import {
   Banknote,
   SearchX,
   Upload,
-  ShieldCheck,
   FileText,
-  ExternalLink,
   History,
   AlertCircle,
-  ArrowRight,
   RefreshCw,
   Download,
-  FileSearch,
   CheckCheck,
-  Filter,
   FilePieChart,
-  ClipboardCheck,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';

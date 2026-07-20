@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { 
   Camera, 
-  X, 
   Scan, 
   Check, 
   AlertCircle, 

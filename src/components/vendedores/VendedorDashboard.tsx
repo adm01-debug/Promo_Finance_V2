@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Users, DollarSign, Target, Award, BarChart3 } from 'lucide-react';
+import { Users, DollarSign, Target, Award, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useVendedores } from '@/hooks/useVendedores';
 import { useContasReceber } from '@/hooks/useFinancialData';
@@ -17,10 +16,8 @@ export function VendedorDashboard() {
 
     return vendedores.map(v => {
       const clientesIds = new Set<string>();
-      const recebiveis = contasReceber.filter(cr => {
-        // Match by cliente vendedor_id through the contasReceber
+      contasReceber.forEach(cr => {
         if (cr.cliente_id) clientesIds.add(cr.cliente_id);
-        return true; // We'll filter by vendedor_id from clientes later
       });
 
       // Sum all receivables for this vendedor (simplified: all receivables / vendedores count)

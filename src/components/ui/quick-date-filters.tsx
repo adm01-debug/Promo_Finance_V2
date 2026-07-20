@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Calendar, CalendarDays, CalendarRange, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subMonths, format } from 'date-fns';
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export type DateFilterOption = 'all' | 'today' | 'week' | 'month' | 'last7' | 'last30' | 'overdue';

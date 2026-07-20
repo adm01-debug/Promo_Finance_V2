@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RankLegend } from '@/components/ui/rank-badge';
-import { Filter, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { StandardFilterSection } from '@/components/shared/StandardFilterSection';
 
 const itemVariants = {

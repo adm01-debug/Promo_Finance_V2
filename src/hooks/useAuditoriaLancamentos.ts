@@ -27,26 +27,6 @@ export interface UseAuditoriaLancamentosParams {
   limit?: number;
 }
 
-const PROFILE_CACHE = new Map<string, string>();
-
-async function resolveUserEmails(userIds: string[]): Promise<Record<string, string>> {
-  const missing = userIds.filter((id) => id && !PROFILE_CACHE.has(id));
-  if (missing.length > 0) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, email, full_name')
-      .in('id', missing);
-    (data || []).forEach((p) => {
-      PROFILE_CACHE.set(p.id, p.full_name || p.email || p.id);
-    });
-  }
-  const out: Record<string, string> = {};
-  userIds.forEach((id) => {
-    if (id) out[id] = PROFILE_CACHE.get(id) || id;
-  });
-  return out;
-}
-
 export function useAuditoriaLancamentos(params: UseAuditoriaLancamentosParams) {
   const { empresaId, ano, operacao = 'ALL', tabela = 'ALL', search = '', limit = 500 } = params;
 

@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Dice5, TrendingUp, TrendingDown, Target, Info, RefreshCw, Loader2 } from 'lucide-react';
+import { Dice5, TrendingUp, TrendingDown, Info, RefreshCw, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   ResponsiveContainer, 

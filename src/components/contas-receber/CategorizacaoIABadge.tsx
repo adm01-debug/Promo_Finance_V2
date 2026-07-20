@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Check, X, Loader2, Tag, FolderOpen } from 'lucide-react';
+import { Sparkles, Check, Loader2, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Popover,
   PopoverContent,
@@ -32,7 +31,6 @@ interface CategorizacaoIABadgeProps {
 
 export function CategorizacaoIABadge({
   despesa,
-  categoriaAtual,
   onAplicar,
   size = 'sm',
 }: CategorizacaoIABadgeProps) {

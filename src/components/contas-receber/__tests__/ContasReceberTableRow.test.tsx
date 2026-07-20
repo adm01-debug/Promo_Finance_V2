@@ -76,7 +76,7 @@ describe('ContasReceberTableRow', () => {
   // ===== #14: Coluna Empresa =====
   describe('Gap #14 - Coluna Empresa', () => {
     it('mostra coluna empresa quando showEmpresa=true', () => {
-      const { container } = renderRow(
+      renderRow(
         { empresas: { razao_social: 'Minha Empresa LTDA', nome_fantasia: 'MinhaEmpresa' } as any },
         { showEmpresa: true }
       );
@@ -344,7 +344,7 @@ describe('ContasReceberTableRow', () => {
   // ===== Score do cliente =====
   describe('Score do cliente', () => {
     it('exibe score >= 800 com cor success', () => {
-      const { container } = renderRow({ clientes: { razao_social: 'X', nome_fantasia: null, score: 850 } });
+      renderRow({ clientes: { razao_social: 'X', nome_fantasia: null, score: 850 } });
       expect(screen.getByText('850')).toBeInTheDocument();
       expect(screen.getByText('Excelente')).toBeInTheDocument();
     });
@@ -371,7 +371,6 @@ describe('ContasReceberTableRow', () => {
       const onDesconto = vi.fn();
       renderRow({ status: 'pendente' }, { onAplicarDesconto: onDesconto });
       // O dropdown existe
-      const moreButton = screen.getAllByRole('button').find(b => b.querySelector('[class*="lucide-more"]') || b.textContent === '');
       // Dropdown is hidden until clicked, but the component is mounted
     });
   });

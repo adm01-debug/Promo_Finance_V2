@@ -1,7 +1,7 @@
 // COMPONENTE: IMPORTAÇÃO XML NF-e
 
 import { useCallback } from 'react';
-import { Upload, FileText, CheckCircle, XCircle, Trash2, FileUp } from 'lucide-react';
+import { Upload, Trash2, FileUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

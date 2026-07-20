@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useDivergenciasConciliacao } from '@/hooks/useDivergenciasConciliacao';
 import { useConciliacaoAudit } from '@/hooks/useConciliacaoAudit';
-import { AlertTriangle, CheckCircle, Clock, ShieldCheck, Loader2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ShieldCheck, Loader2 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 
 export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string }) {

@@ -53,11 +53,11 @@ export function Collapse({
     } else {
       setHeight(contentHeight);
       // Force reflow
-      contentRef.current.offsetHeight;
+      void contentRef.current.offsetHeight;
       requestAnimationFrame(() => {
         setHeight(0);
         setIsAnimating(true);
-        const timer = setTimeout(() => {
+        setTimeout(() => {
           setIsAnimating(false);
         }, duration);
       });

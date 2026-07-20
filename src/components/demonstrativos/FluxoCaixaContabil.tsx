@@ -22,7 +22,7 @@ interface FluxoLinha {
   tipo: 'entrada' | 'saida' | 'subtotal' | 'total';
 }
 
-export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaContabilProps) => {
+export const FluxoCaixaContabil = ({ mes, ano, empresaId }: FluxoCaixaContabilProps) => {
   const { data: contasReceber } = useContasReceber();
   const { data: contasPagar } = useContasPagar();
   const { data: contasBancarias } = useContasBancarias();
@@ -30,7 +30,6 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
   const fluxo = useMemo(() => {
     const dataInicio = new Date(ano, mes, 1);
     const dataFim = new Date(ano, mes + 1, 0);
-    const mesAnteriorFim = new Date(ano, mes, 0);
 
     // Filtrar por empresa
     const bancosEmpresa = (contasBancarias || []).filter(
@@ -157,9 +156,6 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
       fluxoFinanciamento
     };
   }, [contasReceber, contasPagar, contasBancarias, mes, ano, empresaId]);
-
-  const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   const renderLinha = (linha: FluxoLinha, index: number) => (
     <motion.tr

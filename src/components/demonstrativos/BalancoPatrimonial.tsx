@@ -1,14 +1,11 @@
 import { motion } from 'framer-motion';
-import { Scale, ArrowRight, AlertTriangle, CheckCircle2, ShieldCheck, Wallet } from 'lucide-react';
+import { Scale, AlertTriangle, ShieldCheck, Wallet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useDemonstrativosContabeis, type FonteDemonstrativo, type BalancoLinha } from '@/hooks/useDemonstrativosContabeis';
-import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 import { BalancoDesequilibrioIndicator } from '@/components/demonstrativos/BalancoDesequilibrioIndicator';
 
 interface BalancoPatrimonialProps {
@@ -19,30 +16,8 @@ interface BalancoPatrimonialProps {
   fonte?: FonteDemonstrativo;
 }
 
-export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'competencia' }: BalancoPatrimonialProps) => {
+export const BalancoPatrimonial = ({ mes, ano, empresaId, fonte = 'competencia' }: BalancoPatrimonialProps) => {
   const { balanco, origem, isLoading } = useDemonstrativosContabeis({ empresaId, ano, mes, fonte });
-
-  const linhasPDF = [
-    ...balanco.ativo.map((c) => ({
-      codigo: c.codigo,
-      descricao: c.descricao,
-      valor: c.valor,
-      percentual: balanco.totalAtivo > 0 ? (c.valor / balanco.totalAtivo) * 100 : 0,
-      nivel: c.nivel,
-      tipo: 'ativo',
-    })),
-    ...balanco.passivo.map((c) => ({
-      codigo: c.codigo,
-      descricao: c.descricao,
-      valor: c.valor,
-      percentual: balanco.totalPassivo > 0 ? (c.valor / balanco.totalPassivo) * 100 : 0,
-      nivel: c.nivel,
-      tipo: 'passivo',
-    })),
-  ];
-
-  const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   const renderConta = (conta: BalancoLinha, index: number, total: number) => (
     <motion.tr

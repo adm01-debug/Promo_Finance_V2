@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/formatters';
-import { cn } from '@/lib/utils';
 import { Plus, Zap, Star, Trash2, Search, QrCode } from 'lucide-react';
 import { usePixTemplates, useCreatePixTemplate, useDeletePixTemplate, useIncrementTemplateUso } from '@/hooks/usePixTemplates';
 import { useEmpresas } from '@/hooks/useFinancialData';

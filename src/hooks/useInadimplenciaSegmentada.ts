@@ -15,17 +15,6 @@ export interface PredicaoInadimplencia {
   status: string;
 }
 
-interface ContaReceberComCliente {
-  id: string;
-  valor: number;
-  valor_recebido: number | null;
-  data_vencimento: string;
-  status: string;
-  cliente_id: string | null;
-  vendedor_id: string | null;
-  clientes: { ramo_atividade: string | null } | null;
-}
-
 export interface VendedorData {
   id: string;
   nome: string;

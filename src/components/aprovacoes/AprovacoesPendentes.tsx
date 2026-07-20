@@ -24,7 +24,6 @@ import { EmptyState } from '@/components/ui/micro-interactions';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { WorkflowVisualizer } from './WorkflowVisualizer';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 
 export const AprovacoesPendentes = () => {
   const { data: solicitacoes, isLoading } = useSolicitacoesPendentes();

@@ -25,7 +25,7 @@ export function DataTable<T>({
   data, columns, keyExtractor, loading = false, emptyMessage = 'Nenhum registro encontrado', emptyIcon,
   sortable = false, defaultSort, onSort, pagination = false, pageSize: initialPageSize = 10,
   pageSizeOptions = [5, 10, 25, 50], selectable = false, selectedKeys = new Set(), onSelectionChange,
-  className, striped = false, hoverable = true, compact = false, onRowClick, rowClassName,
+  className, striped = false, compact = false, onRowClick, rowClassName,
 }: DataTableProps<T>) {
   const [internalSort, setInternalSort] = useState<SortState | null>(defaultSort || null);
   const sort = onSort ? defaultSort || null : internalSort;

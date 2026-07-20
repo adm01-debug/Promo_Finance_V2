@@ -2,7 +2,6 @@
 // Engine de cálculo para IBS, CBS e IS
 
 import {
-  TipoTributoNovo,
   FaseTransicao,
   CategoriaIS,
   RegimeEspecial,

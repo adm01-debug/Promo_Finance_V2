@@ -352,7 +352,7 @@ export function useConciliacaoPage() {
       if (error) throw error;
       setTransacoes(prev => prev.filter(t => t.id !== id));
       toast.info('Transação marcada como ignorada');
-    } catch (err) {
+    } catch {
       toast.error('Erro ao ignorar transação');
     }
   }, []);

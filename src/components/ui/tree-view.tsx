@@ -23,7 +23,7 @@ interface TreeViewProps {
 export function TreeView({
   data, selectedIds: controlledSelectedIds, expandedIds: controlledExpandedIds,
   onSelect, onExpand, onNodeAction, multiSelect = false, showActions = false,
-  showCheckboxes = false, editable = false, defaultExpandAll = false, defaultCollapseAll = false,
+  showCheckboxes = false, editable = false, defaultExpandAll = false,
   className, emptyMessage = 'Nenhum item encontrado',
 }: TreeViewProps) {
   const getAllNodeIds = useCallback((nodes: TreeNode[]): string[] => {

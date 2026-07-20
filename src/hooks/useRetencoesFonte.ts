@@ -1,11 +1,11 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: RETENÇÕES NA FONTE
 // IRRF, CSRF, INSS, ISS, CBS, IBS
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { format, addDays, endOfMonth } from 'date-fns';
+import { format, endOfMonth } from 'date-fns';
 
 export type TipoRetencao = 'irrf' | 'csrf' | 'pis_cofins_csll' | 'inss' | 'iss' | 'cbs' | 'ibs';
 export type StatusRetencao = 'pendente' | 'recolhido' | 'compensado' | 'cancelado';

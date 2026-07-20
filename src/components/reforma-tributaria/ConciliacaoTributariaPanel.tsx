@@ -1,7 +1,7 @@
 // COMPONENTE: CONCILIAÇÃO TRIBUTÁRIA AUTOMÁTICA
 
 import { useState } from 'react';
-import { RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
+import { RefreshCw, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

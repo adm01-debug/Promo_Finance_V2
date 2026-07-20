@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Type, 
   Palette, 
-  Ruler, 
   Component, 
   AlertTriangle, 
   CheckCircle2, 
   Zap, 
-  Layout, 
   Search,
   ArrowRight
 } from "lucide-react";
@@ -60,7 +56,6 @@ export const DesignSystemAudit = () => {
       // Real DOM scan for typography inconsistencies
       const allElements = document.querySelectorAll('*');
       const fontFamilies = new Set<string>();
-      const nonTokenElements = 0;
       
       allElements.forEach(el => {
         const style = window.getComputedStyle(el);

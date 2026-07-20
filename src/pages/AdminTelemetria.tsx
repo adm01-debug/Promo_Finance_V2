@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -217,29 +216,6 @@ export default function AdminTelemetriaPage() {
   const formatDuration = (ms: number) => {
     if (ms >= 1000) return `${(ms / 1000).toFixed(1)}s`;
     return `${ms}ms`;
-  };
-
-  const formatTime = (iso: string) => {
-    return new Date(iso).toLocaleString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
-    });
-  };
-
-  const getSeverityBadge = (severity: string) => {
-    switch (severity) {
-      case "very_slow":
-        return <Badge className="bg-destructive/20 text-destructive border-destructive/30 text-[10px]">🔴 Muito Lenta</Badge>;
-      case "slow":
-        return <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/30 text-[10px]">🟡 Lenta</Badge>;
-      case "error":
-        return <Badge className="bg-destructive/20 text-destructive border-destructive/30 text-[10px]">❌ Erro</Badge>;
-      default:
-        return <Badge variant="secondary" className="text-[10px]">{severity}</Badge>;
-    }
   };
 
   return (

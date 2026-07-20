@@ -53,7 +53,6 @@ export function ClienteDetailDialog({ cliente, open, onOpenChange }: ClienteDeta
   const totalContas = contasReceber?.length || 0;
   const totalValor = contasReceber?.reduce((acc, c) => acc + Number(c.valor), 0) || 0;
   const totalRecebido = contasReceber?.reduce((acc, c) => acc + Number(c.valor_recebido || 0), 0) || 0;
-  const contasPagas = contasReceber?.filter(c => c.status === 'pago').length || 0;
   const contasVencidas = contasReceber?.filter(c => c.status === 'vencido').length || 0;
 
   return (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Calendar, RefreshCw, Plus, Eye, Edit, Trash2, Loader2 } from 'lucide-react';
+import { FileText, Plus, Trash2, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { useContratos, useCreateContrato, useUpdateContrato, useDeleteContrato } from '@/hooks/useContratos';
+import { useContratos, useCreateContrato, useDeleteContrato } from '@/hooks/useContratos';
 
 const statusColors: Record<string, string> = {
   ativo: 'bg-success/10 text-success border-success/30',
@@ -23,7 +23,6 @@ const statusColors: Record<string, string> = {
 export function GestaoContratos() {
   const { data: contratos, isLoading } = useContratos();
   const createContrato = useCreateContrato();
-  const updateContrato = useUpdateContrato();
   const deleteContrato = useDeleteContrato();
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState({

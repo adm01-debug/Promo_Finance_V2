@@ -17,7 +17,6 @@ import {
   CheckCircle2, 
   Clock,
   DollarSign,
-  ArrowRight,
   Calculator,
   Plus,
 } from 'lucide-react';
@@ -41,7 +40,6 @@ export function SplitPaymentPanel() {
   const { data: empresas = [] } = useAllEmpresas();
   const {
     transacoes,
-    isLoading,
     estatisticas,
     calcularSplit,
     registrarTransacao,

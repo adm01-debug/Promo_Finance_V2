@@ -7,13 +7,12 @@ export function useWhatsAppCobrancaHistory(contaReceberId?: string) {
   return useQuery({
     queryKey: ['historico-cobranca-whatsapp', contaReceberId],
     queryFn: async () => {
-      // @ts-ignore - Type instantiation deep
       const baseQuery = supabase.from('historico_cobranca_whatsapp').select('*');
       
       let query = baseQuery.order('created_at', { ascending: false });
 
       if (contaReceberId) {
-        // @ts-ignore - Type instantiation deep
+        // @ts-expect-error -- instanciação de tipos excessivamente profunda no client supabase
         query = query.eq('conta_receber_id', contaReceberId);
       }
 
@@ -34,7 +33,6 @@ export function useCreateWhatsAppCobranca() {
       mensagem: string;
       regua_id?: string;
     }) => {
-      // @ts-ignore - Type instantiation deep
       const { data, error } = await supabase
         .from('historico_cobranca_whatsapp')
         .insert({

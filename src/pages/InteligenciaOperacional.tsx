@@ -4,7 +4,7 @@ import { AlertasPreditivosPanel } from '@/components/dashboard/AlertasPreditivos
 import { MetasFinanceirasPanel } from '@/components/dashboard/MetasFinanceirasPanel';
 import { PlanosAcaoPanel } from '@/components/dashboard/PlanosAcaoPanel';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Sparkles, BrainCircuit, Target, ClipboardCheck } from 'lucide-react';
+import { BrainCircuit } from 'lucide-react';
 
 import { motion } from 'framer-motion';
 

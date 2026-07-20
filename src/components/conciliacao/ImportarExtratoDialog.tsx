@@ -76,7 +76,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
       toast.success('Conexão Open Finance estabelecida', {
         description: 'Transações sincronizadas com sucesso.'
       });
-    } catch (error) {
+    } catch {
       setStep('error');
     } finally {
       clearInterval(interval);

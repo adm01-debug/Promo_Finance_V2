@@ -1,4 +1,4 @@
-import { test, expect, ConciliacaoPage, generateCNPJ } from './fixtures';
+import { test, expect, ConciliacaoPage } from './fixtures';
 
 test.describe('Conciliação Bancária E2E', () => {
   test.beforeEach(async ({ page }) => {
@@ -123,8 +123,6 @@ NEWFILEUID:NONE
   });
 
   test('deve suportar múltiplas contas bancárias e CNPJs', async ({ page }) => {
-    const conciliacaoPage = new ConciliacaoPage(page);
-    
     // Verificar se o seletor de bancos existe e tem opções
     await page.getByRole('combobox', { name: /banco/i }).click();
     const options = page.getByRole('option');

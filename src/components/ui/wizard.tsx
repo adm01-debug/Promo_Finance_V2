@@ -4,13 +4,11 @@ import {
   createContext,
   useContext,
   ReactNode,
-  useMemo,
 } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
   Check,
-  Circle,
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -91,7 +89,7 @@ export function Wizard({
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [data, setDataState] = useState<Record<string, unknown>>(initialData);
-  const [isValidating, setIsValidating] = useState(false);
+  const [, setIsValidating] = useState(false);
 
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === steps.length - 1;

@@ -8,9 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Star, StarOff, X, ChevronDown, Building2, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRecentItems } from '@/hooks/useRecentItems';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useUserEmpresas, getCurrentEmpresaId, setCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 
 interface RecentAndFavoritesProps {
@@ -26,7 +25,6 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   const { data: vinculos = [] } = useUserEmpresas();
   const currentEmpresaId = getCurrentEmpresaId();
 
-  const hasItems = recentItems.length > 0 || favoriteItems.length > 0 || vinculos.length > 0;
 
   if (collapsed) return null;
 

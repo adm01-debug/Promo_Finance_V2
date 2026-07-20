@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Printer, Mail, CheckCircle2, Copy, Check, History, Clock, Share2, RefreshCw, Barcode, AlertTriangle, FileText, TrendingUp, TrendingDown } from 'lucide-react';
+import { Download, Printer, Mail, CheckCircle2, Copy, Check, History, Clock, Share2, RefreshCw, Barcode, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
@@ -196,7 +196,6 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
           <Button 
             variant="outline" 
             onClick={() => {
-              // @ts-ignore
               if (window.syncBitrixBoleto) window.syncBitrixBoleto(boleto.id);
             }} 
             className="gap-2"

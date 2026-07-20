@@ -1,5 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 
 // We test the pure logic functions extracted from useContasReceberLogic
 // Since the hook uses many external dependencies, we test the KPI calculation logic directly

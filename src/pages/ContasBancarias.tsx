@@ -16,7 +16,6 @@ import {
 import { RegrasConciliacaoDialog } from '@/components/contas-bancarias/RegrasConciliacaoDialog';
 import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
 
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -264,7 +263,6 @@ export default function ContasBancarias() {
           open={importarOpen} 
           onOpenChange={setImportarOpen} 
           onImportSuccess={(extrato) => {
-            if (import.meta.env.DEV) console.log('Extrato importado:', extrato);
             toast.success(`${extrato.transacoes.length} transações importadas com sucesso para processamento.`);
             setImportarOpen(false);
             queryClient.invalidateQueries({ queryKey: ['extratos-bancarios'] });

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowDownRight, CheckCircle2, TrendingUp, TrendingDown, AlertTriangle, Building2, BarChart3, Clock, Zap } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Cell } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
 
 const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor, onClick }: any) => (

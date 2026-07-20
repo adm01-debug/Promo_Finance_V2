@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { AlertTriangle, Calculator, Calendar, Percent, DollarSign } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/formatters';
 import { differenceInDays, parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

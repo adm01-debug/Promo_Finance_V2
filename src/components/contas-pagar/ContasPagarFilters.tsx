@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
-import { cn } from '@/lib/utils';
 import { StandardFilterSection } from '../shared/StandardFilterSection';
 
 interface CentroCusto {

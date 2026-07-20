@@ -36,6 +36,8 @@ export const test = base.extend<{
   testData: TestData;
   helpers: TestHelpers;
 }>({
+  // Playwright fixtures require the object-destructuring pattern even when unused
+  // eslint-disable-next-line no-empty-pattern
   testData: async ({}, use) => {
     const testData: TestData = {
       conta: {

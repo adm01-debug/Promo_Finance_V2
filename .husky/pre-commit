@@ -1,13 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔍 Running lint..."
-npm run lint
-
-echo "💅 Running format check..."
-npm run format:check
-
-echo "🧪 Running tests..."
-npm run test:changed
-
-echo "✅ Pre-commit checks passed!"
+# Valida apenas os arquivos staged (eslint --fix + prettier via lint-staged).
+# Os gates pesados (type-check, suite completa, build) rodam no CI.
+npx lint-staged

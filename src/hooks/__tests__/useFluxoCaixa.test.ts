@@ -9,9 +9,6 @@ import React from 'react';
 
 const eqMock = vi.fn();
 const inMock = vi.fn();
-const gteMock = vi.fn();
-const lteMock = vi.fn();
-const orderMock = vi.fn();
 const selectMock = vi.fn();
 
 vi.mock('@/integrations/supabase/client', () => ({

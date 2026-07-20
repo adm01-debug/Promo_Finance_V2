@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Loader2, FileText, FileJson, FileDown } from 'lucide-react';
+import { Loader2, FileText, FileJson, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

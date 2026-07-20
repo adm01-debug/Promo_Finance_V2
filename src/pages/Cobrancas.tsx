@@ -2,15 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import {
-  Send, Mail, MessageSquare, Phone, Smartphone, Target, TrendingUp,
-  AlertTriangle, CheckCircle2, Clock, DollarSign, Filter, Plus,
-  Settings, BarChart3, Eye, RefreshCcw, Loader2, Bot, FileText, Shield, Gavel,
-  PieChart as PieChartIcon, BrainCircuit
+  Send, Mail, MessageSquare, Phone, Target,
+  AlertTriangle, CheckCircle2, Plus, BarChart3, Loader2, FileText
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatCurrency } from '@/lib/formatters';
@@ -22,9 +19,7 @@ import {
 import { 
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
 } from 'recharts';
-import { AcordoParcelamentoDialog } from '@/components/cobranca/AcordoParcelamentoDialog';
 import { NegociacaoIA } from '@/components/cobranca/NegociacaoIA';
-import { PrevisaoInadimplencia } from '@/components/cobranca/PrevisaoInadimplencia';
 import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
 import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
 import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesProtestosPanel';
@@ -66,7 +61,7 @@ export default function Cobrancas() {
   const { data: kpis, isLoading: loadingKpis } = useCobrancaKPIs();
   const { data: agingData, isLoading: loadingAging } = useAgingData();
   const { data: topDevedores, isLoading: loadingDevedores } = useTopDevedores(10);
-  const { data: etapasCount, isLoading: loadingEtapas } = useEtapasCobranca();
+  const { data: etapasCount } = useEtapasCobranca();
   
   const [selectedDevedor, setSelectedDevedor] = useState<any>(null);
 

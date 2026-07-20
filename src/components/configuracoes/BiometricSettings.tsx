@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
-import { useAuth } from '@/hooks/useAuth';
 import { 
   Fingerprint, 
   Plus, 
@@ -30,7 +29,6 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function BiometricSettings() {
-  const { user } = useAuth();
   const {
     isSupported,
     isLoading,

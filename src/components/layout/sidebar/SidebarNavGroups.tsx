@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   ArrowDownCircle,
   ArrowUpCircle,
-  Package,
   Landmark,
   FileText,
   PieChart,
@@ -34,18 +33,13 @@ import {
   Scale,
   Sparkles,
   Wallet,
-  FolderOpen,
   UserCog,
-  Wrench,
   FileSignature,
   Calculator,
   Camera,
   ArrowLeftRight,
   FileCheck,
   BookOpen,
-  CheckCircle,
-  EyeOff,
-  History,
   Target,
   Brain,
   BrainCircuit,
@@ -223,31 +217,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
   const { data: whatsappUnread = 0 } = useWhatsAppUnreadCount();
   const { user } = useAuth();
-  const [syncStatus, setSyncStatus] = useState<Record<string, boolean>>({});
-  
+
   useRealtimeAlertas();
   useRealtimeAnomalias();
-
-  // Monitora filtros sincronizados para a empresa ativa
-  useEffect(() => {
-    const checkSync = () => {
-      const keys = ['contas-receber-filters', 'contas-pagar-filters', 'conciliacao_filters', 'aging_filters', 'app-dashboard-receber-filters'];
-      const status: Record<string, boolean> = {};
-      keys.forEach(k => {
-        const val = localStorage.getItem(k);
-        if (val) status[k] = true;
-      });
-      setSyncStatus(status);
-    };
-
-    checkSync();
-    window.addEventListener('current-empresa-changed', checkSync);
-    window.addEventListener('storage', checkSync);
-    return () => {
-      window.removeEventListener('current-empresa-changed', checkSync);
-      window.removeEventListener('storage', checkSync);
-    };
-  }, []);
 
   // Track which groups are open
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
@@ -285,15 +257,6 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     return undefined;
   };
 
-  // Helper to determine if an item is synced
-  const isItemSynced = (href: string) => {
-    if (href === '/contas-receber' || href === '/dashboard-receber') return syncStatus['contas-receber-filters'] || syncStatus['app-dashboard-receber-filters'];
-    if (href === '/contas-pagar' || href === '/dashboard-pagar') return syncStatus['contas-pagar-filters'];
-    if (href === '/conciliacao' || href === '/dashboard-conciliacao') return syncStatus['conciliacao_filters'];
-    if (href === '/cobrancas' || href === '/dashboard-aging') return syncStatus['aging_filters'];
-    return false;
-  };
-
   // Check if group has active item
   const groupHasActiveItem = (group: NavGroup): boolean => {
     return group.items.some(item => location.pathname === item.href);
@@ -302,7 +265,6 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   // Render nav item
   const NavItemComponent = ({ item }: { item: NavItem }) => {
     const isActive = location.pathname === item.href;
-    const isSynced = isItemSynced(item.href);
     const Icon = item.icon;
     const badge = getBadgeCount(item.badgeKey);
 

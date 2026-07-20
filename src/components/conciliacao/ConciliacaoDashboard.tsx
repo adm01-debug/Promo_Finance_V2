@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
-  Target, TrendingUp, Brain, Zap, ArrowUpRight, ArrowDownRight,
+  Target, TrendingUp, Brain, Zap,
   AlertCircle, Bell
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';

@@ -4,26 +4,13 @@ import {
   Settings,
   Bell,
   Mail,
-  MessageSquare,
-  Phone,
   Clock,
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  Copy,
   ChevronRight,
-  AlertTriangle,
   CheckCircle2,
-  Users,
-  Building2,
   CreditCard,
-  Palette,
-  Globe,
   Shield,
   Database,
   Zap,
-  ToggleLeft,
   Timer,
   Link2,
   FileText,
@@ -33,7 +20,6 @@ import {
 import { RegrasRoteamentoTab } from '@/components/configuracoes/RegrasRoteamentoTab';
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
 import { WhatsAppConfigPanel } from '@/components/integracoes/WhatsAppConfigPanel';
-import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { CronJobsPanel } from '@/components/configuracoes/CronJobsPanel';
 import { CronJobsStatus } from '@/components/admin/CronJobsStatus';
 import { SecuritySettings } from '@/components/configuracoes/SecuritySettings';
@@ -47,35 +33,17 @@ import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/Configura
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+
+
+
+
+
+
 import { Slider } from '@/components/ui/slider';
-import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { EtapaReguaCobranca } from '@/types/financial';
 import { ReguaCobrancaTab } from '@/components/configuracoes/ReguaCobrancaTab';
@@ -91,11 +59,6 @@ const containerVariants = {
     opacity: 1,
     transition: { staggerChildren: 0.05 }
   }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 }
 };
 
 interface EtapaConfig {
@@ -153,18 +116,11 @@ const templatesIniciais: Template[] = [
   },
 ];
 
-const canaisConfig = {
-  email: { label: 'E-mail', icon: Mail, color: 'bg-secondary' },
-  sms: { label: 'SMS', icon: MessageSquare, color: 'bg-success' },
-  whatsapp: { label: 'WhatsApp', icon: Phone, color: 'bg-success' },
-  telefone: { label: 'Telefone', icon: Phone, color: 'bg-accent' },
-};
-
 export default function Configuracoes() {
   const [etapas, setEtapas] = useState<EtapaConfig[]>(etapasIniciais);
-  const [templates, setTemplates] = useState<Template[]>(templatesIniciais);
+  const [templates] = useState<Template[]>(templatesIniciais);
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [selectedTemplate] = useState<Template | null>(null);
   const { toast } = useToast();
 
   // Preferências do Sistema

@@ -1,19 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Paperclip, X, Download, FileText, Loader2, Trash2, Eye, Plus } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Paperclip, Download, FileText, Loader2, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-
-interface Anexo {
-  id: string;
-  nome_arquivo: string;
-  url_publica: string;
-  tipo_arquivo: string;
-  tamanho_bytes: number;
-}
 
 interface AnexoListProps {
   entidadeId: string;

@@ -119,8 +119,6 @@ export function CronJobsPanel() {
   // Ativar/desativar job
   const toggleJobMutation = useMutation({
     mutationFn: async ({ jobId, active }: { jobId: number; active: boolean }) => {
-      const action = active ? 'cron.schedule' : 'cron.unschedule';
-      
       // Para ativar/desativar, precisamos usar uma edge function ou SQL direto
       const { error } = await supabaseDyn.rpc('toggle_cron_job', {
         job_id: jobId,

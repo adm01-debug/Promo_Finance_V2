@@ -1,7 +1,7 @@
 // DASHBOARD REFORMA TRIBUTÁRIA
 // Visão executiva para empresas Lucro Real
 
-import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { sounds } from '@/lib/sound-feedback';
-import { Check, Sparkles, PartyPopper, Zap, Heart, Star, Trophy, Target } from 'lucide-react';
+import { Sparkles, PartyPopper, Zap, Heart, Star, Trophy, Target } from 'lucide-react';
 
 // HAPTIC FEEDBACK
 export function triggerHaptic(type: 'light' | 'medium' | 'heavy' | 'success' | 'error' = 'light') {

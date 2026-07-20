@@ -4,39 +4,31 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { 
   FileText, 
-  Download, 
   Eye, 
   Plus, 
   Search, 
-  Copy, 
-  Check,
-  Printer,
+  Copy,
   Mail,
   Barcode,
   Clock,
   CheckCircle2,
   XCircle,
   AlertCircle,
-  RefreshCw,
   Ban,
   History as HistoryIcon
 } from 'lucide-react';
 
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
-import { useBoletos, Boleto, NovoBoletoData } from '@/hooks/useBoletos';
+import { useBoletos, Boleto } from '@/hooks/useBoletos';
 import { toastWithUndo } from '@/lib/toast-with-undo';
-import { BoletoBarcode } from '@/components/boletos/BoletoBarcode';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/micro-interactions';
 
@@ -61,26 +53,6 @@ const statusConfig = {
   cancelado: { label: 'Cancelado', color: 'bg-muted text-muted-foreground border-muted', icon: AlertCircle }
 };
 
-// Barcode component
-const BarcodeVisual = ({ code }: { code: string }) => {
-  const bars = code.split('').map((char, i) => {
-    const width = parseInt(char) % 2 === 0 ? 2 : 1;
-    const isBlack = i % 2 === 0;
-    return { width, isBlack };
-  });
-
-  return (
-    <div className="flex items-end h-16 bg-card p-2 rounded">
-      {bars.map((bar, i) => (
-        <div
-          key={i}
-          className={bar.isBlack ? 'bg-black' : 'bg-card'}
-          style={{ width: `${bar.width}px`, height: '100%' }}
-        />
-      ))}
-    </div>
-  );
-};
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
 import { BoletoGlobalHistory } from '@/components/boletos/BoletoGlobalHistory';
@@ -88,7 +60,7 @@ import { BoletoGlobalHistory } from '@/components/boletos/BoletoGlobalHistory';
 export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
-  const [selectedBoleto, setSelectedBoleto] = useState<Boleto | null>(null);
+  const [, setSelectedBoleto] = useState<Boleto | null>(null);
   const [showNovoBoleto, setShowNovoBoleto] = useState(new URLSearchParams(window.location.search).get('novo') === 'true');
   const [activeTab, setActiveTab] = useState('lista');
 
@@ -106,7 +78,6 @@ export default function Boletos() {
   } = useBoletos();
 
   // Make syncBitrixBoleto available for the preview panel
-  // @ts-ignore
   window.syncBitrixBoleto = syncBitrixBoleto;
 
   const filteredBoletos = boletos?.filter(boleto => {

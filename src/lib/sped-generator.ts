@@ -368,8 +368,8 @@ export function gerarEFD_IBS_CBS(
 export function gerarEFD_Contribuicoes(
   empresa: DadosEmpresa,
   competencia: string,
-  operacoes: OperacaoTributavel[],
-  creditos: CreditoTributario[]
+  _operacoes: OperacaoTributavel[],
+  _creditos: CreditoTributario[]
 ): string {
   const linhas: string[] = [];
   const [ano, mes] = competencia.split('-');

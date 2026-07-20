@@ -6,17 +6,14 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from '@/components/ui/command';
 import {
   Home,
@@ -37,7 +34,6 @@ import {
   ArrowDownCircle,
   BarChart3,
   Target,
-  CreditCard,
   Building2,
   Receipt,
   Calculator,
@@ -79,7 +75,7 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   // Open on Ctrl/Cmd + K
   useEffect(() => {

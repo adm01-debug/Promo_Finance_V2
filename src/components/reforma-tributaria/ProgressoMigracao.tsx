@@ -20,7 +20,7 @@ const MARCOS = [
   { percent: 100, year: '2033', label: 'Completo' },
 ];
 
-export function ProgressoMigracao({ percentual, fase }: Props) {
+export function ProgressoMigracao({ percentual }: Props) {
   return (
     <Card className="overflow-hidden">
       <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">

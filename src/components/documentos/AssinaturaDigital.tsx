@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { PenTool, FileSignature, CheckCircle, Clock, Send, X } from 'lucide-react';
+import { FileSignature, CheckCircle, Clock, Send, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -20,7 +19,7 @@ interface AssinaturaDigitalProps {
   onAssinaturaConcluida?: (signatarios: Signatario[]) => void;
 }
 
-export function AssinaturaDigital({ documentoId, documentoNome = 'Documento', onAssinaturaConcluida }: AssinaturaDigitalProps) {
+export function AssinaturaDigital({ documentoNome = 'Documento', onAssinaturaConcluida }: AssinaturaDigitalProps) {
   const [signatarios, setSignatarios] = useState<Signatario[]>([]);
   const [novoNome, setNovoNome] = useState('');
   const [novoEmail, setNovoEmail] = useState('');
@@ -75,7 +74,7 @@ export function AssinaturaDigital({ documentoId, documentoNome = 'Documento', on
 
         {signatarios.length > 0 && (
           <div className="space-y-2">
-            {signatarios.map((sig, idx) => (
+            {signatarios.map((sig) => (
               <motion.div key={sig.email} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="flex items-center justify-between p-2 rounded border">
                 <div>

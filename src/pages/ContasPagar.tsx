@@ -21,7 +21,6 @@ import { QuickDateFilters } from '@/components/ui/quick-date-filters';
 import { useContasPagarLogic } from '@/hooks/useContasPagarLogic';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { formatCurrency } from '@/lib/formatters';
-import { cn } from '@/lib/utils';
 
 const containerVariants = {
   hidden: { opacity: 0 },
