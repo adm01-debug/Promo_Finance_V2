@@ -5,6 +5,25 @@ import { toast } from 'sonner';
 // NOTE: movimentacoes are primarily created by triggers (transferências, pagamentos).
 // Direct inserts should only be used for manual adjustments by admins.
 
+export interface Movimentacao {
+  id: string;
+  empresa_id: string;
+  conta_bancaria_id: string;
+  tipo: 'entrada' | 'saida';
+  descricao: string;
+  valor: number;
+  data_movimentacao: string;
+  categoria_id?: string | null;
+  conta_pagar_id?: string | null;
+  conta_receber_id?: string | null;
+  origem?: string | null;
+  observacoes?: string | null;
+  conciliada?: boolean | null;
+  deleted_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 export interface MovimentacaoInput {
   empresa_id: string;
   conta_bancaria_id: string;
@@ -19,7 +38,10 @@ export interface MovimentacaoInput {
   observacoes?: string;
 }
 
-export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate?: string; endDate?: string }) {
+export function useMovimentacoes(
+  contaBancariaId?: string,
+  filters?: { startDate?: string; endDate?: string }
+) {
   return useQuery({
     queryKey: ['movimentacoes', contaBancariaId, filters],
     queryFn: async () => {
@@ -35,7 +57,7 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
 
       const { data, error } = await query.limit(500);
       if (error) throw error;
-      return (data ?? []) as Record<string, unknown>[];
+      return (data ?? []) as Movimentacao[];
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -46,11 +68,7 @@ export function useCreateMovimentacao() {
 
   return useMutation({
     mutationFn: async (input: MovimentacaoInput) => {
-      const { data, error } = await supabase
-        .from('movimentacoes')
-        .insert(input)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('movimentacoes').insert(input).select().single();
       if (error) throw error;
       return data;
     },
