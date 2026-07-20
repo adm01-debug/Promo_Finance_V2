@@ -1,14 +1,27 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown, ChevronRight, ChevronDown, Wand2, Loader2, Copy, Check } from 'lucide-react';
+import {
+  Download,
+  FileArchive,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  ShieldAlert,
+  Search,
+  X,
+  FileJson,
+  FileText,
+  FileDown,
+  ChevronRight,
+  ChevronDown,
+  Wand2,
+  Loader2,
+  Copy,
+  Check,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import {
-  applyPdfLayout,
-  getAutoTableMargins,
-  getContentStartY,
-  PDF_BRAND,
-} from '@/lib/pdf-layout';
+import { applyPdfLayout, getAutoTableMargins, getContentStartY, PDF_BRAND } from '@/lib/pdf-layout';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { agruparValidacoes } from '@/lib/sped-validacoes-categorias';
@@ -51,7 +64,6 @@ export interface ValidacoesPreSpedArquivo {
   total_linhas?: number | null;
 }
 
-
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -60,7 +72,13 @@ interface Props {
   onDownloadZip: () => void;
 }
 
-export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloadTxt, onDownloadZip }: Props) {
+export function ValidacoesPreSpedDialog({
+  open,
+  onOpenChange,
+  arquivo,
+  onDownloadTxt,
+  onDownloadZip,
+}: Props) {
   const [busca, setBusca] = useState('');
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
   const [isAiCorrecting, setIsAiCorrecting] = useState(false);
@@ -80,17 +98,18 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
   const termo = busca.trim().toLowerCase();
   const errosFiltrados = useMemo(
     () => (termo ? erros.filter((e) => e.toLowerCase().includes(termo)) : erros),
-    [erros, termo],
+    [erros, termo]
   );
   const avisosFiltrados = useMemo(
     () => (termo ? avisos.filter((a) => a.toLowerCase().includes(termo)) : avisos),
-    [avisos, termo],
+    [avisos, termo]
   );
 
   const toggleCategoria = (id: string) => {
     setExpandedCats((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -102,7 +121,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
   // Expandir automaticamente se houver busca ou se houver poucos grupos
   useEffect(() => {
     if (busca.trim() || agrupados.length <= 2) {
-      setExpandedCats(new Set(agrupados.map(a => a.categoria.id)));
+      setExpandedCats(new Set(agrupados.map((a) => a.categoria.id)));
     }
   }, [busca, agrupados]);
 
@@ -111,10 +130,11 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
   const handleAiCorrection = async () => {
     setIsAiCorrecting(true);
     // Simulação de IA analisando e corrigindo inconsistências
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 2000));
     setIsAiCorrecting(false);
     toast.success('IA: Sugestões de correção enviadas para o Auditoria IA', {
-      description: 'As inconsistências detectadas foram mapeadas e enviadas para o módulo de correção automática.'
+      description:
+        'As inconsistências detectadas foram mapeadas e enviadas para o módulo de correção automática.',
     });
   };
 
@@ -191,7 +211,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       toast.success(
         apenasFiltrados
           ? `JSON exportado com ${errosExp.length} erro(s) e ${avisosExp.length} aviso(s) filtrados`
-          : 'Validações exportadas em JSON',
+          : 'Validações exportadas em JSON'
       );
     } catch (e) {
       console.error(e);
@@ -231,11 +251,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         doc.text(label.toUpperCase(), x + 2.5, cursorY + 4.5);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(10);
-        doc.setTextColor(
-          PDF_BRAND.foreground[0],
-          PDF_BRAND.foreground[1],
-          PDF_BRAND.foreground[2],
-        );
+        doc.setTextColor(PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]);
         doc.text(value, x + 2.5, cursorY + 10.5);
       });
       cursorY += cardH + 6;
@@ -244,25 +260,42 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       autoTable(doc, {
         startY: cursorY,
         theme: 'plain',
-        styles: { fontSize: 8.5, cellPadding: 1.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
+        styles: {
+          fontSize: 8.5,
+          cellPadding: 1.5,
+          textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]],
+        },
         body: [
           ['Empresa', arquivo.razao_social ?? '—'],
           ['CNPJ', arquivo.cnpj ?? '—'],
-          ['Período', `${arquivo.periodo_inicio ?? `${arquivo.ano_calendario}-01-01`}  →  ${arquivo.periodo_fim ?? `${arquivo.ano_calendario}-12-31`}`],
+          [
+            'Período',
+            `${arquivo.periodo_inicio ?? `${arquivo.ano_calendario}-01-01`}  →  ${arquivo.periodo_fim ?? `${arquivo.ano_calendario}-12-31`}`,
+          ],
           ['Tipo', `SPED ${arquivo.tipo}`],
           ['Ano-calendário', String(arquivo.ano_calendario)],
-          ['Gerado em', arquivo.created_at ? new Date(arquivo.created_at).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR')],
+          [
+            'Gerado em',
+            arquivo.created_at
+              ? new Date(arquivo.created_at).toLocaleString('pt-BR')
+              : new Date().toLocaleString('pt-BR'),
+          ],
           ['Gerado por', arquivo.gerado_por ?? '—'],
           ['Total lançamentos', String(arquivo.total_lancamentos ?? '—')],
           ['Total linhas', String(arquivo.total_linhas ?? '—')],
           ['Hash SHA-256', arquivo.hash_sha256 ?? '—'],
         ],
         columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 42, textColor: [PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]] },
+          0: {
+            fontStyle: 'bold',
+            cellWidth: 42,
+            textColor: [PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]],
+          },
         },
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      cursorY = (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 6 || cursorY + 6;
+      cursorY =
+        (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 6 ||
+        cursorY + 6;
 
       if (apenasFiltrados) {
         doc.setFont('helvetica', 'italic');
@@ -281,27 +314,41 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             ? `Nenhum item corresponde ao filtro "${busca.trim()}".`
             : 'Nenhum erro ou aviso encontrado.',
           margins.left,
-          cursorY,
+          cursorY
         );
       } else {
         agrupadosPdf.forEach((grupo) => {
           autoTable(doc, {
             startY: cursorY,
-            head: [[{ content: `${grupo.categoria.label} (${grupo.total})`, styles: { halign: 'left' } }]],
+            head: [
+              [
+                {
+                  content: `${grupo.categoria.label} (${grupo.total})`,
+                  styles: { halign: 'left' },
+                },
+              ],
+            ],
             body: [
-              ...grupo.erros.map(e => [{ content: `• ERROR: ${e}`, styles: { textColor: PDF_BRAND.destructive } }]),
-              ...grupo.avisos.map(a => [{ content: `• WARN: ${a}`, styles: { textColor: PDF_BRAND.warning } }])
+              ...grupo.erros.map((e) => [
+                { content: `• ERROR: ${e}`, styles: { textColor: PDF_BRAND.destructive } },
+              ]),
+              ...grupo.avisos.map((a) => [
+                { content: `• WARN: ${a}`, styles: { textColor: PDF_BRAND.warning } },
+              ]),
             ],
             theme: 'striped',
             headStyles: {
-              fillColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]],
+              fillColor: [
+                PDF_BRAND.foreground[0],
+                PDF_BRAND.foreground[1],
+                PDF_BRAND.foreground[2],
+              ],
               textColor: [255, 255, 255],
               fontStyle: 'bold',
             },
             styles: { fontSize: 7.5, cellPadding: 2, font: 'courier' },
             margin: margins,
           });
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           cursorY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
         });
       }
@@ -309,14 +356,16 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       applyPdfLayout(doc, {
         titulo: `Validações SPED ${arquivo.tipo}`,
         subtitulo: `Ano-calendário ${arquivo.ano_calendario}${apenasFiltrados ? ' · filtrado' : ''}`,
-        rodapeInfo: arquivo.hash_sha256 ? `SHA-256 ${arquivo.hash_sha256.slice(0, 16)}…` : undefined,
+        rodapeInfo: arquivo.hash_sha256
+          ? `SHA-256 ${arquivo.hash_sha256.slice(0, 16)}…`
+          : undefined,
       });
 
       doc.save(`${baseFilename}${apenasFiltrados ? '-filtrado' : ''}.pdf`);
       toast.success(
         apenasFiltrados
           ? `PDF exportado com ${errosExp.length} erro(s) e ${avisosExp.length} aviso(s) filtrados`
-          : 'Validações exportadas em PDF',
+          : 'Validações exportadas em PDF'
       );
     } catch (e) {
       console.error(e);
@@ -332,7 +381,10 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             <div className="p-3.5 bg-primary/20 rounded-2xl shadow-[0_0_30px_rgba(var(--primary),0.3)] ring-1 ring-primary/30">
               <ShieldAlert className="h-8 w-8 text-primary" />
             </div>
-            <span>Validações <span className="text-primary">{arquivo.tipo}</span> <span className="text-foreground/20">·</span> {arquivo.ano_calendario}</span>
+            <span>
+              Validações <span className="text-primary">{arquivo.tipo}</span>{' '}
+              <span className="text-foreground/20">·</span> {arquivo.ano_calendario}
+            </span>
           </DialogTitle>
           <DialogDescription className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/40 pl-20">
             Governança & Compliance Fiscal PVA
@@ -341,40 +393,60 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
 
         <div className="grid grid-cols-3 gap-4">
           <div className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl group/stat">
-            <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Erros</div>
+            <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">
+              Erros
+            </div>
             <div
               data-testid="contador-erros"
-              className={cn("text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl", erros.length > 0 ? 'text-destructive' : 'text-success')}
+              className={cn(
+                'text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl',
+                erros.length > 0 ? 'text-destructive' : 'text-success'
+              )}
             >
               {erros.length}
             </div>
           </div>
           <div className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl group/stat">
-            <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Avisos</div>
+            <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">
+              Avisos
+            </div>
             <div
               data-testid="contador-avisos"
-              className={cn("text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl", avisos.length > 0 ? 'text-warning' : 'text-foreground/20')}
+              className={cn(
+                'text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl',
+                avisos.length > 0 ? 'text-warning' : 'text-foreground/20'
+              )}
             >
               {avisos.length}
             </div>
           </div>
-          <div 
+          <div
             className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl flex flex-col justify-center overflow-hidden group/stat cursor-pointer relative"
             onClick={copyHash}
           >
             <div className="text-[10px] uppercase font-black text-foreground/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors flex items-center justify-center gap-1">
-              Hash Alpha {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+              Hash Alpha{' '}
+              {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
             </div>
-            <div className="text-[10px] font-mono mt-1 truncate bg-black/40 p-2.5 rounded-xl border border-white/5 text-foreground/60 transition-all group-hover/stat:border-primary/30 group-hover/stat:text-white" title={arquivo.hash_sha256 ?? ''}>
+            <div
+              className="text-[10px] font-mono mt-1 truncate bg-black/40 p-2.5 rounded-xl border border-white/5 text-foreground/60 transition-all group-hover/stat:border-primary/30 group-hover/stat:text-white"
+              title={arquivo.hash_sha256 ?? ''}
+            >
               {hashCurto}
             </div>
           </div>
         </div>
 
         {bloqueado && (
-          <Alert variant="error" className="bg-destructive/5 border-destructive/20 shadow-sm" data-testid="banner-bloqueio">
+          <Alert
+            variant="error"
+            className="bg-destructive/5 border-destructive/20 shadow-sm"
+            data-testid="banner-bloqueio"
+          >
             <XCircle className="h-4 w-4 text-destructive" />
-            <AlertTitle className="font-bold text-destructive">{isRejeitado ? 'ARQUIVO REJEITADO PELA TRANSMISSÃO' : 'DOWNLOAD BLOQUEADO'}</AlertTitle>
+            <AlertTitle className="font-bold text-destructive">
+              {isRejeitado ? 'ARQUIVO REJEITADO PELA TRANSMISSÃO' : 'DOWNLOAD BLOQUEADO'}
+            </AlertTitle>
             <AlertDescription className="text-xs">
               {isRejeitado
                 ? `A transmissão deste SPED foi rejeitada${erros.length > 0 ? ` com ${erros.length} erro(s)` : ''}. Corrija as inconsistências e gere o arquivo novamente antes de retransmitir ao PVA.`
@@ -433,44 +505,83 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               {agrupados.map(({ categoria, erros: catErros, avisos: catAvisos, total }) => {
                 const isOpen = expandedCats.has(categoria.id);
                 return (
-                  <div key={categoria.id} className={cn("border rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl", isOpen ? "bg-card/[0.03] border-primary/30 ring-1 ring-primary/20" : "bg-card/[0.01] border-white/5 hover:border-primary/20")}>
+                  <div
+                    key={categoria.id}
+                    className={cn(
+                      'border rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl',
+                      isOpen
+                        ? 'bg-card/[0.03] border-primary/30 ring-1 ring-primary/20'
+                        : 'bg-card/[0.01] border-white/5 hover:border-primary/20'
+                    )}
+                  >
                     <button
                       onClick={() => toggleCategoria(categoria.id)}
                       className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors text-left"
                     >
                       <div className="flex items-center gap-4">
-                        <div className={cn(
-                          "p-3 rounded-xl transition-all shadow-sm",
-                          catErros.length > 0 ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning",
-                          isOpen && (catErros.length > 0 ? "bg-destructive text-primary-foreground" : "bg-warning text-primary-foreground")
-                        )}>
-                          {catErros.length > 0 ? <XCircle className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
+                        <div
+                          className={cn(
+                            'p-3 rounded-xl transition-all shadow-sm',
+                            catErros.length > 0
+                              ? 'bg-destructive/10 text-destructive'
+                              : 'bg-warning/10 text-warning',
+                            isOpen &&
+                              (catErros.length > 0
+                                ? 'bg-destructive text-primary-foreground'
+                                : 'bg-warning text-primary-foreground')
+                          )}
+                        >
+                          {catErros.length > 0 ? (
+                            <XCircle className="h-5 w-5" />
+                          ) : (
+                            <AlertTriangle className="h-5 w-5" />
+                          )}
                         </div>
                         <div>
                           <div className="text-sm font-black flex items-center gap-2 tracking-tight">
                             {categoria.label.toUpperCase()}
-                            <Badge variant="secondary" className="text-[10px] h-5 px-2 font-black rounded-full bg-muted/50">
+                            <Badge
+                              variant="secondary"
+                              className="text-[10px] h-5 px-2 font-black rounded-full bg-muted/50"
+                            >
                               {total}
                             </Badge>
                           </div>
-                          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-70">{categoria.description}</p>
+                          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-70">
+                            {categoria.description}
+                          </p>
                         </div>
                       </div>
-                      <div className={cn("p-1.5 rounded-full transition-all", isOpen ? "bg-primary/10 text-primary" : "text-muted-foreground")}>
-                        {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      <div
+                        className={cn(
+                          'p-1.5 rounded-full transition-all',
+                          isOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
+                        )}
+                      >
+                        {isOpen ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
                       </div>
                     </button>
-                    
+
                     {isOpen && (
                       <div className="p-4 pt-0 space-y-2 bg-gradient-to-b from-transparent to-muted/5">
                         {catErros.map((e, i) => (
-                          <div key={`e-${i}`} className="flex gap-3 text-xs font-mono p-3 rounded-xl bg-destructive/5 text-destructive border border-destructive/10 leading-relaxed shadow-sm transition-all hover:bg-destructive/10">
+                          <div
+                            key={`e-${i}`}
+                            className="flex gap-3 text-xs font-mono p-3 rounded-xl bg-destructive/5 text-destructive border border-destructive/10 leading-relaxed shadow-sm transition-all hover:bg-destructive/10"
+                          >
                             <span className="shrink-0 opacity-40 font-bold">ERR</span>
                             <span>{e}</span>
                           </div>
                         ))}
                         {catAvisos.map((a, i) => (
-                          <div key={`a-${i}`} className="flex gap-3 text-xs font-mono p-3 rounded-xl bg-warning/5 text-warning-foreground border border-warning/10 leading-relaxed shadow-sm transition-all hover:bg-warning/10">
+                          <div
+                            key={`a-${i}`}
+                            className="flex gap-3 text-xs font-mono p-3 rounded-xl bg-warning/5 text-warning-foreground border border-warning/10 leading-relaxed shadow-sm transition-all hover:bg-warning/10"
+                          >
                             <span className="shrink-0 opacity-40 font-bold">WRN</span>
                             <span>{a}</span>
                           </div>
@@ -483,7 +594,6 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             </div>
           )}
         </ScrollArea>
-
 
         <DialogFooter className="gap-2">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
@@ -504,23 +614,35 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-2 rounded-xl">
-              <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50 px-2 py-1">Relatório Completo</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => exportarPdf(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50 px-2 py-1">
+                Relatório Completo
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => exportarPdf(false)}
+                className="gap-3 py-2 rounded-lg cursor-pointer"
+              >
                 <div className="p-1.5 bg-destructive/10 rounded-md">
                   <FileText className="h-4 w-4 text-destructive" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-bold">PDF (.pdf)</span>
-                  <span className="text-[10px] text-muted-foreground">{erros.length + avisos.length} item(ns)</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {erros.length + avisos.length} item(ns)
+                  </span>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportarJson(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => exportarJson(false)}
+                className="gap-3 py-2 rounded-lg cursor-pointer"
+              >
                 <div className="p-1.5 bg-primary/10 rounded-md">
                   <FileJson className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-bold">JSON (.json)</span>
-                  <span className="text-[10px] text-muted-foreground">{erros.length + avisos.length} item(ns)</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {erros.length + avisos.length} item(ns)
+                  </span>
                 </div>
               </DropdownMenuItem>
               {temFiltro && (
@@ -540,7 +662,9 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                     </div>
                     <div className="flex flex-col">
                       <span className="text-xs font-bold">PDF Filtrado</span>
-                      <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {errosFiltrados.length + avisosFiltrados.length} item(ns)
+                      </span>
                     </div>
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -554,7 +678,9 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                     </div>
                     <div className="flex flex-col">
                       <span className="text-xs font-bold">JSON Filtrado</span>
-                      <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {errosFiltrados.length + avisosFiltrados.length} item(ns)
+                      </span>
                     </div>
                   </DropdownMenuItem>
                 </>
@@ -577,7 +703,13 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                   </Button>
                 </span>
               </TooltipTrigger>
-              {bloqueado && <TooltipContent>{isRejeitado ? 'Bloqueado: arquivo rejeitado' : 'Bloqueado por erros de validação'}</TooltipContent>}
+              {bloqueado && (
+                <TooltipContent>
+                  {isRejeitado
+                    ? 'Bloqueado: arquivo rejeitado'
+                    : 'Bloqueado por erros de validação'}
+                </TooltipContent>
+              )}
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -593,7 +725,13 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                   </Button>
                 </span>
               </TooltipTrigger>
-              {bloqueado && <TooltipContent>{isRejeitado ? 'Bloqueado: arquivo rejeitado' : 'Bloqueado por erros de validação'}</TooltipContent>}
+              {bloqueado && (
+                <TooltipContent>
+                  {isRejeitado
+                    ? 'Bloqueado: arquivo rejeitado'
+                    : 'Bloqueado por erros de validação'}
+                </TooltipContent>
+              )}
             </Tooltip>
           </TooltipProvider>
         </DialogFooter>
