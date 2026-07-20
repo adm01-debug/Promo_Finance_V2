@@ -20,7 +20,7 @@ describe('Badge', () => {
 
   it('renders destructive variant', () => {
     render(<Badge variant="destructive">Destructive</Badge>);
-    expect(screen.getByText('Destructive')).toHaveClass('bg-rose-500/10');
+    expect(screen.getByText('Destructive')).toHaveClass('bg-destructive/10');
   });
 
   it('renders outline variant', () => {
@@ -30,17 +30,21 @@ describe('Badge', () => {
 
   it('renders success variant', () => {
     render(<Badge variant="success">Success</Badge>);
-    expect(screen.getByText('Success')).toHaveClass('text-emerald-600');
+    expect(screen.getByText('Success')).toHaveClass('text-success');
   });
 
   it('renders warning variant', () => {
     render(<Badge variant="warning">Warning</Badge>);
-    expect(screen.getByText('Warning')).toHaveClass('text-amber-600');
+    expect(screen.getByText('Warning')).toHaveClass('text-warning');
   });
 
   it('renders removable badge with X button', () => {
     const onRemove = vi.fn();
-    render(<Badge removable onRemove={onRemove}>Removable</Badge>);
+    render(
+      <Badge removable onRemove={onRemove}>
+        Removable
+      </Badge>
+    );
     const btn = screen.getByRole('button');
     fireEvent.click(btn);
     expect(onRemove).toHaveBeenCalled();

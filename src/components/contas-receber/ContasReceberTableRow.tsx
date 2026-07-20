@@ -2,21 +2,49 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 import {
-  Building2, Calendar, MoreHorizontal, Eye, Edit, Trash2, Send,
-  CheckCircle2, Clock, AlertTriangle, DollarSign,
-  Banknote, QrCode, CreditCard, Wallet, Shield, Scale, Gavel, Tag, History,
+  Building2,
+  Calendar,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Trash2,
+  Send,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  DollarSign,
+  Banknote,
+  QrCode,
+  CreditCard,
+  Wallet,
+  Shield,
+  Scale,
+  Gavel,
+  Tag,
+  History,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TableCell } from '@/components/ui/table';
-import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime, getEtapaCobrancaLabel } from '@/lib/formatters';
+import {
+  formatCurrency,
+  formatDate,
+  calculateOverdueDays,
+  getRelativeTime,
+  getEtapaCobrancaLabel,
+} from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
@@ -24,7 +52,6 @@ import type { StatusPagamento } from '@/types/financial';
 
 import { VersionHistory } from '@/components/common/VersionHistory';
 import { DuplicateButton } from '@/components/common/DuplicateButton';
-
 
 type ContaReceberRow = Database['public']['Tables']['contas_receber']['Row'];
 
@@ -43,27 +70,75 @@ export interface ContaReceberWithRelations extends ContaReceberRow {
   has_boleto?: boolean;
 }
 
-const statusConfig: Record<StatusPagamento, { label: string; color: string; icon: typeof CheckCircle2 }> = {
-  pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
-  pendente: { label: 'Pendente', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
-  vencido: { label: 'Vencido', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: AlertTriangle },
-  parcial: { label: 'Parcial', color: 'bg-secondary/10 text-secondary border-secondary/20', icon: CheckCircle2 },
-  cancelado: { label: 'Cancelado', color: 'bg-muted text-muted-foreground border-muted', icon: Trash2 },
+const statusConfig: Record<
+  StatusPagamento,
+  { label: string; color: string; icon: typeof CheckCircle2 }
+> = {
+  pago: {
+    label: 'Pago',
+    color: 'bg-success/10 text-success border-success/20',
+    icon: CheckCircle2,
+  },
+  pendente: {
+    label: 'Pendente',
+    color: 'bg-warning/10 text-warning border-warning/20',
+    icon: Clock,
+  },
+  vencido: {
+    label: 'Vencido',
+    color: 'bg-destructive/10 text-destructive border-destructive/20',
+    icon: AlertTriangle,
+  },
+  parcial: {
+    label: 'Parcial',
+    color: 'bg-secondary/10 text-secondary border-secondary/20',
+    icon: CheckCircle2,
+  },
+  cancelado: {
+    label: 'Cancelado',
+    color: 'bg-muted text-muted-foreground border-muted',
+    icon: Trash2,
+  },
 };
 
-const tipoCobrancaConfig: Record<string, { label: string; color: string; icon: typeof Banknote }> = {
-  boleto: { label: 'Boleto', color: 'bg-primary/10 text-primary border-primary/20', icon: Banknote },
-  pix: { label: 'PIX', color: 'bg-success/10 text-success border-success/20', icon: QrCode },
-  cartao: { label: 'Cartão', color: 'bg-secondary/10 text-secondary border-secondary/20', icon: CreditCard },
-  transferencia: { label: 'TED', color: 'bg-warning/10 text-warning border-warning/20', icon: Building2 },
-  dinheiro: { label: 'Dinheiro', color: 'bg-muted text-muted-foreground border-muted', icon: Wallet },
-};
+const tipoCobrancaConfig: Record<string, { label: string; color: string; icon: typeof Banknote }> =
+  {
+    boleto: {
+      label: 'Boleto',
+      color: 'bg-primary/10 text-primary border-primary/20',
+      icon: Banknote,
+    },
+    pix: { label: 'PIX', color: 'bg-success/10 text-success border-success/20', icon: QrCode },
+    cartao: {
+      label: 'Cartão',
+      color: 'bg-secondary/10 text-secondary border-secondary/20',
+      icon: CreditCard,
+    },
+    transferencia: {
+      label: 'TED',
+      color: 'bg-warning/10 text-warning border-warning/20',
+      icon: Building2,
+    },
+    dinheiro: {
+      label: 'Dinheiro',
+      color: 'bg-muted text-muted-foreground border-muted',
+      icon: Wallet,
+    },
+  };
 
 const etapaIcons: Record<string, typeof Shield> = {
-  preventiva: Shield, lembrete: Clock, cobranca: AlertTriangle, negociacao: DollarSign, juridico: Scale,
+  preventiva: Shield,
+  lembrete: Clock,
+  cobranca: AlertTriangle,
+  negociacao: DollarSign,
+  juridico: Scale,
 };
 const etapaColors: Record<string, string> = {
-  preventiva: 'text-primary', lembrete: 'text-warning', cobranca: 'text-destructive', negociacao: 'text-secondary', juridico: 'text-destructive',
+  preventiva: 'text-primary',
+  lembrete: 'text-warning',
+  cobranca: 'text-destructive',
+  negociacao: 'text-secondary',
+  juridico: 'text-destructive',
 };
 
 const getScoreColor = (score: number) => {
@@ -96,9 +171,19 @@ interface ContasReceberTableRowProps {
 }
 
 export function ContasReceberTableRow({
-  conta, index, isSelected, onToggleSelect, onEdit, onDelete,
-  onRegistrarRecebimento, onView, onEnviarCobranca, onAplicarDesconto,
-  showEmpresa = false, showDiasAtraso = true, animate = false,
+  conta,
+  index,
+  isSelected,
+  onToggleSelect,
+  onEdit,
+  onDelete,
+  onRegistrarRecebimento,
+  onView,
+  onEnviarCobranca,
+  onAplicarDesconto,
+  showEmpresa = false,
+  showDiasAtraso = true,
+  animate = false,
 }: ContasReceberTableRowProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const status = statusConfig[conta.status as StatusPagamento];
@@ -114,27 +199,31 @@ export function ContasReceberTableRow({
   const EtapaIcon = etapa ? etapaIcons[etapa] || Shield : null;
 
   const RowComponent = animate ? motion.tr : 'tr';
-  const animationProps = animate ? {
-    initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { delay: index * 0.02 },
-  } : {};
+  const animationProps = animate
+    ? {
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        transition: { delay: index * 0.02 },
+      }
+    : {};
 
   return (
-    <RowComponent 
-      data-highlight-id={conta.id} 
-      {...animationProps} 
+    <RowComponent
+      data-highlight-id={conta.id}
+      {...animationProps}
       className={cn(
-        "group transition-all duration-500 border-white/5 relative overflow-hidden", 
-        isSelected ? "bg-primary/10 shadow-inner" : "hover:bg-card/[0.04]"
+        'group transition-all duration-500 border-white/5 relative overflow-hidden',
+        isSelected ? 'bg-primary/10 shadow-inner' : 'hover:bg-card/[0.04]'
       )}
     >
       <TableCell className="p-6 text-center">
-        <Checkbox 
-          checked={isSelected} 
-          onChange={() => onToggleSelect(conta.id)} 
-          aria-label={`Selecionar ${conta.descricao}`} 
+        <Checkbox
+          checked={isSelected}
+          onChange={() => onToggleSelect(conta.id)}
+          aria-label={`Selecionar ${conta.descricao}`}
         />
       </TableCell>
-      
+
       <TableCell className="p-6">
         <div className="flex items-center gap-4">
           <div className="h-14 w-14 rounded-2xl bg-card/[0.03] border border-white/10 flex items-center justify-center relative shadow-2xl transition-all group-hover:scale-110 duration-700 group-hover:rotate-3 group-hover:border-primary/30">
@@ -146,8 +235,12 @@ export function ContasReceberTableRow({
             )}
           </div>
           <div>
-            <p className="font-black text-lg tracking-tight text-foreground group-hover:text-primary transition-colors">{conta.cliente_nome}</p>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 mt-1">{clienteData?.nome_fantasia || '-'}</p>
+            <p className="font-black text-lg tracking-tight text-foreground group-hover:text-primary transition-colors">
+              {conta.cliente_nome}
+            </p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 mt-1">
+              {clienteData?.nome_fantasia || '-'}
+            </p>
           </div>
         </div>
       </TableCell>
@@ -156,12 +249,26 @@ export function ContasReceberTableRow({
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-primary/40 shrink-0" />
-            <span className="text-sm font-semibold tracking-tight text-foreground truncate max-w-[200px] leading-none">{conta.descricao}</span>
+            <span className="text-sm font-semibold tracking-tight text-foreground truncate max-w-[200px] leading-none">
+              {conta.descricao}
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            {conta.numero_documento && <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-card/5 text-muted-foreground/60 tracking-wider">DOC: {conta.numero_documento}</Badge>}
+            {conta.numero_documento && (
+              <Badge
+                variant="outline"
+                className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-card/5 text-muted-foreground/60 tracking-wider"
+              >
+                DOC: {conta.numero_documento}
+              </Badge>
+            )}
             {conta.numero_parcela_atual && conta.total_parcelas && (
-              <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-primary/20 bg-primary/5 text-primary tracking-wider">{conta.numero_parcela_atual}/{conta.total_parcelas}</Badge>
+              <Badge
+                variant="outline"
+                className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-primary/20 bg-primary/5 text-primary tracking-wider"
+              >
+                {conta.numero_parcela_atual}/{conta.total_parcelas}
+              </Badge>
             )}
           </div>
         </div>
@@ -169,14 +276,24 @@ export function ContasReceberTableRow({
 
       <TableCell className="p-6">
         <div className="space-y-1">
-          <p className="text-xl font-black tabular-nums tracking-tighter text-foreground group-hover:scale-105 transition-transform origin-left">{formatCurrency(conta.valor)}</p>
+          <p className="text-xl font-black tabular-nums tracking-tighter text-foreground group-hover:scale-105 transition-transform origin-left">
+            {formatCurrency(conta.valor)}
+          </p>
           {conta.valor_desconto && conta.valor_desconto > 0 && (
-            <p className="text-[10px] font-black text-warning uppercase tracking-widest leading-none">Desconto: -{formatCurrency(conta.valor_desconto)}</p>
+            <p className="text-[10px] font-black text-warning uppercase tracking-widest leading-none">
+              Desconto: -{formatCurrency(conta.valor_desconto)}
+            </p>
           )}
           {conta.valor_recebido && conta.valor_recebido > 0 && (
             <div className="pt-1.5 max-w-[120px]">
-              <Progress value={percentualRecebido} className="h-1" aria-label="Percentual recebido" />
-              <p className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest mt-1">Saldo: {formatCurrency(saldo)}</p>
+              <Progress
+                value={percentualRecebido}
+                className="h-1"
+                aria-label="Percentual recebido"
+              />
+              <p className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest mt-1">
+                Saldo: {formatCurrency(saldo)}
+              </p>
             </div>
           )}
         </div>
@@ -184,18 +301,28 @@ export function ContasReceberTableRow({
 
       <TableCell className="p-6">
         <div className="flex items-center gap-3">
-          <div className={cn(
-            "h-12 w-12 rounded-2xl flex items-center justify-center border transition-all duration-700 shadow-2xl group-hover:scale-105",
-            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-card/[0.03] border-white/10 text-primary-foreground/20"
-          )}>
+          <div
+            className={cn(
+              'h-12 w-12 rounded-2xl flex items-center justify-center border transition-all duration-700 shadow-2xl group-hover:scale-105',
+              overdueDays > 0 && conta.status !== 'pago'
+                ? 'bg-destructive/10 border-destructive/30 text-destructive'
+                : 'bg-card/[0.03] border-white/10 text-primary-foreground/20'
+            )}
+          >
             <Calendar className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-black tabular-nums tracking-tight">{formatDate(new Date(conta.data_vencimento))}</p>
+            <p className="text-sm font-black tabular-nums tracking-tight">
+              {formatDate(new Date(conta.data_vencimento))}
+            </p>
             {overdueDays > 0 && conta.status !== 'pago' ? (
-              <p className="text-[10px] font-black text-destructive uppercase tracking-widest mt-0.5">Em atraso</p>
+              <p className="text-[10px] font-black text-destructive uppercase tracking-widest mt-0.5">
+                Em atraso
+              </p>
             ) : overdueDays < 0 && conta.status !== 'pago' ? (
-              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mt-0.5">Vence em: {getRelativeTime(new Date(conta.data_vencimento))}</p>
+              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mt-0.5">
+                Vence em: {getRelativeTime(new Date(conta.data_vencimento))}
+              </p>
             ) : null}
           </div>
         </div>
@@ -205,43 +332,81 @@ export function ContasReceberTableRow({
         <TableCell className="p-6 text-center">
           {conta.status !== 'pago' && conta.status !== 'cancelado' ? (
             <div className="flex flex-col items-center">
-              <span className={cn(
-                "text-xl font-semibold tabular-nums tracking-tighter leading-none",
-                overdueDays > 30 ? "text-destructive" : overdueDays > 0 ? "text-warning" : "text-success"
-              )}>
-                {overdueDays > 0 ? overdueDays : overdueDays === 0 ? 'Hoje' : `${Math.abs(overdueDays)}d`}
+              <span
+                className={cn(
+                  'text-xl font-semibold tabular-nums tracking-tighter leading-none',
+                  overdueDays > 30
+                    ? 'text-destructive'
+                    : overdueDays > 0
+                      ? 'text-warning'
+                      : 'text-success'
+                )}
+              >
+                {overdueDays > 0
+                  ? overdueDays
+                  : overdueDays === 0
+                    ? 'Hoje'
+                    : `${Math.abs(overdueDays)}d`}
               </span>
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 mt-1">Atraso</span>
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 mt-1">
+                Atraso
+              </span>
             </div>
           ) : (
-            <span className="text-[10px] font-black text-muted-foreground/20 tracking-widest uppercase">—</span>
+            <span className="text-[10px] font-black text-muted-foreground/20 tracking-widest uppercase">
+              —
+            </span>
           )}
         </TableCell>
       )}
 
       <TableCell className="p-6">
         <div className="flex flex-col gap-1.5 items-center lg:items-start">
-          <Badge variant="outline" className={cn("gap-1.5 px-3 py-1 rounded-lg border-none font-black text-[10px] uppercase tracking-widest", status?.color)}>
+          <Badge
+            variant="outline"
+            className={cn(
+              'gap-1.5 px-3 py-1 rounded-lg border-none font-black text-[10px] uppercase tracking-widest',
+              status?.color
+            )}
+          >
             <StatusIcon className="h-3.5 w-3.5" /> {status?.label || conta.status}
           </Badge>
           <div className="flex gap-1 flex-wrap justify-center lg:justify-start">
             {tipo && (
-              <Badge variant="outline" className={cn("gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider opacity-60", tipo.color)}>
+              <Badge
+                variant="outline"
+                className={cn(
+                  'gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider opacity-60',
+                  tipo.color
+                )}
+              >
                 <TipoIcon className="h-2 w-2" /> {tipo.label}
               </Badge>
             )}
             {EtapaIcon && etapa && (
-              <Badge variant="outline" className={cn("gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider", etapaColors[etapa] || '')}>
+              <Badge
+                variant="outline"
+                className={cn(
+                  'gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider',
+                  etapaColors[etapa] || ''
+                )}
+              >
                 <EtapaIcon className="h-2 w-2" /> {getEtapaCobrancaLabel(etapa)}
               </Badge>
             )}
             {conta.has_protesto && (
-              <Badge variant="outline" className="gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider bg-destructive/10 text-destructive">
+              <Badge
+                variant="outline"
+                className="gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider bg-destructive/10 text-destructive"
+              >
                 <Gavel className="h-2 w-2" /> Protestado
               </Badge>
             )}
             {conta.has_boleto && (
-              <Badge variant="outline" className="gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider bg-primary/10 text-primary">
+              <Badge
+                variant="outline"
+                className="gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider bg-primary/10 text-primary"
+              >
                 <Banknote className="h-2 w-2" /> Boleto
               </Badge>
             )}
@@ -266,12 +431,20 @@ export function ContasReceberTableRow({
       <TableCell className="p-6">
         {clienteData?.score && (
           <div className="flex flex-col items-center">
-            <div className={cn("text-lg font-black tabular-nums tracking-tighter leading-none", getScoreColor(clienteData.score))}>{clienteData.score}</div>
-            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 mt-1">{getScoreLabel(clienteData.score)}</span>
+            <div
+              className={cn(
+                'text-lg font-black tabular-nums tracking-tighter leading-none',
+                getScoreColor(clienteData.score)
+              )}
+            >
+              {clienteData.score}
+            </div>
+            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 mt-1">
+              {getScoreLabel(clienteData.score)}
+            </span>
           </div>
         )}
       </TableCell>
-
 
       <TableCell className="p-6">
         <div className="flex items-center justify-end gap-2">
@@ -279,53 +452,96 @@ export function ContasReceberTableRow({
             {onView && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-primary hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100"
-                    onClick={() => onView(conta)} aria-label="Visualizar">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-primary hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    onClick={() => onView(conta)}
+                    aria-label="Visualizar"
+                  >
                     <Eye className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">Visualizar</TooltipContent>
+                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">
+                  Visualizar
+                </TooltipContent>
               </Tooltip>
             )}
             {conta.status !== 'pago' && conta.status !== 'cancelado' && onEnviarCobranca && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-blue-500 hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
-                    onClick={() => onEnviarCobranca(conta)} aria-label="Enviar cobrança">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-blue-500 hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    onClick={() => onEnviarCobranca(conta)}
+                    aria-label="Enviar cobrança"
+                  >
                     <Send className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">Enviar cobrança</TooltipContent>
+                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">
+                  Enviar cobrança
+                </TooltipContent>
               </Tooltip>
             )}
             {conta.status !== 'pago' && conta.status !== 'cancelado' && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-success hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100"
-                    onClick={() => onRegistrarRecebimento(conta)} aria-label="Registrar recebimento">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 rounded-xl border-white/5 bg-card/5 hover:bg-success hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    onClick={() => onRegistrarRecebimento(conta)}
+                    aria-label="Registrar recebimento"
+                  >
                     <DollarSign className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">Registrar recebimento</TooltipContent>
+                <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl font-bold">
+                  Registrar recebimento
+                </TooltipContent>
               </Tooltip>
             )}
           </TooltipProvider>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-card/10 transition-all opacity-0 group-hover:opacity-100">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-xl hover:bg-card/10 transition-all opacity-0 group-hover:opacity-100"
+              >
                 <MoreHorizontal className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-2xl border-white/10 p-2 rounded-2xl shadow-2xl min-w-[200px]">
-              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-3 py-2">Operações</DropdownMenuLabel>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onView?.(conta)}><Eye className="h-4 w-4 text-primary" /> Ver detalhes</DropdownMenuItem>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Editar</DropdownMenuItem>
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => setHistoryOpen(true)}>
+            <DropdownMenuContent
+              align="end"
+              className="bg-background/95 backdrop-blur-2xl border-white/10 p-2 rounded-2xl shadow-2xl min-w-[200px]"
+            >
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-3 py-2">
+                Operações
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                className="gap-3 rounded-xl focus:bg-card/10"
+                onClick={() => onView?.(conta)}
+              >
+                <Eye className="h-4 w-4 text-primary" /> Ver detalhes
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-3 rounded-xl focus:bg-card/10"
+                onClick={() => onEdit(conta)}
+              >
+                <Edit className="h-4 w-4" /> Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-3 rounded-xl focus:bg-card/10"
+                onClick={() => setHistoryOpen(true)}
+              >
                 <History className="h-4 w-4" /> Histórico de alterações
               </DropdownMenuItem>
-              <DuplicateButton 
-                data={conta} 
+              <DuplicateButton
+                data={conta}
                 onDuplicate={(duplicated) => {
                   onEdit(duplicated as ContaReceberWithRelations);
                   toast.success('Registro clonado. Revise os dados e salve.');
@@ -335,37 +551,56 @@ export function ContasReceberTableRow({
                 variant="ghost"
                 size="default"
               />
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4 text-blue-400" /> Enviar cobrança</DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-3 rounded-xl focus:bg-card/10"
+                onClick={() => onEnviarCobranca?.(conta)}
+              >
+                <Send className="h-4 w-4 text-blue-400" /> Enviar cobrança
+              </DropdownMenuItem>
 
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
-                <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => window.location.href = `/boletos?novo=true&receber_id=${conta.id}`}>
+                <DropdownMenuItem
+                  className="gap-3 rounded-xl focus:bg-card/10"
+                  onClick={() =>
+                    (window.location.href = `/boletos?novo=true&receber_id=${conta.id}`)
+                  }
+                >
                   <Banknote className="h-4 w-4 text-primary" /> Gerar Boleto
                 </DropdownMenuItem>
               )}
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
-                <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onAplicarDesconto?.(conta)}>
+                <DropdownMenuItem
+                  className="gap-3 rounded-xl focus:bg-card/10"
+                  onClick={() => onAplicarDesconto?.(conta)}
+                >
                   <Tag className="h-4 w-4 text-warning" /> Aplicar Desconto
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator className="bg-card/5" />
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-success/20 text-success" onClick={() => onRegistrarRecebimento(conta)} disabled={conta.status === 'pago' || conta.status === 'cancelado'}>
+              <DropdownMenuItem
+                className="gap-3 rounded-xl focus:bg-success/20 text-success"
+                onClick={() => onRegistrarRecebimento(conta)}
+                disabled={conta.status === 'pago' || conta.status === 'cancelado'}
+              >
                 <CheckCircle2 className="h-4 w-4" /> Registrar recebimento
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-card/5" />
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-destructive/20 text-destructive font-bold" onClick={() => onDelete(conta)}>
+              <DropdownMenuItem
+                className="gap-3 rounded-xl focus:bg-destructive/20 text-destructive font-bold"
+                onClick={() => onDelete(conta)}
+              >
                 <Trash2 className="h-4 w-4" /> Excluir
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <VersionHistory 
-          open={historyOpen} 
-          onOpenChange={setHistoryOpen} 
-          recordId={conta.id} 
-          tableName="contas_receber" 
+        <VersionHistory
+          open={historyOpen}
+          onOpenChange={setHistoryOpen}
+          recordId={conta.id}
+          tableName="contas_receber"
         />
       </TableCell>
-
     </RowComponent>
   );
 }
