@@ -13,12 +13,7 @@ import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { formatCurrency } from '@/lib/formatters';
-import {
-  applyPdfLayout,
-  getAutoTableMargins,
-  getContentStartY,
-  PDF_BRAND,
-} from '@/lib/pdf-layout';
+import { applyPdfLayout, getAutoTableMargins, getContentStartY, PDF_BRAND } from '@/lib/pdf-layout';
 
 interface DRELinha {
   codigo: string;
@@ -52,7 +47,20 @@ export interface ExportDemonstrativoPDFProps {
   fonte?: 'competencia' | 'caixa';
 }
 
-const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const MESES = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
+];
 
 const TIPO_LABELS: Record<string, string> = {
   dre: 'Demonstração do Resultado do Exercício (DRE)',
@@ -70,7 +78,10 @@ function buildMetadata(props: ExportDemonstrativoPDFProps) {
     mes_nome: MESES[props.mes],
     ano: props.ano,
     fonte: props.fonte ?? 'competencia',
-    fonte_label: (props.fonte ?? 'competencia') === 'competencia' ? 'Regime de Competência' : 'Regime de Caixa',
+    fonte_label:
+      (props.fonte ?? 'competencia') === 'competencia'
+        ? 'Regime de Competência'
+        : 'Regime de Caixa',
     gerado_em: new Date().toISOString(),
   };
 }
@@ -91,7 +102,16 @@ function downloadBlob(blob: Blob, filename: string) {
 }
 
 export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
-  const { tipo, mes, ano, empresa, linhas, resumoBalanco, resumoDRE, fonte = 'competencia' } = props;
+  const {
+    tipo,
+    mes,
+    ano,
+    empresa,
+    linhas,
+    resumoBalanco,
+    resumoDRE,
+    fonte = 'competencia',
+  } = props;
   const [exporting, setExporting] = useState(false);
 
   const exportJSON = () => {
@@ -109,7 +129,10 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
         })),
       };
       if (tipo === 'dre' && resumoDRE) {
-        payload.resumo = { lucro_liquido: resumoDRE.lucroLiquido, receita_liquida: resumoDRE.receitaLiquida ?? null };
+        payload.resumo = {
+          lucro_liquido: resumoDRE.lucroLiquido,
+          receita_liquida: resumoDRE.receitaLiquida ?? null,
+        };
       }
       if (tipo === 'balanco' && resumoBalanco) {
         payload.resumo = {
@@ -141,12 +164,25 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
         ['Regime', fonte === 'competencia' ? 'Competência' : 'Caixa'],
       ];
       if (tipo === 'dre' && resumoDRE) {
-        metaItems.push(['Resultado', `${resumoDRE.lucroLiquido >= 0 ? 'Lucro' : 'Prejuízo'} ${formatCurrency(Math.abs(resumoDRE.lucroLiquido))}`]);
+        metaItems.push([
+          'Resultado',
+          `${resumoDRE.lucroLiquido >= 0 ? 'Lucro' : 'Prejuízo'} ${formatCurrency(Math.abs(resumoDRE.lucroLiquido))}`,
+        ]);
       }
       if (tipo === 'balanco' && resumoBalanco) {
-        metaItems.push([resumoBalanco.equilibrado ? 'Equilíbrio' : 'Diferença', resumoBalanco.equilibrado ? 'Equilibrado' : formatCurrency(resumoBalanco.totalAtivo - resumoBalanco.totalPassivo)]);
+        metaItems.push([
+          resumoBalanco.equilibrado ? 'Equilíbrio' : 'Diferença',
+          resumoBalanco.equilibrado
+            ? 'Equilibrado'
+            : formatCurrency(resumoBalanco.totalAtivo - resumoBalanco.totalPassivo),
+        ]);
       }
-      const cardW = (doc.internal.pageSize.getWidth() - margins.left - margins.right - (metaItems.length - 1) * 2) / metaItems.length;
+      const cardW =
+        (doc.internal.pageSize.getWidth() -
+          margins.left -
+          margins.right -
+          (metaItems.length - 1) * 2) /
+        metaItems.length;
       const cardH = 14;
       metaItems.forEach(([label, value], i) => {
         const x = margins.left + i * (cardW + 2);
@@ -180,13 +216,18 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
             ['Status', ok ? 'EQUILIBRADO' : 'DESEQUILIBRADO'],
           ],
           columnStyles: {
-            0: { fontStyle: 'bold', cellWidth: 55, textColor: [PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]] },
+            0: {
+              fontStyle: 'bold',
+              cellWidth: 55,
+              textColor: [PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]],
+            },
             1: { halign: 'right' as const, textColor: [accent[0], accent[1], accent[2]] },
           },
           margin: margins,
         });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cursorY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 4 || cursorY + 4;
+        cursorY =
+          (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 4 ||
+          cursorY + 4;
       }
 
       // Main table
@@ -199,13 +240,19 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
           formatCurrency(Math.abs(l.valor)),
           l.percentual.toFixed(1) + '%',
         ]),
-        styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
+        styles: {
+          fontSize: 8,
+          cellPadding: 2.5,
+          textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]],
+        },
         headStyles: {
           fillColor: [PDF_BRAND.primary[0], PDF_BRAND.primary[1], PDF_BRAND.primary[2]],
           textColor: [255, 255, 255],
           fontStyle: 'bold',
         },
-        alternateRowStyles: { fillColor: [PDF_BRAND.surface[0], PDF_BRAND.surface[1], PDF_BRAND.surface[2]] },
+        alternateRowStyles: {
+          fillColor: [PDF_BRAND.surface[0], PDF_BRAND.surface[1], PDF_BRAND.surface[2]],
+        },
         columnStyles: {
           0: { cellWidth: 20 },
           1: { cellWidth: 85 },
@@ -217,7 +264,11 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
             const linha = linhas[data.row.index];
             if (linha && linha.nivel === 0) data.cell.styles.fontStyle = 'bold';
             if (linha && linha.codigo === '11') {
-              data.cell.styles.fillColor = [PDF_BRAND.primary[0], PDF_BRAND.primary[1], PDF_BRAND.primary[2]];
+              data.cell.styles.fillColor = [
+                PDF_BRAND.primary[0],
+                PDF_BRAND.primary[1],
+                PDF_BRAND.primary[2],
+              ];
               data.cell.styles.textColor = [255, 255, 255];
               data.cell.styles.fontStyle = 'bold';
             }
@@ -247,27 +298,34 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" disabled={exporting} className="gap-2 h-9 rounded-xl border-border/50 bg-background/50 hover:bg-accent/50 hover:text-primary transition-all duration-300 shadow-sm active:scale-95">
-          {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={exporting}
+          className="gap-2 h-9 rounded-xl border-border/50 bg-background/50 hover:bg-accent/50 hover:text-primary transition-all duration-300 shadow-sm active:scale-95"
+        >
+          {exporting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <FileDown className="h-4 w-4" />
+          )}
           Exportar
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="text-xs">Exportar {TIPO_LABELS[tipo]?.split('(')[0]?.trim()}</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-xs">
+          Exportar {TIPO_LABELS[tipo]?.split('(')[0]?.trim()}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={exportPDF} className="gap-2">
           <FileText className="h-4 w-4 text-destructive" />
           PDF (.pdf)
-          <span className="ml-auto text-[10px] text-muted-foreground">
-            {linhas.length} linhas
-          </span>
+          <span className="ml-auto text-[10px] text-muted-foreground">{linhas.length} linhas</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={exportJSON} className="gap-2">
           <FileJson className="h-4 w-4 text-primary" />
           JSON (.json)
-          <span className="ml-auto text-[10px] text-muted-foreground">
-            {linhas.length} linhas
-          </span>
+          <span className="ml-auto text-[10px] text-muted-foreground">{linhas.length} linhas</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
