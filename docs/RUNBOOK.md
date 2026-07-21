@@ -197,3 +197,22 @@ Suite de integridade (`scripts/integrity/`):
 Status possíveis: `pass`, `fail` (trava CI), `unverified` (nunca declarado como aprovado).
 
 Baselines versionados em `scripts/integrity/baseline/`. Qualquer PR de schema/RLS/GRANT deve regerar via `scripts/integrity/dump-baseline.sh` e commitar no mesmo PR.
+
+## §10 · Migração de dados PROD → STAGING (opcional)
+
+Cópia seletiva de dados com allowlist declarativa, blacklist automática de logs/telemetria, checkpoint por tabela e rollback via snapshot.
+
+Detalhes completos em [`docs/DATA_MIGRATION.md`](./DATA_MIGRATION.md).
+
+**Entrypoint:** `scripts/data-migrate.sh` (também disponível via `staging-migrate.sh --with-data`).
+
+Fluxo: `preflight → plan → init-run → snapshot+copy → verify → finalize`.
+
+Componentes:
+- `scripts/data/tables.yaml` — allowlist por grupo (catálogos, identidade, cadastros, transacional 90d)
+- `scripts/data/checkpoint.sql` — schema `_migration` (runs, checkpoints, snapshots, gc)
+- `scripts/data/copy-table.sh` — worker `COPY … TO STDOUT | COPY … FROM STDIN`
+- `scripts/data/rollback.sh` — `TRUNCATE + INSERT SELECT` do snapshot, por tabela
+- `scripts/data/verify.sh` — count + hash md5 amostra + estrutura de FK
+
+Guard-rails: `PROD_DB_URL` é somente leitura; aborta se `PROD_DB_URL == STAGING_DB_URL` ou `STAGING_PROJECT_REF == PROD_PROJECT_REF`. PII sensível na blacklist por padrão.
