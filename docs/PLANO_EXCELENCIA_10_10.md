@@ -25,7 +25,7 @@
 - [~] **#1** Erradicar `: any` (303 → 209, -94 / -31%). Refactor `useAsaas`, `useBling`, `useBlingNFe`, `useBudget`, `useFinancialData`, DreBalanco, Consolidacao, ContaReceberFormFields, Asaas.tsx, services. Restante são callbacks JSX de linhas de tabela — próxima passada exigirá tipagem invasiva.
 - [x] **#2** Envolver `console.log` remanescentes em `import.meta.env.DEV` ou migrar para `src/lib/logger.ts`. — `error-tracking.ts` fallback tracker + `initSentry` agora com guard DEV. Restantes são JSDoc/já guardados.
 - [x] **#3** Resolver os 5 marcadores TODO/FIXME. — `useAuth` agora usa tipos gerados; `BlingFinanceiroPanel` e `ContabilizacaoAutomaticaTab` trocaram `window.confirm` por `ConfirmDialog`.
-- [~] **#4** Modularizar 19 arquivos > 700 linhas. Progresso: `AnomaliasDetectadasPanel` 1210 → 1081 linhas — helpers puros (constants, `AnomaliaFilters`, URL/persist serializers) extraídos para `AnomaliasDetectadasPanel.helpers.ts`. Próximo: extrair sub-componentes de JSX (header, filtros, tabela) para levar abaixo de 700; depois `Asaas.tsx` (1186), `DreBalancoTab` (1034), demais.
+- [~] **#4** Modularizar 19 arquivos > 700 linhas. Progresso: `AnomaliasDetectadasPanel` **1210 → 324 linhas** ✅ (abaixo do alvo). Sub-componentes extraídos: `AnomaliasDetectadasPanel.helpers.ts` (constants, filtros, URL/persist), `useAnomaliasPanelDerivations.ts` (267 linhas — memoização de listagem, exportColumns, previews, suggestions), `AnomaliasPanelHeader.tsx` (120 linhas), `AnomaliasFiltersBar.tsx` (312 linhas), `AnomaliasList.tsx` (275 linhas). `tsgo` limpo, comportamento preservado. Próximo: `Asaas.tsx` (1186), `DreBalancoTab` (1034).
 
 ### Fase 2 — Testes e cobertura
 
