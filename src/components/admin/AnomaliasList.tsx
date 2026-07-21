@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
-import { formatProfileLabel } from "@/hooks/useProfilesByIds";
+import { formatProfileLabel, type ProfileMini } from "@/hooks/useProfilesByIds";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { severidadeBadge, TIPO_LABEL } from "./AnomaliasDetectadasPanel.helpers";
 
