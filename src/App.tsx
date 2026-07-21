@@ -80,6 +80,7 @@ const BenchmarkingSetorial = lazy(() => import('./pages/BenchmarkingSetorial'));
 const AdminTelemetria = lazy(() => import('./pages/AdminTelemetria'));
 const AdminEdgeHealth = lazy(() => import('./pages/AdminEdgeHealth'));
 const AdminSystemHealth = lazy(() => import('./pages/AdminSystemHealth'));
+const SRECommandCenter = lazy(() => import('./pages/admin/SRECommandCenter'));
 const AdminBloatMonitor = lazy(() => import('./pages/admin/AdminBloatMonitor'));
 const CentroPrivacidadeLGPD = lazy(() => import('./pages/CentroPrivacidadeLGPD'));
 const FiltrosSalvos = lazy(() => import('./pages/configuracoes/FiltrosSalvos'));
@@ -212,6 +213,7 @@ function AppRoutes() {
             <Route path="/admin/telemetria" element={<ProtectedRoute requiredRoles={['admin']}><AdminTelemetria /></ProtectedRoute>} />
             <Route path="/admin/edge-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminEdgeHealth /></ProtectedRoute>} />
             <Route path="/admin/system-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminSystemHealth /></ProtectedRoute>} />
+            <Route path="/admin/sre" element={<ProtectedRoute requiredRoles={['admin']}><SRECommandCenter /></ProtectedRoute>} />
             <Route path="/admin/bloat-monitor" element={<ProtectedRoute requiredRoles={['admin']}><AdminBloatMonitor /></ProtectedRoute>} />
             <Route path="/admin/sso" element={<ProtectedRoute requiredRoles={['admin']}><SSOAdmin /></ProtectedRoute>} />
             <Route path="/admin/sso-jit-events" element={<ProtectedRoute requiredRoles={['admin']}><SSOJitEvents /></ProtectedRoute>} />

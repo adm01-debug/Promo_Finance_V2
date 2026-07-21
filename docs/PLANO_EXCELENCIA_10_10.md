@@ -50,7 +50,7 @@
 
 ### Fase 5 — Observabilidade & DX
 
-- [ ] **#17** Consolidar `AdminSystemHealth` + `AdminEdgeHealth` + `AdminTelemetria` numa visão SRE (SLO, error budget, alertas).
+- [x] **#17** SRE Command Center unificado em `/admin/sre` (`src/pages/admin/SRECommandCenter.tsx`): agrega SLO/Error Budget, System Health, Edge Health e Telemetria DB em tabs deep-linkáveis (`?tab=slo|system|edge|telemetry`). Guard `has_role('admin')` + lazy load com `Suspense` fallback (skeleton) para preservar TTI. As rotas legadas (`/admin/telemetria`, `/admin/edge-health`, `/admin/system-health`) permanecem por compat.
 - [x] **#18** Docs — catálogo de Edge Functions em `docs/EDGE_FUNCTIONS_CATALOG.md` (87 funções) + ADR-sumário das 356 migrations em `docs/MIGRATIONS_ADR.md` (distribuição temporal/por tipo, domínios, padrões arquiteturais e convenções). Refresh incremental de `ARCHITECTURE.md`/`TESTING.md` fica como manutenção contínua.
 - [x] **#1** Erradicação de `: any` chegou ao piso pragmático: 4 ocorrências reais em produção (2 em `useFinancialData.ts` mantidas por contrato com consumidores tipados a jusante, 2 em comentários explicativos de `supabase-dynamic.ts`/`useTrilhaAuditoria.ts`). Testes mantêm ~17 casts intencionais para mocks. TS strict em 0 erros.
 
