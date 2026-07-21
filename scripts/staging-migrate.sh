@@ -184,5 +184,29 @@ if [ "$ONLY_INTEGRITY" -eq 0 ]; then
 fi
 run_integrity
 
+# ---------------------------- 8. healthcheck -------------------------------
+run_healthcheck() {
+  log_step "healthcheck" "start"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_step "healthcheck" "skipped" "dry-run"
+    return
+  fi
+  STAGING_DB_URL="$STAGING_DB_URL" \
+  STAGING_PROJECT_REF="$STAGING_PROJECT_REF" \
+  STAGING_ANON_KEY="$STAGING_ANON_KEY" \
+  STAGING_SERVICE_ROLE_KEY="${STAGING_SERVICE_ROLE_KEY:-}" \
+  PROD_PROJECT_REF="${PROD_PROJECT_REF:-}" \
+    bash "$ROOT/scripts/healthcheck/run.sh" --json-only \
+      > "/tmp/healthcheck-${TS}.jsonl" \
+    || die "healthcheck" "assertions falharam — veja /tmp/healthcheck-${TS}.jsonl"
+  log_step "healthcheck" "ok" "/tmp/healthcheck-${TS}.jsonl"
+}
+
+if [ "$SKIP_HEALTHCHECK" -eq 0 ]; then
+  run_healthcheck
+else
+  log_step "healthcheck" "skipped" "flag --skip-healthcheck"
+fi
+
 log_step "summary" "ok" "log=$LOG"
 echo "✅ staging-migrate concluído — log: $LOG"
