@@ -29,10 +29,8 @@ interface SincronizarMutation {
   mutate: (input: { anomaliaId: string; evento: string }) => void;
 }
 
-interface ProfileEntry {
-  email?: string | null;
-  [k: string]: unknown;
-}
+
+
 
 export interface AnomaliasListProps {
   lista: Anomalia[];
