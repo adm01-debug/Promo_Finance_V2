@@ -58,7 +58,7 @@ export function useContabilizacaoMutations(empresaId: string) {
       }
       const { error } = await supabaseDyn
         .from('regras_contabilizacao_automatica')
-        .update(regra)
+        .update({ ...regra } as Record<string, unknown>)
         .eq('id', regra.id);
       if (error) throw new Error(error.message);
     },
