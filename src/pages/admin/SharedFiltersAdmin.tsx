@@ -1,32 +1,14 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   Download,
   Loader2,
   RefreshCw,
   Search,
-  Shield,
-  ShieldOff,
-  Trash2,
   Upload,
-  Users,
 } from 'lucide-react';
-import {
-  buildBundle,
-  downloadBundle,
-  parseBundle,
-  SharedFilterBundleParseError,
-  type SharedFilterBundleItem,
-} from '@/lib/sharedFiltersExport';
-import {
-  validateSharing,
-  SavedFilterSharingError,
-  type AppRole as ValidatedAppRole,
-} from '@/hooks/savedFiltersValidation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -36,9 +18,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
@@ -47,339 +27,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { supabase } from '@/integrations/supabase/client';
-import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { useAuth } from '@/hooks/useAuth';
-import { logger } from '@/lib/logger';
-import { toast } from 'sonner';
-
-type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
-
-const ROLE_LABEL: Record<AppRole, string> = {
-  admin: 'Administrador',
-  financeiro: 'Financeiro',
-  operacional: 'Operacional',
-  visualizador: 'Visualizador',
-};
-
-const ROLE_OPTIONS: AppRole[] = [
-  'admin',
-  'financeiro',
-  'operacional',
-  'visualizador',
-];
-
-interface SharedFilterRow {
-  id: string;
-  user_id: string;
-  created_by: string | null;
-  entity_type: string;
-  name: string;
-  is_default: boolean;
-  is_shared: boolean;
-  empresa_id: string | null;
-  shared_with_roles: AppRole[];
-  created_at: string;
-  updated_at: string;
-}
-
-interface ProfileLite {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-}
-
-interface EmpresaLite {
-  id: string;
-  razao_social: string | null;
-  nome_fantasia: string | null;
-}
-
-async function logAudit(params: {
-  filterId: string;
-  details: string;
-  oldData?: Record<string, unknown>;
-  newData?: Record<string, unknown>;
-}) {
-  try {
-    await supabase.rpc('log_audit', {
-      _action: 'UPDATE',
-      _table_name: 'saved_filters',
-      _record_id: params.filterId,
-      _old_data: params.oldData ? JSON.stringify(params.oldData) : null,
-      _new_data: params.newData ? JSON.stringify(params.newData) : null,
-      _details: params.details,
-    });
-  } catch (e) {
-    logger.warn('[shared-filters-admin] audit log falhou', e);
-  }
-}
+import { FilterCard } from './shared-filters-admin/FilterCard';
+import { SummaryCard } from './shared-filters-admin/SummaryCard';
+import { useSharedFiltersAdmin } from './shared-filters-admin/useSharedFiltersAdmin';
 
 export default function SharedFiltersAdmin() {
   const { user, isAdmin, currentEmpresaId } = useAuth();
-  const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [entityFilter, setEntityFilter] = useState<string>('all');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const queryKey = ['admin-shared-filters'] as const;
+  const {
+    rows,
+    isLoading,
+    isFetching,
+    refetch,
+    ownersMap,
+    empresasMap,
+    empresaIds,
+    updateRoles,
+    revokeAll,
+    importBundle,
+    handleExport,
+  } = useSharedFiltersAdmin({ user, currentEmpresaId });
 
-  const { data: rows = [], isLoading, refetch, isFetching } = useQuery({
-    queryKey,
-    enabled: !!user,
-    queryFn: async (): Promise<SharedFilterRow[]> => {
-      const { data, error } = await supabaseDyn
-        .from('saved_filters')
-        .select(
-          'id,user_id,created_by,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at',
-        )
-        .eq('is_shared', true)
-        .order('updated_at', { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as unknown as SharedFilterRow[];
-    },
-  });
-
-  const ownerIds = useMemo(
-    () => Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean))),
-    [rows],
-  );
-  const empresaIds = useMemo(
-    () => Array.from(new Set(rows.map((r) => r.empresa_id).filter(Boolean))) as string[],
-    [rows],
-  );
-
-  const { data: ownersMap = {} } = useQuery({
-    queryKey: ['admin-shared-filters-owners', ownerIds.join(',')],
-    enabled: ownerIds.length > 0,
-    queryFn: async (): Promise<Record<string, ProfileLite>> => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id,email,full_name')
-        .in('id', ownerIds);
-      if (error) throw error;
-      const map: Record<string, ProfileLite> = {};
-      (data ?? []).forEach((p) => {
-        map[p.id] = p as ProfileLite;
-      });
-      return map;
-    },
-  });
-
-  const { data: empresasMap = {} } = useQuery({
-    queryKey: ['admin-shared-filters-empresas', empresaIds.join(',')],
-    enabled: empresaIds.length > 0,
-    queryFn: async (): Promise<Record<string, EmpresaLite>> => {
-      const { data, error } = await supabase
-        .from('empresas')
-        .select('id,razao_social,nome_fantasia')
-        .in('id', empresaIds);
-      if (error) throw error;
-      const map: Record<string, EmpresaLite> = {};
-      (data ?? []).forEach((e) => {
-        map[e.id] = e as EmpresaLite;
-      });
-      return map;
-    },
-  });
-
-  const updateRoles = useMutation({
-    mutationFn: async (input: {
-      row: SharedFilterRow;
-      nextRoles: AppRole[];
-    }) => {
-      const { row, nextRoles } = input;
-      const { error } = await supabaseDyn
-        .from('saved_filters')
-        .update({ shared_with_roles: nextRoles })
-        .eq('id', row.id);
-      if (error) throw error;
-
-      await logAudit({
-        filterId: row.id,
-        details: `Papéis atualizados em filtro "${row.name}" (entity=${row.entity_type}); empresa=${row.empresa_id ?? '—'}; antes=[${row.shared_with_roles.join(',')}]; depois=[${nextRoles.join(',')}]; admin=${user?.id ?? '—'}`,
-        oldData: { shared_with_roles: row.shared_with_roles },
-        newData: { shared_with_roles: nextRoles },
-      });
-    },
-    onSuccess: () => {
-      toast.success('Permissões atualizadas');
-      qc.invalidateQueries({ queryKey });
-    },
-    onError: (e: Error) => toast.error(`Erro: ${e.message}`),
-  });
-
-  const revokeAll = useMutation({
-    mutationFn: async (row: SharedFilterRow) => {
-      const { error } = await supabaseDyn
-        .from('saved_filters')
-        .update({
-          is_shared: false,
-          shared_with_roles: [],
-          empresa_id: null,
-        })
-        .eq('id', row.id);
-      if (error) throw error;
-
-      await logAudit({
-        filterId: row.id,
-        details: `Compartilhamento revogado completamente em "${row.name}" (entity=${row.entity_type}); empresa=${row.empresa_id ?? '—'}; roles_revogados=[${row.shared_with_roles.join(',')}]; admin=${user?.id ?? '—'}`,
-        oldData: {
-          is_shared: row.is_shared,
-          shared_with_roles: row.shared_with_roles,
-          empresa_id: row.empresa_id,
-        },
-        newData: { is_shared: false, shared_with_roles: [], empresa_id: null },
-      });
-    },
-    onSuccess: () => {
-      toast.success('Compartilhamento revogado');
-      qc.invalidateQueries({ queryKey });
-    },
-    onError: (e: Error) => toast.error(`Erro: ${e.message}`),
-  });
-
-  // ----- Export / Import de bundles -----
   const exportableRows = useMemo(() => {
     return currentEmpresaId
       ? rows.filter((r) => r.empresa_id === currentEmpresaId)
       : rows;
   }, [rows, currentEmpresaId]);
 
-  function handleExport() {
-    if (exportableRows.length === 0) {
-      toast.error('Nenhum filtro compartilhado da empresa atual para exportar.');
-      return;
-    }
-    const bundle = buildBundle({
-      rows: exportableRows.map((r) => ({
-        entity_type: r.entity_type,
-        name: r.name,
-        filters: (r as unknown as { filters?: unknown }).filters ?? {},
-        shared_with_roles: r.shared_with_roles,
-        empresa_id: r.empresa_id,
-        user_id: r.user_id,
-      })),
-      ownersById: ownersMap,
-      exportedBy: user ? { id: user.id, email: user.email ?? null } : null,
-      fromEmpresaId: currentEmpresaId ?? null,
-    });
-    downloadBundle(bundle);
-    toast.success(`${bundle.items.length} filtro(s) exportados`);
-  }
-
-  async function fetchTenantRoles(empresaId: string): Promise<string[]> {
-    const { data, error } = await supabase
-      .from('user_empresas')
-      .select('role')
-      .eq('empresa_id', empresaId)
-      .eq('ativo', true);
-    if (error) throw new Error(error.message);
-    const set = new Set<string>();
-    (data ?? []).forEach((r: { role: string | null }) => {
-      if (r?.role) set.add(r.role);
-    });
-    return Array.from(set);
-  }
-
-  const importBundle = useMutation({
-    mutationFn: async (file: File) => {
-      if (!user) throw new Error('Sessão expirada');
-      if (!currentEmpresaId)
-        throw new Error('Selecione uma empresa atual antes de importar.');
-
-      const text = await file.text();
-      const bundle = parseBundle(text);
-      const tenantRoles = await fetchTenantRoles(currentEmpresaId);
-
-      let inserted = 0;
-      let skipped = 0;
-      const reasons: string[] = [];
-
-      for (const item of bundle.items as SharedFilterBundleItem[]) {
-        let normalized: { sharedWithRoles: ValidatedAppRole[] };
-        try {
-          normalized = validateSharing({
-            isShared: true,
-            sharedWithRoles: item.shared_with_roles,
-            empresaId: currentEmpresaId,
-            tenantRoles,
-          });
-        } catch (e) {
-          skipped++;
-          reasons.push(
-            `${item.name}: ${
-              e instanceof SavedFilterSharingError ? e.message : 'validação falhou'
-            }`,
-          );
-          continue;
-        }
-
-        const { error } = await supabaseDyn
-          .from('saved_filters')
-          .upsert(
-            {
-              user_id: user.id,
-              created_by: user.id,
-              entity_type: item.entity_type,
-              name: item.name,
-              filters: item.filters as never,
-              is_default: false,
-              is_shared: true,
-              empresa_id: currentEmpresaId,
-              shared_with_roles: normalized.sharedWithRoles,
-            },
-            { onConflict: 'user_id,entity_type,name' },
-          );
-        if (error) {
-          skipped++;
-          reasons.push(`${item.name}: ${error.message}`);
-          continue;
-        }
-        inserted++;
-      }
-
-      await logAudit({
-        filterId: '00000000-0000-0000-0000-000000000000',
-        details: `Import de bundle: ${inserted} importado(s), ${skipped} ignorado(s); origem_empresa=${bundle.exportedFromEmpresaId ?? '—'}; destino_empresa=${currentEmpresaId}; admin=${user.id}`,
-        oldData: { reasons },
-        newData: { inserted, skipped, total: bundle.items.length },
-      });
-
-      return { inserted, skipped, total: bundle.items.length, reasons };
-    },
-    onSuccess: (r) => {
-      if (r.inserted > 0)
-        toast.success(`${r.inserted} filtro(s) importado(s) com sucesso`);
-      if (r.skipped > 0)
-        toast.warning(
-          `${r.skipped} filtro(s) ignorado(s)${r.reasons[0] ? `: ${r.reasons[0]}` : ''}`,
-        );
-      qc.invalidateQueries({ queryKey });
-    },
-    onError: (e: Error) => {
-      const prefix = e instanceof SharedFilterBundleParseError ? 'Arquivo' : 'Erro';
-      toast.error(`${prefix}: ${e.message}`);
-    },
-  });
-
   function handlePickFile(file: File | null) {
     if (!file) return;
     importBundle.mutate(file);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
-
 
   const entityTypes = useMemo(
     () => Array.from(new Set(rows.map((r) => r.entity_type))).sort(),
@@ -404,15 +87,16 @@ export default function SharedFiltersAdmin() {
     });
   }, [rows, search, entityFilter, ownersMap, empresasMap]);
 
-  const totals = useMemo(() => {
-    return {
+  const totals = useMemo(
+    () => ({
       total: rows.length,
       entidades: entityTypes.length,
       empresas: empresaIds.length,
       sem_papeis: rows.filter((r) => (r.shared_with_roles ?? []).length === 0)
         .length,
-    };
-  }, [rows, entityTypes.length, empresaIds.length]);
+    }),
+    [rows, entityTypes.length, empresaIds.length],
+  );
 
   if (!isAdmin) {
     return (
@@ -440,7 +124,6 @@ export default function SharedFiltersAdmin() {
         transition={{ duration: 0.25 }}
         className="space-y-6"
       >
-        {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild>
@@ -469,7 +152,7 @@ export default function SharedFiltersAdmin() {
             <Button
               variant="outline"
               className="gap-2"
-              onClick={handleExport}
+              onClick={() => handleExport(exportableRows)}
               disabled={isLoading || exportableRows.length === 0}
               title={
                 currentEmpresaId
@@ -514,7 +197,6 @@ export default function SharedFiltersAdmin() {
           </div>
         </div>
 
-        {/* Resumo */}
         <div className="grid gap-3 md:grid-cols-4">
           <SummaryCard label="Filtros compartilhados" value={totals.total} />
           <SummaryCard label="Entidades distintas" value={totals.entidades} />
@@ -526,7 +208,6 @@ export default function SharedFiltersAdmin() {
           />
         </div>
 
-        {/* Filtros */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Catálogo</CardTitle>
@@ -600,163 +281,5 @@ export default function SharedFiltersAdmin() {
         </Card>
       </motion.div>
     </MainLayout>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  tone = 'default',
-}: {
-  label: string;
-  value: number;
-  tone?: 'default' | 'warning';
-}) {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="text-xs text-muted-foreground">{label}</div>
-        <div
-          className={`text-2xl font-bold mt-1 ${
-            tone === 'warning' && value > 0 ? 'text-warning' : ''
-          }`}
-        >
-          {value}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-interface FilterCardProps {
-  row: SharedFilterRow;
-  owner?: ProfileLite;
-  empresa?: EmpresaLite;
-  onToggleRole: (role: AppRole) => void;
-  onRevoke: () => void;
-  busy: boolean;
-}
-
-function FilterCard({
-  row,
-  owner,
-  empresa,
-  onToggleRole,
-  onRevoke,
-  busy,
-}: FilterCardProps) {
-  const activeRoles = new Set(row.shared_with_roles);
-  const empresaLabel =
-    empresa?.nome_fantasia ?? empresa?.razao_social ?? row.empresa_id ?? '—';
-  const ownerLabel = owner?.full_name || owner?.email || row.user_id;
-
-  return (
-    <div className="rounded-lg border border-border bg-card/60 p-4 hover:bg-card transition-colors">
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-sm">{row.name}</span>
-            <Badge variant="outline" className="text-[10px]">
-              {row.entity_type}
-            </Badge>
-            {row.is_default && (
-              <Badge variant="secondary" className="text-[10px]">
-                Padrão
-              </Badge>
-            )}
-          </div>
-          <div className="mt-2 grid gap-1 text-xs text-muted-foreground">
-            <div>
-              <span className="text-foreground font-medium">Dono:</span>{' '}
-              {ownerLabel}
-              {owner?.email && owner.full_name ? (
-                <span className="opacity-70"> ({owner.email})</span>
-              ) : null}
-            </div>
-            <div>
-              <span className="text-foreground font-medium">Empresa:</span>{' '}
-              {empresaLabel}
-            </div>
-            <div>
-              <span className="text-foreground font-medium">
-                Atualizado em:
-              </span>{' '}
-              {new Date(row.updated_at).toLocaleString('pt-BR')}
-            </div>
-          </div>
-        </div>
-
-        <div className="shrink-0">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={busy}
-                className="gap-1 text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-3 w-3" />
-                Revogar tudo
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Revogar compartilhamento?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  O filtro <strong>{row.name}</strong> deixará de ser
-                  compartilhado. O dono ainda pode usá-lo em sua biblioteca
-                  pessoal. Esta ação será registrada na auditoria.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={onRevoke}>
-                  Confirmar revogação
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </div>
-
-      <Separator className="my-3" />
-
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Users className="h-3 w-3" />
-          Papéis com acesso
-          {activeRoles.size === 0 && (
-            <Badge
-              variant="outline"
-              className="text-[10px] border-warning/40 text-warning"
-            >
-              Todos os papéis da empresa
-            </Badge>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {ROLE_OPTIONS.map((role) => {
-            const active = activeRoles.has(role);
-            return (
-              <Button
-                key={role}
-                size="sm"
-                variant={active ? 'default' : 'outline'}
-                disabled={busy}
-                onClick={() => onToggleRole(role)}
-                className="gap-1 h-7"
-              >
-                {active ? (
-                  <Shield className="h-3 w-3" />
-                ) : (
-                  <ShieldOff className="h-3 w-3 opacity-60" />
-                )}
-                {ROLE_LABEL[role]}
-              </Button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
   );
 }
