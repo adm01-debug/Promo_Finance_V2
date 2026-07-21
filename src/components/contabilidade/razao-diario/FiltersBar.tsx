@@ -25,13 +25,7 @@ interface Props {
   contaId: string;
   setContaId: (v: string) => void;
   plano: Array<{ id: string; codigo: string; nome?: string; descricao?: string; tipo: string }>;
-  filtersController: {
-    values: RazaoFilters;
-    reset: () => void;
-    setValues: (v: RazaoFilters) => void;
-    isHydrated: boolean;
-    setField: <K extends keyof RazaoFilters>(k: K, v: RazaoFilters[K]) => void;
-  };
+  filtersController: ManagedFiltersController<RazaoFilters>;
   countLabel: string;
 }
 
