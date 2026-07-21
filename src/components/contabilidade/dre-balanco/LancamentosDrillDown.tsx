@@ -133,7 +133,7 @@ export function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tip
                       {p.tipo}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right font-mono text-[11px] font-black py-3">{formatCurrency(p.valor)}</TableCell>
+                  <TableCell className="text-right font-mono text-[11px] font-black py-3">{formatCurrency(Number(p.valor))}</TableCell>
                 </TableRow>
               ))}
               {partidasFiltradas.length === 0 && (
