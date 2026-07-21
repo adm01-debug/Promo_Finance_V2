@@ -25,6 +25,7 @@ DRY_RUN=0
 SKIP_BASELINE=0
 ONLY_INTEGRITY=0
 WITH_DATA=0
+SKIP_HEALTHCHECK=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -32,6 +33,7 @@ for arg in "$@"; do
     --skip-baseline) SKIP_BASELINE=1 ;;
     --only-integrity) ONLY_INTEGRITY=1 ;;
     --with-data) WITH_DATA=1 ;;
+    --skip-healthcheck) SKIP_HEALTHCHECK=1 ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "Flag desconhecida: $arg" >&2; exit 2 ;;
   esac
@@ -181,6 +183,30 @@ if [ "$ONLY_INTEGRITY" -eq 0 ]; then
   fi
 fi
 run_integrity
+
+# ---------------------------- 8. healthcheck -------------------------------
+run_healthcheck() {
+  log_step "healthcheck" "start"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_step "healthcheck" "skipped" "dry-run"
+    return
+  fi
+  STAGING_DB_URL="$STAGING_DB_URL" \
+  STAGING_PROJECT_REF="$STAGING_PROJECT_REF" \
+  STAGING_ANON_KEY="$STAGING_ANON_KEY" \
+  STAGING_SERVICE_ROLE_KEY="${STAGING_SERVICE_ROLE_KEY:-}" \
+  PROD_PROJECT_REF="${PROD_PROJECT_REF:-}" \
+    bash "$ROOT/scripts/healthcheck/run.sh" --json-only \
+      > "/tmp/healthcheck-${TS}.jsonl" \
+    || die "healthcheck" "assertions falharam — veja /tmp/healthcheck-${TS}.jsonl"
+  log_step "healthcheck" "ok" "/tmp/healthcheck-${TS}.jsonl"
+}
+
+if [ "$SKIP_HEALTHCHECK" -eq 0 ]; then
+  run_healthcheck
+else
+  log_step "healthcheck" "skipped" "flag --skip-healthcheck"
+fi
 
 log_step "summary" "ok" "log=$LOG"
 echo "✅ staging-migrate concluído — log: $LOG"

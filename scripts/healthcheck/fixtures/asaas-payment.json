@@ -1,0 +1,13 @@
+{
+  "id": "evt_HC_PLACEHOLDER",
+  "event": "PAYMENT_CONFIRMED",
+  "payment": {
+    "id": "pay_HC_PLACEHOLDER",
+    "status": "CONFIRMED",
+    "value": 1.00,
+    "customer": "cus_HC_PLACEHOLDER",
+    "dueDate": "2099-12-31",
+    "billingType": "PIX"
+  },
+  "healthcheck_run_id": "__RUN_ID__"
+}

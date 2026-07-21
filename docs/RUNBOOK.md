@@ -216,3 +216,21 @@ Componentes:
 - `scripts/data/verify.sh` — count + hash md5 amostra + estrutura de FK
 
 Guard-rails: `PROD_DB_URL` é somente leitura; aborta se `PROD_DB_URL == STAGING_DB_URL` ou `STAGING_PROJECT_REF == PROD_PROJECT_REF`. PII sensível na blacklist por padrão.
+
+## §11 · Healthcheck pós-corte (comportamental)
+
+Última fase do `staging-migrate.sh`, executada após `integrity`. Enquanto a suite de integridade valida **estrutura** (schema, RLS, grants), o healthcheck valida **comportamento** — em execução real, com relógio e efeitos observáveis.
+
+Detalhes completos em [`docs/HEALTHCHECK.md`](./HEALTHCHECK.md).
+
+**Entrypoint:** `scripts/healthcheck/run.sh` (também via `staging-migrate.sh`, opt-out `--skip-healthcheck`).
+
+Checks:
+- `01_webhooks.sh` — POST válido → 2xx, POST inválido → 401/403, persistência em `webhooks_log`, DLQ vazia (asaas, bitrix24, whatsapp, bling)
+- `02_crons.sql` — `cron.job` ativo + execuções `succeeded` em `cron.job_run_details` (15 min), sem `failed/failure`
+- `03_realtime.mjs` — assina `postgres_changes` em `webhook_events` e `alerts`, insere linha sintética via service_role, mede latência (teto 5s)
+- `04_events.sh` — publica evento em `webhook_events` e verifica propagação para `n8n_dispatch_logs` / `alerts` (30s)
+
+Guard-rails: aborta se `STAGING_PROJECT_REF == PROD_PROJECT_REF`; todo dado sintético carrega `healthcheck_run_id = $RUN_ID` (UUID por run); `trap cleanup EXIT` remove essas linhas de `webhook_events`, `webhooks_log`, `alerts`, `n8n_dispatch_logs`.
+
+`unverified` (sem secret do provedor, cron de baixa frequência sem tick na janela, service_role indisponível) nunca conta como aprovação, mas não trava — é sinal para provisionar o pré-requisito.
