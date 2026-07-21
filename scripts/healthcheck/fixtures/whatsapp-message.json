@@ -1,0 +1,14 @@
+{
+  "event": "messages.upsert",
+  "instance": "healthcheck",
+  "data": {
+    "key": {
+      "remoteJid": "5511999999999@s.whatsapp.net",
+      "fromMe": false,
+      "id": "HC_PLACEHOLDER"
+    },
+    "message": { "conversation": "healthcheck ping" },
+    "messageTimestamp": 1700000000
+  },
+  "healthcheck_run_id": "__RUN_ID__"
+}
