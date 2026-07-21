@@ -36,7 +36,7 @@ export interface AnomaliasListProps {
   lista: Anomalia[];
   isLoading: boolean;
   isVisible: (key: string) => boolean;
-  profilesMap: Map<string, ProfileEntry> | undefined;
+  profilesMap: Map<string, ProfileMini> | undefined;
   selecionados: Set<string>;
   toggleSelecionado: (id: string) => void;
   limparSelecao: () => void;
