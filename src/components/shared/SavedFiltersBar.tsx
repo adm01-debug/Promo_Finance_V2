@@ -11,40 +11,12 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
   Bookmark,
-  Star,
-  Trash2,
   Save,
   ChevronDown,
-  Copy,
-  Share2,
-  Users,
-  User as UserIcon,
   Cloud,
   RotateCcw,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
 import {
   useSavedFilters,
@@ -55,7 +27,10 @@ import {
 import { useSavedFilterSubscriptions } from "@/hooks/useSavedFilterSubscriptions";
 import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
 import { useAuth } from "@/hooks/useAuth";
-import { SubscriptionPopover } from "@/components/shared/SubscriptionPopover";
+import { PresetListItem } from "./saved-filters-bar/PresetListItem";
+import { SavePresetDialog } from "./saved-filters-bar/SavePresetDialog";
+import { ShareFilterDialog } from "./saved-filters-bar/ShareFilterDialog";
+import { RestoreConfirmDialog } from "./saved-filters-bar/RestoreConfirmDialog";
 
 interface SavedFiltersBarProps<T> {
   entityType: string;
@@ -73,13 +48,6 @@ interface SavedFiltersBarProps<T> {
     payload: SavedFilterPayload<T>;
   }) => void;
 }
-
-const ALL_ROLES: { key: AppRole; label: string }[] = [
-  { key: "admin", label: "Admin" },
-  { key: "financeiro", label: "Financeiro" },
-  { key: "operacional", label: "Operacional" },
-  { key: "visualizador", label: "Visualizador" },
-];
 
 export function SavedFiltersBar<T>({
   entityType,
@@ -100,14 +68,8 @@ export function SavedFiltersBar<T>({
     duplicate,
     updateSharing,
   } = useSavedFilters<T>(entityType);
-  const {
-    byFilterId: subsByFilter,
-    subscribe,
-    unsubscribe,
-    updateChannels,
-  } = useSavedFilterSubscriptions();
-  const { subscribed: pushReady, subscribe: enablePush } =
-    useWebPushSubscription();
+  const subsApi = useSavedFilterSubscriptions();
+  const { subscribed: pushReady, subscribe: enablePush } = useWebPushSubscription();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [name, setName] = useState("");
@@ -121,13 +83,11 @@ export function SavedFiltersBar<T>({
   const [shareDialogRoles, setShareDialogRoles] = useState<AppRole[]>([]);
   const [shareError, setShareError] = useState<string | null>(null);
 
-  // Estados visuais para feedback por linha (evita cliques repetidos)
   const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null);
   const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
   const [pendingDefaultId, setPendingDefaultId] = useState<string | null>(null);
-  const [pendingDuplicateId, setPendingDuplicateId] = useState<string | null>(
-    null,
-  );
+  const [pendingDuplicateId, setPendingDuplicateId] = useState<string | null>(null);
+  const [confirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
 
   const anyMutationPending =
     save.isPending ||
@@ -147,8 +107,7 @@ export function SavedFiltersBar<T>({
     return JSON.stringify(activePreset.filters) !== JSON.stringify(currentState);
   }, [activePreset, currentState]);
 
-  const isOwner = (f: SavedFilterRow<T>) =>
-    user?.id === (f.created_by ?? f.user_id);
+  const isOwner = (f: SavedFilterRow<T>) => user?.id === (f.created_by ?? f.user_id);
 
   const handleSave = async () => {
     const trimmed = name.trim();
@@ -168,9 +127,7 @@ export function SavedFiltersBar<T>({
       setShareEnabled(false);
       setShareRoles([]);
     } catch (err) {
-      setSaveError(
-        err instanceof Error ? err.message : "Falha ao salvar o preset.",
-      );
+      setSaveError(err instanceof Error ? err.message : "Falha ao salvar o preset.");
     }
   };
 
@@ -209,23 +166,18 @@ export function SavedFiltersBar<T>({
       setShareDialog(null);
     } catch (err) {
       setShareError(
-        err instanceof Error
-          ? err.message
-          : "Falha ao atualizar compartilhamento.",
+        err instanceof Error ? err.message : "Falha ao atualizar compartilhamento.",
       );
     }
   };
 
-  // Carrega preset com feedback visual e proteção contra cliques repetidos
   const handleLoadPreset = (f: SavedFilterRow<T>) => {
     if (loadingPresetId || anyMutationPending) return;
-    if (f.id === activePresetId) return; // já está ativo
+    if (f.id === activePresetId) return;
     setLoadingPresetId(f.id);
     try {
       onLoad({ id: f.id, payload: f.filters });
     } finally {
-      // Limpa no próximo tick — onLoad é síncrono no consumidor,
-      // mas mantemos o feedback brevemente para evitar flicker.
       setTimeout(() => setLoadingPresetId(null), 200);
     }
   };
@@ -244,9 +196,7 @@ export function SavedFiltersBar<T>({
   const handleSetDefault = (f: SavedFilterRow<T>) => {
     if (pendingDefaultId || setDefault.isPending) return;
     setPendingDefaultId(f.id);
-    setDefault.mutate(f.id, {
-      onSettled: () => setPendingDefaultId(null),
-    });
+    setDefault.mutate(f.id, { onSettled: () => setPendingDefaultId(null) });
   };
 
   const handleDuplicate = (f: SavedFilterRow<T>) => {
@@ -258,19 +208,12 @@ export function SavedFiltersBar<T>({
     );
   };
 
-  const toggleRole = (
-    roles: AppRole[],
-    setRoles: (r: AppRole[]) => void,
-    role: AppRole,
-    checked: boolean,
-  ) => {
-    setRoles(checked ? [...roles, role] : roles.filter((r) => r !== role));
-  };
+  const canRestore =
+    isModified ||
+    (defaultFilter && activePresetId !== defaultFilter.id) ||
+    (!activePresetId && !!defaultFilter);
 
-  // Restaura ao preset padrão (se existir) ou ao estado inicial.
-  // Captura snapshot do estado anterior e oferece "Desfazer" no toast.
   const handleRestoreDefault = () => {
-    // Snapshot do estado vigente para permitir undo dentro da janela do toast.
     const previousPresetId = activePresetId;
     const previousState: SavedFilterPayload<T> = currentState;
 
@@ -284,10 +227,8 @@ export function SavedFiltersBar<T>({
       if (onRestoreState) {
         onRestoreState({ presetId: previousPresetId, payload: previousState });
       } else if (previousPresetId) {
-        // Fallback: reaplica como se fosse um preset com o id anterior.
         onLoad({ id: previousPresetId, payload: previousState });
       } else {
-        // Sem onRestoreState e sem preset anterior: melhor esforço.
         onClear();
       }
       toast.success("Alteração desfeita", {
@@ -305,15 +246,10 @@ export function SavedFiltersBar<T>({
     toast.success(titulo, {
       description: descricao,
       duration: 8000,
-      action: {
-        label: "Desfazer",
-        onClick: undo,
-      },
+      action: { label: "Desfazer", onClick: undo },
     });
   };
 
-  // Confirmação anti-clique-acidental antes de restaurar/voltar ao estado inicial.
-  const [confirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
   const requestRestoreDefault = () => {
     if (!canRestore || anyMutationPending) return;
     setConfirmRestoreOpen(true);
@@ -323,16 +259,6 @@ export function SavedFiltersBar<T>({
     setConfirmRestoreOpen(false);
   };
 
-  // Habilita o botão somente quando há algo a restaurar:
-  // - existe preset modificado, OU
-  // - há um preset ativo diferente do default, OU
-  // - não há preset ativo mas existe default disponível
-  const canRestore =
-    isModified ||
-    (defaultFilter && activePresetId !== defaultFilter.id) ||
-    (!activePresetId && !!defaultFilter);
-
-  // Atalho Alt+R aciona "Restaurar padrão" rapidamente, ignorando campos editáveis.
   const restoreButtonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -349,12 +275,10 @@ export function SavedFiltersBar<T>({
       if (!canRestore || anyMutationPending) return;
       e.preventDefault();
       handleRestoreDefault();
-      // Feedback visual: leva o foco ao botão para indicar a ação executada.
       requestAnimationFrame(() => restoreButtonRef.current?.focus());
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-    // handleRestoreDefault é estável dentro do mesmo render; dependências cobrem o relevante.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canRestore, anyMutationPending, defaultFilter, activePresetId]);
 
@@ -401,152 +325,31 @@ export function SavedFiltersBar<T>({
               </div>
             ) : (
               filters.map((f) => {
-                const owner = isOwner(f);
                 const isLoadingThis = loadingPresetId === f.id;
-                const isRemovingThis = pendingRemoveId === f.id;
-                const isDefaultingThis = pendingDefaultId === f.id;
-                const isDuplicatingThis = pendingDuplicateId === f.id;
                 const rowDisabled =
-                  isRemovingThis ||
+                  pendingRemoveId === f.id ||
                   isLoadingThis ||
                   (!!loadingPresetId && loadingPresetId !== f.id);
                 return (
-                  <DropdownMenuItem
+                  <PresetListItem
                     key={f.id}
-                    className="flex items-center justify-between gap-2"
-                    disabled={rowDisabled}
-                    onSelect={(e) => {
-                      // Evita fechar o menu enquanto carrega; permite clique único
-                      if (rowDisabled) {
-                        e.preventDefault();
-                        return;
-                      }
-                      handleLoadPreset(f);
-                    }}
-                  >
-                    <span className="flex items-center gap-1.5 truncate">
-                      {isLoadingThis ? (
-                        <Loader2 className="h-3 w-3 animate-spin text-primary" />
-                      ) : f.is_default ? (
-                        <Star className="h-3 w-3 fill-warning text-warning" />
-                      ) : f.is_shared ? (
-                        <Users
-                          className="h-3 w-3 text-primary"
-                          aria-label="Compartilhado"
-                        />
-                      ) : (
-                        <UserIcon className="h-3 w-3 text-muted-foreground" />
-                      )}
-                      <span className="truncate">{f.name}</span>
-                      {!owner && (
-                        <Badge
-                          variant="outline"
-                          className="text-[9px] h-4 px-1"
-                        >
-                          equipe
-                        </Badge>
-                      )}
-                    </span>
-                    <span className="flex items-center gap-1 shrink-0">
-                      {entityType === "anomalias_detectadas" && (() => {
-                        const sub = subsByFilter.get(f.id);
-                        const subBusy =
-                          subscribe.isPending ||
-                          unsubscribe.isPending ||
-                          updateChannels.isPending;
-                        return (
-                          <SubscriptionPopover
-                            subscription={sub ?? null}
-                            filterName={f.name}
-                            isBusy={subBusy}
-                            pushReady={pushReady}
-                            tiposEventosOpcoes={[
-                              { value: "movimentacao_outlier", label: "Movimentação atípica" },
-                              { value: "pagamento_duplicado", label: "Pagamento duplicado" },
-                              { value: "conta_pagar_alta", label: "Conta a pagar alta" },
-                              { value: "conciliacao_atrasada", label: "Conciliação atrasada" },
-                              { value: "mudanca_regime_brusca", label: "Variação brusca de regime" },
-                            ]}
-                            onEnablePush={enablePush}
-                            onSubscribe={(input) =>
-                              subscribe.mutate({
-                                savedFilterId: f.id,
-                                ...input,
-                              })
-                            }
-                            onUpdate={(input) => updateChannels.mutate(input)}
-                            onUnsubscribe={(id) => unsubscribe.mutate(id)}
-                          />
-                        );
-                      })()}
-                      <button
-                        type="button"
-                        disabled={isDuplicatingThis || duplicate.isPending}
-                        className="opacity-50 hover:opacity-100 disabled:opacity-30 disabled:cursor-wait"
-                        title="Duplicar para minha biblioteca"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDuplicate(f);
-                        }}
-                      >
-                        {isDuplicatingThis ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )}
-                      </button>
-                      {owner && (
-                        <button
-                          type="button"
-                          disabled={updateSharing.isPending}
-                          className="opacity-50 hover:opacity-100 disabled:opacity-30 disabled:cursor-wait"
-                          title="Compartilhar"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openShareDialog(f);
-                          }}
-                        >
-                          <Share2 className="h-3 w-3" />
-                        </button>
-                      )}
-                      {owner && !f.is_default && (
-                        <button
-                          type="button"
-                          disabled={isDefaultingThis || setDefault.isPending}
-                          className="opacity-50 hover:opacity-100 disabled:opacity-30 disabled:cursor-wait"
-                          title="Definir como padrão"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSetDefault(f);
-                          }}
-                        >
-                          {isDefaultingThis ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            <Star className="h-3 w-3" />
-                          )}
-                        </button>
-                      )}
-                      {owner && (
-                        <button
-                          type="button"
-                          disabled={isRemovingThis || remove.isPending}
-                          className="opacity-50 hover:opacity-100 hover:text-destructive disabled:opacity-30 disabled:cursor-wait"
-                          title="Remover preset"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemove(f);
-                          }}
-                        >
-                          {isRemovingThis ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-3 w-3" />
-                          )}
-                        </button>
-                      )}
-                    </span>
-                  </DropdownMenuItem>
+                    filter={f}
+                    isOwner={isOwner(f)}
+                    isLoading={isLoadingThis}
+                    isRemoving={pendingRemoveId === f.id || remove.isPending}
+                    isSettingDefault={pendingDefaultId === f.id || setDefault.isPending}
+                    isDuplicating={pendingDuplicateId === f.id || duplicate.isPending}
+                    rowDisabled={rowDisabled}
+                    entityType={entityType}
+                    subsApi={subsApi}
+                    pushReady={pushReady}
+                    onEnablePush={enablePush}
+                    onLoad={handleLoadPreset}
+                    onDuplicate={handleDuplicate}
+                    onOpenShare={openShareDialog}
+                    onSetDefault={handleSetDefault}
+                    onRemove={handleRemove}
+                  />
                 );
               })
             )}
@@ -583,7 +386,6 @@ export function SavedFiltersBar<T>({
             )}
             <DropdownMenuItem
               onSelect={(e) => {
-                // Mantém o menu controlando o foco e abre o diálogo de confirmação
                 e.preventDefault();
                 requestRestoreDefault();
               }}
@@ -608,7 +410,6 @@ export function SavedFiltersBar<T>({
           </DropdownMenuContent>
         </DropdownMenu>
 
-
         <Button
           ref={restoreButtonRef}
           variant="ghost"
@@ -632,235 +433,51 @@ export function SavedFiltersBar<T>({
         </Button>
       </div>
 
-      {/* Salvar novo preset */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Salvar preset de filtros</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="preset-name">Nome do preset</Label>
-              <Input
-                id="preset-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ex.: Críticas dos últimos 7 dias"
-                autoFocus
-              />
-            </div>
-            <Checkbox
-              id="default"
-              checked={makeDefault}
-              onChange={(e) =>
-                setMakeDefault((e.target as HTMLInputElement).checked)
-              }
-              label="Aplicar automaticamente ao abrir esta tela"
-            />
-            <div className="border-t pt-3 space-y-2">
-              <Checkbox
-                id="share"
-                checked={shareEnabled}
-                onChange={(e) =>
-                  setShareEnabled((e.target as HTMLInputElement).checked)
-                }
-                label="Compartilhar com a equipe da empresa atual"
-              />
-              {shareEnabled && (
-                <div className="pl-6 space-y-2">
-                  {!currentEmpresaId && (
-                    <p className="text-xs text-destructive">
-                      Selecione uma empresa atual para poder compartilhar.
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Visível para os papéis selecionados (vazio = todos os papéis):
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {ALL_ROLES.map((r) => (
-                      <Checkbox
-                        key={r.key}
-                        id={`role-${r.key}`}
-                        checked={shareRoles.includes(r.key)}
-                        onChange={(e) =>
-                          toggleRole(
-                            shareRoles,
-                            setShareRoles,
-                            r.key,
-                            (e.target as HTMLInputElement).checked,
-                          )
-                        }
-                        label={r.label}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          {saveError && (
-            <div
-              role="alert"
-              className="mt-2 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
-            >
-              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-              <span>{saveError}</span>
-            </div>
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSaveError(null);
-                setDialogOpen(false);
-              }}
-              disabled={save.isPending}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={
-                name.trim().length < 2 ||
-                save.isPending ||
-                (shareEnabled && !currentEmpresaId)
-              }
-            >
-              {save.isPending ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
-                  Salvando…
-                </>
-              ) : (
-                "Salvar"
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SavePresetDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        name={name}
+        onNameChange={setName}
+        makeDefault={makeDefault}
+        onMakeDefaultChange={setMakeDefault}
+        shareEnabled={shareEnabled}
+        onShareEnabledChange={setShareEnabled}
+        shareRoles={shareRoles}
+        onShareRolesChange={setShareRoles}
+        currentEmpresaId={currentEmpresaId}
+        isSaving={save.isPending}
+        saveError={saveError}
+        onCancel={() => {
+          setSaveError(null);
+          setDialogOpen(false);
+        }}
+        onSave={handleSave}
+      />
 
-      {/* Editar compartilhamento */}
-      <Dialog
-        open={!!shareDialog}
-        onOpenChange={(o) => !o && setShareDialog(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Compartilhar &quot;{shareDialog?.name}&quot;</DialogTitle>
-            <DialogDescription>
-              Outros usuários da mesma empresa que tiverem o papel selecionado
-              poderão visualizar e duplicar este preset.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <Checkbox
-              id="share-edit"
-              checked={shareDialogEnabled}
-              onChange={(e) =>
-                setShareDialogEnabled((e.target as HTMLInputElement).checked)
-              }
-              label="Compartilhar com a equipe da empresa atual"
-            />
-            {shareDialogEnabled && (
-              <div className="pl-6 space-y-2">
-                {!currentEmpresaId && (
-                  <p className="text-xs text-destructive">
-                    Selecione uma empresa atual para poder compartilhar.
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Papéis com acesso (vazio = todos):
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {ALL_ROLES.map((r) => (
-                    <Checkbox
-                      key={r.key}
-                      id={`share-role-${r.key}`}
-                      checked={shareDialogRoles.includes(r.key)}
-                      onChange={(e) =>
-                        toggleRole(
-                          shareDialogRoles,
-                          setShareDialogRoles,
-                          r.key,
-                          (e.target as HTMLInputElement).checked,
-                        )
-                      }
-                      label={r.label}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          {shareError && (
-            <div
-              role="alert"
-              className="mt-2 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
-            >
-              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-              <span>{shareError}</span>
-            </div>
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShareError(null);
-                setShareDialog(null);
-              }}
-              disabled={updateSharing.isPending}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSaveShare}
-              disabled={
-                updateSharing.isPending ||
-                (shareDialogEnabled && !currentEmpresaId)
-              }
-            >
-              {updateSharing.isPending ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
-                  Salvando…
-                </>
-              ) : (
-                "Salvar"
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ShareFilterDialog
+        target={shareDialog}
+        enabled={shareDialogEnabled}
+        onEnabledChange={setShareDialogEnabled}
+        roles={shareDialogRoles}
+        onRolesChange={setShareDialogRoles}
+        currentEmpresaId={currentEmpresaId}
+        isSaving={updateSharing.isPending}
+        error={shareError}
+        onCancel={() => {
+          setShareError(null);
+          setShareDialog(null);
+        }}
+        onSave={handleSaveShare}
+      />
 
-      {/* Confirmação anti-clique-acidental para restaurar/voltar ao estado inicial */}
-      <AlertDialog open={confirmRestoreOpen} onOpenChange={setConfirmRestoreOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {defaultFilter
-                ? `Restaurar preset padrão "${defaultFilter.name}"?`
-                : "Voltar ao estado inicial?"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {defaultFilter
-                ? "Suas alterações atuais nos filtros, ordenação e colunas visíveis serão substituídas pelo preset padrão. Esta ação não pode ser desfeita."
-                : "Suas alterações atuais nos filtros, ordenação e colunas visíveis serão descartadas e o painel voltará à configuração inicial. Esta ação não pode ser desfeita."}
-              {isModified && activePreset && (
-                <span className="block mt-2 text-warning">
-                  Você tem alterações não salvas em "{activePreset.name}".
-                </span>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmRestoreDefault}>
-              <RotateCcw className="h-3.5 w-3.5 mr-2" />
-              {defaultFilter ? "Restaurar padrão" : "Voltar ao inicial"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <RestoreConfirmDialog
+        open={confirmRestoreOpen}
+        onOpenChange={setConfirmRestoreOpen}
+        defaultFilter={defaultFilter}
+        isModified={isModified}
+        activePreset={activePreset}
+        onConfirm={confirmRestoreDefault}
+      />
     </>
   );
 }
