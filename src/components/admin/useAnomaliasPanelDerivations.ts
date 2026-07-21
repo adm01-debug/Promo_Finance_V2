@@ -27,7 +27,7 @@ export interface UseAnomaliasPanelDerivationsInput {
   visibleCols: string[];
   activePresetId: string | null;
   pendentes: Anomalia[];
-  reabertasIndex: Map<string, { ultima_reabertura?: string }> | undefined;
+  reabertasIndex: Map<string, ReaberturaInfo> | undefined;
   recentSearches: string[];
 }
 
