@@ -51,7 +51,8 @@
 ### Fase 5 — Observabilidade & DX
 
 - [ ] **#17** Consolidar `AdminSystemHealth` + `AdminEdgeHealth` + `AdminTelemetria` numa visão SRE (SLO, error budget, alertas).
-- [~] **#18** Docs — catálogo de Edge Functions gerado em `docs/EDGE_FUNCTIONS_CATALOG.md` (87 funções indexadas com path). Falta: ADR-sumário das 356 migrations e refresh de `ARCHITECTURE.md`/`TESTING.md`.
+- [x] **#18** Docs — catálogo de Edge Functions em `docs/EDGE_FUNCTIONS_CATALOG.md` (87 funções) + ADR-sumário das 356 migrations em `docs/MIGRATIONS_ADR.md` (distribuição temporal/por tipo, domínios, padrões arquiteturais e convenções). Refresh incremental de `ARCHITECTURE.md`/`TESTING.md` fica como manutenção contínua.
+- [x] **#1** Erradicação de `: any` chegou ao piso pragmático: 4 ocorrências reais em produção (2 em `useFinancialData.ts` mantidas por contrato com consumidores tipados a jusante, 2 em comentários explicativos de `supabase-dynamic.ts`/`useTrilhaAuditoria.ts`). Testes mantêm ~17 casts intencionais para mocks. TS strict em 0 erros.
 
 ---
 
