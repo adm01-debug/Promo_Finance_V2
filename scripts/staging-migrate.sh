@@ -24,12 +24,14 @@ LOG="/tmp/staging-migrate-${TS}.jsonl"
 DRY_RUN=0
 SKIP_BASELINE=0
 ONLY_INTEGRITY=0
+WITH_DATA=0
 
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
     --skip-baseline) SKIP_BASELINE=1 ;;
     --only-integrity) ONLY_INTEGRITY=1 ;;
+    --with-data) WITH_DATA=1 ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "Flag desconhecida: $arg" >&2; exit 2 ;;
   esac
@@ -166,6 +168,17 @@ if [ "$ONLY_INTEGRITY" -eq 0 ]; then
   run_secrets_check
   run_functions
   run_crons
+  if [ "$WITH_DATA" -eq 1 ]; then
+    log_step "data" "start"
+    data_args=(--yes)
+    [ "$DRY_RUN" -eq 1 ] && data_args=(--dry-run)
+    PROD_DB_URL="$PROD_DB_URL" STAGING_DB_URL="$STAGING_DB_URL" \
+    STAGING_PROJECT_REF="$STAGING_PROJECT_REF" \
+    PROD_PROJECT_REF="${PROD_PROJECT_REF:-}" \
+      bash "$ROOT/scripts/data-migrate.sh" "${data_args[@]}" \
+      || die "data" "data-migrate falhou"
+    log_step "data" "ok"
+  fi
 fi
 run_integrity
 
