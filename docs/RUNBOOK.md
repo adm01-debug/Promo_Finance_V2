@@ -130,3 +130,21 @@ Secrets em produção **não** vivem em arquivos `.env` — ficam no vault do Lo
 - Logs Edge Functions: painel Lovable Cloud → Backend.
 - Suporte interno: equipe DevOps Promo Brindes.
 
+
+---
+
+## §7 · Migração de schema entre projetos Supabase
+
+Para clonar schema + RLS/policies + índices de um projeto Supabase para outro (sem dados, sem Edge Functions), seguir o passo a passo em [`docs/MIGRATION_CHECKLIST.md`](./MIGRATION_CHECKLIST.md).
+
+Resumo das 8 fases:
+1. Preparação da origem (lint, diff, snapshot, listar extensions/publications)
+2. Preparação do destino (link CLI, habilitar extensions, backup vazio)
+3. Aplicação das 356 migrations via `supabase db push`
+4. Validação de RLS/policies (linter + pgTAP)
+5. Validação de índices (contagem, parciais, `ANALYZE`)
+6. Partições mensais + publications do Realtime
+7. Diff schema-only origem × destino
+8. Rollback controlado se qualquer validação reprovar
+
+Rodar sempre em janela de manutenção a partir da Fase 3.
