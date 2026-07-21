@@ -168,6 +168,17 @@ if [ "$ONLY_INTEGRITY" -eq 0 ]; then
   run_secrets_check
   run_functions
   run_crons
+  if [ "$WITH_DATA" -eq 1 ]; then
+    log_step "data" "start"
+    data_args=(--yes)
+    [ "$DRY_RUN" -eq 1 ] && data_args=(--dry-run)
+    PROD_DB_URL="$PROD_DB_URL" STAGING_DB_URL="$STAGING_DB_URL" \
+    STAGING_PROJECT_REF="$STAGING_PROJECT_REF" \
+    PROD_PROJECT_REF="${PROD_PROJECT_REF:-}" \
+      bash "$ROOT/scripts/data-migrate.sh" "${data_args[@]}" \
+      || die "data" "data-migrate falhou"
+    log_step "data" "ok"
+  fi
 fi
 run_integrity
 
