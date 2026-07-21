@@ -316,13 +316,7 @@ export function AnomaliasDetectadasPanel() {
   };
 
   const isVisible = (k: string) => visibleCols.includes(k);
-  const activeFilterCount =
-    filters.severidades.length +
-    filters.tipos.length +
-    (filters.periodoInicio ? 1 : 0) +
-    (filters.periodoFim ? 1 : 0) +
-    (filters.apenasReabertas ? 1 : 0) +
-    (searchTerm.trim() ? 1 : 0);
+
 
   return (
     <div className="space-y-4">
