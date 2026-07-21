@@ -2,6 +2,7 @@
 // para reduzir o tamanho do componente principal (modularização #4).
 import { useMemo } from "react";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
+import type { ReaberturaInfo } from "@/hooks/useAnomaliasReabertasIndex";
 import {
   useProfilesByIds,
   formatProfileLabel,
