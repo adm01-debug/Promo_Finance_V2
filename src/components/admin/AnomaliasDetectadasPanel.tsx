@@ -69,10 +69,9 @@ import {
 } from "@/components/shared/ColumnVisibilityMenu";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
 import { useSavedFilters } from "@/hooks/useSavedFilters";
-import {
-  useProfilesByIds,
-  formatProfileLabel,
-} from "@/hooks/useProfilesByIds";
+import { formatProfileLabel } from "@/hooks/useProfilesByIds";
+import { useAnomaliasPanelDerivations } from "./useAnomaliasPanelDerivations";
+
 
 import {
   severidadeBadge,
