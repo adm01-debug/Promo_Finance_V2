@@ -25,7 +25,7 @@
 - [~] **#1** Erradicar `: any` (303 → 209, -94 / -31%). Refactor `useAsaas`, `useBling`, `useBlingNFe`, `useBudget`, `useFinancialData`, DreBalanco, Consolidacao, ContaReceberFormFields, Asaas.tsx, services. Restante são callbacks JSX de linhas de tabela — próxima passada exigirá tipagem invasiva.
 - [x] **#2** Envolver `console.log` remanescentes em `import.meta.env.DEV` ou migrar para `src/lib/logger.ts`. — `error-tracking.ts` fallback tracker + `initSentry` agora com guard DEV. Restantes são JSDoc/já guardados.
 - [x] **#3** Resolver os 5 marcadores TODO/FIXME. — `useAuth` agora usa tipos gerados; `BlingFinanceiroPanel` e `ContabilizacaoAutomaticaTab` trocaram `window.confirm` por `ConfirmDialog`.
-- [~] **#4** Modularizar 19 arquivos > 700 linhas. Progresso: `AnomaliasDetectadasPanel` **1210 → 324** ✅, `Asaas.tsx` **1186 → 559** ✅, `DreBalancoTab` **1021 → 235** ✅ (extraído em `dre-balanco/`: `DreBalancoToolbar`, `DreView`, `BalancoView`, `LancamentosDrillDown`, `exporters`, `types`). `tsgo` limpo. Próximo alvo: próximo arquivo >700 linhas na fila.
+- [~] **#4** Modularizar 19 arquivos > 700 linhas. Progresso: `AnomaliasDetectadasPanel` **1210 → 324** ✅, `Asaas.tsx` **1186 → 559** ✅, `DreBalancoTab` **1021 → 235** ✅, `ContabilizacaoAutomaticaTab` **1036 → 156** ✅ (extraído em `contabilizacao-automatica/`: `types`, `useContabilizacaoQueries`, `useContabilizacaoMutations`, `StatsCards`, `SimulacaoDialog`, `RegraFormDialog`, `RegrasTable`, `LogsTable`; cast global `as any` do supabase substituído por `supabaseDyn`). `tsgo` limpo. Próximo alvo: `SpedEcfWizard.tsx` (950 linhas).
 
 ### Fase 2 — Testes e cobertura
 
