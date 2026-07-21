@@ -174,3 +174,26 @@ Validação pós-corte:
 - `SELECT jobname, active FROM cron.job` → 14 linhas, todas `active = true`
 - Após 60s: `cron.job_run_details` mostra execução do `evaluate-delivery-alerts-every-min`
 - Smoke test HTTP em uma function pública (ex.: `cnpja-lookup`) retorna 200
+
+---
+
+## §9 · Fluxo de migração para staging com testes de integridade
+
+Automatiza §7 + §8 e adiciona uma suite de validação pós-deploy que trava o pipeline se schema, RLS ou endpoints críticos divergirem.
+
+Detalhes completos em [`docs/STAGING_MIGRATION.md`](./STAGING_MIGRATION.md).
+
+**Entrypoint:** `scripts/staging-migrate.sh` (também disponível via GitHub Actions em `.github/workflows/staging-migrate.yml`).
+
+Fases: `preflight → baseline → schema → secrets → functions → crons → integrity → summary`.
+
+Suite de integridade (`scripts/integrity/`):
+- `01_schema.sql` — contagens, extensões, partições
+- `02_rls.sql` — RLS 100%, sem `USING (true)`, tabelas escopadas com `auth.uid`/`has_role`
+- `03_grants.sql` — matriz role × privilege
+- `04_endpoints.sh` — smoke HTTP de 7 Edge Functions críticas
+- `05_crons.sql` — 14 jobs ativos, schedules e execução recente
+
+Status possíveis: `pass`, `fail` (trava CI), `unverified` (nunca declarado como aprovado).
+
+Baselines versionados em `scripts/integrity/baseline/`. Qualquer PR de schema/RLS/GRANT deve regerar via `scripts/integrity/dump-baseline.sh` e commitar no mesmo PR.
