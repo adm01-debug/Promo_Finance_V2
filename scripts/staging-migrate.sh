@@ -25,6 +25,7 @@ DRY_RUN=0
 SKIP_BASELINE=0
 ONLY_INTEGRITY=0
 WITH_DATA=0
+SKIP_HEALTHCHECK=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -32,6 +33,7 @@ for arg in "$@"; do
     --skip-baseline) SKIP_BASELINE=1 ;;
     --only-integrity) ONLY_INTEGRITY=1 ;;
     --with-data) WITH_DATA=1 ;;
+    --skip-healthcheck) SKIP_HEALTHCHECK=1 ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "Flag desconhecida: $arg" >&2; exit 2 ;;
   esac
