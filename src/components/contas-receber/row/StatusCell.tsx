@@ -82,7 +82,7 @@ export function StatusCell({ conta }: { conta: ContaReceberWithRelations }) {
 export function ScoreCell({ conta }: { conta: ContaReceberWithRelations }) {
   const clienteData = conta.clientes;
   if (!clienteData?.score) return <TableCell className="p-6" />;
-  const { getScoreColor, getScoreLabel } = require('./rowConfig');
+
   return (
     <TableCell className="p-6">
       <div className="flex flex-col items-center">
