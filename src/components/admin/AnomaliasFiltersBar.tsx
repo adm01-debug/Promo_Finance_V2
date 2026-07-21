@@ -64,8 +64,11 @@ export interface AnomaliasFiltersBarProps {
   reabertasIndex: unknown;
   exportRows: Anomalia[];
   exportColumns: ViewExportColumn<Anomalia>[];
-  exportMeta: Record<string, string>;
-  onLoadPreset: (preset: { id: string; payload: SavedFilterPayload<AnomaliaFilters> }) => void;
+  exportMeta: {
+    filtros?: Record<string, string | undefined | null>;
+    ordenacao?: string;
+    periodo?: string;
+  };
   onClearPreset: () => void;
 }
 
