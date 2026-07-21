@@ -69,6 +69,7 @@ export interface AnomaliasFiltersBarProps {
     ordenacao?: string;
     periodo?: string;
   };
+  onLoadPreset: (preset: { id: string; payload: SavedFilterPayload<AnomaliaFilters> }) => void;
   onClearPreset: () => void;
 }
 
