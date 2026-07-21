@@ -1,0 +1,84 @@
+# Manifesto de cópia de dados PROD → STAGING.
+# Allowlist wins over blacklist: nada é copiado sem entrada explícita aqui.
+# Ordem dos grupos importa (respeita FKs). Tabelas dentro do grupo idem.
+version: 1
+
+defaults:
+  batch_size: 5000
+  timeout_seconds: 300
+  where: null                  # filtro SQL opcional (aplicado no COPY)
+  columns: "*"                 # projeção
+  truncate_before: true        # TRUNCATE staging antes de copiar (evita PK dup)
+  snapshot: true               # snapshot para rollback
+  snapshot_max_rows: 500000    # se > que isto e snapshot=true, aborta a tabela
+
+# Blacklist explícita (defensivo — nenhuma dessas nunca é copiada, mesmo que
+# entre por engano em um grupo). O engine também rejeita por padrão de nome:
+#   *_log, *_logs, *_telemetry, audit_logs*, frontend_error_logs*,
+#   frontend_performance_logs, runtime_error_logs, rate_limit_logs,
+#   webhooks_log, login_attempts, sso_login_attempts, blocked_ips,
+#   cron_job_logs, query_telemetry*
+blacklist_extra:
+  - password_reset_tokens
+  - mfa_sessions
+  - user_sessions
+  - webauthn_challenges
+  - webauthn_credentials
+  - email_verifications
+  - security_audit_logs
+  - bloat_snapshots
+  - slow_query_alerts
+  - performance_alerts
+  - pg_stat_statements_baseline
+  - alerts_sent
+  - anomalia_toast_eventos
+  - user_devices
+  - dispositivos_conhecidos
+  - user_passkeys
+  - scim_tokens
+  - audit_logs
+  - frontend_error_logs
+  - runtime_error_logs
+  - rate_limit_logs
+  - webhooks_log
+  - login_attempts
+  - sso_login_attempts
+  - blocked_ips
+  - cron_job_logs
+  - query_telemetry
+
+groups:
+  - name: catalogos
+    tables:
+      - empresas
+      - plano_contas
+      - categorias
+      - centros_custo
+      - formas_pagamento
+      - regimes_tributarios
+      - permissions
+      - role_permissions
+
+  - name: identidade
+    tables:
+      - profiles
+      - user_roles
+      - user_empresas
+
+  - name: cadastros
+    tables:
+      - clientes
+      - fornecedores
+      - vendedores
+      - contas_bancarias
+      - drivers
+
+  - name: transacional_recente
+    where: "created_at > now() - interval '90 days'"
+    tables:
+      - contas_pagar
+      - contas_receber
+      - lalamove_orders
+      - lalamove_stops
+      - transacoes_bancarias
+      - conciliacoes
