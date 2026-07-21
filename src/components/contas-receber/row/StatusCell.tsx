@@ -4,7 +4,15 @@ import { TableCell } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { getEtapaCobrancaLabel } from '@/lib/formatters';
 import type { StatusPagamento } from '@/types/financial';
-import { etapaColors, etapaIcons, statusConfig, tipoCobrancaConfig, type ContaReceberWithRelations } from './rowConfig';
+import {
+  etapaColors,
+  etapaIcons,
+  getScoreColor,
+  getScoreLabel,
+  statusConfig,
+  tipoCobrancaConfig,
+  type ContaReceberWithRelations,
+} from './rowConfig';
 
 export function StatusCell({ conta }: { conta: ContaReceberWithRelations }) {
   const status = statusConfig[conta.status as StatusPagamento];
