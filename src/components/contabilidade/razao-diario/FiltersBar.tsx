@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { cn } from '@/lib/utils';
+import type { ManagedFiltersController } from '@/hooks/useManagedFilters';
 import type { DatePreset, RazaoFilters } from './types';
 
 interface Props {
