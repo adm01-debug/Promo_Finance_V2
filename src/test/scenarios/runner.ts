@@ -163,6 +163,77 @@ function runAnomalias(spec: ScenarioSpec, state: ScenarioState): number {
   return mutations;
 }
 
+function runNfe(spec: ScenarioSpec, state: ScenarioState): number {
+  const rng = createRng(spec.seed);
+  let stream: NfeDfeEvento[] = makeNfeStream(rng, spec.size);
+
+  if (spec.fault.kind === "reorder") {
+    // Simula reprocessamento fora de ordem, mas reordena por NSU antes de commitar (correção causal)
+    stream = reorder(stream, rng).slice().sort((a, b) => a.nsu - b.nsu);
+  }
+  if (spec.fault.kind === "duplicate") {
+    stream = duplicate(stream, spec.fault.param ?? 3, rng);
+  }
+
+  const seenChaves = new Set<string>();
+  const chaveToIdx = new Map<string, number>();
+  let ultimoNsu = 0;
+  let mutations = 0;
+
+  const validManifTransitions: Record<string, string[]> = {
+    pendente: ["ciencia", "confirmada", "desconhecida", "nao_realizada"],
+    ciencia: ["confirmada", "desconhecida", "nao_realizada"],
+    confirmada: [],
+    desconhecida: [],
+    nao_realizada: [],
+  };
+
+  for (let i = 0; i < stream.length; i++) {
+    const evt = stream[i];
+    const fail = shouldFail(spec.fault, rng, i);
+    if (fail) continue;
+    if (!evt.xmlOk) continue; // gzip corrompido / cert expirado / timeout: não persiste
+    if (evt.nsu <= ultimoNsu && evt.tipo !== "manifestacao") {
+      // NSU regressivo: ignora (protege monotonicidade)
+      continue;
+    }
+
+    if (evt.tipo === "manifestacao" && evt.manifestacao) {
+      const idx = chaveToIdx.get(evt.chaveAcesso);
+      if (idx == null) continue; // manifestação sem NF-e pai: ignora
+      const nfe = state.nfe.recebidas[idx];
+      const allowed = validManifTransitions[nfe.manifestacao] ?? [];
+      if (!allowed.includes(evt.manifestacao)) continue;
+      nfe.manifestacao = evt.manifestacao;
+      nfe.manifestacaoHistory.push(evt.manifestacao);
+      state.nfe.eventos.push({
+        id: evt.eventId,
+        chaveAcesso: evt.chaveAcesso,
+        tipo: `manif:${evt.manifestacao}`,
+      });
+      mutations++;
+      continue;
+    }
+
+    // Idempotência por chave_acesso
+    if (seenChaves.has(evt.chaveAcesso)) continue;
+    seenChaves.add(evt.chaveAcesso);
+    chaveToIdx.set(evt.chaveAcesso, state.nfe.recebidas.length);
+    state.nfe.recebidas.push({
+      chaveAcesso: evt.chaveAcesso,
+      nsu: evt.nsu,
+      xmlSalvo: true,
+      manifestacao: "pendente",
+      manifestacaoHistory: ["pendente"],
+    });
+    ultimoNsu = evt.nsu;
+    state.nfe.ultimoNsuHistory.push(ultimoNsu);
+    mutations++;
+  }
+
+  return mutations;
+}
+
 export function runScenario(spec: ScenarioSpec): ScenarioResult {
   const state = emptyState();
   const t0 =
@@ -181,6 +252,9 @@ export function runScenario(spec: ScenarioSpec): ScenarioResult {
       break;
     case "anomalias":
       mutations = runAnomalias(spec, state);
+      break;
+    case "nfe":
+      mutations = runNfe(spec, state);
       break;
   }
 
