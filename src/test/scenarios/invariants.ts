@@ -142,7 +142,7 @@ const auditoriaCompleta: InvariantFn = (state) => {
 
 const nfeIdempotenciaChave: InvariantFn = (state) => {
   const seen = new Set<string>();
-  for (const r of state.nfe.recebidas) {
+  for (const r of state.nfe?.recebidas ?? []) {
     if (seen.has(r.chaveAcesso)) {
       return {
         invariant: "nfeIdempotenciaChave",
@@ -155,7 +155,7 @@ const nfeIdempotenciaChave: InvariantFn = (state) => {
 };
 
 const nfeMonotonicidadeNsu: InvariantFn = (state) => {
-  const hist = state.nfe.ultimoNsuHistory;
+  const hist = state.nfe?.ultimoNsuHistory ?? [];
   for (let i = 1; i < hist.length; i++) {
     if (hist[i] < hist[i - 1]) {
       return {
@@ -168,8 +168,8 @@ const nfeMonotonicidadeNsu: InvariantFn = (state) => {
 };
 
 const nfeSemOrfaosEventos: InvariantFn = (state) => {
-  const chaves = new Set(state.nfe.recebidas.map((r) => r.chaveAcesso));
-  for (const e of state.nfe.eventos) {
+  const chaves = new Set((state.nfe?.recebidas ?? []).map((r) => r.chaveAcesso));
+  for (const e of state.nfe?.eventos ?? []) {
     if (!chaves.has(e.chaveAcesso)) {
       return {
         invariant: "nfeSemOrfaosEventos",
@@ -181,7 +181,7 @@ const nfeSemOrfaosEventos: InvariantFn = (state) => {
 };
 
 const nfeCursorNaoRegride: InvariantFn = (state) => {
-  const nsus = state.nfe.recebidas.map((r) => r.nsu);
+  const nsus = (state.nfe?.recebidas ?? []).map((r) => r.nsu);
   for (let i = 1; i < nsus.length; i++) {
     if (nsus[i] < nsus[i - 1]) {
       return {
@@ -201,7 +201,7 @@ const nfeManifestacaoValida: InvariantFn = (state) => {
     desconhecida: [],
     nao_realizada: [],
   };
-  for (const r of state.nfe.recebidas) {
+  for (const r of state.nfe?.recebidas ?? []) {
     const h = r.manifestacaoHistory;
     for (let i = 1; i < h.length; i++) {
       const allowed = validTransitions[h[i - 1]] ?? [];
