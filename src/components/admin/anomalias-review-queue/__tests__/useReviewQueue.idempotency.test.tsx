@@ -13,19 +13,29 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const mocks = vi.hoisted(() => ({
-  fila: [] as any[],
-  revisarMutateAsync: undefined as any,
-  revisarIsPending: false,
-  sincronizarMutate: undefined as any,
-  supabaseMaybeSingle: undefined as any,
-  toasts: {
-    success: undefined as any,
-    error: undefined as any,
-    warning: undefined as any,
-    info: undefined as any,
-  },
-}));
+const mocks = vi.hoisted(() => {
+  class AnomaliaJaRevisadaError extends Error {
+    code = "ANOMALIA_JA_REVISADA" as const;
+    constructor(message = "Anomalia já foi revisada por outro usuário") {
+      super(message);
+      this.name = "AnomaliaJaRevisadaError";
+    }
+  }
+  return {
+    AnomaliaJaRevisadaError,
+    fila: [] as any[],
+    revisarMutateAsync: undefined as any,
+    revisarIsPending: false,
+    sincronizarMutate: undefined as any,
+    supabaseMaybeSingle: undefined as any,
+    toasts: {
+      success: undefined as any,
+      error: undefined as any,
+      warning: undefined as any,
+      info: undefined as any,
+    },
+  };
+});
 
 mocks.revisarMutateAsync = vi.fn();
 mocks.sincronizarMutate = vi.fn();
