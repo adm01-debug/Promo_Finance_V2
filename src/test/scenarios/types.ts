@@ -1,0 +1,97 @@
+/**
+ * Tipos compartilhados do harness de cenários.
+ */
+
+export type Domain = "conciliacao" | "webhooks" | "cobranca" | "anomalias";
+
+export type FaultKind =
+  | "none"
+  | "timeout"
+  | "flaky"
+  | "reorder"
+  | "duplicate"
+  | "latency"
+  | "partial_write";
+
+export interface FaultSpec {
+  kind: FaultKind;
+  /** taxa 0..1 para flaky/partial_write, k para duplicate, ms para timeout/latency */
+  param?: number;
+}
+
+export interface ScenarioSpec {
+  id: string;
+  domain: Domain;
+  fault: FaultSpec;
+  seed: number;
+  /** tamanho do lote (transações/eventos/boletos/anomalias) */
+  size: number;
+}
+
+export interface InvariantViolation {
+  invariant: string;
+  message: string;
+  details?: unknown;
+}
+
+export interface ScenarioResult {
+  spec: ScenarioSpec;
+  durationMs: number;
+  mutations: number;
+  violations: InvariantViolation[];
+}
+
+/**
+ * Estado "de banco" in-memory pós-execução.
+ * Estrutura minimalista mas suficiente para todos os invariantes.
+ */
+export interface ScenarioState {
+  empresaId: string;
+
+  contas: {
+    saldoInicial: number;
+    saldoFinal: number;
+  };
+
+  transacoes: Array<{
+    id: string;
+    transacaoExternaId: string;
+    valor: number; // positivo=crédito, negativo=débito
+    conciliada: boolean;
+    lancamentoId?: string;
+  }>;
+
+  lancamentos: Array<{
+    id: string;
+    tipo: "pagar" | "receber";
+    valor: number;
+  }>;
+
+  webhookEvents: Array<{
+    id: string; // event_id
+    paymentId: string;
+    tipo: "PAYMENT_CREATED" | "PAYMENT_CONFIRMED" | "PAYMENT_FAILED";
+    processedAt: number; // ordem lógica de processamento
+    /** contagem de vezes que o handler foi invocado com este event_id */
+    invocations: number;
+  }>;
+
+  anomalias: Array<{
+    id: string;
+    status: "nova" | "confirmada" | "falso_positivo";
+    statusHistory: string[];
+  }>;
+
+  reguaDisparos: Array<{
+    boletoId: string;
+    etapa: string;
+    janela: string; // ex: "2026-07-22"
+  }>;
+
+  auditLogs: Array<{
+    entidade: string;
+    entidadeId: string;
+    de: string | null;
+    para: string;
+  }>;
+}
