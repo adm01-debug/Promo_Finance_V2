@@ -187,16 +187,13 @@ export function CertificadosDigitaisTab() {
 
         <CardContent className="space-y-4">
           {vencendo.length > 0 && (
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Atenção: certificados vencendo</AlertTitle>
-              <AlertDescription>
-                {vencendo.length} certificado(s) vencem em até {DIAS_ALERTA_VENCIMENTO} dias.
-                Renove com o AR ou autoridade certificadora antes do vencimento para evitar
-                interrupção na descoberta automática de NF-e.
-              </AlertDescription>
+            <Alert variant="warning" title="Atenção: certificados vencendo">
+              {vencendo.length} certificado(s) vencem em até {DIAS_ALERTA_VENCIMENTO} dias.
+              Renove com o AR ou autoridade certificadora antes do vencimento para evitar
+              interrupção na descoberta automática de NF-e.
             </Alert>
           )}
+
 
           {loadingCerts ? (
             <div className="flex items-center justify-center py-10">
