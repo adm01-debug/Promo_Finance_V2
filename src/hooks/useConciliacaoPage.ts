@@ -295,15 +295,19 @@ export function useConciliacaoPage() {
   }, [selectedBanco, lancamentosSistema, salvarExtratoBanco, confirmarConciliacao, contasBancarias]);
 
   const handleConfirmarMatch = useCallback(async (transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
+    // Invariante de integridade: só atualiza estado local se a persistência confirmar.
+    // Se a mutação falhar, mantém a transação em `transacoesImportadas` para nova tentativa.
     try {
       await confirmarConciliacao.mutateAsync({
         transacaoId,
         contaPagarId: tipo === 'pagar' ? lancamentoId : undefined,
         contaReceberId: tipo === 'receber' ? lancamentoId : undefined,
       });
-    } catch { /* update local state anyway */ }
-    setTransacoes(prev => prev.map(t => t.id === transacaoId ? { ...t, conciliada: true } : t));
-    setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
+      setTransacoes(prev => prev.map(t => t.id === transacaoId ? { ...t, conciliada: true } : t));
+      setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
+    } catch {
+      // Toast já é exibido pelo onError da mutation em useConciliacao; não corrompemos o estado local.
+    }
   }, [confirmarConciliacao]);
 
   const handleRejeitarMatch = useCallback((transacaoId: string, _lancamentoId: string) => {
@@ -322,15 +326,18 @@ export function useConciliacaoPage() {
   }, [transacoes]);
 
   const handleManualSuccess = useCallback(async (transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
+    // Invariante de integridade: idêntica a `handleConfirmarMatch`.
     try {
       await confirmarConciliacao.mutateAsync({
         transacaoId,
         contaPagarId: tipo === 'pagar' ? lancamentoId : undefined,
         contaReceberId: tipo === 'receber' ? lancamentoId : undefined,
       });
-    } catch { /* fallback */ }
-    setTransacoes(prev => prev.map(t => t.id === transacaoId ? { ...t, conciliada: true } : t));
-    setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
+      setTransacoes(prev => prev.map(t => t.id === transacaoId ? { ...t, conciliada: true } : t));
+      setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
+    } catch {
+      // Estado local preservado: transação continua pendente para reprocessamento.
+    }
   }, [confirmarConciliacao]);
 
   const handleConciliar = useCallback((transacao: TransacaoExtrato) => {
