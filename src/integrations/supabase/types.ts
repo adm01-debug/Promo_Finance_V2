@@ -5243,8 +5243,8 @@ export type Database = {
           criado_por: string | null
           empresa_id: string
           id: string
-          password_secret_name: string
-          pfx_secret_name: string
+          password_encrypted: string | null
+          pfx_storage_path: string
           razao_social: string | null
           uf: string
           updated_at: string
@@ -5259,8 +5259,8 @@ export type Database = {
           criado_por?: string | null
           empresa_id: string
           id?: string
-          password_secret_name: string
-          pfx_secret_name: string
+          password_encrypted?: string | null
+          pfx_storage_path: string
           razao_social?: string | null
           uf: string
           updated_at?: string
@@ -5275,8 +5275,8 @@ export type Database = {
           criado_por?: string | null
           empresa_id?: string
           id?: string
-          password_secret_name?: string
-          pfx_secret_name?: string
+          password_encrypted?: string | null
+          pfx_storage_path?: string
           razao_social?: string | null
           uf?: string
           updated_at?: string
