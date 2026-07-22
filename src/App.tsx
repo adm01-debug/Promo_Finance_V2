@@ -58,6 +58,7 @@ const ReformaTributaria = lazy(() => import('./pages/ReformaTributaria'));
 const SimulacaoRegimes = lazy(() => import('./pages/tributario/SimulacaoRegimes'));
 const HistoricoFinanceiroTributario = lazy(() => import('./pages/tributario/HistoricoFinanceiro'));
 const OportunidadesElisao = lazy(() => import('./pages/tributario/OportunidadesElisao'));
+const CertificadosDigitais = lazy(() => import('./pages/tributario/CertificadosDigitais'));
 const ProjecaoReformaPage = lazy(() => import('./pages/tributario/ProjecaoReforma'));
 const DashboardTributario = lazy(() => import('./pages/tributario/DashboardTributario'));
 const RecomendacaoExecutiva = lazy(() => import('./pages/tributario/RecomendacaoExecutiva'));
