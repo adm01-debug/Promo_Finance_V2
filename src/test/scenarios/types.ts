@@ -94,4 +94,20 @@ export interface ScenarioState {
     de: string | null;
     para: string;
   }>;
+
+  nfe: {
+    ultimoNsuHistory: number[];
+    recebidas: Array<{
+      chaveAcesso: string;
+      nsu: number;
+      xmlSalvo: boolean;
+      manifestacao: "pendente" | "ciencia" | "confirmada" | "desconhecida" | "nao_realizada";
+      manifestacaoHistory: string[];
+    }>;
+    eventos: Array<{
+      id: string;
+      chaveAcesso: string;
+      tipo: string;
+    }>;
+  };
 }
