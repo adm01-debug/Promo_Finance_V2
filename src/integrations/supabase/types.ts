@@ -5234,6 +5234,107 @@ export type Database = {
         }
         Relationships: []
       }
+      empresas_certificados: {
+        Row: {
+          ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
+          ativo: boolean
+          cnpj: string
+          created_at: string
+          criado_por: string | null
+          empresa_id: string
+          id: string
+          password_encrypted: string | null
+          pfx_storage_path: string
+          razao_social: string | null
+          uf: string
+          updated_at: string
+          valido_ate: string
+          valido_de: string | null
+        }
+        Insert: {
+          ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          ativo?: boolean
+          cnpj: string
+          created_at?: string
+          criado_por?: string | null
+          empresa_id: string
+          id?: string
+          password_encrypted?: string | null
+          pfx_storage_path: string
+          razao_social?: string | null
+          uf: string
+          updated_at?: string
+          valido_ate: string
+          valido_de?: string | null
+        }
+        Update: {
+          ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          ativo?: boolean
+          cnpj?: string
+          created_at?: string
+          criado_por?: string | null
+          empresa_id?: string
+          id?: string
+          password_encrypted?: string | null
+          pfx_storage_path?: string
+          razao_social?: string | null
+          uf?: string
+          updated_at?: string
+          valido_ate?: string
+          valido_de?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       evidencias_pacotes: {
         Row: {
           created_at: string | null
@@ -8183,6 +8284,214 @@ export type Database = {
           },
         ]
       }
+      nfe_eventos: {
+        Row: {
+          chave_acesso: string
+          codigo_evento: string | null
+          created_at: string
+          created_by: string | null
+          data_evento: string
+          id: string
+          justificativa: string | null
+          motivo_retorno: string | null
+          protocolo: string | null
+          raw_payload: Json | null
+          sequencial: number
+          status_retorno: string | null
+          tipo_evento: string
+          xml_path: string | null
+        }
+        Insert: {
+          chave_acesso: string
+          codigo_evento?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_evento?: string
+          id?: string
+          justificativa?: string | null
+          motivo_retorno?: string | null
+          protocolo?: string | null
+          raw_payload?: Json | null
+          sequencial?: number
+          status_retorno?: string | null
+          tipo_evento: string
+          xml_path?: string | null
+        }
+        Update: {
+          chave_acesso?: string
+          codigo_evento?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_evento?: string
+          id?: string
+          justificativa?: string | null
+          motivo_retorno?: string | null
+          protocolo?: string | null
+          raw_payload?: Json | null
+          sequencial?: number
+          status_retorno?: string | null
+          tipo_evento?: string
+          xml_path?: string | null
+        }
+        Relationships: []
+      }
+      nfe_recebidas: {
+        Row: {
+          ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
+          chave_acesso: string
+          cnpj_destinatario: string
+          cnpj_emitente: string
+          conta_pagar_id: string | null
+          created_at: string
+          data_emissao: string | null
+          digest_value: string | null
+          empresa_id: string | null
+          id: string
+          ie_emitente: string | null
+          manifestacao_data: string | null
+          manifestacao_justificativa: string | null
+          manifestacao_status: Database["public"]["Enums"]["nfe_manifestacao_status"]
+          modelo: string
+          nsu: number
+          numero: string | null
+          raw_metadata: Json | null
+          razao_emitente: string | null
+          schema_tipo: Database["public"]["Enums"]["nfe_schema_tipo"]
+          serie: string | null
+          situacao_nfe: string | null
+          tipo_documento: string
+          uf_emitente: string | null
+          updated_at: string
+          valor_total: number | null
+          xml_completo: boolean
+          xml_path: string | null
+        }
+        Insert: {
+          ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          chave_acesso: string
+          cnpj_destinatario: string
+          cnpj_emitente: string
+          conta_pagar_id?: string | null
+          created_at?: string
+          data_emissao?: string | null
+          digest_value?: string | null
+          empresa_id?: string | null
+          id?: string
+          ie_emitente?: string | null
+          manifestacao_data?: string | null
+          manifestacao_justificativa?: string | null
+          manifestacao_status?: Database["public"]["Enums"]["nfe_manifestacao_status"]
+          modelo?: string
+          nsu: number
+          numero?: string | null
+          raw_metadata?: Json | null
+          razao_emitente?: string | null
+          schema_tipo: Database["public"]["Enums"]["nfe_schema_tipo"]
+          serie?: string | null
+          situacao_nfe?: string | null
+          tipo_documento?: string
+          uf_emitente?: string | null
+          updated_at?: string
+          valor_total?: number | null
+          xml_completo?: boolean
+          xml_path?: string | null
+        }
+        Update: {
+          ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          chave_acesso?: string
+          cnpj_destinatario?: string
+          cnpj_emitente?: string
+          conta_pagar_id?: string | null
+          created_at?: string
+          data_emissao?: string | null
+          digest_value?: string | null
+          empresa_id?: string | null
+          id?: string
+          ie_emitente?: string | null
+          manifestacao_data?: string | null
+          manifestacao_justificativa?: string | null
+          manifestacao_status?: Database["public"]["Enums"]["nfe_manifestacao_status"]
+          modelo?: string
+          nsu?: number
+          numero?: string | null
+          raw_metadata?: Json | null
+          razao_emitente?: string | null
+          schema_tipo?: Database["public"]["Enums"]["nfe_schema_tipo"]
+          serie?: string | null
+          situacao_nfe?: string | null
+          tipo_documento?: string
+          uf_emitente?: string | null
+          updated_at?: string
+          valor_total?: number | null
+          xml_completo?: boolean
+          xml_path?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nfe_recebidas_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_pagar_painel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       notas_fiscais: {
         Row: {
           chave_acesso: string | null
@@ -10515,6 +10824,45 @@ export type Database = {
           restrict_by_ip?: boolean
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      sefaz_dfe_cursor: {
+        Row: {
+          ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
+          cnpj: string
+          created_at: string
+          id: string
+          max_nsu: number
+          ultima_consulta: string | null
+          ultimo_erro: string | null
+          ultimo_nsu: number
+          ultimo_status: string | null
+          updated_at: string
+        }
+        Insert: {
+          ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          cnpj: string
+          created_at?: string
+          id?: string
+          max_nsu?: number
+          ultima_consulta?: string | null
+          ultimo_erro?: string | null
+          ultimo_nsu?: number
+          ultimo_status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          cnpj?: string
+          created_at?: string
+          id?: string
+          max_nsu?: number
+          ultima_consulta?: string | null
+          ultimo_erro?: string | null
+          ultimo_nsu?: number
+          ultimo_status?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -13207,6 +13555,26 @@ export type Database = {
           deleted_old: number
         }[]
       }
+      certificado_get_password: {
+        Args: { p_cert_id: string; p_master_key: string }
+        Returns: string
+      }
+      certificado_upsert: {
+        Args: {
+          p_ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
+          p_cnpj: string
+          p_criado_por: string
+          p_empresa_id: string
+          p_master_key: string
+          p_password: string
+          p_pfx_storage_path: string
+          p_razao_social: string
+          p_uf: string
+          p_valido_ate: string
+          p_valido_de: string
+        }
+        Returns: string
+      }
       check_integrity_invariants: { Args: never; Returns: Json }
       check_login_lockout: {
         Args: { p_email: string }
@@ -13665,6 +14033,19 @@ export type Database = {
         | "CUSTOMER_COMPLAINT"
         | "DAMAGE"
         | "OTHER"
+      nfe_manifestacao_status:
+        | "pendente"
+        | "ciencia"
+        | "confirmada"
+        | "desconhecida"
+        | "nao_realizada"
+      nfe_schema_tipo:
+        | "resNFe"
+        | "procNFe"
+        | "resEvento"
+        | "procEventoNFe"
+        | "resCTe"
+        | "procCTe"
       order_status:
         | "PENDING"
         | "MATCHED"
@@ -13675,6 +14056,7 @@ export type Database = {
         | "REJECTED"
         | "EXPIRED"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
+      sefaz_ambiente: "homologacao" | "producao"
       tipo_alerta_tributario:
         | "vencimento_apuracao"
         | "vencimento_darf"
@@ -13862,6 +14244,21 @@ export const Constants = {
         "DAMAGE",
         "OTHER",
       ],
+      nfe_manifestacao_status: [
+        "pendente",
+        "ciencia",
+        "confirmada",
+        "desconhecida",
+        "nao_realizada",
+      ],
+      nfe_schema_tipo: [
+        "resNFe",
+        "procNFe",
+        "resEvento",
+        "procEventoNFe",
+        "resCTe",
+        "procCTe",
+      ],
       order_status: [
         "PENDING",
         "MATCHED",
@@ -13873,6 +14270,7 @@ export const Constants = {
         "EXPIRED",
       ],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
+      sefaz_ambiente: ["homologacao", "producao"],
       tipo_alerta_tributario: [
         "vencimento_apuracao",
         "vencimento_darf",

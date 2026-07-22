@@ -58,6 +58,7 @@ const ReformaTributaria = lazy(() => import('./pages/ReformaTributaria'));
 const SimulacaoRegimes = lazy(() => import('./pages/tributario/SimulacaoRegimes'));
 const HistoricoFinanceiroTributario = lazy(() => import('./pages/tributario/HistoricoFinanceiro'));
 const OportunidadesElisao = lazy(() => import('./pages/tributario/OportunidadesElisao'));
+const CertificadosDigitais = lazy(() => import('./pages/tributario/CertificadosDigitais'));
 const ProjecaoReformaPage = lazy(() => import('./pages/tributario/ProjecaoReforma'));
 const DashboardTributario = lazy(() => import('./pages/tributario/DashboardTributario'));
 const RecomendacaoExecutiva = lazy(() => import('./pages/tributario/RecomendacaoExecutiva'));
@@ -197,6 +198,8 @@ function AppRoutes() {
             <Route path="/tributario/recomendacao" element={<ProtectedRoute><RecomendacaoExecutiva /></ProtectedRoute>} />
             <Route path="/tributario/pf-vinculada" element={<ProtectedRoute><PfVinculada /></ProtectedRoute>} />
             <Route path="/tributario/onboarding" element={<ProtectedRoute><OnboardingTributario /></ProtectedRoute>} />
+            <Route path="/tributario/certificados-digitais" element={<ProtectedRoute><CertificadosDigitais /></ProtectedRoute>} />
+
             <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
             <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
             <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />
