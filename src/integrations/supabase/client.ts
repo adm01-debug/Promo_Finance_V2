@@ -100,6 +100,10 @@ export const supabase = new Proxy(
  * Health-check pós-boot: valida que a URL/anon key apontam para um projeto
  * Supabase real e acessível. Retorna { ok, status, error } — nunca lança.
  * Timeout curto para não travar o boot em ambientes offline (PWA).
+ *
+ * Usa `/auth/v1/health` (GoTrue) porque `/rest/v1/` exige `service_role` e
+ * retornaria 401 mesmo com uma anon key válida — o que fazia o app bloquear
+ * o boot em 100% das sessões (regressão P0 corrigida em 2026-07).
  */
 export async function verifySupabaseHealth(
   timeoutMs = 3000,
@@ -107,15 +111,13 @@ export async function verifySupabaseHealth(
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/health`, {
       method: 'GET',
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY as string,
-        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-      },
+      headers: { apikey: SUPABASE_PUBLISHABLE_KEY as string },
       signal: controller.signal,
     });
-    // PostgREST responde 200 na raiz; 401/404 indicam credenciais/URL erradas.
+    // GoTrue responde 200 quando saudável. Qualquer 2xx/3xx = ok.
+    // 401/403/404 aqui indicam URL/anon key inválidas de verdade.
     return { ok: res.status >= 200 && res.status < 400, status: res.status };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
