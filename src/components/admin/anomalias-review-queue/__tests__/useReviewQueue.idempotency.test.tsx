@@ -54,31 +54,22 @@ vi.mock("sonner", () => ({
   },
 }));
 
-vi.mock("@/hooks/useAnomaliasDetectadas", () => {
-  class AnomaliaJaRevisadaError extends Error {
-    code = "ANOMALIA_JA_REVISADA" as const;
-    constructor(message = "Anomalia já foi revisada por outro usuário") {
-      super(message);
-      this.name = "AnomaliaJaRevisadaError";
-    }
-  }
-  return {
-    AnomaliaJaRevisadaError,
-    usePendingAnomaliasQueueInfinite: () => ({
-      items: mocks.fila,
-      isLoading: false,
-      isFetchingNextPage: false,
-      hasNextPage: false,
-      fetchNextPage: vi.fn(),
-    }),
-    useRevisarAnomalia: () => ({
-      mutateAsync: (...a: any[]) => mocks.revisarMutateAsync(...a),
-      isPending: mocks.revisarIsPending,
-    }),
-  };
-});
+vi.mock("@/hooks/useAnomaliasDetectadas", () => ({
+  AnomaliaJaRevisadaError: mocks.AnomaliaJaRevisadaError,
+  usePendingAnomaliasQueueInfinite: () => ({
+    items: mocks.fila,
+    isLoading: false,
+    isFetchingNextPage: false,
+    hasNextPage: false,
+    fetchNextPage: vi.fn(),
+  }),
+  useRevisarAnomalia: () => ({
+    mutateAsync: (...a: any[]) => mocks.revisarMutateAsync(...a),
+    isPending: mocks.revisarIsPending,
+  }),
+}));
 
-import { AnomaliaJaRevisadaError } from "@/hooks/useAnomaliasDetectadas";
+const AnomaliaJaRevisadaError = mocks.AnomaliaJaRevisadaError;
 
 vi.mock("@/hooks/useSincronizarAnomaliaBitrix", () => ({
   useSincronizarAnomaliaBitrix: () => ({
