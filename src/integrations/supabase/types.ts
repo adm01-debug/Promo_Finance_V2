@@ -13555,6 +13555,26 @@ export type Database = {
           deleted_old: number
         }[]
       }
+      certificado_get_password: {
+        Args: { p_cert_id: string; p_master_key: string }
+        Returns: string
+      }
+      certificado_upsert: {
+        Args: {
+          p_ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
+          p_cnpj: string
+          p_criado_por: string
+          p_empresa_id: string
+          p_master_key: string
+          p_password: string
+          p_pfx_storage_path: string
+          p_razao_social: string
+          p_uf: string
+          p_valido_ate: string
+          p_valido_de: string
+        }
+        Returns: string
+      }
       check_integrity_invariants: { Args: never; Returns: Json }
       check_login_lockout: {
         Args: { p_email: string }
