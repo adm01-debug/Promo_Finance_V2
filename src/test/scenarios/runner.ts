@@ -9,6 +9,7 @@ import {
 import { makeWebhookStream, type WebhookEvent } from "./fixtures/webhooks";
 import { makeBoletos, makeReguaEtapas } from "./fixtures/cobranca";
 import { makeAnomalias, makeAcoes } from "./fixtures/anomalias";
+import { makeNfeStream, type NfeDfeEvento } from "./fixtures/nfe";
 import { checkAll } from "./invariants";
 import type { ScenarioResult, ScenarioSpec, ScenarioState } from "./types";
 
@@ -22,6 +23,7 @@ function emptyState(): ScenarioState {
     anomalias: [],
     reguaDisparos: [],
     auditLogs: [],
+    nfe: { ultimoNsuHistory: [0], recebidas: [], eventos: [] },
   };
 }
 
