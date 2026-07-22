@@ -43,6 +43,18 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
   const [transicionando, setTransicionando] = useState(false);
   const [conflito, setConflito] = useState<ConflitoBanner | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Idempotência: ids com mutação em andamento (bloqueia submits duplicados)
+  const inFlightIds = useRef<Set<string>>(new Set());
+  // Idempotência: ids já sincronizados com Bitrix nesta sessão do modal
+  const bitrixSincronizados = useRef<Set<string>>(new Set());
+
+  // Reset dos guards ao (re)abrir o modal — evita estado preso após fechar durante mutação
+  useEffect(() => {
+    if (open) {
+      inFlightIds.current.clear();
+      bitrixSincronizados.current.clear();
+    }
+  }, [open]);
 
   const resolverAutor = useCallback(async (userId: string | null) => {
     if (!userId) return { nome: "outro revisor", email: null as string | null };
@@ -298,18 +310,65 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
     }
   }, [index, recarregarPosicao]);
 
+  /**
+   * Classifica um erro como transitório (rede, timeout ou códigos PostgREST
+   * 08xxx/53xxx/57P03 — connection/resource/shutdown). Não retenta erros
+   * de validação (ex.: comentário curto) nem conflito de concorrência.
+   */
+  const isTransient = useCallback((err: unknown): boolean => {
+    if (err instanceof AnomaliaJaRevisadaError) return false;
+    const msg = (err as { message?: string } | null)?.message?.toLowerCase() ?? "";
+    const code = (err as { code?: string } | null)?.code ?? "";
+    if (/network|failed to fetch|timeout|timed out|econnreset|fetch failed/.test(msg)) return true;
+    if (/^08/.test(code) || /^53/.test(code) || code === "57P03") return true;
+    return false;
+  }, []);
+
+  const withRetry = useCallback(
+    async <T,>(fn: () => Promise<T>, attempts = 3): Promise<T> => {
+      let lastErr: unknown;
+      for (let i = 0; i < attempts; i++) {
+        try {
+          return await fn();
+        } catch (err) {
+          lastErr = err;
+          if (!isTransient(err) || i === attempts - 1) throw err;
+          // Backoff exponencial: 300ms, 900ms
+          await new Promise((r) => setTimeout(r, 300 * Math.pow(3, i)));
+        }
+      }
+      throw lastErr;
+    },
+    [isTransient],
+  );
+
   const handleAcao = useCallback(
     async (status: "confirmada" | "falso_positivo") => {
       if (!atual) return;
+      // Idempotência: bloqueia re-entrada para o mesmo id (double-click, teclas rápidas)
+      if (inFlightIds.current.has(atual.id)) return;
+      // Concorrência local: não permitir novo submit enquanto outro está em andamento
+      if (revisar.isPending || transicionando || recarregando) return;
+
       const minRequerido = status === "confirmada" ? MIN_CONFIRMAR : MIN_FALSO_POSITIVO;
       if (comentarioTrim.length < minRequerido) {
         setComentarioTocado(true);
         return;
       }
+
+      const alvo = atual; // captura estável do id/severidade para closure segura
+      const obs = comentarioTrim;
+      inFlightIds.current.add(alvo.id);
       try {
-        await revisar.mutateAsync({ id: atual.id, status, observacoes: comentarioTrim });
+        await withRetry(() =>
+          revisar.mutateAsync({ id: alvo.id, status, observacoes: obs }),
+        );
         setTransicionando(true);
-        sincronizar.mutate({ anomaliaId: atual.id, evento: status });
+        // Idempotência: só sincroniza Bitrix uma vez por id nesta sessão
+        if (!bitrixSincronizados.current.has(alvo.id)) {
+          bitrixSincronizados.current.add(alvo.id);
+          sincronizar.mutate({ anomaliaId: alvo.id, evento: status });
+        }
         setStats((s) => ({
           ...s,
           confirmadas: status === "confirmada" ? s.confirmadas + 1 : s.confirmadas,
@@ -328,13 +387,13 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
             const { data } = await supabase
               .from("anomalias_detectadas")
               .select("*")
-              .eq("id", atual.id)
+              .eq("id", alvo.id)
               .maybeSingle();
             if (data) {
-              await notificarConflito(atual, data as Anomalia);
+              await notificarConflito(alvo, data as Anomalia);
             } else {
               toast.warning(
-                `Anomalia [${atual.severidade.toUpperCase()} · ${TIPO_LABEL[atual.tipo_anomalia]}] foi removida`,
+                `Anomalia [${alvo.severidade.toUpperCase()} · ${TIPO_LABEL[alvo.tipo_anomalia]}] foi removida`,
                 { description: "Avançando para a próxima da fila." },
               );
             }
@@ -345,10 +404,36 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
           }
           setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
           await avancar();
+          return;
         }
+        // Falha de persistência definitiva: NÃO avança, NÃO atualiza stats.
+        // Estado local intacto para permitir nova tentativa manual.
+        const detalhe = (err as { message?: string } | null)?.message ?? "Erro desconhecido";
+        toast.error("Falha ao registrar revisão", {
+          description: `${detalhe} — o item permanece na fila.`,
+          duration: 8000,
+          action: {
+            label: "Tentar novamente",
+            onClick: () => {
+              void handleAcao(status);
+            },
+          },
+        });
+      } finally {
+        inFlightIds.current.delete(alvo.id);
       }
     },
-    [atual, comentarioTrim, revisar, sincronizar, avancar, notificarConflito],
+    [
+      atual,
+      comentarioTrim,
+      revisar,
+      transicionando,
+      recarregando,
+      sincronizar,
+      avancar,
+      notificarConflito,
+      withRetry,
+    ],
   );
 
   const handlePular = useCallback(async () => {
