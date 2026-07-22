@@ -18,7 +18,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/ui/empty-state';
-import { AlertTriangle, KeyRound, Loader2, Plus, ShieldCheck, Upload } from 'lucide-react';
+import { KeyRound, Loader2, Plus, ShieldCheck, Upload } from 'lucide-react';
 import {
   useCertificadosDigitais,
   useToggleCertificado,
