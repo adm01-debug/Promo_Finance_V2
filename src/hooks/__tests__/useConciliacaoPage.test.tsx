@@ -319,7 +319,10 @@ describe('useConciliacaoPage — importação de extrato', () => {
 
     expect(mocks.mutations.confirmarConciliacao.mutateAsync).not.toHaveBeenCalled();
     expect(result.current.importReport?.autoConciliadas).toBe(0);
-    expect(result.current.transacoesImportadas.some(t => t.id === 'tx-1')).toBe(true);
+    // Sem aceite_automatico a transação entra em `transacoes` como pendente (não conciliada)
+    const inserida = result.current.transacoes.find(t => t.id === 'tx-1');
+    expect(inserida).toBeDefined();
+    expect(inserida?.conciliada).toBe(false);
   });
 
   it('#8 [invariante] rejeição da mutation NÃO marca conciliada localmente e loga em webhooks_log', async () => {
