@@ -2,7 +2,7 @@
  * Tipos compartilhados do harness de cenários.
  */
 
-export type Domain = "conciliacao" | "webhooks" | "cobranca" | "anomalias";
+export type Domain = "conciliacao" | "webhooks" | "cobranca" | "anomalias" | "nfe";
 
 export type FaultKind =
   | "none"
