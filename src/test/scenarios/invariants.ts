@@ -140,6 +140,82 @@ const auditoriaCompleta: InvariantFn = (state) => {
   return null;
 };
 
+const nfeIdempotenciaChave: InvariantFn = (state) => {
+  const seen = new Set<string>();
+  for (const r of state.nfe?.recebidas ?? []) {
+    if (seen.has(r.chaveAcesso)) {
+      return {
+        invariant: "nfeIdempotenciaChave",
+        message: `chave_acesso duplicada: ${r.chaveAcesso}`,
+      };
+    }
+    seen.add(r.chaveAcesso);
+  }
+  return null;
+};
+
+const nfeMonotonicidadeNsu: InvariantFn = (state) => {
+  const hist = state.nfe?.ultimoNsuHistory ?? [];
+  for (let i = 1; i < hist.length; i++) {
+    if (hist[i] < hist[i - 1]) {
+      return {
+        invariant: "nfeMonotonicidadeNsu",
+        message: `ultimo_nsu regrediu: ${hist[i - 1]} → ${hist[i]}`,
+      };
+    }
+  }
+  return null;
+};
+
+const nfeSemOrfaosEventos: InvariantFn = (state) => {
+  const chaves = new Set((state.nfe?.recebidas ?? []).map((r) => r.chaveAcesso));
+  for (const e of state.nfe?.eventos ?? []) {
+    if (!chaves.has(e.chaveAcesso)) {
+      return {
+        invariant: "nfeSemOrfaosEventos",
+        message: `evento ${e.id} sem NF-e pai (chave=${e.chaveAcesso})`,
+      };
+    }
+  }
+  return null;
+};
+
+const nfeCursorNaoRegride: InvariantFn = (state) => {
+  const nsus = (state.nfe?.recebidas ?? []).map((r) => r.nsu);
+  for (let i = 1; i < nsus.length; i++) {
+    if (nsus[i] < nsus[i - 1]) {
+      return {
+        invariant: "nfeCursorNaoRegride",
+        message: `NSU processado fora de ordem: ${nsus[i - 1]} → ${nsus[i]}`,
+      };
+    }
+  }
+  return null;
+};
+
+const nfeManifestacaoValida: InvariantFn = (state) => {
+  const validTransitions: Record<string, string[]> = {
+    pendente: ["ciencia", "confirmada", "desconhecida", "nao_realizada"],
+    ciencia: ["confirmada", "desconhecida", "nao_realizada"],
+    confirmada: [],
+    desconhecida: [],
+    nao_realizada: [],
+  };
+  for (const r of state.nfe?.recebidas ?? []) {
+    const h = r.manifestacaoHistory;
+    for (let i = 1; i < h.length; i++) {
+      const allowed = validTransitions[h[i - 1]] ?? [];
+      if (!allowed.includes(h[i])) {
+        return {
+          invariant: "nfeManifestacaoValida",
+          message: `transição inválida ${h[i - 1]} → ${h[i]} em ${r.chaveAcesso}`,
+        };
+      }
+    }
+  }
+  return null;
+};
+
 export const INVARIANTS: Record<string, InvariantFn> = {
   idempotencyWebhook,
   unicidadeTransacoes,
@@ -150,6 +226,11 @@ export const INVARIANTS: Record<string, InvariantFn> = {
   ordemCausalEventos,
   reguaSemDuplicidade,
   auditoriaCompleta,
+  nfeIdempotenciaChave,
+  nfeMonotonicidadeNsu,
+  nfeSemOrfaosEventos,
+  nfeCursorNaoRegride,
+  nfeManifestacaoValida,
 };
 
 export function checkAll(state: ScenarioState): InvariantViolation[] {

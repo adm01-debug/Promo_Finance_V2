@@ -2,7 +2,7 @@
  * Tipos compartilhados do harness de cenários.
  */
 
-export type Domain = "conciliacao" | "webhooks" | "cobranca" | "anomalias";
+export type Domain = "conciliacao" | "webhooks" | "cobranca" | "anomalias" | "nfe";
 
 export type FaultKind =
   | "none"
@@ -94,4 +94,20 @@ export interface ScenarioState {
     de: string | null;
     para: string;
   }>;
+
+  nfe: {
+    ultimoNsuHistory: number[];
+    recebidas: Array<{
+      chaveAcesso: string;
+      nsu: number;
+      xmlSalvo: boolean;
+      manifestacao: "pendente" | "ciencia" | "confirmada" | "desconhecida" | "nao_realizada";
+      manifestacaoHistory: string[];
+    }>;
+    eventos: Array<{
+      id: string;
+      chaveAcesso: string;
+      tipo: string;
+    }>;
+  };
 }

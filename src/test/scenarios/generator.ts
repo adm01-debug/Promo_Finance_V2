@@ -1,7 +1,7 @@
 import type { Domain, FaultKind, FaultSpec, ScenarioSpec } from "./types";
 import { createRng } from "./rng";
 
-const DOMAINS: Domain[] = ["conciliacao", "webhooks", "cobranca", "anomalias"];
+const DOMAINS: Domain[] = ["conciliacao", "webhooks", "cobranca", "anomalias", "nfe"];
 const FAULT_KINDS: FaultKind[] = [
   "none",
   "timeout",
