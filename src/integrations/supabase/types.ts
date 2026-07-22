@@ -7154,6 +7154,54 @@ export type Database = {
           },
         ]
       }
+      integrity_alerts: {
+        Row: {
+          affected_count: number
+          alert_hour: string
+          created_at: string
+          domain: string
+          id: string
+          invariant: string
+          metadata: Json | null
+          reason: string
+          resolved_at: string | null
+          resolved_by: string | null
+          sample_ids: string[] | null
+          severity: string
+          updated_at: string
+        }
+        Insert: {
+          affected_count?: number
+          alert_hour?: string
+          created_at?: string
+          domain: string
+          id?: string
+          invariant: string
+          metadata?: Json | null
+          reason: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sample_ids?: string[] | null
+          severity: string
+          updated_at?: string
+        }
+        Update: {
+          affected_count?: number
+          alert_hour?: string
+          created_at?: string
+          domain?: string
+          id?: string
+          invariant?: string
+          metadata?: Json | null
+          reason?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sample_ids?: string[] | null
+          severity?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ip_whitelist: {
         Row: {
           added_by: string | null
@@ -13159,6 +13207,7 @@ export type Database = {
           deleted_old: number
         }[]
       }
+      check_integrity_invariants: { Args: never; Returns: Json }
       check_login_lockout: {
         Args: { p_email: string }
         Returns: {
@@ -13333,6 +13382,21 @@ export type Database = {
       get_cron_run_history:
         | { Args: never; Returns: Json }
         | { Args: { p_job_name?: string; p_limit?: number }; Returns: Json }
+      get_integrity_alerts: {
+        Args: { p_hours?: number; p_only_open?: boolean }
+        Returns: {
+          affected_count: number
+          alert_hour: string
+          created_at: string
+          domain: string
+          id: string
+          invariant: string
+          reason: string
+          resolved_at: string
+          sample_ids: string[]
+          severity: string
+        }[]
+      }
       get_lockout_details: {
         Args: { _email: string }
         Returns: {
