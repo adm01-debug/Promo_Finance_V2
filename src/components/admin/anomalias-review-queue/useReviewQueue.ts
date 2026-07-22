@@ -43,6 +43,18 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
   const [transicionando, setTransicionando] = useState(false);
   const [conflito, setConflito] = useState<ConflitoBanner | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Idempotência: ids com mutação em andamento (bloqueia submits duplicados)
+  const inFlightIds = useRef<Set<string>>(new Set());
+  // Idempotência: ids já sincronizados com Bitrix nesta sessão do modal
+  const bitrixSincronizados = useRef<Set<string>>(new Set());
+
+  // Reset dos guards ao (re)abrir o modal — evita estado preso após fechar durante mutação
+  useEffect(() => {
+    if (open) {
+      inFlightIds.current.clear();
+      bitrixSincronizados.current.clear();
+    }
+  }, [open]);
 
   const resolverAutor = useCallback(async (userId: string | null) => {
     if (!userId) return { nome: "outro revisor", email: null as string | null };
