@@ -85,33 +85,6 @@ jobs:
       - name: Build check
         run: bun run build
 
-      - name: Install Playwright Browsers
-        run: bunx playwright install --with-deps
-
-      - name: E2E Tests
-        run: bun run test:e2e
-        env:
-          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
-          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          # O app é Vite: o dev server (npm run dev) só expõe variáveis com
-          # prefixo VITE_. Sem elas, src/integrations/supabase/client.ts lança
-          # no carregamento e o app nem inicializa para o Playwright.
-          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          CI: true
-
-      - name: Upload Test Artifacts (Reports & Screenshots)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-artifacts
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 30
-
       - name: Upload Error Logs
         if: failure()
         uses: actions/upload-artifact@v4
@@ -120,16 +93,108 @@ jobs:
           path: "*.log"
           retention-days: 7
 
-      - name: Trigger Simulation Audit
-        if: github.ref == 'refs/heads/main' && success()
-        run: |
-          curl -X POST "${{ secrets.SUPABASE_URL }}/functions/v1/webhook-simulator" \
-          -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"target_function": "asaas-webhook", "scenarios_count": 100, "mode": "stress"}'
+  # ---------------------------------------------------------------------------
+  # E2E — job separado, sharded, roda em paralelo ao quality-gate.
+  # Configurado como required check no branch protection → bloqueia merge de PR
+  # se qualquer shard falhar. Cada shard sobe seu próprio dev server via
+  # `webServer` do playwright.config.ts.
+  # ---------------------------------------------------------------------------
+  e2e:
+    name: E2E Tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
 
-      - name: Notify Failure
-        if: failure()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.11"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install Playwright browsers
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: E2E Tests (chromium, shard ${{ matrix.shard }}/3)
+        run: bunx playwright test --project=chromium --shard=${{ matrix.shard }}/3 --reporter=blob
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CI: true
+
+      - name: Upload blob report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Merge blob reports em um HTML único para inspeção pós-run.
+  # ---------------------------------------------------------------------------
+  e2e-report:
+    name: E2E Report
+    if: always()
+    needs: [e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.11"
+      - run: bun install --frozen-lockfile
+      - name: Download blob reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+      - name: Merge into HTML report
+        run: bunx playwright merge-reports --reporter=html ./all-blob-reports
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Auditoria pós-merge — só roda em main após e2e + quality-gate passarem.
+  # ---------------------------------------------------------------------------
+  post-merge-audit:
+    name: Post-merge Simulation Audit
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [quality-gate, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Simulation Audit
         run: |
-          echo "CI Pipeline failed. Check the logs and Playwright report for details."
-          exit 1
+          curl -fsS -X POST "${{ secrets.SUPABASE_URL }}/functions/v1/webhook-simulator" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"target_function": "asaas-webhook", "scenarios_count": 100, "mode": "stress"}'
+
