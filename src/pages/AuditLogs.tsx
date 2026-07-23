@@ -13,7 +13,7 @@ import { format, subDays, startOfDay, endOfDay, differenceInMinutes } from 'date
 import { ptBR } from 'date-fns/locale';
 import { CalendarIcon, Search, FileText, Filter, RefreshCcw, Activity, Database, Download, FileSpreadsheet } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { exportToCSV, exportToPDF, ExportColumn } from '@/lib/export-utils';
+import { exportToCSV, exportToPDF, exportToJSON, ExportColumn } from '@/lib/export-utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
