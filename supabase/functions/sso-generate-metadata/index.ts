@@ -12,7 +12,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { tipo, nome } = await req.json();
+    const raw = await req.json().catch(() => ({}));
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload } = await import('../_shared/validation.ts');
+    const Schema = z.object({ tipo: z.enum(['oidc', 'saml']), nome: z.string().optional() }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'sso-generate-metadata');
+    if (!parsed.success) return json({ error: parsed.error, details: parsed.details }, 400);
+    const { tipo, nome } = parsed.data;
 
     if (tipo === "oidc") {
       return json({

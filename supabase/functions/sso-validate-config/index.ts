@@ -11,7 +11,20 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { tipo, discovery_url, metadata_xml, metadata_url, sso_url, x509_cert } = await req.json();
+    const raw = await req.json().catch(() => ({}));
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload } = await import('../_shared/validation.ts');
+    const Schema = z.object({
+      tipo: z.enum(['oidc', 'saml']),
+      discovery_url: z.string().url().optional().nullable(),
+      metadata_xml: z.string().optional().nullable(),
+      metadata_url: z.string().url().optional().nullable(),
+      sso_url: z.string().url().optional().nullable(),
+      x509_cert: z.string().optional().nullable(),
+    }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'sso-validate-config');
+    if (!parsed.success) return json({ valid: false, message: parsed.error, details: parsed.details }, 400);
+    const { tipo, discovery_url, metadata_xml, metadata_url, sso_url, x509_cert } = parsed.data;
 
     const result: ValidationResult = { valid: false, message: "" };
 

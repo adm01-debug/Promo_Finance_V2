@@ -19,8 +19,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { provider_id, redirect_to } = await req.json();
-    if (!provider_id) return json({ error: "provider_id obrigatório" }, 400);
+    const raw = await req.json().catch(() => ({}));
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload } = await import('../_shared/validation.ts');
+    const Schema = z.object({ provider_id: z.string().uuid(), redirect_to: z.string().url().optional().nullable() }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'sso-initiate');
+    if (!parsed.success) return json({ error: parsed.error, details: parsed.details }, 400);
+    const { provider_id, redirect_to } = parsed.data;
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
     const { data: provider, error } = await admin

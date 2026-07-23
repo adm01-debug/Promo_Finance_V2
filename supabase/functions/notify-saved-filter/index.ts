@@ -61,7 +61,21 @@ const handler = async (req: Request): Promise<Response> => {
     const userId = userData.user.id;
     const userEmail = userData.user.email ?? null;
 
-    const payload = (await req.json()) as NotifyRequest;
+    const raw = await req.json();
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const Schema = z.object({
+      sourceRef: z.string().optional(),
+      filterName: z.string().min(1),
+      title: z.string().min(1),
+      body: z.string(),
+      channels: z.object({ inapp: z.boolean().optional(), email: z.boolean().optional(), push: z.boolean().optional() }),
+      metadata: z.record(z.any()).optional(),
+      url: z.string().optional(),
+    }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'notify-saved-filter');
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const payload = parsed.data as NotifyRequest;
     if (!payload?.title || !payload?.filterName || !payload?.channels) {
       return new Response(JSON.stringify({ error: "invalid_payload" }), {
         status: 400,

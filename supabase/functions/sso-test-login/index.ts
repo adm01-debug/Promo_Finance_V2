@@ -14,7 +14,20 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const payload = await req.json() as {
+    const raw = await req.json().catch(() => ({}));
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload } = await import('../_shared/validation.ts');
+    const Schema = z.object({
+      mock_claims: z.record(z.any()),
+      claim_mapping: z.record(z.any()).optional(),
+      role_mappings: z.array(z.any()).optional(),
+      default_role: z.string().optional(),
+      allowed_domains: z.array(z.string()).optional(),
+      provider_id: z.string().uuid().optional(),
+    }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'sso-test-login');
+    if (!parsed.success) return new Response(JSON.stringify({ error: parsed.error, details: parsed.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    const payload = parsed.data as {
       mock_claims: Record<string, unknown>;
       claim_mapping?: ClaimMapping;
       role_mappings?: RoleMapping[];

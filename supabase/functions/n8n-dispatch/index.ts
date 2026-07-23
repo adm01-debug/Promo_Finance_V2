@@ -78,7 +78,18 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
   try {
-    const body = (await req.json()) as DispatchRequest;
+    const raw = await req.json();
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const Schema = z.object({
+      event_type: z.string().min(1),
+      risk_score: z.number().optional(),
+      entity_id: z.string().optional(),
+      payload: z.record(z.any()),
+    }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'n8n-dispatch');
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const body = parsed.data as DispatchRequest;
     if (!body.event_type || !body.payload) {
       return new Response(JSON.stringify({ error: "event_type e payload são obrigatórios" }), {
         status: 400,
