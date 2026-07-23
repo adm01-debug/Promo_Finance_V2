@@ -120,6 +120,8 @@ describe('sefaz-contingency :: state', () => {
   });
 
   it('getContingencyStats sem pendentes retorna oldestPending=null', () => {
+    // Limpa quaisquer pendentes remanescentes do initialState compartilhado
+    getContingencyState().pendingNFes.forEach((n) => removePendingNFe(n.id));
     const stats = getContingencyStats();
     expect(stats.totalPending).toBe(0);
     expect(stats.pendingValue).toBe(0);
