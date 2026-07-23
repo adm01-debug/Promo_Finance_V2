@@ -2,6 +2,18 @@
 // Cria Deal no Bitrix24 + anexa PDF tributário + comentário com resumo
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { createLogger } from '../_shared/observability.ts';
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _BxTribSchema = z.object({
+  empresaId: z.string().uuid(),
+  signedUrl: z.string().url(),
+  empresaNome: z.string().min(1),
+  periodo: z.string().min(1),
+  regimeRecomendado: z.string().min(1),
+  economiaAnual: z.number(),
+  dealId: z.string().optional(),
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -85,7 +97,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: ReqBody = await req.json();
+    const _raw = await req.json();
+    const _v = await validateContract(_BxTribSchema, _raw);
+    if (!_v.success) return _v.response;
+    const body = _v.data as unknown as ReqBody;
     if (!body.empresaId || !body.signedUrl || !body.empresaNome) {
       return new Response(
         JSON.stringify({ error: 'Campos obrigatórios ausentes' }),

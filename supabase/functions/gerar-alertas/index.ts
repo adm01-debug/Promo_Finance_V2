@@ -1,5 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _GerarAlertasSchema = z.object({
+  incluirMetas: z.boolean().optional(),
+  userId: z.string().uuid().nullable().optional(),
+}).partial();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,8 +30,10 @@ serve(async (req) => {
     // Parse request body para opções
     let options = { incluirMetas: true, userId: null };
     try {
-      const body = await req.json();
-      options = { ...options, ...body };
+      const _raw = await req.json();
+      const _v = await validateContract(_GerarAlertasSchema, _raw);
+      if (!_v.success) return _v.response;
+      options = { ...options, ..._v.data } as typeof options;
     } catch {
       // Sem body, usar padrões
     }

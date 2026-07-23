@@ -12,6 +12,10 @@
 // verify_jwt = false — chamada antes do login. Não retorna dados sensíveis.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _IpGeoSchema = z.object({ email: z.string().email().optional() }).partial();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -88,7 +92,10 @@ Deno.serve(async (req: Request) => {
 
   let body: { email?: string } = {};
   try {
-    body = await req.json();
+    const _raw = await req.json();
+    const _v = await validateContract(_IpGeoSchema, _raw);
+    if (!_v.success) return _v.response;
+    body = _v.data as { email?: string };
   } catch {
     // ok — body opcional
   }

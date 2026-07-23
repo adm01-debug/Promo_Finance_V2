@@ -4,6 +4,13 @@
 // pois a chamada vem do runner do GitHub Actions, sem sessão de usuário.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _CIBodySchema = z.object({
+  matrix: z.string().optional(),
+  failures: z.array(z.record(z.unknown())).max(500),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -47,7 +54,10 @@ Deno.serve(async (req) => {
 
   let body: RequestBody;
   try {
-    body = (await req.json()) as RequestBody;
+    const _raw = await req.json();
+    const _v = await validateContract(_CIBodySchema, _raw);
+    if (!_v.success) return _v.response;
+    body = _v.data as unknown as RequestBody;
   } catch {
     return json({ error: "invalid_json" }, 400);
   }

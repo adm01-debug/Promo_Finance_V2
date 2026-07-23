@@ -1,6 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import JSZip from "https://esm.sh/jszip@3.10.1";
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _EvidBodySchema = z.object({
+  periodo_inicio: z.string().min(1),
+  periodo_fim: z.string().min(1),
+  escopos: z.array(z.enum(["financeiro","tributario","sistema","conformidade"])).min(1),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -241,7 +249,10 @@ serve(async (req) => {
 
   let body: Body;
   try {
-    body = (await req.json()) as Body;
+    const _raw = await req.json();
+    const _v = await validateContract(_EvidBodySchema, _raw);
+    if (!_v.success) return _v.response;
+    body = _v.data as unknown as Body;
   } catch {
     return new Response(JSON.stringify({ error: "invalid json" }), {
       status: 400,

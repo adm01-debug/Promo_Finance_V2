@@ -1,6 +1,10 @@
 // Edge: comparar-benchmark-setorial — empresa vs mediana do regime
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { createLogger } from '../_shared/observability.ts';
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _BenchBodySchema = z.object({ empresa_id: z.string().uuid() });
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -36,7 +40,10 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const body = await req.json();
+    const _raw = await req.json();
+    const _v = await validateContract(_BenchBodySchema, _raw);
+    if (!_v.success) return _v.response;
+    const body = _v.data;
     const empresaId: string | undefined = body?.empresa_id;
     if (!empresaId) {
       return new Response(JSON.stringify({ error: 'empresa_id obrigatório' }), {

@@ -4,6 +4,14 @@
 // ============================================
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { createLogger } from "../_shared/observability.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _FechamentoSchema = z.object({
+  empresa_id: z.string().uuid(),
+  ano: z.number().int().min(2000).max(2100),
+  mes: z.number().int().min(1).max(12),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -67,7 +75,10 @@ Deno.serve(async (req) => {
     }
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
 
-    const body = (await req.json()) as ReqBody;
+    const _raw = await req.json();
+    const _v = await validateContract(_FechamentoSchema, _raw);
+    if (!_v.success) return _v.response;
+    const body = _v.data as unknown as ReqBody;
     if (!body.empresa_id || !body.ano || !body.mes) {
       return new Response(JSON.stringify({ error: "invalid_payload" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
