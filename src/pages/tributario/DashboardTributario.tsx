@@ -18,6 +18,7 @@ import { ptBR } from 'date-fns/locale';
 import { EvolucaoCargaChart } from '@/components/tributario/dashboard/EvolucaoCargaChart';
 import { ComparativoRegimes } from '@/components/tributario/dashboard/ComparativoRegimes';
 import { OportunidadesElisaoWidget } from '@/components/tributario/dashboard/OportunidadesElisaoWidget';
+import { CalculadoraWidget } from '@/components/tributario/dashboard/CalculadoraWidget';
 import { ProximosVencimentosTimeline } from '@/components/tributario/dashboard/ProximosVencimentosTimeline';
 import { AlertasAtivosResumo } from '@/components/tributario/dashboard/AlertasAtivosResumo';
 import { RelatoriosAgendadosCard } from '@/components/tributario/dashboard/RelatoriosAgendadosCard';
@@ -216,6 +217,9 @@ export default function DashboardTributario() {
                 </motion.div>
                 <motion.div variants={itemVariants}>
                   <OportunidadesElisaoWidget oportunidades={oportunidades} />
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <CalculadoraWidget />
                 </motion.div>
                 <motion.div variants={itemVariants}>
                   <ProximosVencimentosTimeline vencimentos={vencimentos} />

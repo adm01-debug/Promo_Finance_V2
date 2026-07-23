@@ -1,0 +1,132 @@
+// LUCRO PRESUMIDO — Trimestral com adicional 10%, PIS/COFINS cumulativo
+
+import type {
+  InputLucroPresumido, ResultadoRegime, LinhaMemoria, TributoDetalhe, AtividadePresumido,
+} from './types';
+
+const LIMITE_ANUAL = 78_000_000;
+const LIMITE_ADICIONAL_TRIMESTRAL = 60_000;
+
+// [presuncaoIrpj, presuncaoCsll]
+const PRESUNCAO: Record<AtividadePresumido, [number, number]> = {
+  comercio:                  [0.08, 0.12],
+  industria:                 [0.08, 0.12],
+  servicos_geral:            [0.32, 0.32],
+  servicos_profissionais:    [0.32, 0.32],
+  transporte_cargas:         [0.08, 0.12],
+  transporte_passageiros:    [0.16, 0.12],
+  servicos_hospitalares:     [0.08, 0.12],
+};
+
+function push(mem: LinhaMemoria[], linha: Omit<LinhaMemoria, 'ordem'>) {
+  mem.push({ ordem: mem.length + 1, ...linha });
+}
+
+export function calcularLucroPresumido(input: InputLucroPresumido): ResultadoRegime {
+  const memoria: LinhaMemoria[] = [];
+  const alertas: string[] = [];
+  const receitaBruta = input.receitas.receitaBrutaAnual;
+
+  if (receitaBruta > LIMITE_ANUAL) {
+    return {
+      regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: false,
+      motivoInelegibilidade: `Receita > R$ ${LIMITE_ANUAL.toLocaleString('pt-BR')}`,
+      tributos: [], retencoesCompensadas: 0, totalTributos: 0, totalAPagar: 0,
+      receitaBase: receitaBruta, cargaEfetiva: 0, memoria: [],
+      alertas: ['Obrigatório Lucro Real acima de R$ 78 mi.'],
+    };
+  }
+
+  const receitaLiquida = Math.max(
+    0,
+    receitaBruta - (input.receitas.devolucoes ?? 0) - (input.receitas.descontosIncondicionais ?? 0),
+  );
+  const percServ = input.receitas.percentualServicos / 100;
+  const percRevenda = 1 - percServ;
+  const receitaServicos = receitaLiquida * percServ;
+  const receitaMercadorias = receitaLiquida * percRevenda;
+
+  const [presIrpjPad, presCsllPad] = PRESUNCAO[input.atividade];
+  const presIrpjServ = input.aliquotaIrpjPresuncao ?? 0.32;
+  const presCsllServ = input.aliquotaCsllPresuncao ?? 0.32;
+
+  const baseIrpj = receitaMercadorias * presIrpjPad + receitaServicos * presIrpjServ +
+    (input.ganhoCapital ?? 0) + (input.rendimentosAplicacoes ?? 0);
+  const baseCsll = receitaMercadorias * presCsllPad + receitaServicos * presCsllServ +
+    (input.ganhoCapital ?? 0) + (input.rendimentosAplicacoes ?? 0);
+
+  push(memoria, { grupo: 'IRPJ', descricao: `Base IRPJ presumida (${(presIrpjPad * 100).toFixed(0)}% merc / ${(presIrpjServ * 100).toFixed(0)}% serv)`, valor: baseIrpj });
+  push(memoria, { grupo: 'CSLL', descricao: `Base CSLL presumida`, valor: baseCsll });
+
+  const irpjBase = baseIrpj * 0.15;
+  // Adicional considerando trimestre (mais realista): base_anual / 4 vs 60k
+  const excedenteTrim = Math.max(0, (baseIrpj / 4) - LIMITE_ADICIONAL_TRIMESTRAL) * 4;
+  const irpjAdicional = excedenteTrim * 0.10;
+  const irpj = irpjBase + irpjAdicional;
+  push(memoria, { grupo: 'IRPJ', descricao: 'IRPJ 15% × base', base: baseIrpj, aliquota: 0.15, valor: irpjBase });
+  if (irpjAdicional > 0) {
+    push(memoria, {
+      grupo: 'IRPJ', descricao: 'Adicional 10% (excedente > R$ 60k/trimestre)',
+      base: excedenteTrim, aliquota: 0.10, valor: irpjAdicional,
+    });
+  }
+
+  const csll = baseCsll * 0.09;
+  push(memoria, { grupo: 'CSLL', descricao: 'CSLL 9% × base', base: baseCsll, aliquota: 0.09, valor: csll });
+
+  // PIS/COFINS cumulativo
+  const pis = receitaLiquida * 0.0065;
+  const cofins = receitaLiquida * 0.03;
+  push(memoria, { grupo: 'PIS', descricao: 'PIS cumulativo 0,65%', base: receitaLiquida, aliquota: 0.0065, valor: pis });
+  push(memoria, { grupo: 'COFINS', descricao: 'COFINS cumulativo 3%', base: receitaLiquida, aliquota: 0.03, valor: cofins });
+
+  // CPP
+  const rat = input.folha.aliquotaRat ?? 0.02;
+  const terceiros = input.folha.aliquotaTerceiros ?? 0.058;
+  const cppAliq = 0.20 + rat + terceiros;
+  const cpp = input.folha.folhaAnual * cppAliq;
+  push(memoria, { grupo: 'CPP', descricao: `INSS patronal ${(cppAliq * 100).toFixed(1)}%`, base: input.folha.folhaAnual, aliquota: cppAliq, valor: cpp });
+
+  // ICMS
+  const em = input.estadualMunicipal;
+  const icmsAliq = em.aliquotaIcms ?? 0.18;
+  const icmsDebito = receitaMercadorias * icmsAliq;
+  const icms = Math.max(0, icmsDebito - (em.creditoIcmsCompras ?? 0)) + (em.icmsSt ?? 0) + (em.difal ?? 0);
+  if (receitaMercadorias > 0) {
+    push(memoria, { grupo: 'ICMS', descricao: `ICMS ${(icmsAliq * 100).toFixed(2)}%`, base: receitaMercadorias, aliquota: icmsAliq, valor: icms });
+  }
+
+  // ISS
+  const issAliq = em.aliquotaIss ?? 0.05;
+  const iss = receitaServicos * issAliq;
+  if (receitaServicos > 0) {
+    push(memoria, { grupo: 'ISS', descricao: `ISS ${(issAliq * 100).toFixed(2)}%`, base: receitaServicos, aliquota: issAliq, valor: iss });
+  }
+
+  const r = input.retencoes ?? {};
+  const retencoes = (r.irrfSofrido ?? 0) + (r.csrfSofrido ?? 0) + (r.inssSofrido ?? 0) + (r.issRetido ?? 0);
+
+  const tributos: TributoDetalhe[] = [
+    { nome: 'IRPJ', valor: irpj, base: baseIrpj, aliquotaEfetiva: baseIrpj > 0 ? irpj / baseIrpj : 0, formula: '15% base presumida + 10% excedente' },
+    { nome: 'CSLL', valor: csll, base: baseCsll, aliquotaEfetiva: 0.09, formula: '9% base presumida' },
+    { nome: 'PIS', valor: pis, base: receitaLiquida, aliquotaEfetiva: 0.0065, formula: '0,65% receita (cumulativo)' },
+    { nome: 'COFINS', valor: cofins, base: receitaLiquida, aliquotaEfetiva: 0.03, formula: '3% receita (cumulativo)' },
+    { nome: 'CPP', valor: cpp, base: input.folha.folhaAnual, aliquotaEfetiva: cppAliq, formula: `${(cppAliq * 100).toFixed(1)}% folha` },
+    { nome: 'ICMS', valor: icms, base: receitaMercadorias, aliquotaEfetiva: receitaMercadorias > 0 ? icms / receitaMercadorias : 0, formula: `${(icmsAliq * 100).toFixed(2)}% mercadorias` },
+    { nome: 'ISS', valor: iss, base: receitaServicos, aliquotaEfetiva: issAliq, formula: `${(issAliq * 100).toFixed(2)}% serviços` },
+  ];
+  const totalTributos = tributos.reduce((s, t) => s + t.valor, 0);
+  const totalAPagar = Math.max(0, totalTributos - retencoes);
+
+  push(memoria, { grupo: 'TOTAL', descricao: 'Total de tributos', valor: totalTributos });
+
+  if (receitaBruta > LIMITE_ANUAL * 0.9) alertas.push('Faturamento próximo do limite de R$ 78 mi — planejar migração para Lucro Real.');
+
+  return {
+    regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
+    tributos, retencoesCompensadas: retencoes, totalTributos, totalAPagar,
+    receitaBase: receitaBruta,
+    cargaEfetiva: receitaBruta > 0 ? (totalAPagar / receitaBruta) * 100 : 0,
+    memoria, alertas,
+  };
+}
