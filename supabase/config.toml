@@ -110,3 +110,7 @@ verify_jwt = false
 
 [functions.sefaz-dfe-dispatcher]
 verify_jwt = false
+
+[functions.sefaz-dfe-puxar]
+verify_jwt = false
+
