@@ -116,7 +116,7 @@ export function useConciliacao() {
     },
     onError: (error) => {
       logger.error('[useConciliacao] Erro ao confirmar conciliação:', error);
-      toast.error('Erro ao confirmar conciliação');
+      handleEdgeError(error, 'Erro ao confirmar conciliação');
     },
   });
 
