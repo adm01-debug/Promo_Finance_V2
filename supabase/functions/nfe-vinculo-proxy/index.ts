@@ -1,7 +1,7 @@
 // Edge Function proxy autenticado para RPCs nfe_* (SECURITY DEFINER).
 // Frontend não chama mais RPCs diretamente: valida JWT e usa service_role.
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform" };
 
 type Action =
   | { action: "suggest"; nfeId: string }
