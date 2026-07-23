@@ -14,10 +14,12 @@
 
 async function streamThrough(
   input: Uint8Array,
-  transform: TransformStream<Uint8Array, Uint8Array>,
+  transform: TransformStream<BufferSource, Uint8Array>,
 ): Promise<Uint8Array> {
   const blob = new Blob([input as BlobPart]);
-  const stream = blob.stream().pipeThrough(transform);
+  const stream = (blob.stream() as unknown as ReadableStream<BufferSource>).pipeThrough(
+    transform,
+  );
   const chunks: Uint8Array[] = [];
   const reader = stream.getReader();
   for (;;) {
