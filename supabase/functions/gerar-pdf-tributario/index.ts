@@ -65,16 +65,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: ReqBody = await req.json();
-    if (!body.empresaId || !body.anoReferencia || !body.mesReferencia) {
-      return new Response(
-        JSON.stringify({ error: 'empresaId, anoReferencia e mesReferencia obrigatórios' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(PdfTributarioBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const body: ReqBody = validation.data;
+
 
     const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
