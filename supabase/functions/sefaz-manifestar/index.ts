@@ -235,7 +235,15 @@ Deno.serve(async (req) => {
 
   let body: ManifestarArgs;
   try {
-    body = await req.json();
+    const raw = await req.json();
+    const ManifSchema = z.object({
+      chave_acesso: z.string().length(44),
+      tipo: z.enum(['210200','210210','210220','210240']),
+      justificativa: z.string().optional(),
+    });
+    const __c = validatePayload(ManifSchema, raw, 'sefaz-manifestar');
+    if (!__c.success) return json(400, { error: __c.error, details: __c.details });
+    body = __c.data as ManifestarArgs;
   } catch {
     return json(400, { error: "invalid_json" });
   }

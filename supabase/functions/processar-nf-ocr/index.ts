@@ -58,12 +58,17 @@ serve(async (req) => {
       });
     }
 
-    const { arquivo_url, arquivo_base64, arquivo_tipo, arquivo_nome, empresa_id } = await req.json();
-    if (!arquivo_base64 && !arquivo_url) {
-      return new Response(JSON.stringify({ error: "arquivo_base64 ou arquivo_url é obrigatório" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    }
+    const rawJson = await req.json().catch(() => ({}));
+    const OcrSchema = z.object({
+      arquivo_url: z.string().optional(),
+      arquivo_base64: z.string().optional(),
+      arquivo_tipo: z.string().optional(),
+      arquivo_nome: z.string().optional(),
+      empresa_id: z.string().uuid().optional(),
+    }).refine((d) => !!(d.arquivo_base64 || d.arquivo_url), { message: "arquivo_base64 ou arquivo_url é obrigatório" });
+    const __c = validatePayload(OcrSchema, rawJson, 'processar-nf-ocr');
+    if (!__c.success) return new Response(JSON.stringify({ error: __c.error, details: __c.details }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { arquivo_url, arquivo_base64, arquivo_tipo, arquivo_nome, empresa_id } = __c.data;
 
     // Cria registro inicial em status processando
     const { data: registro, error: errReg } = await supabase
