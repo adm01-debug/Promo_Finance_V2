@@ -58,12 +58,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = (await req.json()) as ReqBody;
-    if (!body.empresa_id || !body.periodo) {
-      return new Response(JSON.stringify({ error: "invalid_payload" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(DreTributariaBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const body: ReqBody = validation.data;
+
 
     const [anoStr, mesStr] = body.periodo.split("-");
     const ano = Number(anoStr);
