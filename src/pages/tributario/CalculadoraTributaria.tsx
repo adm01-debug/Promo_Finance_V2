@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Calculator, Save, RefreshCw } from 'lucide-react';
+import { Calculator, Save, RefreshCw, FileDown, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { calcularTodosRegimes, type InputCalculadora, type ResultadoRegime } from '@/lib/tributario/calculadora';
@@ -14,6 +14,10 @@ import { NumberField } from '@/components/tributario/calculadora/NumberField';
 import { ResultadoBreakdown } from '@/components/tributario/calculadora/ResultadoBreakdown';
 import { MemoriaCalculo } from '@/components/tributario/calculadora/MemoriaCalculo';
 import { ComparativoRegimes } from '@/components/tributario/calculadora/ComparativoRegimes';
+import { HistoricoCenariosCalculadora } from '@/components/tributario/calculadora/HistoricoCenariosCalculadora';
+import { useCalculadoraDadosReais } from '@/hooks/useCalculadoraDadosReais';
+import { useAllEmpresas } from '@/hooks/useEmpresas';
+import { gerarPdfMemorialCalculo } from '@/lib/tributario/relatorio-pdf/memorial';
 
 type CampoInput = {
   receitaBrutaAnual: number;
@@ -113,6 +117,29 @@ export default function CalculadoraTributaria() {
   const [form, setForm] = useState<CampoInput>(DEFAULT_INPUT);
   const [regimeSelecionado, setRegimeSelecionado] = useState<string>('lucro_real');
   const [salvando, setSalvando] = useState(false);
+  const [usarDadosReais, setUsarDadosReais] = useState(false);
+  const { data: empresas = [] } = useAllEmpresas();
+  const [empresaId, setEmpresaId] = useState<string | undefined>();
+  const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+
+  const { data: dadosReais, isFetching: fetchingReais } = useCalculadoraDadosReais(empresaId, usarDadosReais);
+
+  useEffect(() => {
+    if (usarDadosReais && dadosReais) {
+      setForm((p) => ({
+        ...p,
+        receitaBrutaAnual: dadosReais.receitaBrutaAnual || p.receitaBrutaAnual,
+        folhaAnual: dadosReais.folhaAnual || p.folhaAnual,
+        creditoPisCofinsInsumos: dadosReais.creditoPisCofinsInsumos || p.creditoPisCofinsInsumos,
+        creditoIcmsCompras: dadosReais.creditoIcmsCompras || p.creditoIcmsCompras,
+        rbt12: dadosReais.rbt12 || p.rbt12,
+        folha12m: dadosReais.folha12m || p.folha12m,
+      }));
+      toast.success(
+        `Dados aplicados: ${dadosReais.amostragem.contasReceber} recebimentos, ${dadosReais.amostragem.folhaLinhas} folhas, ${dadosReais.amostragem.nfeRecebidas} NF-e`,
+      );
+    }
+  }, [usarDadosReais, dadosReais]);
 
   const update = <K extends keyof CampoInput>(k: K, v: CampoInput[K]) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -120,6 +147,26 @@ export default function CalculadoraTributaria() {
   const resultadoAtivo: ResultadoRegime | undefined = resultado.cenarios.find(
     (c) => c.regime === regimeSelecionado,
   ) ?? resultado.cenarios[0];
+
+  function exportarPDF() {
+    if (!resultadoAtivo) return;
+    try {
+      const blob = gerarPdfMemorialCalculo(resultado, resultadoAtivo, {
+        nome: empresaSelecionada?.nome_fantasia ?? empresaSelecionada?.razao_social ?? 'Empresa',
+        cnpj: empresaSelecionada?.cnpj,
+        periodo: String(new Date().getFullYear()),
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `memorial-tributario-${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('PDF gerado');
+    } catch (e) {
+      toast.error(`Falha ao gerar PDF: ${(e as Error).message}`);
+    }
+  }
 
   async function salvarCenario() {
     setSalvando(true);
