@@ -102,19 +102,27 @@ async function fetchCertificados(
   return (data ?? []) as CertificadoRow[];
 }
 
+interface CursorState {
+  nsu: number;
+  cbOpen: boolean;
+  backoffPending: boolean;
+  nextRunAt: string | null;
+}
 async function getCursor(
   admin: SupabaseClient,
   cnpj: string,
   ambiente: "homologacao" | "producao",
-): Promise<number> {
+): Promise<CursorState> {
   const { data } = await admin.from("sefaz_dfe_cursor")
     .select("ultimo_nsu, circuit_open, next_run_at")
     .eq("cnpj", cnpj).eq("ambiente", ambiente).maybeSingle();
-  if (data?.circuit_open) throw new Error("circuit_open");
-  if (data?.next_run_at && new Date(data.next_run_at) > new Date()) {
-    throw new Error("backoff_pending");
-  }
-  return Number(data?.ultimo_nsu ?? 0);
+  const nextRunAt = data?.next_run_at ?? null;
+  return {
+    nsu: Number(data?.ultimo_nsu ?? 0),
+    cbOpen: Boolean(data?.circuit_open),
+    backoffPending: nextRunAt ? new Date(nextRunAt) > new Date() : false,
+    nextRunAt,
+  };
 }
 
 /**
