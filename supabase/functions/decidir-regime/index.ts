@@ -55,14 +55,21 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const body = await req.json().catch(() => ({}));
-    const { empresaId, anoReferencia, mesReferencia, parametrosOverride, regimeAtual, persist = true } = body;
+    const raw = await req.json().catch(() => ({}));
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const DecidirBodySchema = z.object({
+      empresaId: z.string().uuid(),
+      anoReferencia: z.number().int().optional().nullable(),
+      mesReferencia: z.number().int().min(1).max(12).optional().nullable(),
+      parametrosOverride: z.record(z.any()).optional().nullable(),
+      regimeAtual: z.enum(['simples', 'presumido', 'real']).optional().nullable(),
+      persist: z.boolean().optional(),
+    }).passthrough();
+    const parsed = validatePayload(DecidirBodySchema, raw, 'decidir-regime');
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const { empresaId, anoReferencia, mesReferencia, parametrosOverride, regimeAtual, persist = true } = parsed.data as Record<string, any>;
 
-    if (!empresaId || typeof empresaId !== 'string') {
-      return new Response(JSON.stringify({ error: 'empresaId obrigatório' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     const hoje = new Date();
     const ano = anoReferencia ?? hoje.getFullYear();
