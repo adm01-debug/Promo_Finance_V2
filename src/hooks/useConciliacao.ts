@@ -229,13 +229,7 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { data: proxyRes, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>(
-        'conciliacao-proxy',
-        { body: { action: 'desfazer', transacaoId } },
-      );
-
-      if (error) throw new Error(error.message);
-      if (proxyRes?.error) throw new Error(proxyRes.error);
+      await invokeEdge('conciliacao-proxy', { action: 'desfazer', transacaoId });
 
     },
     onSuccess: () => {
