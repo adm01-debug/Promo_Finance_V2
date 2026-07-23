@@ -342,6 +342,12 @@ export default function NfeRecebidasPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <NfeVinculoDialog
+        nfeId={vincDialog?.id ?? null}
+        nfeChave={vincDialog?.chave_acesso}
+        onClose={() => setVincDialog(null)}
+      />
     </>
   );
 }
