@@ -1,4 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { validatePayload } from '../_shared/validation.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -39,6 +41,9 @@ Deno.serve(async (req) => {
     if (!allowed) return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
     const body = await req.json();
+    const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), ano_calendario: z.number().int().min(2000).max(2100), mode: z.enum(['validate','generate']).optional() }), (typeof body === 'object' ? body : {}) as unknown, 'gerar-sped-ecf');
+    if (!__contract.success) return new Response(JSON.stringify({ error: __contract.error, details: __contract.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
     const empresa_id: string = body.empresa_id;
     const ano_calendario: number = body.ano_calendario;
     const mode: 'validate' | 'generate' = body.mode === 'validate' ? 'validate' : 'generate';
