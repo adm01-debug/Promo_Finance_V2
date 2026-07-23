@@ -14012,6 +14012,19 @@ export type Database = {
           ultimo_nsu: number
         }[]
       }
+      sefaz_process_batch: {
+        Args: {
+          p_ambiente: string
+          p_cnpj: string
+          p_docs: Json
+          p_empresa_id: string
+          p_erro: string
+          p_max_nsu: number
+          p_novo_nsu: number
+          p_status: string
+        }
+        Returns: Json
+      }
       snapshot_table_bloat: { Args: never; Returns: Json }
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
