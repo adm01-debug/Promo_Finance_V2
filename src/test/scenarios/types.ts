@@ -125,4 +125,22 @@ export interface ScenarioState {
       tipo: string;
     }>;
   };
+
+  entregas: Array<{
+    orderId: string;
+    status:
+      | "pending"
+      | "assigning"
+      | "picked_up"
+      | "in_progress"
+      | "delivered"
+      | "canceled"
+      | "failed";
+    statusHistory: string[];
+    driverId?: string;
+    deliveredAt?: number;
+    hasPod: boolean;
+    gpsPoints: number;
+    canceledReason?: string;
+  }>;
 }
