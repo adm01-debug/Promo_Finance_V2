@@ -1,5 +1,7 @@
 -- ============================================================================
--- Testa privilégios EXECUTE das funções SECURITY DEFINER de observabilidade.
+-- Testa privilégios EXECUTE das funções SECURITY DEFINER de
+-- observabilidade, NF-e e conciliação bancária.
+
 -- Roda via: psql -f scripts/security/test-observability-privileges.sql
 -- Retorna FAIL/PASS por função e sai com código != 0 se algum FAIL.
 -- ============================================================================
