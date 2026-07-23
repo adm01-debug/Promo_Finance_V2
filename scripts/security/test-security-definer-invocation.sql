@@ -84,6 +84,31 @@ CREATE TEMP TABLE _invocation_results(
 ) ON COMMIT DROP;
 
 -- Executa cada chamada sob cada role e classifica o resultado.
+-- Detecta a priori quais roles o usuário corrente consegue assumir. Em ambientes
+-- onde o executor não é membro (ex.: sandbox local), marcamos SKIP em vez de FAIL
+-- para essa role — o gate estático em test-observability-privileges.sql já cobre
+-- o caso allow(service_role) pela ACL.
+CREATE TEMP TABLE _role_switchable(role_name text PRIMARY KEY, ok boolean) ON COMMIT DROP;
+DO $$
+DECLARE r RECORD; v_ok boolean;
+BEGIN
+  FOR r IN VALUES ('anon'), ('authenticated'), ('service_role') LOOP
+    BEGIN
+      EXECUTE format('SET LOCAL ROLE %I', r.column1);
+      v_ok := true;
+      RESET ROLE;
+    EXCEPTION WHEN OTHERS THEN
+      v_ok := false;
+      RESET ROLE;
+    END;
+    INSERT INTO _role_switchable VALUES (r.column1, v_ok);
+  END LOOP;
+END $$;
+
+\echo
+\echo '=== Roles disponíveis no ambiente atual ==='
+SELECT role_name, ok AS switchable FROM _role_switchable ORDER BY role_name;
+
 DO $$
 DECLARE
   c RECORD;
@@ -92,19 +117,29 @@ DECLARE
   v_message  text;
   v_status   text;
   v_expect   text;
+  v_switch_ok boolean;
 BEGIN
   FOR c IN SELECT * FROM _calls LOOP
     FOR r IN VALUES ('anon'), ('authenticated'), ('service_role') LOOP
       v_sqlstate := NULL;
       v_message  := NULL;
 
+      SELECT ok INTO v_switch_ok FROM _role_switchable WHERE role_name = r.column1;
+
+      IF NOT v_switch_ok THEN
+        -- Ambiente não permite SET ROLE para essa role; delega ao gate estático.
+        INSERT INTO _invocation_results(categoria, fn, role_name, sqlstate, expectation, status, message)
+        VALUES (c.categoria, c.fn, r.column1, NULL,
+                CASE WHEN r.column1 IN ('anon','authenticated') THEN 'deny(42501)' ELSE 'allow(not 42501)' END,
+                'SKIP', 'role não assumível pelo executor corrente');
+        CONTINUE;
+      END IF;
+
       BEGIN
-        -- Savepoint isola falhas — importantíssimo porque SECURITY DEFINER
-        -- funções com escrita podem deixar a transação em estado abortado.
         EXECUTE format('SET LOCAL ROLE %I', r.column1);
         BEGIN
           EXECUTE c.call_sql;
-          v_sqlstate := '00000';  -- executou sem erro
+          v_sqlstate := '00000';
         EXCEPTION WHEN OTHERS THEN
           GET STACKED DIAGNOSTICS
             v_sqlstate = RETURNED_SQLSTATE,
