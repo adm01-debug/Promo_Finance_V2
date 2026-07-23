@@ -15,7 +15,7 @@ import type { ScenarioResult, ScenarioSpec, ScenarioState } from "./types";
 
 function emptyState(): ScenarioState {
   return {
-    empresaId: "emp-1",
+    empresaId: "11111111-2222-3333-4444-555555555555",
     contas: { saldoInicial: 10_000, saldoFinal: 10_000 },
     transacoes: [],
     lancamentos: [],
@@ -242,10 +242,12 @@ function runNfe(spec: ScenarioSpec, state: ScenarioState): number {
     if (seenChaves.has(evt.chaveAcesso)) continue;
     seenChaves.add(evt.chaveAcesso);
     chaveToIdx.set(evt.chaveAcesso, state.nfe.recebidas.length);
+    const xmlSalvo = evt.xmlOk;
     state.nfe.recebidas.push({
       chaveAcesso: evt.chaveAcesso,
       nsu: evt.nsu,
-      xmlSalvo: true,
+      xmlSalvo,
+      xmlPath: xmlSalvo ? `${state.empresaId}/${evt.chaveAcesso}.xml` : undefined,
       manifestacao: "pendente",
       manifestacaoHistory: ["pendente"],
     });
