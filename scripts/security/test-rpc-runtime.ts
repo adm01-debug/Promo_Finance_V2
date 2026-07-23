@@ -149,7 +149,7 @@ async function callRpc(fn: string, role: Role, token: string): Promise<{ status:
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
     method: "POST",
     headers,
-    body: "{}",
+    body: JSON.stringify(RPC_PARAMS[fn] ?? {}),
   });
   let code: string | undefined;
   try {
@@ -162,12 +162,14 @@ async function callRpc(fn: string, role: Role, token: string): Promise<{ status:
 }
 
 function evaluate(exp: Expectation, status: number, code?: string): boolean {
-  // PGRST202 = função não visível para o role atual (sem EXECUTE)
-  const blocked = status === 404 && code === "PGRST202";
-  const rejectedAuth = status === 401 || status === 403;
-  const bypassed = !(blocked || rejectedAuth);
-  return exp.allowed ? bypassed : !bypassed;
+  // "blocked" = PostgREST recusou por falta de EXECUTE (função invisível ao
+  // role → PGRST202/404) ou o gateway rejeitou a chave (401). Erros 403 com
+  // SQLSTATE 42501 emitidos DENTRO do corpo da função (ex.: guarda
+  // `not_authenticated`) NÃO contam como bloqueio de EXECUTE — a função rodou.
+  const blocked = (status === 404 && code === "PGRST202") || status === 401;
+  return exp.allowed ? !blocked : blocked;
 }
+
 
 async function main() {
   const authToken = await getAuthenticatedToken();
