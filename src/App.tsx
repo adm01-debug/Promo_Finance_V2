@@ -199,6 +199,7 @@ function AppRoutes() {
             <Route path="/tributario/pf-vinculada" element={<ProtectedRoute><PfVinculada /></ProtectedRoute>} />
             <Route path="/tributario/onboarding" element={<ProtectedRoute><OnboardingTributario /></ProtectedRoute>} />
             <Route path="/tributario/certificados-digitais" element={<ProtectedRoute><CertificadosDigitais /></ProtectedRoute>} />
+            <Route path="/tributario/nfe-recebidas" element={<ProtectedRoute><NfeRecebidasPage /></ProtectedRoute>} />
 
             <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
             <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
