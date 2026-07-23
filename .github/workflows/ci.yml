@@ -35,8 +35,13 @@ jobs:
         # Edge Function `external-data`. Ver docs/AUDITORIA_BACKEND_SENIOR.md.
         run: bash scripts/check-external-secret-isolation.sh
 
+      - name: Zod coverage gate (edge functions)
+        # Falha se novas funções chegarem sem validatePayload (Zod).
+        run: bash scripts/security/zod-coverage.sh
+
       - name: Lint check
         run: bun run lint
+
 
       - name: Observability privileges guard (psql)
         # Falha o pipeline se alguma função SECURITY DEFINER de observabilidade
