@@ -61,6 +61,16 @@ BEGIN
   END IF;
 END $$;
 
+-- Resolve OIDs uma única vez (has_function_privilege exige assinatura por tipos,
+-- não a forma nome+tipo devolvida por pg_get_function_identity_arguments em
+-- algumas versões do Postgres). Trabalhar por OID elimina essa fragilidade.
+CREATE TEMP TABLE _targets_resolved(fn text, categoria text, proc_oid oid) ON COMMIT DROP;
+INSERT INTO _targets_resolved(fn, categoria, proc_oid)
+SELECT t.fn, t.categoria, p.oid
+FROM _targets t
+JOIN pg_proc p ON true
+JOIN pg_namespace n ON n.oid = p.pronamespace
+WHERE (n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')') = t.fn;
 
 -- Matriz esperada: (role, deve_executar?). 'PUBLIC' é tratado à parte via proacl.
 CREATE TEMP TABLE _expected(role_name text, expected boolean) ON COMMIT DROP;
@@ -79,13 +89,13 @@ SELECT
   t.fn,
   e.role_name,
   e.expected,
-  has_function_privilege(e.role_name, t.fn, 'EXECUTE') AS actual,
+  has_function_privilege(e.role_name, t.proc_oid, 'EXECUTE') AS actual,
   CASE
-    WHEN has_function_privilege(e.role_name, t.fn, 'EXECUTE') = e.expected
+    WHEN has_function_privilege(e.role_name, t.proc_oid, 'EXECUTE') = e.expected
       THEN 'PASS'
     ELSE 'FAIL'
   END
-FROM _targets t
+FROM _targets_resolved t
 CROSS JOIN _expected e;
 
 -- Adicionalmente, verifica PUBLIC (grantee vazio na proacl → EXECUTE herdado).
@@ -97,22 +107,20 @@ SELECT
   false AS expected,
   EXISTS (
     SELECT 1
-    FROM pg_proc p
-    JOIN pg_namespace n ON n.oid = p.pronamespace
-    LEFT JOIN LATERAL unnest(COALESCE(p.proacl, acldefault('f', p.proowner))) AS acl(item) ON true
-    WHERE (n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')') = t.fn
-      AND acl.item::text LIKE '=X%'
+    FROM pg_proc p,
+    LATERAL unnest(COALESCE(p.proacl, acldefault('f', p.proowner))) AS acl(item)
+    WHERE p.oid = t.proc_oid AND acl.item::text LIKE '=X%'
   ) AS actual,
   CASE
     WHEN EXISTS (
       SELECT 1
-      FROM pg_proc p
-      JOIN pg_namespace n ON n.oid = p.pronamespace
-      LEFT JOIN LATERAL unnest(COALESCE(p.proacl, acldefault('f', p.proowner))) AS acl(item) ON true
-      WHERE (n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')') = t.fn
-        AND acl.item::text LIKE '=X%'
+      FROM pg_proc p,
+      LATERAL unnest(COALESCE(p.proacl, acldefault('f', p.proowner))) AS acl(item)
+      WHERE p.oid = t.proc_oid AND acl.item::text LIKE '=X%'
     ) = false THEN 'PASS' ELSE 'FAIL'
   END
+FROM _targets_resolved t;
+
 FROM _targets t;
 
 \echo
