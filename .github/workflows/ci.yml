@@ -52,7 +52,20 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-security-definer-invocation.sql
 
+      - name: Runtime RPC privilege matrix (anon / authenticated / service_role)
+        # Invoca cada RPC nfe_* e conciliacao_* via /rest/v1/rpc/<fn> com três
+        # identidades reais e valida contra a matriz de exceções controladas.
+        if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != '' && env.E2E_USER_EMAIL != '' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        run: bun run scripts/security/test-rpc-runtime.ts
+
       - name: Export function privileges snapshot (CSV + JSON)
+
         # Gera um resumo por função × role para inspeção e download no CI.
         # Não falha o build — o gate acima já cobre regressões.
         if: ${{ env.DATABASE_URL != '' }}
