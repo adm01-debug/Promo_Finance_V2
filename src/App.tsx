@@ -122,6 +122,7 @@ const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
 const Logistica = lazy(() => import('./pages/Logistica'));
 const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
+const ThemeDiagnostics = lazy(() => import('./pages/ThemeDiagnostics'));
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
