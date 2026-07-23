@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-confetti';
 import { logger } from '@/lib/logger';
+import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
 import type { TablesInsert, Tables } from '@/integrations/supabase/types';
 
@@ -31,21 +32,13 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       
       // Proxy Edge Function (service_role) em vez de RPC direta
-      const { data: proxyRes, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>(
-        'conciliacao-proxy',
-        {
-          body: {
-            action: 'confirmar',
-            transacaoId,
-            contaPagarId: contaPagarId || null,
-            contaReceberId: contaReceberId || null,
-            ajusteCentavos: ajusteCentavos || 0,
-          },
-        },
-      );
-
-      if (error) throw new Error(error.message);
-      if (proxyRes?.error) throw new Error(proxyRes.error);
+      await invokeEdge('conciliacao-proxy', {
+        action: 'confirmar',
+        transacaoId,
+        contaPagarId: contaPagarId || null,
+        contaReceberId: contaReceberId || null,
+        ajusteCentavos: ajusteCentavos || 0,
+      });
 
 
       // Atualiza metadados extras na transação bancária
@@ -123,7 +116,7 @@ export function useConciliacao() {
     },
     onError: (error) => {
       logger.error('[useConciliacao] Erro ao confirmar conciliação:', error);
-      toast.error('Erro ao confirmar conciliação');
+      handleEdgeError(error, 'Erro ao confirmar conciliação');
     },
   });
 
@@ -236,13 +229,7 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { data: proxyRes, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>(
-        'conciliacao-proxy',
-        { body: { action: 'desfazer', transacaoId } },
-      );
-
-      if (error) throw new Error(error.message);
-      if (proxyRes?.error) throw new Error(proxyRes.error);
+      await invokeEdge('conciliacao-proxy', { action: 'desfazer', transacaoId });
 
     },
     onSuccess: () => {
@@ -253,7 +240,7 @@ export function useConciliacao() {
     },
     onError: (error) => {
       logger.error('[useConciliacao] Erro ao desfazer conciliação:', error);
-      toast.error('Erro ao desfazer conciliação');
+      handleEdgeError(error, 'Erro ao desfazer conciliação');
     },
   });
 

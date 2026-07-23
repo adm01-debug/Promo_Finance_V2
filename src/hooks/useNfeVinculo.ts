@@ -1,8 +1,8 @@
 // Hook para vínculo financeiro NFe recebida ↔ contas_pagar.
 // Chama proxy Edge Function `nfe-vinculo-proxy` (service_role) em vez de RPCs diretas.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 
 export interface SugestaoContaPagar {
   conta_pagar_id: string;
@@ -16,14 +16,8 @@ export interface SugestaoContaPagar {
   match_motivo: string | null;
 }
 
-async function invokeNfeProxy<T>(body: Record<string, unknown>): Promise<T> {
-  const { data, error } = await supabase.functions.invoke<{ data?: T; ok?: boolean; error?: string }>(
-    'nfe-vinculo-proxy',
-    { body },
-  );
-  if (error) throw new Error(error.message);
-  if (data && 'error' in data && data.error) throw new Error(data.error);
-  return (data?.data ?? (data as unknown)) as T;
+function invokeNfeProxy<T>(body: Record<string, unknown>): Promise<T> {
+  return invokeEdge<T>('nfe-vinculo-proxy', body);
 }
 
 export function useSugestoesContaPagar(nfeId: string | null) {
@@ -57,7 +51,7 @@ export function useVincularNfe() {
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
       qc.invalidateQueries({ queryKey: ['contas-pagar'] });
     },
-    onError: (err: Error) => toast.error('Falha ao vincular NFe', { description: err.message }),
+    onError: (err) => handleEdgeError(err, 'Falha ao vincular NFe'),
   });
 }
 
@@ -73,7 +67,7 @@ export function useDesvincularNfe() {
       toast.success('Vínculo removido.');
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
     },
-    onError: (err: Error) => toast.error('Falha ao desvincular', { description: err.message }),
+    onError: (err) => handleEdgeError(err, 'Falha ao desvincular'),
   });
 }
 
@@ -94,6 +88,6 @@ export function useCriarContaDaNfe() {
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
       qc.invalidateQueries({ queryKey: ['contas-pagar'] });
     },
-    onError: (err: Error) => toast.error('Falha ao criar conta a pagar', { description: err.message }),
+    onError: (err) => handleEdgeError(err, 'Falha ao criar conta a pagar'),
   });
 }

@@ -46,16 +46,19 @@ export interface AsaasPayment {
   created_at: string;
 }
 
-async function invokeAsaas(action: string, data: Record<string, unknown>) {
-  const { data: result, error } = await supabase.functions.invoke('asaas-proxy', {
-    body: { action, data },
-  });
-  if (error) throw new Error(error.message);
-  if (result?.errors) {
-    throw new Error(result.errors.map((e: { description: string }) => e.description).join(', '));
-  }
-  if (result?.error) {
-    throw new Error(result.error);
+import { invokeEdge, EdgeFunctionError, handleEdgeError } from '@/lib/edge-function-error';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- retorno heterogêneo do proxy Asaas
+async function invokeAsaas(action: string, data: Record<string, unknown>): Promise<any> {
+  const result = await invokeEdge<any>('asaas-proxy', { action, data });
+  if (result && Array.isArray(result.errors)) {
+    throw new EdgeFunctionError({
+      functionName: 'asaas-proxy',
+      status: 400,
+      code: 'ASAAS_VALIDATION',
+      message: result.errors.map((e: { description: string }) => e.description).join(', '),
+      body: { details: result.errors },
+    });
   }
   return result;
 }
@@ -84,7 +87,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
       toast.success('Cliente criado no ASAAS');
     },
-    onError: (e: Error) => toast.error('Erro ao criar cliente: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao criar cliente'),
   });
 
   const editarCliente = useMutation({
@@ -93,7 +96,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
       toast.success('Cliente atualizado');
     },
-    onError: (e: Error) => toast.error('Erro ao editar cliente: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao editar cliente'),
   });
 
   const excluirCliente = useMutation({
@@ -102,7 +105,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
       toast.success('Cliente removido');
     },
-    onError: (e: Error) => toast.error('Erro ao excluir cliente: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao excluir cliente'),
   });
 
   const { data: payments = [], isLoading: loadingPayments } = useQuery({
@@ -135,7 +138,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Cobrança criada com sucesso!');
     },
-    onError: (e: Error) => toast.error('Erro ao criar cobrança: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao criar cobrança'),
   });
 
   const cancelarCobranca = useMutation({
@@ -144,7 +147,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Cobrança cancelada');
     },
-    onError: (e: Error) => toast.error('Erro ao cancelar: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao cancelar'),
   });
 
   const estornarCobranca = useMutation({
@@ -153,7 +156,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Estorno realizado com sucesso');
     },
-    onError: (e: Error) => toast.error('Erro ao estornar: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao estornar'),
   });
 
   const segundaViaBoleto = useMutation({
@@ -162,12 +165,12 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Segunda via gerada com novo vencimento');
     },
-    onError: (e: Error) => toast.error('Erro ao gerar segunda via: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao gerar segunda via'),
   });
 
   const buscarPixQrCode = useMutation({
     mutationFn: (asaasId: string) => invokeAsaas('pix_qrcode', { asaas_id: asaasId }),
-    onError: (e: Error) => toast.error('Erro ao buscar QR Code: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao buscar QR Code'),
   });
 
   const criarAssinatura = useMutation({
@@ -176,7 +179,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
       toast.success('Assinatura criada com sucesso');
     },
-    onError: (e: Error) => toast.error('Erro ao criar assinatura: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao criar assinatura'),
   });
 
   const cancelarAssinatura = useMutation({
@@ -185,7 +188,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
       toast.success('Assinatura cancelada');
     },
-    onError: (e: Error) => toast.error('Erro ao cancelar assinatura: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao cancelar assinatura'),
   });
 
   const consultarSaldo = useMutation({
@@ -198,7 +201,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-transfers'] });
       toast.success('Transferência Pix realizada!');
     },
-    onError: (e: Error) => toast.error('Erro na transferência: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro na transferência'),
   });
 
   const { data: transfers = [], isLoading: loadingTransfers } = useQuery({
@@ -226,7 +229,7 @@ export function useAsaas(empresaId?: string) {
 
   const consultarExtrato = useMutation({
     mutationFn: (payload: Record<string, unknown>) => invokeAsaas('extrato', payload),
-    onError: (e: Error) => toast.error('Erro ao consultar extrato: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao consultar extrato'),
   });
 
   const criarLinkPagamento = useMutation({
@@ -234,13 +237,13 @@ export function useAsaas(empresaId?: string) {
     onSuccess: () => {
       toast.success('Link de pagamento criado!');
     },
-    onError: (e: Error) => toast.error('Erro ao criar link: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao criar link'),
   });
 
   const excluirLinkPagamento = useMutation({
     mutationFn: (id: string) => invokeAsaas('excluir_link_pagamento', { id }),
     onSuccess: () => toast.success('Link removido'),
-    onError: (e: Error) => toast.error('Erro ao remover link: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro ao remover link'),
   });
 
   const simularAntecipacao = useMutation({
@@ -250,7 +253,7 @@ export function useAsaas(empresaId?: string) {
   const solicitarAntecipacao = useMutation({
     mutationFn: (payload: Record<string, unknown>) => invokeAsaas('solicitar_antecipacao', payload),
     onSuccess: () => toast.success('Antecipação solicitada com sucesso'),
-    onError: (e: Error) => toast.error('Erro na antecipação: ' + e.message),
+    onError: (e) => handleEdgeError(e, 'Erro na antecipação'),
   });
 
   const { data: config, isLoading: loadingConfig } = useQuery({
@@ -315,7 +318,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-config'] });
       toast.success('Configurações salvas');
     },
-    onError: (e: Error) => toast.error('Erro ao salvar: ' + e.message)
+    onError: (e) => handleEdgeError(e, 'Erro ao salvar')
   });
 
   const { data: suggestions = [] } = useQuery({
