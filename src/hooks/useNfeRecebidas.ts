@@ -42,7 +42,7 @@ export interface NfeFiltros {
 }
 
 export function useNfeRecebidas(filtros: NfeFiltros = {}) {
-  const { empresaId } = useEmpresaScope();
+  const { currentEmpresaId: empresaId } = useEmpresaScope();
 
   return useQuery({
     queryKey: ['nfe-recebidas', empresaId, filtros],
