@@ -1,11 +1,12 @@
-// @ts-nocheck
+// @ts-nocheck — tabelas/views ausentes em integrations/supabase/types.ts (gerado desatualizado).
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
 import type { StatusPagamento } from './types';
+import type { ContasReceberPainelRow } from './views.types';
 
 export function useContasReceber(empresaId?: string) {
-  return useQuery({
+  return useQuery<ContasReceberPainelRow[]>({
     queryKey: ['contas-receber', empresaId],
     queryFn: async () => {
       let query = supabase
@@ -20,11 +21,12 @@ export function useContasReceber(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as any[];
+      return (data ?? []) as unknown as ContasReceberPainelRow[];
     },
     staleTime: STALE_TIMES.financial,
   });
 }
+
 
 
 
