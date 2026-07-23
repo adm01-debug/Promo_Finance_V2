@@ -98,7 +98,7 @@ Deno.test("conciliacao-proxy: sucesso desfazer chama RPC correta", async () => {
 });
 
 Deno.test("conciliacao-proxy: erro do RPC vira 400", async () => {
-  const { deps } = makeDeps({}, { error: { message: "conflito" } });
+  const { deps } = makeDeps({}, { error: new Error("conflito") as unknown as { message: string } });
   const res = await createHandler(deps)(req({ action: "desfazer", transacaoId: T }));
   assertEquals(res.status, 400);
   assertEquals((await res.json()).error, "conflito");

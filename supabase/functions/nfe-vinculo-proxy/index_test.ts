@@ -123,7 +123,7 @@ Deno.test("nfe-vinculo-proxy: sucesso em create_from_nfe com defaults null", asy
 });
 
 Deno.test("nfe-vinculo-proxy: erro do RPC vira 400 com mensagem", async () => {
-  const { deps } = makeDeps({}, { error: { message: "not_authenticated" } });
+  const { deps } = makeDeps({}, { error: new Error("not_authenticated") as unknown as { message: string } });
   const res = await createHandler(deps)(req({ action: "suggest", nfeId: UUID_A }));
   assertEquals(res.status, 400);
   assertEquals((await res.json()).error, "not_authenticated");
