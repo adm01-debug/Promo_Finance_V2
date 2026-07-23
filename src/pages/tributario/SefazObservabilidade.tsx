@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AlertTriangle, Activity, CheckCircle2, Loader2, RefreshCw, ShieldAlert, Zap } from 'lucide-react';
+import { AlertTriangle, Activity, Check, CheckCircle2, Loader2, RefreshCw, ShieldAlert, Zap } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useSefazAlerts, useSefazObservability } from '@/hooks/useSefazObservability';
+import { useResolveAlert, useSefazAlerts, useSefazObservability } from '@/hooks/useSefazObservability';
 
 const SEVERITY_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   critical: 'destructive',
