@@ -1,5 +1,5 @@
 // Hook para vínculo financeiro NFe recebida ↔ contas_pagar.
-// Usa RPCs atômicas e idempotentes definidas na migration da Fase 5.
+// Chama proxy Edge Function `nfe-vinculo-proxy` (service_role) em vez de RPCs diretas.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -16,30 +16,42 @@ export interface SugestaoContaPagar {
   match_motivo: string | null;
 }
 
+async function invokeNfeProxy<T>(body: Record<string, unknown>): Promise<T> {
+  const { data, error } = await supabase.functions.invoke<{ data?: T; ok?: boolean; error?: string }>(
+    'nfe-vinculo-proxy',
+    { body },
+  );
+  if (error) throw new Error(error.message);
+  if (data && 'error' in data && data.error) throw new Error(data.error);
+  return (data?.data ?? (data as unknown)) as T;
+}
+
 export function useSugestoesContaPagar(nfeId: string | null) {
   return useQuery({
     queryKey: ['nfe-sugestoes-cp', nfeId],
     enabled: !!nfeId,
     staleTime: 30_000,
     queryFn: async (): Promise<SugestaoContaPagar[]> => {
-      const { data, error } = await supabase.rpc('nfe_suggest_contas_pagar', { p_nfe_id: nfeId! });
-      if (error) throw error;
-      return (data ?? []) as SugestaoContaPagar[];
+      const data = await invokeNfeProxy<SugestaoContaPagar[] | null>({
+        action: 'suggest',
+        nfeId,
+      });
+      return data ?? [];
     },
   });
 }
 
+type LinkResult = { ok: boolean; already_linked: boolean; conta_pagar_id: string };
+
 export function useVincularNfe() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (v: { nfeId: string; contaPagarId: string }) => {
-      const { data, error } = await supabase.rpc('nfe_link_conta_pagar', {
-        p_nfe_id: v.nfeId,
-        p_conta_pagar_id: v.contaPagarId,
-      });
-      if (error) throw error;
-      return data as { ok: boolean; already_linked: boolean; conta_pagar_id: string };
-    },
+    mutationFn: async (v: { nfeId: string; contaPagarId: string }) =>
+      invokeNfeProxy<LinkResult>({
+        action: 'link',
+        nfeId: v.nfeId,
+        contaPagarId: v.contaPagarId,
+      }),
     onSuccess: (data) => {
       toast.success(data.already_linked ? 'NFe já estava vinculada.' : 'NFe vinculada à conta a pagar.');
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
@@ -52,11 +64,11 @@ export function useVincularNfe() {
 export function useDesvincularNfe() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (nfeId: string) => {
-      const { data, error } = await supabase.rpc('nfe_unlink_conta_pagar', { p_nfe_id: nfeId });
-      if (error) throw error;
-      return data as { ok: boolean; conta_pagar_id: string | null };
-    },
+    mutationFn: async (nfeId: string) =>
+      invokeNfeProxy<{ ok: boolean; conta_pagar_id: string | null }>({
+        action: 'unlink',
+        nfeId,
+      }),
     onSuccess: () => {
       toast.success('Vínculo removido.');
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
@@ -68,15 +80,13 @@ export function useDesvincularNfe() {
 export function useCriarContaDaNfe() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (v: { nfeId: string; dataVencimento?: string; categoriaId?: string }) => {
-      const { data, error } = await supabase.rpc('nfe_create_conta_pagar_from_nfe', {
-        p_nfe_id: v.nfeId,
-        p_data_vencimento: v.dataVencimento ?? null,
-        p_categoria_id: v.categoriaId ?? null,
-      });
-      if (error) throw error;
-      return data as { ok: boolean; already_linked: boolean; conta_pagar_id: string };
-    },
+    mutationFn: async (v: { nfeId: string; dataVencimento?: string; categoriaId?: string }) =>
+      invokeNfeProxy<LinkResult>({
+        action: 'create_from_nfe',
+        nfeId: v.nfeId,
+        dataVencimento: v.dataVencimento ?? null,
+        categoriaId: v.categoriaId ?? null,
+      }),
     onSuccess: (data) => {
       toast.success(
         data.already_linked ? 'NFe já possuía conta vinculada.' : 'Conta a pagar criada e vinculada à NFe.',
