@@ -104,6 +104,8 @@ export interface ScenarioState {
       chaveAcesso: string;
       nsu: number;
       xmlSalvo: boolean;
+      /** Caminho no bucket `nfe-xml`: `{empresa_id}/{chave}.xml`. Presente quando xmlSalvo=true. */
+      xmlPath?: string;
       manifestacao: "pendente" | "ciencia" | "confirmada" | "desconhecida" | "nao_realizada";
       manifestacaoHistory: string[];
     }>;
