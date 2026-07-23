@@ -48,25 +48,19 @@ export interface AsaasPayment {
 
 import { invokeEdge, EdgeFunctionError } from '@/lib/edge-function-error';
 
-async function invokeAsaas(action: string, data: Record<string, unknown>) {
-  try {
-    const result = await invokeEdge<{ errors?: Array<{ description: string }> } & Record<string, unknown>>(
-      'asaas-proxy',
-      { action, data },
-    );
-    if (result?.errors && Array.isArray(result.errors)) {
-      throw new EdgeFunctionError({
-        functionName: 'asaas-proxy',
-        status: 400,
-        code: 'ASAAS_VALIDATION',
-        message: result.errors.map((e) => e.description).join(', '),
-        body: { details: result.errors },
-      });
-    }
-    return result;
-  } catch (err) {
-    throw err;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- retorno heterogêneo do proxy Asaas
+async function invokeAsaas(action: string, data: Record<string, unknown>): Promise<any> {
+  const result = await invokeEdge<any>('asaas-proxy', { action, data });
+  if (result && Array.isArray(result.errors)) {
+    throw new EdgeFunctionError({
+      functionName: 'asaas-proxy',
+      status: 400,
+      code: 'ASAAS_VALIDATION',
+      message: result.errors.map((e: { description: string }) => e.description).join(', '),
+      body: { details: result.errors },
+    });
   }
+  return result;
 }
 
 export function useAsaas(empresaId?: string) {
