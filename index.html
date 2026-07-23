@@ -46,17 +46,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet" />
 
     <script>
-      // Aplica tema antes do React montar para evitar flash claro
+      // Aplica tema antes do React montar para evitar flash claro.
+      // Na primeira visita (ou quando forçamos um novo padrão), limpamos
+      // qualquer preferência legada e assumimos dark. O flag versionado
+      // permite re-executar o reset em migrações futuras bumpando a versão.
       (function () {
+        var BOOTSTRAP_KEY = 'theme_bootstrap_v1';
+        var root = document.documentElement;
         try {
-          var stored = localStorage.getItem('theme');
-          var mode = stored || 'dark';
-          var isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          var root = document.documentElement;
+          if (!localStorage.getItem(BOOTSTRAP_KEY)) {
+            localStorage.removeItem('theme');
+            localStorage.setItem('theme', 'dark');
+            localStorage.setItem(BOOTSTRAP_KEY, '1');
+          }
+          var mode = localStorage.getItem('theme') || 'dark';
+          var isDark = mode === 'dark'
+            || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
           root.classList.remove('light', 'dark');
           root.classList.add(isDark ? 'dark' : 'light');
         } catch (_) {
-          document.documentElement.classList.add('dark');
+          root.classList.add('dark');
         }
       })();
     </script>
