@@ -1,6 +1,18 @@
 // Edge: copilot-global
 // Assistente IA contextual para todas as páginas. SSE streaming via Lovable AI Gateway.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
+
+const CopilotGlobalBodySchema = z.object({
+  contexto_pagina: z.string().max(64).optional(),
+  messages: z.array(z.object({
+    role: z.enum(["system", "user", "assistant", "tool"]),
+    content: z.string().max(20000).optional(),
+    tool_call_id: z.string().optional(),
+    tool_calls: z.array(z.unknown()).optional(),
+  })).max(50).optional(),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
