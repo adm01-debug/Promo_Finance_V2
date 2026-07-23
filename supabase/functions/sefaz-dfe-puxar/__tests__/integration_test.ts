@@ -156,26 +156,30 @@ Deno.test("runPuxador processa NFe + evento e avança cursor", async () => {
     assertEquals(summary.cursorDepois, 102, "cursor avançado para ultNSU do lote");
     assertEquals(cursorState.ultimo_nsu, 102, "estado interno consistente");
 
-    const upserts = calls.filter((c) => c.op === "nfe_recebidas.upsert");
-    assertEquals(upserts.length, 1);
-    const nfe = upserts[0].args as any;
-    assertEquals(nfe.cnpj_emitente, CNPJ);
-    assertEquals(nfe.nsu, 101);
-    assertEquals(nfe.ambiente, "homologacao");
-    assertEquals(nfe.empresa_id, CERT.empresa_id);
-    assert(nfe.xml_path.startsWith(`${CERT.empresa_id}/`));
-    assert(nfe.xml_path.endsWith(".xml"));
+    const batches = calls.filter((c) => c.op === "rpc.sefaz_process_batch");
+    assert(batches.length >= 1, "sefaz_process_batch chamado ao menos uma vez");
 
-    const eventos = calls.filter((c) => c.op === "nfe_eventos.insert");
-    assertEquals(eventos.length, 1);
-    assertEquals((eventos[0].args as any).chave_acesso.length, 44);
+    // O primeiro batch com docs deve conter 1 NFe + 1 evento, no CNPJ certo.
+    const withDocs = batches.find((b) => (b.args as any).p_docs?.length > 0);
+    assert(withDocs, "deve haver um batch com docs");
+    const args = withDocs!.args as any;
+    assertEquals(args.p_cnpj, CNPJ);
+    assertEquals(args.p_ambiente, "homologacao");
+    assertEquals(args.p_empresa_id, CERT.empresa_id);
+    const docs = args.p_docs as Array<any>;
+    assertEquals(docs.length, 2);
+    const nfeDoc = docs.find((d) => d.kind === "nfe")!;
+    const eventoDoc = docs.find((d) => d.kind === "evento")!;
+    assertEquals(nfeDoc.payload.cnpj_emitente, CNPJ);
+    assertEquals(nfeDoc.nsu, 101);
+    assert(nfeDoc.payload.xml_path.startsWith(`${CERT.empresa_id}/`));
+    assert(nfeDoc.payload.xml_path.endsWith(".xml"));
+    assertEquals(eventoDoc.payload.chave_acesso.length, 44);
 
-    const advances = calls.filter((c) => c.op === "rpc.sefaz_cursor_advance");
-    assert(advances.length >= 1, "cursor_advance chamado ao menos uma vez");
-    // monotonicidade: cada chamada nunca regride
+    // Monotonicidade: nenhum batch pode regredir p_novo_nsu.
     let last = -1;
-    for (const a of advances) {
-      const v = Number((a.args as any).p_novo_nsu);
+    for (const b of batches) {
+      const v = Number((b.args as any).p_novo_nsu);
       assert(v >= last, `regressão de NSU detectada: ${v} < ${last}`);
       last = v;
     }
@@ -193,25 +197,51 @@ Deno.test("runPuxador — cStat=137 (empty) não persiste nada", async () => {
     assertEquals(summary.novos, 0);
     assertEquals(summary.cStatFinal, "137");
     assertEquals(summary.cursorDepois, 0, "cursor NÃO avança em resposta vazia");
-    assertEquals(calls.filter((c) => c.op === "nfe_recebidas.upsert").length, 0);
-    assertEquals(calls.filter((c) => c.op === "nfe_eventos.insert").length, 0);
+    const batches = calls.filter((c) => c.op === "rpc.sefaz_process_batch");
+    // Deve chamar o RPC apenas para status/erro — SEM docs.
+    assert(batches.every((b) => ((b.args as any).p_docs ?? []).length === 0));
   } finally {
     mock.restore();
   }
 });
 
-Deno.test("runPuxador — cStat=656 (rate_limit) marca erro no cursor", async () => {
+Deno.test("runPuxador — cStat=656 (rate_limit) marca erro no cursor sem persistir docs", async () => {
   const mock = installSefazSoapMock([{ cnpj: CNPJ, responses: [{ kind: "rate_limit" }] }]);
   const { stub, calls } = makeStubClient();
   try {
     const summary = await runPuxador(stub as any, CERT, asSefazFetch());
     assertEquals(summary.cStatFinal, "656");
     assert(summary.erro !== null, "deve registrar erro");
-    const advances = calls.filter((c) => c.op === "rpc.sefaz_cursor_advance");
-    assert(advances.length >= 1, "advance chamado com erro persistido");
-    const withError = advances.find((a) => (a.args as any).p_erro !== null);
-    assert(withError, "ao menos uma chamada com p_erro preenchido");
+    const batches = calls.filter((c) => c.op === "rpc.sefaz_process_batch");
+    const withError = batches.find((b) => (b.args as any).p_erro !== null);
+    assert(withError, "batch com p_erro preenchido");
+    assert(((withError!.args as any).p_docs ?? []).length === 0, "nenhum doc no erro");
   } finally {
     mock.restore();
   }
 });
+
+Deno.test("runPuxador — reprocessamento é idempotente (mesmo NSU não avança cursor duas vezes)", async () => {
+  const nfeXml = await readFixture("procNFe-ok.xml");
+  // Mesmo lote entregue duas vezes: segunda rodada não deve inserir NFes.
+  const scenarios: SefazScenario[] = [{
+    cnpj: CNPJ,
+    responses: [
+      { kind: "batch", docs: [{ xml: nfeXml, nsu: 200 }], ultNSU: 200, maxNSU: 200 },
+      { kind: "batch", docs: [{ xml: nfeXml, nsu: 200 }], ultNSU: 200, maxNSU: 200 },
+      { kind: "empty" },
+    ],
+  }];
+  const mock = installSefazSoapMock(scenarios);
+  const { stub, cursorState } = makeStubClient();
+  try {
+    await runPuxador(stub as any, CERT, asSefazFetch());
+    assertEquals(cursorState.ultimo_nsu, 200);
+    // Segunda rodada — cursor não deve regredir nem duplicar (garantia do RPC real via ON CONFLICT).
+    await runPuxador(stub as any, CERT, asSefazFetch());
+    assertEquals(cursorState.ultimo_nsu, 200, "cursor permanece em 200");
+  } finally {
+    mock.restore();
+  }
+});
+
