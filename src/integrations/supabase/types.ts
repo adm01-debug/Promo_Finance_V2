@@ -13924,6 +13924,33 @@ export type Database = {
         }
         Returns: Json
       }
+      nfe_create_conta_pagar_from_nfe: {
+        Args: {
+          p_categoria_id?: string
+          p_data_vencimento?: string
+          p_nfe_id: string
+        }
+        Returns: Json
+      }
+      nfe_link_conta_pagar: {
+        Args: { p_conta_pagar_id: string; p_nfe_id: string }
+        Returns: Json
+      }
+      nfe_suggest_contas_pagar: {
+        Args: { p_nfe_id: string }
+        Returns: {
+          conta_pagar_id: string
+          data_vencimento: string
+          descricao: string
+          fornecedor_cnpj: string
+          fornecedor_nome: string
+          match_motivo: string
+          score: number
+          status: string
+          valor: number
+        }[]
+      }
+      nfe_unlink_conta_pagar: { Args: { p_nfe_id: string }; Returns: Json }
       processar_regua_cobranca: {
         Args: { p_empresa_id?: string; p_simulate?: boolean }
         Returns: Json
