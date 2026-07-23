@@ -38,6 +38,19 @@ jobs:
       - name: Lint check
         run: bun run lint
 
+      - name: Observability privileges guard (psql)
+        # Falha o pipeline se alguma função SECURITY DEFINER de observabilidade
+        # regredir privilégios EXECUTE para anon/PUBLIC/authenticated.
+        # Requer secret DATABASE_URL apontando para o Postgres do Supabase.
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/security/test-observability-privileges.sql
+
+
       - name: Type check
         run: bun run type-check
 
