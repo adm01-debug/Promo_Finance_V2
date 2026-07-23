@@ -8,6 +8,8 @@ import {
   finalizeAudit,
   withCorrelation,
 } from "../_shared/proxy-audit.ts";
+import { NfeVinculoProxySchema, validatePayload } from "../_shared/validation.ts";
+import type { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,25 +17,11 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-request-id",
 };
 
-type Action =
-  | { action: "suggest"; nfeId: string }
-  | { action: "link"; nfeId: string; contaPagarId: string }
-  | { action: "unlink"; nfeId: string }
-  | {
-      action: "create_from_nfe";
-      nfeId: string;
-      dataVencimento?: string | null;
-      categoriaId?: string | null;
-    };
+type Action = z.infer<typeof NfeVinculoProxySchema>;
 
 export interface HandlerDeps {
   verifyJwt: (token: string) => Promise<{ userId: string | null }>;
   admin: Pick<SupabaseClient, "rpc" | "from">;
-}
-
-function isUuid(s: unknown): s is string {
-  return typeof s === "string" &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
 export function createHandler(deps: HandlerDeps) {
@@ -64,16 +52,20 @@ export function createHandler(deps: HandlerDeps) {
     }
     ctx.userId = userId;
 
-    let payload: Action;
+    let raw: unknown;
     try {
-      payload = (await req.json()) as Action;
+      raw = await req.json();
     } catch {
       return json(400, { error: "Invalid JSON" }, { reason: "invalid_json" });
     }
 
-    if (!isUuid((payload as { nfeId?: unknown }).nfeId)) {
-      return json(400, { error: "nfeId inválido" }, { reason: "invalid_nfe_id" });
+    const parsed = validatePayload(NfeVinculoProxySchema, raw, "nfe-vinculo-proxy");
+    if (!parsed.success) {
+      return json(400, { error: parsed.error, details: parsed.details }, { reason: "schema_violation" });
     }
+    const payload: Action = parsed.data;
+
+
 
     try {
       switch (payload.action) {
