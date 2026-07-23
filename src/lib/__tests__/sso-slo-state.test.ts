@@ -7,9 +7,17 @@ import {
   type SloFailureReason,
 } from '../sso-slo-state';
 
+// setup.ts substitui sessionStorage por vi.fn() sem estado. Recriamos um backing map por teste.
+let store: Record<string, string>;
 beforeEach(() => {
-  sessionStorage.clear();
-  vi.restoreAllMocks();
+  store = {};
+  vi.mocked(sessionStorage.getItem).mockImplementation((k: string) => store[k] ?? null);
+  vi.mocked(sessionStorage.setItem).mockImplementation((k: string, v: string) => {
+    store[k] = String(v);
+  });
+  vi.mocked(sessionStorage.removeItem).mockImplementation((k: string) => {
+    delete store[k];
+  });
 });
 
 describe('sso-slo-state', () => {
@@ -35,12 +43,12 @@ describe('sso-slo-state', () => {
   });
 
   it('readSloFailure retorna null para JSON inválido', () => {
-    sessionStorage.setItem('sso-slo-failure', '{{not json');
+    store['sso-slo-failure'] = '{{not json';
     expect(readSloFailure()).toBeNull();
   });
 
   it('readSloFailure retorna null para payload sem reason', () => {
-    sessionStorage.setItem('sso-slo-failure', JSON.stringify({ foo: 'bar' }));
+    store['sso-slo-failure'] = JSON.stringify({ foo: 'bar' });
     expect(readSloFailure()).toBeNull();
   });
 
@@ -58,7 +66,7 @@ describe('sso-slo-state', () => {
   });
 
   it('setSloFailure não lança quando sessionStorage falha', () => {
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    vi.mocked(sessionStorage.setItem).mockImplementationOnce(() => {
       throw new Error('quota');
     });
     expect(() =>
@@ -74,14 +82,14 @@ describe('sso-slo-state', () => {
   });
 
   it('readSloFailure não lança quando sessionStorage falha', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    vi.mocked(sessionStorage.getItem).mockImplementationOnce(() => {
       throw new Error('denied');
     });
     expect(readSloFailure()).toBeNull();
   });
 
   it('clearSloFailure não lança quando sessionStorage falha', () => {
-    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+    vi.mocked(sessionStorage.removeItem).mockImplementationOnce(() => {
       throw new Error('denied');
     });
     expect(() => clearSloFailure()).not.toThrow();
