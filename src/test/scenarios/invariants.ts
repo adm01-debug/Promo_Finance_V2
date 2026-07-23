@@ -216,6 +216,28 @@ const nfeManifestacaoValida: InvariantFn = (state) => {
   return null;
 };
 
+
+const nfeXmlPathLayout: InvariantFn = (state) => {
+  const re = /^[0-9a-f-]{36}\/[0-9]{44}\.xml$/i;
+  for (const r of state.nfe?.recebidas ?? []) {
+    if (!r.xmlSalvo) continue;
+    if (!r.xmlPath || !re.test(r.xmlPath)) {
+      return {
+        invariant: "nfeXmlPathLayout",
+        message: `xml_path fora do padrão {empresa_id}/{chave44}.xml em ${r.chaveAcesso}: ${r.xmlPath}`,
+      };
+    }
+    const empresaSeg = r.xmlPath.split("/")[0];
+    if (empresaSeg !== state.empresaId) {
+      return {
+        invariant: "nfeXmlPathLayout",
+        message: `xml_path aponta para empresa ${empresaSeg}, esperado ${state.empresaId}`,
+      };
+    }
+  }
+  return null;
+};
+
 export const INVARIANTS: Record<string, InvariantFn> = {
   idempotencyWebhook,
   unicidadeTransacoes,
@@ -231,6 +253,7 @@ export const INVARIANTS: Record<string, InvariantFn> = {
   nfeSemOrfaosEventos,
   nfeCursorNaoRegride,
   nfeManifestacaoValida,
+  nfeXmlPathLayout,
 };
 
 export function checkAll(state: ScenarioState): InvariantViolation[] {
