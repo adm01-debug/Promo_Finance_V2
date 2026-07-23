@@ -62,19 +62,35 @@ const EXCEPTIONS: Array<{ fn: string; role: Role; reason: string; expiresAt: str
   { fn: "generate_reconciliation_suggestions", role: "authenticated", reason: "Sugestões IA consumidas pelo painel", expiresAt: "2026-10-31" },
 ];
 
-// RPCs monitoradas (sem assinatura — PostgREST usa o nome).
-const RPCS = [
-  "nfe_apply_manifestacao",
-  "nfe_create_conta_pagar_from_nfe",
-  "nfe_link_conta_pagar",
-  "nfe_suggest_contas_pagar",
-  "nfe_unlink_conta_pagar",
-  "confirmar_conciliacao",
-  "confirmar_conciliacao_manual",
-  "desfazer_conciliacao",
-  "desfazer_conciliacao_manual",
-  "generate_reconciliation_suggestions",
-];
+// RPCs monitoradas + params esperados. PostgREST resolve a assinatura pelo
+// conjunto de chaves recebidas — enviar todos os p_* como null garante que
+// a função é encontrada e o gate de EXECUTE é o único obstáculo real.
+const RPC_PARAMS: Record<string, Record<string, null>> = {
+  nfe_apply_manifestacao: {
+    p_chave: null, p_tipo_evento: null, p_codigo_evento: null, p_sequencial: null,
+    p_data_evento: null, p_protocolo: null, p_justificativa: null,
+    p_status_retorno: null, p_motivo_retorno: null, p_novo_status: null, p_raw: null,
+  },
+  nfe_create_conta_pagar_from_nfe: { p_nfe_id: null, p_data_vencimento: null, p_categoria_id: null },
+  nfe_link_conta_pagar: { p_nfe_id: null, p_conta_pagar_id: null },
+  nfe_suggest_contas_pagar: { p_nfe_id: null },
+  nfe_unlink_conta_pagar: { p_nfe_id: null },
+  confirmar_conciliacao: {
+    p_conciliacao_id: null, p_user_id: null, p_transacao_id: null,
+    p_conta_pagar_id: null, p_conta_receber_id: null, p_ajuste_centavos: null,
+  },
+  confirmar_conciliacao_manual: {
+    p_transacao_id: null, p_conta_pagar_id: null, p_conta_receber_id: null, p_ajuste_centavos: null,
+  },
+  desfazer_conciliacao: { p_conciliacao_id: null, p_transacao_id: null, p_user_id: null },
+  desfazer_conciliacao_manual: { p_transacao_id: null },
+  generate_reconciliation_suggestions: {
+    p_empresa_id: null, p_transaction_date: null, p_transaction_value: null, p_transaction_id: null,
+  },
+};
+
+const RPCS = Object.keys(RPC_PARAMS);
+
 
 function mustEnv(name: string): string {
   const v = process.env[name];
