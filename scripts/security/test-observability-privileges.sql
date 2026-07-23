@@ -18,11 +18,11 @@ INSERT INTO _targets(fn) VALUES
   ('public.refresh_performance_alerts_weekly()'),
   ('public.sefaz_run_observability_checks()');
 
--- Matriz esperada: (role, deve_executar?)
+-- Matriz esperada: (role, deve_executar?). 'PUBLIC' é tratado à parte via proacl.
 CREATE TEMP TABLE _expected(role_name text, expected boolean) ON COMMIT DROP;
 INSERT INTO _expected VALUES
   ('anon',          false),
-  ('PUBLIC',        false),
+  ('authenticated', false),  -- sem role admin no user_roles
   ('service_role',  true);
 
 CREATE TEMP TABLE _results(
