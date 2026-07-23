@@ -226,8 +226,13 @@ export async function runPuxador(
     summary.cursorAntes = cursorInicial;
     summary.cursorDepois = cursorInicial;
 
-    const pem = await loadCertificado(admin, cert);
+    // Só carrega o PFX quando vamos falar de verdade com a SEFAZ.
+    // Em testes injetamos `sefazFetch` e o loadCertificado é dispensado.
+    const pem = sefazFetch
+      ? { certPem: "", keyPem: "" }
+      : await loadCertificado(admin, cert);
     const endpoint = distDFeEndpoint(cert.ambiente, "AN");
+
 
     let ultNSU = cursorInicial;
     let response: DistDFeResponse | null = null;
