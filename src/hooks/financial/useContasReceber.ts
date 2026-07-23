@@ -26,6 +26,9 @@ export function useContasReceber(empresaId?: string) {
   });
 }
 
+
+
+
 export interface PaginatedContasReceberParams {
   page: number;
   pageSize: number;
