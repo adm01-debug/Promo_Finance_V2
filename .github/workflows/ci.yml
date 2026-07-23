@@ -51,6 +51,8 @@ jobs:
             -f scripts/security/test-observability-privileges.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-security-definer-invocation.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f supabase/tests/sql/rls_multi_empresa.sql
 
       - name: Runtime RPC privilege matrix (anon / authenticated / service_role)
         # Invoca cada RPC nfe_* e conciliacao_* via /rest/v1/rpc/<fn> com três
