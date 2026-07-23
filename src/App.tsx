@@ -158,6 +158,7 @@ function AppRoutes() {
             <Route path="/status" element={<StatusPage />} />
             <Route path="/portal-cliente" element={<PortalCliente />} />
             <Route path="/design-system-debug" element={<DesignSystemDebug />} />
+            <Route path="/theme-diagnostics" element={<ThemeDiagnostics />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
