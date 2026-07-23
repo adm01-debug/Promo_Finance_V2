@@ -40,12 +40,11 @@ serve(async (req) => {
       });
     }
 
-    const { empresa_id, ano } = await req.json();
-    if (!empresa_id || !ano) {
-      return new Response(JSON.stringify({ error: "empresa_id e ano são obrigatórios" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    }
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(HeatmapBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const { empresa_id, ano } = validation.data;
+
 
     // Apurações novas (CBS/IBS/IS)
     const { data: apuracoes, error: errA } = await supabase
