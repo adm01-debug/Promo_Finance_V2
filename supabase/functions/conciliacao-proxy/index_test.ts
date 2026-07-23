@@ -21,7 +21,8 @@ function makeDeps(
         calls.push({ fn, args });
         return Promise.resolve(rpcResult) as never;
       },
-    } as HandlerDeps["admin"],
+      from: () => ({ insert: () => Promise.resolve({ data: null, error: null }) }),
+    } as unknown as HandlerDeps["admin"],
     ...overrides,
   };
   return { deps, calls };
