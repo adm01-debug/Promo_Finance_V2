@@ -62,6 +62,11 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          # Segredo compartilhado com a edge function ci-security-gate-log.
+          # Quando presente, o script registra automaticamente cada falha em
+          # public.ci_security_gate_events com git_sha e run URL.
+          CI_GATE_LOG_SECRET: ${{ secrets.CI_GATE_LOG_SECRET }}
+          MIGRATION_REVISION: ${{ github.sha }}
         run: bun run scripts/security/test-rpc-runtime.ts
 
       - name: Export function privileges snapshot (CSV + JSON)
