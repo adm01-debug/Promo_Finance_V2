@@ -12564,13 +12564,17 @@ export type Database = {
         Row: {
           attempts: number
           created_at: string
+          dlq_id: string | null
           error_message: string | null
           event_type: string | null
           external_id: string | null
           id: string
           last_error_at: string | null
+          last_response: Json | null
+          max_attempts: number
           next_retry_at: string | null
           payload: Json | null
+          processed_at: string | null
           response: Json | null
           source: string | null
           status: string | null
@@ -12578,13 +12582,17 @@ export type Database = {
         Insert: {
           attempts?: number
           created_at?: string
+          dlq_id?: string | null
           error_message?: string | null
           event_type?: string | null
           external_id?: string | null
           id?: string
           last_error_at?: string | null
+          last_response?: Json | null
+          max_attempts?: number
           next_retry_at?: string | null
           payload?: Json | null
+          processed_at?: string | null
           response?: Json | null
           source?: string | null
           status?: string | null
@@ -12592,18 +12600,30 @@ export type Database = {
         Update: {
           attempts?: number
           created_at?: string
+          dlq_id?: string | null
           error_message?: string | null
           event_type?: string | null
           external_id?: string | null
           id?: string
           last_error_at?: string | null
+          last_response?: Json | null
+          max_attempts?: number
           next_retry_at?: string | null
           payload?: Json | null
+          processed_at?: string | null
           response?: Json | null
           source?: string | null
           status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "webhooks_log_dlq_id_fkey"
+            columns: ["dlq_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_dlq"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       whatsapp_conversas: {
         Row: {
@@ -14177,6 +14197,88 @@ export type Database = {
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
         Returns: boolean
+      }
+      webhook_claim: {
+        Args: {
+          p_event_type: string
+          p_external_id: string
+          p_max_attempts?: number
+          p_payload: Json
+          p_source: string
+        }
+        Returns: {
+          already_processed: boolean
+          attempts: number
+          id: string
+          status: string
+        }[]
+      }
+      webhook_dequeue_retries: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          created_at: string
+          dlq_id: string | null
+          error_message: string | null
+          event_type: string | null
+          external_id: string | null
+          id: string
+          last_error_at: string | null
+          last_response: Json | null
+          max_attempts: number
+          next_retry_at: string | null
+          payload: Json | null
+          processed_at: string | null
+          response: Json | null
+          source: string | null
+          status: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "webhooks_log"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      webhook_mark_failure: {
+        Args: { p_error: string; p_id: string; p_retryable?: boolean }
+        Returns: {
+          dlq_id: string
+          next_retry_at: string
+          status: string
+          will_retry: boolean
+        }[]
+      }
+      webhook_mark_success: {
+        Args: { p_id: string; p_response?: Json }
+        Returns: undefined
+      }
+      webhook_replay: {
+        Args: { p_id: string }
+        Returns: {
+          attempts: number
+          created_at: string
+          dlq_id: string | null
+          error_message: string | null
+          event_type: string | null
+          external_id: string | null
+          id: string
+          last_error_at: string | null
+          last_response: Json | null
+          max_attempts: number
+          next_retry_at: string | null
+          payload: Json | null
+          processed_at: string | null
+          response: Json | null
+          source: string | null
+          status: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "webhooks_log"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
