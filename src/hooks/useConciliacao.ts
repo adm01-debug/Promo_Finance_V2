@@ -30,15 +30,23 @@ export function useConciliacao() {
       
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Usando a nova RPC manual para conciliação direta
-      const { error } = await supabase.rpc('confirmar_conciliacao_manual', {
-        p_transacao_id: transacaoId,
-        p_conta_pagar_id: contaPagarId || null,
-        p_conta_receber_id: contaReceberId || null,
-        p_ajuste_centavos: ajusteCentavos || 0,
-      });
+      // Proxy Edge Function (service_role) em vez de RPC direta
+      const { data: proxyRes, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>(
+        'conciliacao-proxy',
+        {
+          body: {
+            action: 'confirmar',
+            transacaoId,
+            contaPagarId: contaPagarId || null,
+            contaReceberId: contaReceberId || null,
+            ajusteCentavos: ajusteCentavos || 0,
+          },
+        },
+      );
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
+      if (proxyRes?.error) throw new Error(proxyRes.error);
+
 
       // Atualiza metadados extras na transação bancária
       const updateData: any = {
@@ -228,11 +236,14 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { error } = await supabase.rpc('desfazer_conciliacao_manual', {
-        p_transacao_id: transacaoId
-      });
+      const { data: proxyRes, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>(
+        'conciliacao-proxy',
+        { body: { action: 'desfazer', transacaoId } },
+      );
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
+      if (proxyRes?.error) throw new Error(proxyRes.error);
+
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
