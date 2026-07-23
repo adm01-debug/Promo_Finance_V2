@@ -103,8 +103,8 @@ FROM (
 ROLLBACK;" > "$OUT_DIR/function-privileges.json"
 
 # --- Resumo (stdout) -----------------------------------------------------------
+echo "=== Resumo por categoria × role ==="
 "${PSQL[@]}" -c "BEGIN; ${BUILD_MATRIX}
-\\echo === Resumo por categoria × role ===
 SELECT categoria, role_name,
   COUNT(*) FILTER (WHERE has_execute)     AS with_execute,
   COUNT(*) FILTER (WHERE NOT has_execute) AS denied,
