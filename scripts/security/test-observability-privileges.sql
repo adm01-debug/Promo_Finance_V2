@@ -43,6 +43,32 @@ SELECT
 FROM _targets t
 CROSS JOIN _expected e;
 
+-- Adicionalmente, verifica PUBLIC (grantee vazio na proacl → EXECUTE herdado).
+INSERT INTO _results(fn, role_name, expected, actual, status)
+SELECT
+  t.fn,
+  'PUBLIC',
+  false AS expected,
+  EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    LEFT JOIN LATERAL unnest(COALESCE(p.proacl, acldefault('f', p.proowner))) AS acl(item) ON true
+    WHERE (n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')') = t.fn
+      AND acl.item::text LIKE '=X%'
+  ) AS actual,
+  CASE
+    WHEN EXISTS (
+      SELECT 1
+      FROM pg_proc p
+      JOIN pg_namespace n ON n.oid = p.pronamespace
+      LEFT JOIN LATERAL unnest(COALESCE(p.proacl, acldefault('f', p.proowner))) AS acl(item) ON true
+      WHERE (n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')') = t.fn
+        AND acl.item::text LIKE '=X%'
+    ) = false THEN 'PASS' ELSE 'FAIL'
+  END
+FROM _targets t;
+
 \echo
 \echo '=== Privilégios EXECUTE — funções de observabilidade ==='
 SELECT fn, role_name, expected, actual, status FROM _results ORDER BY fn, role_name;
