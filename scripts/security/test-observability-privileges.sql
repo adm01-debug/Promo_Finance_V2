@@ -69,11 +69,12 @@ INSERT INTO _expected VALUES
   ('service_role',  true);
 
 CREATE TEMP TABLE _results(
-  fn text, role_name text, expected boolean, actual boolean, status text
+  categoria text, fn text, role_name text, expected boolean, actual boolean, status text
 ) ON COMMIT DROP;
 
-INSERT INTO _results(fn, role_name, expected, actual, status)
+INSERT INTO _results(categoria, fn, role_name, expected, actual, status)
 SELECT
+  t.categoria,
   t.fn,
   e.role_name,
   e.expected,
@@ -87,8 +88,9 @@ FROM _targets t
 CROSS JOIN _expected e;
 
 -- Adicionalmente, verifica PUBLIC (grantee vazio na proacl → EXECUTE herdado).
-INSERT INTO _results(fn, role_name, expected, actual, status)
+INSERT INTO _results(categoria, fn, role_name, expected, actual, status)
 SELECT
+  t.categoria,
   t.fn,
   'PUBLIC',
   false AS expected,
@@ -113,16 +115,30 @@ SELECT
 FROM _targets t;
 
 \echo
-\echo '=== Privilégios EXECUTE — funções de observabilidade ==='
-SELECT fn, role_name, expected, actual, status FROM _results ORDER BY fn, role_name;
+\echo '=== Privilégios EXECUTE — observabilidade / NF-e / conciliação ==='
+SELECT categoria, fn, role_name, expected, actual, status
+FROM _results
+ORDER BY categoria, fn, role_name;
 
 \echo
-\echo '=== Resumo ==='
+\echo '=== Resumo por categoria ==='
+SELECT
+  categoria,
+  COUNT(*) FILTER (WHERE status = 'PASS') AS pass,
+  COUNT(*) FILTER (WHERE status = 'FAIL') AS fail,
+  COUNT(*) AS total
+FROM _results
+GROUP BY categoria
+ORDER BY categoria;
+
+\echo
+\echo '=== Resumo geral ==='
 SELECT
   COUNT(*) FILTER (WHERE status = 'PASS') AS pass,
   COUNT(*) FILTER (WHERE status = 'FAIL') AS fail,
   COUNT(*) AS total
 FROM _results;
+
 
 -- Falha o script se houver qualquer FAIL.
 DO $$
