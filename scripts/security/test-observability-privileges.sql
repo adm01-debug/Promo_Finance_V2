@@ -17,8 +17,9 @@ CREATE TEMP TABLE _targets(fn text, categoria text) ON COMMIT DROP;
 
 -- Observabilidade / performance
 INSERT INTO _targets(fn, categoria) VALUES
-  ('public.capture_pg_stat_statements_baseline(text)',        'observability'),
-  ('public.capture_slow_queries(numeric)',                    'observability'),
+  ('public.capture_pg_stat_statements_baseline(p_label text)', 'observability'),
+  ('public.capture_slow_queries(threshold_ms numeric)',        'observability'),
+
   ('public.monitor_table_bloat()',                            'observability'),
   ('public.snapshot_table_bloat()',                           'observability'),
   ('public.refresh_performance_alerts_weekly()',              'observability'),
