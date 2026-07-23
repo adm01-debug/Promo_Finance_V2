@@ -13998,6 +13998,20 @@ export type Database = {
       }
       run_daily_cleanup: { Args: never; Returns: Json }
       run_daily_cleanup_with_logging: { Args: never; Returns: undefined }
+      sefaz_cursor_advance: {
+        Args: {
+          p_ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
+          p_cnpj: string
+          p_erro?: string
+          p_max_nsu?: number
+          p_novo_nsu: number
+          p_status?: string
+        }
+        Returns: {
+          advanced: boolean
+          ultimo_nsu: number
+        }[]
+      }
       snapshot_table_bloat: { Args: never; Returns: Json }
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
