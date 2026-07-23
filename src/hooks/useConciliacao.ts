@@ -240,7 +240,7 @@ export function useConciliacao() {
     },
     onError: (error) => {
       logger.error('[useConciliacao] Erro ao desfazer conciliação:', error);
-      toast.error('Erro ao desfazer conciliação');
+      handleEdgeError(error, 'Erro ao desfazer conciliação');
     },
   });
 
