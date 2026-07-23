@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { Download, FileText, Link2, Loader2, RefreshCw } from 'lucide-react';
+import { CheckCircle2, Download, Eye, FileText, HelpCircle, Link2, Loader2, RefreshCw, XCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,13 +22,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import {
   getNfeXmlSignedUrl,
   useNfeRecebidas,
   type ManifestacaoStatus,
   type NfeFiltros,
+  type NfeRecebida,
 } from '@/hooks/useNfeRecebidas';
+import { MANIFESTACAO_LABEL, useManifestarNfe, type ManifestacaoTipo } from '@/hooks/useManifestarNfe';
 
 const STATUS_LABELS: Record<ManifestacaoStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   pendente: { label: 'Pendente', variant: 'outline' },
@@ -43,6 +62,10 @@ const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: '
 export default function NfeRecebidasPage() {
   const [filtros, setFiltros] = useState<NfeFiltros>({ status: 'todos', vinculadaContaPagar: 'todos' });
   const { data = [], isLoading, refetch, isFetching } = useNfeRecebidas(filtros);
+  const manifestar = useManifestarNfe();
+
+  const [justDialog, setJustDialog] = useState<{ nfe: NfeRecebida; tipo: ManifestacaoTipo } | null>(null);
+  const [justTexto, setJustTexto] = useState('');
 
   const totals = useMemo(() => {
     const total = data.reduce((acc, n) => acc + Number(n.valor_total ?? 0), 0);
@@ -62,6 +85,23 @@ export default function NfeRecebidasPage() {
       return;
     }
     window.open(url, '_blank', 'noopener');
+  }
+
+  function iniciarManifestacao(nfe: NfeRecebida, tipo: ManifestacaoTipo) {
+    if (tipo === '210240') {
+      setJustTexto('');
+      setJustDialog({ nfe, tipo });
+      return;
+    }
+    manifestar.mutate({ chave_acesso: nfe.chave_acesso, tipo });
+  }
+
+  function confirmarComJustificativa() {
+    if (!justDialog) return;
+    manifestar.mutate(
+      { chave_acesso: justDialog.nfe.chave_acesso, tipo: justDialog.tipo, justificativa: justTexto },
+      { onSuccess: () => setJustDialog(null) },
+    );
   }
 
   return (
@@ -204,14 +244,48 @@ export default function NfeRecebidasPage() {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => downloadXml(n.id, n.xml_path)}
-                          disabled={!n.xml_path}
-                        >
-                          <Download className="mr-1 h-4 w-4" /> XML
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => downloadXml(n.id, n.xml_path)}
+                            disabled={!n.xml_path}
+                          >
+                            <Download className="mr-1 h-4 w-4" /> XML
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={manifestar.isPending}
+                              >
+                                {manifestar.isPending && manifestar.variables?.chave_acesso === n.chave_acesso ? (
+                                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Eye className="mr-1 h-4 w-4" />
+                                )}
+                                Manifestar
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                              <DropdownMenuLabel>Evento SEFAZ</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210210')}>
+                                <Eye className="mr-2 h-4 w-4" /> {MANIFESTACAO_LABEL['210210']}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210200')}>
+                                <CheckCircle2 className="mr-2 h-4 w-4 text-success" /> {MANIFESTACAO_LABEL['210200']}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210220')}>
+                                <HelpCircle className="mr-2 h-4 w-4 text-warning" /> {MANIFESTACAO_LABEL['210220']}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210240')}>
+                                <XCircle className="mr-2 h-4 w-4 text-destructive" /> {MANIFESTACAO_LABEL['210240']}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -221,6 +295,36 @@ export default function NfeRecebidasPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={!!justDialog} onOpenChange={(open) => !open && setJustDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Operação Não Realizada</DialogTitle>
+            <DialogDescription>
+              A SEFAZ exige justificativa com no mínimo 15 caracteres para este evento.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={justTexto}
+            onChange={(e) => setJustTexto(e.target.value)}
+            placeholder="Ex.: mercadoria não recebida por divergência de destinatário."
+            rows={4}
+            minLength={15}
+            maxLength={255}
+          />
+          <div className="text-xs text-muted-foreground">{justTexto.trim().length} / 255 caracteres</div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setJustDialog(null)}>Cancelar</Button>
+            <Button
+              onClick={confirmarComJustificativa}
+              disabled={justTexto.trim().length < 15 || manifestar.isPending}
+            >
+              {manifestar.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Enviar manifestação
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

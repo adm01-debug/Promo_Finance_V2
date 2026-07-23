@@ -13908,6 +13908,22 @@ export type Database = {
       }
       maintain_monthly_partitions: { Args: never; Returns: Json }
       monitor_table_bloat: { Args: never; Returns: Json }
+      nfe_apply_manifestacao: {
+        Args: {
+          p_chave: string
+          p_codigo_evento: string
+          p_data_evento: string
+          p_justificativa: string
+          p_motivo_retorno: string
+          p_novo_status: Database["public"]["Enums"]["nfe_manifestacao_status"]
+          p_protocolo: string
+          p_raw?: Json
+          p_sequencial: number
+          p_status_retorno: string
+          p_tipo_evento: string
+        }
+        Returns: Json
+      }
       processar_regua_cobranca: {
         Args: { p_empresa_id?: string; p_simulate?: boolean }
         Returns: Json
