@@ -26,12 +26,11 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { record } = await req.json()
-    const { id, mensagem } = record
+    const rawBody = await req.json().catch(() => ({}))
+    const validation = await validateContract(WhatsappAnalyzerBodySchema, rawBody)
+    if (!validation.success) return validation.response
+    const { id, mensagem } = validation.data.record
 
-    if (!mensagem) {
-      return new Response(JSON.stringify({ error: 'No message provided' }), { status: 400 })
-    }
 
     // Call AI Gateway (OpenAI)
     const prompt = `Analise a seguinte mensagem de cobrança enviada via WhatsApp para um cliente inadimplente e forneça um JSON com:
