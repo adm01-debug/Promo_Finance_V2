@@ -6,6 +6,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { verify as verifyJwt } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _TokenSchema = z.object({ token: z.string().min(10) });
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -36,7 +40,10 @@ Deno.serve(async (req) => {
   const startedAt = Date.now();
 
   try {
-    const { token } = await req.json().catch(() => ({}));
+    const _raw = await req.json().catch(() => ({}));
+    const _v = await validateContract(_TokenSchema, _raw);
+    if (!_v.success) return _v.response;
+    const { token } = _v.data;
     if (!token || typeof token !== 'string') {
       return json({ error: 'Token ausente' }, 400);
     }

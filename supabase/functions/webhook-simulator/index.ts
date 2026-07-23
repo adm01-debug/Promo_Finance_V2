@@ -1,5 +1,14 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { ConcurrencyLimiter } from '../_shared/concurrency-limiter.ts'
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _WebhookSimSchema = z.object({
+  run_id: z.string().uuid(),
+  target_function: z.string().min(1),
+  scenarios_count: z.number().int().positive().max(1000).optional(),
+  mode: z.string().optional(),
+});
 
 
 const corsHeaders = {
@@ -17,7 +26,10 @@ Deno.serve(async (req) => {
   const supabase = createClient(supabaseUrl, serviceRoleKey)
 
   try {
-    const body = await req.json()
+    const _raw = await req.json();
+    const _v = await validateContract(_WebhookSimSchema, _raw);
+    if (!_v.success) return _v.response;
+    const body = _v.data
     const { run_id, target_function, scenarios_count = 10, mode = 'normal' } = body
 
     if (!run_id || !target_function) {

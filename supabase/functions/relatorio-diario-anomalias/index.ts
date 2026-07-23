@@ -1,5 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _RelAnomSchema = z.object({
+  destinatarios: z.array(z.string().email()).optional(),
+  horas: z.number().positive().max(720).optional(),
+}).partial();
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,7 +47,10 @@ serve(async (req) => {
     const resendKey = Deno.env.get("RESEND_API_KEY");
     const supabase = createClient(url, key);
 
-    const body = await req.json().catch(() => ({}));
+    const _raw = await req.json().catch(() => ({}));
+    const _v = await validateContract(_RelAnomSchema, _raw);
+    if (!_v.success) return _v.response;
+    const body = _v.data;
     const destinatariosOverride: string[] | undefined = body?.destinatarios;
     const horasJanela: number = Number(body?.horas ?? 24);
 

@@ -1,6 +1,13 @@
 // Edge: verificar-conformidade-fiscal — 8 checks automáticos + score 0-100
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { createLogger } from '../_shared/observability.ts';
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _ConfFiscalSchema = z.object({
+  empresa_id: z.string().uuid(),
+  periodo: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -56,7 +63,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json().catch(() => ({}));
+    const _raw = await req.json().catch(() => ({}));
+    const _v = await validateContract(_ConfFiscalSchema, _raw);
+    if (!_v.success) return _v.response;
+    const body = _v.data;
     const empresa_id = body.empresa_id as string | undefined;
     const periodo = (body.periodo as string) ?? new Date().toISOString().slice(0, 7);
 

@@ -1,5 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _OFSchema = z.object({
+  action: z.string().min(1),
+  params: z.record(z.unknown()).optional(),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -59,7 +66,10 @@ serve(async (req) => {
       });
     }
 
-    const { action, params }: OpenFinanceRequest = await req.json();
+    const _raw = await req.json();
+    const _v = await validateContract(_OFSchema, _raw);
+    if (!_v.success) return _v.response;
+    const { action, params } = _v.data as unknown as OpenFinanceRequest;
     console.log(`[open-finance] Action: ${action}, User: ${user.id}`);
 
     let result;

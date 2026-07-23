@@ -1,4 +1,12 @@
 import { createClient } from "npm:@supabase/supabase-js";
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'npm:zod@3.23.8';
+
+const _SyncProfileSchema = z.object({
+  full_name: z.string().optional(),
+  avatar_url: z.string().url().nullable().optional(),
+  telefone: z.string().nullable().optional(),
+}).passthrough();
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -126,7 +134,10 @@ Deno.serve(async (req) => {
   // Body
   let body: SyncBody;
   try {
-    body = (await req.json()) as SyncBody;
+    const _raw = await req.json();
+    const _v = await validateContract(_SyncProfileSchema, _raw);
+    if (!_v.success) return _v.response;
+    body = _v.data as unknown as SyncBody;
   } catch {
     return jsonResp({ error: "invalid_json" }, 400);
   }

@@ -1,6 +1,13 @@
 // Edge Function: sincronizar-anomalia-bitrix24
 // Cria/atualiza uma Tarefa no Bitrix24 quando uma anomalia é revisada
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { validateContract } from "../_shared/contract-validator.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+const _SyncAnomSchema = z.object({
+  anomaliaId: z.string().uuid(),
+  evento: z.enum(["confirmada","falso_positivo","parecer","reaberta"]),
+}).passthrough();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -102,7 +109,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: ReqBody = await req.json();
+    const _raw = await req.json();
+    const _v = await validateContract(_SyncAnomSchema, _raw);
+    if (!_v.success) return _v.response;
+    const body = _v.data as unknown as ReqBody;
     if (!body.anomaliaId || !body.evento) {
       return new Response(
         JSON.stringify({ error: 'Campos obrigatórios ausentes' }),

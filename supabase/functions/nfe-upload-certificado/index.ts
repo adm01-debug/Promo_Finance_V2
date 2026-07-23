@@ -7,6 +7,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import forge from 'npm:node-forge@1.3.1';
 import { z } from 'npm:zod@3.23.8';
+import { validateContract } from '../_shared/contract-validator.ts';
 
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
