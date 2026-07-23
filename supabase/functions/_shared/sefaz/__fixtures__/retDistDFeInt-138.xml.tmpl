@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Body>
+    <nfeDistDFeInteresseResponse xmlns="http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe">
+      <nfeDistDFeInteresseResult>
+        <retDistDFeInt xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.01">
+          <tpAmb>{{tpAmb}}</tpAmb>
+          <verAplic>SEFAZ-MOCK</verAplic>
+          <cStat>138</cStat>
+          <xMotivo>Documento(s) localizado(s)</xMotivo>
+          <dhResp>{{dhResp}}</dhResp>
+          <ultNSU>{{ultNSU}}</ultNSU>
+          <maxNSU>{{maxNSU}}</maxNSU>
+          <loteDistDFeInt>
+            {{docs}}
+          </loteDistDFeInt>
+        </retDistDFeInt>
+      </nfeDistDFeInteresseResult>
+    </nfeDistDFeInteresseResponse>
+  </soap:Body>
+</soap:Envelope>

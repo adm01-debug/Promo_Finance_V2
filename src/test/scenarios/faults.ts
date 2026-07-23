@@ -47,6 +47,9 @@ export function shouldFail(fault: FaultSpec, rng: Rng, opIndex: number): string 
     case "latency":
     case "reorder":
     case "duplicate":
+    case "nfe_gzip_corrupt":
+    case "nfe_nsu_gap":
+    case "nfe_soap_timeout":
     case "none":
       return null;
   }

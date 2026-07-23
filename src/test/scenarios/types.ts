@@ -11,7 +11,10 @@ export type FaultKind =
   | "reorder"
   | "duplicate"
   | "latency"
-  | "partial_write";
+  | "partial_write"
+  | "nfe_gzip_corrupt"
+  | "nfe_nsu_gap"
+  | "nfe_soap_timeout";
 
 export interface FaultSpec {
   kind: FaultKind;

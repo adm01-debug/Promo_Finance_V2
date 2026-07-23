@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resNFe xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.01">
+  <chNFe>35240611222333000181550010000000021000000024</chNFe>
+  <CNPJ>11222333000181</CNPJ>
+  <xNome>EMITENTE MOCK LTDA</xNome>
+  <IE>111111111111</IE>
+  <dhEmi>2026-07-22T12:00:00-03:00</dhEmi>
+  <tpNF>1</tpNF>
+  <vNF>2500.00</vNF>
+  <digVal>abc123==</digVal>
+  <dhRecbto>2026-07-22T12:00:05-03:00</dhRecbto>
+  <nProt>135260000000002</nProt>
+  <cSitNFe>1</cSitNFe>
+</resNFe>

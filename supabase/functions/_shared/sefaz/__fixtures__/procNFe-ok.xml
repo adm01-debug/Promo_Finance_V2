@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+  <NFe>
+    <infNFe Id="NFe35240611222333000181550010000000011000000015" versao="4.00">
+      <ide>
+        <cUF>35</cUF>
+        <cNF>00000001</cNF>
+        <natOp>VENDA</natOp>
+        <mod>55</mod>
+        <serie>1</serie>
+        <nNF>1</nNF>
+        <dhEmi>2026-07-22T10:00:00-03:00</dhEmi>
+        <tpNF>1</tpNF>
+        <idDest>1</idDest>
+        <cMunFG>3550308</cMunFG>
+        <tpImp>1</tpImp>
+        <tpEmis>1</tpEmis>
+        <cDV>5</cDV>
+        <tpAmb>2</tpAmb>
+        <finNFe>1</finNFe>
+        <indFinal>1</indFinal>
+        <indPres>1</indPres>
+        <procEmi>0</procEmi>
+        <verProc>SEFAZ-MOCK-1.0</verProc>
+      </ide>
+      <emit>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>EMITENTE MOCK LTDA</xNome>
+        <enderEmit>
+          <xLgr>RUA MOCK</xLgr>
+          <nro>100</nro>
+          <xBairro>CENTRO</xBairro>
+          <cMun>3550308</cMun>
+          <xMun>SAO PAULO</xMun>
+          <UF>SP</UF>
+          <CEP>01000000</CEP>
+        </enderEmit>
+        <IE>111111111111</IE>
+        <CRT>3</CRT>
+      </emit>
+      <dest>
+        <CNPJ>44555666000199</CNPJ>
+        <xNome>DESTINATARIO MOCK LTDA</xNome>
+        <indIEDest>1</indIEDest>
+        <IE>222222222222</IE>
+      </dest>
+      <total>
+        <ICMSTot>
+          <vNF>1000.00</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+  </NFe>
+  <protNFe versao="4.00">
+    <infProt>
+      <tpAmb>2</tpAmb>
+      <verAplic>SEFAZ-MOCK</verAplic>
+      <chNFe>35240611222333000181550010000000011000000015</chNFe>
+      <dhRecbto>2026-07-22T10:00:05-03:00</dhRecbto>
+      <nProt>135260000000001</nProt>
+      <cStat>100</cStat>
+      <xMotivo>Autorizado o uso da NF-e</xMotivo>
+    </infProt>
+  </protNFe>
+</nfeProc>

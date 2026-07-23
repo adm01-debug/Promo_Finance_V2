@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Body>
+    <nfeDistDFeInteresseResponse xmlns="http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe">
+      <nfeDistDFeInteresseResult>
+        <retDistDFeInt xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.01">
+          <tpAmb>2</tpAmb>
+          <verAplic>SEFAZ-MOCK</verAplic>
+          <cStat>656</cStat>
+          <xMotivo>Consumo Indevido</xMotivo>
+          <dhResp>2026-07-22T10:00:00-03:00</dhResp>
+        </retDistDFeInt>
+      </nfeDistDFeInteresseResult>
+    </nfeDistDFeInteresseResponse>
+  </soap:Body>
+</soap:Envelope>

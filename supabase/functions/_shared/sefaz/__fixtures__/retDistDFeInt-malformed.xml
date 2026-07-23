@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Body>
+    <nfeDistDFeInteresseResponse xmlns="http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe">
+      <nfeDistDFeInteresseResult>
+        <retDistDFeInt versao="1.01">
+          <tpAmb>2
+          <cStat>138</cStat>
+          <ultNSU>100</ultNSU>
+          <!-- envelope truncado propositalmente

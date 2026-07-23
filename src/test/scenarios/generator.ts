@@ -10,6 +10,9 @@ const FAULT_KINDS: FaultKind[] = [
   "duplicate",
   "latency",
   "partial_write",
+  "nfe_gzip_corrupt",
+  "nfe_nsu_gap",
+  "nfe_soap_timeout",
 ];
 
 function faultParam(kind: FaultKind, rng: ReturnType<typeof createRng>): FaultSpec {
