@@ -52,6 +52,26 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-security-definer-invocation.sql
 
+      - name: Export function privileges snapshot (CSV + JSON)
+        # Gera um resumo por função × role para inspeção e download no CI.
+        # Não falha o build — o gate acima já cobre regressões.
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OUT_DIR: ./artifacts/security
+        run: bash scripts/security/export-function-privileges.sh
+
+      - name: Upload function privileges artifact
+        if: ${{ env.DATABASE_URL != '' && always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: function-privileges
+          path: artifacts/security/function-privileges.*
+          if-no-files-found: warn
+          retention-days: 30
+
+
+
 
       - name: Type check
         run: bun run type-check
