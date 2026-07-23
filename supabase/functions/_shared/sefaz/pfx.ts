@@ -121,7 +121,7 @@ export async function loadCertificado(
     fetchPfxBytes(admin, cert.pfx_storage_path),
     fetchPfxPassword(admin, cert.id),
   ]);
-  const pem = pfxToPem(pfxBytes, password);
+  const pem = await pfxToPem(pfxBytes, password);
   return {
     ...pem,
     cnpj: cert.cnpj,
