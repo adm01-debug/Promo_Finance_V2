@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-confetti';
 import { logger } from '@/lib/logger';
+import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
 import type { TablesInsert, Tables } from '@/integrations/supabase/types';
 
