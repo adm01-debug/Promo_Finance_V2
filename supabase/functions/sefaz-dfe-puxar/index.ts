@@ -91,23 +91,40 @@ async function getCursor(
   return Number(data?.ultimo_nsu ?? 0);
 }
 
-async function advanceCursor(
+/**
+ * Aplica um lote completo (docs + avanço de cursor) numa única transação
+ * via RPC `sefaz_process_batch`. Garante:
+ *   - atomicidade (tudo ou nada);
+ *   - idempotência (ON CONFLICT DO NOTHING em chave/evento);
+ *   - monotonicidade do cursor (SELECT FOR UPDATE + guard `p_novo_nsu > atual`).
+ */
+async function applyBatchTransactional(
   admin: SupabaseClient,
-  cnpj: string,
-  ambiente: "homologacao" | "producao",
+  cert: CertificadoRow,
   novoNsu: number,
   maxNsu: number,
   status: string,
   erro: string | null,
-) {
-  await admin.rpc("sefaz_cursor_advance", {
-    p_cnpj: cnpj,
-    p_ambiente: ambiente,
+  docs: Array<{ kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }>,
+): Promise<{ novos: number; eventos: number; ignorados: number; cursor_depois: number }> {
+  const { data, error } = await admin.rpc("sefaz_process_batch", {
+    p_cnpj: cert.cnpj,
+    p_ambiente: cert.ambiente,
+    p_empresa_id: cert.empresa_id,
     p_novo_nsu: novoNsu,
     p_max_nsu: maxNsu,
     p_status: status,
     p_erro: erro,
+    p_docs: docs,
   });
+  if (error) throw new Error(`sefaz_process_batch_failed: ${error.message}`);
+  const r = (data ?? {}) as any;
+  return {
+    novos: Number(r.novos ?? 0),
+    eventos: Number(r.eventos ?? 0),
+    ignorados: Number(r.ignorados ?? 0),
+    cursor_depois: Number(r.cursor_depois ?? novoNsu),
+  };
 }
 
 // Chamada SEFAZ com mTLS. Isolada para permitir stub em teste.
@@ -119,7 +136,6 @@ async function defaultSefazFetch(
   certPem: string,
   keyPem: string,
 ): Promise<string> {
-  // Deno.createHttpClient com cert + key
   const client = (Deno as any).createHttpClient({ cert: certPem, key: keyPem });
   try {
     const resp = await fetch(url, {
@@ -139,27 +155,37 @@ async function defaultSefazFetch(
   }
 }
 
-async function processarDoc(
+/**
+ * Materializa um docZip (NFe ou evento) em:
+ *   - upload de XML no bucket (idempotente — path determinístico por chave);
+ *   - descriptor de payload que será entregue ao RPC transacional.
+ * Se o XML for inválido, devolve null (não bloqueia o lote).
+ */
+async function stageDoc(
   admin: SupabaseClient,
   empresaId: string,
-  ambiente: "homologacao" | "producao",
   nsu: number,
   xml: string,
-): Promise<{ novo: boolean; evento: boolean }> {
+): Promise<
+  | { kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }
+  | null
+> {
   const parsed: ParsedDoc | null = parseDoc(xml);
-  if (!parsed) return { novo: false, evento: false };
+  if (!parsed) return null;
 
   if (parsed.kind === "nfe") {
     const xmlPath = buildXmlPath(empresaId, parsed.chaveAcesso);
-    // Storage upsert primeiro (idempotente)
+    // Storage é fora da transação, mas o path é determinístico:
+    // um retry re-envia para o mesmo caminho (upsert=true). Nunca gera órfão inconsistente.
     await uploadNfeXml(admin as any, {
       empresaId,
       chave: parsed.chaveAcesso,
       xml,
     });
-    const { data, error } = await admin.from("nfe_recebidas").upsert(
-      {
-        empresa_id: empresaId,
+    return {
+      kind: "nfe",
+      nsu,
+      payload: {
         chave_acesso: parsed.chaveAcesso,
         cnpj_emitente: parsed.cnpjEmitente,
         razao_emitente: parsed.razaoEmitente,
@@ -174,31 +200,29 @@ async function processarDoc(
         digest_value: parsed.digestValue,
         tipo_documento: parsed.tipoDocumento,
         schema_tipo: parsed.schemaTipo,
-        nsu,
-        ambiente,
         xml_path: xmlPath,
         xml_completo: parsed.xmlCompleto,
       },
-      { onConflict: "chave_acesso", ignoreDuplicates: false },
-    ).select("id").maybeSingle();
-    if (error) throw new Error(`upsert_nfe_failed: ${error.message}`);
-    return { novo: !!data, evento: false };
+    };
   }
 
-  // Evento
-  await admin.from("nfe_eventos").insert({
-    chave_acesso: parsed.chaveAcesso,
-    tipo_evento: parsed.tipoEvento,
-    codigo_evento: parsed.codigoEvento,
-    sequencial: parsed.sequencial,
-    data_evento: parsed.dataEvento,
-    protocolo: parsed.protocolo,
-    justificativa: parsed.justificativa,
-    status_retorno: parsed.statusRetorno,
-    motivo_retorno: parsed.motivoRetorno,
-  });
-  return { novo: false, evento: true };
+  return {
+    kind: "evento",
+    nsu,
+    payload: {
+      chave_acesso: parsed.chaveAcesso,
+      tipo_evento: parsed.tipoEvento,
+      codigo_evento: parsed.codigoEvento,
+      sequencial: parsed.sequencial,
+      data_evento: parsed.dataEvento,
+      protocolo: parsed.protocolo,
+      justificativa: parsed.justificativa,
+      status_retorno: parsed.statusRetorno,
+      motivo_retorno: parsed.motivoRetorno,
+    },
+  };
 }
+
 
 // ------------------------------------------------------- pull loop
 export async function runPuxador(
@@ -252,24 +276,35 @@ export async function runPuxador(
       summary.cStatFinal = response.cStat;
 
       const cls = classifyCStat(response.cStat);
-      if (cls === "empty") break;
+
+      // Cenários sem docs: apenas atualizar status/erro no cursor (sem regredir NSU).
+      if (cls === "empty") {
+        await applyBatchTransactional(
+          admin, cert, ultNSU, response.maxNSU, response.cStat, null, [],
+        );
+        break;
+      }
       if (cls === "retry" || cls === "rate_limit" || cls === "fatal") {
         summary.erro = `cStat=${response.cStat} ${response.xMotivo}`;
+        await applyBatchTransactional(
+          admin, cert, ultNSU, response.maxNSU, response.cStat, summary.erro, [],
+        );
         break;
       }
 
-      // Processar docs do lote
+      // Materializa docs (parse + upload XML) fora da transação DB.
+      // O RPC transacional consolida tudo num único COMMIT: se ele falhar,
+      // NENHUM registro é inserido e o cursor NÃO avança — próxima execução
+      // retoma do mesmo ultNSU e reprocessa idempotentemente (ON CONFLICT DO NOTHING).
+      const staged: Array<{ kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }> = [];
       for (const doc of response.docs) {
         summary.docs++;
         try {
           const xml = await gunzipBase64(doc.b64);
-          const { novo, evento } = await processarDoc(
-            admin, cert.empresa_id, cert.ambiente, doc.nsu, xml,
-          );
-          if (novo) summary.novos++;
-          if (evento) summary.eventos++;
+          const s = await stageDoc(admin, cert.empresa_id, doc.nsu, xml);
+          if (s) staged.push(s);
         } catch (err) {
-          // Doc inválido não bloqueia o lote — log e segue
+          // Doc inválido não bloqueia o lote — log e segue (é ignorado pelo RPC).
           console.error(JSON.stringify({
             level: "WARN", fn: "sefaz-dfe-puxar",
             cnpj: cert.cnpj, nsu: doc.nsu,
@@ -278,25 +313,20 @@ export async function runPuxador(
         }
       }
 
-      // Avança cursor após batch bem-sucedido
-      await advanceCursor(
-        admin, cert.cnpj, cert.ambiente,
+      const applied = await applyBatchTransactional(
+        admin, cert,
         response.ultNSU, response.maxNSU, response.cStat, null,
+        staged,
       );
-      ultNSU = response.ultNSU;
-      summary.cursorDepois = ultNSU;
+      summary.novos     += applied.novos;
+      summary.eventos   += applied.eventos;
+      summary.cursorDepois = applied.cursor_depois;
+      ultNSU = applied.cursor_depois;
 
       // Chegou no fim
       if (response.ultNSU >= response.maxNSU) break;
     }
 
-    // Registrar erro no cursor se houve falha
-    if (summary.erro && response) {
-      await advanceCursor(
-        admin, cert.cnpj, cert.ambiente,
-        summary.cursorDepois, response.maxNSU, response.cStat, summary.erro,
-      );
-    }
   } catch (err) {
     summary.erro = err instanceof Error ? err.message : String(err);
   }
