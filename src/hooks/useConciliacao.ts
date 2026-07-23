@@ -31,21 +31,13 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       
       // Proxy Edge Function (service_role) em vez de RPC direta
-      const { data: proxyRes, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>(
-        'conciliacao-proxy',
-        {
-          body: {
-            action: 'confirmar',
-            transacaoId,
-            contaPagarId: contaPagarId || null,
-            contaReceberId: contaReceberId || null,
-            ajusteCentavos: ajusteCentavos || 0,
-          },
-        },
-      );
-
-      if (error) throw new Error(error.message);
-      if (proxyRes?.error) throw new Error(proxyRes.error);
+      await invokeEdge('conciliacao-proxy', {
+        action: 'confirmar',
+        transacaoId,
+        contaPagarId: contaPagarId || null,
+        contaReceberId: contaReceberId || null,
+        ajusteCentavos: ajusteCentavos || 0,
+      });
 
 
       // Atualiza metadados extras na transação bancária
