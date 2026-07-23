@@ -13121,6 +13121,24 @@ export type Database = {
           },
         ]
       }
+      v_sefaz_observability: {
+        Row: {
+          ambiente: Database["public"]["Enums"]["sefaz_ambiente"] | null
+          circuit_open: boolean | null
+          cnpj: string | null
+          max_nsu: number | null
+          next_run_at: string | null
+          nfe_24h: number | null
+          nfe_7d: number | null
+          open_alerts: number | null
+          retry_count: number | null
+          seconds_since_last: number | null
+          ultima_consulta: string | null
+          ultimo_nsu: number | null
+          ultimo_status: string | null
+        }
+        Relationships: []
+      }
       v_table_bloat: {
         Row: {
           analyze_count: number | null
@@ -14055,6 +14073,8 @@ export type Database = {
           ultimo_nsu: number
         }[]
       }
+      sefaz_detect_nsu_gaps: { Args: { p_max_gap?: number }; Returns: number }
+      sefaz_detect_stuck_cursors: { Args: never; Returns: number }
       sefaz_process_batch: {
         Args: {
           p_ambiente: string
@@ -14068,6 +14088,7 @@ export type Database = {
         }
         Returns: Json
       }
+      sefaz_run_observability_checks: { Args: never; Returns: Json }
       snapshot_table_bloat: { Args: never; Returns: Json }
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
