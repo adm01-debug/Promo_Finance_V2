@@ -62,6 +62,10 @@ const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: '
 export default function NfeRecebidasPage() {
   const [filtros, setFiltros] = useState<NfeFiltros>({ status: 'todos', vinculadaContaPagar: 'todos' });
   const { data = [], isLoading, refetch, isFetching } = useNfeRecebidas(filtros);
+  const manifestar = useManifestarNfe();
+
+  const [justDialog, setJustDialog] = useState<{ nfe: NfeRecebida; tipo: ManifestacaoTipo } | null>(null);
+  const [justTexto, setJustTexto] = useState('');
 
   const totals = useMemo(() => {
     const total = data.reduce((acc, n) => acc + Number(n.valor_total ?? 0), 0);
@@ -81,6 +85,23 @@ export default function NfeRecebidasPage() {
       return;
     }
     window.open(url, '_blank', 'noopener');
+  }
+
+  function iniciarManifestacao(nfe: NfeRecebida, tipo: ManifestacaoTipo) {
+    if (tipo === '210240') {
+      setJustTexto('');
+      setJustDialog({ nfe, tipo });
+      return;
+    }
+    manifestar.mutate({ chave_acesso: nfe.chave_acesso, tipo });
+  }
+
+  function confirmarComJustificativa() {
+    if (!justDialog) return;
+    manifestar.mutate(
+      { chave_acesso: justDialog.nfe.chave_acesso, tipo: justDialog.tipo, justificativa: justTexto },
+      { onSuccess: () => setJustDialog(null) },
+    );
   }
 
   return (
