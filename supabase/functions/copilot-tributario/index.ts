@@ -1,6 +1,16 @@
 // Edge: copilot-tributario — chat IA streaming SSE com tool calling
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { createLogger } from '../_shared/observability.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
+
+const CopilotTributarioBodySchema = z.object({
+  messages: z.array(z.object({
+    role: z.enum(['system', 'user', 'assistant']),
+    content: z.string().max(20000),
+  })).min(1).max(50),
+  empresa_id: z.string().uuid().optional(),
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -77,16 +87,12 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const body = await req.json();
-    const messages: ChatMessage[] = Array.isArray(body?.messages) ? body.messages : [];
-    const empresaId: string | undefined = body?.empresa_id;
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(CopilotTributarioBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const messages = validation.data.messages;
+    const empresaId = validation.data.empresa_id;
 
-    if (messages.length === 0) {
-      return new Response(JSON.stringify({ error: 'messages obrigatório' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     // Contexto rico opcional
     let contextoSistema = '';

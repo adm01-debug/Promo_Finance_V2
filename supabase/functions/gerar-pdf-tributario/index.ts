@@ -4,6 +4,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { jsPDF } from 'https://esm.sh/jspdf@2.5.1';
 import autoTable from 'https://esm.sh/jspdf-autotable@3.8.2';
 import { createLogger } from '../_shared/observability.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,11 +14,12 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-interface ReqBody {
-  empresaId: string;
-  anoReferencia: number;
-  mesReferencia: number;
-}
+const PdfTributarioBodySchema = z.object({
+  empresaId: z.string().uuid(),
+  anoReferencia: z.number().int().min(2020).max(2100),
+  mesReferencia: z.number().int().min(1).max(12),
+});
+type ReqBody = z.infer<typeof PdfTributarioBodySchema>;
 
 const formatBRL = (n: number) =>
   n.toLocaleString('pt-BR', {
@@ -62,16 +65,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: ReqBody = await req.json();
-    if (!body.empresaId || !body.anoReferencia || !body.mesReferencia) {
-      return new Response(
-        JSON.stringify({ error: 'empresaId, anoReferencia e mesReferencia obrigatórios' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(PdfTributarioBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const body: ReqBody = validation.data;
+
 
     const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 

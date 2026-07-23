@@ -1,5 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
+import { validateContract } from "../_shared/contract-validator.ts"
+
+const WhatsappAnalyzerBodySchema = z.object({
+  record: z.object({
+    id: z.union([z.string(), z.number()]),
+    mensagem: z.string().min(1).max(4096),
+  }),
+})
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,12 +26,11 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { record } = await req.json()
-    const { id, mensagem } = record
+    const rawBody = await req.json().catch(() => ({}))
+    const validation = await validateContract(WhatsappAnalyzerBodySchema, rawBody)
+    if (!validation.success) return validation.response
+    const { id, mensagem } = validation.data.record
 
-    if (!mensagem) {
-      return new Response(JSON.stringify({ error: 'No message provided' }), { status: 400 })
-    }
 
     // Call AI Gateway (OpenAI)
     const prompt = `Analise a seguinte mensagem de cobrança enviada via WhatsApp para um cliente inadimplente e forneça um JSON com:

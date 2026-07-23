@@ -4,6 +4,8 @@
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { createLogger } from '../_shared/observability.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,10 +14,11 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-interface ReqBody {
-  empresa_id: string;
-  ano: number;
-}
+const RelatorioAnualBodySchema = z.object({
+  empresa_id: z.string().uuid(),
+  ano: z.number().int().min(2020).max(2100),
+});
+type ReqBody = z.infer<typeof RelatorioAnualBodySchema>;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -71,16 +74,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: ReqBody = await req.json();
-    if (!body.empresa_id || !body.ano) {
-      return new Response(
-        JSON.stringify({ error: 'empresa_id e ano obrigatórios' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(RelatorioAnualBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const body: ReqBody = validation.data;
+
 
     // Empresa
     const { data: empresa } = await admin

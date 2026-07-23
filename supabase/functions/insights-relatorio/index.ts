@@ -1,6 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
+
+const InsightsRelatorioBodySchema = z.object({
+  dados: z.unknown(),
+  contexto: z.string().max(500).optional(),
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,7 +33,10 @@ serve(async (req) => {
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
-    const { dados, contexto } = await req.json();
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(InsightsRelatorioBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const { dados, contexto } = validation.data;
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
 

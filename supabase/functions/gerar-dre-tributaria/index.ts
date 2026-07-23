@@ -4,6 +4,8 @@
 // ============================================
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { createLogger } from "../_shared/observability.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,10 +13,11 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-interface ReqBody {
-  empresa_id: string;
-  periodo: string; // YYYY-MM
-}
+const DreTributariaBodySchema = z.object({
+  empresa_id: z.string().uuid(),
+  periodo: z.string().regex(/^\d{4}-\d{2}$/, "periodo deve ser YYYY-MM"),
+});
+type ReqBody = z.infer<typeof DreTributariaBodySchema>;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -55,12 +58,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = (await req.json()) as ReqBody;
-    if (!body.empresa_id || !body.periodo) {
-      return new Response(JSON.stringify({ error: "invalid_payload" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(DreTributariaBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const body: ReqBody = validation.data;
+
 
     const [anoStr, mesStr] = body.periodo.split("-");
     const ano = Number(anoStr);

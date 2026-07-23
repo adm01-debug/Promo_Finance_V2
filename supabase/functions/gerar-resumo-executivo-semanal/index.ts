@@ -1,5 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
+
+const ResumoSemanalBodySchema = z.object({
+  empresa_id: z.string().uuid().optional(),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -102,8 +108,10 @@ serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    const body = await req.json().catch(() => ({}));
-    const empresaIdFilter: string | undefined = body.empresa_id;
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(ResumoSemanalBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
     const hoje = new Date();
     const semanaFim = new Date(hoje); semanaFim.setDate(hoje.getDate() - 1);
