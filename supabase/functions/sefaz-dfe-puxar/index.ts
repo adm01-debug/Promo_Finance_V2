@@ -62,6 +62,30 @@ function json(status: number, body: unknown) {
   });
 }
 
+/**
+ * Log estruturado (JSON de linha única) — consumido por Logflare/Explorer.
+ * Sempre inclui `fn`, `ts`, `level` para permitir filtros consistentes,
+ * e chaves canônicas do domínio SEFAZ (`cnpj`, `ambiente`, `cStat`,
+ * `cb_open`, `durationMs`) para agregações e alertas.
+ */
+type LogLevel = "INFO" | "WARN" | "ERROR";
+function slog(level: LogLevel, event: string, fields: Record<string, unknown> = {}) {
+  try {
+    const line = JSON.stringify({
+      ts: new Date().toISOString(),
+      level,
+      fn: "sefaz-dfe-puxar",
+      event,
+      ...fields,
+    });
+    if (level === "ERROR") console.error(line);
+    else if (level === "WARN") console.warn(line);
+    else console.log(line);
+  } catch {
+    // Nunca deixar log estruturado quebrar o fluxo.
+  }
+}
+
 async function fetchCertificados(
   admin: SupabaseClient,
   empresaId?: string,
