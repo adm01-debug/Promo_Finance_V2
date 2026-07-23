@@ -10830,10 +10830,14 @@ export type Database = {
       sefaz_dfe_cursor: {
         Row: {
           ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
+          circuit_open: boolean
           cnpj: string
           created_at: string
           id: string
+          last_error_at: string | null
           max_nsu: number
+          next_run_at: string
+          retry_count: number
           ultima_consulta: string | null
           ultimo_erro: string | null
           ultimo_nsu: number
@@ -10842,10 +10846,14 @@ export type Database = {
         }
         Insert: {
           ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          circuit_open?: boolean
           cnpj: string
           created_at?: string
           id?: string
+          last_error_at?: string | null
           max_nsu?: number
+          next_run_at?: string
+          retry_count?: number
           ultima_consulta?: string | null
           ultimo_erro?: string | null
           ultimo_nsu?: number
@@ -10854,10 +10862,14 @@ export type Database = {
         }
         Update: {
           ambiente?: Database["public"]["Enums"]["sefaz_ambiente"]
+          circuit_open?: boolean
           cnpj?: string
           created_at?: string
           id?: string
+          last_error_at?: string | null
           max_nsu?: number
+          next_run_at?: string
+          retry_count?: number
           ultima_consulta?: string | null
           ultimo_erro?: string | null
           ultimo_nsu?: number
