@@ -52,10 +52,10 @@ function makeStubClient(init: CursorInit = {}) {
         if (table === "sefaz_dfe_cursor") return { data: { ...cursor }, error: null };
         return { data: null, error: null };
       },
-      insert: async (row: any) => {
+      insert: (row: any) => {
         calls.push({ op: `${table}.insert`, args: row });
         if (table === "query_telemetry") telemetry.push(row);
-        return { data: null, error: null };
+        return Promise.resolve({ data: null, error: null });
       },
       upsert: (row: any) => {
         calls.push({ op: `${table}.upsert`, args: row });
