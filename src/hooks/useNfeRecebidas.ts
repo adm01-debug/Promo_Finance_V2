@@ -7,7 +7,7 @@ export type ManifestacaoStatus =
   | 'pendente'
   | 'ciencia'
   | 'confirmada'
-  | 'desconhecimento'
+  | 'desconhecida'
   | 'nao_realizada';
 
 export interface NfeRecebida {
