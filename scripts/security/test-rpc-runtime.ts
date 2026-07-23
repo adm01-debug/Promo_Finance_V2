@@ -51,15 +51,11 @@ const E2E_PASS = mustEnv("E2E_USER_PASSWORD");
 // Exceções controladas — mantenha sincronizado com _exceptions em
 // scripts/security/test-observability-privileges.sql
 const EXCEPTIONS: Array<{ fn: string; role: Role; reason: string; expiresAt: string }> = [
-  { fn: "nfe_suggest_contas_pagar", role: "authenticated", reason: "Migrado para nfe-vinculo-proxy", expiresAt: "2026-08-31" },
-  { fn: "nfe_link_conta_pagar", role: "authenticated", reason: "Migrado para nfe-vinculo-proxy", expiresAt: "2026-08-31" },
-  { fn: "nfe_unlink_conta_pagar", role: "authenticated", reason: "Migrado para nfe-vinculo-proxy", expiresAt: "2026-08-31" },
-  { fn: "nfe_create_conta_pagar_from_nfe", role: "authenticated", reason: "Migrado para nfe-vinculo-proxy", expiresAt: "2026-08-31" },
-  { fn: "confirmar_conciliacao_manual", role: "authenticated", reason: "Migrado para conciliacao-proxy", expiresAt: "2026-08-31" },
-  { fn: "desfazer_conciliacao_manual", role: "authenticated", reason: "Migrado para conciliacao-proxy", expiresAt: "2026-08-31" },
+  // NF-e (nfe_suggest/link/unlink/create_conta_pagar_from_nfe), conciliação manual
+  // (confirmar/desfazer_conciliacao_manual) e generate_reconciliation_suggestions
+  // foram revogadas de authenticated — agora só rodam via proxies service_role.
   { fn: "confirmar_conciliacao", role: "authenticated", reason: "Fluxo legado; migrar para conciliacao-proxy", expiresAt: "2026-10-31" },
   { fn: "desfazer_conciliacao", role: "authenticated", reason: "Fluxo legado; migrar para conciliacao-proxy", expiresAt: "2026-10-31" },
-  { fn: "generate_reconciliation_suggestions", role: "authenticated", reason: "Sugestões IA consumidas pelo painel", expiresAt: "2026-10-31" },
 ];
 
 // RPCs monitoradas + params esperados. PostgREST resolve a assinatura pelo
