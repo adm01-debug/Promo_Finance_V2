@@ -32,6 +32,7 @@ function fmtSeconds(sec: number | null): string {
 export default function SefazObservabilidade() {
   const cursors = useSefazObservability();
   const alerts = useSefazAlerts();
+  const resolveMutation = useResolveAlert();
 
   const kpis = useMemo(() => {
     const rows = cursors.data ?? [];
