@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
 import type { StatusPagamento } from './types';
 import type { ContasReceberPainelRow } from './views.types';
+import { parseContasReceberRows } from './views.schemas';
 
 export function useContasReceber(empresaId?: string) {
   return useQuery<ContasReceberPainelRow[]>({
@@ -21,7 +22,7 @@ export function useContasReceber(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as unknown as ContasReceberPainelRow[];
+      return parseContasReceberRows((data ?? []) as unknown[]);
     },
     staleTime: STALE_TIMES.financial,
   });
