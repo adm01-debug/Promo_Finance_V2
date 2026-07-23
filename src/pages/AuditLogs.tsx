@@ -337,11 +337,16 @@ export default function AuditLogs() {
         <Card className="border-border/50">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-lg">Registros ({filteredLogs?.length || 0})</CardTitle>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={handleExportCSV}><FileSpreadsheet className="h-4 w-4 mr-2" />CSV</Button>
+              <Button variant="outline" size="sm" onClick={handleExportJSON}><Download className="h-4 w-4 mr-2" />JSON</Button>
+              <Button variant="outline" size="sm" onClick={handleExportJSONFull} disabled={isExportingFull}>
+                <Download className="h-4 w-4 mr-2" />{isExportingFull ? 'Exportando…' : 'JSON completo'}
+              </Button>
               <Button variant="outline" size="sm" onClick={handleExportPDF}><Download className="h-4 w-4 mr-2" />PDF</Button>
               <Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCcw className="h-4 w-4 mr-2" />Atualizar</Button>
             </div>
+
           </CardHeader>
           <CardContent>
             {isLoading ? <TableShimmerSkeleton rows={10} columns={6} /> : !filteredLogs?.length ? (
