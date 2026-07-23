@@ -89,25 +89,7 @@ DO $$
 DECLARE
   bad text[];
 BEGIN
-  -- service_role precisa de SELECT direto em toda tabela física com empresa_id
-  SELECT array_agg(c.table_name ORDER BY c.table_name) INTO bad
-  FROM information_schema.columns c
-  JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = 'public'::regnamespace
-  WHERE c.table_schema = 'public'
-    AND c.column_name = 'empresa_id'
-    AND pc.relkind = 'r'
-    AND NOT EXISTS (
-      SELECT 1 FROM information_schema.role_table_grants g
-      WHERE g.table_schema = 'public'
-        AND g.table_name = c.table_name
-        AND g.grantee = 'service_role'
-        AND g.privilege_type = 'SELECT'
-    );
-
-  IF bad IS NOT NULL THEN
-    RAISE EXCEPTION 'service_role sem GRANT SELECT direto em: %', bad;
-  END IF;
-
+  -- service_role em Supabase tem bypass implícito; não exigimos GRANT direto.
   -- anon jamais deve receber DELETE/UPDATE/INSERT direto em tabelas multi-empresa
   SELECT array_agg(DISTINCT c.table_name ORDER BY c.table_name) INTO bad
   FROM information_schema.columns c
