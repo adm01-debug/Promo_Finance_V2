@@ -276,24 +276,35 @@ export async function runPuxador(
       summary.cStatFinal = response.cStat;
 
       const cls = classifyCStat(response.cStat);
-      if (cls === "empty") break;
+
+      // Cenários sem docs: apenas atualizar status/erro no cursor (sem regredir NSU).
+      if (cls === "empty") {
+        await applyBatchTransactional(
+          admin, cert, ultNSU, response.maxNSU, response.cStat, null, [],
+        );
+        break;
+      }
       if (cls === "retry" || cls === "rate_limit" || cls === "fatal") {
         summary.erro = `cStat=${response.cStat} ${response.xMotivo}`;
+        await applyBatchTransactional(
+          admin, cert, ultNSU, response.maxNSU, response.cStat, summary.erro, [],
+        );
         break;
       }
 
-      // Processar docs do lote
+      // Materializa docs (parse + upload XML) fora da transação DB.
+      // O RPC transacional consolida tudo num único COMMIT: se ele falhar,
+      // NENHUM registro é inserido e o cursor NÃO avança — próxima execução
+      // retoma do mesmo ultNSU e reprocessa idempotentemente (ON CONFLICT DO NOTHING).
+      const staged: Array<{ kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }> = [];
       for (const doc of response.docs) {
         summary.docs++;
         try {
           const xml = await gunzipBase64(doc.b64);
-          const { novo, evento } = await processarDoc(
-            admin, cert.empresa_id, cert.ambiente, doc.nsu, xml,
-          );
-          if (novo) summary.novos++;
-          if (evento) summary.eventos++;
+          const s = await stageDoc(admin, cert.empresa_id, doc.nsu, xml);
+          if (s) staged.push(s);
         } catch (err) {
-          // Doc inválido não bloqueia o lote — log e segue
+          // Doc inválido não bloqueia o lote — log e segue (é ignorado pelo RPC).
           console.error(JSON.stringify({
             level: "WARN", fn: "sefaz-dfe-puxar",
             cnpj: cert.cnpj, nsu: doc.nsu,
@@ -302,25 +313,20 @@ export async function runPuxador(
         }
       }
 
-      // Avança cursor após batch bem-sucedido
-      await advanceCursor(
-        admin, cert.cnpj, cert.ambiente,
+      const applied = await applyBatchTransactional(
+        admin, cert,
         response.ultNSU, response.maxNSU, response.cStat, null,
+        staged,
       );
-      ultNSU = response.ultNSU;
-      summary.cursorDepois = ultNSU;
+      summary.novos     += applied.novos;
+      summary.eventos   += applied.eventos;
+      summary.cursorDepois = applied.cursor_depois;
+      ultNSU = applied.cursor_depois;
 
       // Chegou no fim
       if (response.ultNSU >= response.maxNSU) break;
     }
 
-    // Registrar erro no cursor se houve falha
-    if (summary.erro && response) {
-      await advanceCursor(
-        admin, cert.cnpj, cert.ambiente,
-        summary.cursorDepois, response.maxNSU, response.cStat, summary.erro,
-      );
-    }
   } catch (err) {
     summary.erro = err instanceof Error ? err.message : String(err);
   }
