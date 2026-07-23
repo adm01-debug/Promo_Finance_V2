@@ -50,6 +50,8 @@ interface PullSummary {
   cursorAntes: number;
   cursorDepois: number;
   cStatFinal: string;
+  cbOpen: boolean;
+  backoffPending: boolean;
   erro: string | null;
   durationMs: number;
 }
