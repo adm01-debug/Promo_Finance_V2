@@ -109,6 +109,7 @@ const AuditoriaCompliancePage = lazy(() => import('./pages/tributario/AuditoriaC
 const ComparativoRegimesPage = lazy(() => import('./pages/tributario/ComparativoRegimes'));
 const CashbackSimuladorPage = lazy(() => import('./pages/tributario/CashbackSimulador'));
 const ImportacaoXMLPage = lazy(() => import('./pages/tributario/ImportacaoXML'));
+const NfeRecebidasPage = lazy(() => import('./pages/tributario/NfeRecebidas'));
 const SpedExportPage = lazy(() => import('./pages/tributario/SpedExport'));
 const RelatoriosContabeisPage = lazy(() => import('./pages/tributario/RelatoriosContabeis'));
 const PerDcompPage = lazy(() => import('./pages/tributario/PerDcomp'));
