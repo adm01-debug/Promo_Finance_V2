@@ -8,6 +8,8 @@ import {
   finalizeAudit,
   withCorrelation,
 } from "../_shared/proxy-audit.ts";
+import { ConciliacaoProxySchema, validatePayload } from "../_shared/validation.ts";
+import type { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,24 +17,11 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-request-id",
 };
 
-type Action =
-  | {
-      action: "confirmar";
-      transacaoId: string;
-      contaPagarId?: string | null;
-      contaReceberId?: string | null;
-      ajusteCentavos?: number | null;
-    }
-  | { action: "desfazer"; transacaoId: string };
+type Action = z.infer<typeof ConciliacaoProxySchema>;
 
 export interface HandlerDeps {
   verifyJwt: (token: string) => Promise<{ userId: string | null }>;
   admin: Pick<SupabaseClient, "rpc" | "from">;
-}
-
-function isUuid(s: unknown): s is string {
-  return typeof s === "string" &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
 export function createHandler(deps: HandlerDeps) {
@@ -63,26 +52,23 @@ export function createHandler(deps: HandlerDeps) {
     }
     ctx.userId = userId;
 
-    let payload: Action;
+    let raw: unknown;
     try {
-      payload = (await req.json()) as Action;
+      raw = await req.json();
     } catch {
       return json(400, { error: "Invalid JSON" }, { reason: "invalid_json" });
     }
 
-    if (!isUuid((payload as { transacaoId?: unknown }).transacaoId)) {
-      return json(400, { error: "transacaoId inválido" }, { reason: "invalid_transacao_id" });
+    const parsed = validatePayload(ConciliacaoProxySchema, raw, "conciliacao-proxy");
+    if (!parsed.success) {
+      return json(400, { error: parsed.error, details: parsed.details }, { reason: "schema_violation" });
     }
+    const payload: Action = parsed.data;
 
     try {
       if (payload.action === "confirmar") {
-        if (payload.contaPagarId != null && !isUuid(payload.contaPagarId)) {
-          return json(400, { error: "contaPagarId inválido" }, { reason: "invalid_conta_pagar_id" });
-        }
-        if (payload.contaReceberId != null && !isUuid(payload.contaReceberId)) {
-          return json(400, { error: "contaReceberId inválido" }, { reason: "invalid_conta_receber_id" });
-        }
         const ajuste = Number.isFinite(payload.ajusteCentavos) ? Number(payload.ajusteCentavos) : 0;
+
         await auditedRpc(ctx, deps.admin, "confirmar_conciliacao_manual", {
           p_transacao_id: payload.transacaoId,
           p_conta_pagar_id: payload.contaPagarId ?? null,
