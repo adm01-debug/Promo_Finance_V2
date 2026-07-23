@@ -840,7 +840,11 @@ export const handler = async (req: Request) => {
         // GRANT/RLS extras ao usuário autenticado.
         const { error: sugErr } = await supabase
           .from('asaas_reconciliation_suggestions')
-          .update({ status: 'ACCEPTED', accepted_by: user.id, accepted_at: new Date().toISOString() })
+          .update({
+            status: 'ACCEPTED',
+            metadata: { accepted_by: user.id, accepted_at: new Date().toISOString() },
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', data.suggestion_id)
         if (sugErr) return err(sugErr.message, 400)
 
