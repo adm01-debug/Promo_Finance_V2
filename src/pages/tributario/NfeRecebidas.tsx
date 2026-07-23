@@ -66,13 +66,6 @@ export default function NfeRecebidasPage() {
 
   return (
     <>
-      <Helmet>
-        <title>NF-e Recebidas | Tributário</title>
-        <meta
-          name="description"
-          content="NF-e emitidas contra seus CNPJs, sincronizadas via SEFAZ Nacional (NFeDistribuicaoDFe)."
-        />
-      </Helmet>
 
       <div className="container mx-auto space-y-6 py-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
