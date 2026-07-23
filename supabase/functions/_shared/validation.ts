@@ -243,6 +243,31 @@ export const CalculoIvaSchema = z.object({
   setor: z.string().optional(),
 }).strict();
 
+const uuid = z.string().uuid();
+
+export const NfeVinculoProxySchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("suggest"), nfeId: uuid }).strict(),
+  z.object({ action: z.literal("link"), nfeId: uuid, contaPagarId: uuid }).strict(),
+  z.object({ action: z.literal("unlink"), nfeId: uuid }).strict(),
+  z.object({
+    action: z.literal("create_from_nfe"),
+    nfeId: uuid,
+    dataVencimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+    categoriaId: uuid.optional().nullable(),
+  }).strict(),
+]);
+
+export const ConciliacaoProxySchema = z.discriminatedUnion("action", [
+  z.object({
+    action: z.literal("confirmar"),
+    transacaoId: uuid,
+    contaPagarId: uuid.optional().nullable(),
+    contaReceberId: uuid.optional().nullable(),
+    ajusteCentavos: z.number().int().optional().nullable(),
+  }).strict(),
+  z.object({ action: z.literal("desfazer"), transacaoId: uuid }).strict(),
+]);
+
 export const CategorizarDespesaSchema = z.object({
   despesas: z.array(z.object({
     id: z.string().optional(),

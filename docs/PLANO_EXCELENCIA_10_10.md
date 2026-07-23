@@ -31,7 +31,7 @@
 
 - [ ] **#5** Cobertura ≥ 85% via `vitest --coverage`. Focar `src/lib/tributario/*`, hooks financeiros, conciliação.
 - [ ] **#6** Expandir E2E: 10 → 25 specs. Adicionar NFe (emissão+cancelamento), régua de Cobrança, Aprovações multi-nível, Import XML, Split Payment, LGPD, Onboarding tributário.
-- [ ] **#7** Contrato Zod em 100% das 88 Edge Functions + teste unit por função.
+- [~] **#7** Zod contracts nas 94 Edge Functions. Baseline registrado em `scripts/security/zod-coverage.baseline` (52 funções sem `validatePayload`). Gate `scripts/security/zod-coverage.sh` integrado ao CI (job `Zod coverage gate`) — falha se novas funções regredirem. Aplicado piloto discriminado (`NfeVinculoProxySchema`/`ConciliacaoProxySchema`) nos proxies SECURITY DEFINER: 22 testes Deno verdes com mensagens padronizadas de Contract Violation. Próxima rodada: descer o baseline para as demais funções críticas (SEFAZ, SPED, OCR, LGPD).
 - [x] **#8** Suíte SQL `supabase/tests/sql/rls_multi_empresa.sql`: valida 88 tabelas com `empresa_id` — RLS habilitado, ausência de policies permissivas (`USING true`), ausência de GRANT anon (INSERT/UPDATE/DELETE) e presença do helper `user_has_empresa_access` com `SECURITY DEFINER` + `search_path` fixo. Integrado ao gate de CI (`.github/workflows/ci.yml`) após o guard de observabilidade. Views são ignoradas (RLS herdada das tabelas base).
 
 ### Fase 3 — Segurança
