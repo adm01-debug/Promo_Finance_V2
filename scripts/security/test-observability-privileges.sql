@@ -121,7 +121,7 @@ SELECT
   END
 FROM _targets_resolved t;
 
-FROM _targets t;
+
 
 \echo
 \echo '=== Privilégios EXECUTE — observabilidade / NF-e / conciliação ==='
