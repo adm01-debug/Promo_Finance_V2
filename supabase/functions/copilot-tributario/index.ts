@@ -1,6 +1,16 @@
 // Edge: copilot-tributario — chat IA streaming SSE com tool calling
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { createLogger } from '../_shared/observability.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
+
+const CopilotTributarioBodySchema = z.object({
+  messages: z.array(z.object({
+    role: z.enum(['system', 'user', 'assistant']),
+    content: z.string().max(20000),
+  })).min(1).max(50),
+  empresa_id: z.string().uuid().optional(),
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
