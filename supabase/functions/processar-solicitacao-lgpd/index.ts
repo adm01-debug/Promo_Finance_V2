@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { validatePayload } from '../_shared/validation.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -36,7 +38,10 @@ serve(async (req) => {
     }
     const userId = userData.user.id;
 
-    const body = (await req.json()) as Payload;
+    const body = (await req.json()) 
+    const __contract = validatePayload(z.object({ solicitacao_id: z.string().uuid() }), (typeof body === 'object' ? body : {}) as unknown, 'processar-solicitacao-lgpd');
+    if (!__contract.success) return new Response(JSON.stringify({ error: __contract.error, details: __contract.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+as Payload;
     if (!body?.solicitacao_id) {
       return new Response(JSON.stringify({ error: "solicitacao_id required" }), {
         status: 400,
