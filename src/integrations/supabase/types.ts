@@ -10587,6 +10587,45 @@ export type Database = {
           },
         ]
       }
+      rpc_observability_metrics: {
+        Row: {
+          called_at: string
+          caller_role: string | null
+          caller_user_id: string | null
+          duration_ms: number
+          error_message: string | null
+          error_sqlstate: string | null
+          function_name: string
+          id: number
+          meta: Json
+          success: boolean
+        }
+        Insert: {
+          called_at?: string
+          caller_role?: string | null
+          caller_user_id?: string | null
+          duration_ms: number
+          error_message?: string | null
+          error_sqlstate?: string | null
+          function_name: string
+          id?: number
+          meta?: Json
+          success?: boolean
+        }
+        Update: {
+          called_at?: string
+          caller_role?: string | null
+          caller_user_id?: string | null
+          duration_ms?: number
+          error_message?: string | null
+          error_sqlstate?: string | null
+          function_name?: string
+          id?: number
+          meta?: Json
+          success?: boolean
+        }
+        Relationships: []
+      }
       runtime_error_logs: {
         Row: {
           app_version: string | null
@@ -13531,6 +13570,35 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_rpc_hotspots: {
+        Row: {
+          avg_ms: number | null
+          bucket_hour: string | null
+          calls: number | null
+          errors: number | null
+          function_name: string | null
+          max_ms: number | null
+          p50_ms: number | null
+          p95_ms: number | null
+          p99_ms: number | null
+        }
+        Relationships: []
+      }
+      vw_rpc_slow_calls: {
+        Row: {
+          called_at: string | null
+          caller_role: string | null
+          caller_user_id: string | null
+          duration_ms: number | null
+          error_message: string | null
+          error_sqlstate: string | null
+          function_name: string | null
+          id: number | null
+          meta: Json | null
+          success: boolean | null
+        }
+        Relationships: []
+      }
       vw_saldos_contas: {
         Row: {
           empresa_id: string | null
@@ -13630,6 +13698,7 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       cleanup_pgss_baseline: { Args: { p_days?: number }; Returns: number }
+      cleanup_rpc_observability_metrics: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
       compare_pg_stat_baseline: {
         Args: { p_label?: string }
@@ -13912,6 +13981,17 @@ export type Database = {
         }
         Returns: string
       }
+      log_rpc_observability_call: {
+        Args: {
+          _duration_ms: number
+          _error_message?: string
+          _error_sqlstate?: string
+          _function_name: string
+          _meta?: Json
+          _success: boolean
+        }
+        Returns: undefined
+      }
       log_sso_onboarding_event: {
         Args: {
           _context?: Json
@@ -14059,6 +14139,10 @@ export type Database = {
       }
       run_daily_cleanup: { Args: never; Returns: Json }
       run_daily_cleanup_with_logging: { Args: never; Returns: undefined }
+      run_observability_rpc: {
+        Args: { _function_name: string }
+        Returns: undefined
+      }
       sefaz_cursor_advance: {
         Args: {
           p_ambiente: Database["public"]["Enums"]["sefaz_ambiente"]
