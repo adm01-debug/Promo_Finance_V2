@@ -244,14 +244,48 @@ export default function NfeRecebidasPage() {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => downloadXml(n.id, n.xml_path)}
-                          disabled={!n.xml_path}
-                        >
-                          <Download className="mr-1 h-4 w-4" /> XML
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => downloadXml(n.id, n.xml_path)}
+                            disabled={!n.xml_path}
+                          >
+                            <Download className="mr-1 h-4 w-4" /> XML
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={manifestar.isPending}
+                              >
+                                {manifestar.isPending && manifestar.variables?.chave_acesso === n.chave_acesso ? (
+                                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Eye className="mr-1 h-4 w-4" />
+                                )}
+                                Manifestar
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                              <DropdownMenuLabel>Evento SEFAZ</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210210')}>
+                                <Eye className="mr-2 h-4 w-4" /> {MANIFESTACAO_LABEL['210210']}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210200')}>
+                                <CheckCircle2 className="mr-2 h-4 w-4 text-success" /> {MANIFESTACAO_LABEL['210200']}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210220')}>
+                                <HelpCircle className="mr-2 h-4 w-4 text-warning" /> {MANIFESTACAO_LABEL['210220']}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210240')}>
+                                <XCircle className="mr-2 h-4 w-4 text-destructive" /> {MANIFESTACAO_LABEL['210240']}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
