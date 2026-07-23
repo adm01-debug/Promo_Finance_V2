@@ -8,15 +8,56 @@
 
 BEGIN;
 
--- Funções que devem ser bloqueadas para anon/PUBLIC e liberadas para service_role.
-CREATE TEMP TABLE _targets(fn text) ON COMMIT DROP;
-INSERT INTO _targets(fn) VALUES
-  ('public.capture_pg_stat_statements_baseline(text)'),
-  ('public.capture_slow_queries(numeric)'),
-  ('public.monitor_table_bloat()'),
-  ('public.snapshot_table_bloat()'),
-  ('public.refresh_performance_alerts_weekly()'),
-  ('public.sefaz_run_observability_checks()');
+-- Funções que devem ser bloqueadas para anon/PUBLIC/authenticated e liberadas
+-- apenas para service_role (authenticated pode receber acesso via has_role no
+-- corpo da função, mas o GRANT EXECUTE bruto deve permanecer negado).
+CREATE TEMP TABLE _targets(fn text, categoria text) ON COMMIT DROP;
+
+-- Observabilidade / performance
+INSERT INTO _targets(fn, categoria) VALUES
+  ('public.capture_pg_stat_statements_baseline(text)',        'observability'),
+  ('public.capture_slow_queries(numeric)',                    'observability'),
+  ('public.monitor_table_bloat()',                            'observability'),
+  ('public.snapshot_table_bloat()',                           'observability'),
+  ('public.refresh_performance_alerts_weekly()',              'observability'),
+  ('public.sefaz_run_observability_checks()',                 'observability');
+
+-- NF-e (SECURITY DEFINER): manifestação e vínculo financeiro
+INSERT INTO _targets(fn, categoria) VALUES
+  ('public.nfe_apply_manifestacao(p_chave text, p_tipo_evento text, p_codigo_evento text, p_sequencial integer, p_data_evento timestamp with time zone, p_protocolo text, p_justificativa text, p_status_retorno text, p_motivo_retorno text, p_novo_status nfe_manifestacao_status, p_raw jsonb)', 'nfe'),
+  ('public.nfe_create_conta_pagar_from_nfe(p_nfe_id uuid, p_data_vencimento date, p_categoria_id uuid)', 'nfe'),
+  ('public.nfe_link_conta_pagar(p_nfe_id uuid, p_conta_pagar_id uuid)',   'nfe'),
+  ('public.nfe_suggest_contas_pagar(p_nfe_id uuid)',                      'nfe'),
+  ('public.nfe_unlink_conta_pagar(p_nfe_id uuid)',                        'nfe');
+
+-- Conciliação bancária (SECURITY DEFINER): confirmar/desfazer/sugestões
+INSERT INTO _targets(fn, categoria) VALUES
+  ('public.confirmar_conciliacao(p_conciliacao_id uuid, p_user_id uuid, p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)', 'conciliacao'),
+  ('public.confirmar_conciliacao_manual(p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)', 'conciliacao'),
+  ('public.desfazer_conciliacao(p_conciliacao_id uuid, p_transacao_id uuid, p_user_id uuid)',                                             'conciliacao'),
+  ('public.desfazer_conciliacao_manual(p_transacao_id uuid)',                                                                             'conciliacao'),
+  ('public.generate_reconciliation_suggestions(p_empresa_id uuid, p_transaction_date date, p_transaction_value numeric, p_transaction_id uuid)', 'conciliacao');
+
+-- Guarda: garante que todas as funções alvo existem no banco (evita falso PASS
+-- caso uma função seja renomeada/removida e o teste passe a validar o vazio).
+DO $$
+DECLARE r RECORD; v_missing INT := 0;
+BEGIN
+  FOR r IN SELECT fn FROM _targets LOOP
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_proc p
+      JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE (n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')') = r.fn
+    ) THEN
+      RAISE WARNING 'Função alvo não encontrada: %', r.fn;
+      v_missing := v_missing + 1;
+    END IF;
+  END LOOP;
+  IF v_missing > 0 THEN
+    RAISE EXCEPTION 'Security test FAILED: % função(ões) alvo ausente(s) — atualizar assinaturas em _targets', v_missing;
+  END IF;
+END $$;
+
 
 -- Matriz esperada: (role, deve_executar?). 'PUBLIC' é tratado à parte via proacl.
 CREATE TEMP TABLE _expected(role_name text, expected boolean) ON COMMIT DROP;
