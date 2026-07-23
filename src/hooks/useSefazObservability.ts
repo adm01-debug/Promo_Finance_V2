@@ -63,3 +63,24 @@ export function useSefazAlerts() {
     refetchInterval: 60_000,
   });
 }
+
+export function useResolveAlert() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from('integrity_alerts')
+        .update({ resolved_at: new Date().toISOString(), resolved_by: userData.user?.id ?? null })
+        .eq('id', id);
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sefaz-integrity-alerts'] });
+      qc.invalidateQueries({ queryKey: ['sefaz-observability'] });
+      toast.success('Alerta resolvido');
+    },
+    onError: (e: Error) => toast.error(`Falha ao resolver: ${e.message}`),
+  });
+}
