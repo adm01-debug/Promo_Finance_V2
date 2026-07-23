@@ -4,12 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
 import type { StatusPagamento } from './types';
 
-export type ContaReceberPainelRow = Record<string, any>;
-
 export function useContasReceber(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-receber', empresaId],
-    queryFn: async (): Promise<any[]> => {
+    queryFn: async () => {
       let query = supabase
         .from('vw_contas_receber_painel')
         .select('*')
@@ -22,11 +20,12 @@ export function useContasReceber(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as ContaReceberPainelRow[];
+      return (data ?? []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
 }
+
 
 
 
