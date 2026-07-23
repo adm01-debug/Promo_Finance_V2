@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { Download, FileText, Link2, Loader2, RefreshCw } from 'lucide-react';
+import { CheckCircle2, Download, Eye, FileText, HelpCircle, Link2, Loader2, RefreshCw, XCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,13 +22,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import {
   getNfeXmlSignedUrl,
   useNfeRecebidas,
   type ManifestacaoStatus,
   type NfeFiltros,
+  type NfeRecebida,
 } from '@/hooks/useNfeRecebidas';
+import { MANIFESTACAO_LABEL, useManifestarNfe, type ManifestacaoTipo } from '@/hooks/useManifestarNfe';
 
 const STATUS_LABELS: Record<ManifestacaoStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   pendente: { label: 'Pendente', variant: 'outline' },
