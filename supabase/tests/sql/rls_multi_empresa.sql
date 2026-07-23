@@ -89,24 +89,40 @@ DO $$
 DECLARE
   bad text[];
 BEGIN
+  -- service_role precisa de SELECT direto em toda tabela física com empresa_id
   SELECT array_agg(c.table_name ORDER BY c.table_name) INTO bad
   FROM information_schema.columns c
+  JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = 'public'::regnamespace
   WHERE c.table_schema = 'public'
     AND c.column_name = 'empresa_id'
-    AND NOT has_table_privilege('service_role', 'public.' || quote_ident(c.table_name), 'SELECT');
+    AND pc.relkind = 'r'
+    AND NOT EXISTS (
+      SELECT 1 FROM information_schema.role_table_grants g
+      WHERE g.table_schema = 'public'
+        AND g.table_name = c.table_name
+        AND g.grantee = 'service_role'
+        AND g.privilege_type = 'SELECT'
+    );
 
   IF bad IS NOT NULL THEN
-    RAISE EXCEPTION 'service_role sem SELECT em: %', bad;
+    RAISE EXCEPTION 'service_role sem GRANT SELECT direto em: %', bad;
   END IF;
 
-  SELECT array_agg(c.table_name ORDER BY c.table_name) INTO bad
+  -- anon jamais deve receber DELETE/UPDATE/INSERT direto em tabelas multi-empresa
+  SELECT array_agg(DISTINCT c.table_name ORDER BY c.table_name) INTO bad
   FROM information_schema.columns c
+  JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = 'public'::regnamespace
+  JOIN information_schema.role_table_grants g
+    ON g.table_schema = 'public'
+   AND g.table_name = c.table_name
+   AND g.grantee = 'anon'
+   AND g.privilege_type IN ('DELETE','UPDATE','INSERT')
   WHERE c.table_schema = 'public'
     AND c.column_name = 'empresa_id'
-    AND has_table_privilege('anon', 'public.' || quote_ident(c.table_name), 'DELETE');
+    AND pc.relkind = 'r';
 
   IF bad IS NOT NULL THEN
-    RAISE EXCEPTION 'anon com DELETE em tabelas multi-empresa: %', bad;
+    RAISE EXCEPTION 'anon com GRANT de escrita direto em tabelas multi-empresa: %', bad;
   END IF;
 END $$;
 
