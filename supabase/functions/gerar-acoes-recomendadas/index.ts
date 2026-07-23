@@ -32,8 +32,10 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const body = await req.json().catch(() => ({}));
-    const empresaIdFilter: string | undefined = body.empresa_id;
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(AcoesRecomendadasBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
     let q = supabase.from("empresas").select("id, razao_social").eq("ativa", true);
     if (empresaIdFilter) q = q.eq("id", empresaIdFilter);
