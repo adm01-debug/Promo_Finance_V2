@@ -55,7 +55,7 @@ function getInitialsFromName(name?: string | null, email?: string | null): strin
 }
 
 export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }, ref) => {
-  const { theme, setTheme, isDark } = useTheme();
+  const { theme, setTheme, resetTheme, isDark } = useTheme();
   const { user, profile, role, roleAtual, currentEmpresaId, signOut } = useAuth();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
@@ -161,6 +161,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 <DropdownMenuItem onClick={() => setTheme('light')} className="text-sm">Claro</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('dark')} className="text-sm">Escuro</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('system')} className="text-sm">Sistema</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => resetTheme()} className="text-sm text-muted-foreground">
+                  Restaurar padrão (escuro)
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
