@@ -54,6 +54,29 @@ export function exportToCSV<T extends object>(
   URL.revokeObjectURL(link.href);
 }
 
+// Exportar para JSON (uso em auditoria/investigação — preserva estrutura completa)
+export function exportToJSON<T extends object>(
+  data: T[],
+  filename: string,
+  metadata?: Record<string, unknown>
+): void {
+  const payload = {
+    exported_at: new Date().toISOString(),
+    total_records: data.length,
+    ...(metadata ? { metadata } : {}),
+    records: data,
+  };
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${filename}_${todayISOLocal()}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+
+
 // Exportar para PDF (usando print do browser)
 export function exportToPDF<T extends object>(
   data: T[],
