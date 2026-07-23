@@ -76,15 +76,13 @@ export function createHandler(deps: HandlerDeps) {
           return json(200, { data }, { action: "suggest" });
         }
         case "link": {
-          if (!isUuid(payload.contaPagarId)) {
-            return json(400, { error: "contaPagarId inválido" }, { reason: "invalid_conta_pagar_id" });
-          }
           const data = await auditedRpc(ctx, deps.admin, "nfe_link_conta_pagar", {
             p_nfe_id: payload.nfeId,
             p_conta_pagar_id: payload.contaPagarId,
           }, "link");
           return json(200, { data }, { action: "link" });
         }
+
         case "unlink": {
           const data = await auditedRpc(ctx, deps.admin, "nfe_unlink_conta_pagar", {
             p_nfe_id: payload.nfeId,
