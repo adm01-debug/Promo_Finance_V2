@@ -57,6 +57,14 @@ Sai com código `1` se qualquer invariante falhar.
 | `duplicate` | k∈{2,3,5} | eventos repetidos |
 | `latency` | jitter ms | modela atraso (sem I/O) |
 | `partial_write` | taxa 0..1 | falha após primeira mutação ok |
+| `nfe_gzip_corrupt` | — | ~40% dos eventos DFe chegam com gzip inválido (puxador pula sem persistir) |
+| `nfe_nsu_gap` | — | saltos aleatórios de NSU (>=10) simulando lacunas do webservice |
+| `nfe_soap_timeout` | — | ~30% dos eventos abortam mid-batch; cursor não avança nesses |
+
+Os três últimos são a contraparte lógica do mock SOAP em
+`supabase/functions/_shared/sefaz/__mocks__/soap-mock.ts` (kinds
+`gzip_corrupt`, `nsu_gap`, `timeout`). Fixtures XML compartilhadas em
+`supabase/functions/_shared/sefaz/__fixtures__/`.
 
 ## Invariantes (catálogo)
 
