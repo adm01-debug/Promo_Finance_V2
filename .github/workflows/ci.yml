@@ -49,6 +49,8 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-observability-privileges.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/security/test-security-definer-invocation.sql
 
 
       - name: Type check
