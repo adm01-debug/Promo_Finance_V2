@@ -2,7 +2,13 @@
  * Tipos compartilhados do harness de cenários.
  */
 
-export type Domain = "conciliacao" | "webhooks" | "cobranca" | "anomalias" | "nfe";
+export type Domain =
+  | "conciliacao"
+  | "webhooks"
+  | "cobranca"
+  | "anomalias"
+  | "nfe"
+  | "entregas";
 
 export type FaultKind =
   | "none"
@@ -14,7 +20,11 @@ export type FaultKind =
   | "partial_write"
   | "nfe_gzip_corrupt"
   | "nfe_nsu_gap"
-  | "nfe_soap_timeout";
+  | "nfe_soap_timeout"
+  | "entrega_driver_offline"
+  | "entrega_gps_lost"
+  | "entrega_pod_missing"
+  | "entrega_status_regressivo";
 
 export interface FaultSpec {
   kind: FaultKind;
