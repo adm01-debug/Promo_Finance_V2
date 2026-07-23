@@ -45,7 +45,9 @@ function makeNFe(id: string, valor = 100, dataEmissao = new Date('2026-01-01')) 
 
 describe('sefaz-contingency :: state', () => {
   beforeEach(() => {
-    localStorage.clear();
+    store.clear();
+    // initialState é compartilhado (referência); zera pendências residuais
+    getContingencyState().pendingNFes.forEach((n) => removePendingNFe(n.id));
   });
 
   it('activateContingency salva modo, motivo e activatedAt', () => {
