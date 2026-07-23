@@ -108,8 +108,10 @@ serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    const body = await req.json().catch(() => ({}));
-    const empresaIdFilter: string | undefined = body.empresa_id;
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(ResumoSemanalBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
     const hoje = new Date();
     const semanaFim = new Date(hoje); semanaFim.setDate(hoje.getDate() - 1);
