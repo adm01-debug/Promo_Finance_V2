@@ -75,17 +75,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json().catch(() => ({}));
-    const empresa_id = body.empresa_id as string | undefined;
-    const meses_historico = Math.min(Math.max(Number(body.meses_historico ?? 12), 3), 24);
-
-    if (!empresa_id) {
+    const raw = await req.json().catch(() => ({}));
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const Schema = z.object({
+      empresa_id: z.string().uuid(),
+      meses_historico: z.number().int().min(3).max(24).optional(),
+    }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'prever-carga-tributaria');
+    if (!parsed.success) {
       await logger.flush();
-      return new Response(JSON.stringify({ error: 'empresa_id obrigatório' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return createErrorResponse(parsed.error, 400, parsed.details);
     }
+    const empresa_id = parsed.data.empresa_id as string;
+    const meses_historico = Math.min(Math.max(Number(parsed.data.meses_historico ?? 12), 3), 24);
 
     // Buscar série histórica
     const { data: serieRaw, error: serieErr } = await admin
