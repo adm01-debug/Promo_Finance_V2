@@ -187,6 +187,8 @@ Deno.test("telemetria: logs estruturados contêm cStat, cb_open e duration_ms po
     const row = telemetry[0] as any;
     assertEquals(row.operation, "sefaz_dfe_puxar");
     const payload = JSON.parse(row.error_message);
+    logs.restore(); // permite prints de debug após capture
+    console.error("SUMMARY DEBUG", JSON.stringify(summary), "PAYLOAD", JSON.stringify(payload));
     assertEquals(payload.cnpj, CNPJ);
     assertEquals(payload.cb_open, false);
     assert("cStat_final" in payload);
