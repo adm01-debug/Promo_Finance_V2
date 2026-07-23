@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AlertTriangle, Activity, CheckCircle2, Loader2, RefreshCw, ShieldAlert, Zap } from 'lucide-react';
+import { AlertTriangle, Activity, Check, CheckCircle2, Loader2, RefreshCw, ShieldAlert, Zap } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useSefazAlerts, useSefazObservability } from '@/hooks/useSefazObservability';
+import { useResolveAlert, useSefazAlerts, useSefazObservability } from '@/hooks/useSefazObservability';
 
 const SEVERITY_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   critical: 'destructive',
@@ -32,6 +32,7 @@ function fmtSeconds(sec: number | null): string {
 export default function SefazObservabilidade() {
   const cursors = useSefazObservability();
   const alerts = useSefazAlerts();
+  const resolveMutation = useResolveAlert();
 
   const kpis = useMemo(() => {
     const rows = cursors.data ?? [];
@@ -163,6 +164,7 @@ export default function SefazObservabilidade() {
                 <TableHead>Motivo</TableHead>
                 <TableHead className="text-right">Afetados</TableHead>
                 <TableHead>Quando</TableHead>
+                <TableHead className="text-right">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -179,11 +181,27 @@ export default function SefazObservabilidade() {
                   <TableCell className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(a.created_at), { addSuffix: true, locale: ptBR })}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => resolveMutation.mutate(a.id)}
+                      disabled={resolveMutation.isPending && resolveMutation.variables === a.id}
+                      aria-label={`Resolver alerta ${a.invariant}`}
+                    >
+                      {resolveMutation.isPending && resolveMutation.variables === a.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Check className="h-3.5 w-3.5" />
+                      )}
+                      <span className="ml-1">Resolver</span>
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
               {(alerts.data ?? []).length === 0 && !loading && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                     Nenhum alerta aberto — SEFAZ operando dentro dos invariantes ✅
                   </TableCell>
                 </TableRow>
