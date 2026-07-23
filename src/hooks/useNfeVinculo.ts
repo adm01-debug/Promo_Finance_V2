@@ -67,7 +67,7 @@ export function useDesvincularNfe() {
       toast.success('Vínculo removido.');
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
     },
-    onError: (err: Error) => toast.error('Falha ao desvincular', { description: err.message }),
+    onError: (err) => handleEdgeError(err, 'Falha ao desvincular'),
   });
 }
 
