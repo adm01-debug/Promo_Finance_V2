@@ -65,32 +65,16 @@ CREATE TEMP TABLE _exceptions(
 ) ON COMMIT DROP;
 
 INSERT INTO _exceptions(fn, role_name, motivo, expira_em) VALUES
-  -- NF-e: migradas para Edge Function `nfe-vinculo-proxy` (service_role).
-  -- GRANT antigo mantido temporariamente até rollout do proxy em produção.
-  ('public.nfe_suggest_contas_pagar(p_nfe_id uuid)',
-   'authenticated', 'Migrado para nfe-vinculo-proxy; revogar após rollout', DATE '2026-08-31'),
-  ('public.nfe_link_conta_pagar(p_nfe_id uuid, p_conta_pagar_id uuid)',
-   'authenticated', 'Migrado para nfe-vinculo-proxy; revogar após rollout', DATE '2026-08-31'),
-  ('public.nfe_unlink_conta_pagar(p_nfe_id uuid)',
-   'authenticated', 'Migrado para nfe-vinculo-proxy; revogar após rollout', DATE '2026-08-31'),
-  ('public.nfe_create_conta_pagar_from_nfe(p_nfe_id uuid, p_data_vencimento date, p_categoria_id uuid)',
-   'authenticated', 'Migrado para nfe-vinculo-proxy; revogar após rollout', DATE '2026-08-31'),
-
-  -- Conciliação: RPCs manuais migradas para `conciliacao-proxy` (service_role).
-  ('public.confirmar_conciliacao_manual(p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)',
-   'authenticated', 'Migrado para conciliacao-proxy; revogar após rollout', DATE '2026-08-31'),
-  ('public.desfazer_conciliacao_manual(p_transacao_id uuid)',
-   'authenticated', 'Migrado para conciliacao-proxy; revogar após rollout', DATE '2026-08-31'),
-
   -- Conciliação: RPCs legadas ainda consumidas por fluxos administrativos.
   -- Proteção efetiva vem de has_role no corpo (default-deny) — plano é migrar
   -- para o mesmo proxy até a data abaixo.
   ('public.confirmar_conciliacao(p_conciliacao_id uuid, p_user_id uuid, p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)',
    'authenticated', 'Fluxo legado; migrar para conciliacao-proxy', DATE '2026-10-31'),
   ('public.desfazer_conciliacao(p_conciliacao_id uuid, p_transacao_id uuid, p_user_id uuid)',
-   'authenticated', 'Fluxo legado; migrar para conciliacao-proxy', DATE '2026-10-31'),
-  ('public.generate_reconciliation_suggestions(p_empresa_id uuid, p_transaction_date date, p_transaction_value numeric, p_transaction_id uuid)',
-   'authenticated', 'Sugestões IA consumidas pelo painel; migrar para proxy', DATE '2026-10-31');
+   'authenticated', 'Fluxo legado; migrar para conciliacao-proxy', DATE '2026-10-31');
+-- NF-e (nfe_suggest/link/unlink/create_conta_pagar_from_nfe), conciliação manual
+-- (confirmar/desfazer_conciliacao_manual) e generate_reconciliation_suggestions
+-- foram revogadas de authenticated e agora só rodam via proxies service_role.
 
 -- Guarda: garante que todas as funções alvo existem no banco (evita falso PASS
 -- caso uma função seja renomeada/removida e o teste passe a validar o vazio).
