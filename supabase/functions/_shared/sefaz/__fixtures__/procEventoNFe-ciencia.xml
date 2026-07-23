@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<procEventoNFe xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.00">
+  <evento versao="1.00">
+    <infEvento Id="ID21020035240611222333000181550010000000011000000015001">
+      <cOrgao>91</cOrgao>
+      <tpAmb>2</tpAmb>
+      <CNPJ>44555666000199</CNPJ>
+      <chNFe>35240611222333000181550010000000011000000015</chNFe>
+      <dhEvento>2026-07-22T11:00:00-03:00</dhEvento>
+      <tpEvento>210200</tpEvento>
+      <nSeqEvento>1</nSeqEvento>
+      <verEvento>1.00</verEvento>
+      <detEvento versao="1.00">
+        <descEvento>Ciencia da Operacao</descEvento>
+      </detEvento>
+    </infEvento>
+  </evento>
+  <retEvento versao="1.00">
+    <infEvento>
+      <tpAmb>2</tpAmb>
+      <verAplic>SEFAZ-MOCK</verAplic>
+      <cOrgao>91</cOrgao>
+      <cStat>135</cStat>
+      <xMotivo>Evento registrado e vinculado a NF-e</xMotivo>
+      <chNFe>35240611222333000181550010000000011000000015</chNFe>
+      <tpEvento>210200</tpEvento>
+      <nSeqEvento>1</nSeqEvento>
+      <dhRegEvento>2026-07-22T11:00:05-03:00</dhRegEvento>
+      <nProt>191260000000001</nProt>
+    </infEvento>
+  </retEvento>
+</procEventoNFe>
