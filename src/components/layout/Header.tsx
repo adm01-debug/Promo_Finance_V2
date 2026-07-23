@@ -161,6 +161,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 <DropdownMenuItem onClick={() => setTheme('light')} className="text-sm">Claro</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('dark')} className="text-sm">Escuro</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('system')} className="text-sm">Sistema</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => resetTheme()} className="text-sm text-muted-foreground">
+                  Restaurar padrão (escuro)
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
