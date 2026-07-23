@@ -379,9 +379,10 @@ export default function CalculadoraTributaria() {
           {resultadoAtivo && <MemoriaCalculo resultado={resultadoAtivo} />}
         </div>
 
-        {/* COMPARATIVO */}
-        <div className="lg:col-span-3">
+        {/* COMPARATIVO + HISTÓRICO */}
+        <div className="lg:col-span-3 space-y-4">
           <ComparativoRegimes resultado={resultado} />
+          <HistoricoCenariosCalculadora empresaId={empresaId} />
         </div>
       </div>
     </div>
