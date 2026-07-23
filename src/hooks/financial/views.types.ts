@@ -45,6 +45,8 @@ export interface ContasReceberPainelRow {
   cliente_nome_display: string | null;
   centro_custo_nome: string | null;
   conta_bancaria_nome: string | null;
+  vendedor_id: string | null;
+  [key: string]: unknown;
 }
 
 export interface ContasPagarPainelRow {
@@ -85,4 +87,5 @@ export interface ContasPagarPainelRow {
   fornecedor_nome_display: string | null;
   centro_custo_nome: string | null;
   conta_bancaria_nome: string | null;
+  [key: string]: unknown;
 }
