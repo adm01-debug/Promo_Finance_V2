@@ -103,7 +103,7 @@ const asSefazFetch = () => async (url: string, envelope: string) => {
 
 const cert = (cnpj: string): CertificadoRow => ({
   id: `cert-${cnpj}`,
-  empresa_id: `e-${cnpj}`,
+  empresa_id: crypto.randomUUID(),
   cnpj,
   razao_social: `Emitente ${cnpj}`,
   uf: "SP",
