@@ -14,7 +14,8 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
-import forge from "npm:node-forge@1.3.1";
+// `node-forge` é carregado dinamicamente em `pfxToPem` para não exigir a
+// dependência em testes locais que só exercitam parsing/soap.
 
 export interface CertificadoRow {
   id: string;
