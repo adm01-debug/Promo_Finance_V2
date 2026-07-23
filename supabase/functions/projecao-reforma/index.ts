@@ -49,8 +49,20 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) return new Response('Unauthorized', { status: 401, headers: corsHeaders });
 
-    const body = await req.json();
-    const { faturamentoAnual, percentualServicos, pisCofinsAtual = 9.25, icmsAtual = 18, issAtual = 5, setor = 'geral' } = body;
+    const raw = await req.json();
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const Schema = z.object({
+      faturamentoAnual: z.number().nonnegative(),
+      percentualServicos: z.number().min(0).max(100),
+      pisCofinsAtual: z.number().optional(),
+      icmsAtual: z.number().optional(),
+      issAtual: z.number().optional(),
+      setor: z.string().optional(),
+    }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'projecao-reforma');
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const { faturamentoAnual, percentualServicos, pisCofinsAtual = 9.25, icmsAtual = 18, issAtual = 5, setor = 'geral' } = parsed.data as Record<string, any>;
 
     const redutor = redutorSetorial(setor);
     const pctServ = percentualServicos / 100;

@@ -277,3 +277,60 @@ export const CategorizarDespesaSchema = z.object({
     data_vencimento: z.string().optional(),
   })),
 }).strict();
+
+// ============ Schemas Calculadora Tributária ============
+
+const FaturamentoMesSchema = z.object({
+  ano: z.number().int(),
+  mes: z.number().int().min(0).max(11),
+  receita_bruta: z.number().nonnegative(),
+}).passthrough();
+
+const FolhaMesSchema = z.object({
+  ano: z.number().int(),
+  mes: z.number().int().min(0).max(11),
+  valor: z.number().nonnegative(),
+}).passthrough();
+
+export const ParametrosSimulacaoSchema = z.object({
+  faturamentoAnual: z.number().nonnegative(),
+  faturamentoMensal: z.array(FaturamentoMesSchema).optional(),
+  folhaAnual: z.number().nonnegative().optional(),
+  folhaMensal: z.array(FolhaMesSchema).optional(),
+  percentualServicos: z.number().min(0).max(100).optional(),
+  margemLucro: z.number().optional(),
+  setor: z.string().optional(),
+  atividade: z.string().optional(),
+  cnaePrincipal: z.string().optional(),
+  custos: z.number().nonnegative().optional(),
+  despesas: z.number().nonnegative().optional(),
+}).passthrough();
+
+export const SimularSimplesRpcSchema = z.object({
+  faturamentoAnual: z.number().nonnegative(),
+  rbt12: z.number().nonnegative().optional().nullable(),
+  folha12m: z.number().nonnegative().optional().nullable(),
+  percentualServicos: z.number().min(0).max(100).optional().nullable(),
+  anexoForcado: z.string().optional().nullable(),
+}).passthrough();
+
+export const DecidirRegimeSchema = z.object({
+  parametros: ParametrosSimulacaoSchema,
+  ano: z.number().int().optional(),
+  mes: z.number().int().min(1).max(12).optional(),
+  regimeAtual: z.enum(['simples', 'presumido', 'real']).optional().nullable(),
+}).passthrough();
+
+export const ProjecaoReformaSchema = z.object({
+  faturamentoAnual: z.number().nonnegative(),
+  setor: z.string().optional(),
+  cbsBase: z.number().optional(),
+  ibsBase: z.number().optional(),
+  anos: z.array(z.number().int()).optional(),
+}).passthrough();
+
+export const PreverCargaSchema = z.object({
+  empresa_id: z.string().uuid().optional().nullable(),
+  meses: z.number().int().min(1).max(24).optional(),
+  horizonte: z.number().int().min(1).max(24).optional(),
+}).passthrough();

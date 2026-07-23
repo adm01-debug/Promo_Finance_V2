@@ -1,25 +1,19 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { simularPresumido } from '../_shared/tributario-logic.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import { corsHeaders, validatePayload, createErrorResponse, ParametrosSimulacaoSchema } from '../_shared/validation.ts';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const params = await req.json();
-    const result = simularPresumido(params);
-
+    const raw = await req.json();
+    const parsed = validatePayload(ParametrosSimulacaoSchema, raw, 'simular-presumido');
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const result = simularPresumido(parsed.data as Parameters<typeof simularPresumido>[0]);
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return createErrorResponse((e as Error).message, 500);
   }
 });
