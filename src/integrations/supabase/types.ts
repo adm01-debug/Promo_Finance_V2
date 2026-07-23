@@ -13606,6 +13606,7 @@ export type Database = {
           remaining_seconds: number
         }[]
       }
+      check_nfe_xml_path_invariants: { Args: never; Returns: Json }
       cleanup_expired_tokens: { Args: never; Returns: number }
       cleanup_log_tables: { Args: never; Returns: Json }
       cleanup_old_cron_logs: { Args: never; Returns: number }
