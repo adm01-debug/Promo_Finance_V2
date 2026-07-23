@@ -33,7 +33,10 @@ serve(async (req) => {
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
-    const { dados, contexto } = await req.json();
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(InsightsRelatorioBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const { dados, contexto } = validation.data;
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
 
