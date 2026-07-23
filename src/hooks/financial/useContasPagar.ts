@@ -8,6 +8,7 @@ import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
 import { sel, type StatusPagamento } from './types';
 import type { ContasPagarPainelRow } from './views.types';
+import { parseContasPagarRows } from './views.schemas';
 
 export function useContasPagar(empresaId?: string) {
   return useQuery<ContasPagarPainelRow[]>({
@@ -25,7 +26,7 @@ export function useContasPagar(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as unknown as ContasPagarPainelRow[];
+      return parseContasPagarRows((data ?? []) as unknown[]);
     },
     staleTime: STALE_TIMES.financial,
   });
