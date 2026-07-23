@@ -1,7 +1,7 @@
 import type { Domain, FaultKind, FaultSpec, ScenarioSpec } from "./types";
 import { createRng } from "./rng";
 
-const DOMAINS: Domain[] = ["conciliacao", "webhooks", "cobranca", "anomalias", "nfe"];
+const DOMAINS: Domain[] = ["conciliacao", "webhooks", "cobranca", "anomalias", "nfe", "entregas"];
 const FAULT_KINDS: FaultKind[] = [
   "none",
   "timeout",
@@ -13,6 +13,10 @@ const FAULT_KINDS: FaultKind[] = [
   "nfe_gzip_corrupt",
   "nfe_nsu_gap",
   "nfe_soap_timeout",
+  "entrega_driver_offline",
+  "entrega_gps_lost",
+  "entrega_pod_missing",
+  "entrega_status_regressivo",
 ];
 
 function faultParam(kind: FaultKind, rng: ReturnType<typeof createRng>): FaultSpec {
