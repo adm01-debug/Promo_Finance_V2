@@ -76,8 +76,9 @@ export async function pfxToPem(pfxBytes: Uint8Array, password: string): Promise<
   keyPem: string;
   caPem: string | null;
 }> {
-  const forgeMod: any = await import("npm:node-forge@1.3.1");
-  const forge: any = forgeMod.default ?? forgeMod;
+  const forgeSpecifier = "npm:node-forge@1.3.1";
+  const forgeMod: any = await import(forgeSpecifier);
+
 
   let binary = "";
   const chunk = 0x8000;
