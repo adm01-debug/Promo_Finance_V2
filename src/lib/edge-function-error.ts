@@ -225,9 +225,9 @@ function reportEdgeError(err: EdgeFunctionError): void {
     });
     return;
   }
-  captureException(err, {
+  errorTracker.captureException(err, {
     tags: { source: 'edge_function', fn: err.functionName, status: String(err.status) },
-    extra: { body: err.body },
+    extra: { body: err.body ?? undefined },
   });
 }
 
