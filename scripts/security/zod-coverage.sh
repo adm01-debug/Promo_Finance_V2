@@ -18,7 +18,7 @@ for d in "$FUNCS_DIR"/*/; do
   [ -f "$f" ] || continue
   total=$((total+1))
   if grep -q "req\.json()" "$f" 2>/dev/null; then
-    if ! grep -qE "validatePayload|_shared/validation" "$f" 2>/dev/null; then
+    if ! grep -qE "validatePayload|validateContract|_shared/validation|_shared/contract-validator" "$f" 2>/dev/null; then
       missing+=("$name")
     fi
   fi
