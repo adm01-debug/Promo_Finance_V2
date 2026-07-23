@@ -50,6 +50,10 @@ export function shouldFail(fault: FaultSpec, rng: Rng, opIndex: number): string 
     case "nfe_gzip_corrupt":
     case "nfe_nsu_gap":
     case "nfe_soap_timeout":
+    case "entrega_driver_offline":
+    case "entrega_gps_lost":
+    case "entrega_pod_missing":
+    case "entrega_status_regressivo":
     case "none":
       return null;
   }
