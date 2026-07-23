@@ -46,18 +46,27 @@ export interface AsaasPayment {
   created_at: string;
 }
 
+import { invokeEdge, EdgeFunctionError } from '@/lib/edge-function-error';
+
 async function invokeAsaas(action: string, data: Record<string, unknown>) {
-  const { data: result, error } = await supabase.functions.invoke('asaas-proxy', {
-    body: { action, data },
-  });
-  if (error) throw new Error(error.message);
-  if (result?.errors) {
-    throw new Error(result.errors.map((e: { description: string }) => e.description).join(', '));
+  try {
+    const result = await invokeEdge<{ errors?: Array<{ description: string }> } & Record<string, unknown>>(
+      'asaas-proxy',
+      { action, data },
+    );
+    if (result?.errors && Array.isArray(result.errors)) {
+      throw new EdgeFunctionError({
+        functionName: 'asaas-proxy',
+        status: 400,
+        code: 'ASAAS_VALIDATION',
+        message: result.errors.map((e) => e.description).join(', '),
+        body: { details: result.errors },
+      });
+    }
+    return result;
+  } catch (err) {
+    throw err;
   }
-  if (result?.error) {
-    throw new Error(result.error);
-  }
-  return result;
 }
 
 export function useAsaas(empresaId?: string) {
