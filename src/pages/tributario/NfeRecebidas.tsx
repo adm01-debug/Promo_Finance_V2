@@ -48,6 +48,8 @@ import {
   type NfeRecebida,
 } from '@/hooks/useNfeRecebidas';
 import { MANIFESTACAO_LABEL, useManifestarNfe, type ManifestacaoTipo } from '@/hooks/useManifestarNfe';
+import { useDesvincularNfe } from '@/hooks/useNfeVinculo';
+import { NfeVinculoDialog } from '@/components/tributario/NfeVinculoDialog';
 
 const STATUS_LABELS: Record<ManifestacaoStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   pendente: { label: 'Pendente', variant: 'outline' },
@@ -63,9 +65,11 @@ export default function NfeRecebidasPage() {
   const [filtros, setFiltros] = useState<NfeFiltros>({ status: 'todos', vinculadaContaPagar: 'todos' });
   const { data = [], isLoading, refetch, isFetching } = useNfeRecebidas(filtros);
   const manifestar = useManifestarNfe();
+  const desvincular = useDesvincularNfe();
 
   const [justDialog, setJustDialog] = useState<{ nfe: NfeRecebida; tipo: ManifestacaoTipo } | null>(null);
   const [justTexto, setJustTexto] = useState('');
+  const [vincDialog, setVincDialog] = useState<NfeRecebida | null>(null);
 
   const totals = useMemo(() => {
     const total = data.reduce((acc, n) => acc + Number(n.valor_total ?? 0), 0);
@@ -236,11 +240,24 @@ export default function NfeRecebidasPage() {
                       </TableCell>
                       <TableCell>
                         {n.conta_pagar_id ? (
-                          <Badge variant="secondary" className="gap-1">
+                          <button
+                            type="button"
+                            onClick={() => desvincular.mutate(n.id)}
+                            disabled={desvincular.isPending}
+                            className="inline-flex items-center gap-1 rounded-md border border-transparent bg-secondary px-2 py-0.5 text-xs text-secondary-foreground hover:bg-secondary/80"
+                            title="Clique para desvincular"
+                          >
                             <Link2 className="h-3 w-3" /> Vinculada
-                          </Badge>
+                          </button>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 gap-1 text-xs"
+                            onClick={() => setVincDialog(n)}
+                          >
+                            <Link2 className="h-3 w-3" /> Vincular
+                          </Button>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
