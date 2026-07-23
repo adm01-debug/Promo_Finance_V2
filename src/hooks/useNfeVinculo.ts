@@ -88,6 +88,6 @@ export function useCriarContaDaNfe() {
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
       qc.invalidateQueries({ queryKey: ['contas-pagar'] });
     },
-    onError: (err: Error) => toast.error('Falha ao criar conta a pagar', { description: err.message }),
+    onError: (err) => handleEdgeError(err, 'Falha ao criar conta a pagar'),
   });
 }
