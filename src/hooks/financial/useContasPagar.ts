@@ -7,9 +7,10 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
 import { sel, type StatusPagamento } from './types';
+import type { ContasPagarPainelRow } from './views.types';
 
 export function useContasPagar(empresaId?: string) {
-  return useQuery({
+  return useQuery<ContasPagarPainelRow[]>({
     queryKey: ['contas-pagar', empresaId],
     queryFn: async () => {
       let query = supabaseDyn
@@ -24,11 +25,12 @@ export function useContasPagar(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as any[];
+      return (data ?? []) as unknown as ContasPagarPainelRow[];
     },
     staleTime: STALE_TIMES.financial,
   });
 }
+
 
 export interface PaginatedContasPagarParams {
   page: number;
