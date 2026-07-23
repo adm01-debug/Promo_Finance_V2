@@ -198,9 +198,3 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"target_function": "asaas-webhook", "scenarios_count": 100, "mode": "stress"}'
 
-
-      - name: Notify Failure
-        if: failure()
-        run: |
-          echo "CI Pipeline failed. Check the logs and Playwright report for details."
-          exit 1
