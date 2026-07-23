@@ -46,7 +46,7 @@ export interface AsaasPayment {
   created_at: string;
 }
 
-import { invokeEdge, EdgeFunctionError } from '@/lib/edge-function-error';
+import { invokeEdge, EdgeFunctionError, handleEdgeError } from '@/lib/edge-function-error';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retorno heterogêneo do proxy Asaas
 async function invokeAsaas(action: string, data: Record<string, unknown>): Promise<any> {
