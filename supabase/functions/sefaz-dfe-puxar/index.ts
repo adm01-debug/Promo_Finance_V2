@@ -450,13 +450,14 @@ export async function runPuxador(
   });
 
   // Telemetria persistida (dashboard de queries).
+  // `error_message` carrega o JSON completo do summary — parseável por
+  // `SELECT error_message::jsonb ->> 'cStat_final'` etc.
   await admin.from("query_telemetry").insert({
     operation: "sefaz_dfe_puxar",
     table_name: "nfe_recebidas",
     duration_ms: summary.durationMs,
     severity: summary.erro ? "warning" : "info",
-    error_message: JSON.stringify(summary),
-    metadata: {
+    error_message: JSON.stringify({
       cnpj: cert.cnpj,
       ambiente: cert.ambiente,
       empresa_id: cert.empresa_id,
@@ -467,7 +468,10 @@ export async function runPuxador(
       docs: summary.docs,
       novos: summary.novos,
       eventos: summary.eventos,
-    },
+      cursor_antes: summary.cursorAntes,
+      cursor_depois: summary.cursorDepois,
+      erro: summary.erro,
+    }),
   }).then(() => {}, () => {});
 
   return summary;
