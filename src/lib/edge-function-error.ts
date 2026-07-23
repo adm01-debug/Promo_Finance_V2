@@ -10,7 +10,7 @@ import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from '@s
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
-import { captureException } from '@/lib/error-tracking';
+import { errorTracker } from '@/lib/error-tracking';
 
 export interface EdgeErrorBody {
   error?: string;
