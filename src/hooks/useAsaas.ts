@@ -336,24 +336,32 @@ export function useAsaas(empresaId?: string) {
   const gerarSugestoes = useMutation({
     mutationFn: async (payload: { date: string; value: number; transaction_id: string }) => {
       if (!empresaId) throw new Error('Empresa não identificada');
-      const { error } = await supabase.rpc('generate_reconciliation_suggestions', {
-        p_empresa_id: empresaId,
-        p_transaction_date: payload.date,
-        p_transaction_value: payload.value,
-        p_transaction_id: payload.transaction_id
+      // Delegado ao asaas-proxy (service_role) — usuário autenticado NÃO
+      // precisa mais de EXECUTE em generate_reconciliation_suggestions nem
+      // de INSERT direto em asaas_reconciliation_suggestions.
+      await invokeAsaas('gerar_sugestoes_conciliacao', {
+        empresa_id: empresaId,
+        transaction_date: payload.date,
+        transaction_value: payload.value,
+        transaction_id: payload.transaction_id,
       });
-      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] }),
   });
 
   const aceitarSugestao = useMutation({
     mutationFn: async ({ suggestionId, contaId }: { suggestionId: string, contaId: string }) => {
-      await supabase.from('asaas_reconciliation_suggestions').update({ status: 'ACCEPTED' }).eq('id', suggestionId);
-      await supabase.from('contas_receber').update({ status: 'pago', data_recebimento: todayISOLocal() }).eq('id', contaId);
+      // Proxy autenticado faz UPDATE atômico em suggestions + contas_receber
+      // sob service_role: dispensa GRANT UPDATE ao role authenticated nessas
+      // tabelas para o fluxo de aceite.
+      await invokeAsaas('aceitar_sugestao_conciliacao', {
+        suggestion_id: suggestionId,
+        conta_id: contaId,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] });
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       toast.success('Conciliação realizada com sucesso');
     }
   });
