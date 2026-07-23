@@ -275,14 +275,45 @@ export async function runPuxador(
     cursorAntes: 0,
     cursorDepois: 0,
     cStatFinal: "",
+    cbOpen: false,
+    backoffPending: false,
     erro: null,
     durationMs: 0,
   };
 
+  slog("INFO", "puxador_start", {
+    cnpj: cert.cnpj,
+    ambiente: cert.ambiente,
+    uf: cert.uf,
+    empresa_id: cert.empresa_id,
+  });
+
   try {
-    const cursorInicial = await getCursor(admin, cert.cnpj, cert.ambiente);
-    summary.cursorAntes = cursorInicial;
-    summary.cursorDepois = cursorInicial;
+    const cursorState = await getCursor(admin, cert.cnpj, cert.ambiente);
+    summary.cursorAntes = cursorState.nsu;
+    summary.cursorDepois = cursorState.nsu;
+    summary.cbOpen = cursorState.cbOpen;
+    summary.backoffPending = cursorState.backoffPending;
+
+    if (cursorState.cbOpen) {
+      summary.erro = "circuit_open";
+      slog("WARN", "puxador_skipped", {
+        cnpj: cert.cnpj, ambiente: cert.ambiente,
+        cb_open: true, reason: "circuit_open",
+        cursor_antes: cursorState.nsu,
+      });
+      throw new Error("circuit_open");
+    }
+    if (cursorState.backoffPending) {
+      summary.erro = "backoff_pending";
+      slog("WARN", "puxador_skipped", {
+        cnpj: cert.cnpj, ambiente: cert.ambiente,
+        cb_open: false, backoff_pending: true,
+        next_run_at: cursorState.nextRunAt,
+        reason: "backoff_pending",
+      });
+      throw new Error("backoff_pending");
+    }
 
     // Só carrega o PFX quando vamos falar de verdade com a SEFAZ.
     // Em testes injetamos `sefazFetch` e o loadCertificado é dispensado.
@@ -292,10 +323,11 @@ export async function runPuxador(
     const endpoint = distDFeEndpoint(cert.ambiente, "AN");
 
 
-    let ultNSU = cursorInicial;
+    let ultNSU = cursorState.nsu;
     let response: DistDFeResponse | null = null;
 
     for (let batch = 0; batch < MAX_BATCHES_PER_CNPJ; batch++) {
+      const batchStarted = performance.now();
       const envelope = buildDistDFeEnvelope({
         ambiente: cert.ambiente,
         uf: cert.uf,
@@ -310,6 +342,21 @@ export async function runPuxador(
       summary.cStatFinal = response.cStat;
 
       const cls = classifyCStat(response.cStat);
+      const batchDurationMs = Math.round(performance.now() - batchStarted);
+
+      slog("INFO", "puxador_batch", {
+        cnpj: cert.cnpj,
+        ambiente: cert.ambiente,
+        batch: batch + 1,
+        cStat: response.cStat,
+        xMotivo: response.xMotivo,
+        classify: cls,
+        ult_nsu_enviado: ultNSU,
+        ult_nsu_resposta: response.ultNSU,
+        max_nsu: response.maxNSU,
+        docs: response.docs?.length ?? 0,
+        duration_ms: batchDurationMs,
+      });
 
       // Cenários sem docs: apenas atualizar status/erro no cursor (sem regredir NSU).
       if (cls === "empty") {
@@ -320,6 +367,11 @@ export async function runPuxador(
       }
       if (cls === "retry" || cls === "rate_limit" || cls === "fatal") {
         summary.erro = `cStat=${response.cStat} ${response.xMotivo}`;
+        slog("WARN", "puxador_cstat_stop", {
+          cnpj: cert.cnpj, ambiente: cert.ambiente,
+          cStat: response.cStat, classify: cls,
+          xMotivo: response.xMotivo,
+        });
         await applyBatchTransactional(
           admin, cert, ultNSU, response.maxNSU, response.cStat, summary.erro, [],
         );
@@ -331,19 +383,22 @@ export async function runPuxador(
       // NENHUM registro é inserido e o cursor NÃO avança — próxima execução
       // retoma do mesmo ultNSU e reprocessa idempotentemente (ON CONFLICT DO NOTHING).
       const staged: Array<{ kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }> = [];
+      let docsIgnorados = 0;
       for (const doc of response.docs) {
         summary.docs++;
         try {
           const xml = await gunzipBase64(doc.b64);
           const s = await stageDoc(admin, cert.empresa_id, doc.nsu, xml);
           if (s) staged.push(s);
+          else docsIgnorados++;
         } catch (err) {
           // Doc inválido não bloqueia o lote — log e segue (é ignorado pelo RPC).
-          console.error(JSON.stringify({
-            level: "WARN", fn: "sefaz-dfe-puxar",
-            cnpj: cert.cnpj, nsu: doc.nsu,
+          docsIgnorados++;
+          slog("WARN", "puxador_doc_invalido", {
+            cnpj: cert.cnpj, ambiente: cert.ambiente,
+            nsu: doc.nsu,
             error: err instanceof Error ? err.message : String(err),
-          }));
+          });
         }
       }
 
@@ -357,6 +412,15 @@ export async function runPuxador(
       summary.cursorDepois = applied.cursor_depois;
       ultNSU = applied.cursor_depois;
 
+      slog("INFO", "puxador_batch_persisted", {
+        cnpj: cert.cnpj, ambiente: cert.ambiente,
+        batch: batch + 1,
+        novos: applied.novos,
+        eventos: applied.eventos,
+        ignorados: docsIgnorados,
+        cursor_depois: applied.cursor_depois,
+      });
+
       // Chegou no fim
       if (response.ultNSU >= response.maxNSU) break;
     }
@@ -367,13 +431,43 @@ export async function runPuxador(
 
   summary.durationMs = Math.round(performance.now() - started);
 
-  // Telemetria
+  // Log final por CNPJ (agrega métrica de tempo total).
+  slog(summary.erro ? "WARN" : "INFO", "puxador_finish", {
+    cnpj: cert.cnpj,
+    ambiente: cert.ambiente,
+    empresa_id: cert.empresa_id,
+    batches: summary.batches,
+    docs: summary.docs,
+    novos: summary.novos,
+    eventos: summary.eventos,
+    cursor_antes: summary.cursorAntes,
+    cursor_depois: summary.cursorDepois,
+    cStat_final: summary.cStatFinal,
+    cb_open: summary.cbOpen,
+    backoff_pending: summary.backoffPending,
+    duration_ms: summary.durationMs,
+    erro: summary.erro,
+  });
+
+  // Telemetria persistida (dashboard de queries).
   await admin.from("query_telemetry").insert({
     operation: "sefaz_dfe_puxar",
     table_name: "nfe_recebidas",
     duration_ms: summary.durationMs,
     severity: summary.erro ? "warning" : "info",
     error_message: JSON.stringify(summary),
+    metadata: {
+      cnpj: cert.cnpj,
+      ambiente: cert.ambiente,
+      empresa_id: cert.empresa_id,
+      cStat_final: summary.cStatFinal,
+      cb_open: summary.cbOpen,
+      backoff_pending: summary.backoffPending,
+      batches: summary.batches,
+      docs: summary.docs,
+      novos: summary.novos,
+      eventos: summary.eventos,
+    },
   }).then(() => {}, () => {});
 
   return summary;
