@@ -28,6 +28,7 @@ BEGIN
   JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = 'public'::regnamespace
   WHERE c.table_schema = 'public'
     AND c.column_name = 'empresa_id'
+    AND pc.relkind = 'r'        -- somente tabelas físicas (exclui views/matviews)
     AND pc.relrowsecurity = false;
 
   IF offenders IS NOT NULL THEN
