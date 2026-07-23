@@ -150,8 +150,94 @@ export default function AuditLogs() {
     { key: 'ip_address', header: 'IP', formatter: (v) => maskIp(typeof v === 'string' ? v : null, maskIpsEnabled) },
   ];
 
-  const handleExportCSV = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToCSV(filteredLogs, auditColumns, 'logs_auditoria'); toast.success('Exportado para CSV com sucesso!'); };
-  const handleExportPDF = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria'); toast.success('PDF gerado para impressão!'); };
+  const buildExportMetadata = () => ({
+    filtros: {
+      busca: searchTerm || null,
+      acao: actionFilter,
+      tabela: tableFilter,
+      usuario: userFilter,
+      periodo: {
+        de: dateRange?.from ? startOfDay(dateRange.from).toISOString() : null,
+        ate: dateRange?.to ? endOfDay(dateRange.to).toISOString() : null,
+      },
+      ...(isSsoProfileSyncScope ? { provider: providerFilter, campo_sso: ssoFieldFilter } : {}),
+    },
+    mascarar_ips: maskIpsEnabled,
+    gerado_em: new Date().toISOString(),
+  });
+
+  const logExportAction = async (formato: 'CSV' | 'JSON' | 'PDF' | 'JSON_COMPLETO', total: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from('audit_logs').insert({
+        user_id: user?.id ?? null,
+        user_email: user?.email ?? null,
+        action: 'EXPORT',
+        table_name: 'audit_logs',
+        details: `Exportação de trilha de auditoria (${formato}) — ${total} registros`,
+        new_data: buildExportMetadata() as never,
+      });
+    } catch {
+      // Falha em log de auditoria não deve bloquear a exportação
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; }
+    exportToCSV(filteredLogs, auditColumns, 'logs_auditoria');
+    void logExportAction('CSV', filteredLogs.length);
+    toast.success('Exportado para CSV com sucesso!');
+  };
+  const handleExportPDF = () => {
+    if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; }
+    exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria');
+    void logExportAction('PDF', filteredLogs.length);
+    toast.success('PDF gerado para impressão!');
+  };
+  const handleExportJSON = () => {
+    if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; }
+    const sanitized = maskIpsEnabled
+      ? filteredLogs.map(l => ({ ...l, ip_address: maskIp(l.ip_address, true) }))
+      : filteredLogs;
+    exportToJSON(sanitized, 'logs_auditoria', buildExportMetadata());
+    void logExportAction('JSON', sanitized.length);
+    toast.success('Exportado para JSON com sucesso!');
+  };
+
+  const [isExportingFull, setIsExportingFull] = useState(false);
+  const handleExportJSONFull = async () => {
+    setIsExportingFull(true);
+    const HARD_CAP = 50000;
+    const PAGE = 1000;
+    const collected: AuditLog[] = [];
+    try {
+      for (let from = 0; from < HARD_CAP; from += PAGE) {
+        let query = supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).range(from, from + PAGE - 1);
+        if (actionFilter !== 'all') query = query.eq('action', actionFilter);
+        if (tableFilter !== 'all') query = query.eq('table_name', tableFilter);
+        if (userFilter !== 'all') query = query.eq('user_email', userFilter);
+        if (dateRange?.from) query = query.gte('created_at', startOfDay(dateRange.from).toISOString());
+        if (dateRange?.to) query = query.lte('created_at', endOfDay(dateRange.to).toISOString());
+        const { data, error } = await query;
+        if (error) throw error;
+        const batch = (data ?? []) as unknown as AuditLog[];
+        collected.push(...batch);
+        if (batch.length < PAGE) break;
+      }
+      if (!collected.length) { toast.error('Nenhum registro encontrado para o período/filtros'); return; }
+      const sanitized = maskIpsEnabled
+        ? collected.map(l => ({ ...l, ip_address: maskIp(l.ip_address, true) }))
+        : collected;
+      exportToJSON(sanitized, 'logs_auditoria_completo', { ...buildExportMetadata(), truncado: collected.length >= HARD_CAP, limite: HARD_CAP });
+      void logExportAction('JSON_COMPLETO', sanitized.length);
+      toast.success(`Exportação completa concluída (${sanitized.length} registros)`);
+    } catch (e) {
+      toast.error(`Falha ao exportar: ${(e as Error).message}`);
+    } finally {
+      setIsExportingFull(false);
+    }
+  };
+
 
   const filtersController = useManagedFilters({
     entityType: 'audit-logs',
