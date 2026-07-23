@@ -814,6 +814,50 @@ export const handler = async (req: Request) => {
         break
       }
 
+      case 'gerar_sugestoes_conciliacao': {
+        if (!data?.empresa_id) return err('empresa_id é obrigatório')
+        if (!data?.transaction_id) return err('transaction_id é obrigatório')
+        if (!data?.transaction_date) return err('transaction_date é obrigatório')
+        if (typeof data?.transaction_value !== 'number') return err('transaction_value inválido')
+
+        const { error: rpcErr } = await supabase.rpc('generate_reconciliation_suggestions', {
+          p_empresa_id: data.empresa_id,
+          p_transaction_date: data.transaction_date,
+          p_transaction_value: data.transaction_value,
+          p_transaction_id: data.transaction_id,
+        })
+        if (rpcErr) return err(rpcErr.message, 400)
+        result = { ok: true }
+        break
+      }
+
+      case 'aceitar_sugestao_conciliacao': {
+        if (!data?.suggestion_id) return err('suggestion_id é obrigatório')
+        if (!data?.conta_id) return err('conta_id é obrigatório')
+
+        // Atualização transacional: sugestão + conta a receber. As duas
+        // escritas ocorrem sob service_role para eliminar a necessidade de
+        // GRANT/RLS extras ao usuário autenticado.
+        const { error: sugErr } = await supabase
+          .from('asaas_reconciliation_suggestions')
+          .update({
+            status: 'ACCEPTED',
+            metadata: { accepted_by: user.id, accepted_at: new Date().toISOString() },
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', data.suggestion_id)
+        if (sugErr) return err(sugErr.message, 400)
+
+        const { error: contaErr } = await supabase
+          .from('contas_receber')
+          .update({ status: 'pago', data_recebimento: new Date().toISOString().slice(0, 10) })
+          .eq('id', data.conta_id)
+        if (contaErr) return err(contaErr.message, 400)
+
+        result = { ok: true }
+        break
+      }
+
       default:
         return err(`Ação desconhecida: ${action}`)
     }
