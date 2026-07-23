@@ -131,7 +131,10 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "forbidden" }), { status: 403, headers: corsHeaders });
     }
 
-    const body = await req.json();
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(CopilotGlobalBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const body = validation.data;
     const contexto = String(body.contexto_pagina ?? "financeiro");
     const messages = Array.isArray(body.messages) ? body.messages : [];
 
