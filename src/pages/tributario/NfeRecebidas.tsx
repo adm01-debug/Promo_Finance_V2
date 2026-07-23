@@ -295,6 +295,36 @@ export default function NfeRecebidasPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={!!justDialog} onOpenChange={(open) => !open && setJustDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Operação Não Realizada</DialogTitle>
+            <DialogDescription>
+              A SEFAZ exige justificativa com no mínimo 15 caracteres para este evento.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={justTexto}
+            onChange={(e) => setJustTexto(e.target.value)}
+            placeholder="Ex.: mercadoria não recebida por divergência de destinatário."
+            rows={4}
+            minLength={15}
+            maxLength={255}
+          />
+          <div className="text-xs text-muted-foreground">{justTexto.trim().length} / 255 caracteres</div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setJustDialog(null)}>Cancelar</Button>
+            <Button
+              onClick={confirmarComJustificativa}
+              disabled={justTexto.trim().length < 15 || manifestar.isPending}
+            >
+              {manifestar.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Enviar manifestação
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
