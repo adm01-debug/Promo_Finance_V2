@@ -64,11 +64,29 @@ function makeStubClient() {
     from: chain,
     rpc: async (name: string, args: any) => {
       calls.push({ op: `rpc.${name}`, args });
-      if (name === "sefaz_cursor_advance") {
-        cursorState.ultimo_nsu = Math.max(cursorState.ultimo_nsu, Number(args.p_novo_nsu));
+      if (name === "sefaz_process_batch") {
+        const novo = Number(args.p_novo_nsu);
+        const antes = cursorState.ultimo_nsu;
+        const docs = (args.p_docs ?? []) as Array<any>;
+        let novos = 0, eventos = 0, ignorados = 0;
+        for (const d of docs) {
+          if (d.kind === "nfe") novos++;
+          else if (d.kind === "evento") eventos++;
+          else ignorados++;
+        }
+        if (novo > antes) cursorState.ultimo_nsu = novo;
+        return {
+          data: {
+            cursor_antes: antes,
+            cursor_depois: cursorState.ultimo_nsu,
+            novos, eventos, ignorados,
+          },
+          error: null,
+        };
       }
       return { data: null, error: null };
     },
+
     storage: {
       from: () => ({
         upload: async () => ({ data: { path: "x" }, error: null }),
