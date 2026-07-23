@@ -74,16 +74,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: ReqBody = await req.json();
-    if (!body.empresa_id || !body.ano) {
-      return new Response(
-        JSON.stringify({ error: 'empresa_id e ano obrigatórios' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(RelatorioAnualBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const body: ReqBody = validation.data;
+
 
     // Empresa
     const { data: empresa } = await admin
