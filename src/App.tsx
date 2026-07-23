@@ -110,6 +110,7 @@ const ComparativoRegimesPage = lazy(() => import('./pages/tributario/Comparativo
 const CashbackSimuladorPage = lazy(() => import('./pages/tributario/CashbackSimulador'));
 const ImportacaoXMLPage = lazy(() => import('./pages/tributario/ImportacaoXML'));
 const NfeRecebidasPage = lazy(() => import('./pages/tributario/NfeRecebidas'));
+const SefazObservabilidadePage = lazy(() => import('./pages/tributario/SefazObservabilidade'));
 const SpedExportPage = lazy(() => import('./pages/tributario/SpedExport'));
 const RelatoriosContabeisPage = lazy(() => import('./pages/tributario/RelatoriosContabeis'));
 const PerDcompPage = lazy(() => import('./pages/tributario/PerDcomp'));
@@ -201,6 +202,7 @@ function AppRoutes() {
             <Route path="/tributario/onboarding" element={<ProtectedRoute><OnboardingTributario /></ProtectedRoute>} />
             <Route path="/tributario/certificados-digitais" element={<ProtectedRoute><CertificadosDigitais /></ProtectedRoute>} />
             <Route path="/tributario/nfe-recebidas" element={<ProtectedRoute><NfeRecebidasPage /></ProtectedRoute>} />
+            <Route path="/tributario/sefaz-observabilidade" element={<ProtectedRoute><SefazObservabilidadePage /></ProtectedRoute>} />
 
             <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
             <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
