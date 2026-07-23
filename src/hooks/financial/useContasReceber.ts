@@ -9,7 +9,7 @@ export type ContaReceberPainelRow = Record<string, any>;
 export function useContasReceber(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-receber', empresaId],
-    queryFn: async (): Promise<ContaReceberPainelRow[]> => {
+    queryFn: async (): Promise<any[]> => {
       let query = supabase
         .from('vw_contas_receber_painel')
         .select('*')
