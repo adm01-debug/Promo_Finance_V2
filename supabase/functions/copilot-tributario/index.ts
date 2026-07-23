@@ -87,16 +87,12 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const body = await req.json();
-    const messages: ChatMessage[] = Array.isArray(body?.messages) ? body.messages : [];
-    const empresaId: string | undefined = body?.empresa_id;
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = await validateContract(CopilotTributarioBodySchema, rawBody);
+    if (!validation.success) return validation.response;
+    const messages = validation.data.messages;
+    const empresaId = validation.data.empresa_id;
 
-    if (messages.length === 0) {
-      return new Response(JSON.stringify({ error: 'messages obrigatório' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     // Contexto rico opcional
     let contextoSistema = '';
