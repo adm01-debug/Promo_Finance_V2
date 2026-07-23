@@ -131,25 +131,31 @@ export default function CalculadoraTributaria() {
       const empresaId = empresas?.[0]?.empresa_id;
       if (!empresaId) throw new Error('Sem empresa vinculada');
 
+      const cenariosResumo = resultado.cenarios.map((c) => ({
+        regime: c.regime, nome: c.nome, totalAPagar: c.totalAPagar, cargaEfetiva: c.cargaEfetiva,
+      }));
       const { error } = await supabase.from('regimes_simulados').insert({
         empresa_id: empresaId,
-        user_id: user.id,
-        nome: `Calculadora ${new Date().toLocaleDateString('pt-BR')}`,
-        regime: (resultadoAtivo?.regime ?? 'lucro_real') as 'lucro_real' | 'lucro_presumido' | 'simples_nacional',
-        receita_bruta_anual: form.receitaBrutaAnual,
+        created_by: user.id,
+        ano_referencia: new Date().getFullYear(),
+        regime_atual: resultadoAtivo?.regime ?? 'lucro_real',
+        regime_recomendado: resultado.melhorCenario?.regime ?? (resultadoAtivo?.regime ?? 'lucro_real'),
+        economia_anual_estimada: resultado.economiaAnualVsPior,
+        rbt12: form.rbt12,
+        folha_12m: form.folha12m,
+        cenarios: cenariosResumo as unknown as import('@/integrations/supabase/types').Json,
+        alertas: (resultadoAtivo?.alertas ?? []) as unknown as import('@/integrations/supabase/types').Json,
         parametros: {
           tipo_calculo: 'calculadora',
-          inputs_completos: form as unknown as Record<string, unknown>,
-          memoria_calculo: (resultadoAtivo?.memoria ?? []) as unknown as Record<string, unknown>[],
-        },
-        resultado: {
-          totalTributos: resultadoAtivo?.totalTributos ?? 0,
-          totalAPagar: resultadoAtivo?.totalAPagar ?? 0,
-          cargaEfetiva: resultadoAtivo?.cargaEfetiva ?? 0,
-          cenarios: resultado.cenarios.map((c) => ({
-            regime: c.regime, totalAPagar: c.totalAPagar, cargaEfetiva: c.cargaEfetiva,
-          })),
-        } as unknown as Record<string, unknown>,
+          inputs_completos: form,
+          memoria_calculo: resultadoAtivo?.memoria ?? [],
+          resultado_ativo: {
+            regime: resultadoAtivo?.regime,
+            totalTributos: resultadoAtivo?.totalTributos ?? 0,
+            totalAPagar: resultadoAtivo?.totalAPagar ?? 0,
+            cargaEfetiva: resultadoAtivo?.cargaEfetiva ?? 0,
+          },
+        } as unknown as import('@/integrations/supabase/types').Json,
       });
       if (error) throw error;
       toast.success('Cenário salvo com sucesso');
