@@ -1,4 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Substitui o localStorage totalmente mockado do setup por um store real em memória
+const store = new Map<string, string>();
+Object.defineProperty(window, 'localStorage', {
+  configurable: true,
+  value: {
+    getItem: (k: string) => (store.has(k) ? store.get(k)! : null),
+    setItem: (k: string, v: string) => { store.set(k, String(v)); },
+    removeItem: (k: string) => { store.delete(k); },
+    clear: () => { store.clear(); },
+    key: (i: number) => Array.from(store.keys())[i] ?? null,
+    get length() { return store.size; },
+  },
+});
+
+vi.mock('@/lib/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn(), info: vi.fn() },
+}));
+
 import {
   activateContingency,
   deactivateContingency,
@@ -10,10 +29,6 @@ import {
   getContingencyStats,
 } from '../sefaz-contingency/state';
 import { getContingencyState } from '../sefaz-contingency/storage';
-
-vi.mock('@/lib/logger', () => ({
-  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn(), info: vi.fn() },
-}));
 
 function makeNFe(id: string, valor = 100, dataEmissao = new Date('2026-01-01')) {
   return {
