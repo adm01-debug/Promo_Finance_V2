@@ -175,6 +175,29 @@ function runNfe(spec: ScenarioSpec, state: ScenarioState): number {
     stream = duplicate(stream, spec.fault.param ?? 3, rng);
   }
 
+  // Faults específicos do puxador DFe (equivalentes lógicos aos kinds do mock SOAP).
+  if (spec.fault.kind === "nfe_gzip_corrupt") {
+    // ~40% dos eventos chegam com gzip inválido — puxador deve pular sem persistir.
+    stream = stream.map((e) =>
+      rng.bool(0.4) ? { ...e, tipo: "gzip_corrompido", xmlOk: false } : e,
+    );
+  }
+  if (spec.fault.kind === "nfe_soap_timeout") {
+    // ~30% dos eventos abortam no meio do batch — não persistem, cursor não avança nesses.
+    stream = stream.map((e) =>
+      rng.bool(0.3) ? { ...e, tipo: "timeout_sefaz", xmlOk: false } : e,
+    );
+  }
+  if (spec.fault.kind === "nfe_nsu_gap") {
+    // Insere saltos grandes de NSU (>=10) em pontos aleatórios do stream.
+    let offset = 0;
+    stream = stream.map((e, i) => {
+      if (i > 0 && rng.bool(0.2)) offset += rng.int(10, 50);
+      return { ...e, nsu: e.nsu + offset };
+    });
+  }
+
+
   const seenChaves = new Set<string>();
   const chaveToIdx = new Map<string, number>();
   let ultimoNsu = 0;
