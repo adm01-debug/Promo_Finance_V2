@@ -164,6 +164,7 @@ export default function SefazObservabilidade() {
                 <TableHead>Motivo</TableHead>
                 <TableHead className="text-right">Afetados</TableHead>
                 <TableHead>Quando</TableHead>
+                <TableHead className="text-right">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -180,11 +181,27 @@ export default function SefazObservabilidade() {
                   <TableCell className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(a.created_at), { addSuffix: true, locale: ptBR })}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => resolveMutation.mutate(a.id)}
+                      disabled={resolveMutation.isPending && resolveMutation.variables === a.id}
+                      aria-label={`Resolver alerta ${a.invariant}`}
+                    >
+                      {resolveMutation.isPending && resolveMutation.variables === a.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Check className="h-3.5 w-3.5" />
+                      )}
+                      <span className="ml-1">Resolver</span>
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
               {(alerts.data ?? []).length === 0 && !loading && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                     Nenhum alerta aberto — SEFAZ operando dentro dos invariantes ✅
                   </TableCell>
                 </TableRow>
