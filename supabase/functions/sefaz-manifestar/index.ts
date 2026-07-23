@@ -18,6 +18,8 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validatePayload } from '../_shared/validation.ts';
 import { loadCertificado, makeAdminClient, type CertificadoRow } from "../_shared/sefaz/pfx.ts";
 import {
   buildEnvEvento,
