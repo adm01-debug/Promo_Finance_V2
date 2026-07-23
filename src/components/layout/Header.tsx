@@ -55,7 +55,7 @@ function getInitialsFromName(name?: string | null, email?: string | null): strin
 }
 
 export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }, ref) => {
-  const { theme, setTheme, isDark } = useTheme();
+  const { theme, setTheme, resetTheme, isDark } = useTheme();
   const { user, profile, role, roleAtual, currentEmpresaId, signOut } = useAuth();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
