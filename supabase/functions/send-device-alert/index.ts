@@ -22,7 +22,20 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { userId, email, browser, os, deviceType, timestamp }: DeviceAlertRequest = await req.json();
+    const raw = await req.json();
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const Schema = z.object({
+      userId: z.string().uuid(),
+      email: z.string().email(),
+      browser: z.string(),
+      os: z.string(),
+      deviceType: z.string(),
+      timestamp: z.string(),
+    }).passthrough();
+    const parsed = validatePayload(Schema, raw, 'send-device-alert');
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const { userId, email, browser, os, deviceType, timestamp } = parsed.data as DeviceAlertRequest;
 
     console.log(`Sending new device alert to ${email}`);
 

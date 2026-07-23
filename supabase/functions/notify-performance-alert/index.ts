@@ -25,7 +25,14 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const body = (await req.json()) as { alert?: AlertPayload } | AlertPayload;
+    const raw = await req.json();
+    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const AlertShape = z.record(z.any());
+    const Schema = z.union([z.object({ alert: AlertShape }).passthrough(), AlertShape]);
+    const parsed = validatePayload(Schema, raw, 'notify-performance-alert');
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const body = parsed.data as { alert?: AlertPayload } | AlertPayload;
     const alert: AlertPayload = (body as { alert?: AlertPayload })?.alert ?? (body as AlertPayload);
 
     if (!alert || !alert.severity) {
