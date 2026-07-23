@@ -51,7 +51,7 @@ export function useVincularNfe() {
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
       qc.invalidateQueries({ queryKey: ['contas-pagar'] });
     },
-    onError: (err: Error) => toast.error('Falha ao vincular NFe', { description: err.message }),
+    onError: (err) => handleEdgeError(err, 'Falha ao vincular NFe'),
   });
 }
 
