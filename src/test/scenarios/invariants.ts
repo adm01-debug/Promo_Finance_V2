@@ -238,6 +238,105 @@ const nfeXmlPathLayout: InvariantFn = (state) => {
   return null;
 };
 
+// ─────────────────── Entregas (Lalamove) ───────────────────
+
+const entregaIdempotenciaOrderId: InvariantFn = (state) => {
+  const seen = new Set<string>();
+  for (const e of state.entregas ?? []) {
+    if (seen.has(e.orderId)) {
+      return {
+        invariant: "entregaIdempotenciaOrderId",
+        message: `orderId duplicado no estado: ${e.orderId}`,
+      };
+    }
+    seen.add(e.orderId);
+  }
+  return null;
+};
+
+const entregaStatusMonotone: InvariantFn = (state) => {
+  const rank: Record<string, number> = {
+    pending: 0,
+    assigning: 1,
+    picked_up: 2,
+    in_progress: 3,
+    delivered: 4,
+    canceled: 5,
+    failed: 5,
+  };
+  for (const e of state.entregas ?? []) {
+    const h = e.statusHistory;
+    for (let i = 1; i < h.length; i++) {
+      const prev = rank[h[i - 1]] ?? -1;
+      const cur = rank[h[i]] ?? -1;
+      // Terminal states não podem transitar.
+      if (h[i - 1] === "delivered" || h[i - 1] === "canceled" || h[i - 1] === "failed") {
+        return {
+          invariant: "entregaStatusMonotone",
+          message: `transição a partir de terminal em ${e.orderId}: ${h[i - 1]} → ${h[i]}`,
+        };
+      }
+      // Cancel/failed podem entrar de qualquer não-terminal; demais devem avançar.
+      if (h[i] !== "canceled" && h[i] !== "failed" && cur < prev) {
+        return {
+          invariant: "entregaStatusMonotone",
+          message: `status regressivo em ${e.orderId}: ${h[i - 1]} → ${h[i]}`,
+        };
+      }
+    }
+  }
+  return null;
+};
+
+const entregaComDriver: InvariantFn = (state) => {
+  for (const e of state.entregas ?? []) {
+    const precisaDriver = ["picked_up", "in_progress", "delivered"].includes(e.status);
+    if (precisaDriver && !e.driverId) {
+      return {
+        invariant: "entregaComDriver",
+        message: `entrega ${e.orderId} em ${e.status} sem driver atribuído`,
+      };
+    }
+  }
+  return null;
+};
+
+const entregaPodQuandoEntregue: InvariantFn = (state) => {
+  for (const e of state.entregas ?? []) {
+    if (e.status === "delivered" && !e.hasPod) {
+      return {
+        invariant: "entregaPodQuandoEntregue",
+        message: `entrega ${e.orderId} concluída sem prova de entrega (POD)`,
+      };
+    }
+  }
+  return null;
+};
+
+const entregaGpsCoerente: InvariantFn = (state) => {
+  for (const e of state.entregas ?? []) {
+    if ((e.status === "in_progress" || e.status === "delivered") && e.gpsPoints <= 0) {
+      return {
+        invariant: "entregaGpsCoerente",
+        message: `entrega ${e.orderId} sem pontos de GPS após pickup`,
+      };
+    }
+  }
+  return null;
+};
+
+const entregaCancelamentoComRazao: InvariantFn = (state) => {
+  for (const e of state.entregas ?? []) {
+    if ((e.status === "canceled" || e.status === "failed") && !e.canceledReason) {
+      return {
+        invariant: "entregaCancelamentoComRazao",
+        message: `entrega ${e.orderId} em ${e.status} sem motivo registrado`,
+      };
+    }
+  }
+  return null;
+};
+
 export const INVARIANTS: Record<string, InvariantFn> = {
   idempotencyWebhook,
   unicidadeTransacoes,
@@ -254,6 +353,12 @@ export const INVARIANTS: Record<string, InvariantFn> = {
   nfeCursorNaoRegride,
   nfeManifestacaoValida,
   nfeXmlPathLayout,
+  entregaIdempotenciaOrderId,
+  entregaStatusMonotone,
+  entregaComDriver,
+  entregaPodQuandoEntregue,
+  entregaGpsCoerente,
+  entregaCancelamentoComRazao,
 };
 
 export function checkAll(state: ScenarioState): InvariantViolation[] {

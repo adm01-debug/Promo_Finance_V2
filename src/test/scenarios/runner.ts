@@ -10,6 +10,7 @@ import { makeWebhookStream, type WebhookEvent } from "./fixtures/webhooks";
 import { makeBoletos, makeReguaEtapas } from "./fixtures/cobranca";
 import { makeAnomalias, makeAcoes } from "./fixtures/anomalias";
 import { makeNfeStream, type NfeDfeEvento } from "./fixtures/nfe";
+import { makeEntregasStream, type EntregaEvento } from "./fixtures/entregas";
 import { checkAll } from "./invariants";
 import type { ScenarioResult, ScenarioSpec, ScenarioState } from "./types";
 
@@ -24,6 +25,7 @@ function emptyState(): ScenarioState {
     reguaDisparos: [],
     auditLogs: [],
     nfe: { ultimoNsuHistory: [0], recebidas: [], eventos: [] },
+    entregas: [],
   };
 }
 
@@ -259,6 +261,149 @@ function runNfe(spec: ScenarioSpec, state: ScenarioState): number {
   return mutations;
 }
 
+// ─────────────────── Entregas (Lalamove) ───────────────────
+
+const STATUS_RANK: Record<string, number> = {
+  pending: 0,
+  assigning: 1,
+  picked_up: 2,
+  in_progress: 3,
+  delivered: 4,
+  canceled: 5,
+  failed: 5,
+};
+
+function tipoToStatus(t: EntregaEvento["tipo"]): string | null {
+  switch (t) {
+    case "ORDER_CREATED":
+      return "pending";
+    case "DRIVER_ASSIGNED":
+      return "assigning";
+    case "PICKED_UP":
+      return "picked_up";
+    case "IN_PROGRESS":
+      return "in_progress";
+    case "DELIVERED":
+      return "delivered";
+    case "CANCELED":
+      return "canceled";
+    case "FAILED":
+      return "failed";
+    case "GPS_PING":
+      return null;
+  }
+}
+
+function runEntregas(spec: ScenarioSpec, state: ScenarioState): number {
+  const rng = createRng(spec.seed);
+  let stream: EntregaEvento[] = makeEntregasStream(rng, spec.size);
+
+  if (spec.fault.kind === "reorder") {
+    // Reordena e depois corrige por timestamp (ordem causal).
+    stream = reorder(stream, rng).slice().sort((a, b) => a.ts - b.ts);
+  }
+  if (spec.fault.kind === "duplicate") {
+    stream = duplicate(stream, spec.fault.param ?? 3, rng);
+  }
+  if (spec.fault.kind === "entrega_status_regressivo") {
+    // Injeta eventos espúrios apontando para status anteriores.
+    const spur: EntregaEvento[] = [];
+    for (const e of stream) {
+      if (e.tipo === "IN_PROGRESS" && rng.bool(0.3)) {
+        spur.push({ ...e, eventId: `${e.eventId}-regressive`, tipo: "PICKED_UP", ts: e.ts + 1 });
+      }
+    }
+    stream = stream.concat(spur).sort((a, b) => a.ts - b.ts);
+  }
+
+  const processedEvents = new Set<string>();
+  const idx = new Map<string, number>();
+  let mutations = 0;
+
+  for (let i = 0; i < stream.length; i++) {
+    const evt = stream[i];
+    const fail = shouldFail(spec.fault, rng, i);
+    if (fail) continue;
+    if (processedEvents.has(evt.eventId)) continue; // idempotência
+    processedEvents.add(evt.eventId);
+
+    // Cria entrada se ainda não existe (ORDER_CREATED normalmente é o primeiro).
+    let entregaIdx = idx.get(evt.orderId);
+    if (entregaIdx == null) {
+      idx.set(evt.orderId, state.entregas.length);
+      entregaIdx = state.entregas.length;
+      state.entregas.push({
+        orderId: evt.orderId,
+        status: "pending",
+        statusHistory: ["pending"],
+        hasPod: false,
+        gpsPoints: 0,
+      });
+      mutations++;
+    }
+    const entrega = state.entregas[entregaIdx];
+
+    // GPS_PING: gap de sinal descarta ping, mas garantimos ≥1 fallback pós-pickup.
+    if (evt.tipo === "GPS_PING") {
+      const drop = spec.fault.kind === "entrega_gps_lost" && rng.bool(0.7);
+      if (!drop) entrega.gpsPoints++;
+      continue;
+    }
+
+    // DRIVER_ASSIGNED com falha "driver_offline": não atribui driver → status fica em assigning.
+    if (evt.tipo === "DRIVER_ASSIGNED") {
+      const offline = spec.fault.kind === "entrega_driver_offline" && rng.bool(0.4);
+      if (!offline && evt.driverId) entrega.driverId = evt.driverId;
+    }
+
+    // Transição de status guardada por monotonicidade.
+    const novo = tipoToStatus(evt.tipo);
+    if (!novo) continue;
+
+    const cur = entrega.status;
+    if (cur === "delivered" || cur === "canceled" || cur === "failed") continue; // terminal
+    const prevRank = STATUS_RANK[cur] ?? -1;
+    const nextRank = STATUS_RANK[novo] ?? -1;
+    const isTerminalTransition = novo === "canceled" || novo === "failed";
+
+    if (!isTerminalTransition && nextRank <= prevRank) continue;
+
+    // POD faltando: se DELIVERED sem POD, mantém em in_progress (não avança).
+    if (novo === "delivered") {
+      const podPresente =
+        evt.hasPodPhoto === true &&
+        !(spec.fault.kind === "entrega_pod_missing" && rng.bool(0.6));
+      if (!podPresente) continue;
+      entrega.hasPod = true;
+      entrega.deliveredAt = evt.ts;
+    }
+
+    // Requer driver para picked_up/in_progress/delivered.
+    if (["picked_up", "in_progress", "delivered"].includes(novo) && !entrega.driverId) continue;
+
+    // Garante GPS mínimo pós-pickup (fallback do sistema quando ping foi perdido).
+    if ((novo === "in_progress" || novo === "delivered") && entrega.gpsPoints === 0) {
+      entrega.gpsPoints = 1;
+    }
+
+    if (isTerminalTransition) {
+      entrega.canceledReason = evt.cancelReason ?? "unknown";
+    }
+
+    entrega.status = novo as typeof entrega.status;
+    entrega.statusHistory.push(novo);
+    state.auditLogs.push({
+      entidade: "entrega",
+      entidadeId: entrega.orderId,
+      de: cur,
+      para: novo,
+    });
+    mutations++;
+  }
+
+  return mutations;
+}
+
 export function runScenario(spec: ScenarioSpec): ScenarioResult {
   const state = emptyState();
   const t0 =
@@ -280,6 +425,9 @@ export function runScenario(spec: ScenarioSpec): ScenarioResult {
       break;
     case "nfe":
       mutations = runNfe(spec, state);
+      break;
+    case "entregas":
+      mutations = runEntregas(spec, state);
       break;
   }
 
