@@ -213,11 +213,61 @@ async function main() {
         `  • ${f.fn} [${f.role}] esperado=${f.allowed ? "permitido" : "bloqueado"} — resposta ${f.status}/${f.code ?? "-"}`,
       );
     }
+    await reportFailures(fails);
     process.exit(1);
   }
 
   console.log("✅ Todos os privilégios de runtime estão conforme esperado.");
 }
+
+async function reportFailures(fails: Result[]): Promise<void> {
+  const secret = process.env.CI_GATE_LOG_SECRET;
+  if (!secret) {
+    console.warn("⚠️  CI_GATE_LOG_SECRET não definido — pulando registro remoto.");
+    return;
+  }
+  const endpoint = `${SUPABASE_URL}/functions/v1/ci-security-gate-log`;
+  const payload = {
+    git_sha: process.env.GITHUB_SHA ?? null,
+    git_ref: process.env.GITHUB_REF ?? null,
+    workflow_run_url:
+      process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
+        ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+        : null,
+    migration_revision: process.env.MIGRATION_REVISION ?? null,
+    failures: fails.map((f) => ({
+      matrix: "rpc_runtime_privileges",
+      function_name: f.fn,
+      role_tested: f.role,
+      expected_state: f.allowed ? "allow" : "deny",
+      observed_status: f.status,
+      observed_code: f.code ?? null,
+      severity: f.role === "anon" ? "critical" : "error",
+      exception_notes: f.reason ?? null,
+      raw: { reason: f.reason ?? null },
+    })),
+  };
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: ANON_KEY,
+        "x-ci-gate-secret": secret,
+      },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.text();
+    if (!res.ok) {
+      console.error(`⚠️  Falha ao registrar evento no gate log: ${res.status} ${body}`);
+    } else {
+      console.log(`📝 Falhas registradas em ci_security_gate_events: ${body}`);
+    }
+  } catch (err) {
+    console.error("⚠️  Erro ao contactar ci-security-gate-log:", err instanceof Error ? err.message : err);
+  }
+}
+
 
 main().catch((err) => {
   console.error("💥 Erro fatal:", err instanceof Error ? err.message : err);
