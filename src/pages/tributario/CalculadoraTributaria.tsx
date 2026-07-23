@@ -224,11 +224,27 @@ export default function CalculadoraTributaria() {
             Simule Lucro Real, Presumido, Simples Nacional e Reforma Tributária (CBS/IBS) simultaneamente. Recálculo instantâneo.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setForm(DEFAULT_INPUT)}>
+        <div className="flex flex-wrap gap-2 items-center">
+          <Select value={empresaId} onValueChange={setEmpresaId}>
+            <SelectTrigger className="w-52 h-9"><SelectValue placeholder="Selecionar empresa" /></SelectTrigger>
+            <SelectContent>
+              {empresas.map((e) => (
+                <SelectItem key={e.id} value={e.id}>{e.nome_fantasia ?? e.razao_social}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-2 rounded-md border border-border px-3 py-1.5">
+            <Database className="h-3.5 w-3.5 text-muted-foreground" />
+            <Label className="text-xs">Usar dados reais</Label>
+            <Switch checked={usarDadosReais} onCheckedChange={setUsarDadosReais} disabled={!empresaId || fetchingReais} />
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setForm(DEFAULT_INPUT)}>
             <RefreshCw className="h-4 w-4 mr-2" /> Resetar
           </Button>
-          <Button onClick={salvarCenario} disabled={salvando}>
+          <Button variant="outline" size="sm" onClick={exportarPDF}>
+            <FileDown className="h-4 w-4 mr-2" /> PDF
+          </Button>
+          <Button size="sm" onClick={salvarCenario} disabled={salvando}>
             <Save className="h-4 w-4 mr-2" /> {salvando ? 'Salvando…' : 'Salvar cenário'}
           </Button>
         </div>
