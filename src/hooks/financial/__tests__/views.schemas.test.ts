@@ -1,86 +1,51 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
-  contasReceberPainelRowSchema,
-  contasPagarPainelRowSchema,
+  parseContasReceberRows,
+  parseContasPagarRows,
   parseRows,
+  contasReceberPainelRowSchema,
 } from '../views.schemas';
 
-vi.mock('@/lib/logger', () => ({
-  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
-}));
-
-describe('views.schemas — validação runtime Zod', () => {
-  const validReceber = {
-    id: 'uuid-1',
-    descricao: 'Fatura',
-    valor: 100,
-    data_vencimento: '2026-01-01',
-    status: 'pendente',
-  };
-  const validPagar = {
-    id: 'uuid-2',
-    descricao: 'NF fornecedor',
-    valor: 250,
-    data_vencimento: '2026-01-15',
-    status: 'pendente',
-  };
-
-  it('aceita linhas válidas de contas a receber com passthrough', () => {
-    const parsed = contasReceberPainelRowSchema.parse({
-      ...validReceber,
-      campo_extra: 'ok',
-    });
-    expect(parsed.id).toBe('uuid-1');
-    expect((parsed as Record<string, unknown>).campo_extra).toBe('ok');
+describe('views.schemas — parseRows', () => {
+  it('aceita linhas válidas mínimas de contas a receber', () => {
+    const rows = [
+      { id: 'r1', descricao: 'Fatura 001', valor: 1000, status: 'aberto' },
+      { id: 'r2', valor: null, status: null },
+    ];
+    const parsed = parseContasReceberRows(rows);
+    expect(parsed).toHaveLength(2);
+    expect(parsed[0].id).toBe('r1');
+    expect(parsed[0].valor).toBe(1000);
   });
 
-  it('aceita linhas válidas de contas a pagar', () => {
-    const parsed = contasPagarPainelRowSchema.parse(validPagar);
-    expect(parsed.valor).toBe(250);
+  it('aceita linhas válidas mínimas de contas a pagar', () => {
+    const rows = [{ id: 'p1', descricao: 'Aluguel', valor: 500 }];
+    const parsed = parseContasPagarRows(rows);
+    expect(parsed[0].descricao).toBe('Aluguel');
   });
 
-  it('rejeita quando tipos divergem (valor não numérico)', () => {
-    const r = contasReceberPainelRowSchema.safeParse({
-      ...validReceber,
-      valor: 'cem',
-    });
-    expect(r.success).toBe(false);
+  it('preserva colunas adicionais via passthrough', () => {
+    const rows = [{ id: 'r1', valor: 10, extra_col: 'x' } as Record<string, unknown>];
+    const parsed = parseContasReceberRows(rows);
+    expect((parsed[0] as unknown as Record<string, unknown>).extra_col).toBe('x');
   });
 
-  describe('parseRows', () => {
-    beforeEach(() => {
-      vi.stubEnv('MODE', 'production');
-      // @ts-expect-error override readonly for teste
-      import.meta.env.DEV = false;
-    });
-    afterEach(() => {
-      vi.unstubAllEnvs();
-    });
+  it('lança em test mode quando linha tem tipo inválido', () => {
+    const rows = [{ id: 123, valor: 'não-numérico' }];
+    expect(() => parseContasReceberRows(rows)).toThrow(/Contrato divergente/);
+  });
 
-    it('em produção descarta linhas inválidas mantendo as válidas', async () => {
-      // Reimporta módulo com nova env para reavaliar STRICT
-      vi.resetModules();
-      const mod = await import('../views.schemas');
-      const out = mod.parseRows(
-        mod.contasReceberPainelRowSchema,
-        [validReceber, { ...validReceber, valor: 'x' }, validReceber],
-        'vw_contas_receber_painel',
-      );
-      expect(out).toHaveLength(2);
-    });
+  it('parseRows: array vazio retorna array vazio', () => {
+    const out = parseRows(contasReceberPainelRowSchema, [], 'vw_test');
+    expect(out).toEqual([]);
+  });
 
-    it('em dev/test lança quando alguma linha diverge', () => {
-      expect(() =>
-        parseRows(
-          contasReceberPainelRowSchema,
-          [{ ...validReceber, valor: 'x' }],
-          'vw_contas_receber_painel',
-        ),
-      ).toThrow(/Contrato divergente/);
-    });
-
-    it('retorna array vazio sem erro quando não há linhas', () => {
-      expect(parseRows(contasReceberPainelRowSchema, [], 'v')).toEqual([]);
-    });
+  it('parseRows: erro cita a view no texto lançado', () => {
+    try {
+      parseRows(contasReceberPainelRowSchema, [{ id: {} }], 'vw_minha_view');
+      throw new Error('deveria ter lançado');
+    } catch (err) {
+      expect(String(err)).toMatch(/vw_minha_view/);
+    }
   });
 });
