@@ -122,6 +122,7 @@ const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
 const Logistica = lazy(() => import('./pages/Logistica'));
 const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
+const ThemeDiagnostics = lazy(() => import('./pages/ThemeDiagnostics'));
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
@@ -157,6 +158,7 @@ function AppRoutes() {
             <Route path="/status" element={<StatusPage />} />
             <Route path="/portal-cliente" element={<PortalCliente />} />
             <Route path="/design-system-debug" element={<DesignSystemDebug />} />
+            <Route path="/theme-diagnostics" element={<ThemeDiagnostics />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
