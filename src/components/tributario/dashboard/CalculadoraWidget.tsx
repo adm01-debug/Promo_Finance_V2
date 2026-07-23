@@ -6,8 +6,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-interface CenarioResumo { regime: string; totalAPagar: number; cargaEfetiva: number }
-interface ResultadoSalvo { totalAPagar?: number; cargaEfetiva?: number; cenarios?: CenarioResumo[] }
+interface CenarioResumo { regime: string; nome?: string; totalAPagar: number; cargaEfetiva: number }
 
 export function CalculadoraWidget() {
   const { data } = useQuery({
@@ -15,9 +14,9 @@ export function CalculadoraWidget() {
     queryFn: async () => {
       const { data: rows } = await supabase
         .from('regimes_simulados')
-        .select('regime, resultado, created_at')
+        .select('regime_atual, regime_recomendado, cenarios, economia_anual_estimada, parametros, data_simulacao')
         .contains('parametros', { tipo_calculo: 'calculadora' })
-        .order('created_at', { ascending: false })
+        .order('data_simulacao', { ascending: false })
         .limit(1);
       return rows?.[0] ?? null;
     },
@@ -26,21 +25,12 @@ export function CalculadoraWidget() {
 
   const stats = useMemo(() => {
     if (!data) return null;
-    const r = (data.resultado ?? {}) as ResultadoSalvo;
-    const cenarios = r.cenarios ?? [];
-    const melhor = cenarios.reduce<CenarioResumo | null>(
-      (a, c) => (a === null || c.totalAPagar < a.totalAPagar ? c : a),
-      null,
-    );
-    const pior = cenarios.reduce<CenarioResumo | null>(
-      (a, c) => (a === null || c.totalAPagar > a.totalAPagar ? c : a),
-      null,
-    );
-    const economia = melhor && pior ? pior.totalAPagar - melhor.totalAPagar : 0;
+    const cenarios = (Array.isArray(data.cenarios) ? data.cenarios : []) as unknown as CenarioResumo[];
+    const ativo = cenarios.find((c) => c.regime === data.regime_atual) ?? cenarios[0];
     return {
-      regime: data.regime,
-      cargaEfetiva: r.cargaEfetiva ?? 0,
-      economia,
+      regime: data.regime_atual ?? '—',
+      cargaEfetiva: ativo?.cargaEfetiva ?? 0,
+      economia: data.economia_anual_estimada ?? 0,
     };
   }, [data]);
 
