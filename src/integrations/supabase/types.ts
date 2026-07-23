@@ -3370,6 +3370,63 @@ export type Database = {
           },
         ]
       }
+      ci_security_gate_events: {
+        Row: {
+          created_at: string
+          exception_notes: string | null
+          expected_state: string
+          function_name: string
+          git_ref: string | null
+          git_sha: string | null
+          id: string
+          matrix: string
+          migration_revision: string | null
+          observed_code: string | null
+          observed_message: string | null
+          observed_status: number | null
+          raw: Json | null
+          role_tested: string
+          severity: string
+          workflow_run_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          exception_notes?: string | null
+          expected_state: string
+          function_name: string
+          git_ref?: string | null
+          git_sha?: string | null
+          id?: string
+          matrix: string
+          migration_revision?: string | null
+          observed_code?: string | null
+          observed_message?: string | null
+          observed_status?: number | null
+          raw?: Json | null
+          role_tested: string
+          severity?: string
+          workflow_run_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          exception_notes?: string | null
+          expected_state?: string
+          function_name?: string
+          git_ref?: string | null
+          git_sha?: string | null
+          id?: string
+          matrix?: string
+          migration_revision?: string | null
+          observed_code?: string | null
+          observed_message?: string | null
+          observed_status?: number | null
+          raw?: Json | null
+          role_tested?: string
+          severity?: string
+          workflow_run_url?: string | null
+        }
+        Relationships: []
+      }
       clientes: {
         Row: {
           ativo: boolean | null
