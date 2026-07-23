@@ -4,6 +4,8 @@
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { createLogger } from '../_shared/observability.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,10 +14,11 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-interface ReqBody {
-  empresa_id: string;
-  ano: number;
-}
+const RelatorioAnualBodySchema = z.object({
+  empresa_id: z.string().uuid(),
+  ano: z.number().int().min(2020).max(2100),
+});
+type ReqBody = z.infer<typeof RelatorioAnualBodySchema>;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
