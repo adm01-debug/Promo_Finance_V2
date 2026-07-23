@@ -71,12 +71,14 @@ async function fetchPfxPassword(
 }
 
 /** Converte bytes PFX + senha em PEM (cert + key). */
-export function pfxToPem(pfxBytes: Uint8Array, password: string): {
+export async function pfxToPem(pfxBytes: Uint8Array, password: string): Promise<{
   certPem: string;
   keyPem: string;
   caPem: string | null;
-} {
-  // node-forge espera ASCII binário
+}> {
+  const forgeMod: any = await import("npm:node-forge@1.3.1");
+  const forge: any = forgeMod.default ?? forgeMod;
+
   let binary = "";
   const chunk = 0x8000;
   for (let i = 0; i < pfxBytes.length; i += chunk) {
@@ -98,18 +100,18 @@ export function pfxToPem(pfxBytes: Uint8Array, password: string): {
     throw new Error("pfx_missing_cert_or_key");
   }
 
-  // Primeiro cert = cliente; demais = cadeia intermediária.
-  const [leaf, ...rest] = certBags.map((b: any) => b.cert as forge.pki.Certificate);
-  const key = keyBags[0].key as forge.pki.PrivateKey;
+  const [leaf, ...rest] = certBags.map((b: any) => b.cert);
+  const key = keyBags[0].key;
 
   const certPem = forge.pki.certificateToPem(leaf);
   const keyPem = forge.pki.privateKeyToPem(key);
   const caPem = rest.length > 0
-    ? rest.map((c) => forge.pki.certificateToPem(c)).join("")
+    ? rest.map((c: any) => forge.pki.certificateToPem(c)).join("")
     : null;
 
   return { certPem, keyPem, caPem };
 }
+
 
 export async function loadCertificado(
   admin: SupabaseClient,
