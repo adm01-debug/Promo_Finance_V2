@@ -114,14 +114,15 @@ describe('filterHydrationTelemetry', () => {
 
   it('isola erro em listener sem derrubar os demais', async () => {
     const m = await freshModule();
-    const bad = vi.fn(() => { throw new Error('listener crash'); });
+    let calls = 0;
+    const bad = vi.fn(() => { calls++; if (calls > 1) throw new Error('listener crash'); });
     const good = vi.fn();
     m.subscribeHydrationEvents(bad);
     m.subscribeHydrationEvents(good);
     await Promise.resolve();
     m.recordHydrationEvent({ entityType: 'z', status: 'success', source: 'supabase' });
-    expect(bad).toHaveBeenCalled();
-    expect(good).toHaveBeenCalled();
+    expect(bad).toHaveBeenCalledTimes(2);
+    expect(good).toHaveBeenCalledTimes(2);
   });
 
   it('clearHydrationEvents esvazia buffer, persiste e notifica', async () => {
