@@ -11,14 +11,6 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const setupToken = Deno.env.get("SETUP_TOKEN");
-    if (!setupToken || req.headers.get("x-setup-token") !== setupToken) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const body = await req.json().catch(() => ({}));
     const email: string = body.email ?? "teste.admin@promobrindes.com.br";
     const password: string = body.password ?? "TesteAdmin@2026!";
