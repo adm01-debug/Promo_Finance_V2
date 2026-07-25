@@ -118,5 +118,3 @@ verify_jwt = false
 [functions.migrate-helper]
 verify_jwt = false
 
-[functions.create-test-admin]
-verify_jwt = false
