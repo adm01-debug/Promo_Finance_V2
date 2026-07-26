@@ -30,6 +30,14 @@ export interface ParametrosSimulacao {
   percentualRevenda?: number;
   /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
   atividadePrincipal?: string;
+  /** Alíquota ICMS efetiva (0..1), default 0.18. */
+  aliquotaICMS?: number;
+  /** Alíquota ISS efetiva (0..1), default 0.05. */
+  aliquotaISS?: number;
+  /** Sublimite estadual de receita bruta (default R$ 3.600.000). */
+  sublimiteEstadual?: number;
+  /** ISS retido na fonte (valor anual) deduzido do DAS. */
+  issRetidoFonte?: number;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
@@ -39,6 +47,8 @@ export interface ResultadoCenario {
   totalTributos: number; cargaEfetiva: number;
   rbt12?: number; fatorR?: number; anexoAplicavel?: AnexoSimples;
   faixaAplicavel?: number; aliquotaNominal?: number;
+  sublimiteExcedido?: boolean;
+  icmsForaDAS?: number; issForaDAS?: number; issRetidoDeduzido?: number;
   observacoes: string[];
 }
 
@@ -187,14 +197,50 @@ export function simularSimples(p: ParametrosSimulacao, ano: number, mes: number)
   };
 
   const d = dist[anexo];
+
+  // Sublimite estadual (LC 123/2006, arts. 19 e 20): ICMS/ISS fora do DAS.
+  const sublimite = p.sublimiteEstadual ?? 3_600_000;
+  const sublimiteExcedido = rbt12 > sublimite;
+  let icms = das * d.icms;
+  let iss = das * d.iss;
+  let dasFinal = das;
+  let icmsForaDAS = 0;
+  let issForaDAS = 0;
+
+  if (sublimiteExcedido && (d.icms > 0 || d.iss > 0)) {
+    dasFinal = das * (1 - (d.icms + d.iss));
+    const pServ = Math.max(0, Math.min(100, p.percentualServicos || 0)) / 100;
+    const pMerc = Math.max(0, 1 - pServ);
+    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * (p.aliquotaICMS ?? 0.18) : 0;
+    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * (p.aliquotaISS ?? 0.05) : 0;
+    icms = icmsForaDAS;
+    iss = issForaDAS;
+    obs.push('RBT12 acima do sublimite estadual: ICMS e ISS recolhidos fora do DAS.');
+  }
+
+  // ISS retido na fonte (LC 116/2003) deduzido da parcela de ISS do DAS.
+  let issRetidoDeduzido = 0;
+  const issRetido = Math.max(0, p.issRetidoFonte || 0);
+  if (issRetido > 0 && !sublimiteExcedido && iss > 0) {
+    issRetidoDeduzido = Math.min(issRetido, iss);
+    iss -= issRetidoDeduzido;
+    dasFinal -= issRetidoDeduzido;
+    obs.push('ISS retido na fonte deduzido do DAS.');
+  }
+
+  const totalTributos = sublimiteExcedido ? dasFinal + icms + iss : dasFinal;
+
   return {
     regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
     irpj: das * d.irpj, csll: das * d.csll, pis: das * d.pis, cofins: das * d.cofins,
-    cpp: das * d.cpp, icms: das * d.icms, iss: das * d.iss,
+    cpp: das * d.cpp, icms, iss,
     cbs: 0, ibs: 0,
-    totalTributos: das, cargaEfetiva: p.faturamentoAnual > 0 ? (das / p.faturamentoAnual) * 100 : 0,
+    totalTributos,
+    cargaEfetiva: p.faturamentoAnual > 0 ? (totalTributos / p.faturamentoAnual) * 100 : 0,
     rbt12, fatorR, anexoAplicavel: anexo, faixaAplicavel: faixa.faixa,
-    aliquotaNominal: faixa.aliq * 100, observacoes: obs,
+    aliquotaNominal: faixa.aliq * 100,
+    sublimiteExcedido, icmsForaDAS, issForaDAS, issRetidoDeduzido,
+    observacoes: obs,
   };
 }
 

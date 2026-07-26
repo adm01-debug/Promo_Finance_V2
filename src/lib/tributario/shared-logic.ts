@@ -32,6 +32,14 @@ export interface ParametrosSimulacao {
   percentualRevenda?: number;
   /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
   atividadePrincipal?: string;
+  /**
+   * Sublimite estadual de receita bruta (LC 123/2006, art. 19/20). Acima dele o
+   * ICMS e o ISS saem do DAS e passam a ser recolhidos pelo regime normal.
+   * Default: R$ 3.600.000,00.
+   */
+  sublimiteEstadual?: number;
+  /** Valor anual de ISS retido na fonte pelo tomador — deduzido da parcela de ISS do DAS. */
+  issRetidoFonte?: number;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
@@ -41,6 +49,14 @@ export interface ResultadoCenario {
   totalTributos: number; cargaEfetiva: number;
   rbt12?: number; fatorR?: number; anexoAplicavel?: AnexoSimples;
   faixaAplicavel?: number; aliquotaNominal?: number;
+  /** True quando o RBT12 ultrapassou o sublimite estadual (ICMS/ISS fora do DAS). */
+  sublimiteExcedido?: boolean;
+  /** ICMS recolhido fora do DAS (regime normal), quando há excesso de sublimite. */
+  icmsForaDAS?: number;
+  /** ISS recolhido fora do DAS (regime normal), quando há excesso de sublimite. */
+  issForaDAS?: number;
+  /** ISS retido na fonte efetivamente deduzido do DAS. */
+  issRetidoDeduzido?: number;
   observacoes: string[];
 }
 
@@ -235,14 +251,66 @@ export function simularSimples(
         iss: raw.iss / sum,
       }
     : raw;
+
+  // --- Sublimite estadual (LC 123/2006, arts. 19 e 20) ---------------------
+  // Ultrapassado o sublimite (padrão R$ 3,6 mi), ICMS e ISS deixam de ser
+  // recolhidos no DAS e passam ao regime normal de apuração. A parcela federal
+  // do DAS é reproporcionalizada para os tributos remanescentes.
+  const sublimite = p.sublimiteEstadual ?? 3_600_000;
+  const sublimiteExcedido = rbt12 > sublimite;
+
+  let icms = das * d.icms;
+  let iss = das * d.iss;
+  let dasFinal = das;
+  let icmsForaDAS = 0;
+  let issForaDAS = 0;
+
+  if (sublimiteExcedido && (d.icms > 0 || d.iss > 0)) {
+    const fracaoEstadualMunicipal = d.icms + d.iss;
+    dasFinal = das * (1 - fracaoEstadualMunicipal);
+
+    const pServ = Math.max(0, Math.min(100, p.percentualServicos || 0)) / 100;
+    const pMerc = Math.max(0, 1 - pServ);
+    const aliqICMS = p.aliquotaICMS ?? 0.18;
+    const aliqISS = p.aliquotaISS ?? 0.05;
+
+    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * aliqICMS : 0;
+    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * aliqISS : 0;
+    icms = icmsForaDAS;
+    iss = issForaDAS;
+    obs.push(
+      `RBT12 (R$ ${rbt12.toLocaleString('pt-BR')}) acima do sublimite estadual de R$ ${sublimite.toLocaleString('pt-BR')}: ICMS e ISS recolhidos FORA do DAS pelo regime normal.`,
+    );
+  }
+
+  // --- ISS retido na fonte (LC 116/2003) -----------------------------------
+  // O ISS retido pelo tomador é deduzido da parcela de ISS devida no DAS,
+  // limitado ao próprio valor dessa parcela (não gera saldo negativo).
+  let issRetidoDeduzido = 0;
+  const issRetido = Math.max(0, p.issRetidoFonte || 0);
+  if (issRetido > 0 && !sublimiteExcedido && iss > 0) {
+    issRetidoDeduzido = Math.min(issRetido, iss);
+    iss -= issRetidoDeduzido;
+    dasFinal -= issRetidoDeduzido;
+    obs.push(
+      `ISS retido na fonte de R$ ${issRetidoDeduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} deduzido do DAS.`,
+    );
+  }
+
+  const totalTributos = sublimiteExcedido ? dasFinal + icms + iss : dasFinal;
+
   return {
     regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
     irpj: das * d.irpj, csll: das * d.csll, pis: das * d.pis, cofins: das * d.cofins,
-    cpp: das * d.cpp, icms: das * d.icms, iss: das * d.iss,
+    cpp: das * d.cpp, icms, iss,
     cbs: 0, ibs: 0,
-    totalTributos: das, cargaEfetiva: p.faturamentoAnual > 0 ? (das / p.faturamentoAnual) * 100 : 0,
+    totalTributos,
+    cargaEfetiva: p.faturamentoAnual > 0 ? (totalTributos / p.faturamentoAnual) * 100 : 0,
     rbt12, fatorR, anexoAplicavel: anexo, faixaAplicavel: faixa.faixa,
-    aliquotaNominal: faixa.aliq * 100, observacoes: obs,
+    aliquotaNominal: faixa.aliq * 100,
+    sublimiteExcedido,
+    icmsForaDAS, issForaDAS, issRetidoDeduzido,
+    observacoes: obs,
   };
 }
 
