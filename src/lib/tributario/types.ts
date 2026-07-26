@@ -47,6 +47,8 @@ export interface ParametrosSimulacao {
   issRetidoFonte?: number;
   /** Alíquota RAT/FAP (0..1) aplicada à CPP patronal fora do DAS (Anexo IV). Default 0.02. */
   aliquotaRAT?: number;
+  /** Contribuições a Terceiros (fração) sobre a folha em Presumido/Real. Default 0.058. */
+  aliquotaTerceiros?: number;
 
 }
 
