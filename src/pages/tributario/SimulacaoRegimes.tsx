@@ -397,8 +397,26 @@ export default function SimulacaoRegimes() {
                           Recálculo atual indica {h.regimeRecalculado}
                         </p>
                       )}
+                      {h.ajustesAplicados.length > 0 && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          Ajustes: {h.ajustesAplicados.map((a) => `${a.rotulo} ${a.informado}→${a.aplicado}`).join(' · ')}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
+                      {h.ajustesAplicados.length > 0 && (
+                        <Badge
+                          variant="outline"
+                          className={
+                            h.ajustesAplicados.some((a) => a.severidade === 'critico')
+                              ? 'text-destructive border-destructive/40'
+                              : 'text-warning border-warning/40'
+                          }
+                          title={h.ajustesAplicados.map((a) => `${a.rotulo}: ${a.motivo}`).join('\n')}
+                        >
+                          {h.ajustesAplicados.length} ajuste{h.ajustesAplicados.length > 1 ? 's' : ''}
+                        </Badge>
+                      )}
                       {h.divergente && (
                         <Badge variant="outline" className="text-warning border-warning/40">
                           Divergente
@@ -409,6 +427,7 @@ export default function SimulacaoRegimes() {
                           Motor antigo
                         </Badge>
                       )}
+
                       {h.economia_anual_estimada !== null && h.economia_anual_estimada !== undefined && (
                         <Badge variant="outline" className="text-success">
                           {formatCurrency(Number(h.economia_anual_estimada))}/ano
