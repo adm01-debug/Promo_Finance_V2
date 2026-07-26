@@ -71,6 +71,26 @@ function normalizarParametros(bruto: unknown): Partial<ParametrosSimulacao> | nu
   return registro as Partial<ParametrosSimulacao>;
 }
 
+/**
+ * Narrowing defensivo da trilha de auditoria de ajustes. Registros legados
+ * (anteriores à coluna) e payloads malformados degradam para lista vazia.
+ */
+function normalizarAjustes(bruto: unknown): AjusteParametro[] {
+  if (!Array.isArray(bruto)) return [];
+  return bruto.filter((item): item is AjusteParametro => {
+    if (!item || typeof item !== 'object') return false;
+    const registro = item as Record<string, unknown>;
+    return (
+      typeof registro.campo === 'string' &&
+      typeof registro.rotulo === 'string' &&
+      typeof registro.informado === 'string' &&
+      typeof registro.aplicado === 'string' &&
+      (registro.severidade === 'aviso' || registro.severidade === 'critico')
+    );
+  });
+}
+
+
 
 const DEFAULT_PARAMS: ParametrosSimulacao = {
   faturamentoAnual: 1_000_000,
