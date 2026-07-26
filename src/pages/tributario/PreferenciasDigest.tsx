@@ -326,7 +326,9 @@ export default function PreferenciasDigest() {
             </Card>
           </div>
         )}
-      </PageBackground>
+        </div>
+      </div>
+
     </MainLayout>
   );
 }
