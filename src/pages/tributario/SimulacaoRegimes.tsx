@@ -68,6 +68,25 @@ export default function SimulacaoRegimes() {
     }));
   }, [empresaSelecionada, setParametros]);
 
+  /**
+   * Lista de parâmetros de folha ausentes no cadastro da empresa. Quando algum
+   * está ausente, o motor usa defaults genéricos (RAT 2%, Terceiros 5,8%), o que
+   * pode distorcer a comparação de regimes com folha relevante (Anexo IV, Lucro
+   * Presumido e Lucro Real).
+   */
+  const parametrosFolhaAusentes = useMemo(() => {
+    if (!empresaSelecionada) return [] as string[];
+    const faltando: string[] = [];
+    if (!empresaSelecionada.cnae_principal) faltando.push('CNAE principal');
+    if (empresaSelecionada.aliquota_rat === null || empresaSelecionada.aliquota_rat === undefined)
+      faltando.push('Alíquota RAT/FAP');
+    if (empresaSelecionada.aliquota_terceiros === null || empresaSelecionada.aliquota_terceiros === undefined)
+      faltando.push('Alíquota de Terceiros');
+    return faltando;
+  }, [empresaSelecionada]);
+
+
+
 
 
   const popularDoHistorico = () => {
