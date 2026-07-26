@@ -5,6 +5,8 @@ import {
   resumirAuditoriaHistorico,
   snapshotComPendencia,
   filtrarHistorico,
+  montarLinhasAuditoriaCsv,
+
 } from '../historico-simulacao';
 import type { AjusteParametro } from '../diagnostico-parametros';
 
