@@ -260,8 +260,11 @@ export default function ObrigacoesAcessorias() {
             analise={analiseHistorico}
             salvando={salvarSnapshots.isPending}
             onSalvar={() => salvarSnapshots.mutate(analiseHistorico.pontos)}
+          />
 
           <ProjecaoConformidadeCard pontos={analiseHistorico.pontos} horizonte={3} />
+
+
 
 
 
