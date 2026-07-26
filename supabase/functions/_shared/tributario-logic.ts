@@ -30,6 +30,14 @@ export interface ParametrosSimulacao {
   percentualRevenda?: number;
   /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
   atividadePrincipal?: string;
+  /** Alíquota ICMS efetiva (0..1), default 0.18. */
+  aliquotaICMS?: number;
+  /** Alíquota ISS efetiva (0..1), default 0.05. */
+  aliquotaISS?: number;
+  /** Sublimite estadual de receita bruta (default R$ 3.600.000). */
+  sublimiteEstadual?: number;
+  /** ISS retido na fonte (valor anual) deduzido do DAS. */
+  issRetidoFonte?: number;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
@@ -39,6 +47,8 @@ export interface ResultadoCenario {
   totalTributos: number; cargaEfetiva: number;
   rbt12?: number; fatorR?: number; anexoAplicavel?: AnexoSimples;
   faixaAplicavel?: number; aliquotaNominal?: number;
+  sublimiteExcedido?: boolean;
+  icmsForaDAS?: number; issForaDAS?: number; issRetidoDeduzido?: number;
   observacoes: string[];
 }
 
