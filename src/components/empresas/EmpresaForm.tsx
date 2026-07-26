@@ -133,6 +133,10 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         estado: empresa.estado || '',
         cep: empresa.cep || '',
         ativo: empresa.ativo ?? true,
+        cnae_principal: empresa.cnae_principal || '',
+        codigo_fpas: empresa.codigo_fpas || '',
+        aliquota_rat: paraPercentual(empresa.aliquota_rat) ?? 2,
+        aliquota_terceiros: paraPercentual(empresa.aliquota_terceiros) ?? 5.8,
       });
     }
   }, [empresa, reset]);
@@ -151,6 +155,35 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
     const masked = applyCepMask(e.target.value);
     setValue('cep', masked);
   };
+
+  /**
+   * Ao digitar o CNAE, deriva automaticamente o FPAS e a alíquota de Terceiros.
+   * A derivação é apenas uma sugestão: o usuário pode sobrescrever ambos manualmente.
+   */
+  const handleCnaeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const masked = applyCnaeMask(e.target.value);
+    setValue('cnae_principal', masked, { shouldValidate: true });
+    const digitos = masked.replace(/\D/g, '');
+    if (digitos.length >= 2) {
+      const sugerido = resolverFpasPorCnae(digitos);
+      setValue('codigo_fpas', sugerido.codigo, { shouldValidate: true });
+      setValue('aliquota_terceiros', Number((sugerido.aliquotaTerceiros * 100).toFixed(2)), {
+        shouldValidate: true,
+      });
+    }
+  };
+
+  /** Seleção manual de FPAS sincroniza a alíquota de Terceiros correspondente. */
+  const handleFpasChange = (codigo: string) => {
+    setValue('codigo_fpas', codigo, { shouldValidate: true });
+    const info = buscarFpas(codigo);
+    if (info) {
+      setValue('aliquota_terceiros', Number((info.aliquotaTerceiros * 100).toFixed(2)), {
+        shouldValidate: true,
+      });
+    }
+  };
+
 
   const onSubmit = async (data: EmpresaFormData) => {
     try {
