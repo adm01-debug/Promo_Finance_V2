@@ -156,6 +156,65 @@ export function ParametrosForm({
             onChange={(e) => setParametros({ ...parametros, despesasOperacionais: Number(e.target.value) })}
           />
         </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="aliq-icms">Alíquota ICMS (%)</Label>
+            <Input
+              id="aliq-icms"
+              type="number"
+              step="0.01"
+              value={((parametros.aliquotaICMS ?? 0.18) * 100).toFixed(2)}
+              onChange={(e) =>
+                setParametros({ ...parametros, aliquotaICMS: Math.max(0, Number(e.target.value)) / 100 })
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="aliq-iss">Alíquota ISS (%)</Label>
+            <Input
+              id="aliq-iss"
+              type="number"
+              step="0.01"
+              value={((parametros.aliquotaISS ?? 0.05) * 100).toFixed(2)}
+              onChange={(e) =>
+                setParametros({ ...parametros, aliquotaISS: Math.max(0, Number(e.target.value)) / 100 })
+              }
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="sublimite">Sublimite Estadual (R$)</Label>
+            <Input
+              id="sublimite"
+              type="number"
+              value={parametros.sublimiteEstadual ?? 3600000}
+              onChange={(e) =>
+                setParametros({ ...parametros, sublimiteEstadual: Math.max(0, Number(e.target.value)) })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              Acima do sublimite, ICMS e ISS saem do DAS (LC 123/2006, arts. 19 e 20).
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="iss-retido">ISS Retido na Fonte (R$/ano)</Label>
+            <Input
+              id="iss-retido"
+              type="number"
+              value={parametros.issRetidoFonte || 0}
+              onChange={(e) =>
+                setParametros({ ...parametros, issRetidoFonte: Math.max(0, Number(e.target.value)) })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              Deduzido da parcela de ISS do DAS, limitado ao valor devido.
+            </p>
+          </div>
+        </div>
+
       </CardContent>
     </Card>
   );
