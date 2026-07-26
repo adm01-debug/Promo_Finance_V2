@@ -14,11 +14,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowRight, Minus, ShieldCheck, TrendingDown, TrendingUp } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Minus, ShieldCheck, TrendingDown, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useConformidadeSnapshotsDaEmpresa } from '@/hooks/useConformidadeSnapshots';
 import {
   analisarTendencia,
+  avaliarAlertasConformidade,
   NIVEL_LABEL,
   type DirecaoTendencia,
   type NivelConformidade,
@@ -86,6 +87,14 @@ export function ConformidadeTendenciaWidget({
     () => analise.pontos.map((p) => ({ competencia: rotuloCompetencia(p.competencia), score: p.score })),
     [analise.pontos],
   );
+
+  /**
+   * Etapa N — pré-visualização dos alertas. Usa exatamente o mesmo motor puro
+   * que o cron aplica ao persistir em `alertas_tributarios`, garantindo que a
+   * UI nunca divirja do que foi notificado.
+   */
+  const alertas = useMemo(() => avaliarAlertasConformidade(analise.pontos).slice(0, 3), [analise.pontos]);
+
 
   return (
     <Card className={cn('backdrop-blur-xl bg-background/40 border-white/10 shadow-xl', className)}>
@@ -199,7 +208,29 @@ export function ConformidadeTendenciaWidget({
                 </dd>
               </div>
             </dl>
+
+            {alertas.length > 0 && (
+              <ul className="space-y-1.5" aria-label="Alertas de conformidade">
+                {alertas.map((a) => (
+                  <li
+                    key={a.chave}
+                    className={cn(
+                      'flex items-start gap-2 rounded-lg border p-2 text-xs',
+                      a.severidade === 'critica'
+                        ? 'border-destructive/30 bg-destructive/10 text-destructive'
+                        : a.severidade === 'alta'
+                          ? 'border-warning/30 bg-warning/10 text-warning'
+                          : 'border-border/60 bg-muted/20 text-muted-foreground',
+                    )}
+                  >
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span className="font-medium leading-snug">{a.titulo}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </>
+
         )}
       </CardContent>
     </Card>
