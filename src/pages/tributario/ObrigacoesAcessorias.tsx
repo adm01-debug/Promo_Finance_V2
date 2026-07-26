@@ -227,7 +227,7 @@ export default function ObrigacoesAcessorias() {
                             <TableCell>
                               <Checkbox
                                 checked={item.situacao === 'entregue'}
-                                onCheckedChange={() => alternarEntrega(item)}
+                                onChange={() => alternarEntrega(item)}
                                 aria-label={`Marcar ${item.nome} de ${item.competencia} como entregue`}
                               />
                             </TableCell>
