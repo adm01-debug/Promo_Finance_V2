@@ -57,6 +57,24 @@ export default function SimulacaoRegimes() {
   // pela camada de sanitização do motor, evitando cálculos silenciosamente corrigidos.
   const ajustesParametros = useMemo(() => diagnosticarParametros(parametros), [parametros]);
 
+  // Ajustes críticos exigem confirmação explícita antes de persistir o snapshot,
+  // preservando a integridade auditável da base histórica de simulações.
+  const ajustesCriticos = useMemo(
+    () => ajustesParametros.filter((a) => a.severidade === 'critico'),
+    [ajustesParametros],
+  );
+  const [confirmarSalvamento, setConfirmarSalvamento] = useState(false);
+
+  const handleSalvar = () => {
+    if (ajustesCriticos.length > 0) {
+      setConfirmarSalvamento(true);
+      return;
+    }
+    salvarSimulacao.mutate();
+  };
+
+
+
   const empresaSelecionada = useMemo(() => empresas.find((e) => e.id === empresaId), [empresas, empresaId]);
 
   // Carrega os parâmetros de folha cadastrados na empresa (CNAE, RAT/FAP e
