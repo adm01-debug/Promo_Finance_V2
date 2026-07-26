@@ -5,6 +5,7 @@ import type {
   InputLucroReal, ResultadoRegime, LinhaMemoria, TributoDetalhe,
 } from './types';
 import { calcularMixMonofasico } from '../monofasico';
+import { calcularEncargosPatronais } from '../folha';
 
 const LIMITE_ADICIONAL_ANUAL = 240_000;
 const LIMITE_ADICIONAL_TRIMESTRAL = 60_000;
