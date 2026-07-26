@@ -5335,11 +5335,15 @@ export type Database = {
       }
       empresas: {
         Row: {
+          aliquota_rat: number | null
+          aliquota_terceiros: number | null
           ativo: boolean
           bairro: string | null
           cep: string | null
           cidade: string | null
+          cnae_principal: string | null
           cnpj: string | null
+          codigo_fpas: string | null
           cor_hex: string | null
           created_at: string
           email: string | null
@@ -5355,11 +5359,15 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          aliquota_rat?: number | null
+          aliquota_terceiros?: number | null
           ativo?: boolean
           bairro?: string | null
           cep?: string | null
           cidade?: string | null
+          cnae_principal?: string | null
           cnpj?: string | null
+          codigo_fpas?: string | null
           cor_hex?: string | null
           created_at?: string
           email?: string | null
@@ -5375,11 +5383,15 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          aliquota_rat?: number | null
+          aliquota_terceiros?: number | null
           ativo?: boolean
           bairro?: string | null
           cep?: string | null
           cidade?: string | null
+          cnae_principal?: string | null
           cnpj?: string | null
+          codigo_fpas?: string | null
           cor_hex?: string | null
           created_at?: string
           email?: string | null
