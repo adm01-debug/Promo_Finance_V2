@@ -175,10 +175,11 @@ export default function ComparativoConformidade() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <div className="relative">
+        <PageBackground />
         <PageHeader
           title="Comparativo de Conformidade"
-          description="Ranking do score fiscal entre as empresas do grupo, com tendência e multas acumuladas."
+          subtitle="Ranking do score fiscal entre as empresas do grupo, com tendência e multas acumuladas."
           icon={BarChart3}
         />
 
@@ -214,7 +215,7 @@ export default function ComparativoConformidade() {
           </div>
 
           {error && (
-            <Alert variant="destructive">
+            <Alert variant="error">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 Não foi possível carregar o histórico de conformidade: {error.message}
@@ -326,7 +327,7 @@ export default function ComparativoConformidade() {
             </CardContent>
           </Card>
         </div>
-      </PageBackground>
+      </div>
     </MainLayout>
   );
 }
