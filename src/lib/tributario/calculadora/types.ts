@@ -3,6 +3,7 @@
 
 import type { AnexoSimples, RegimeTributario } from '../types';
 import type { ItemMonofasico, PosicaoCadeia } from '../monofasico/types';
+import type { GrauRisco } from '../folha/types';
 
 /** Mix de NCMs sujeitos ao regime monofásico de PIS/COFINS (Etapa 36). */
 export interface InputMonofasico {
