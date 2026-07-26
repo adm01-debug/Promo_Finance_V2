@@ -36,6 +36,7 @@ export default function SimulacaoRegimes() {
     salvarSimulacao,
     temHistoricoSuficiente,
     historicoSimulacoes,
+    resumoAuditoria,
     restaurarSimulacao,
     versaoMotor,
     faturamentoMensal,
@@ -382,6 +383,41 @@ export default function SimulacaoRegimes() {
               <CardHeader>
                 <CardTitle className="text-base">Simulações Anteriores</CardTitle>
                 <p className="text-xs text-muted-foreground">Motor tributário v{versaoMotor}</p>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {resumoAuditoria.saudavel ? (
+                    <Badge variant="outline" className="text-success border-success/40">
+                      {resumoAuditoria.total} snapshot{resumoAuditoria.total > 1 ? 's' : ''} sem pendências
+                    </Badge>
+                  ) : (
+                    <>
+                      {resumoAuditoria.divergentes > 0 && (
+                        <Badge variant="outline" className="text-warning border-warning/40">
+                          {resumoAuditoria.divergentes} divergente{resumoAuditoria.divergentes > 1 ? 's' : ''}
+                        </Badge>
+                      )}
+                      {resumoAuditoria.motorDesatualizado > 0 && (
+                        <Badge variant="outline" className="text-muted-foreground">
+                          {resumoAuditoria.motorDesatualizado} com motor antigo
+                        </Badge>
+                      )}
+                      {resumoAuditoria.comAjustes > 0 && (
+                        <Badge
+                          variant="outline"
+                          className={
+                            resumoAuditoria.comAjustesCriticos > 0
+                              ? 'text-destructive border-destructive/40'
+                              : 'text-warning border-warning/40'
+                          }
+                        >
+                          {resumoAuditoria.comAjustes} com ajustes
+                          {resumoAuditoria.comAjustesCriticos > 0
+                            ? ` (${resumoAuditoria.comAjustesCriticos} crítico${resumoAuditoria.comAjustesCriticos > 1 ? 's' : ''})`
+                            : ''}
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-2">
                 {historicoSimulacoes.slice(0, 5).map((h) => (
