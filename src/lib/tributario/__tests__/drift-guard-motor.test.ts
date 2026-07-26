@@ -42,6 +42,7 @@ const FUNCOES = [
   'calcularRBT12',
   'calcularFolha12m',
   'determinarAnexoSimples',
+  'sanitizarParametros',
   'simularSimples',
   'simularPresumido',
   'simularReal',
