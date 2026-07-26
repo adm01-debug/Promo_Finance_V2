@@ -28,6 +28,7 @@ import {
   ScrollText,
   User,
   Truck,
+  Factory,
   FileSpreadsheet,
   ShieldCheck,
   Bot,
