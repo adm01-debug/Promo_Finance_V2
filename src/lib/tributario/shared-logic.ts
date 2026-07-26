@@ -434,7 +434,9 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
 }
 
 export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
-  const lucro = p.faturamentoAnual * (p.margemLucro / 100);
+  // Defesa: margemLucro ausente/inválida não pode propagar NaN para o total.
+  const margemLucro = Number.isFinite(p.margemLucro) ? Number(p.margemLucro) : 0;
+  const lucro = p.faturamentoAnual * (margemLucro / 100);
   const irpj = Math.max(0, lucro * 0.15 + (lucro > 240000 ? (lucro - 240000) * 0.10 : 0));
   const csll = Math.max(0, lucro * 0.09);
   const baseCred = (p.comprasComCredito || 0) + (p.despesasOperacionais || 0);
@@ -449,13 +451,13 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const iss = rs * aliqISS;
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
-  const observacoes = [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
+  const observacoes = [`Lucro estimado: ${margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
   if (lucro <= 240000) {
     observacoes.push('Sem adicional de IRPJ: lucro anual ≤ R$ 240k.');
   } else {
     observacoes.push('Adicional de IRPJ de 10% sobre o lucro excedente a R$ 240k.');
   }
-  if (p.margemLucro < 8) {
+  if (margemLucro < 8) {
     observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
   }
   return {
