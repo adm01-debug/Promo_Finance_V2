@@ -227,6 +227,9 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
   const salvarSimulacao = useMutation({
     mutationFn: async () => {
       if (!empresaId) throw new Error('Selecione uma empresa para salvar a simulação.');
+      // Trilha de auditoria: registra as correções automáticas aplicadas às
+      // entradas, de modo que o snapshot seja reproduzível e explicável.
+      const ajustesAplicados = diagnosticarParametros(parametros);
       const { error } = await supabase.from('regimes_simulados').insert({
         empresa_id: empresaId,
         ano_referencia: anoReferencia,
@@ -243,8 +246,10 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         created_by: user?.id ?? null,
         audit_log_id: resultado.auditLogId ?? null,
         versao_motor: VERSAO_MOTOR_TRIBUTARIO,
+        ajustes_aplicados: ajustesAplicados as unknown as Json,
       });
       if (error) throw error;
+
     },
     onSuccess: () => {
       toast.success('Simulação salva no histórico');
