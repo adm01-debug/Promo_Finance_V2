@@ -27,6 +27,10 @@ export default function OportunidadesElisao() {
   const [pd, setPd] = useState<number>(0);
   const [beneficioIcms, setBeneficioIcms] = useState<number>(0);
   const [dividendos, setDividendos] = useState<number>(0);
+  const [uf, setUf] = useState<string>('');
+  const [lucrosAcumulados, setLucrosAcumulados] = useState<number>(0);
+  const [creditosPisCofins, setCreditosPisCofins] = useState<number>(0);
+  const [investimentoMaquinas, setInvestimentoMaquinas] = useState<number>(0);
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
 
   const {
@@ -50,6 +54,11 @@ export default function OportunidadesElisao() {
       despesas_pd: pd,
       beneficio_icms_anual: beneficioIcms,
       dividendos_pf_anual: dividendos,
+      uf: uf || undefined,
+      cnae: empresaSelecionada?.cnae_principal ?? undefined,
+      lucros_acumulados_ate_2025: lucrosAcumulados,
+      creditos_pis_cofins_nao_aproveitados: creditosPisCofins || undefined,
+      investimento_maquinas_anual: investimentoMaquinas,
     },
   });
 
@@ -62,7 +71,7 @@ export default function OportunidadesElisao() {
             Oportunidades de Elisão Fiscal
           </h1>
           <p className="text-muted-foreground mt-1">
-            9 estratégias legais analisadas a partir do perfil tributário da empresa.
+            13 estratégias legais analisadas a partir do perfil tributário da empresa.
           </p>
         </div>
         <Button
@@ -86,6 +95,10 @@ export default function OportunidadesElisao() {
         pd={pd} setPd={setPd}
         beneficioIcms={beneficioIcms} setBeneficioIcms={setBeneficioIcms}
         dividendos={dividendos} setDividendos={setDividendos}
+        uf={uf} setUf={setUf}
+        lucrosAcumulados={lucrosAcumulados} setLucrosAcumulados={setLucrosAcumulados}
+        creditosPisCofins={creditosPisCofins} setCreditosPisCofins={setCreditosPisCofins}
+        investimentoMaquinas={investimentoMaquinas} setInvestimentoMaquinas={setInvestimentoMaquinas}
       />
 
       {!temHistoricoSuficiente && empresaId && (

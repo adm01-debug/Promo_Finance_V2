@@ -21,13 +21,26 @@ interface ContextoFormProps {
   pd: number; setPd: (v: number) => void;
   beneficioIcms: number; setBeneficioIcms: (v: number) => void;
   dividendos: number; setDividendos: (v: number) => void;
+  uf: string; setUf: (v: string) => void;
+  lucrosAcumulados: number; setLucrosAcumulados: (v: number) => void;
+  creditosPisCofins: number; setCreditosPisCofins: (v: number) => void;
+  investimentoMaquinas: number; setInvestimentoMaquinas: (v: number) => void;
 }
+
+/** UFs disponíveis para seleção da unidade principal. */
+const UFS = [
+  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI',
+  'PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO',
+] as const;
 
 export function ContextoForm(props: ContextoFormProps) {
   const {
     empresas, empresaId, setEmpresaId, regimeAtual, setRegimeAtual,
     pl, setPl, lucro, setLucro, importacao, setImportacao,
     pd, setPd, beneficioIcms, setBeneficioIcms, dividendos, setDividendos,
+    uf, setUf, lucrosAcumulados, setLucrosAcumulados,
+    creditosPisCofins, setCreditosPisCofins,
+    investimentoMaquinas, setInvestimentoMaquinas,
   } = props;
 
   return (
@@ -84,6 +97,47 @@ export function ContextoForm(props: ContextoFormProps) {
         <div>
           <Label>Dividendos PF anuais (R$)</Label>
           <Input type="number" value={dividendos} onChange={(e) => setDividendos(Number(e.target.value))} />
+        </div>
+        <div>
+          <Label htmlFor="elisao-uf">UF da unidade principal</Label>
+          <Select value={uf} onValueChange={setUf}>
+            <SelectTrigger id="elisao-uf"><SelectValue placeholder="Selecione a UF" /></SelectTrigger>
+            <SelectContent>
+              {UFS.map((sigla) => (
+                <SelectItem key={sigla} value={sigla}>{sigla}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="elisao-lucros-acumulados">Lucros acumulados até 2025 (R$)</Label>
+          <Input
+            id="elisao-lucros-acumulados"
+            type="number"
+            min={0}
+            value={lucrosAcumulados}
+            onChange={(e) => setLucrosAcumulados(Number(e.target.value))}
+          />
+        </div>
+        <div>
+          <Label htmlFor="elisao-creditos-pis">Créditos PIS/COFINS não aproveitados (R$/ano)</Label>
+          <Input
+            id="elisao-creditos-pis"
+            type="number"
+            min={0}
+            value={creditosPisCofins}
+            onChange={(e) => setCreditosPisCofins(Number(e.target.value))}
+          />
+        </div>
+        <div>
+          <Label htmlFor="elisao-investimento-maquinas">Investimento em máquinas novas (R$/ano)</Label>
+          <Input
+            id="elisao-investimento-maquinas"
+            type="number"
+            min={0}
+            value={investimentoMaquinas}
+            onChange={(e) => setInvestimentoMaquinas(Number(e.target.value))}
+          />
         </div>
       </CardContent>
     </Card>
