@@ -15,7 +15,22 @@
  *   à classificação de conformidade já existente (`classificarConformidade`).
  * - A ausência de dados nunca gera alerta: sem série não há afirmação possível.
  */
-import type { PontoHistorico } from './historico.ts';
+/**
+ * Espelho local do ponto da série temporal (definido em
+ * `src/lib/tributario/obrigacoes/historico.ts`). Duplicado aqui porque Edge
+ * Functions não podem importar de `src/`; a paridade é garantida por teste.
+ */
+export interface PontoHistorico {
+  readonly competencia: string;
+  readonly score: number;
+  readonly nivel: 'critico' | 'atencao' | 'bom' | 'excelente';
+  readonly total: number;
+  readonly entregues: number;
+  readonly vencidasPendentes: number;
+  readonly entreguesComAtraso: number;
+  readonly pontualidade: number;
+  readonly multaRegistrada: number;
+}
 
 /** Tipos de alerta emitidos pelo motor. */
 export type TipoAlertaConformidade =
