@@ -17,9 +17,9 @@ import type { RegimeAplicavel } from '@/lib/tributario/obrigacoes/types';
 import {
   gerarCalendario as gerarEdge,
   calcularPrazo as prazoEdge,
-} from '../../../supabase/functions/_shared/obrigacoes/calendario.ts';
-import { calcularConformidade as conformidadeEdge } from '../../../supabase/functions/_shared/obrigacoes/conformidade.ts';
-import { OBRIGACOES as OBRIGACOES_EDGE } from '../../../supabase/functions/_shared/obrigacoes/catalogo.ts';
+} from '../../../../supabase/functions/_shared/obrigacoes/calendario.ts';
+import { calcularConformidade as conformidadeEdge } from '../../../../supabase/functions/_shared/obrigacoes/conformidade.ts';
+import { OBRIGACOES as OBRIGACOES_EDGE } from '../../../../supabase/functions/_shared/obrigacoes/catalogo.ts';
 
 const REGIMES: RegimeAplicavel[] = ['simples', 'presumido', 'real', 'todos'];
 
