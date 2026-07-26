@@ -146,12 +146,19 @@ export default function IrpjCsllLucroReal() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <div className="relative min-h-screen">
+        <PageBackground />
+        <div className="container relative z-10 mx-auto space-y-6 p-4 md:p-6">
         <PageHeader
           title="IRPJ/CSLL — Lucro Real"
-          description="Apuração trimestral ou anual por estimativa, com LALUR Parte A (adições/exclusões) e Parte B (prejuízo fiscal e base negativa)."
+          subtitle="Apuração trimestral ou anual por estimativa, com LALUR Parte A (adições/exclusões) e Parte B (prejuízo fiscal e base negativa)."
+          badge="Etapa F"
           icon={Landmark}
+          gradientFrom="from-primary/80"
+          gradientVia="via-primary"
+          gradientTo="to-success"
         />
+
 
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
