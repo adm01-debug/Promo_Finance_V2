@@ -106,6 +106,27 @@ export function ParametrosForm({
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="perc-industria">% Indústria (Anexo II)</Label>
+            <Input
+              id="perc-industria"
+              type="number"
+              value={parametros.percentualIndustria || 0}
+              onChange={(e) => setParametros({ ...parametros, percentualIndustria: Number(e.target.value) })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="perc-revenda">% Revenda (Anexo I)</Label>
+            <Input
+              id="perc-revenda"
+              type="number"
+              value={parametros.percentualRevenda ?? Math.max(0, 100 - (parametros.percentualServicos || 0) - (parametros.percentualIndustria || 0))}
+              onChange={(e) => setParametros({ ...parametros, percentualRevenda: Number(e.target.value) })}
+            />
+          </div>
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="folha-anual">Folha Anual</Label>
           <Input
