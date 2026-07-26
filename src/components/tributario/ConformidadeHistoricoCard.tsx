@@ -52,7 +52,7 @@ export function ConformidadeHistoricoCard({
   onSalvar,
   className,
 }: ConformidadeHistoricoCardProps) {
-  const dados = useMemo(() => mediaMovel(analise.pontos, 3), [analise.pontos]);
+  const dados = useMemo(() => [...mediaMovel(analise.pontos, 3)], [analise.pontos]);
   const Icone = analise.direcao === 'alta' ? TrendingUp : analise.direcao === 'queda' ? TrendingDown : Minus;
 
   return (
