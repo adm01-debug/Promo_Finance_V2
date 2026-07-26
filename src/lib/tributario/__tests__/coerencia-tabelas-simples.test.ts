@@ -92,16 +92,14 @@ describe('Coerência das tabelas do Simples Nacional', () => {
         expect(depois).toBeGreaterThanOrEqual(antes - 1e-9);
       }
 
-      // Na última faixa, a alíquota efetiva ainda deve crescer até o teto do Simples
-      // e superar a efetiva máxima da faixa anterior no limite de R$ 4,8 mi.
-      const penultima = faixas[faixas.length - 2];
+      // Na última faixa a efetiva ainda deve crescer monotonicamente até o teto
+      // do Simples. Não se compara com a faixa 5: a LC 123/2006 usa alíquota
+      // nominal e PD próprias na 6ª faixa, o que gera degrau legítimo.
       const ultima = faixas[faixas.length - 1];
-      expect(efetiva(ultima.rbt12_ate, ultima)).toBeGreaterThan(
-        efetiva(penultima.rbt12_ate, penultima),
-      );
       expect(efetiva(ultima.rbt12_ate, ultima)).toBeGreaterThan(
         efetiva(ultima.rbt12_de + 0.01, ultima),
       );
+
 
 
       for (const f of faixas) {
