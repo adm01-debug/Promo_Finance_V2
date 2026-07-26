@@ -135,6 +135,7 @@ const DarfConsolidadoPage = lazy(() => import('./pages/tributario/DarfConsolidad
 const ObrigacoesAcessoriasPage = lazy(() => import('./pages/tributario/ObrigacoesAcessorias'));
 const ComparativoConformidadePage = lazy(() => import('./pages/tributario/ComparativoConformidade'));
 const PreferenciasDigestPage = lazy(() => import('./pages/tributario/PreferenciasDigest'));
+const ObservabilidadeDigestPage = lazy(() => import('./pages/tributario/ObservabilidadeDigest'));
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
@@ -278,6 +279,7 @@ function AppRoutes() {
             <Route path="/tributario/obrigacoes" element={<ProtectedRoute><ObrigacoesAcessoriasPage /></ProtectedRoute>} />
             <Route path="/tributario/comparativo-conformidade" element={<ProtectedRoute><ComparativoConformidadePage /></ProtectedRoute>} />
             <Route path="/tributario/preferencias-digest" element={<ProtectedRoute><PreferenciasDigestPage /></ProtectedRoute>} />
+            <Route path="/tributario/observabilidade-digest" element={<ProtectedRoute><ObservabilidadeDigestPage /></ProtectedRoute>} />
 
 
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />

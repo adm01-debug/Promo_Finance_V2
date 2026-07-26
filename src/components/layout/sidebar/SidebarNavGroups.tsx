@@ -157,6 +157,7 @@ const navGroups: NavGroup[] = [
       { label: 'Obrigações Acessórias', icon: CalendarCheck, href: '/tributario/obrigacoes' },
       { label: 'Comparativo de Conformidade', icon: BarChart3, href: '/tributario/comparativo-conformidade' },
       { label: 'Preferências do Resumo', icon: BarChart3, href: '/tributario/preferencias-digest' },
+      { label: 'Observabilidade do Resumo', icon: BarChart3, href: '/tributario/observabilidade-digest' },
 
       { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
