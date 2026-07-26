@@ -212,6 +212,23 @@ export default function SimulacaoRegimes() {
         </Alert>
       )}
 
+      {empresaId && parametrosFolhaAusentes.length > 0 && (
+        <Alert variant="default" role="status" aria-live="polite">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Parâmetros de folha incompletos</AlertTitle>
+          <AlertDescription>
+            A empresa selecionada não possui {parametrosFolhaAusentes.join(', ')} no cadastro. A simulação usará
+            valores padrão (RAT 2% e Terceiros 5,8%), o que pode distorcer os encargos patronais. Preencha em{' '}
+            <Link to="/empresas" className="font-medium underline underline-offset-4">
+              Cadastro de Empresas
+            </Link>
+            .
+          </AlertDescription>
+        </Alert>
+      )}
+
+
+
       <div className="grid gap-6 lg:grid-cols-3">
         <ParametrosForm
           empresas={empresas}
