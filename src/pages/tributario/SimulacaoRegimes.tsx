@@ -20,8 +20,21 @@ import { AjustesParametrosAlert } from '@/components/tributario/simulacao/Ajuste
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
-import { filtrarHistorico, montarLinhasAuditoriaCsv, paginarHistorico } from '@/lib/tributario/historico-simulacao';
-import type { LinhaAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
+import {
+  filtrarHistorico,
+  montarLinhasAuditoriaCsv,
+  ordenarHistorico,
+  paginarHistorico,
+  ORDENACOES_HISTORICO,
+} from '@/lib/tributario/historico-simulacao';
+import type { LinhaAuditoriaCsv, OrdenacaoHistorico } from '@/lib/tributario/historico-simulacao';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { exportToCSV, type ExportColumn } from '@/lib/export-utils';
 
 /** Colunas da trilha de auditoria exportável (ordem fixa para diffs estáveis). */
@@ -48,6 +61,7 @@ export default function SimulacaoRegimes() {
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const [autoLoaded, setAutoLoaded] = useState(false);
   const [somentePendencias, setSomentePendencias] = useState(false);
+  const [ordenacao, setOrdenacao] = useState<OrdenacaoHistorico>('data_desc');
   const [paginaHistorico, setPaginaHistorico] = useState(1);
   const TAMANHO_PAGINA_HISTORICO = 5;
 
@@ -82,16 +96,18 @@ export default function SimulacaoRegimes() {
   // pela camada de sanitização do motor, evitando cálculos silenciosamente corrigidos.
   const ajustesParametros = useMemo(() => diagnosticarParametros(parametros), [parametros]);
 
-  // Histórico exibido: opcionalmente restrito aos snapshots que exigem atenção.
+  // Histórico exibido: opcionalmente restrito aos snapshots que exigem atenção
+  // e ordenado conforme o critério escolhido (helpers puros, sem mutação).
   const historicoVisivel = useMemo(
-    () => filtrarHistorico(historicoSimulacoes, somentePendencias),
-    [historicoSimulacoes, somentePendencias],
+    () => ordenarHistorico(filtrarHistorico(historicoSimulacoes, somentePendencias), ordenacao),
+    [historicoSimulacoes, somentePendencias, ordenacao],
   );
 
   // Volta ao início sempre que o recorte muda, evitando página órfã.
   useEffect(() => {
     setPaginaHistorico(1);
-  }, [somentePendencias, empresaId]);
+  }, [somentePendencias, ordenacao, empresaId]);
+
 
   // O clamp acontece no helper puro: se a lista encurtar, a página é ajustada.
   const pagina = useMemo(
@@ -474,16 +490,39 @@ export default function SimulacaoRegimes() {
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-2 pt-2">
-                  <Switch
-                    id="filtro-pendencias-historico"
-                    checked={somentePendencias}
-                    onCheckedChange={setSomentePendencias}
-                  />
-                  <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
-                    Somente snapshots com pendências
-                  </Label>
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="filtro-pendencias-historico"
+                      checked={somentePendencias}
+                      onCheckedChange={setSomentePendencias}
+                    />
+                    <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
+                      Somente snapshots com pendências
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="ordenacao-historico" className="text-xs font-normal">
+                      Ordenar por
+                    </Label>
+                    <Select
+                      value={ordenacao}
+                      onValueChange={(v) => setOrdenacao(v as OrdenacaoHistorico)}
+                    >
+                      <SelectTrigger id="ordenacao-historico" className="h-8 w-[190px] text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ORDENACOES_HISTORICO.map((o) => (
+                          <SelectItem key={o.valor} value={o.valor} className="text-xs">
+                            {o.rotulo}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
 
                 <div className="pt-2">
                   <Button
