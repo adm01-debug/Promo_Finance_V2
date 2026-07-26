@@ -3,6 +3,7 @@
 
 import type { AnexoSimples, RegimeTributario } from '../types';
 import type { ItemMonofasico, PosicaoCadeia } from '../monofasico/types';
+import type { GrauRisco } from '../folha/types';
 
 /** Mix de NCMs sujeitos ao regime monofásico de PIS/COFINS (Etapa 36). */
 export interface InputMonofasico {
@@ -28,9 +29,18 @@ export interface InputReceitas {
 export interface InputFolha {
   folhaAnual: number;
   proLabore?: number;
-  aliquotaRat?: number;   // decimal, ex 0.02
-  aliquotaTerceiros?: number; // decimal, ex 0.058
+  aliquotaRat?: number;   // decimal, ex 0.02 (override do RAT nominal)
+  aliquotaTerceiros?: number; // decimal, ex 0.058 (override do FPAS)
+  /** CNAE preponderante — deriva o grau de risco quando aliquotaRat não é informada. */
+  cnae?: string;
+  /** Grau de risco explícito (leve/medio/grave). */
+  grauRisco?: GrauRisco;
+  /** Fator Acidentário de Prevenção (0,5000 a 2,0000). */
+  fap?: number;
+  /** Código FPAS que determina o pacote de Terceiros. */
+  fpas?: string;
 }
+
 
 export interface CreditosPisCofins {
   insumos?: number;

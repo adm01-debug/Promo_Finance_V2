@@ -5,6 +5,7 @@ import type {
   InputLucroReal, ResultadoRegime, LinhaMemoria, TributoDetalhe,
 } from './types';
 import { calcularMixMonofasico } from '../monofasico';
+import { calcularEncargosPatronais } from '../folha';
 
 const LIMITE_ADICIONAL_ANUAL = 240_000;
 const LIMITE_ADICIONAL_TRIMESTRAL = 60_000;
@@ -148,16 +149,28 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   if (mono) alertas.push(...mono.alertas);
 
 
-  // === CPP (INSS patronal) ===
-  const rat = input.folha.aliquotaRat ?? 0.02;
-  const terceiros = input.folha.aliquotaTerceiros ?? 0.058;
-  const cppAliq = 0.20 + rat + terceiros;
-  const cpp = input.folha.folhaAnual * cppAliq;
-  push(memoria, {
-    grupo: 'CPP',
-    descricao: `INSS patronal (20% + RAT ${(rat * 100).toFixed(1)}% + Terceiros ${(terceiros * 100).toFixed(1)}%)`,
-    base: input.folha.folhaAnual, aliquota: cppAliq, valor: cpp,
-  });
+  // === CPP (INSS patronal com RAT ajustado pelo FAP e Terceiros por FPAS) ===
+  const encargos = calcularEncargosPatronais({
+    folha: input.folha.folhaAnual,
+    proLabore: input.folha.proLabore,
+    aliquotaRat: input.folha.aliquotaRat,
+    aliquotaTerceiros: input.folha.aliquotaTerceiros,
+    grauRisco: input.folha.grauRisco,
+    fap: input.folha.fap,
+    fpas: input.folha.fpas,
+    incluirFgts: false,
+  }, input.folha.cnae);
+  const cpp = encargos.totalInss;
+  const cppAliq = input.folha.folhaAnual > 0 ? cpp / input.folha.folhaAnual : 0;
+  for (const linha of encargos.linhas) {
+    push(memoria, {
+      grupo: 'CPP',
+      descricao: `${linha.rubrica} — ${linha.fundamento}`,
+      base: linha.base, aliquota: linha.aliquota, valor: linha.valor,
+    });
+  }
+  alertas.push(...encargos.alertas);
+
 
   // === ICMS ===
   const em = input.estadualMunicipal;

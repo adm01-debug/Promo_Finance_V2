@@ -146,6 +146,7 @@ const navGroups: NavGroup[] = [
       { label: 'PER/DCOMP', icon: FileText, href: '/tributario/per-dcomp' },
       { label: 'Retenções na Fonte', icon: Receipt, href: '/tributario/retencoes' },
       { label: 'Monofásico PIS/COFINS', icon: Beaker, href: '/tributario/monofasico' },
+      { label: 'Encargos de Folha (RAT/FAP)', icon: Users, href: '/tributario/folha-encargos' },
       { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
       { label: 'Relatórios de Entregas', icon: FileText, href: '/relatorios/entregas', highlight: true },
