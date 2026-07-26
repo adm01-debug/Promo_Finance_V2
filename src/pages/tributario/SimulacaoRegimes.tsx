@@ -49,6 +49,27 @@ export default function SimulacaoRegimes() {
 
   const empresaSelecionada = useMemo(() => empresas.find((e) => e.id === empresaId), [empresas, empresaId]);
 
+  // Carrega os parâmetros de folha cadastrados na empresa (CNAE, RAT/FAP e
+  // terceiros). Valores nulos permanecem indefinidos para que o motor derive
+  // a alíquota de terceiros a partir do CNAE.
+  useEffect(() => {
+    if (!empresaSelecionada) return;
+    setParametros((atual) => ({
+      ...atual,
+      cnaePrincipal: empresaSelecionada.cnae_principal ?? atual.cnaePrincipal,
+      aliquotaRAT:
+        empresaSelecionada.aliquota_rat !== null && empresaSelecionada.aliquota_rat !== undefined
+          ? Number(empresaSelecionada.aliquota_rat)
+          : atual.aliquotaRAT,
+      aliquotaTerceiros:
+        empresaSelecionada.aliquota_terceiros !== null && empresaSelecionada.aliquota_terceiros !== undefined
+          ? Number(empresaSelecionada.aliquota_terceiros)
+          : atual.aliquotaTerceiros,
+    }));
+  }, [empresaSelecionada, setParametros]);
+
+
+
   const popularDoHistorico = () => {
     if (faturamentoMensal.length === 0) {
       toast.error('Sem histórico de faturamento para esta empresa.');
