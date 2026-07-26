@@ -200,7 +200,12 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         estado: data.estado || null,
         cep: data.cep || null,
         ativo: data.ativo,
+        cnae_principal: data.cnae_principal || null,
+        codigo_fpas: data.codigo_fpas || null,
+        aliquota_rat: paraFracao(data.aliquota_rat),
+        aliquota_terceiros: paraFracao(data.aliquota_terceiros),
       };
+
 
       if (isEditing && empresa) {
         await atualizarEmpresa.mutateAsync({ id: empresa.id, data: formPayload });
