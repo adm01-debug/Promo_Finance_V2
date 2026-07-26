@@ -130,6 +130,7 @@ Deno.serve(async (req: Request) => {
       nivel: string;
     }> = [];
     const falhas: Array<{ empresaId: string; erro: string }> = [];
+    let alertasCriados = 0;
 
     for (const empresa of empresas ?? []) {
       try {
