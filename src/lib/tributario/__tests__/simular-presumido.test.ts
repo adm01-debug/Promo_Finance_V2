@@ -46,9 +46,9 @@ describe('simularPresumido', () => {
     expect(r.cofins).toBeCloseTo(2_000_000 * 0.03, 2);
   });
 
-  it('CPP de 20% sobre folha', () => {
+  it('CPP patronal de 27,8% sobre folha (20% + RAT 2% + Terceiros 5,8%)', () => {
     const r = simularPresumido(base);
-    expect(r.cpp).toBeCloseTo(40_000, 2);
+    expect(r.cpp).toBeCloseTo(200_000 * 0.278, 2);
   });
 
   it('mistura serviços + comércio proporcionalmente', () => {

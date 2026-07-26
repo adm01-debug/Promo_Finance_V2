@@ -40,6 +40,11 @@ export interface ParametrosSimulacao {
   issRetidoFonte?: number;
   /** Alíquota RAT/FAP (0..1) da CPP patronal fora do DAS (Anexo IV). Default 0.02. */
   aliquotaRAT?: number;
+  /**
+   * Alíquota de Contribuições a Terceiros (fração, ex.: 0.058 = 5,8%) incidente
+   * sobre a folha em Lucro Presumido e Lucro Real. Default: 0.058 (FPAS 507).
+   */
+  aliquotaTerceiros?: number;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
@@ -302,6 +307,24 @@ export function simularSimples(
   };
 }
 
+/**
+ * Alíquota RAT/FAP aplicada à folha (fração). Limitada a 6% — teto legal do
+ * RAT (3%) multiplicado pelo FAP máximo (2,0), conforme Lei 8.212/1991 e
+ * Decreto 3.048/1999.
+ */
+function ratFap(p: ParametrosSimulacao): number {
+  return Math.min(0.06, Math.max(0, p.aliquotaRAT ?? 0.02));
+}
+
+/**
+ * Contribuições a Terceiros (Sistema S / INCRA / Salário-Educação / SEBRAE).
+ * Padrão 5,8% para o FPAS 507 (comércio/indústria/serviços em geral). Empresas
+ * do Simples Nacional são isentas, por isso só se aplica a Presumido e Real.
+ */
+function terceiros(p: ParametrosSimulacao): number {
+  return Math.min(0.08, Math.max(0, p.aliquotaTerceiros ?? 0.058));
+}
+
 export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   if (p.faturamentoAnual > LIMITE_PRESUMIDO) {
     return {
@@ -324,7 +347,7 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const cofins = p.faturamentoAnual * 0.03;
   const icms = rc * aliqICMS;
   const iss = rs * aliqISS;
-  const cpp = (p.folhaAnual || 0) * 0.20;
+  const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
@@ -352,7 +375,7 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const aliqISS = p.aliquotaISS ?? 0.05;
   const icms = Math.max(0, rc * aliqICMS - (p.comprasComCredito || 0) * aliqICMS);
   const iss = rs * aliqISS;
-  const cpp = (p.folhaAnual || 0) * 0.20;
+  const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
   if (lucro <= 240000) {
