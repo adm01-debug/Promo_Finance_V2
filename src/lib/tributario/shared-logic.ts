@@ -50,6 +50,8 @@ export interface ParametrosSimulacao {
    * sobre a folha em Lucro Presumido e Lucro Real. Default: 0.058 (FPAS 507).
    */
   aliquotaTerceiros?: number;
+  /** CNAE principal da empresa; usado para derivar a alíquota de terceiros quando não informada. */
+  cnaePrincipal?: string;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
@@ -358,8 +360,42 @@ function ratFap(p: ParametrosSimulacao): number {
  * do Simples Nacional são isentas, por isso só se aplica a Presumido e Real.
  */
 function terceiros(p: ParametrosSimulacao): number {
-  return Math.min(0.08, Math.max(0, p.aliquotaTerceiros ?? 0.058));
+  const base = p.aliquotaTerceiros ?? terceirosPorCnaeMotor(p);
+  return Math.min(0.08, Math.max(0, base));
 }
+
+/**
+ * Alíquota de Contribuições a Terceiros por divisão CNAE (fração).
+ * Espelha `src/lib/tributario/folha/fpas-terceiros.ts` (validado por teste de
+ * coerência). Divisões ausentes usam o padrão 5,8% (FPAS 507).
+ */
+const TERCEIROS_POR_DIVISAO_CNAE: Readonly<Record<string, number>> = {
+  '01': 0.052, '02': 0.052, '03': 0.052,
+  '64': 0.052, '65': 0.052, '66': 0.052,
+  '84': 0.025,
+  '85': 0.027,
+};
+
+const TERCEIROS_PADRAO = 0.058;
+
+/** Divisão (2 primeiros dígitos) do CNAE, ou null quando inválido. */
+function divisaoCnaeMotor(cnae?: string | null): string | null {
+  if (!cnae) return null;
+  const digitos = String(cnae).replace(/\D/g, '');
+  if (digitos.length < 2) return null;
+  return digitos.slice(0, 2);
+}
+
+/**
+ * Alíquota de terceiros aplicável: prioriza o valor explícito informado nos
+ * parâmetros; na ausência, deriva do CNAE principal; por fim usa 5,8%.
+ */
+function terceirosPorCnaeMotor(p: ParametrosSimulacao): number {
+  const divisao = divisaoCnaeMotor(p.cnaePrincipal);
+  if (!divisao) return TERCEIROS_PADRAO;
+  return TERCEIROS_POR_DIVISAO_CNAE[divisao] ?? TERCEIROS_PADRAO;
+}
+
 
 export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   if (p.faturamentoAnual > LIMITE_PRESUMIDO) {
