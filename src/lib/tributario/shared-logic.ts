@@ -194,12 +194,65 @@ export function determinarAnexoSimples(
 }
 
 
+/** Coerção segura de número: descarta NaN/Infinity/negativos indevidos. */
+function num(v: unknown, fallback: number): number {
+  const n = typeof v === 'number' ? v : Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+/** Restringe um valor ao intervalo [min, max]. */
+function clamp(v: number, min: number, max: number): number {
+  return v < min ? min : v > max ? max : v;
+}
+
+/**
+ * Normaliza defensivamente os parâmetros de simulação antes de qualquer cálculo.
+ *
+ * Motivação (gap detectado em fuzzing de milhares de cenários): entradas fora de
+ * domínio — percentual de serviços > 100, mix serviços+indústria+revenda > 100,
+ * alíquotas absurdas, valores negativos ou NaN vindos de formulários/JSONB —
+ * produziam bases negativas (ex.: ICMS negativo no Lucro Presumido) e resultados
+ * fiscalmente impossíveis. Aqui todo parâmetro é coagido ao seu domínio legal.
+ */
+export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao {
+  const faturamentoAnual = Math.max(0, num(p.faturamentoAnual, 0));
+  let servicos = clamp(num(p.percentualServicos, 0), 0, 100);
+  let industria = clamp(num(p.percentualIndustria, 0), 0, 100);
+  let revenda = p.percentualRevenda === undefined || p.percentualRevenda === null
+    ? Math.max(0, 100 - servicos - industria)
+    : clamp(num(p.percentualRevenda, 0), 0, 100);
+  const somaMix = servicos + industria + revenda;
+  if (somaMix > 100 && somaMix > 0) {
+    servicos = (servicos / somaMix) * 100;
+    industria = (industria / somaMix) * 100;
+    revenda = (revenda / somaMix) * 100;
+  }
+  return {
+    ...p,
+    faturamentoAnual,
+    margemLucro: clamp(num(p.margemLucro, 0), -100, 100),
+    percentualServicos: servicos,
+    percentualIndustria: industria,
+    percentualRevenda: revenda,
+    folhaAnual: Math.max(0, num(p.folhaAnual, 0)),
+    comprasComCredito: Math.max(0, num(p.comprasComCredito, 0)),
+    despesasOperacionais: Math.max(0, num(p.despesasOperacionais, 0)),
+    aliquotaICMS: p.aliquotaICMS === undefined ? undefined : clamp(num(p.aliquotaICMS, 0.18), 0, 1),
+    aliquotaISS: p.aliquotaISS === undefined ? undefined : clamp(num(p.aliquotaISS, 0.05), 0, 1),
+    aliquotaRAT: p.aliquotaRAT === undefined ? undefined : clamp(num(p.aliquotaRAT, 0.02), 0, 0.06),
+    aliquotaTerceiros: p.aliquotaTerceiros === undefined ? undefined : clamp(num(p.aliquotaTerceiros, 0.058), 0, 0.1),
+    issRetidoFonte: Math.max(0, num(p.issRetidoFonte, 0)),
+    sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
+  };
+}
+
 export function simularSimples(
   p: ParametrosSimulacao,
   ano: number,
   mes: number,
   forcarAnexo?: AnexoSimples,
 ): ResultadoCenario {
+  p = sanitizarParametros(p);
   const obs: string[] = [];
   if (p.faturamentoAnual > LIMITE_SIMPLES) {
     return {
@@ -398,6 +451,7 @@ function terceirosPorCnaeMotor(p: ParametrosSimulacao): number {
 
 
 export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
+  p = sanitizarParametros(p);
   if (p.faturamentoAnual > LIMITE_PRESUMIDO) {
     return {
       regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: false,
@@ -434,6 +488,7 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
 }
 
 export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
+  p = sanitizarParametros(p);
   // Defesa: margemLucro ausente/inválida não pode propagar NaN para o total.
   const margemLucro = Number.isFinite(p.margemLucro) ? Number(p.margemLucro) : 0;
   const lucro = p.faturamentoAnual * (margemLucro / 100);
