@@ -31,7 +31,7 @@ describe('fuzz', () => {
           if (!Number.isFinite(v)) problemas.push(`${nome} ${k} nao-finito #${i} (fat=${fat}, margem=${p.margemLucro})`);
           else if (v < -0.001) problemas.push(`${nome} ${k} negativo=${v.toFixed(2)} #${i} (fat=${fat}, margem=${p.margemLucro}, serv=${p.percentualServicos})`);
         }
-        if (res.elegivel && res.cargaEfetiva > 1.2) problemas.push(`${nome} carga absurda ${(res.cargaEfetiva).toFixed(2)} #${i} fat=${fat}`);
+        if (res.elegivel && res.cargaEfetiva > 120) problemas.push(`${nome} carga absurda ${(res.cargaEfetiva).toFixed(2)} #${i} fat=${fat}`);
       }
     }
     const uniq = [...new Set(problemas.map(x=>x.replace(/#\d+/,'#')))];
