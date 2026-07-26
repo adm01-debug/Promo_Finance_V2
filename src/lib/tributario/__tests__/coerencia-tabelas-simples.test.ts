@@ -105,7 +105,10 @@ describe('Coerência das tabelas do Simples Nacional', () => {
       for (const f of faixas) {
         const piso = Math.max(f.rbt12_de, 0.01);
         expect(efetiva(piso, f), `alíquota efetiva negativa na faixa ${f.faixa}`).toBeGreaterThan(0);
-        expect(efetiva(f.rbt12_ate, f)).toBeLessThan(f.aliquota);
+        // Na 1ª faixa a PD é zero, logo efetiva == nominal; nas demais, sempre menor.
+        expect(efetiva(f.rbt12_ate, f)).toBeLessThanOrEqual(f.aliquota);
+        if (f.pd > 0) expect(efetiva(f.rbt12_ate, f)).toBeLessThan(f.aliquota);
+
       }
     },
   );
