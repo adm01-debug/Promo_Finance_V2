@@ -200,7 +200,26 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  /**
+   * Restaura uma simulação salva: repõe os parâmetros de entrada e o regime
+   * atual do snapshot, permitindo reproduzir e auditar o resultado histórico
+   * com o motor corrente (detecta divergências causadas por mudanças de tabela).
+   */
+  const restaurarSimulacao = (item: SimulaoHistoricoItem) => {
+    const parametrosSnapshot = normalizarParametros(item.parametros);
+    if (!parametrosSnapshot) {
+      toast.error('Snapshot sem parâmetros válidos — não é possível restaurar.');
+      return;
+    }
+    setParametros((atual) => ({ ...atual, ...parametrosSnapshot }));
+    const regimeSnapshot = REGIMES_VALIDOS.find((r) => r === item.regime_atual);
+    setRegimeAtual(regimeSnapshot);
+    setServerResult(null);
+    toast.success('Parâmetros restaurados a partir do histórico');
+  };
+
   return {
+
     parametros,
     setParametros: (p: ParametrosSimulacao | ((prev: ParametrosSimulacao) => ParametrosSimulacao)) => {
       setParametros(p);
