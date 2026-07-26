@@ -237,6 +237,10 @@ export default function DashboardTributario() {
                   <ConformidadeFiscalCard empresaId={empresaId} />
                 </motion.div>
                 <motion.div variants={itemVariants}>
+                  <ConformidadeTendenciaWidget empresaId={empresaId} />
+                </motion.div>
+
+                <motion.div variants={itemVariants}>
                   <BenchmarkSetorialCard empresaId={empresaId} />
                 </motion.div>
                 <motion.div variants={itemVariants} className="lg:col-span-2">
