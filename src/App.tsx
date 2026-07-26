@@ -133,6 +133,7 @@ const PisCofinsCreditosPage = lazy(() => import('./pages/tributario/PisCofinsCre
 const IrpjCsllLucroRealPage = lazy(() => import('./pages/tributario/IrpjCsllLucroReal'));
 const DarfConsolidadoPage = lazy(() => import('./pages/tributario/DarfConsolidado'));
 const ObrigacoesAcessoriasPage = lazy(() => import('./pages/tributario/ObrigacoesAcessorias'));
+const ComparativoConformidadePage = lazy(() => import('./pages/tributario/ComparativoConformidade'));
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
@@ -274,6 +275,7 @@ function AppRoutes() {
             <Route path="/tributario/irpj-csll" element={<ProtectedRoute><IrpjCsllLucroRealPage /></ProtectedRoute>} />
             <Route path="/tributario/darf" element={<ProtectedRoute><DarfConsolidadoPage /></ProtectedRoute>} />
             <Route path="/tributario/obrigacoes" element={<ProtectedRoute><ObrigacoesAcessoriasPage /></ProtectedRoute>} />
+            <Route path="/tributario/comparativo-conformidade" element={<ProtectedRoute><ComparativoConformidadePage /></ProtectedRoute>} />
 
 
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
