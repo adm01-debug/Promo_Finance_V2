@@ -79,16 +79,30 @@ describe('Coerência das tabelas do Simples Nacional', () => {
       const faixas = obterAnexo(anexo);
       const efetiva = (rbt12: number, f: FaixaSimples) => (rbt12 * f.aliquota - f.pd) / rbt12;
 
-      for (let i = 0; i < faixas.length - 1; i++) {
+      // Faixas 1→5: a parcela a deduzir existe justamente para evitar salto na virada.
+      // A transição 5→6 é descontínua POR DESENHO LEGAL (LC 123/2006): a última
+      // faixa usa alíquota nominal e PD muito maiores, então é validada à parte.
+      for (let i = 0; i < faixas.length - 2; i++) {
         const teto = faixas[i].rbt12_ate;
         const antes = efetiva(teto, faixas[i]);
         const depois = efetiva(teto + 0.01, faixas[i + 1]);
-        // A parcela a deduzir existe justamente para evitar salto na virada.
         expect(Math.abs(depois - antes), `descontinuidade no teto da faixa ${i + 1}`).toBeLessThan(
           0.005,
         );
         expect(depois).toBeGreaterThanOrEqual(antes - 1e-9);
       }
+
+      // Na última faixa, a alíquota efetiva ainda deve crescer até o teto do Simples
+      // e superar a efetiva máxima da faixa anterior no limite de R$ 4,8 mi.
+      const penultima = faixas[faixas.length - 2];
+      const ultima = faixas[faixas.length - 1];
+      expect(efetiva(ultima.rbt12_ate, ultima)).toBeGreaterThan(
+        efetiva(penultima.rbt12_ate, penultima),
+      );
+      expect(efetiva(ultima.rbt12_ate, ultima)).toBeGreaterThan(
+        efetiva(ultima.rbt12_de + 0.01, ultima),
+      );
+
 
       for (const f of faixas) {
         const piso = Math.max(f.rbt12_de, 0.01);
