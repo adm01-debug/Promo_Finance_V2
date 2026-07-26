@@ -8,3 +8,9 @@ export type {
 export { exportDiarioCSV, exportDiarioPDF } from './diario';
 export { exportRazaoCSV, exportRazaoPDF } from './razao';
 export { exportAuditoriaCFCCSV, exportAuditoriaCFCPDF } from './auditoria-cfc';
+export {
+  exportLivroDiarioOficialPDF,
+  exportLivroRazaoOficialPDF,
+  type LivroOficialParams,
+} from './livro-oficial';
+

@@ -25,7 +25,11 @@ import {
   exportDiarioPDF,
   exportRazaoCSV,
   exportRazaoPDF,
+  exportLivroDiarioOficialPDF,
+  exportLivroRazaoOficialPDF,
+  type LivroOficialParams,
 } from '@/lib/export-contabil';
+
 import { toast } from 'sonner';
 import type { DatePreset, RazaoFilters } from './razao-diario/types';
 import { useRazaoDiarioData } from './razao-diario/useRazaoDiarioData';
@@ -116,6 +120,24 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
       toast.success(`Razão exportado (${razao.length} contas).`);
     }
   };
+
+  /**
+   * Livro oficial: mesma base do relatório de tela, porém com termo de
+   * abertura/encerramento e numeração sequencial de folhas.
+   */
+  const exportarLivroOficial = () => {
+    const params: LivroOficialParams = { numeroLivro: ano - 2000 };
+    if (modo === 'diario') {
+      if (diario.length === 0) return toast.warning('Nada para exportar.');
+      exportLivroDiarioOficialPDF(diario, ctxExport, params);
+      toast.success('Livro Diário oficial gerado com termos de abertura e encerramento.');
+    } else {
+      if (razao.length === 0) return toast.warning('Nada para exportar.');
+      exportLivroRazaoOficialPDF(razao, ctxExport, params);
+      toast.success('Livro Razão oficial gerado com termos de abertura e encerramento.');
+    }
+  };
+
 
   if (!empresaId) {
     return (
@@ -208,7 +230,17 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                   <span className="text-[10px] opacity-50">Relatório de Governança</span>
                 </div>
               </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-card/5" />
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40 px-3 py-2">Livro Oficial</DropdownMenuLabel>
+              <DropdownMenuItem onClick={exportarLivroOficial} className="rounded-xl gap-3 py-3 cursor-pointer">
+                <div className="p-2 bg-primary/20 rounded-lg"><BookText className="h-4 w-4 text-primary" /></div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">Livro encadernado (.pdf)</span>
+                  <span className="text-[10px] opacity-50">Termos de abertura e encerramento</span>
+                </div>
+              </DropdownMenuItem>
             </DropdownMenuContent>
+
           </DropdownMenu>
         </div>
 
