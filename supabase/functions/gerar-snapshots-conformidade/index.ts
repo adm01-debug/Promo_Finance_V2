@@ -17,7 +17,24 @@ import { z } from 'npm:zod@3.23.8';
 
 import { gerarCalendario, competenciasAoRedor } from '../_shared/obrigacoes/calendario.ts';
 import { calcularConformidade, type RegistroEntrega } from '../_shared/obrigacoes/conformidade.ts';
+import {
+  avaliarAlertasConformidade,
+  type AlertaConformidade,
+  type PontoHistorico,
+} from '../_shared/obrigacoes/alertas.ts';
 import type { RegimeAplicavel } from '../_shared/obrigacoes/types.ts';
+
+/** Prefixo usado na coluna `tipo` para deduplicar alertas de conformidade. */
+const PREFIXO_ALERTA = 'conformidade';
+
+/** Mapeia a severidade do motor para a coluna `prioridade`. */
+const PRIORIDADE: Record<AlertaConformidade['severidade'], string> = {
+  critica: 'critica',
+  alta: 'alta',
+  media: 'media',
+  baixa: 'baixa',
+};
+
 
 const BodySchema = z.object({
   /** Competências AAAA-MM a recalcular. Se ausente, usa as últimas `meses`. */
