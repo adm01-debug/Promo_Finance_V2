@@ -130,6 +130,7 @@ const FolhaEncargosPage = lazy(() => import('./pages/tributario/FolhaEncargos'))
 const IcmsStDifalPage = lazy(() => import('./pages/tributario/IcmsStDifal'));
 const IpiIssPage = lazy(() => import('./pages/tributario/IpiIss'));
 const PisCofinsCreditosPage = lazy(() => import('./pages/tributario/PisCofinsCreditos'));
+const IrpjCsllLucroRealPage = lazy(() => import('./pages/tributario/IrpjCsllLucroReal'));
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
@@ -268,6 +269,7 @@ function AppRoutes() {
             <Route path="/tributario/icms-st" element={<ProtectedRoute><IcmsStDifalPage /></ProtectedRoute>} />
             <Route path="/tributario/ipi-iss" element={<ProtectedRoute><IpiIssPage /></ProtectedRoute>} />
             <Route path="/tributario/pis-cofins" element={<ProtectedRoute><PisCofinsCreditosPage /></ProtectedRoute>} />
+            <Route path="/tributario/irpj-csll" element={<ProtectedRoute><IrpjCsllLucroRealPage /></ProtectedRoute>} />
 
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
             <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
