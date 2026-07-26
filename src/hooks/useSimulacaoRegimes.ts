@@ -47,6 +47,8 @@ export interface SimulaoHistoricoItem {
   data_simulacao: string;
   /** Versão do motor que gerou o snapshot (null em registros legados). */
   versao_motor: string | null;
+  /** Trilha bruta (jsonb) dos ajustes automáticos aplicados às entradas. */
+  ajustes_aplicados?: unknown;
 }
 
 /** Item de histórico enriquecido com a auditoria de drift do motor. */
@@ -57,7 +59,10 @@ export interface SimulacaoHistoricoAuditada extends SimulaoHistoricoItem {
   regimeRecalculado: RegimeTributario | null;
   /** True quando o recálculo diverge do regime recomendado salvo. */
   divergente: boolean;
+  /** Ajustes automáticos validados e tipados para exibição. */
+  ajustesAplicados: AjusteParametro[];
 }
+
 
 
 const REGIMES_VALIDOS: readonly RegimeTributario[] = [
