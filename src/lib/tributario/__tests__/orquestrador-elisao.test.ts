@@ -19,10 +19,10 @@ const ctxBase: ContextoEmpresa = {
 };
 
 describe('analisarOportunidadesElisao', () => {
-  it('roda 9 estratégias e retorna relatório consolidado', () => {
+  it('roda 13 estratégias e retorna relatório consolidado', () => {
     const r = analisarOportunidadesElisao(ctxBase);
-    expect(r.total_oportunidades).toBe(9);
-    expect(r.oportunidades).toHaveLength(9);
+    expect(r.total_oportunidades).toBe(13);
+    expect(r.oportunidades).toHaveLength(13);
   });
 
   it('ranqueia oportunidades por economia decrescente', () => {

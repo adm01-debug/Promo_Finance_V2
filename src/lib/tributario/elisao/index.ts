@@ -9,3 +9,7 @@ export { detectarLeiBem } from './detectar-lei-bem';
 export { detectarDrawback } from './detectar-drawback';
 export { detectarSubvencaoIcms } from './detectar-subvencao-icms';
 export { detectarBonificacao } from './detectar-bonificacao';
+export { detectarDeliberacaoLucros } from './detectar-deliberacao-lucros';
+export { detectarRecuperacaoPisCofins } from './detectar-recuperacao-pis-cofins';
+export { detectarDepreciacaoAcelerada } from './detectar-depreciacao-acelerada';
+export { detectarSudeneSudam } from './detectar-sudene-sudam';

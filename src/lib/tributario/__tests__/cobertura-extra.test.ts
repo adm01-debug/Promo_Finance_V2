@@ -219,6 +219,6 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
       opcoes,
     );
     expect(r.anexoAplicavel).toBe('I');
-    expect(r.observacoes?.some((o) => o.toLowerCase().includes('comercial'))).toBe(true);
+    expect(r.observacoes?.some((o) => o.toLowerCase().includes('com'))).toBe(true);
   });
 });

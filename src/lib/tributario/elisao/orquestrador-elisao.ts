@@ -1,5 +1,5 @@
 // ORQUESTRADOR DE ELISÃO FISCAL
-// Roda todas as 9 estratégias e ranqueia
+// Roda todas as 13 estratégias e ranqueia
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
 import { detectarJCP } from './detectar-jcp';
@@ -11,6 +11,10 @@ import { detectarLeiBem } from './detectar-lei-bem';
 import { detectarDrawback } from './detectar-drawback';
 import { detectarSubvencaoIcms } from './detectar-subvencao-icms';
 import { detectarBonificacao } from './detectar-bonificacao';
+import { detectarDeliberacaoLucros } from './detectar-deliberacao-lucros';
+import { detectarRecuperacaoPisCofins } from './detectar-recuperacao-pis-cofins';
+import { detectarDepreciacaoAcelerada } from './detectar-depreciacao-acelerada';
+import { detectarSudeneSudam } from './detectar-sudene-sudam';
 
 export interface RelatorioElisao {
   total_oportunidades: number;
@@ -20,12 +24,14 @@ export interface RelatorioElisao {
 }
 
 /**
- * Orquestra as 9 estratégias de elisão fiscal lícita e ranqueia por economia estimada.
+ * Orquestra as 13 estratégias de elisão fiscal lícita e ranqueia por economia estimada.
  *
  * **Estratégias avaliadas:** JCP (Lei 9.249/95 art. 9º), REINTEGRA (Lei 13.043/14),
  * Mandado de Segurança LC 224 (exclusão ICMS-ST da base PIS/COFINS), Holding Patrimonial,
  * PAT (Lei 6.321/76), Lei do Bem (Lei 11.196/05), DRAWBACK (DL 37/66),
- * Subvenção ICMS (LC 160/17) e Bonificação em mercadorias.
+ * Subvenção ICMS (LC 160/17), Bonificação em mercadorias,
+ * Deliberação antecipada de lucros (Lei 15.270/2025), Recuperação de PIS/COFINS (STJ Tema 779),
+ * Depreciação acelerada incentivada (Lei 11.774/08) e Incentivos regionais SUDENE/SUDAM.
  *
  * @param ctx - Contexto da empresa (regime, faturamento, lucro, atividade, UF).
  * @returns Relatório consolidado com oportunidades aplicáveis e economia total.
@@ -41,6 +47,10 @@ export function analisarOportunidadesElisao(ctx: ContextoEmpresa): RelatorioElis
     detectarDrawback(ctx),
     detectarSubvencaoIcms(ctx),
     detectarBonificacao(ctx),
+    detectarDeliberacaoLucros(ctx),
+    detectarRecuperacaoPisCofins(ctx),
+    detectarDepreciacaoAcelerada(ctx),
+    detectarSudeneSudam(ctx),
   ];
 
   // Ranquear por economia estimada (decrescente)

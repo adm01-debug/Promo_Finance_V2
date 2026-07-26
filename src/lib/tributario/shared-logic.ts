@@ -26,6 +26,12 @@ export interface ParametrosSimulacao {
   aliquotaICMS?: number;
   /** Alíquota ISS efetiva (0..1), default 0.05 (teto LC 116/2003). */
   aliquotaISS?: number;
+  /** Percentual (0..100) da receita proveniente de industrialização própria (Anexo II). */
+  percentualIndustria?: number;
+  /** Percentual (0..100) da receita de revenda/comércio (Anexo I). */
+  percentualRevenda?: number;
+  /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
+  atividadePrincipal?: string;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
@@ -102,6 +108,61 @@ export function calcularFolha12m(hist: FolhaMes[], ano: number, mes: number): nu
   const soma = u12.reduce((a, f) => a + (f.total_folha || 0), 0);
   return u12.length < 12 && u12.length > 0 ? (soma / u12.length) * 12 : soma;
 }
+/**
+ * Serviços tributados obrigatoriamente pelo Anexo IV (LC 123/2006, art. 18 §5º-C),
+ * onde a CPP fica FORA do DAS (recolhida à parte pela folha).
+ */
+const PALAVRAS_ANEXO_IV = [
+  'construcao', 'obra', 'edificacao', 'vigilancia', 'seguranca',
+  'limpeza', 'conservacao', 'zeladoria', 'portaria', 'advocacia', 'advogado',
+];
+
+const normalizar = (s: string) =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+/**
+ * Determina o anexo do Simples Nacional pela atividade PREPONDERANTE.
+ * Corrige a simplificação anterior (apenas Anexo I x III/V), que classificava
+ * indústrias (Anexo II) como comércio e ignorava o Anexo IV.
+ */
+export function determinarAnexoSimples(
+  p: ParametrosSimulacao,
+  fatorR: number,
+): { anexo: AnexoSimples; motivo: string } {
+  const servicos = Math.max(0, p.percentualServicos || 0);
+  const industria = Math.max(0, p.percentualIndustria || 0);
+  const revenda = Math.max(0, p.percentualRevenda ?? Math.max(0, 100 - servicos - industria));
+
+  const maior = Math.max(servicos, industria, revenda);
+
+  if (maior === servicos && servicos > 0) {
+    const atividade = normalizar(p.atividadePrincipal || '');
+    if (atividade && PALAVRAS_ANEXO_IV.some((t) => atividade.includes(t))) {
+      return {
+        anexo: 'IV',
+        motivo: `Serviço do Anexo IV (${p.atividadePrincipal}) — CPP fora do DAS, recolhida sobre a folha.`,
+      };
+    }
+    const anexo: AnexoSimples = fatorR >= 0.28 ? 'III' : 'V';
+    return {
+      anexo,
+      motivo: `Serviços preponderantes (${servicos.toFixed(1)}%). Fator R = ${(fatorR * 100).toFixed(2)}% → Anexo ${anexo}.`,
+    };
+  }
+
+  if (maior === industria && industria > 0) {
+    return {
+      anexo: 'II',
+      motivo: `Industrialização preponderante (${industria.toFixed(1)}%) → Anexo II.`,
+    };
+  }
+
+  return {
+    anexo: 'I',
+    motivo: `Revenda/comércio preponderante (${revenda.toFixed(1)}%) → Anexo I.`,
+  };
+}
+
 
 export function simularSimples(
   p: ParametrosSimulacao,
@@ -131,15 +192,13 @@ export function simularSimples(
     ? calcularFolha12m(p.folhaMensal, ano, mes)
     : (p.folhaAnual || 0);
   const fatorR = rbt12 > 0 ? folha12m / rbt12 : 0;
-  let anexo: AnexoSimples = 'I';
+  const { anexo: anexoDetectado, motivo } = determinarAnexoSimples(p, fatorR);
+  let anexo: AnexoSimples = anexoDetectado;
   if (forcarAnexo) {
     anexo = forcarAnexo;
     obs.push(`Anexo forçado manualmente para simulação: Anexo ${anexo}.`);
-  } else if (p.percentualServicos > 50) {
-    anexo = fatorR >= 0.28 ? 'III' : 'V';
-    obs.push(`Fator R = ${(fatorR * 100).toFixed(2)}% → Anexo ${anexo}.`);
   } else {
-    obs.push('Atividade comercial → Anexo I.');
+    obs.push(motivo);
   }
   const faixa = ANEXOS[anexo].find((f) => rbt12 <= f.ate) || ANEXOS[anexo][5];
   const aliqEfet = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;

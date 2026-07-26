@@ -59,14 +59,26 @@ export default function SimulacaoRegimes() {
     const faturamentoAnual = ultimos12.reduce((s, m) => s + Number(m.receita_bruta || 0), 0);
     const totalServicos = ultimos12.reduce((s, m) => s + Number(m.receita_servicos || 0), 0);
     const folhaAnual = ultimos12Folha.reduce((s, m) => s + Number(m.total_folha || 0), 0);
+    const totalIndustria = ultimos12.reduce((s, m) => s + Number(m.receita_industria || 0), 0);
+    const totalRevenda = ultimos12.reduce((s, m) => s + Number(m.receita_revenda || 0), 0);
     const percentualServicos =
       faturamentoAnual > 0 ? (totalServicos / faturamentoAnual) * 100 : parametros.percentualServicos;
+    const percentualIndustria =
+      faturamentoAnual > 0 ? (totalIndustria / faturamentoAnual) * 100 : (parametros.percentualIndustria ?? 0);
+    const percentualRevenda =
+      faturamentoAnual > 0
+        ? (totalRevenda > 0
+            ? (totalRevenda / faturamentoAnual) * 100
+            : Math.max(0, 100 - percentualServicos - percentualIndustria))
+        : (parametros.percentualRevenda ?? 0);
 
     setParametros({
       ...parametros,
       faturamentoAnual,
       folhaAnual,
       percentualServicos: Math.round(percentualServicos),
+      percentualIndustria: Math.round(percentualIndustria),
+      percentualRevenda: Math.round(percentualRevenda),
     });
     setAutoLoaded(true);
     toast.success(`Parâmetros carregados de ${ultimos12.length} meses de histórico.`);
