@@ -18,6 +18,7 @@ import { SimulacaoHeaderActions } from '@/components/tributario/simulacao/Simula
 import { ParametrosForm } from '@/components/tributario/simulacao/ParametrosForm';
 import { AjustesParametrosAlert } from '@/components/tributario/simulacao/AjustesParametrosAlert';
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
+import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
 
 export default function SimulacaoRegimes() {
@@ -55,6 +56,24 @@ export default function SimulacaoRegimes() {
   // Transparência fiscal: expõe todo ajuste automático aplicado aos parâmetros
   // pela camada de sanitização do motor, evitando cálculos silenciosamente corrigidos.
   const ajustesParametros = useMemo(() => diagnosticarParametros(parametros), [parametros]);
+
+  // Ajustes críticos exigem confirmação explícita antes de persistir o snapshot,
+  // preservando a integridade auditável da base histórica de simulações.
+  const ajustesCriticos = useMemo(
+    () => ajustesParametros.filter((a) => a.severidade === 'critico'),
+    [ajustesParametros],
+  );
+  const [confirmarSalvamento, setConfirmarSalvamento] = useState(false);
+
+  const handleSalvar = () => {
+    if (ajustesCriticos.length > 0) {
+      setConfirmarSalvamento(true);
+      return;
+    }
+    salvarSimulacao.mutate();
+  };
+
+
 
   const empresaSelecionada = useMemo(() => empresas.find((e) => e.id === empresaId), [empresas, empresaId]);
 
@@ -202,13 +221,24 @@ export default function SimulacaoRegimes() {
           onRecarregarHistorico={popularDoHistorico}
           onAnalisarElisao={analisarElisao}
           onExportarPdf={exportarPdf}
-          onSalvar={() => salvarSimulacao.mutate()}
+          onSalvar={handleSalvar}
           onSincronizarIA={sincronizarComServer}
           isAnalisandoElisao={persistirOportunidades.isPending}
           isSalvando={salvarSimulacao.isPending}
           isSincronizando={isSincronizando}
         />
       </div>
+
+      <ConfirmarSalvamentoAjustesDialog
+        open={confirmarSalvamento}
+        onOpenChange={setConfirmarSalvamento}
+        ajustesCriticos={ajustesCriticos}
+        onConfirmar={() => {
+          setConfirmarSalvamento(false);
+          salvarSimulacao.mutate();
+        }}
+      />
+
 
       {empresaId && autoLoaded && (
         <Alert role="status" aria-live="polite">
