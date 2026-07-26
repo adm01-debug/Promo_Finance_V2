@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import { useAuth } from '@/hooks/useAuth';
 import { decidirRegime } from '@/lib/tributario';
+import { VERSAO_MOTOR_TRIBUTARIO, versaoDesatualizada } from '@/lib/tributario/versao';
 import type {
   ParametrosSimulacao,
   ResultadoDecisao,
