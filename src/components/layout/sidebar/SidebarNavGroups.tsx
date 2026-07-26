@@ -151,6 +151,7 @@ const navGroups: NavGroup[] = [
       { label: 'ICMS-ST e DIFAL', icon: Truck, href: '/tributario/icms-st' },
       { label: 'IPI e ISS', icon: Factory, href: '/tributario/ipi-iss' },
       { label: 'PIS/COFINS (créditos)', icon: Receipt, href: '/tributario/pis-cofins' },
+      { label: 'IRPJ/CSLL (Lucro Real)', icon: Landmark, href: '/tributario/irpj-csll' },
 
       { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
