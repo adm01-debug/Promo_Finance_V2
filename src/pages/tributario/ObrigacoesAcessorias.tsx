@@ -35,6 +35,8 @@ import {
 } from '@/lib/tributario/obrigacoes';
 import { ConformidadeCard } from '@/components/tributario/ConformidadeCard';
 import { ConformidadeHistoricoCard } from '@/components/tributario/ConformidadeHistoricoCard';
+import { ProjecaoConformidadeCard } from '@/components/tributario/ProjecaoConformidadeCard';
+
 import {
   useConformidadeSnapshots,
   useSalvarConformidadeSnapshots,
@@ -261,6 +263,12 @@ export default function ObrigacoesAcessorias() {
             salvando={salvarSnapshots.isPending}
             onSalvar={() => salvarSnapshots.mutate(analiseHistorico.pontos)}
           />
+
+          <ProjecaoConformidadeCard pontos={analiseHistorico.pontos} horizonte={3} />
+
+
+
+
 
 
 
