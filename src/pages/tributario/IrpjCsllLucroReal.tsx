@@ -404,7 +404,9 @@ export default function IrpjCsllLucroReal() {
             ))}
           </TabsContent>
         </Tabs>
-      </PageBackground>
+        </div>
+      </div>
+
     </MainLayout>
   );
 }
