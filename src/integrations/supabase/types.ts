@@ -3698,6 +3698,57 @@ export type Database = {
         }
         Relationships: []
       }
+      conformidade_snapshots: {
+        Row: {
+          competencia: string
+          created_at: string
+          empresa_id: string
+          entregues: number
+          entregues_com_atraso: number
+          gerado_por: string | null
+          id: string
+          multa_registrada: number
+          nivel: string
+          pontualidade: number
+          score: number
+          total_obrigacoes: number
+          updated_at: string
+          vencidas_pendentes: number
+        }
+        Insert: {
+          competencia: string
+          created_at?: string
+          empresa_id: string
+          entregues?: number
+          entregues_com_atraso?: number
+          gerado_por?: string | null
+          id?: string
+          multa_registrada?: number
+          nivel: string
+          pontualidade?: number
+          score: number
+          total_obrigacoes?: number
+          updated_at?: string
+          vencidas_pendentes?: number
+        }
+        Update: {
+          competencia?: string
+          created_at?: string
+          empresa_id?: string
+          entregues?: number
+          entregues_com_atraso?: number
+          gerado_por?: string | null
+          id?: string
+          multa_registrada?: number
+          nivel?: string
+          pontualidade?: number
+          score?: number
+          total_obrigacoes?: number
+          updated_at?: string
+          vencidas_pendentes?: number
+        }
+        Relationships: []
+      }
       contas_bancarias: {
         Row: {
           agencia: string | null

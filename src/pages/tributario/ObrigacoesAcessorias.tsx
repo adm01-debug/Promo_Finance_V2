@@ -21,7 +21,9 @@ import {
 } from '@/hooks/useEntregasObrigacoes';
 import {
   OBRIGACOES,
+  analisarTendencia,
   calcularConformidade,
+  construirHistorico,
   calcularMultaAtraso,
   chaveItem,
   competenciasAoRedor,
@@ -32,6 +34,11 @@ import {
   type SituacaoObrigacao,
 } from '@/lib/tributario/obrigacoes';
 import { ConformidadeCard } from '@/components/tributario/ConformidadeCard';
+import { ConformidadeHistoricoCard } from '@/components/tributario/ConformidadeHistoricoCard';
+import {
+  useConformidadeSnapshots,
+  useSalvarConformidadeSnapshots,
+} from '@/hooks/useConformidadeSnapshots';
 
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -112,21 +119,33 @@ export default function ObrigacoesAcessorias() {
     };
   }, [itens]);
 
+  /** Registros de entrega normalizados para o motor de conformidade (J e K). */
+  const registrosConformidade = useMemo(
+    () =>
+      entregas.map((e) => ({
+        obrigacaoId: e.obrigacao_id,
+        competencia: e.competencia,
+        status: e.status,
+        dataEntrega: e.data_entrega,
+        valorMulta: e.valor_multa,
+      })),
+    [entregas]
+  );
+
   /** Etapa J — score de conformidade fiscal do período em tela. */
   const conformidade = useMemo(
-    () =>
-      calcularConformidade(
-        itens,
-        entregas.map((e) => ({
-          obrigacaoId: e.obrigacao_id,
-          competencia: e.competencia,
-          status: e.status,
-          dataEntrega: e.data_entrega,
-          valorMulta: e.valor_multa,
-        }))
-      ),
-    [itens, entregas]
+    () => calcularConformidade(itens, registrosConformidade),
+    [itens, registrosConformidade]
   );
+
+  const salvarSnapshots = useSalvarConformidadeSnapshots();
+
+  /** Etapa K — série histórica e tendência do score. */
+  const analiseHistorico = useMemo(
+    () => analisarTendencia(construirHistorico(itens, registrosConformidade)),
+    [itens, registrosConformidade]
+  );
+
 
 
 
@@ -236,6 +255,12 @@ export default function ObrigacoesAcessorias() {
           </div>
 
           <ConformidadeCard resultado={conformidade} />
+
+          <ConformidadeHistoricoCard
+            analise={analiseHistorico}
+            salvando={salvarSnapshots.isPending}
+            onSalvar={() => salvarSnapshots.mutate(analiseHistorico.pontos)}
+          />
 
 
 
