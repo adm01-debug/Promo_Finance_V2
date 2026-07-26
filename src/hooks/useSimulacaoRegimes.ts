@@ -7,6 +7,7 @@ import { decidirRegime } from '@/lib/tributario';
 import type {
   ParametrosSimulacao,
   ResultadoDecisao,
+  ResultadoCenario,
   RegimeTributario,
   FaturamentoMes,
   FolhaMes,
