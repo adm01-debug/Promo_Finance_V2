@@ -29,15 +29,32 @@ export interface SimulaoHistoricoItem {
   fator_r: number | null;
   regime_atual: string | null;
   regime_recomendado: string;
-  cenarios: any;
+  /** Cenários serializados no momento do salvamento (snapshot imutável). */
+  cenarios: ResultadoCenario[];
   alertas: string[];
   justificativa: string;
   economia_anual_estimada: number | null;
-  parametros: any;
+  /** Parâmetros de entrada usados na simulação — base da reprodutibilidade. */
+  parametros: Partial<ParametrosSimulacao>;
   created_by: string | null;
   audit_log_id: string | null;
   data_simulacao: string;
 }
+
+const REGIMES_VALIDOS: readonly RegimeTributario[] = [
+  'simples_nacional',
+  'lucro_presumido',
+  'lucro_real',
+];
+
+/** Narrowing defensivo: o jsonb do banco não tem garantia de forma. */
+function normalizarParametros(bruto: unknown): Partial<ParametrosSimulacao> | null {
+  if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) return null;
+  const registro = bruto as Record<string, unknown>;
+  if (typeof registro.faturamentoAnual !== 'number') return null;
+  return registro as Partial<ParametrosSimulacao>;
+}
+
 
 const DEFAULT_PARAMS: ParametrosSimulacao = {
   faturamentoAnual: 1_000_000,
