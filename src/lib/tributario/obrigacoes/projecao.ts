@@ -79,6 +79,8 @@ export const MIN_OBSERVACOES = 3;
 export const HORIZONTE_PADRAO = 3;
 /** Score abaixo do qual a projeção é considerada crítica. */
 export const LIMIAR_ALERTA = 70;
+/** Variação (em pontos) a partir da qual a tendência deixa de ser estável. */
+export const LIMIAR_VARIACAO = 2;
 /** Multiplicador da banda de previsão (~95% sob normalidade). */
 export const FATOR_BANDA = 1.96;
 
@@ -169,9 +171,6 @@ function classificarRisco(scoreFinal: number, variacao: number): RiscoProjetado 
   if (variacao >= LIMIAR_VARIACAO) return 'melhora';
   return 'estavel';
 }
-
-/** Variação (em pontos) a partir da qual a tendência deixa de ser estável. */
-export const LIMIAR_VARIACAO = 2;
 
 /**
  * Projeta o score para as próximas `horizonte` competências.
