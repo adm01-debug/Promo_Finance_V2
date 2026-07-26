@@ -315,7 +315,7 @@ export default function ObrigacoesAcessorias() {
                                   <Checkbox
                                     checked={item.situacao === 'entregue'}
                                     disabled={!currentEmpresaId}
-                                    onCheckedChange={() => alternarEntrega(item)}
+                                    onChange={() => alternarEntrega(item)}
                                     aria-label={`Marcar ${item.nome} de ${item.competencia} como entregue`}
                                   />
                                 )}
