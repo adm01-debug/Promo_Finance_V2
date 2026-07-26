@@ -11,7 +11,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarCheck, Download, Info } from 'lucide-react';
+import { CalendarCheck, Download, Info, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useEmpresaScope } from '@/contexts/EmpresaScopeContext';
+import {
+  chaveEntrega,
+  useEntregasObrigacoes,
+  useRegistrarEntregaObrigacao,
+} from '@/hooks/useEntregasObrigacoes';
 import {
   OBRIGACOES,
   calcularMultaAtraso,
@@ -23,6 +30,7 @@ import {
   type RegimeAplicavel,
   type SituacaoObrigacao,
 } from '@/lib/tributario/obrigacoes';
+
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const dataBR = (iso: string) => (iso.length === 10 ? iso.split('-').reverse().join('/') : iso);
