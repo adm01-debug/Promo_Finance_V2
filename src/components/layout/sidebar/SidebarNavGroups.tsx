@@ -150,6 +150,8 @@ const navGroups: NavGroup[] = [
       { label: 'Encargos de Folha (RAT/FAP)', icon: Users, href: '/tributario/folha-encargos' },
       { label: 'ICMS-ST e DIFAL', icon: Truck, href: '/tributario/icms-st' },
       { label: 'IPI e ISS', icon: Factory, href: '/tributario/ipi-iss' },
+      { label: 'PIS/COFINS (créditos)', icon: Receipt, href: '/tributario/pis-cofins' },
+
       { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
       { label: 'Relatórios de Entregas', icon: FileText, href: '/relatorios/entregas', highlight: true },
