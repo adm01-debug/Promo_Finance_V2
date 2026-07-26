@@ -24,6 +24,7 @@ import { AlertasAtivosResumo } from '@/components/tributario/dashboard/AlertasAt
 import { RelatoriosAgendadosCard } from '@/components/tributario/dashboard/RelatoriosAgendadosCard';
 import { PrevisaoTributariaIA } from '@/components/tributario/dashboard/PrevisaoTributariaIA';
 import { ConformidadeFiscalCard } from '@/components/tributario/dashboard/ConformidadeFiscalCard';
+import { ConformidadeTendenciaWidget } from '@/components/tributario/dashboard/ConformidadeTendenciaWidget';
 import { BenchmarkSetorialCard } from '@/components/tributario/dashboard/BenchmarkSetorialCard';
 import { CopilotTributarioFloat } from '@/components/tributario/dashboard/CopilotTributarioFloat';
 import { DRETributariaPanel } from '@/components/tributario/dashboard/DRETributariaPanel';
