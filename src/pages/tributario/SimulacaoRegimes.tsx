@@ -2,9 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw } from 'lucide-react';
+import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw, History as HistoryIcon } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
@@ -32,6 +33,7 @@ export default function SimulacaoRegimes() {
     salvarSimulacao,
     temHistoricoSuficiente,
     historicoSimulacoes,
+    restaurarSimulacao,
     faturamentoMensal,
     folhaMensal,
     sincronizarComServer,
