@@ -8,3 +8,5 @@ export * from './comparativo';
 export * from './digest';
 export * from './serie-comparativa';
 export * from './preferencias-digest';
+export * from './projecao';
+
