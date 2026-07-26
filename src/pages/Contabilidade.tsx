@@ -177,7 +177,9 @@ export default function Contabilidade() {
             <TabsTrigger value="plano" className="gap-1.5"><BookOpen className="h-4 w-4" />Plano</TabsTrigger>
             <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
             <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
+            <TabsTrigger value="balancete" className="gap-1.5"><BookOpenCheck className="h-4 w-4" />Balancete</TabsTrigger>
             <TabsTrigger value="dre" className="gap-1.5"><BarChart3 className="h-4 w-4" />DRE & Balanço</TabsTrigger>
+
             <TabsTrigger value="auto" className="gap-1.5"><Zap className="h-4 w-4" />Automático</TabsTrigger>
             <TabsTrigger value="elisao" className="gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" />Elisão Fiscal</TabsTrigger>
             <TabsTrigger value="integracoes" className="gap-1.5"><Plug className="h-4 w-4" />Integrações</TabsTrigger>
