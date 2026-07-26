@@ -99,7 +99,7 @@ export function ConformidadeTendenciaWidget({
             <CardDescription>Score consolidado das obrigações acessórias</CardDescription>
           </div>
           <Button asChild size="sm" variant="ghost" className="gap-1 shrink-0">
-            <Link to="/tributario/obrigacoes-acessorias" aria-label="Abrir obrigações acessórias">
+            <Link to="/tributario/obrigacoes" aria-label="Abrir obrigações acessórias">
               Detalhar
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
