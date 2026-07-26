@@ -273,6 +273,7 @@ function AppRoutes() {
             <Route path="/tributario/pis-cofins" element={<ProtectedRoute><PisCofinsCreditosPage /></ProtectedRoute>} />
             <Route path="/tributario/irpj-csll" element={<ProtectedRoute><IrpjCsllLucroRealPage /></ProtectedRoute>} />
             <Route path="/tributario/darf" element={<ProtectedRoute><DarfConsolidadoPage /></ProtectedRoute>} />
+            <Route path="/tributario/obrigacoes" element={<ProtectedRoute><ObrigacoesAcessoriasPage /></ProtectedRoute>} />
 
 
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
