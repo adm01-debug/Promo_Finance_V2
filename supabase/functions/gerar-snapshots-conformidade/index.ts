@@ -183,6 +183,68 @@ Deno.serve(async (req: Request) => {
           .from('conformidade_snapshots')
           .upsert(linhas, { onConflict: 'empresa_id,competencia' });
         if (upErr) throw new Error(upErr.message);
+
+        // ---- Etapa N: alertas automáticos sobre o histórico ------------------
+        // Relê a série completa persistida (inclui competências antigas) para
+        // que tendência e multa acumulada considerem todo o histórico, não só
+        // as competências recalculadas nesta execução.
+        const { data: hist, error: histErr } = await admin
+          .from('conformidade_snapshots')
+          .select(
+            'competencia,score,nivel,total_obrigacoes,entregues,vencidas_pendentes,entregues_com_atraso,pontualidade,multa_registrada',
+          )
+          .eq('empresa_id', empresa.id)
+          .order('competencia', { ascending: false })
+          .limit(12);
+        if (histErr) throw new Error(histErr.message);
+
+        const serie: PontoHistorico[] = (hist ?? [])
+          .map((s) => ({
+            competencia: s.competencia as string,
+            score: Number(s.score),
+            nivel: s.nivel as PontoHistorico['nivel'],
+            total: Number(s.total_obrigacoes),
+            entregues: Number(s.entregues),
+            vencidasPendentes: Number(s.vencidas_pendentes),
+            entreguesComAtraso: Number(s.entregues_com_atraso),
+            pontualidade: Number(s.pontualidade),
+            multaRegistrada: Number(s.multa_registrada),
+          }))
+          .sort((a, b) => (a.competencia < b.competencia ? -1 : 1));
+
+        const alertas = avaliarAlertasConformidade(serie);
+        if (alertas.length > 0) {
+          const tipos = alertas.map((a) => `${PREFIXO_ALERTA}:${a.chave}`);
+          // Deduplicação idempotente: `tipo` carrega a chave determinística.
+          const { data: existentes, error: exErr } = await admin
+            .from('alertas_tributarios')
+            .select('tipo')
+            .eq('empresa_id', empresa.id)
+            .in('tipo', tipos);
+          if (exErr) throw new Error(exErr.message);
+
+          const jaExiste = new Set((existentes ?? []).map((r) => r.tipo as string));
+          const novos = alertas
+            .filter((a) => !jaExiste.has(`${PREFIXO_ALERTA}:${a.chave}`))
+            .map((a) => ({
+              empresa_id: empresa.id as string,
+              tipo: `${PREFIXO_ALERTA}:${a.chave}`,
+              titulo: a.titulo,
+              descricao: a.mensagem,
+              mensagem: a.mensagem,
+              prioridade: PRIORIDADE[a.severidade],
+              valor: a.valor,
+              status: 'pendente',
+              lido: false,
+              resolvido: false,
+            }));
+
+          if (novos.length > 0) {
+            const { error: insErr } = await admin.from('alertas_tributarios').insert(novos);
+            if (insErr) throw new Error(insErr.message);
+            alertasCriados += novos.length;
+          }
+        }
       } catch (e) {
         falhas.push({ empresaId: empresa.id as string, erro: (e as Error).message });
       }
@@ -194,8 +256,10 @@ Deno.serve(async (req: Request) => {
       competencias,
       empresasProcessadas: (empresas ?? []).length - falhas.length,
       snapshots: resultados.length,
+      alertasCriados,
       falhas,
     });
+
   } catch (e) {
     console.error('gerar-snapshots-conformidade falhou:', (e as Error).message);
     return json({ error: 'Erro interno', details: (e as Error).message }, 500);
