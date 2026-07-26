@@ -53,11 +53,22 @@ Deno.serve(async (req: Request) => {
   try {
     // ---- Autorização -------------------------------------------------------
     const cronSecret = req.headers.get('x-cron-secret');
-    const esperado = Deno.env.get('CONFORMIDADE_CRON_SECRET') ?? serviceKey;
-    let autorizado = Boolean(cronSecret) && cronSecret === esperado;
+    let autorizado = false;
     let geradoPor: string | null = null;
 
     const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
+
+    if (cronSecret) {
+      // Segredo do cron vive em `integration_secrets` (sem policies → só service_role).
+      const { data: segredo } = await admin
+        .from('integration_secrets')
+        .select('valor')
+        .eq('chave', 'conformidade_cron')
+        .maybeSingle();
+      autorizado = Boolean(segredo?.valor) && segredo?.valor === cronSecret;
+      if (!autorizado) return json({ error: 'Não autorizado' }, 401);
+    }
+
 
     if (!autorizado) {
       const jwt = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '') ?? '';
