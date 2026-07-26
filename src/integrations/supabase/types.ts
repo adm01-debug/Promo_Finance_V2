@@ -13900,6 +13900,48 @@ export type Database = {
         Args: { p_empresa_id: string }
         Returns: string
       }
+      fn_balancete: {
+        Args: {
+          p_data_fim: string
+          p_data_inicio: string
+          p_empresa_id: string
+          p_nivel_max?: number
+        }
+        Returns: {
+          aceita_lancamento: boolean
+          codigo: string
+          conta_id: string
+          creditos: number
+          debitos: number
+          natureza: string
+          nivel: number
+          nome: string
+          saldo_anterior: number
+          saldo_final: number
+          tipo: string
+        }[]
+      }
+      fn_livro_razao: {
+        Args: {
+          p_conta_id?: string
+          p_data_fim: string
+          p_data_inicio: string
+          p_empresa_id: string
+        }
+        Returns: {
+          codigo: string
+          conta_id: string
+          credito: number
+          data_lancamento: string
+          debito: number
+          historico: string
+          lancamento_id: string
+          nome: string
+          numero_lancamento: number
+          saldo_anterior: number
+          saldo_corrido: number
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string
