@@ -1,0 +1,2 @@
+ALTER TABLE public.regimes_simulados ADD COLUMN IF NOT EXISTS versao_motor text;
+COMMENT ON COLUMN public.regimes_simulados.versao_motor IS 'Versao do motor tributario usada para gerar o snapshot (auditoria de drift).';
