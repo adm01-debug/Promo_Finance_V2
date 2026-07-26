@@ -32,6 +32,14 @@ export interface ParametrosSimulacao {
   percentualRevenda?: number;
   /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
   atividadePrincipal?: string;
+  /**
+   * Sublimite estadual de receita bruta (LC 123/2006, art. 19/20). Acima dele o
+   * ICMS e o ISS saem do DAS e passam a ser recolhidos pelo regime normal.
+   * Default: R$ 3.600.000,00.
+   */
+  sublimiteEstadual?: number;
+  /** Valor anual de ISS retido na fonte pelo tomador — deduzido da parcela de ISS do DAS. */
+  issRetidoFonte?: number;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
