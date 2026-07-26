@@ -40,7 +40,20 @@ export interface SimulaoHistoricoItem {
   created_by: string | null;
   audit_log_id: string | null;
   data_simulacao: string;
+  /** Versão do motor que gerou o snapshot (null em registros legados). */
+  versao_motor: string | null;
 }
+
+/** Item de histórico enriquecido com a auditoria de drift do motor. */
+export interface SimulacaoHistoricoAuditada extends SimulaoHistoricoItem {
+  /** Snapshot gerado por versão anterior do motor. */
+  motorDesatualizado: boolean;
+  /** Regime obtido ao recalcular o snapshot com o motor corrente. */
+  regimeRecalculado: RegimeTributario | null;
+  /** True quando o recálculo diverge do regime recomendado salvo. */
+  divergente: boolean;
+}
+
 
 const REGIMES_VALIDOS: readonly RegimeTributario[] = [
   'simples_nacional',
