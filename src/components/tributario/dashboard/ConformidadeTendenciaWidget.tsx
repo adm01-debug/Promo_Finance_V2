@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { useConformidadeSnapshotsDaEmpresa } from '@/hooks/useConformidadeSnapshots';
 import {
   analisarTendencia,
+  avaliarAlertasConformidade,
   NIVEL_LABEL,
   type DirecaoTendencia,
   type NivelConformidade,
