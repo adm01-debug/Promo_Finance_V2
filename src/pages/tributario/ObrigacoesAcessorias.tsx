@@ -35,6 +35,8 @@ import {
 } from '@/lib/tributario/obrigacoes';
 import { ConformidadeCard } from '@/components/tributario/ConformidadeCard';
 import { ConformidadeHistoricoCard } from '@/components/tributario/ConformidadeHistoricoCard';
+import { ProjecaoConformidadeCard } from '@/components/tributario/ProjecaoConformidadeCard';
+
 import {
   useConformidadeSnapshots,
   useSalvarConformidadeSnapshots,
