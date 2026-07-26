@@ -4710,6 +4710,60 @@ export type Database = {
           },
         ]
       }
+      digest_envios_log: {
+        Row: {
+          created_at: string
+          duplicado: boolean
+          email: string
+          erro: string | null
+          execucao_id: string
+          hash_conteudo: string | null
+          id: string
+          motivo: string | null
+          multa_total: number
+          severidade_maxima: string | null
+          simulado: boolean
+          situacao: string
+          total_alertas: number
+          total_empresas: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duplicado?: boolean
+          email: string
+          erro?: string | null
+          execucao_id: string
+          hash_conteudo?: string | null
+          id?: string
+          motivo?: string | null
+          multa_total?: number
+          severidade_maxima?: string | null
+          simulado?: boolean
+          situacao: string
+          total_alertas?: number
+          total_empresas?: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duplicado?: boolean
+          email?: string
+          erro?: string | null
+          execucao_id?: string
+          hash_conteudo?: string | null
+          id?: string
+          motivo?: string | null
+          multa_total?: number
+          severidade_maxima?: string | null
+          simulado?: boolean
+          situacao?: string
+          total_alertas?: number
+          total_empresas?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       dispositivos_conhecidos: {
         Row: {
           browser: string | null
