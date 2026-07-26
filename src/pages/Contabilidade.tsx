@@ -219,7 +219,9 @@ export default function Contabilidade() {
           <TabsContent value="plano"><PlanoContasTab empresaId={empresaId} /></TabsContent>
           <TabsContent value="lancamentos"><LancamentosTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="razao"><RazaoDiarioTab empresaId={empresaId} ano={ano} /></TabsContent>
+          <TabsContent value="balancete"><BalanceteTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="dre"><DreBalancoTab empresaId={empresaId} ano={ano} /></TabsContent>
+
           <TabsContent value="auto"><ContabilizacaoAutomaticaTab empresaId={empresaId} /></TabsContent>
           <TabsContent value="elisao"><ElisaoFiscalTab empresaId={empresaId} /></TabsContent>
           <TabsContent value="integracoes"><VerificacaoIntegracoesPanel empresaId={empresaId} ano={ano} /></TabsContent>
