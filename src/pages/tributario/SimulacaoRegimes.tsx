@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -67,6 +67,25 @@ export default function SimulacaoRegimes() {
           : atual.aliquotaTerceiros,
     }));
   }, [empresaSelecionada, setParametros]);
+
+  /**
+   * Lista de parâmetros de folha ausentes no cadastro da empresa. Quando algum
+   * está ausente, o motor usa defaults genéricos (RAT 2%, Terceiros 5,8%), o que
+   * pode distorcer a comparação de regimes com folha relevante (Anexo IV, Lucro
+   * Presumido e Lucro Real).
+   */
+  const parametrosFolhaAusentes = useMemo(() => {
+    if (!empresaSelecionada) return [] as string[];
+    const faltando: string[] = [];
+    if (!empresaSelecionada.cnae_principal) faltando.push('CNAE principal');
+    if (empresaSelecionada.aliquota_rat === null || empresaSelecionada.aliquota_rat === undefined)
+      faltando.push('Alíquota RAT/FAP');
+    if (empresaSelecionada.aliquota_terceiros === null || empresaSelecionada.aliquota_terceiros === undefined)
+      faltando.push('Alíquota de Terceiros');
+    return faltando;
+  }, [empresaSelecionada]);
+
+
 
 
 
@@ -192,6 +211,23 @@ export default function SimulacaoRegimes() {
           </AlertDescription>
         </Alert>
       )}
+
+      {empresaId && parametrosFolhaAusentes.length > 0 && (
+        <Alert variant="default" role="status" aria-live="polite">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Parâmetros de folha incompletos</AlertTitle>
+          <AlertDescription>
+            A empresa selecionada não possui {parametrosFolhaAusentes.join(', ')} no cadastro. A simulação usará
+            valores padrão (RAT 2% e Terceiros 5,8%), o que pode distorcer os encargos patronais. Preencha em{' '}
+            <Link to="/empresas" className="font-medium underline underline-offset-4">
+              Cadastro de Empresas
+            </Link>
+            .
+          </AlertDescription>
+        </Alert>
+      )}
+
+
 
       <div className="grid gap-6 lg:grid-cols-3">
         <ParametrosForm
