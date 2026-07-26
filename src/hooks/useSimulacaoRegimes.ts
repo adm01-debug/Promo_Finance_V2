@@ -14,6 +14,7 @@ import type {
   FolhaMes,
 } from '@/lib/tributario/types';
 import { useDecidirRegimeServer } from './useDecidirRegimeServer';
+import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { toast } from 'sonner';
 
 interface UseSimulacaoOptions {
