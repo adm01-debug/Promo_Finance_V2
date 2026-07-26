@@ -94,8 +94,12 @@ describe('icms — MVA ajustada', () => {
   });
 
   it('degrada com segurança em entradas patológicas', () => {
-    expect(calcularMvaAjustada({ mvaOriginal: Number.NaN, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 })).toBe(0);
-    expect(calcularMvaAjustada({ mvaOriginal: -1, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 })).toBe(0);
+    // MVA inválida é tratada como zero; o ajuste de carga (0,88/0,82 − 1) permanece.
+    expect(calcularMvaAjustada({ mvaOriginal: Number.NaN, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 }))
+      .toBeCloseTo(0.0731707, 6);
+    expect(calcularMvaAjustada({ mvaOriginal: -1, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 }))
+      .toBeCloseTo(0.0731707, 6);
+
     expect(calcularMvaAjustada({ mvaOriginal: 0.4, aliquotaInterestadual: 0.12, aliquotaInterna: 1 })).toBeCloseTo(0.4, 8);
     expect(calcularMvaAjustada({ mvaOriginal: 0.4, aliquotaInterestadual: 0.12, aliquotaInterna: 5 })).toBeCloseTo(0.4, 8);
   });
