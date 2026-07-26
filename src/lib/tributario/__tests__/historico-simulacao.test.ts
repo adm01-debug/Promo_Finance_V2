@@ -129,3 +129,67 @@ describe('filtrarHistorico / snapshotComPendencia', () => {
     expect(filtrarHistorico([], true)).toEqual([]);
   });
 });
+
+describe('montarLinhasAuditoriaCsv', () => {
+  const base = {
+    data_simulacao: '2026-01-10',
+    regime_recomendado: 'simples_nacional',
+    regimeRecalculado: 'simples_nacional',
+    versao_motor: '3.4.0',
+    faturamento_12m: 1_000_000,
+    folha_12m: 200_000,
+    economia_anual_estimada: 50_000,
+    divergente: false,
+    motorDesatualizado: false,
+    ajustesAplicados: [],
+  };
+
+  it('marca situação "ok" quando não há pendências', () => {
+    const [linha] = montarLinhasAuditoriaCsv([base]);
+    expect(linha.situacao).toBe('ok');
+    expect(linha.qtdAjustes).toBe(0);
+    expect(linha.ajustes).toBe('');
+  });
+
+  it('acumula marcas de divergência, motor antigo e ajuste crítico', () => {
+    const [linha] = montarLinhasAuditoriaCsv([
+      {
+        ...base,
+        divergente: true,
+        motorDesatualizado: true,
+        regimeRecalculado: 'lucro_presumido',
+        ajustesAplicados: [
+          {
+            campo: 'margemLucro',
+            rotulo: 'Margem de lucro',
+            informado: '-5%',
+            aplicado: '0%',
+            severidade: 'critico',
+            motivo: 'valor negativo',
+          },
+        ],
+      },
+    ]);
+    expect(linha.situacao).toBe('divergente | motor antigo | ajuste crítico');
+    expect(linha.ajustesCriticos).toBe(1);
+    expect(linha.ajustes).toContain('Margem de lucro: -5% → 0%');
+  });
+
+  it('degrada valores não finitos e nulos para zero/legado', () => {
+    const [linha] = montarLinhasAuditoriaCsv([
+      {
+        ...base,
+        versao_motor: null,
+        regimeRecalculado: null,
+        faturamento_12m: Number.NaN,
+        folha_12m: Number.POSITIVE_INFINITY,
+        economia_anual_estimada: null,
+      },
+    ]);
+    expect(linha.versaoMotor).toBe('legado');
+    expect(linha.regimeRecalculado).toBe('');
+    expect(linha.faturamento12m).toBe(0);
+    expect(linha.folha12m).toBe(0);
+    expect(linha.economiaAnual).toBe(0);
+  });
+});
