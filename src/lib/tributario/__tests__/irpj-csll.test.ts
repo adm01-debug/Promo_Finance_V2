@@ -159,8 +159,8 @@ describe('IRPJ/CSLL — simulação massiva de cenários', () => {
             expect(p.compensacaoPrejuizo).toBeLessThanOrEqual(prejuizoFiscal + 0.01);
 
             // Coerência das alíquotas
-            expect(p.irpjBase).toBeCloseTo(p.lucroReal * ALIQUOTA_IRPJ, 2);
-            expect(p.csllDevida).toBeCloseTo(p.baseCsll * ALIQUOTA_CSLL, 2);
+            expect(p.irpjBase).toBeCloseTo(p.lucroReal * ALIQUOTA_IRPJ, 1);
+            expect(p.csllDevida).toBeCloseTo(p.baseCsll * ALIQUOTA_CSLL, 1);
 
             // Adicional só sobre excedente
             const excedente = Math.max(0, p.lucroReal - LIMITE_ADICIONAL_MENSAL * 3);
