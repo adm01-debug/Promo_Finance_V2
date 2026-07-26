@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BookOpen, FileText, Calculator, Building2, BookText, BookOpenCheck, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap, ShieldCheck } from 'lucide-react';
+import { BookOpen, FileText, Calculator, Building2, BookText, BookOpenCheck, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap, ShieldCheck, Gauge } from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { formatCNPJ } from '@/lib/brazilian-validators';
 import { motion } from 'framer-motion';
@@ -25,9 +25,10 @@ import { AuditoriaLancamentosPanel } from '@/components/contabilidade/AuditoriaL
 import { ContabilizacaoAutomaticaTab } from '@/components/contabilidade/ContabilizacaoAutomaticaTab';
 import { ElisaoFiscalTab } from '@/components/contabilidade/elisao/ElisaoFiscalTab';
 import { BalanceteTab } from '@/components/contabilidade/BalanceteTab';
+import { IndicesTab } from '@/components/contabilidade/IndicesTab';
 
 
-const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'balancete', 'dre', 'auto', 'elisao', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
+const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'balancete', 'indices', 'dre', 'auto', 'elisao', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
 type TabId = typeof VALID_TABS[number];
 
 const ANO_DEFAULT = new Date().getFullYear() - 1;
@@ -178,6 +179,7 @@ export default function Contabilidade() {
             <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
             <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
             <TabsTrigger value="balancete" className="gap-1.5"><BookOpenCheck className="h-4 w-4" />Balancete</TabsTrigger>
+            <TabsTrigger value="indices" className="gap-1.5"><Gauge className="h-4 w-4" />Índices</TabsTrigger>
             <TabsTrigger value="dre" className="gap-1.5"><BarChart3 className="h-4 w-4" />DRE & Balanço</TabsTrigger>
 
             <TabsTrigger value="auto" className="gap-1.5"><Zap className="h-4 w-4" />Automático</TabsTrigger>
@@ -220,6 +222,7 @@ export default function Contabilidade() {
           <TabsContent value="lancamentos"><LancamentosTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="razao"><RazaoDiarioTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="balancete"><BalanceteTab empresaId={empresaId} ano={ano} /></TabsContent>
+          <TabsContent value="indices"><IndicesTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="dre"><DreBalancoTab empresaId={empresaId} ano={ano} /></TabsContent>
 
           <TabsContent value="auto"><ContabilizacaoAutomaticaTab empresaId={empresaId} /></TabsContent>
@@ -247,6 +250,7 @@ const HOME_CARDS: HomeCard[] = [
   { id: 'lancamentos', label: 'Lançamentos', description: 'Registre partidas dobradas no diário contábil.', icon: Calculator, accent: 'text-primary' },
   { id: 'razao', label: 'Razão & Diário', description: 'Consulte movimentação por conta e por data.', icon: BookText, accent: 'text-primary' },
   { id: 'balancete', label: 'Balancete', description: 'Saldo anterior, movimento e saldo final por conta.', icon: BookOpenCheck, accent: 'text-primary' },
+  { id: 'indices', label: 'Índices', description: 'Liquidez, endividamento, rentabilidade, prazos e estrutura.', icon: Gauge, accent: 'text-success' },
   { id: 'dre', label: 'DRE & Balanço', description: 'Demonstrações apuradas pela escrituração contábil.', icon: BarChart3, accent: 'text-success' },
 
   { id: 'ecd', label: 'SPED ECD', description: 'Geração e validação da Escrituração Contábil Digital.', icon: FileText, accent: 'text-warning' },
