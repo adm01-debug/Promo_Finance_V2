@@ -110,6 +110,24 @@ export default function ObrigacoesAcessorias() {
     };
   }, [itens]);
 
+  /** Etapa J — score de conformidade fiscal do período em tela. */
+  const conformidade = useMemo(
+    () =>
+      calcularConformidade(
+        itens,
+        entregas.map((e) => ({
+          obrigacaoId: e.obrigacao_id,
+          competencia: e.competencia,
+          status: e.status,
+          dataEntrega: e.data_entrega,
+          valorMulta: e.valor_multa,
+        }))
+      ),
+    [itens, entregas]
+  );
+
+
+
   const multa = useMemo(() => {
     try {
       return calcularMultaAtraso({
