@@ -49,6 +49,8 @@ export interface ParametrosSimulacao {
   aliquotaRAT?: number;
   /** Contribuições a Terceiros (fração) sobre a folha em Presumido/Real. Default 0.058. */
   aliquotaTerceiros?: number;
+  /** CNAE principal (deriva a alíquota de terceiros quando não informada). */
+  cnaePrincipal?: string;
 
 }
 

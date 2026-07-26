@@ -234,6 +234,24 @@ export function ParametrosForm({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="cnae-principal">CNAE principal</Label>
+            <Input
+              id="cnae-principal"
+              type="text"
+              placeholder="Ex.: 47.11-3/02"
+              value={parametros.cnaePrincipal ?? ''}
+              onChange={(e) =>
+                setParametros({ ...parametros, cnaePrincipal: e.target.value })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              Define automaticamente o FPAS e a alíquota de terceiros quando o campo
+              abaixo é deixado em branco.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+
             <Label htmlFor="aliquota-terceiros">Terceiros / Sistema S (%)</Label>
             <Input
               id="aliquota-terceiros"
