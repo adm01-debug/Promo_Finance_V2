@@ -235,6 +235,10 @@ export default function ObrigacoesAcessorias() {
             ))}
           </div>
 
+          <ConformidadeCard resultado={conformidade} />
+
+
+
           <Card>
             <CardHeader>
               <CardTitle>Parâmetros</CardTitle>
