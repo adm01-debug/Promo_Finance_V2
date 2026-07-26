@@ -96,16 +96,18 @@ export default function SimulacaoRegimes() {
   // pela camada de sanitização do motor, evitando cálculos silenciosamente corrigidos.
   const ajustesParametros = useMemo(() => diagnosticarParametros(parametros), [parametros]);
 
-  // Histórico exibido: opcionalmente restrito aos snapshots que exigem atenção.
+  // Histórico exibido: opcionalmente restrito aos snapshots que exigem atenção
+  // e ordenado conforme o critério escolhido (helpers puros, sem mutação).
   const historicoVisivel = useMemo(
-    () => filtrarHistorico(historicoSimulacoes, somentePendencias),
-    [historicoSimulacoes, somentePendencias],
+    () => ordenarHistorico(filtrarHistorico(historicoSimulacoes, somentePendencias), ordenacao),
+    [historicoSimulacoes, somentePendencias, ordenacao],
   );
 
   // Volta ao início sempre que o recorte muda, evitando página órfã.
   useEffect(() => {
     setPaginaHistorico(1);
-  }, [somentePendencias, empresaId]);
+  }, [somentePendencias, ordenacao, empresaId]);
+
 
   // O clamp acontece no helper puro: se a lista encurtar, a página é ajustada.
   const pagina = useMemo(
