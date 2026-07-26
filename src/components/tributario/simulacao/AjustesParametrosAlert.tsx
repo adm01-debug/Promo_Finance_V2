@@ -17,7 +17,7 @@ export function AjustesParametrosAlert({ ajustes }: AjustesParametrosAlertProps)
   const critico = ajustes.some((a) => a.severidade === 'critico');
 
   return (
-    <Alert variant={critico ? 'destructive' : 'default'} role="status" aria-live="polite">
+    <Alert variant={critico ? 'error' : 'warning'} role="status" aria-live="polite">
       <AlertTriangle className="h-4 w-4" />
       <AlertTitle>
         {ajustes.length === 1
