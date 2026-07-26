@@ -161,7 +161,12 @@ export function determinarAnexoSimples(
   return { anexo: 'I', motivo: `Revenda/comercio preponderante (${revenda.toFixed(1)}%) -> Anexo I.` };
 }
 
-export function simularSimples(p: ParametrosSimulacao, ano: number, mes: number): ResultadoCenario {
+export function simularSimples(
+  p: ParametrosSimulacao,
+  ano: number,
+  mes: number,
+  forcarAnexo?: AnexoSimples,
+): ResultadoCenario {
   const obs: string[] = [];
   if (p.faturamentoAnual > LIMITE_SIMPLES) {
     return {
@@ -174,21 +179,35 @@ export function simularSimples(p: ParametrosSimulacao, ano: number, mes: number)
   let rbt12 = p.faturamentoAnual;
   if (p.faturamentoMensal?.length) {
     const r = calcularRBT12(p.faturamentoMensal, ano, mes);
-    if (r > 0) rbt12 = r;
+    if (r > 0) {
+      rbt12 = r;
+    } else {
+      obs.push('RBT12 estimado a partir do faturamento anual informado (histórico mensal sem meses anteriores ao mês de referência).');
+    }
   }
   const folha12m = p.folhaMensal?.length
     ? calcularFolha12m(p.folhaMensal, ano, mes)
     : (p.folhaAnual || 0);
   const fatorR = rbt12 > 0 ? folha12m / rbt12 : 0;
-  const { anexo, motivo } = determinarAnexoSimples(p, fatorR);
-  obs.push(motivo);
+  const { anexo: anexoDetectado, motivo } = determinarAnexoSimples(p, fatorR);
+  let anexo: AnexoSimples = anexoDetectado;
+  if (forcarAnexo) {
+    anexo = forcarAnexo;
+    obs.push(`Anexo forçado manualmente para simulação: Anexo ${anexo}.`);
+  } else {
+    obs.push(motivo);
+  }
   const faixa = ANEXOS[anexo].find((f) => rbt12 <= f.ate) || ANEXOS[anexo][5];
   const aliqEfet = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;
   const das = p.faturamentoAnual * aliqEfet;
   obs.push(`Faixa ${faixa.faixa}, alíq nominal ${(faixa.aliq * 100).toFixed(2)}%, efetiva ${(aliqEfet * 100).toFixed(2)}%.`);
   
   // Distribuição simplificada
-  const dist: Record<AnexoSimples, any> = {
+  type DistribuicaoAnexo = {
+    irpj: number; csll: number; cofins: number; pis: number;
+    cpp: number; icms: number; iss: number;
+  };
+  const dist: Record<AnexoSimples, DistribuicaoAnexo> = {
     I:   { irpj: 0.055, csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.415, icms: 0.34,  iss: 0 },
     II:  { irpj: 0.055, csll: 0.035, cofins: 0.1182, pis: 0.0278, cpp: 0.415, icms: 0.32,  iss: 0,  },
     III: { irpj: 0.04,  csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.4340, icms: 0,    iss: 0.335 },
@@ -196,7 +215,16 @@ export function simularSimples(p: ParametrosSimulacao, ano: number, mes: number)
     V:   { irpj: 0.25,  csll: 0.15,  cofins: 0.1428, pis: 0.0309, cpp: 0.2885, icms: 0,    iss: 0.137 },
   };
 
-  const d = dist[anexo];
+  // As frações de cada anexo devem somar 1.0; renormalizamos defensivamente
+  // para que desvios da tabela não distorçam a decomposição do DAS.
+  const raw = dist[anexo];
+  const sum = raw.irpj + raw.csll + raw.cofins + raw.pis + raw.cpp + raw.icms + raw.iss;
+  const d: DistribuicaoAnexo = sum > 0
+    ? {
+        irpj: raw.irpj / sum, csll: raw.csll / sum, cofins: raw.cofins / sum,
+        pis: raw.pis / sum, cpp: raw.cpp / sum, icms: raw.icms / sum, iss: raw.iss / sum,
+      }
+    : raw;
 
   // Sublimite estadual (LC 123/2006, arts. 19 e 20): ICMS/ISS fora do DAS.
   const sublimite = p.sublimiteEstadual ?? 3_600_000;
@@ -257,20 +285,26 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const pc = 1 - ps;
   const rs = p.faturamentoAnual * ps;
   const rc = p.faturamentoAnual * pc;
+  const aliqICMS = p.aliquotaICMS ?? 0.18;
+  const aliqISS = p.aliquotaISS ?? 0.05;
   const baseIrpj = rs * 0.32 + rc * 0.08;
   const irpj = baseIrpj * 0.15 + (baseIrpj > 240000 ? (baseIrpj - 240000) * 0.10 : 0);
   const csll = (rs * 0.32 + rc * 0.12) * 0.09;
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
-  const icms = rc * 0.18;
-  const iss = rs * 0.05;
+  const icms = rc * aliqICMS;
+  const iss = rs * aliqISS;
   const cpp = (p.folhaAnual || 0) * 0.20;
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
-    observacoes: ['Presunção 8% comércio / 32% serviços.', 'PIS/COFINS cumulativo.'],
+    observacoes: [
+      'Presunção 8% comércio / 32% serviços.',
+      'PIS/COFINS cumulativo.',
+      `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
+    ],
   };
 }
 
@@ -284,14 +318,25 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const ps = p.percentualServicos / 100;
   const rs = p.faturamentoAnual * ps;
   const rc = p.faturamentoAnual * (1 - ps);
-  const icms = Math.max(0, rc * 0.18 - (p.comprasComCredito || 0) * 0.18);
-  const iss = rs * 0.05;
+  const aliqICMS = p.aliquotaICMS ?? 0.18;
+  const aliqISS = p.aliquotaISS ?? 0.05;
+  const icms = Math.max(0, rc * aliqICMS - (p.comprasComCredito || 0) * aliqICMS);
+  const iss = rs * aliqISS;
   const cpp = (p.folhaAnual || 0) * 0.20;
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
+  const observacoes = [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
+  if (lucro <= 240000) {
+    observacoes.push('Sem adicional de IRPJ: lucro anual ≤ R$ 240k.');
+  } else {
+    observacoes.push('Adicional de IRPJ de 10% sobre o lucro excedente a R$ 240k.');
+  }
+  if (p.margemLucro < 8) {
+    observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
+  }
   return {
     regime: 'lucro_real', nome: 'Lucro Real', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
-    observacoes: [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'],
+    observacoes,
   };
 }
