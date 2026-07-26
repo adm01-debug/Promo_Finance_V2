@@ -84,6 +84,21 @@ export default function SimulacaoRegimes() {
     salvarSimulacao.mutate();
   };
 
+  /**
+   * Exporta a trilha de auditoria do histórico visível. Usa o mesmo recorte
+   * exibido na tela (respeitando o filtro de pendências) para que o arquivo
+   * seja fiel ao que o contador está analisando no momento.
+   */
+  const handleExportarAuditoria = () => {
+    const linhas = montarLinhasAuditoriaCsv(historicoVisivel);
+    if (linhas.length === 0) {
+      toast.error('Nenhum snapshot para exportar.');
+      return;
+    }
+    exportToCSV(linhas, COLUNAS_AUDITORIA, 'auditoria_simulacoes_regimes');
+    toast.success(`Trilha exportada (${linhas.length} snapshot(s)).`);
+  };
+
 
 
   const empresaSelecionada = useMemo(() => empresas.find((e) => e.id === empresaId), [empresas, empresaId]);
