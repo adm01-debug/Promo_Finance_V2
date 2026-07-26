@@ -18,6 +18,7 @@ import { SimulacaoHeaderActions } from '@/components/tributario/simulacao/Simula
 import { ParametrosForm } from '@/components/tributario/simulacao/ParametrosForm';
 import { AjustesParametrosAlert } from '@/components/tributario/simulacao/AjustesParametrosAlert';
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
+import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
 
 export default function SimulacaoRegimes() {
