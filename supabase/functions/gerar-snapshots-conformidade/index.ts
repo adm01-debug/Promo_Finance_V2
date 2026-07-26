@@ -53,7 +53,8 @@ Deno.serve(async (req: Request) => {
   try {
     // ---- Autorização -------------------------------------------------------
     const cronSecret = req.headers.get('x-cron-secret');
-    let autorizado = Boolean(cronSecret) && cronSecret === serviceKey;
+    const esperado = Deno.env.get('CONFORMIDADE_CRON_SECRET') ?? serviceKey;
+    let autorizado = Boolean(cronSecret) && cronSecret === esperado;
     let geradoPor: string | null = null;
 
     const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
