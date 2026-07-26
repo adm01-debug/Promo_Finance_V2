@@ -123,7 +123,7 @@ describe('E2E orquestrador-elisao — edge cases', () => {
       faturamento_anual: 0,
     };
     const r = analisarOportunidadesElisao(vazio);
-    expect(r.total_oportunidades).toBe(9);
+    expect(r.total_oportunidades).toBe(13);
     expect(r.total_aplicaveis).toBe(0);
     expect(r.economia_total_estimada).toBe(0);
   });
