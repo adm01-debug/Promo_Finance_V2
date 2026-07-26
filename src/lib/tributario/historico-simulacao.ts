@@ -194,3 +194,68 @@ export function paginarHistorico<T>(
     fim: total === 0 ? 0 : offset + fatia.length,
   };
 }
+
+/** Critérios de ordenação suportados pelo card de histórico. */
+export type OrdenacaoHistorico = 'data_desc' | 'data_asc' | 'economia_desc' | 'pendencia';
+
+export const ORDENACOES_HISTORICO: ReadonlyArray<{
+  valor: OrdenacaoHistorico;
+  rotulo: string;
+}> = [
+  { valor: 'data_desc', rotulo: 'Mais recentes' },
+  { valor: 'data_asc', rotulo: 'Mais antigos' },
+  { valor: 'economia_desc', rotulo: 'Maior economia' },
+  { valor: 'pendencia', rotulo: 'Pendências primeiro' },
+];
+
+/** Item mínimo ordenável (subconjunto do exportável). */
+export interface ItemAuditavelOrdenavel extends ItemAuditavel {
+  data_simulacao: string;
+  economia_anual_estimada: number | null;
+}
+
+/** Datas inválidas/ausentes vão para o fim, nunca quebram a comparação. */
+function tempoDe(valor: string): number {
+  const t = Date.parse(valor ?? '');
+  return Number.isFinite(t) ? t : Number.NEGATIVE_INFINITY;
+}
+
+function economiaDe(valor: number | null): number {
+  return typeof valor === 'number' && Number.isFinite(valor) ? valor : Number.NEGATIVE_INFINITY;
+}
+
+/** Peso de pendência: crítico > divergente/motor antigo > ajuste simples > ok. */
+function pesoPendencia(item: ItemAuditavelOrdenavel): number {
+  if (item.ajustesAplicados.some((a) => a.severidade === 'critico')) return 3;
+  if (item.divergente || item.motorDesatualizado) return 2;
+  if (item.ajustesAplicados.length > 0) return 1;
+  return 0;
+}
+
+/**
+ * Ordena o histórico sem mutar a lista de entrada. Todos os critérios usam a
+ * data decrescente como desempate para manter a saída estável e determinística.
+ */
+export function ordenarHistorico<T extends ItemAuditavelOrdenavel>(
+  itens: readonly T[],
+  ordenacao: OrdenacaoHistorico,
+): T[] {
+  const copia = [...itens];
+  const porDataDesc = (a: T, b: T) => tempoDe(b.data_simulacao) - tempoDe(a.data_simulacao);
+
+  switch (ordenacao) {
+    case 'data_asc':
+      return copia.sort((a, b) => tempoDe(a.data_simulacao) - tempoDe(b.data_simulacao));
+    case 'economia_desc':
+      return copia.sort(
+        (a, b) =>
+          economiaDe(b.economia_anual_estimada) - economiaDe(a.economia_anual_estimada) ||
+          porDataDesc(a, b),
+      );
+    case 'pendencia':
+      return copia.sort((a, b) => pesoPendencia(b) - pesoPendencia(a) || porDataDesc(a, b));
+    case 'data_desc':
+    default:
+      return copia.sort(porDataDesc);
+  }
+}
