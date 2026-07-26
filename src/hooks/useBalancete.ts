@@ -52,7 +52,21 @@ export function useBalancete({ empresaId, dataInicio, dataFim, nivelMax }: UseBa
       if (!parsed.success) {
         throw new Error('Retorno do balancete em formato inesperado.');
       }
-      return parsed.data;
+      // Normalização explícita: garante o contrato BalanceteRow (sem campos opcionais).
+      return parsed.data.map<BalanceteRow>((r) => ({
+        conta_id: r.conta_id ?? '',
+        codigo: r.codigo ?? '',
+        nome: r.nome ?? '',
+        tipo: r.tipo ?? '',
+        natureza: r.natureza ?? '',
+        nivel: r.nivel ?? 1,
+        aceita_lancamento: r.aceita_lancamento ?? true,
+        saldo_anterior: r.saldo_anterior ?? 0,
+        debitos: r.debitos ?? 0,
+        creditos: r.creditos ?? 0,
+        saldo_final: r.saldo_final ?? 0,
+      }));
+
     },
   });
 }
