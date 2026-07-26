@@ -46,7 +46,7 @@ export interface ResumoAuditoriaHistorico {
   saudavel: boolean;
 }
 
-interface ItemAuditavel {
+export interface ItemAuditavel {
   divergente: boolean;
   motorDesatualizado: boolean;
   ajustesAplicados: AjusteParametro[];
@@ -71,4 +71,21 @@ export function resumirAuditoriaHistorico(
     comAjustesCriticos,
     saudavel: divergentes === 0 && motorDesatualizado === 0 && comAjustes === 0,
   };
+}
+
+/** Um snapshot é "pendente" se diverge, veio de motor antigo ou teve ajustes. */
+export function snapshotComPendencia(item: ItemAuditavel): boolean {
+  return item.divergente || item.motorDesatualizado || item.ajustesAplicados.length > 0;
+}
+
+/**
+ * Filtra o histórico para exibição. Quando `somentePendencias` é true, retorna
+ * apenas snapshots que exigem atenção do contador; caso o filtro zere a lista,
+ * a UI deve informar o usuário em vez de simplesmente sumir com o card.
+ */
+export function filtrarHistorico<T extends ItemAuditavel>(
+  itens: readonly T[],
+  somentePendencias: boolean,
+): T[] {
+  return somentePendencias ? itens.filter(snapshotComPendencia) : [...itens];
 }
