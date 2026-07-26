@@ -50,7 +50,30 @@ const empresaSchema = z.object({
   estado: z.string().max(2, 'Selecione um estado').optional().nullable(),
   cep: z.string().max(10, 'CEP inválido').optional().nullable(),
   ativo: z.boolean(),
+  cnae_principal: z
+    .string()
+    .max(9, 'CNAE inválido')
+    .optional()
+    .nullable()
+    .refine(
+      (v) => !v || (v.replace(/\D/g, '').length >= 2 && v.replace(/\D/g, '').length <= 7),
+      'CNAE deve ter entre 2 e 7 dígitos',
+    ),
+  codigo_fpas: z.string().max(10, 'FPAS inválido').optional().nullable(),
+  aliquota_rat: z
+    .number({ invalid_type_error: 'Informe um percentual' })
+    .min(0, 'Mínimo 0%')
+    .max(6, 'Máximo 6%')
+    .optional()
+    .nullable(),
+  aliquota_terceiros: z
+    .number({ invalid_type_error: 'Informe um percentual' })
+    .min(0, 'Mínimo 0%')
+    .max(8, 'Máximo 8%')
+    .optional()
+    .nullable(),
 });
+
 
 type EmpresaFormData = z.infer<typeof empresaSchema>;
 
