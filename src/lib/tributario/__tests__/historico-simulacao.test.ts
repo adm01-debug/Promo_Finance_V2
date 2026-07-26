@@ -7,6 +7,7 @@ import {
   filtrarHistorico,
   montarLinhasAuditoriaCsv,
   paginarHistorico,
+  ordenarHistorico,
 
 } from '../historico-simulacao';
 import type { AjusteParametro } from '../diagnostico-parametros';
@@ -221,5 +222,68 @@ describe('paginarHistorico', () => {
   it('lida com lista vazia', () => {
     const p = paginarHistorico([], 3, 5);
     expect(p).toMatchObject({ itens: [], pagina: 1, totalPaginas: 1, total: 0, inicio: 0, fim: 0 });
+  });
+});
+
+describe('ordenarHistorico', () => {
+  const item = (
+    data: string,
+    economia: number | null,
+    extra: Partial<{ divergente: boolean; motorDesatualizado: boolean; ajustesAplicados: AjusteParametro[] }> = {},
+  ) => ({
+    data_simulacao: data,
+    economia_anual_estimada: economia,
+    divergente: false,
+    motorDesatualizado: false,
+    ajustesAplicados: [] as AjusteParametro[],
+    ...extra,
+  });
+
+  const base = [
+    item('2026-01-01', 100),
+    item('2026-03-01', 900, { divergente: true }),
+    item('2026-02-01', 500, { ajustesAplicados: [ajuste('critico')] }),
+  ];
+
+  it('não muta a lista original', () => {
+    const copia = [...base];
+    ordenarHistorico(base, 'data_asc');
+    expect(base).toEqual(copia);
+  });
+
+  it('ordena por data decrescente por padrão', () => {
+    expect(ordenarHistorico(base, 'data_desc').map((i) => i.data_simulacao)).toEqual([
+      '2026-03-01',
+      '2026-02-01',
+      '2026-01-01',
+    ]);
+  });
+
+  it('ordena por data crescente', () => {
+    expect(ordenarHistorico(base, 'data_asc').map((i) => i.data_simulacao)).toEqual([
+      '2026-01-01',
+      '2026-02-01',
+      '2026-03-01',
+    ]);
+  });
+
+  it('ordena por maior economia, jogando nulos para o fim', () => {
+    const comNulo = [...base, item('2026-04-01', null)];
+    expect(ordenarHistorico(comNulo, 'economia_desc').map((i) => i.economia_anual_estimada)).toEqual([
+      900, 500, 100, null,
+    ]);
+  });
+
+  it('prioriza pendências: crítico > divergente > ajuste > ok', () => {
+    expect(ordenarHistorico(base, 'pendencia').map((i) => i.data_simulacao)).toEqual([
+      '2026-02-01',
+      '2026-03-01',
+      '2026-01-01',
+    ]);
+  });
+
+  it('empurra datas inválidas para o fim na ordem decrescente', () => {
+    const comInvalida = [item('nao-e-data', 10), ...base];
+    expect(ordenarHistorico(comInvalida, 'data_desc').at(-1)?.data_simulacao).toBe('nao-e-data');
   });
 });
