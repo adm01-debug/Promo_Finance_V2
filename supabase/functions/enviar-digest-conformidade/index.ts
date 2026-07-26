@@ -349,10 +349,31 @@ Deno.serve(async (req: Request) => {
         if (!resposta.ok) {
           // Falha individual não derruba o lote: os alertas deste destinatário
           // simplesmente não são marcados e voltam no próximo ciclo.
-          falhas.push({ email: envio.email, detalhe: (await resposta.text()).slice(0, 200) });
+          const detalhe = (await resposta.text()).slice(0, 200);
+          falhas.push({ email: envio.email, detalhe });
+          logs.push({
+            execucao_id: execucaoId,
+            user_id: envio.userId,
+            email: envio.email,
+            situacao: 'falhou',
+            erro: detalhe,
+            hash_conteudo: envio.hash,
+            simulado: false,
+            ...resumo(envio.alertas),
+          });
           continue;
         }
       }
+
+      logs.push({
+        execucao_id: execucaoId,
+        user_id: envio.userId,
+        email: envio.email,
+        situacao: simulado ? 'simulado' : 'enviado',
+        hash_conteudo: envio.hash,
+        simulado,
+        ...resumo(envio.alertas),
+      });
 
       for (const a of envio.alertas) {
         const id = idPorChave.get(`${a.empresaId}|${PREFIXO_ALERTA}:${a.tipo}:${a.competencia}|${a.titulo}`)
@@ -367,6 +388,14 @@ Deno.serve(async (req: Request) => {
           .eq('user_id', envio.userId);
       }
     }
+
+    // A auditoria nunca pode derrubar o lote: falha de log é apenas reportada.
+    let logErro: string | null = null;
+    if (logs.length > 0) {
+      const { error: logErr } = await admin.from('digest_envios_log').insert(logs);
+      if (logErr) logErro = logErr.message;
+    }
+
 
     // ---- Idempotência: marca somente o que foi efetivamente enviado --------
     if (idsEnviados.size > 0) {
