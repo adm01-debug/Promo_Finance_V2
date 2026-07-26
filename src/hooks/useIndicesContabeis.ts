@@ -133,3 +133,53 @@ export function useIndicesContabeis({
     },
   });
 }
+
+export interface PontoSerie {
+  competencia: string;
+  label: string;
+  indices: Indicador[];
+}
+
+/** Divide o intervalo em meses (máx. 24) para a série histórica. */
+export function mesesDoIntervalo(dataInicio: string, dataFim: string) {
+  const ini = new Date(`${dataInicio}T00:00:00Z`);
+  const fim = new Date(`${dataFim}T00:00:00Z`);
+  if (Number.isNaN(ini.getTime()) || Number.isNaN(fim.getTime()) || ini > fim) return [];
+  const out: { inicio: string; fim: string; competencia: string }[] = [];
+  const cursor = new Date(Date.UTC(ini.getUTCFullYear(), ini.getUTCMonth(), 1));
+  while (cursor <= fim && out.length < 24) {
+    const primeiro = new Date(Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth(), 1));
+    const ultimo = new Date(Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, 0));
+    out.push({
+      inicio: primeiro.toISOString().slice(0, 10),
+      fim: ultimo.toISOString().slice(0, 10),
+      competencia: primeiro.toISOString().slice(0, 7),
+    });
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+  }
+  return out;
+}
+
+/** Série mensal dos índices dentro do intervalo selecionado. */
+export function useSerieIndices({ empresaId, dataInicio, dataFim }: UseIndicesParams) {
+  return useQuery<PontoSerie[]>({
+    queryKey: ['indices-contabeis-serie', empresaId, dataInicio, dataFim],
+    enabled: Boolean(empresaId && dataInicio && dataFim),
+    staleTime: 60_000,
+    queryFn: async () => {
+      const meses = mesesDoIntervalo(dataInicio, dataFim);
+      const pontos = await Promise.all(
+        meses.map(async (m) => {
+          const agg = await buscarAgregados(empresaId as string, m.inicio, m.fim);
+          const [ano, mes] = m.competencia.split('-');
+          return {
+            competencia: m.competencia,
+            label: `${mes}/${ano.slice(2)}`,
+            indices: calcularIndices(agg),
+          };
+        }),
+      );
+      return pontos;
+    },
+  });
+}
