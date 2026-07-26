@@ -14,7 +14,10 @@ import type {
   FolhaMes,
 } from '@/lib/tributario/types';
 import { useDecidirRegimeServer } from './useDecidirRegimeServer';
-import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
+import {
+  diagnosticarParametros,
+  type AjusteParametro,
+} from '@/lib/tributario/diagnostico-parametros';
 import { toast } from 'sonner';
 
 interface UseSimulacaoOptions {
@@ -44,6 +47,8 @@ export interface SimulaoHistoricoItem {
   data_simulacao: string;
   /** Versão do motor que gerou o snapshot (null em registros legados). */
   versao_motor: string | null;
+  /** Trilha bruta (jsonb) dos ajustes automáticos aplicados às entradas. */
+  ajustes_aplicados?: unknown;
 }
 
 /** Item de histórico enriquecido com a auditoria de drift do motor. */
@@ -54,7 +59,10 @@ export interface SimulacaoHistoricoAuditada extends SimulaoHistoricoItem {
   regimeRecalculado: RegimeTributario | null;
   /** True quando o recálculo diverge do regime recomendado salvo. */
   divergente: boolean;
+  /** Ajustes automáticos validados e tipados para exibição. */
+  ajustesAplicados: AjusteParametro[];
 }
+
 
 
 const REGIMES_VALIDOS: readonly RegimeTributario[] = [
@@ -70,6 +78,26 @@ function normalizarParametros(bruto: unknown): Partial<ParametrosSimulacao> | nu
   if (typeof registro.faturamentoAnual !== 'number') return null;
   return registro as Partial<ParametrosSimulacao>;
 }
+
+/**
+ * Narrowing defensivo da trilha de auditoria de ajustes. Registros legados
+ * (anteriores à coluna) e payloads malformados degradam para lista vazia.
+ */
+function normalizarAjustes(bruto: unknown): AjusteParametro[] {
+  if (!Array.isArray(bruto)) return [];
+  return bruto.filter((item): item is AjusteParametro => {
+    if (!item || typeof item !== 'object') return false;
+    const registro = item as Record<string, unknown>;
+    return (
+      typeof registro.campo === 'string' &&
+      typeof registro.rotulo === 'string' &&
+      typeof registro.informado === 'string' &&
+      typeof registro.aplicado === 'string' &&
+      (registro.severidade === 'aviso' || registro.severidade === 'critico')
+    );
+  });
+}
+
 
 
 const DEFAULT_PARAMS: ParametrosSimulacao = {
@@ -175,7 +203,9 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         return {
           ...item,
           motorDesatualizado: versaoDesatualizada(item.versao_motor),
+          ajustesAplicados: normalizarAjustes(item.ajustes_aplicados),
           regimeRecalculado,
+
           divergente: regimeRecalculado !== null && regimeRecalculado !== item.regime_recomendado,
         };
       }),
