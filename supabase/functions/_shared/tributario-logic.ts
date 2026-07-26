@@ -48,7 +48,9 @@ export interface ResultadoCenario {
   rbt12?: number; fatorR?: number; anexoAplicavel?: AnexoSimples;
   faixaAplicavel?: number; aliquotaNominal?: number;
   sublimiteExcedido?: boolean;
-  icmsForaDAS?: number; issForaDAS?: number; issRetidoDeduzido?: number;
+  icmsForaDAS?: number;
+  issForaDAS?: number;
+  issRetidoDeduzido?: number;
   observacoes: string[];
 }
 
