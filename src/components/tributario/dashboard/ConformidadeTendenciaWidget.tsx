@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowRight, Minus, ShieldCheck, TrendingDown, TrendingUp } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Minus, ShieldCheck, TrendingDown, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useConformidadeSnapshotsDaEmpresa } from '@/hooks/useConformidadeSnapshots';
 import {
