@@ -60,22 +60,45 @@ export default function ObrigacoesAcessorias() {
   const [regime, setRegime] = useState<RegimeAplicavel>('real');
   const [referencia, setReferencia] = useState(hojeISO.slice(0, 7));
   const [hoje, setHoje] = useState(hojeISO);
-  const [entregues, setEntregues] = useState<Set<string>>(new Set());
 
   const [multaObrigacao, setMultaObrigacao] = useState(OBRIGACOES[0].id);
   const [multaPrazo, setMultaPrazo] = useState(hojeISO);
   const [multaEntrega, setMultaEntrega] = useState(hojeISO);
   const [multaBase, setMultaBase] = useState(0);
 
+  const { currentEmpresaId } = useEmpresaScope();
+
+  const competencias = useMemo(
+    () => (/^\d{4}-\d{2}$/.test(referencia) ? competenciasAoRedor(referencia, 6, 6) : []),
+    [referencia]
+  );
+
+  const { data: entregas = [], isLoading: carregandoEntregas } =
+    useEntregasObrigacoes(competencias);
+  const registrar = useRegistrarEntregaObrigacao();
+
+  /** Índice das entregas persistidas por obrigação+competência. */
+  const entregasPorChave = useMemo(() => {
+    const mapa = new Map<string, (typeof entregas)[number]>();
+    for (const e of entregas) mapa.set(chaveEntrega(e.obrigacao_id, e.competencia), e);
+    return mapa;
+  }, [entregas]);
+
+  /** Conjunto de chaves entregues no formato esperado pelo motor do calendário. */
+  const entregues = useMemo(() => {
+    const set = new Set<string>();
+    for (const e of entregas) {
+      if (e.status === 'entregue' || e.status === 'dispensada') {
+        set.add(chaveItem(e.obrigacao_id, e.competencia));
+      }
+    }
+    return set;
+  }, [entregas]);
+
   const itens = useMemo<ItemCalendario[]>(() => {
-    if (!/^\d{4}-\d{2}$/.test(referencia)) return [];
-    return gerarCalendario({
-      competencias: competenciasAoRedor(referencia, 6, 6),
-      regime,
-      hoje,
-      entregues,
-    });
-  }, [referencia, regime, hoje, entregues]);
+    if (competencias.length === 0) return [];
+    return gerarCalendario({ competencias, regime, hoje, entregues });
+  }, [competencias, regime, hoje, entregues]);
 
   const resumo = useMemo(() => {
     const contar = (s: SituacaoObrigacao) => itens.filter((i) => i.situacao === s).length;
@@ -100,15 +123,54 @@ export default function ObrigacoesAcessorias() {
     }
   }, [multaObrigacao, multaPrazo, multaEntrega, multaBase]);
 
+  /**
+   * Alterna a situação de entrega persistindo no banco. Quando marcada,
+   * calcula automaticamente a multa por atraso caso a entrega ocorra
+   * após o prazo legal (base zerada — piso da obrigação é aplicado).
+   */
   const alternarEntrega = (item: ItemCalendario) => {
-    const chave = chaveItem(item.obrigacaoId, item.competencia);
-    setEntregues((prev) => {
-      const proximo = new Set(prev);
-      if (proximo.has(chave)) proximo.delete(chave);
-      else proximo.add(chave);
-      return proximo;
-    });
+    if (!currentEmpresaId) {
+      toast.error('Selecione uma empresa para controlar as entregas.');
+      return;
+    }
+    const registro = entregasPorChave.get(chaveEntrega(item.obrigacaoId, item.competencia));
+    const marcando = registro?.status !== 'entregue';
+
+    let valorMulta = 0;
+    if (marcando && hoje > item.prazo) {
+      try {
+        valorMulta = calcularMultaAtraso({
+          obrigacaoId: item.obrigacaoId,
+          prazo: item.prazo,
+          dataEntrega: hoje,
+          baseCalculo: 0,
+        }).valorDevido;
+      } catch {
+        valorMulta = 0;
+      }
+    }
+
+    registrar.mutate(
+      {
+        obrigacaoId: item.obrigacaoId,
+        competencia: item.competencia,
+        prazo: item.prazo,
+        status: marcando ? 'entregue' : 'pendente',
+        dataEntrega: marcando ? hoje : null,
+        protocolo: registro?.protocolo ?? null,
+        valorMulta,
+      },
+      {
+        onSuccess: () =>
+          toast.success(
+            marcando
+              ? `${item.nome} ${item.competencia} registrada como entregue.`
+              : `${item.nome} ${item.competencia} voltou para pendente.`
+          ),
+      }
+    );
   };
+
 
   const baixarCsv = () => {
     const blob = new Blob([exportarCalendarioCsv(itens)], { type: 'text/csv;charset=utf-8' });
