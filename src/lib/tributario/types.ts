@@ -81,6 +81,9 @@ export interface ResultadoCenario {
   icmsForaDAS?: number;
   issForaDAS?: number;
   issRetidoDeduzido?: number;
+  /** CPP patronal recolhida fora do DAS (Anexo IV do Simples Nacional). */
+  cppForaDAS?: number;
+
   observacoes: string[];
 }
 
