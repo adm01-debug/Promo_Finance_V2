@@ -88,6 +88,14 @@ export function ConformidadeTendenciaWidget({
     [analise.pontos],
   );
 
+  /**
+   * Etapa N — pré-visualização dos alertas. Usa exatamente o mesmo motor puro
+   * que o cron aplica ao persistir em `alertas_tributarios`, garantindo que a
+   * UI nunca divirja do que foi notificado.
+   */
+  const alertas = useMemo(() => avaliarAlertasConformidade(analise.pontos).slice(0, 3), [analise.pontos]);
+
+
   return (
     <Card className={cn('backdrop-blur-xl bg-background/40 border-white/10 shadow-xl', className)}>
       <CardHeader className="pb-2">
