@@ -45,6 +45,9 @@ export interface ParametrosSimulacao {
   sublimiteEstadual?: number;
   /** ISS retido na fonte (valor anual) deduzido da parcela de ISS do DAS. */
   issRetidoFonte?: number;
+  /** Alíquota RAT/FAP (0..1) aplicada à CPP patronal fora do DAS (Anexo IV). Default 0.02. */
+  aliquotaRAT?: number;
+
 }
 
 export interface ResultadoCenario {
