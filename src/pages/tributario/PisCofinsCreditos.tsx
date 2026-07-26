@@ -98,12 +98,19 @@ export default function PisCofinsCreditos() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <div className="relative min-h-screen">
+        <PageBackground />
+        <div className="container relative z-10 mx-auto space-y-6 p-4 md:p-6">
         <PageHeader
           title="PIS/COFINS não cumulativo"
-          description="Apuração de débitos e créditos com exclusão do ICMS da base (Tema 69), rateio de receitas mistas e controle de saldo credor."
+          subtitle="Apuração de débitos e créditos com exclusão do ICMS da base (Tema 69), rateio de receitas mistas e controle de saldo credor."
+          badge="Etapa E"
           icon={Receipt}
+          gradientFrom="from-primary/80"
+          gradientVia="via-primary"
+          gradientTo="to-success"
         />
+
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Card>
