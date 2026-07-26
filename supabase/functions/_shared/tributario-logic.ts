@@ -211,7 +211,7 @@ export function simularSimples(
   };
   const dist: Record<AnexoSimples, DistribuicaoAnexo> = {
     I:   { irpj: 0.055, csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.415, icms: 0.34,  iss: 0 },
-    II:  { irpj: 0.055, csll: 0.035, cofins: 0.1182, pis: 0.0278, cpp: 0.415, icms: 0.32,  iss: 0,  },
+    II:  { irpj: 0.055, csll: 0.035, cofins: 0.1182, pis: 0.0278, cpp: 0.415, icms: 0.32,  iss: 0 },
     III: { irpj: 0.04,  csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.4340, icms: 0,    iss: 0.335 },
     IV:  { irpj: 0.185, csll: 0.15,  cofins: 0.1603, pis: 0.0347, cpp: 0,     icms: 0,    iss: 0.47 },
     V:   { irpj: 0.25,  csll: 0.15,  cofins: 0.1428, pis: 0.0309, cpp: 0.2885, icms: 0,    iss: 0.137 },
@@ -238,14 +238,19 @@ export function simularSimples(
   let issForaDAS = 0;
 
   if (sublimiteExcedido && (d.icms > 0 || d.iss > 0)) {
-    dasFinal = das * (1 - (d.icms + d.iss));
+    const fracaoEstadualMunicipal = d.icms + d.iss;
+    dasFinal = das * (1 - fracaoEstadualMunicipal);
     const pServ = Math.max(0, Math.min(100, p.percentualServicos || 0)) / 100;
     const pMerc = Math.max(0, 1 - pServ);
-    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * (p.aliquotaICMS ?? 0.18) : 0;
-    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * (p.aliquotaISS ?? 0.05) : 0;
+    const aliqICMS = p.aliquotaICMS ?? 0.18;
+    const aliqISS = p.aliquotaISS ?? 0.05;
+    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * aliqICMS : 0;
+    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * aliqISS : 0;
     icms = icmsForaDAS;
     iss = issForaDAS;
-    obs.push('RBT12 acima do sublimite estadual: ICMS e ISS recolhidos fora do DAS.');
+    obs.push(
+      `RBT12 (R$ ${rbt12.toLocaleString('pt-BR')}) acima do sublimite estadual de R$ ${sublimite.toLocaleString('pt-BR')}: ICMS e ISS recolhidos FORA do DAS pelo regime normal.`,
+    );
   }
 
   // ISS retido na fonte (LC 116/2003) deduzido da parcela de ISS do DAS.
@@ -255,7 +260,9 @@ export function simularSimples(
     issRetidoDeduzido = Math.min(issRetido, iss);
     iss -= issRetidoDeduzido;
     dasFinal -= issRetidoDeduzido;
-    obs.push('ISS retido na fonte deduzido do DAS.');
+    obs.push(
+      `ISS retido na fonte de R$ ${issRetidoDeduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} deduzido do DAS.`,
+    );
   }
 
   const totalTributos = sublimiteExcedido ? dasFinal + icms + iss : dasFinal;
