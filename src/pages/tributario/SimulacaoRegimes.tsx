@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw, History as HistoryIcon } from 'lucide-react';
+import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw, History as HistoryIcon, Download } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
@@ -20,7 +20,25 @@ import { AjustesParametrosAlert } from '@/components/tributario/simulacao/Ajuste
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
-import { filtrarHistorico } from '@/lib/tributario/historico-simulacao';
+import { filtrarHistorico, montarLinhasAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
+import type { LinhaAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
+import { exportToCSV, type ExportColumn } from '@/lib/export-utils';
+
+/** Colunas da trilha de auditoria exportável (ordem fixa para diffs estáveis). */
+const COLUNAS_AUDITORIA: ExportColumn<LinhaAuditoriaCsv>[] = [
+  { key: 'data', header: 'Data da simulação' },
+  { key: 'regimeSalvo', header: 'Regime recomendado (salvo)' },
+  { key: 'regimeRecalculado', header: 'Regime recalculado (motor atual)' },
+  { key: 'situacao', header: 'Situação' },
+  { key: 'versaoMotor', header: 'Versão do motor' },
+  { key: 'faturamento12m', header: 'Faturamento 12m' },
+  { key: 'folha12m', header: 'Folha 12m' },
+  { key: 'economiaAnual', header: 'Economia anual estimada' },
+  { key: 'qtdAjustes', header: 'Qtd. ajustes' },
+  { key: 'ajustesCriticos', header: 'Ajustes críticos' },
+  { key: 'ajustes', header: 'Detalhe dos ajustes' },
+];
+
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
@@ -82,6 +100,21 @@ export default function SimulacaoRegimes() {
       return;
     }
     salvarSimulacao.mutate();
+  };
+
+  /**
+   * Exporta a trilha de auditoria do histórico visível. Usa o mesmo recorte
+   * exibido na tela (respeitando o filtro de pendências) para que o arquivo
+   * seja fiel ao que o contador está analisando no momento.
+   */
+  const handleExportarAuditoria = () => {
+    const linhas = montarLinhasAuditoriaCsv(historicoVisivel);
+    if (linhas.length === 0) {
+      toast.error('Nenhum snapshot para exportar.');
+      return;
+    }
+    exportToCSV(linhas, COLUNAS_AUDITORIA, 'auditoria_simulacoes_regimes');
+    toast.success(`Trilha exportada (${linhas.length} snapshot(s)).`);
   };
 
 
@@ -439,7 +472,20 @@ export default function SimulacaoRegimes() {
                   </Label>
                 </div>
 
+                <div className="pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={historicoVisivel.length === 0}
+                    onClick={handleExportarAuditoria}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Exportar trilha de auditoria (CSV)
+                  </Button>
+                </div>
               </CardHeader>
+
               <CardContent className="space-y-2">
                 {historicoVisivel.length === 0 && (
                   <p className="text-sm text-muted-foreground">

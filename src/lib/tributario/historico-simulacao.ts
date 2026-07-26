@@ -89,3 +89,66 @@ export function filtrarHistorico<T extends ItemAuditavel>(
 ): T[] {
   return somentePendencias ? itens.filter(snapshotComPendencia) : [...itens];
 }
+
+/** Linha achatada da trilha de auditoria, pronta para CSV/planilha. */
+export interface LinhaAuditoriaCsv extends Record<string, string | number> {
+  data: string;
+  regimeSalvo: string;
+  regimeRecalculado: string;
+  situacao: string;
+  versaoMotor: string;
+  faturamento12m: number;
+  folha12m: number;
+  economiaAnual: number;
+  qtdAjustes: number;
+  ajustesCriticos: number;
+  ajustes: string;
+}
+
+/** Item mínimo exigido para compor a trilha exportável. */
+export interface ItemAuditavelExportavel extends ItemAuditavel {
+  data_simulacao: string;
+  regime_recomendado: string;
+  regimeRecalculado: string | null;
+  versao_motor: string | null;
+  rbt12: number;
+  folha_12m: number;
+  economia_anual_estimada: number | null;
+}
+
+function descreverSituacao(item: ItemAuditavelExportavel): string {
+  const marcas: string[] = [];
+  if (item.divergente) marcas.push('divergente');
+  if (item.motorDesatualizado) marcas.push('motor antigo');
+  if (item.ajustesAplicados.some((a) => a.severidade === 'critico')) marcas.push('ajuste crítico');
+  else if (item.ajustesAplicados.length > 0) marcas.push('ajustado');
+  return marcas.length > 0 ? marcas.join(' | ') : 'ok';
+}
+
+/**
+ * Achata o histórico auditado em linhas exportáveis. Função pura: não formata
+ * moeda nem toca no DOM, para permanecer testável e independente de locale.
+ */
+export function montarLinhasAuditoriaCsv(
+  itens: readonly ItemAuditavelExportavel[],
+): LinhaAuditoriaCsv[] {
+  return itens.map((item) => ({
+    data: item.data_simulacao ?? '',
+    regimeSalvo: item.regime_recomendado ?? '',
+    regimeRecalculado: item.regimeRecalculado ?? '',
+    situacao: descreverSituacao(item),
+    versaoMotor: item.versao_motor ?? 'legado',
+    faturamento12m: Number.isFinite(item.rbt12) ? item.rbt12 : 0,
+    folha12m: Number.isFinite(item.folha_12m) ? item.folha_12m : 0,
+    economiaAnual:
+      typeof item.economia_anual_estimada === 'number' &&
+      Number.isFinite(item.economia_anual_estimada)
+        ? item.economia_anual_estimada
+        : 0,
+    qtdAjustes: item.ajustesAplicados.length,
+    ajustesCriticos: item.ajustesAplicados.filter((a) => a.severidade === 'critico').length,
+    ajustes: item.ajustesAplicados
+      .map((a) => `${a.rotulo}: ${a.informado} → ${a.aplicado}`)
+      .join(' ; '),
+  }));
+}
