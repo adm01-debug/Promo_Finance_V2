@@ -5392,6 +5392,54 @@ export type Database = {
           },
         ]
       }
+      entregas_obrigacoes: {
+        Row: {
+          competencia: string
+          created_at: string
+          data_entrega: string | null
+          empresa_id: string
+          id: string
+          obrigacao_id: string
+          observacoes: string | null
+          prazo: string
+          protocolo: string | null
+          registrado_por: string | null
+          status: string
+          updated_at: string
+          valor_multa: number
+        }
+        Insert: {
+          competencia: string
+          created_at?: string
+          data_entrega?: string | null
+          empresa_id: string
+          id?: string
+          obrigacao_id: string
+          observacoes?: string | null
+          prazo: string
+          protocolo?: string | null
+          registrado_por?: string | null
+          status?: string
+          updated_at?: string
+          valor_multa?: number
+        }
+        Update: {
+          competencia?: string
+          created_at?: string
+          data_entrega?: string | null
+          empresa_id?: string
+          id?: string
+          obrigacao_id?: string
+          observacoes?: string | null
+          prazo?: string
+          protocolo?: string | null
+          registrado_por?: string | null
+          status?: string
+          updated_at?: string
+          valor_multa?: number
+        }
+        Relationships: []
+      }
       evidencias_pacotes: {
         Row: {
           created_at: string | null

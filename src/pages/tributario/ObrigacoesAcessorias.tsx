@@ -11,7 +11,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarCheck, Download, Info } from 'lucide-react';
+import { CalendarCheck, Download, Info, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useEmpresaScope } from '@/contexts/EmpresaScopeContext';
+import {
+  chaveEntrega,
+  useEntregasObrigacoes,
+  useRegistrarEntregaObrigacao,
+} from '@/hooks/useEntregasObrigacoes';
 import {
   OBRIGACOES,
   calcularMultaAtraso,
@@ -23,6 +30,7 @@ import {
   type RegimeAplicavel,
   type SituacaoObrigacao,
 } from '@/lib/tributario/obrigacoes';
+
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const dataBR = (iso: string) => (iso.length === 10 ? iso.split('-').reverse().join('/') : iso);
@@ -52,22 +60,45 @@ export default function ObrigacoesAcessorias() {
   const [regime, setRegime] = useState<RegimeAplicavel>('real');
   const [referencia, setReferencia] = useState(hojeISO.slice(0, 7));
   const [hoje, setHoje] = useState(hojeISO);
-  const [entregues, setEntregues] = useState<Set<string>>(new Set());
 
   const [multaObrigacao, setMultaObrigacao] = useState(OBRIGACOES[0].id);
   const [multaPrazo, setMultaPrazo] = useState(hojeISO);
   const [multaEntrega, setMultaEntrega] = useState(hojeISO);
   const [multaBase, setMultaBase] = useState(0);
 
+  const { currentEmpresaId } = useEmpresaScope();
+
+  const competencias = useMemo(
+    () => (/^\d{4}-\d{2}$/.test(referencia) ? competenciasAoRedor(referencia, 6, 6) : []),
+    [referencia]
+  );
+
+  const { data: entregas = [], isLoading: carregandoEntregas } =
+    useEntregasObrigacoes(competencias);
+  const registrar = useRegistrarEntregaObrigacao();
+
+  /** Índice das entregas persistidas por obrigação+competência. */
+  const entregasPorChave = useMemo(() => {
+    const mapa = new Map<string, (typeof entregas)[number]>();
+    for (const e of entregas) mapa.set(chaveEntrega(e.obrigacao_id, e.competencia), e);
+    return mapa;
+  }, [entregas]);
+
+  /** Conjunto de chaves entregues no formato esperado pelo motor do calendário. */
+  const entregues = useMemo(() => {
+    const set = new Set<string>();
+    for (const e of entregas) {
+      if (e.status === 'entregue' || e.status === 'dispensada') {
+        set.add(chaveItem(e.obrigacao_id, e.competencia));
+      }
+    }
+    return set;
+  }, [entregas]);
+
   const itens = useMemo<ItemCalendario[]>(() => {
-    if (!/^\d{4}-\d{2}$/.test(referencia)) return [];
-    return gerarCalendario({
-      competencias: competenciasAoRedor(referencia, 6, 6),
-      regime,
-      hoje,
-      entregues,
-    });
-  }, [referencia, regime, hoje, entregues]);
+    if (competencias.length === 0) return [];
+    return gerarCalendario({ competencias, regime, hoje, entregues });
+  }, [competencias, regime, hoje, entregues]);
 
   const resumo = useMemo(() => {
     const contar = (s: SituacaoObrigacao) => itens.filter((i) => i.situacao === s).length;
@@ -92,15 +123,54 @@ export default function ObrigacoesAcessorias() {
     }
   }, [multaObrigacao, multaPrazo, multaEntrega, multaBase]);
 
+  /**
+   * Alterna a situação de entrega persistindo no banco. Quando marcada,
+   * calcula automaticamente a multa por atraso caso a entrega ocorra
+   * após o prazo legal (base zerada — piso da obrigação é aplicado).
+   */
   const alternarEntrega = (item: ItemCalendario) => {
-    const chave = chaveItem(item.obrigacaoId, item.competencia);
-    setEntregues((prev) => {
-      const proximo = new Set(prev);
-      if (proximo.has(chave)) proximo.delete(chave);
-      else proximo.add(chave);
-      return proximo;
-    });
+    if (!currentEmpresaId) {
+      toast.error('Selecione uma empresa para controlar as entregas.');
+      return;
+    }
+    const registro = entregasPorChave.get(chaveEntrega(item.obrigacaoId, item.competencia));
+    const marcando = registro?.status !== 'entregue';
+
+    let valorMulta = 0;
+    if (marcando && hoje > item.prazo) {
+      try {
+        valorMulta = calcularMultaAtraso({
+          obrigacaoId: item.obrigacaoId,
+          prazo: item.prazo,
+          dataEntrega: hoje,
+          baseCalculo: 0,
+        }).valorDevido;
+      } catch {
+        valorMulta = 0;
+      }
+    }
+
+    registrar.mutate(
+      {
+        obrigacaoId: item.obrigacaoId,
+        competencia: item.competencia,
+        prazo: item.prazo,
+        status: marcando ? 'entregue' : 'pendente',
+        dataEntrega: marcando ? hoje : null,
+        protocolo: registro?.protocolo ?? null,
+        valorMulta,
+      },
+      {
+        onSuccess: () =>
+          toast.success(
+            marcando
+              ? `${item.nome} ${item.competencia} registrada como entregue.`
+              : `${item.nome} ${item.competencia} voltou para pendente.`
+          ),
+      }
+    );
   };
+
 
   const baixarCsv = () => {
     const blob = new Blob([exportarCalendarioCsv(itens)], { type: 'text/csv;charset=utf-8' });
@@ -200,9 +270,18 @@ export default function ObrigacoesAcessorias() {
                   <CardTitle>Prazos de 6 meses antes a 6 meses depois</CardTitle>
                   <CardDescription>
                     Prazos ajustados para dia útil bancário (feriados fixos e móveis considerados).
+                    Entregas marcadas são persistidas no banco por empresa e competência.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                  {!currentEmpresaId && (
+                    <Alert className="mb-4">
+                      <Info className="h-4 w-4" />
+                      <AlertDescription>
+                        Selecione uma empresa no seletor superior para registrar e consultar entregas.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                   {itens.length === 0 ? (
                     <Alert>
                       <Info className="h-4 w-4" />
@@ -219,34 +298,56 @@ export default function ObrigacoesAcessorias() {
                           <TableHead>Prazo</TableHead>
                           <TableHead className="text-right">Dias</TableHead>
                           <TableHead>Situação</TableHead>
+                          <TableHead>Registro</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {itens.map((item) => (
-                          <TableRow key={chaveItem(item.obrigacaoId, item.competencia)}>
-                            <TableCell>
-                              <Checkbox
-                                checked={item.situacao === 'entregue'}
-                                onChange={() => alternarEntrega(item)}
-                                aria-label={`Marcar ${item.nome} de ${item.competencia} como entregue`}
-                              />
-                            </TableCell>
-                            <TableCell className="font-medium text-foreground">{item.nome}</TableCell>
-                            <TableCell className="text-muted-foreground">{item.orgao}</TableCell>
-                            <TableCell>{item.competencia}</TableCell>
-                            <TableCell>{dataBR(item.prazo)}</TableCell>
-                            <TableCell className="text-right tabular-nums">{item.diasRestantes}</TableCell>
-                            <TableCell>
-                              <Badge variant={SITUACAO_VARIANT[item.situacao]}>
-                                {SITUACAO_LABEL[item.situacao]}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {itens.map((item) => {
+                          const registro = entregasPorChave.get(
+                            chaveEntrega(item.obrigacaoId, item.competencia)
+                          );
+                          return (
+                            <TableRow key={chaveItem(item.obrigacaoId, item.competencia)}>
+                              <TableCell>
+                                {carregandoEntregas || registrar.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                ) : (
+                                  <Checkbox
+                                    checked={item.situacao === 'entregue'}
+                                    disabled={!currentEmpresaId}
+                                    onChange={() => alternarEntrega(item)}
+                                    aria-label={`Marcar ${item.nome} de ${item.competencia} como entregue`}
+                                  />
+                                )}
+                              </TableCell>
+                              <TableCell className="font-medium text-foreground">{item.nome}</TableCell>
+                              <TableCell className="text-muted-foreground">{item.orgao}</TableCell>
+                              <TableCell>{item.competencia}</TableCell>
+                              <TableCell>{dataBR(item.prazo)}</TableCell>
+                              <TableCell className="text-right tabular-nums">{item.diasRestantes}</TableCell>
+                              <TableCell>
+                                <Badge variant={SITUACAO_VARIANT[item.situacao]}>
+                                  {SITUACAO_LABEL[item.situacao]}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {registro?.data_entrega ? (
+                                  <span>
+                                    {dataBR(registro.data_entrega)}
+                                    {registro.valor_multa > 0 ? ` · multa ${brl(registro.valor_multa)}` : ''}
+                                  </span>
+                                ) : (
+                                  '—'
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   )}
                 </CardContent>
+
               </Card>
             </TabsContent>
 
