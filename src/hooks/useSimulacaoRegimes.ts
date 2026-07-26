@@ -241,6 +241,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         parametros: parametros as unknown as Json,
         created_by: user?.id ?? null,
         audit_log_id: resultado.auditLogId ?? null,
+        versao_motor: VERSAO_MOTOR_TRIBUTARIO,
       });
       if (error) throw error;
     },
@@ -284,7 +285,8 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     resultado,
     faturamentoMensal,
     folhaMensal,
-    historicoSimulacoes,
+    historicoSimulacoes: historicoAuditado,
+    versaoMotor: VERSAO_MOTOR_TRIBUTARIO,
     restaurarSimulacao,
     salvarSimulacao,
     sincronizarComServer,
