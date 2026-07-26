@@ -10036,6 +10036,7 @@ export type Database = {
           regime_atual: string | null
           regime_recomendado: string
           updated_at: string
+          versao_motor: string | null
         }
         Insert: {
           alertas?: Json
@@ -10055,6 +10056,7 @@ export type Database = {
           regime_atual?: string | null
           regime_recomendado: string
           updated_at?: string
+          versao_motor?: string | null
         }
         Update: {
           alertas?: Json
@@ -10074,6 +10076,7 @@ export type Database = {
           regime_atual?: string | null
           regime_recomendado?: string
           updated_at?: string
+          versao_motor?: string | null
         }
         Relationships: [
           {

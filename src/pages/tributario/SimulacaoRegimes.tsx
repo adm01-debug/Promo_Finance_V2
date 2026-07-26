@@ -34,6 +34,7 @@ export default function SimulacaoRegimes() {
     temHistoricoSuficiente,
     historicoSimulacoes,
     restaurarSimulacao,
+    versaoMotor,
     faturamentoMensal,
     folhaMensal,
     sincronizarComServer,
@@ -342,6 +343,7 @@ export default function SimulacaoRegimes() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Simulações Anteriores</CardTitle>
+                <p className="text-xs text-muted-foreground">Motor tributário v{versaoMotor}</p>
               </CardHeader>
               <CardContent className="space-y-2">
                 {historicoSimulacoes.slice(0, 5).map((h) => (
@@ -350,14 +352,31 @@ export default function SimulacaoRegimes() {
                       <p className="font-medium truncate">{h.regime_recomendado}</p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(h.data_simulacao).toLocaleString('pt-BR')}
+                        {h.versao_motor ? ` · v${h.versao_motor}` : ' · versão não registrada'}
                       </p>
+                      {h.divergente && h.regimeRecalculado && (
+                        <p className="text-xs text-warning">
+                          Recálculo atual indica {h.regimeRecalculado}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
+                      {h.divergente && (
+                        <Badge variant="outline" className="text-warning border-warning/40">
+                          Divergente
+                        </Badge>
+                      )}
+                      {!h.divergente && h.motorDesatualizado && (
+                        <Badge variant="outline" className="text-muted-foreground">
+                          Motor antigo
+                        </Badge>
+                      )}
                       {h.economia_anual_estimada !== null && h.economia_anual_estimada !== undefined && (
                         <Badge variant="outline" className="text-success">
                           {formatCurrency(Number(h.economia_anual_estimada))}/ano
                         </Badge>
                       )}
+
                       <Button
                         variant="ghost"
                         size="sm"

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import { useAuth } from '@/hooks/useAuth';
 import { decidirRegime } from '@/lib/tributario';
+import { VERSAO_MOTOR_TRIBUTARIO, versaoDesatualizada } from '@/lib/tributario/versao';
 import type {
   ParametrosSimulacao,
   ResultadoDecisao,
@@ -40,7 +41,20 @@ export interface SimulaoHistoricoItem {
   created_by: string | null;
   audit_log_id: string | null;
   data_simulacao: string;
+  /** Versão do motor que gerou o snapshot (null em registros legados). */
+  versao_motor: string | null;
 }
+
+/** Item de histórico enriquecido com a auditoria de drift do motor. */
+export interface SimulacaoHistoricoAuditada extends SimulaoHistoricoItem {
+  /** Snapshot gerado por versão anterior do motor. */
+  motorDesatualizado: boolean;
+  /** Regime obtido ao recalcular o snapshot com o motor corrente. */
+  regimeRecalculado: RegimeTributario | null;
+  /** True quando o recálculo diverge do regime recomendado salvo. */
+  divergente: boolean;
+}
+
 
 const REGIMES_VALIDOS: readonly RegimeTributario[] = [
   'simples_nacional',
@@ -132,6 +146,43 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     staleTime: 60_000,
   });
 
+  /**
+   * Auditoria de drift: recalcula cada snapshot com o motor corrente e marca
+   * divergências de recomendação. Erros de recálculo (snapshots corrompidos ou
+   * incompletos) degradam para "não auditável" em vez de quebrar a página.
+   */
+  const historicoAuditado: SimulacaoHistoricoAuditada[] = useMemo(
+    () =>
+      historicoSimulacoes.map((item) => {
+        const parametrosSnapshot = normalizarParametros(item.parametros);
+        let regimeRecalculado: RegimeTributario | null = null;
+        if (parametrosSnapshot) {
+          try {
+            const recalculo = decidirRegime(
+              { ...DEFAULT_PARAMS, ...parametrosSnapshot },
+              {
+                anoReferencia: item.ano_referencia,
+                mesReferencia,
+                regimeAtual: REGIMES_VALIDOS.find((r) => r === item.regime_atual),
+              },
+            );
+            regimeRecalculado = recalculo.recomendado.regime;
+          } catch {
+            regimeRecalculado = null;
+          }
+        }
+        return {
+          ...item,
+          motorDesatualizado: versaoDesatualizada(item.versao_motor),
+          regimeRecalculado,
+          divergente: regimeRecalculado !== null && regimeRecalculado !== item.regime_recomendado,
+        };
+      }),
+    [historicoSimulacoes, mesReferencia],
+  );
+
+
+
   // Mescla parâmetros manuais com histórico real
   const parametrosCompletos: ParametrosSimulacao = useMemo(
     () => ({
@@ -190,6 +241,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         parametros: parametros as unknown as Json,
         created_by: user?.id ?? null,
         audit_log_id: resultado.auditLogId ?? null,
+        versao_motor: VERSAO_MOTOR_TRIBUTARIO,
       });
       if (error) throw error;
     },
@@ -233,7 +285,8 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     resultado,
     faturamentoMensal,
     folhaMensal,
-    historicoSimulacoes,
+    historicoSimulacoes: historicoAuditado,
+    versaoMotor: VERSAO_MOTOR_TRIBUTARIO,
     restaurarSimulacao,
     salvarSimulacao,
     sincronizarComServer,
