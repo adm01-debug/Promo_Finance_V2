@@ -300,16 +300,6 @@ export default function SimulacaoRegimes() {
                 <div className="p-3 rounded-full bg-success/10">
                   <Award className="h-8 w-8 text-success" aria-hidden="true" />
                 </div>
-                <div className="flex items-center gap-2 pt-2">
-                  <Switch
-                    id="filtro-pendencias-historico"
-                    checked={somentePendencias}
-                    onCheckedChange={setSomentePendencias}
-                  />
-                  <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
-                    Somente snapshots com pendências
-                  </Label>
-                </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Regime Recomendado</p>
                   <div className="flex items-center gap-2">
