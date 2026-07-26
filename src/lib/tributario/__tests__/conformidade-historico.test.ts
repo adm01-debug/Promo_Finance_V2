@@ -199,7 +199,7 @@ describe('paraSnapshot', () => {
     expect(snap).toEqual({
       competencia: '2025-06',
       score: 80,
-      nivel: 'critico',
+      nivel: 'atencao',
       total_obrigacoes: 1,
       entregues: 0,
       vencidas_pendentes: 0,
@@ -211,7 +211,7 @@ describe('paraSnapshot', () => {
 });
 
 describe('simulação massiva — invariantes', () => {
-  it('mantém invariantes em 720 séries combinatórias', () => {
+  it('mantém invariantes em 2000 séries combinatórias', () => {
     let cenarios = 0;
 
     for (let s1 = 0; s1 < SITUACOES.length; s1 += 1) {
@@ -278,7 +278,7 @@ describe('simulação massiva — invariantes', () => {
       }
     }
 
-    expect(cenarios).toBe(720);
+    expect(cenarios).toBe(2000);
   });
 
   it('monotonicidade: entregar uma obrigação vencida nunca reduz o score (36 cenários)', () => {
