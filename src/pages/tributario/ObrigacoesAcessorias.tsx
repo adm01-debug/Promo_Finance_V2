@@ -21,6 +21,7 @@ import {
 } from '@/hooks/useEntregasObrigacoes';
 import {
   OBRIGACOES,
+  calcularConformidade,
   calcularMultaAtraso,
   chaveItem,
   competenciasAoRedor,
@@ -30,6 +31,7 @@ import {
   type RegimeAplicavel,
   type SituacaoObrigacao,
 } from '@/lib/tributario/obrigacoes';
+import { ConformidadeCard } from '@/components/tributario/ConformidadeCard';
 
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
