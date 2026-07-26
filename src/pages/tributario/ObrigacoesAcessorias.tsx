@@ -270,9 +270,18 @@ export default function ObrigacoesAcessorias() {
                   <CardTitle>Prazos de 6 meses antes a 6 meses depois</CardTitle>
                   <CardDescription>
                     Prazos ajustados para dia útil bancário (feriados fixos e móveis considerados).
+                    Entregas marcadas são persistidas no banco por empresa e competência.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                  {!currentEmpresaId && (
+                    <Alert className="mb-4">
+                      <Info className="h-4 w-4" />
+                      <AlertDescription>
+                        Selecione uma empresa no seletor superior para registrar e consultar entregas.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                   {itens.length === 0 ? (
                     <Alert>
                       <Info className="h-4 w-4" />
@@ -289,34 +298,56 @@ export default function ObrigacoesAcessorias() {
                           <TableHead>Prazo</TableHead>
                           <TableHead className="text-right">Dias</TableHead>
                           <TableHead>Situação</TableHead>
+                          <TableHead>Registro</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {itens.map((item) => (
-                          <TableRow key={chaveItem(item.obrigacaoId, item.competencia)}>
-                            <TableCell>
-                              <Checkbox
-                                checked={item.situacao === 'entregue'}
-                                onChange={() => alternarEntrega(item)}
-                                aria-label={`Marcar ${item.nome} de ${item.competencia} como entregue`}
-                              />
-                            </TableCell>
-                            <TableCell className="font-medium text-foreground">{item.nome}</TableCell>
-                            <TableCell className="text-muted-foreground">{item.orgao}</TableCell>
-                            <TableCell>{item.competencia}</TableCell>
-                            <TableCell>{dataBR(item.prazo)}</TableCell>
-                            <TableCell className="text-right tabular-nums">{item.diasRestantes}</TableCell>
-                            <TableCell>
-                              <Badge variant={SITUACAO_VARIANT[item.situacao]}>
-                                {SITUACAO_LABEL[item.situacao]}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {itens.map((item) => {
+                          const registro = entregasPorChave.get(
+                            chaveEntrega(item.obrigacaoId, item.competencia)
+                          );
+                          return (
+                            <TableRow key={chaveItem(item.obrigacaoId, item.competencia)}>
+                              <TableCell>
+                                {carregandoEntregas || registrar.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                ) : (
+                                  <Checkbox
+                                    checked={item.situacao === 'entregue'}
+                                    disabled={!currentEmpresaId}
+                                    onCheckedChange={() => alternarEntrega(item)}
+                                    aria-label={`Marcar ${item.nome} de ${item.competencia} como entregue`}
+                                  />
+                                )}
+                              </TableCell>
+                              <TableCell className="font-medium text-foreground">{item.nome}</TableCell>
+                              <TableCell className="text-muted-foreground">{item.orgao}</TableCell>
+                              <TableCell>{item.competencia}</TableCell>
+                              <TableCell>{dataBR(item.prazo)}</TableCell>
+                              <TableCell className="text-right tabular-nums">{item.diasRestantes}</TableCell>
+                              <TableCell>
+                                <Badge variant={SITUACAO_VARIANT[item.situacao]}>
+                                  {SITUACAO_LABEL[item.situacao]}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {registro?.data_entrega ? (
+                                  <span>
+                                    {dataBR(registro.data_entrega)}
+                                    {registro.valor_multa > 0 ? ` · multa ${brl(registro.valor_multa)}` : ''}
+                                  </span>
+                                ) : (
+                                  '—'
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   )}
                 </CardContent>
+
               </Card>
             </TabsContent>
 
