@@ -131,15 +131,13 @@ export function simularSimples(
     ? calcularFolha12m(p.folhaMensal, ano, mes)
     : (p.folhaAnual || 0);
   const fatorR = rbt12 > 0 ? folha12m / rbt12 : 0;
-  let anexo: AnexoSimples = 'I';
+  const { anexo: anexoDetectado, motivo } = determinarAnexoSimples(p, fatorR);
+  let anexo: AnexoSimples = anexoDetectado;
   if (forcarAnexo) {
     anexo = forcarAnexo;
     obs.push(`Anexo forçado manualmente para simulação: Anexo ${anexo}.`);
-  } else if (p.percentualServicos > 50) {
-    anexo = fatorR >= 0.28 ? 'III' : 'V';
-    obs.push(`Fator R = ${(fatorR * 100).toFixed(2)}% → Anexo ${anexo}.`);
   } else {
-    obs.push('Atividade comercial → Anexo I.');
+    obs.push(motivo);
   }
   const faixa = ANEXOS[anexo].find((f) => rbt12 <= f.ate) || ANEXOS[anexo][5];
   const aliqEfet = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;
