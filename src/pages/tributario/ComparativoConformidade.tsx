@@ -44,6 +44,7 @@ import {
   useComparativoConformidade,
   type EmpresaComparavel,
 } from '@/hooks/useComparativoConformidade';
+import { ComparativoTemporalChart } from '@/components/tributario/ComparativoTemporalChart';
 import {
   exportarComparativoCsv,
   NIVEL_LABEL,
@@ -144,7 +145,7 @@ export default function ComparativoConformidade() {
     [vinculos]
   );
 
-  const { comparativo, isLoading, isFetching, error, refetch } = useComparativoConformidade(
+  const { comparativo, series, isLoading, isFetching, error, refetch } = useComparativoConformidade(
     empresas,
     competencia === 'auto' ? undefined : competencia
   );
@@ -276,6 +277,8 @@ export default function ComparativoConformidade() {
               </CardContent>
             </Card>
           </div>
+
+          <ComparativoTemporalChart series={series} isLoading={isLoading} />
 
           <Card>
             <CardHeader>

@@ -71,7 +71,8 @@ export function useComparativoConformidade(
     },
   });
 
-  const comparativo: ResultadoComparativo = useMemo(() => {
+  /** Séries alinhadas por empresa — reutilizadas pelo gráfico temporal. */
+  const series: SerieEmpresa[] = useMemo(() => {
     const porEmpresa = new Map<string, PontoHistorico[]>();
     for (const empresa of empresas) porEmpresa.set(empresa.id, []);
 
@@ -93,17 +94,21 @@ export function useComparativoConformidade(
       });
     }
 
-    const series: SerieEmpresa[] = empresas.map((empresa) => ({
+    return empresas.map((empresa) => ({
       empresaId: empresa.id,
       nome: empresa.nome,
       pontos: porEmpresa.get(empresa.id) ?? [],
     }));
+  }, [empresas, query.data, limitePorEmpresa]);
 
-    return compararConformidade(series, competenciaReferencia);
-  }, [empresas, query.data, competenciaReferencia, limitePorEmpresa]);
+  const comparativo: ResultadoComparativo = useMemo(
+    () => compararConformidade(series, competenciaReferencia),
+    [series, competenciaReferencia],
+  );
 
   return {
     comparativo,
+    series,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     error: query.error as Error | null,
