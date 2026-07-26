@@ -208,7 +208,29 @@ export function ConformidadeTendenciaWidget({
                 </dd>
               </div>
             </dl>
+
+            {alertas.length > 0 && (
+              <ul className="space-y-1.5" aria-label="Alertas de conformidade">
+                {alertas.map((a) => (
+                  <li
+                    key={a.chave}
+                    className={cn(
+                      'flex items-start gap-2 rounded-lg border p-2 text-xs',
+                      a.severidade === 'critica'
+                        ? 'border-destructive/30 bg-destructive/10 text-destructive'
+                        : a.severidade === 'alta'
+                          ? 'border-warning/30 bg-warning/10 text-warning'
+                          : 'border-border/60 bg-muted/20 text-muted-foreground',
+                    )}
+                  >
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span className="font-medium leading-snug">{a.titulo}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </>
+
         )}
       </CardContent>
     </Card>
