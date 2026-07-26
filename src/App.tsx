@@ -258,6 +258,7 @@ function AppRoutes() {
             <Route path="/tributario/retencoes" element={<ProtectedRoute><RetencoesFontePage /></ProtectedRoute>} />
             <Route path="/tributario/fechamento-mensal" element={<ProtectedRoute><FechamentoMensalPage /></ProtectedRoute>} />
             <Route path="/tributario/glossario" element={<ProtectedRoute><GlossarioTributario /></ProtectedRoute>} />
+            <Route path="/tributario/monofasico" element={<ProtectedRoute><MonofasicoPage /></ProtectedRoute>} />
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
             <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
             <Route path="/orcamentos" element={<ProtectedRoute><Orcamentos /></ProtectedRoute>} />
