@@ -128,6 +128,7 @@ const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTribu
 const MonofasicoPage = lazy(() => import('./pages/tributario/Monofasico'));
 const FolhaEncargosPage = lazy(() => import('./pages/tributario/FolhaEncargos'));
 const IcmsStDifalPage = lazy(() => import('./pages/tributario/IcmsStDifal'));
+const IpiIssPage = lazy(() => import('./pages/tributario/IpiIss'));
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
 const ApiManagement = lazy(() => import('./pages/admin/ApiManagement'));
@@ -263,6 +264,7 @@ function AppRoutes() {
             <Route path="/tributario/monofasico" element={<ProtectedRoute><MonofasicoPage /></ProtectedRoute>} />
             <Route path="/tributario/folha-encargos" element={<ProtectedRoute><FolhaEncargosPage /></ProtectedRoute>} />
             <Route path="/tributario/icms-st" element={<ProtectedRoute><IcmsStDifalPage /></ProtectedRoute>} />
+            <Route path="/tributario/ipi-iss" element={<ProtectedRoute><IpiIssPage /></ProtectedRoute>} />
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
             <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
             <Route path="/orcamentos" element={<ProtectedRoute><Orcamentos /></ProtectedRoute>} />
