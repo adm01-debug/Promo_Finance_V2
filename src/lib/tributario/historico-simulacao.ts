@@ -111,7 +111,7 @@ export interface ItemAuditavelExportavel extends ItemAuditavel {
   regime_recomendado: string;
   regimeRecalculado: string | null;
   versao_motor: string | null;
-  faturamento_12m: number;
+  rbt12: number;
   folha_12m: number;
   economia_anual_estimada: number | null;
 }
@@ -138,7 +138,7 @@ export function montarLinhasAuditoriaCsv(
     regimeRecalculado: item.regimeRecalculado ?? '',
     situacao: descreverSituacao(item),
     versaoMotor: item.versao_motor ?? 'legado',
-    faturamento12m: Number.isFinite(item.faturamento_12m) ? item.faturamento_12m : 0,
+    faturamento12m: Number.isFinite(item.rbt12) ? item.rbt12 : 0,
     folha12m: Number.isFinite(item.folha_12m) ? item.folha_12m : 0,
     economiaAnual:
       typeof item.economia_anual_estimada === 'number' &&
