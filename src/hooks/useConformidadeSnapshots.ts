@@ -31,10 +31,11 @@ export interface ConformidadeSnapshot {
 const COLUNAS =
   'id,empresa_id,competencia,score,nivel,total_obrigacoes,entregues,vencidas_pendentes,entregues_com_atraso,pontualidade,multa_registrada,gerado_por,created_at,updated_at';
 
-/** Lista os snapshots persistidos da empresa em escopo, do mais antigo ao mais recente. */
-export function useConformidadeSnapshots(limite = 24) {
-  const { currentEmpresaId: empresaId } = useEmpresaScope();
-
+/**
+ * Lista os snapshots persistidos de uma empresa explícita (ordem cronológica).
+ * Usado por telas que escolhem a empresa localmente, como o Dashboard Tributário.
+ */
+export function useConformidadeSnapshotsDaEmpresa(empresaId?: string, limite = 24) {
   return useQuery({
     queryKey: ['conformidade-snapshots', empresaId, limite],
     enabled: Boolean(empresaId),
@@ -53,6 +54,13 @@ export function useConformidadeSnapshots(limite = 24) {
     staleTime: 30_000,
   });
 }
+
+/** Lista os snapshots persistidos da empresa em escopo, do mais antigo ao mais recente. */
+export function useConformidadeSnapshots(limite = 24) {
+  const { currentEmpresaId: empresaId } = useEmpresaScope();
+  return useConformidadeSnapshotsDaEmpresa(empresaId ?? undefined, limite);
+}
+
 
 /**
  * Grava (ou regrava) os snapshots das competências informadas.
