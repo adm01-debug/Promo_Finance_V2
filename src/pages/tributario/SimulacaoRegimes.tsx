@@ -567,7 +567,42 @@ export default function SimulacaoRegimes() {
                     </div>
                   </div>
                 ))}
+
+                {pagina.total > 0 && (
+                  <nav
+                    className="flex items-center justify-between pt-2"
+                    aria-label="Paginação do histórico de simulações"
+                  >
+                    <p className="text-xs text-muted-foreground" aria-live="polite">
+                      Exibindo {pagina.inicio}–{pagina.fim} de {pagina.total} snapshot
+                      {pagina.total > 1 ? 's' : ''} · página {pagina.pagina}/{pagina.totalPaginas}
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={pagina.pagina <= 1}
+                        onClick={() => setPaginaHistorico(pagina.pagina - 1)}
+                        aria-label="Página anterior do histórico"
+                      >
+                        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={pagina.pagina >= pagina.totalPaginas}
+                        onClick={() => setPaginaHistorico(pagina.pagina + 1)}
+                        aria-label="Próxima página do histórico"
+                      >
+                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      </Button>
+                    </div>
+                  </nav>
+                )}
               </CardContent>
+
             </Card>
           )}
 
