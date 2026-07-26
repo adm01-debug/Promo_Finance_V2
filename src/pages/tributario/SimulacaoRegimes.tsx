@@ -20,12 +20,16 @@ import { AjustesParametrosAlert } from '@/components/tributario/simulacao/Ajuste
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
+import { filtrarHistorico } from '@/lib/tributario/historico-simulacao';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export default function SimulacaoRegimes() {
   const navigate = useNavigate();
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const [autoLoaded, setAutoLoaded] = useState(false);
+  const [somentePendencias, setSomentePendencias] = useState(false);
 
   const {
     parametros,
@@ -57,6 +61,12 @@ export default function SimulacaoRegimes() {
   // Transparência fiscal: expõe todo ajuste automático aplicado aos parâmetros
   // pela camada de sanitização do motor, evitando cálculos silenciosamente corrigidos.
   const ajustesParametros = useMemo(() => diagnosticarParametros(parametros), [parametros]);
+
+  // Histórico exibido: opcionalmente restrito aos snapshots que exigem atenção.
+  const historicoVisivel = useMemo(
+    () => filtrarHistorico(historicoSimulacoes, somentePendencias),
+    [historicoSimulacoes, somentePendencias],
+  );
 
   // Ajustes críticos exigem confirmação explícita antes de persistir o snapshot,
   // preservando a integridade auditável da base histórica de simulações.
@@ -290,6 +300,16 @@ export default function SimulacaoRegimes() {
                 <div className="p-3 rounded-full bg-success/10">
                   <Award className="h-8 w-8 text-success" aria-hidden="true" />
                 </div>
+                <div className="flex items-center gap-2 pt-2">
+                  <Switch
+                    id="filtro-pendencias-historico"
+                    checked={somentePendencias}
+                    onCheckedChange={setSomentePendencias}
+                  />
+                  <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
+                    Somente snapshots com pendências
+                  </Label>
+                </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Regime Recomendado</p>
                   <div className="flex items-center gap-2">
@@ -420,7 +440,12 @@ export default function SimulacaoRegimes() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {historicoSimulacoes.slice(0, 5).map((h) => (
+                {historicoVisivel.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Nenhum snapshot com pendências — histórico íntegro.
+                  </p>
+                )}
+                {historicoVisivel.slice(0, 5).map((h) => (
                   <div key={h.id} className="flex items-center justify-between gap-2 p-2 rounded border text-sm">
                     <div className="min-w-0">
                       <p className="font-medium truncate">{h.regime_recomendado}</p>
