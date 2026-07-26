@@ -170,21 +170,29 @@ Deno.serve(async (req: Request) => {
     // um digest recortado pelas suas preferências.
     const explicitos = parsed.data.destinatarios ?? [];
     const agora = new Date();
+    // Converte o instante UTC para os campos de calendário do fuso brasileiro
+    // usando `en-CA` (formato ISO estável) — evita depender do locale do runtime.
+    const partes = new Intl.DateTimeFormat('en-CA', {
+      timeZone: FUSO,
+      weekday: 'short',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      hour12: false,
+    }).formatToParts(agora);
+    const parte = (tipo: string) => partes.find((p) => p.type === tipo)?.value ?? '';
+    const SEMANA = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const anoLocal = Number(parte('year'));
+    const mesLocal = Number(parte('month'));
     const contexto = {
-      diaSemana: Number(
-        new Intl.DateTimeFormat('en-US', { timeZone: FUSO, weekday: 'short' })
-          .format(agora)
-          .replace(/(Sun|Mon|Tue|Wed|Thu|Fri|Sat)/, (d) =>
-            String(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(d)),
-          ),
-      ),
-      diaMes: Number(new Intl.DateTimeFormat('en-US', { timeZone: FUSO, day: 'numeric' }).format(agora)),
-      hora: Number(
-        new Intl.DateTimeFormat('en-US', { timeZone: FUSO, hour: 'numeric', hour12: false }).format(agora),
-      ) % 24,
+      diaSemana: Math.max(0, SEMANA.indexOf(parte('weekday'))),
+      diaMes: Number(parte('day')),
+      hora: Number(parte('hour')) % 24,
       toleranciaHoras: 2,
-      ultimoDiaDoMes: new Date(agora.getUTCFullYear(), agora.getUTCMonth() + 1, 0).getUTCDate(),
+      ultimoDiaDoMes: new Date(Date.UTC(anoLocal, mesLocal, 0)).getUTCDate(),
     };
+
 
     interface Envio {
       readonly email: string;
