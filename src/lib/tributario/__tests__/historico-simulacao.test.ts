@@ -6,6 +6,7 @@ import {
   snapshotComPendencia,
   filtrarHistorico,
   montarLinhasAuditoriaCsv,
+  paginarHistorico,
 
 } from '../historico-simulacao';
 import type { AjusteParametro } from '../diagnostico-parametros';
@@ -193,5 +194,32 @@ describe('montarLinhasAuditoriaCsv', () => {
     expect(linha.faturamento12m).toBe(0);
     expect(linha.folha12m).toBe(0);
     expect(linha.economiaAnual).toBe(0);
+  });
+});
+
+describe('paginarHistorico', () => {
+  const lista = Array.from({ length: 12 }, (_, i) => i + 1);
+
+  it('retorna a fatia correta e índices humanos', () => {
+    const p = paginarHistorico(lista, 2, 5);
+    expect(p.itens).toEqual([6, 7, 8, 9, 10]);
+    expect(p).toMatchObject({ pagina: 2, totalPaginas: 3, total: 12, inicio: 6, fim: 10 });
+  });
+
+  it('faz clamp de páginas fora do intervalo', () => {
+    expect(paginarHistorico(lista, 99, 5).pagina).toBe(3);
+    expect(paginarHistorico(lista, 0, 5).pagina).toBe(1);
+    expect(paginarHistorico(lista, Number.NaN, 5).pagina).toBe(1);
+  });
+
+  it('degrada tamanho inválido para 1 sem divisão por zero', () => {
+    const p = paginarHistorico(lista, 1, 0);
+    expect(p.totalPaginas).toBe(12);
+    expect(p.itens).toEqual([1]);
+  });
+
+  it('lida com lista vazia', () => {
+    const p = paginarHistorico([], 3, 5);
+    expect(p).toMatchObject({ itens: [], pagina: 1, totalPaginas: 1, total: 0, inicio: 0, fim: 0 });
   });
 });
