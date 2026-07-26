@@ -113,7 +113,7 @@ Deno.serve(async (req: Request) => {
     const raw = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
     const parsed = BodySchema.safeParse(raw ?? {});
     if (!parsed.success) return json({ error: parsed.error.flatten().fieldErrors }, 400);
-    const { empresaId, competencia, severidadeMinima, dryRun, limite } = parsed.data;
+    const { empresaId, competencia, severidadeMinima, dryRun, limite, forcarGlobal } = parsed.data;
 
     // ---- Alertas pendentes -------------------------------------------------
     let query = admin
