@@ -203,7 +203,9 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         return {
           ...item,
           motorDesatualizado: versaoDesatualizada(item.versao_motor),
+          ajustesAplicados: normalizarAjustes(item.ajustes_aplicados),
           regimeRecalculado,
+
           divergente: regimeRecalculado !== null && regimeRecalculado !== item.regime_recomendado,
         };
       }),
