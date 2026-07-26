@@ -61,6 +61,7 @@ export default function SimulacaoRegimes() {
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const [autoLoaded, setAutoLoaded] = useState(false);
   const [somentePendencias, setSomentePendencias] = useState(false);
+  const [ordenacao, setOrdenacao] = useState<OrdenacaoHistorico>('data_desc');
   const [paginaHistorico, setPaginaHistorico] = useState(1);
   const TAMANHO_PAGINA_HISTORICO = 5;
 
