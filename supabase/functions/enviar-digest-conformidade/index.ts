@@ -414,11 +414,14 @@ Deno.serve(async (req: Request) => {
     return json({
       success: falhas.length === 0,
       simulado,
+      execucaoId,
+      logErro,
       enviados: envios.length - falhas.length,
       alertasMarcados: idsEnviados.size,
       falhas,
       ignorados,
     });
+
   } catch (erro) {
     const mensagem = erro instanceof Error ? erro.message : 'Erro desconhecido';
     return json({ error: 'Erro inesperado', details: mensagem }, 500);
