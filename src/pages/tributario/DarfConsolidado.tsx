@@ -370,7 +370,9 @@ export default function DarfConsolidado() {
             </TabsContent>
           </Tabs>
         )}
-      </PageBackground>
+        </div>
+      </div>
+
     </MainLayout>
   );
 }
