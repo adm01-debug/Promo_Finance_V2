@@ -92,18 +92,23 @@ export default function PreferenciasDigest() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <div className="relative">
+        <PageBackground />
         <PageHeader
           title="Preferências do resumo fiscal"
-          description="Defina com que frequência e com qual nível de severidade você recebe por e-mail o resumo de conformidade fiscal."
+          subtitle="Defina com que frequência e com qual nível de severidade você recebe por e-mail o resumo de conformidade fiscal."
+          icon={MailCheck}
         />
 
+        <div className="space-y-6 p-4 md:p-6">
         {error && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert variant="error" className="mb-6">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>{error.message}</AlertDescription>
           </Alert>
         )}
+
+
 
         {isLoading ? (
           <div className="space-y-4">
