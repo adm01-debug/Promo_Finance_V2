@@ -21,7 +21,9 @@ import {
 } from '@/hooks/useEntregasObrigacoes';
 import {
   OBRIGACOES,
+  analisarTendencia,
   calcularConformidade,
+  construirHistorico,
   calcularMultaAtraso,
   chaveItem,
   competenciasAoRedor,
@@ -32,6 +34,11 @@ import {
   type SituacaoObrigacao,
 } from '@/lib/tributario/obrigacoes';
 import { ConformidadeCard } from '@/components/tributario/ConformidadeCard';
+import { ConformidadeHistoricoCard } from '@/components/tributario/ConformidadeHistoricoCard';
+import {
+  useConformidadeSnapshots,
+  useSalvarConformidadeSnapshots,
+} from '@/hooks/useConformidadeSnapshots';
 
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -130,6 +137,8 @@ export default function ObrigacoesAcessorias() {
     () => calcularConformidade(itens, registrosConformidade),
     [itens, registrosConformidade]
   );
+
+  const salvarSnapshots = useSalvarConformidadeSnapshots();
 
   /** Etapa K — série histórica e tendência do score. */
   const analiseHistorico = useMemo(
@@ -246,6 +255,12 @@ export default function ObrigacoesAcessorias() {
           </div>
 
           <ConformidadeCard resultado={conformidade} />
+
+          <ConformidadeHistoricoCard
+            analise={analiseHistorico}
+            salvando={salvarSnapshots.isPending}
+            onSalvar={() => salvarSnapshots.mutate(analiseHistorico.pontos)}
+          />
 
 
 
