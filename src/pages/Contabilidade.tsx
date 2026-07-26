@@ -250,6 +250,7 @@ const HOME_CARDS: HomeCard[] = [
   { id: 'lancamentos', label: 'Lançamentos', description: 'Registre partidas dobradas no diário contábil.', icon: Calculator, accent: 'text-primary' },
   { id: 'razao', label: 'Razão & Diário', description: 'Consulte movimentação por conta e por data.', icon: BookText, accent: 'text-primary' },
   { id: 'balancete', label: 'Balancete', description: 'Saldo anterior, movimento e saldo final por conta.', icon: BookOpenCheck, accent: 'text-primary' },
+  { id: 'indices', label: 'Índices', description: 'Liquidez, endividamento, rentabilidade, prazos e estrutura.', icon: Gauge, accent: 'text-success' },
   { id: 'dre', label: 'DRE & Balanço', description: 'Demonstrações apuradas pela escrituração contábil.', icon: BarChart3, accent: 'text-success' },
 
   { id: 'ecd', label: 'SPED ECD', description: 'Geração e validação da Escrituração Contábil Digital.', icon: FileText, accent: 'text-warning' },
