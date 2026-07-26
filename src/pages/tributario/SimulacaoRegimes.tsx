@@ -439,7 +439,20 @@ export default function SimulacaoRegimes() {
                   </Label>
                 </div>
 
+                <div className="pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={historicoVisivel.length === 0}
+                    onClick={handleExportarAuditoria}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Exportar trilha de auditoria (CSV)
+                  </Button>
+                </div>
               </CardHeader>
+
               <CardContent className="space-y-2">
                 {historicoVisivel.length === 0 && (
                   <p className="text-sm text-muted-foreground">
