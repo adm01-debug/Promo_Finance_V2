@@ -10019,6 +10019,7 @@ export type Database = {
       }
       regimes_simulados: {
         Row: {
+          ajustes_aplicados: Json
           alertas: Json
           ano_referencia: number
           audit_log_id: string | null
@@ -10039,6 +10040,7 @@ export type Database = {
           versao_motor: string | null
         }
         Insert: {
+          ajustes_aplicados?: Json
           alertas?: Json
           ano_referencia: number
           audit_log_id?: string | null
@@ -10059,6 +10061,7 @@ export type Database = {
           versao_motor?: string | null
         }
         Update: {
+          ajustes_aplicados?: Json
           alertas?: Json
           ano_referencia?: number
           audit_log_id?: string | null
