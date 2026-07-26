@@ -61,6 +61,6 @@ export function detectarSudeneSudam(ctx: ContextoEmpresa): OportunidadeDetectada
       'Constituir reserva de incentivos fiscais e vedar sua distribuição aos sócios',
     ],
     observacoes:
-      'A base do benefício é o lucro da exploração, não o lucro contábil total — a estimativa tende a ser otimista até a segregação contábil ser feita.',
+      'A base do benefício é o lucro da exploração, não o lucro contábil total — a estimativa tende a ser otimista até a segregação contábil ser feita. Em MG e ES a área da SUDENE alcança apenas parte dos municípios: confirme o enquadramento pelo código IBGE da unidade.',
   };
 }

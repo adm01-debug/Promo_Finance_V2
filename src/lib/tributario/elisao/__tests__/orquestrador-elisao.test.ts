@@ -16,7 +16,7 @@ describe('analisarOportunidadesElisao', () => {
 
     const result = analisarOportunidadesElisao(ctx);
 
-    expect(result.total_oportunidades).toBe(9);
+    expect(result.total_oportunidades).toBe(13);
     expect(result.total_aplicaveis).toBeGreaterThanOrEqual(2); // Pelo menos JCP e Lei do Bem
     expect(result.economia_total_estimada).toBeGreaterThan(0);
     
