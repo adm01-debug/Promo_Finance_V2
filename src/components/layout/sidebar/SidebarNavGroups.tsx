@@ -21,6 +21,7 @@ import {
   CreditCard,
   BarChart3,
   Receipt,
+  Beaker,
   RefreshCcw,
   Users,
   Zap,
