@@ -20,8 +20,21 @@ import { AjustesParametrosAlert } from '@/components/tributario/simulacao/Ajuste
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
-import { filtrarHistorico, montarLinhasAuditoriaCsv, paginarHistorico } from '@/lib/tributario/historico-simulacao';
-import type { LinhaAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
+import {
+  filtrarHistorico,
+  montarLinhasAuditoriaCsv,
+  ordenarHistorico,
+  paginarHistorico,
+  ORDENACOES_HISTORICO,
+} from '@/lib/tributario/historico-simulacao';
+import type { LinhaAuditoriaCsv, OrdenacaoHistorico } from '@/lib/tributario/historico-simulacao';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { exportToCSV, type ExportColumn } from '@/lib/export-utils';
 
 /** Colunas da trilha de auditoria exportável (ordem fixa para diffs estáveis). */
