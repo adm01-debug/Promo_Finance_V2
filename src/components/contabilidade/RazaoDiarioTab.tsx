@@ -25,7 +25,11 @@ import {
   exportDiarioPDF,
   exportRazaoCSV,
   exportRazaoPDF,
+  exportLivroDiarioOficialPDF,
+  exportLivroRazaoOficialPDF,
+  type LivroOficialParams,
 } from '@/lib/export-contabil';
+
 import { toast } from 'sonner';
 import type { DatePreset, RazaoFilters } from './razao-diario/types';
 import { useRazaoDiarioData } from './razao-diario/useRazaoDiarioData';
