@@ -3,6 +3,8 @@ import {
   normalizarParametrosSnapshot,
   normalizarAjustesAplicados,
   resumirAuditoriaHistorico,
+  snapshotComPendencia,
+  filtrarHistorico,
 } from '../historico-simulacao';
 import type { AjusteParametro } from '../diagnostico-parametros';
 
@@ -89,5 +91,41 @@ describe('resumirAuditoriaHistorico', () => {
     );
     expect(resumo.saudavel).toBe(true);
     expect(resumo.total).toBe(200);
+  });
+});
+
+describe('filtrarHistorico / snapshotComPendencia', () => {
+  const limpo = { id: 'a', divergente: false, motorDesatualizado: false, ajustesAplicados: [] };
+  const divergente = { id: 'b', divergente: true, motorDesatualizado: false, ajustesAplicados: [] };
+  const antigo = { id: 'c', divergente: false, motorDesatualizado: true, ajustesAplicados: [] };
+  const comAjuste = {
+    id: 'd',
+    divergente: false,
+    motorDesatualizado: false,
+    ajustesAplicados: [ajuste('aviso')],
+  };
+
+  it('classifica pendências corretamente', () => {
+    expect(snapshotComPendencia(limpo)).toBe(false);
+    expect(snapshotComPendencia(divergente)).toBe(true);
+    expect(snapshotComPendencia(antigo)).toBe(true);
+    expect(snapshotComPendencia(comAjuste)).toBe(true);
+  });
+
+  it('retorna cópia integral quando o filtro está desligado', () => {
+    const itens = [limpo, divergente];
+    const resultado = filtrarHistorico(itens, false);
+    expect(resultado).toEqual(itens);
+    expect(resultado).not.toBe(itens);
+  });
+
+  it('mantém apenas pendências quando ligado, preservando a ordem', () => {
+    const resultado = filtrarHistorico([limpo, divergente, antigo, comAjuste], true);
+    expect(resultado.map((i) => i.id)).toEqual(['b', 'c', 'd']);
+  });
+
+  it('pode retornar lista vazia sem lançar', () => {
+    expect(filtrarHistorico([limpo], true)).toEqual([]);
+    expect(filtrarHistorico([], true)).toEqual([]);
   });
 });
