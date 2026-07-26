@@ -266,6 +266,93 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         </div>
       </div>
 
+      {/* Parâmetros de folha (eSocial / FPAS) — usados pelo motor tributário */}
+      <div className="space-y-4 pt-4 border-t">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">Parâmetros de Folha (eSocial / FPAS)</h3>
+          <p className="text-xs text-muted-foreground">
+            Utilizados no cálculo de encargos patronais (CPP 20% + RAT/FAP + Terceiros) nas simulações de regime.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="cnae_principal">CNAE Principal</Label>
+            <Input
+              id="cnae_principal"
+              value={cnaeValue || ''}
+              onChange={handleCnaeChange}
+              placeholder="0000-0/00"
+              maxLength={9}
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground">
+              {fpasSugerido
+                ? `Sugestão: FPAS ${fpasSugerido.codigo} — ${fpasSugerido.descricao} (Terceiros ${(fpasSugerido.aliquotaTerceiros * 100).toFixed(1)}%)`
+                : 'Informe o CNAE para derivar o FPAS automaticamente.'}
+            </p>
+            {errors.cnae_principal && <p className="text-sm text-destructive">{errors.cnae_principal.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="codigo_fpas">Código FPAS</Label>
+            <Select
+              value={fpasValue || ''}
+              onValueChange={handleFpasChange}
+              disabled={isLoading}
+            >
+              <SelectTrigger id="codigo_fpas">
+                <SelectValue placeholder="Selecione o FPAS" />
+              </SelectTrigger>
+              <SelectContent>
+                {TABELA_FPAS.map((f) => (
+                  <SelectItem key={f.codigo} value={f.codigo}>
+                    {f.codigo} — {f.descricao}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.codigo_fpas && <p className="text-sm text-destructive">{errors.codigo_fpas.message}</p>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="aliquota_rat">Alíquota RAT/FAP (%)</Label>
+            <Input
+              id="aliquota_rat"
+              type="number"
+              step="0.1"
+              min={0}
+              max={6}
+              {...register('aliquota_rat', { valueAsNumber: true })}
+              placeholder="2"
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground">RAT 1%, 2% ou 3% ajustado pelo FAP (0,5 a 2,0) — limite 6%.</p>
+            {errors.aliquota_rat && <p className="text-sm text-destructive">{errors.aliquota_rat.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="aliquota_terceiros">Alíquota Terceiros (%)</Label>
+            <Input
+              id="aliquota_terceiros"
+              type="number"
+              step="0.1"
+              min={0}
+              max={8}
+              {...register('aliquota_terceiros', { valueAsNumber: true })}
+              placeholder="5.8"
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground">Salário-educação, INCRA, Sistema S conforme o código FPAS.</p>
+            {errors.aliquota_terceiros && <p className="text-sm text-destructive">{errors.aliquota_terceiros.message}</p>}
+          </div>
+        </div>
+      </div>
+
+
+
       <div className="flex items-center justify-between pt-4 border-t">
         <div className="flex items-center gap-2">
           <Switch
