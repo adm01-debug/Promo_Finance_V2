@@ -230,7 +230,17 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                   <span className="text-[10px] opacity-50">Relatório de Governança</span>
                 </div>
               </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-card/5" />
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40 px-3 py-2">Livro Oficial</DropdownMenuLabel>
+              <DropdownMenuItem onClick={exportarLivroOficial} className="rounded-xl gap-3 py-3 cursor-pointer">
+                <div className="p-2 bg-primary/20 rounded-lg"><BookText className="h-4 w-4 text-primary" /></div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">Livro encadernado (.pdf)</span>
+                  <span className="text-[10px] opacity-50">Termos de abertura e encerramento</span>
+                </div>
+              </DropdownMenuItem>
             </DropdownMenuContent>
+
           </DropdownMenu>
         </div>
 
