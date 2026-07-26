@@ -21,17 +21,22 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { z } from 'npm:zod@3.23.8';
 
 import { construirDigest, type AlertaDigest } from '../_shared/obrigacoes/digest.ts';
+import { hashAlertas, planejarEnvios } from '../_shared/obrigacoes/preferencias-digest.ts';
 
 /** Prefixo gravado na coluna `tipo` pelo job de snapshots. */
 const PREFIXO_ALERTA = 'conformidade';
 /** Status aplicado após o envio bem-sucedido. */
 const STATUS_NOTIFICADO = 'notificado';
+/** Fuso de referência das preferências (horário comercial brasileiro). */
+const FUSO = 'America/Sao_Paulo';
 
 const BodySchema = z.object({
   /** Restringe o digest a uma empresa. */
   empresaId: z.string().uuid().optional(),
-  /** Destinatários explícitos; se ausente, usa os admins com e-mail. */
+  /** Destinatários explícitos; se ausente, usa as preferências dos usuários. */
   destinatarios: z.array(z.string().email()).max(50).optional(),
+  /** Ignora as preferências e envia um digest único aos administradores. */
+  forcarGlobal: z.boolean().default(false),
   /** Competência exibida no cabeçalho (AAAA-MM). */
   competencia: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional(),
   /** Severidade mínima incluída no digest. */
@@ -49,6 +54,22 @@ const json = (body: unknown, status = 200) =>
     status,
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
+
+/** E-mails dos administradores — fallback quando não há preferências. */
+async function destinatariosAdmin(
+  admin: ReturnType<typeof createClient>,
+): Promise<string[]> {
+  const { data: adminRoles } = await admin.from('user_roles').select('user_id').eq('role', 'admin');
+  const adminIds = (adminRoles ?? []).map((r) => r.user_id as string);
+  if (adminIds.length === 0) return [];
+  const { data: perfis } = await admin
+    .from('profiles')
+    .select('email')
+    .in('user_id', adminIds)
+    .not('email', 'is', null);
+  return [...new Set((perfis ?? []).map((p) => String(p.email)).filter((e) => e.includes('@')))];
+}
+
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
