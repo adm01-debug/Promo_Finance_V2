@@ -76,8 +76,8 @@ describe('simularReal', () => {
     expect(r.observacoes.some((o) => /Margem baixa/.test(o))).toBe(true);
   });
 
-  it('CPP 20% sobre folha', () => {
+  it('CPP patronal 27,8% sobre folha (20% + RAT 2% + Terceiros 5,8%)', () => {
     const r = simularReal(base);
-    expect(r.cpp).toBeCloseTo(120_000, 2);
+    expect(r.cpp).toBeCloseTo(600_000 * 0.278, 2);
   });
 });
