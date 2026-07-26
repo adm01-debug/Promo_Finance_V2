@@ -21,6 +21,7 @@ import {
 } from '@/hooks/useEntregasObrigacoes';
 import {
   OBRIGACOES,
+  calcularConformidade,
   calcularMultaAtraso,
   chaveItem,
   competenciasAoRedor,
@@ -30,6 +31,7 @@ import {
   type RegimeAplicavel,
   type SituacaoObrigacao,
 } from '@/lib/tributario/obrigacoes';
+import { ConformidadeCard } from '@/components/tributario/ConformidadeCard';
 
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -109,6 +111,24 @@ export default function ObrigacoesAcessorias() {
       entregues: contar('entregue'),
     };
   }, [itens]);
+
+  /** Etapa J — score de conformidade fiscal do período em tela. */
+  const conformidade = useMemo(
+    () =>
+      calcularConformidade(
+        itens,
+        entregas.map((e) => ({
+          obrigacaoId: e.obrigacao_id,
+          competencia: e.competencia,
+          status: e.status,
+          dataEntrega: e.data_entrega,
+          valorMulta: e.valor_multa,
+        }))
+      ),
+    [itens, entregas]
+  );
+
+
 
   const multa = useMemo(() => {
     try {
@@ -214,6 +234,10 @@ export default function ObrigacoesAcessorias() {
               </Card>
             ))}
           </div>
+
+          <ConformidadeCard resultado={conformidade} />
+
+
 
           <Card>
             <CardHeader>
