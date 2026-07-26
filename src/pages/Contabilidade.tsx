@@ -24,6 +24,8 @@ import { VerificacaoIntegracoesPanel } from '@/components/contabilidade/Verifica
 import { AuditoriaLancamentosPanel } from '@/components/contabilidade/AuditoriaLancamentosPanel';
 import { ContabilizacaoAutomaticaTab } from '@/components/contabilidade/ContabilizacaoAutomaticaTab';
 import { ElisaoFiscalTab } from '@/components/contabilidade/elisao/ElisaoFiscalTab';
+import { BalanceteTab } from '@/components/contabilidade/BalanceteTab';
+
 
 const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'balancete', 'dre', 'auto', 'elisao', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
 type TabId = typeof VALID_TABS[number];
