@@ -20,7 +20,25 @@ import { AjustesParametrosAlert } from '@/components/tributario/simulacao/Ajuste
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
-import { filtrarHistorico } from '@/lib/tributario/historico-simulacao';
+import { filtrarHistorico, montarLinhasAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
+import type { LinhaAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
+import { exportToCSV, type ExportColumn } from '@/lib/export-utils';
+
+/** Colunas da trilha de auditoria exportável (ordem fixa para diffs estáveis). */
+const COLUNAS_AUDITORIA: ExportColumn<LinhaAuditoriaCsv>[] = [
+  { key: 'data', header: 'Data da simulação' },
+  { key: 'regimeSalvo', header: 'Regime recomendado (salvo)' },
+  { key: 'regimeRecalculado', header: 'Regime recalculado (motor atual)' },
+  { key: 'situacao', header: 'Situação' },
+  { key: 'versaoMotor', header: 'Versão do motor' },
+  { key: 'faturamento12m', header: 'Faturamento 12m' },
+  { key: 'folha12m', header: 'Folha 12m' },
+  { key: 'economiaAnual', header: 'Economia anual estimada' },
+  { key: 'qtdAjustes', header: 'Qtd. ajustes' },
+  { key: 'ajustesCriticos', header: 'Ajustes críticos' },
+  { key: 'ajustes', header: 'Detalhe dos ajustes' },
+];
+
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
