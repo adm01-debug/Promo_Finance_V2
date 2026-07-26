@@ -11,6 +11,26 @@ import { Loader2 } from 'lucide-react';
 import { useCriarEmpresa, useAtualizarEmpresa, type Empresa } from '@/hooks/useEmpresas';
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { TABELA_FPAS, resolverFpasPorCnae, buscarFpas } from '@/lib/tributario/folha/fpas-terceiros';
+
+/** Converte uma fração decimal (0.058) para percentual (5.8), preservando null. */
+function paraPercentual(valor: number | null | undefined): number | null {
+  return valor === null || valor === undefined || Number.isNaN(valor) ? null : Number((valor * 100).toFixed(4));
+}
+
+/** Converte percentual digitado (5.8) para fração decimal (0.058), preservando null. */
+function paraFracao(valor: number | null | undefined): number | null {
+  return valor === null || valor === undefined || Number.isNaN(valor) ? null : Number((valor / 100).toFixed(6));
+}
+
+/** Máscara CNAE no formato 0000-0/00. */
+function applyCnaeMask(valor: string): string {
+  const d = valor.replace(/\D/g, '').slice(0, 7);
+  if (d.length <= 4) return d;
+  if (d.length <= 5) return `${d.slice(0, 4)}-${d.slice(4)}`;
+  return `${d.slice(0, 4)}-${d.slice(4, 5)}/${d.slice(5)}`;
+}
+
 
 const ESTADOS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
@@ -30,7 +50,30 @@ const empresaSchema = z.object({
   estado: z.string().max(2, 'Selecione um estado').optional().nullable(),
   cep: z.string().max(10, 'CEP inválido').optional().nullable(),
   ativo: z.boolean(),
+  cnae_principal: z
+    .string()
+    .max(9, 'CNAE inválido')
+    .optional()
+    .nullable()
+    .refine(
+      (v) => !v || (v.replace(/\D/g, '').length >= 2 && v.replace(/\D/g, '').length <= 7),
+      'CNAE deve ter entre 2 e 7 dígitos',
+    ),
+  codigo_fpas: z.string().max(10, 'FPAS inválido').optional().nullable(),
+  aliquota_rat: z
+    .number({ invalid_type_error: 'Informe um percentual' })
+    .min(0, 'Mínimo 0%')
+    .max(6, 'Máximo 6%')
+    .optional()
+    .nullable(),
+  aliquota_terceiros: z
+    .number({ invalid_type_error: 'Informe um percentual' })
+    .min(0, 'Mínimo 0%')
+    .max(8, 'Máximo 8%')
+    .optional()
+    .nullable(),
 });
+
 
 type EmpresaFormData = z.infer<typeof empresaSchema>;
 
@@ -68,6 +111,11 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
       estado: '',
       cep: '',
       ativo: true,
+      cnae_principal: '',
+      codigo_fpas: '',
+      aliquota_rat: 2,
+      aliquota_terceiros: 5.8,
+
     },
   });
 
@@ -85,6 +133,10 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         estado: empresa.estado || '',
         cep: empresa.cep || '',
         ativo: empresa.ativo ?? true,
+        cnae_principal: empresa.cnae_principal || '',
+        codigo_fpas: empresa.codigo_fpas || '',
+        aliquota_rat: paraPercentual(empresa.aliquota_rat) ?? 2,
+        aliquota_terceiros: paraPercentual(empresa.aliquota_terceiros) ?? 5.8,
       });
     }
   }, [empresa, reset]);
@@ -104,6 +156,35 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
     setValue('cep', masked);
   };
 
+  /**
+   * Ao digitar o CNAE, deriva automaticamente o FPAS e a alíquota de Terceiros.
+   * A derivação é apenas uma sugestão: o usuário pode sobrescrever ambos manualmente.
+   */
+  const handleCnaeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const masked = applyCnaeMask(e.target.value);
+    setValue('cnae_principal', masked, { shouldValidate: true });
+    const digitos = masked.replace(/\D/g, '');
+    if (digitos.length >= 2) {
+      const sugerido = resolverFpasPorCnae(digitos);
+      setValue('codigo_fpas', sugerido.codigo, { shouldValidate: true });
+      setValue('aliquota_terceiros', Number((sugerido.aliquotaTerceiros * 100).toFixed(2)), {
+        shouldValidate: true,
+      });
+    }
+  };
+
+  /** Seleção manual de FPAS sincroniza a alíquota de Terceiros correspondente. */
+  const handleFpasChange = (codigo: string) => {
+    setValue('codigo_fpas', codigo, { shouldValidate: true });
+    const info = buscarFpas(codigo);
+    if (info) {
+      setValue('aliquota_terceiros', Number((info.aliquotaTerceiros * 100).toFixed(2)), {
+        shouldValidate: true,
+      });
+    }
+  };
+
+
   const onSubmit = async (data: EmpresaFormData) => {
     try {
       // Ensure required fields are present
@@ -119,7 +200,12 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         estado: data.estado || null,
         cep: data.cep || null,
         ativo: data.ativo,
+        cnae_principal: data.cnae_principal || null,
+        codigo_fpas: data.codigo_fpas || null,
+        aliquota_rat: paraFracao(data.aliquota_rat),
+        aliquota_terceiros: paraFracao(data.aliquota_terceiros),
       };
+
 
       if (isEditing && empresa) {
         await atualizarEmpresa.mutateAsync({ id: empresa.id, data: formPayload });
@@ -136,6 +222,11 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
 
   const ativoValue = watch('ativo');
   const estadoValue = watch('estado');
+  const cnaeValue = watch('cnae_principal');
+  const fpasValue = watch('codigo_fpas');
+  const cnaeDigitos = (cnaeValue || '').replace(/\D/g, '');
+  const fpasSugerido = cnaeDigitos.length >= 2 ? resolverFpasPorCnae(cnaeDigitos) : null;
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -265,6 +356,93 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
           {errors.cep && <p className="text-sm text-destructive">{errors.cep.message}</p>}
         </div>
       </div>
+
+      {/* Parâmetros de folha (eSocial / FPAS) — usados pelo motor tributário */}
+      <div className="space-y-4 pt-4 border-t">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">Parâmetros de Folha (eSocial / FPAS)</h3>
+          <p className="text-xs text-muted-foreground">
+            Utilizados no cálculo de encargos patronais (CPP 20% + RAT/FAP + Terceiros) nas simulações de regime.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="cnae_principal">CNAE Principal</Label>
+            <Input
+              id="cnae_principal"
+              value={cnaeValue || ''}
+              onChange={handleCnaeChange}
+              placeholder="0000-0/00"
+              maxLength={9}
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground">
+              {fpasSugerido
+                ? `Sugestão: FPAS ${fpasSugerido.codigo} — ${fpasSugerido.descricao} (Terceiros ${(fpasSugerido.aliquotaTerceiros * 100).toFixed(1)}%)`
+                : 'Informe o CNAE para derivar o FPAS automaticamente.'}
+            </p>
+            {errors.cnae_principal && <p className="text-sm text-destructive">{errors.cnae_principal.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="codigo_fpas">Código FPAS</Label>
+            <Select
+              value={fpasValue || ''}
+              onValueChange={handleFpasChange}
+              disabled={isLoading}
+            >
+              <SelectTrigger id="codigo_fpas">
+                <SelectValue placeholder="Selecione o FPAS" />
+              </SelectTrigger>
+              <SelectContent>
+                {TABELA_FPAS.map((f) => (
+                  <SelectItem key={f.codigo} value={f.codigo}>
+                    {f.codigo} — {f.descricao}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.codigo_fpas && <p className="text-sm text-destructive">{errors.codigo_fpas.message}</p>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="aliquota_rat">Alíquota RAT/FAP (%)</Label>
+            <Input
+              id="aliquota_rat"
+              type="number"
+              step="0.1"
+              min={0}
+              max={6}
+              {...register('aliquota_rat', { valueAsNumber: true })}
+              placeholder="2"
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground">RAT 1%, 2% ou 3% ajustado pelo FAP (0,5 a 2,0) — limite 6%.</p>
+            {errors.aliquota_rat && <p className="text-sm text-destructive">{errors.aliquota_rat.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="aliquota_terceiros">Alíquota Terceiros (%)</Label>
+            <Input
+              id="aliquota_terceiros"
+              type="number"
+              step="0.1"
+              min={0}
+              max={8}
+              {...register('aliquota_terceiros', { valueAsNumber: true })}
+              placeholder="5.8"
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground">Salário-educação, INCRA, Sistema S conforme o código FPAS.</p>
+            {errors.aliquota_terceiros && <p className="text-sm text-destructive">{errors.aliquota_terceiros.message}</p>}
+          </div>
+        </div>
+      </div>
+
+
 
       <div className="flex items-center justify-between pt-4 border-t">
         <div className="flex items-center gap-2">
