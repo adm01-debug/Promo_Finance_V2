@@ -117,6 +117,24 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
     }
   };
 
+  /**
+   * Livro oficial: mesma base do relatório de tela, porém com termo de
+   * abertura/encerramento e numeração sequencial de folhas.
+   */
+  const exportarLivroOficial = () => {
+    const params: LivroOficialParams = { numeroLivro: ano - 2000 };
+    if (modo === 'diario') {
+      if (diario.length === 0) return toast.warning('Nada para exportar.');
+      exportLivroDiarioOficialPDF(diario, ctxExport, params);
+      toast.success('Livro Diário oficial gerado com termos de abertura e encerramento.');
+    } else {
+      if (razao.length === 0) return toast.warning('Nada para exportar.');
+      exportLivroRazaoOficialPDF(razao, ctxExport, params);
+      toast.success('Livro Razão oficial gerado com termos de abertura e encerramento.');
+    }
+  };
+
+
   if (!empresaId) {
     return (
       <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group p-12">
