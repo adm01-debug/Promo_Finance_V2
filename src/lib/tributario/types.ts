@@ -73,6 +73,11 @@ export interface ResultadoCenario {
   fatorR?: number;
   anexoAplicavel?: AnexoSimples;
   faixaAplicavel?: number;
+  /** True quando o RBT12 ultrapassou o sublimite estadual (ICMS/ISS fora do DAS). */
+  sublimiteExcedido?: boolean;
+  icmsForaDAS?: number;
+  issForaDAS?: number;
+  issRetidoDeduzido?: number;
   observacoes: string[];
 }
 
