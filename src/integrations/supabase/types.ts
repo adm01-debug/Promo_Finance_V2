@@ -13921,6 +13921,33 @@ export type Database = {
           tipo: string
         }[]
       }
+      fn_indices_contabeis: {
+        Args: {
+          p_data_fim: string
+          p_data_inicio: string
+          p_empresa_id: string
+        }
+        Returns: {
+          ativo_circulante: number
+          ativo_nao_circulante: number
+          ativo_total: number
+          clientes: number
+          cmv: number
+          deducoes_receita: number
+          dias_periodo: number
+          disponibilidades: number
+          estoques: number
+          fornecedores: number
+          imobilizado: number
+          lucro_liquido: number
+          passivo_circulante: number
+          passivo_nao_circulante: number
+          patrimonio_liquido: number
+          realizavel_lp: number
+          receita_bruta: number
+          receita_liquida: number
+        }[]
+      }
       fn_livro_razao: {
         Args: {
           p_conta_id?: string
@@ -13942,6 +13969,7 @@ export type Database = {
           saldo_corrido: number
         }[]
       }
+      fn_norm_conta_codigo: { Args: { p_codigo: string }; Returns: string }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string
