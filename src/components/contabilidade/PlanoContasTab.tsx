@@ -17,6 +17,8 @@ import { usePlanoContaHistory } from '@/hooks/usePlanoContaHistory';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
 import { PlanoContaHistoryPanel } from './PlanoContaHistoryPanel';
+import { ImportarPlanoContasDialog } from './ImportarPlanoContasDialog';
+
 
 interface Props { empresaId?: string }
 
