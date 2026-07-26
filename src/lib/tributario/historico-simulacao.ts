@@ -152,3 +152,45 @@ export function montarLinhasAuditoriaCsv(
       .join(' ; '),
   }));
 }
+
+export interface PaginaHistorico<T> {
+  itens: T[];
+  /** Página efetivamente aplicada após o clamp (1-based). */
+  pagina: number;
+  totalPaginas: number;
+  total: number;
+  /** Índice humano do primeiro item exibido (1-based); 0 quando vazio. */
+  inicio: number;
+  /** Índice humano do último item exibido; 0 quando vazio. */
+  fim: number;
+}
+
+/**
+ * Pagina o histórico de forma defensiva: página fora do intervalo é ajustada
+ * para o limite mais próximo (útil quando o filtro de pendências encurta a
+ * lista enquanto o usuário está numa página avançada) e tamanhos inválidos
+ * degradam para 1, jamais produzindo divisão por zero ou fatia vazia.
+ */
+export function paginarHistorico<T>(
+  itens: readonly T[],
+  pagina: number,
+  tamanhoPagina: number,
+): PaginaHistorico<T> {
+  const total = itens.length;
+  const tamanho =
+    Number.isFinite(tamanhoPagina) && tamanhoPagina >= 1 ? Math.floor(tamanhoPagina) : 1;
+  const totalPaginas = Math.max(1, Math.ceil(total / tamanho));
+  const paginaSolicitada = Number.isFinite(pagina) ? Math.floor(pagina) : 1;
+  const paginaAtual = Math.min(Math.max(paginaSolicitada, 1), totalPaginas);
+  const offset = (paginaAtual - 1) * tamanho;
+  const fatia = itens.slice(offset, offset + tamanho);
+
+  return {
+    itens: fatia,
+    pagina: paginaAtual,
+    totalPaginas,
+    total,
+    inicio: total === 0 ? 0 : offset + 1,
+    fim: total === 0 ? 0 : offset + fatia.length,
+  };
+}
