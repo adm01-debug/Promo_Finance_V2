@@ -161,7 +161,11 @@ export function agruparPorEmpresa(alertas: readonly AlertaDigest[]): BlocoEmpres
       (a, b) =>
         PESO[normalizarSeveridade(a.severidade)] - PESO[normalizarSeveridade(b.severidade)] ||
         (a.competencia < b.competencia ? 1 : a.competencia > b.competencia ? -1 : 0) ||
-        String(a.tipo).localeCompare(String(b.tipo)),
+        String(a.tipo).localeCompare(String(b.tipo)) ||
+        // Desempate final por conteúdo: garante ordenação total (determinismo
+        // independente da ordem de chegada dos registros do banco).
+        a.titulo.localeCompare(b.titulo, 'pt-BR') ||
+        a.mensagem.localeCompare(b.mensagem, 'pt-BR'),
     );
     const severidadeMaxima = ordenados.reduce<SeveridadeAlerta>(
       (pior, a) => {
@@ -183,7 +187,8 @@ export function agruparPorEmpresa(alertas: readonly AlertaDigest[]): BlocoEmpres
     (a, b) =>
       PESO[a.severidadeMaxima] - PESO[b.severidadeMaxima] ||
       b.alertas.length - a.alertas.length ||
-      a.empresaNome.localeCompare(b.empresaNome, 'pt-BR'),
+      a.empresaNome.localeCompare(b.empresaNome, 'pt-BR') ||
+      a.empresaId.localeCompare(b.empresaId),
   );
 }
 
