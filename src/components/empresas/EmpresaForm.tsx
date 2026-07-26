@@ -222,6 +222,11 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
 
   const ativoValue = watch('ativo');
   const estadoValue = watch('estado');
+  const cnaeValue = watch('cnae_principal');
+  const fpasValue = watch('codigo_fpas');
+  const cnaeDigitos = (cnaeValue || '').replace(/\D/g, '');
+  const fpasSugerido = cnaeDigitos.length >= 2 ? resolverFpasPorCnae(cnaeDigitos) : null;
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
