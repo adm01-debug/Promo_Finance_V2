@@ -111,6 +111,11 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
       estado: '',
       cep: '',
       ativo: true,
+      cnae_principal: '',
+      codigo_fpas: '',
+      aliquota_rat: 2,
+      aliquota_terceiros: 5.8,
+
     },
   });
 
