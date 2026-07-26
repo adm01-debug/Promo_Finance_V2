@@ -11,6 +11,26 @@ import { Loader2 } from 'lucide-react';
 import { useCriarEmpresa, useAtualizarEmpresa, type Empresa } from '@/hooks/useEmpresas';
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { TABELA_FPAS, resolverFpasPorCnae, buscarFpas } from '@/lib/tributario/folha/fpas-terceiros';
+
+/** Converte uma fração decimal (0.058) para percentual (5.8), preservando null. */
+function paraPercentual(valor: number | null | undefined): number | null {
+  return valor === null || valor === undefined || Number.isNaN(valor) ? null : Number((valor * 100).toFixed(4));
+}
+
+/** Converte percentual digitado (5.8) para fração decimal (0.058), preservando null. */
+function paraFracao(valor: number | null | undefined): number | null {
+  return valor === null || valor === undefined || Number.isNaN(valor) ? null : Number((valor / 100).toFixed(6));
+}
+
+/** Máscara CNAE no formato 0000-0/00. */
+function applyCnaeMask(valor: string): string {
+  const d = valor.replace(/\D/g, '').slice(0, 7);
+  if (d.length <= 4) return d;
+  if (d.length <= 5) return `${d.slice(0, 4)}-${d.slice(4)}`;
+  return `${d.slice(0, 4)}-${d.slice(4, 5)}/${d.slice(5)}`;
+}
+
 
 const ESTADOS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
