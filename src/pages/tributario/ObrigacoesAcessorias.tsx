@@ -112,21 +112,31 @@ export default function ObrigacoesAcessorias() {
     };
   }, [itens]);
 
+  /** Registros de entrega normalizados para o motor de conformidade (J e K). */
+  const registrosConformidade = useMemo(
+    () =>
+      entregas.map((e) => ({
+        obrigacaoId: e.obrigacao_id,
+        competencia: e.competencia,
+        status: e.status,
+        dataEntrega: e.data_entrega,
+        valorMulta: e.valor_multa,
+      })),
+    [entregas]
+  );
+
   /** Etapa J — score de conformidade fiscal do período em tela. */
   const conformidade = useMemo(
-    () =>
-      calcularConformidade(
-        itens,
-        entregas.map((e) => ({
-          obrigacaoId: e.obrigacao_id,
-          competencia: e.competencia,
-          status: e.status,
-          dataEntrega: e.data_entrega,
-          valorMulta: e.valor_multa,
-        }))
-      ),
-    [itens, entregas]
+    () => calcularConformidade(itens, registrosConformidade),
+    [itens, registrosConformidade]
   );
+
+  /** Etapa K — série histórica e tendência do score. */
+  const analiseHistorico = useMemo(
+    () => analisarTendencia(construirHistorico(itens, registrosConformidade)),
+    [itens, registrosConformidade]
+  );
+
 
 
 
