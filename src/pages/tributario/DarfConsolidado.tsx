@@ -90,12 +90,20 @@ export default function DarfConsolidado() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <div className="relative min-h-screen">
+        <PageBackground />
+        <div className="container relative z-10 mx-auto space-y-6 p-4 md:p-6">
         <PageHeader
           title="DARF Consolidado"
-          description="Consolidação de débitos federais por código de receita, com vencimento em dia útil, multa de mora e juros SELIC."
+          subtitle="Consolidação de débitos federais por código de receita, com vencimento em dia útil, multa de mora e juros SELIC."
+          badge="Etapa G"
           icon={Receipt}
+          gradientFrom="from-primary/80"
+          gradientVia="via-primary"
+          gradientTo="to-success"
         />
+
+
 
         <div className="grid gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2">
