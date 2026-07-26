@@ -16,6 +16,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, 
 import { toast } from 'sonner';
 import { SimulacaoHeaderActions } from '@/components/tributario/simulacao/SimulacaoHeaderActions';
 import { ParametrosForm } from '@/components/tributario/simulacao/ParametrosForm';
+import { AjustesParametrosAlert } from '@/components/tributario/simulacao/AjustesParametrosAlert';
+import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
 
 export default function SimulacaoRegimes() {
@@ -49,6 +51,10 @@ export default function SimulacaoRegimes() {
         regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples',
     },
   });
+
+  // Transparência fiscal: expõe todo ajuste automático aplicado aos parâmetros
+  // pela camada de sanitização do motor, evitando cálculos silenciosamente corrigidos.
+  const ajustesParametros = useMemo(() => diagnosticarParametros(parametros), [parametros]);
 
   const empresaSelecionada = useMemo(() => empresas.find((e) => e.id === empresaId), [empresas, empresaId]);
 
@@ -231,6 +237,8 @@ export default function SimulacaoRegimes() {
       )}
 
 
+
+      <AjustesParametrosAlert ajustes={ajustesParametros} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <ParametrosForm
