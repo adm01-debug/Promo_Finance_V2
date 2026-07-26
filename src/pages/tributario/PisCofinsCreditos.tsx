@@ -391,7 +391,9 @@ export default function PisCofinsCreditos() {
             </Card>
           </TabsContent>
         </Tabs>
-      </PageBackground>
+        </div>
+      </div>
+
     </MainLayout>
   );
 }
