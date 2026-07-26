@@ -4,6 +4,7 @@
 import type {
   InputLucroReal, ResultadoRegime, LinhaMemoria, TributoDetalhe,
 } from './types';
+import { calcularMixMonofasico } from '../monofasico';
 
 const LIMITE_ADICIONAL_ANUAL = 240_000;
 const LIMITE_ADICIONAL_TRIMESTRAL = 60_000;
@@ -94,22 +95,39 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
     base: lucroReal, aliquota: csllAliq, valor: csll,
   });
 
-  // === PIS/COFINS não-cumulativo ===
+  // === PIS/COFINS não-cumulativo (com segregação de receita monofásica) ===
   const c = input.creditosPisCofins;
   const baseCreditos =
     (c.insumos ?? 0) + (c.energiaEletrica ?? 0) + (c.alugueisPj ?? 0) +
     (c.depreciacao ?? 0) + (c.fretesVenda ?? 0) + (c.devolucoesVenda ?? 0) +
     (c.arrendamentoMercantil ?? 0) + (c.outros ?? 0);
 
-  const pisDebito = receitaLiquida * 0.0165;
-  const pisCredito = baseCreditos * 0.0165;
-  const pis = Math.max(0, pisDebito - pisCredito);
-  const cofinsDebito = receitaLiquida * 0.076;
-  const cofinsCredito = baseCreditos * 0.076;
-  const cofins = Math.max(0, cofinsDebito - cofinsCredito);
+  const mono = input.receitas.monofasico?.itens?.length
+    ? calcularMixMonofasico(
+        input.receitas.monofasico.itens,
+        input.receitas.monofasico.posicaoPadrao ?? 'revenda',
+        'real',
+      )
+    : null;
+  const receitaMonofasica = Math.min(mono?.receitaMonofasica ?? 0, receitaLiquida);
+  const baseNormalPisCofins = Math.max(0, receitaLiquida - receitaMonofasica);
 
+  const pisDebito = baseNormalPisCofins * 0.0165;
+  const pisCredito = baseCreditos * 0.0165;
+  const pis = Math.max(0, pisDebito - pisCredito) + (mono?.pisMonofasico ?? 0);
+  const cofinsDebito = baseNormalPisCofins * 0.076;
+  const cofinsCredito = baseCreditos * 0.076;
+  const cofins = Math.max(0, cofinsDebito - cofinsCredito) + (mono?.cofinsMonofasico ?? 0);
+
+  if (receitaMonofasica > 0) {
+    push(memoria, {
+      grupo: 'PIS/COFINS', descricao: '(−) Receita monofásica excluída da base não cumulativa',
+      valor: -receitaMonofasica,
+      observacao: 'Revenda de monofásico não gera débito nem crédito (Lei 10.865/04, art. 21)',
+    });
+  }
   push(memoria, {
-    grupo: 'PIS', descricao: 'PIS débito 1,65%', base: receitaLiquida, aliquota: 0.0165, valor: pisDebito,
+    grupo: 'PIS', descricao: 'PIS débito 1,65%', base: baseNormalPisCofins, aliquota: 0.0165, valor: pisDebito,
   });
   push(memoria, {
     grupo: 'PIS', descricao: '(−) Créditos PIS 1,65%', base: baseCreditos, aliquota: 0.0165, valor: -pisCredito,
@@ -117,12 +135,18 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   });
   push(memoria, { grupo: 'PIS', descricao: '= PIS a recolher', valor: pis });
   push(memoria, {
-    grupo: 'COFINS', descricao: 'COFINS débito 7,6%', base: receitaLiquida, aliquota: 0.076, valor: cofinsDebito,
+    grupo: 'COFINS', descricao: 'COFINS débito 7,6%', base: baseNormalPisCofins, aliquota: 0.076, valor: cofinsDebito,
   });
   push(memoria, {
     grupo: 'COFINS', descricao: '(−) Créditos COFINS 7,6%', base: baseCreditos, aliquota: 0.076, valor: -cofinsCredito,
   });
   push(memoria, { grupo: 'COFINS', descricao: '= COFINS a recolher', valor: cofins });
+  if (mono && mono.totalMonofasico > 0) {
+    push(memoria, { grupo: 'PIS', descricao: 'PIS monofásico (etapa concentrada)', base: receitaMonofasica, valor: mono.pisMonofasico });
+    push(memoria, { grupo: 'COFINS', descricao: 'COFINS monofásico (etapa concentrada)', base: receitaMonofasica, valor: mono.cofinsMonofasico });
+  }
+  if (mono) alertas.push(...mono.alertas);
+
 
   // === CPP (INSS patronal) ===
   const rat = input.folha.aliquotaRat ?? 0.02;

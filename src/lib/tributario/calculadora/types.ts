@@ -2,6 +2,13 @@
 // Todos os valores monetários em BRL, alíquotas em decimal (0.15 = 15%)
 
 import type { AnexoSimples, RegimeTributario } from '../types';
+import type { ItemMonofasico, PosicaoCadeia } from '../monofasico/types';
+
+/** Mix de NCMs sujeitos ao regime monofásico de PIS/COFINS (Etapa 36). */
+export interface InputMonofasico {
+  posicaoPadrao?: PosicaoCadeia;
+  itens: ItemMonofasico[];
+}
 
 export type Periodicidade = 'mensal' | 'trimestral' | 'anual';
 export type ModoLucroReal = 'anual_estimativa' | 'trimestral';
@@ -14,6 +21,8 @@ export interface InputReceitas {
   percentualExportacao?: number;
   devolucoes?: number;
   descontosIncondicionais?: number;
+  /** Receitas com tributação concentrada (monofásico) — saem da base normal de PIS/COFINS. */
+  monofasico?: InputMonofasico;
 }
 
 export interface InputFolha {

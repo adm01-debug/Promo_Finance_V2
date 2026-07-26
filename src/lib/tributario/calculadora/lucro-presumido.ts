@@ -1,8 +1,10 @@
 // LUCRO PRESUMIDO — Trimestral com adicional 10%, PIS/COFINS cumulativo
+// Suporta segregação de receita monofásica (Leis 9.718/98, 10.147/00, 10.485/02, 10.833/03).
 
 import type {
   InputLucroPresumido, ResultadoRegime, LinhaMemoria, TributoDetalhe, AtividadePresumido,
 } from './types';
+import { calcularMixMonofasico } from '../monofasico';
 
 const LIMITE_ANUAL = 78_000_000;
 const LIMITE_ADICIONAL_TRIMESTRAL = 60_000;
@@ -74,11 +76,33 @@ export function calcularLucroPresumido(input: InputLucroPresumido): ResultadoReg
   const csll = baseCsll * 0.09;
   push(memoria, { grupo: 'CSLL', descricao: 'CSLL 9% × base', base: baseCsll, aliquota: 0.09, valor: csll });
 
-  // PIS/COFINS cumulativo
-  const pis = receitaLiquida * 0.0065;
-  const cofins = receitaLiquida * 0.03;
-  push(memoria, { grupo: 'PIS', descricao: 'PIS cumulativo 0,65%', base: receitaLiquida, aliquota: 0.0065, valor: pis });
-  push(memoria, { grupo: 'COFINS', descricao: 'COFINS cumulativo 3%', base: receitaLiquida, aliquota: 0.03, valor: cofins });
+  // PIS/COFINS cumulativo — receita monofásica segregada da base normal
+  const mono = input.receitas.monofasico?.itens?.length
+    ? calcularMixMonofasico(
+        input.receitas.monofasico.itens,
+        input.receitas.monofasico.posicaoPadrao ?? 'revenda',
+        'presumido',
+      )
+    : null;
+  const receitaMonofasica = Math.min(mono?.receitaMonofasica ?? 0, receitaLiquida);
+  const baseNormalPisCofins = Math.max(0, receitaLiquida - receitaMonofasica);
+
+  const pis = baseNormalPisCofins * 0.0065 + (mono?.pisMonofasico ?? 0);
+  const cofins = baseNormalPisCofins * 0.03 + (mono?.cofinsMonofasico ?? 0);
+  if (receitaMonofasica > 0) {
+    push(memoria, {
+      grupo: 'PIS/COFINS', descricao: '(−) Receita monofásica excluída da base cumulativa',
+      valor: -receitaMonofasica, observacao: 'Tributação concentrada na indústria/importador',
+    });
+  }
+  push(memoria, { grupo: 'PIS', descricao: 'PIS cumulativo 0,65%', base: baseNormalPisCofins, aliquota: 0.0065, valor: baseNormalPisCofins * 0.0065 });
+  push(memoria, { grupo: 'COFINS', descricao: 'COFINS cumulativo 3%', base: baseNormalPisCofins, aliquota: 0.03, valor: baseNormalPisCofins * 0.03 });
+  if (mono && mono.totalMonofasico > 0) {
+    push(memoria, { grupo: 'PIS', descricao: 'PIS monofásico (etapa concentrada)', base: receitaMonofasica, valor: mono.pisMonofasico });
+    push(memoria, { grupo: 'COFINS', descricao: 'COFINS monofásico (etapa concentrada)', base: receitaMonofasica, valor: mono.cofinsMonofasico });
+  }
+  if (mono) alertas.push(...mono.alertas);
+
 
   // CPP
   const rat = input.folha.aliquotaRat ?? 0.02;
@@ -109,8 +133,8 @@ export function calcularLucroPresumido(input: InputLucroPresumido): ResultadoReg
   const tributos: TributoDetalhe[] = [
     { nome: 'IRPJ', valor: irpj, base: baseIrpj, aliquotaEfetiva: baseIrpj > 0 ? irpj / baseIrpj : 0, formula: '15% base presumida + 10% excedente' },
     { nome: 'CSLL', valor: csll, base: baseCsll, aliquotaEfetiva: 0.09, formula: '9% base presumida' },
-    { nome: 'PIS', valor: pis, base: receitaLiquida, aliquotaEfetiva: 0.0065, formula: '0,65% receita (cumulativo)' },
-    { nome: 'COFINS', valor: cofins, base: receitaLiquida, aliquotaEfetiva: 0.03, formula: '3% receita (cumulativo)' },
+    { nome: 'PIS', valor: pis, base: receitaLiquida, aliquotaEfetiva: receitaLiquida > 0 ? pis / receitaLiquida : 0, formula: receitaMonofasica > 0 ? '0,65% receita comum + monofásico' : '0,65% receita (cumulativo)' },
+    { nome: 'COFINS', valor: cofins, base: receitaLiquida, aliquotaEfetiva: receitaLiquida > 0 ? cofins / receitaLiquida : 0, formula: receitaMonofasica > 0 ? '3% receita comum + monofásico' : '3% receita (cumulativo)' },
     { nome: 'CPP', valor: cpp, base: input.folha.folhaAnual, aliquotaEfetiva: cppAliq, formula: `${(cppAliq * 100).toFixed(1)}% folha` },
     { nome: 'ICMS', valor: icms, base: receitaMercadorias, aliquotaEfetiva: receitaMercadorias > 0 ? icms / receitaMercadorias : 0, formula: `${(icmsAliq * 100).toFixed(2)}% mercadorias` },
     { nome: 'ISS', valor: iss, base: receitaServicos, aliquotaEfetiva: issAliq, formula: `${(issAliq * 100).toFixed(2)}% serviços` },

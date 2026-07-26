@@ -125,6 +125,7 @@ const Logistica = lazy(() => import('./pages/Logistica'));
 const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
 const ThemeDiagnostics = lazy(() => import('./pages/ThemeDiagnostics'));
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
+const MonofasicoPage = lazy(() => import('./pages/tributario/Monofasico'));
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
 const ApiManagement = lazy(() => import('./pages/admin/ApiManagement'));
@@ -257,6 +258,7 @@ function AppRoutes() {
             <Route path="/tributario/retencoes" element={<ProtectedRoute><RetencoesFontePage /></ProtectedRoute>} />
             <Route path="/tributario/fechamento-mensal" element={<ProtectedRoute><FechamentoMensalPage /></ProtectedRoute>} />
             <Route path="/tributario/glossario" element={<ProtectedRoute><GlossarioTributario /></ProtectedRoute>} />
+            <Route path="/tributario/monofasico" element={<ProtectedRoute><MonofasicoPage /></ProtectedRoute>} />
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
             <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
             <Route path="/orcamentos" element={<ProtectedRoute><Orcamentos /></ProtectedRoute>} />
