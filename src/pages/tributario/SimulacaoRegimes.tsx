@@ -364,7 +364,7 @@ export default function SimulacaoRegimes() {
                         onClick={() => restaurarSimulacao(h)}
                         aria-label={`Restaurar simulação de ${new Date(h.data_simulacao).toLocaleString('pt-BR')}`}
                       >
-                        <History className="h-4 w-4 mr-1" aria-hidden="true" />
+                        <HistoryIcon className="h-4 w-4 mr-1" aria-hidden="true" />
                         Restaurar
                       </Button>
                     </div>
