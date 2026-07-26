@@ -155,6 +155,7 @@ const navGroups: NavGroup[] = [
       { label: 'IRPJ/CSLL (Lucro Real)', icon: Landmark, href: '/tributario/irpj-csll' },
       { label: 'DARF Consolidado', icon: Receipt, href: '/tributario/darf' },
       { label: 'Obrigações Acessórias', icon: CalendarCheck, href: '/tributario/obrigacoes' },
+      { label: 'Comparativo de Conformidade', icon: BarChart3, href: '/tributario/comparativo-conformidade' },
 
       { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
