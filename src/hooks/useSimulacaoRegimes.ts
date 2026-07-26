@@ -145,6 +145,43 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     staleTime: 60_000,
   });
 
+  /**
+   * Auditoria de drift: recalcula cada snapshot com o motor corrente e marca
+   * divergências de recomendação. Erros de recálculo (snapshots corrompidos ou
+   * incompletos) degradam para "não auditável" em vez de quebrar a página.
+   */
+  const historicoAuditado: SimulacaoHistoricoAuditada[] = useMemo(
+    () =>
+      historicoSimulacoes.map((item) => {
+        const parametrosSnapshot = normalizarParametros(item.parametros);
+        let regimeRecalculado: RegimeTributario | null = null;
+        if (parametrosSnapshot) {
+          try {
+            const recalculo = decidirRegime(
+              { ...DEFAULT_PARAMS, ...parametrosSnapshot },
+              {
+                anoReferencia: item.ano_referencia,
+                mesReferencia,
+                regimeAtual: REGIMES_VALIDOS.find((r) => r === item.regime_atual),
+              },
+            );
+            regimeRecalculado = recalculo.recomendado.regime;
+          } catch {
+            regimeRecalculado = null;
+          }
+        }
+        return {
+          ...item,
+          motorDesatualizado: versaoDesatualizada(item.versao_motor),
+          regimeRecalculado,
+          divergente: regimeRecalculado !== null && regimeRecalculado !== item.regime_recomendado,
+        };
+      }),
+    [historicoSimulacoes, mesReferencia],
+  );
+
+
+
   // Mescla parâmetros manuais com histórico real
   const parametrosCompletos: ParametrosSimulacao = useMemo(
     () => ({
