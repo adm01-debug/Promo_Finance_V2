@@ -213,7 +213,26 @@ export function ParametrosForm({
               Deduzido da parcela de ISS do DAS, limitado ao valor devido.
             </p>
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="aliquota-rat">Alíquota RAT/FAP (%)</Label>
+            <Input
+              id="aliquota-rat"
+              type="number"
+              step="0.1"
+              value={((parametros.aliquotaRAT ?? 0.02) * 100).toFixed(2)}
+              onChange={(e) =>
+                setParametros({
+                  ...parametros,
+                  aliquotaRAT: Math.min(6, Math.max(0, Number(e.target.value))) / 100,
+                })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              Compõe a CPP patronal (20% + RAT) recolhida fora do DAS no Anexo IV.
+            </p>
+          </div>
         </div>
+
 
       </CardContent>
     </Card>
