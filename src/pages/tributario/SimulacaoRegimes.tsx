@@ -221,13 +221,24 @@ export default function SimulacaoRegimes() {
           onRecarregarHistorico={popularDoHistorico}
           onAnalisarElisao={analisarElisao}
           onExportarPdf={exportarPdf}
-          onSalvar={() => salvarSimulacao.mutate()}
+          onSalvar={handleSalvar}
           onSincronizarIA={sincronizarComServer}
           isAnalisandoElisao={persistirOportunidades.isPending}
           isSalvando={salvarSimulacao.isPending}
           isSincronizando={isSincronizando}
         />
       </div>
+
+      <ConfirmarSalvamentoAjustesDialog
+        open={confirmarSalvamento}
+        onOpenChange={setConfirmarSalvamento}
+        ajustesCriticos={ajustesCriticos}
+        onConfirmar={() => {
+          setConfirmarSalvamento(false);
+          salvarSimulacao.mutate();
+        }}
+      />
+
 
       {empresaId && autoLoaded && (
         <Alert role="status" aria-live="polite">
