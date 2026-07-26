@@ -228,9 +228,31 @@ export function ParametrosForm({
               }
             />
             <p className="text-xs text-muted-foreground">
-              Compõe a CPP patronal (20% + RAT) recolhida fora do DAS no Anexo IV.
+              Compõe a CPP patronal (20% + RAT) recolhida fora do DAS no Anexo IV
+              e a folha em Presumido/Real.
             </p>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="aliquota-terceiros">Terceiros / Sistema S (%)</Label>
+            <Input
+              id="aliquota-terceiros"
+              type="number"
+              step="0.1"
+              value={((parametros.aliquotaTerceiros ?? 0.058) * 100).toFixed(2)}
+              onChange={(e) =>
+                setParametros({
+                  ...parametros,
+                  aliquotaTerceiros: Math.min(8, Math.max(0, Number(e.target.value))) / 100,
+                })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              INCRA, SEBRAE, Salário-Educação e Sistema S (padrão 5,8% — FPAS 507).
+              Não se aplica ao Simples Nacional.
+            </p>
+          </div>
+
         </div>
 
 
