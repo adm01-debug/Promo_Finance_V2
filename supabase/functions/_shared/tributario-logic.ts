@@ -265,18 +265,35 @@ export function simularSimples(
     );
   }
 
-  const totalTributos = sublimiteExcedido ? dasFinal + icms + iss : dasFinal;
+  // --- CPP patronal fora do DAS (Anexo IV, LC 123/2006 art. 18 §5º-C) ------
+  // No Anexo IV a contribuição previdenciária patronal NÃO está incluída no DAS:
+  // a empresa recolhe 20% sobre a folha + RAT/FAP em GPS/DCTFWeb. Ignorar essa
+  // parcela subestimaria materialmente a carga do regime na comparação.
+  let cpp = das * d.cpp;
+  let cppForaDAS = 0;
+  if (anexo === 'IV') {
+    const rat = Math.min(0.06, Math.max(0, p.aliquotaRAT ?? 0.02));
+    cppForaDAS = Math.max(0, p.folhaAnual || 0) * (0.20 + rat);
+    cpp = cppForaDAS;
+    if (cppForaDAS > 0) {
+      obs.push(
+        `Anexo IV: CPP patronal de R$ ${cppForaDAS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (20% + RAT ${(rat * 100).toFixed(2)}%) recolhida FORA do DAS.`,
+      );
+    }
+  }
+
+  const totalTributos = (sublimiteExcedido ? dasFinal + icms + iss : dasFinal) + cppForaDAS;
 
   return {
     regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
     irpj: das * d.irpj, csll: das * d.csll, pis: das * d.pis, cofins: das * d.cofins,
-    cpp: das * d.cpp, icms, iss,
+    cpp, icms, iss,
     cbs: 0, ibs: 0,
     totalTributos,
     cargaEfetiva: p.faturamentoAnual > 0 ? (totalTributos / p.faturamentoAnual) * 100 : 0,
     rbt12, fatorR, anexoAplicavel: anexo, faixaAplicavel: faixa.faixa,
     aliquotaNominal: faixa.aliq * 100,
-    sublimiteExcedido, icmsForaDAS, issForaDAS, issRetidoDeduzido,
+    sublimiteExcedido, icmsForaDAS, issForaDAS, issRetidoDeduzido, cppForaDAS,
     observacoes: obs,
   };
 }
