@@ -37,6 +37,14 @@ export interface ParametrosSimulacao {
   despesasOperacionais?: number;
   uf?: string;
   atividadePrincipal?: string;
+  /** Alíquota ICMS efetiva (0..1), default 0.18. */
+  aliquotaICMS?: number;
+  /** Alíquota ISS efetiva (0..1), default 0.05. */
+  aliquotaISS?: number;
+  /** Sublimite estadual de receita bruta (LC 123/2006, arts. 19 e 20). Default R$ 3.600.000. */
+  sublimiteEstadual?: number;
+  /** ISS retido na fonte (valor anual) deduzido da parcela de ISS do DAS. */
+  issRetidoFonte?: number;
 }
 
 export interface ResultadoCenario {
