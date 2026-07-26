@@ -49,6 +49,14 @@ export interface ResultadoCenario {
   totalTributos: number; cargaEfetiva: number;
   rbt12?: number; fatorR?: number; anexoAplicavel?: AnexoSimples;
   faixaAplicavel?: number; aliquotaNominal?: number;
+  /** True quando o RBT12 ultrapassou o sublimite estadual (ICMS/ISS fora do DAS). */
+  sublimiteExcedido?: boolean;
+  /** ICMS recolhido fora do DAS (regime normal), quando há excesso de sublimite. */
+  icmsForaDAS?: number;
+  /** ISS recolhido fora do DAS (regime normal), quando há excesso de sublimite. */
+  issForaDAS?: number;
+  /** ISS retido na fonte efetivamente deduzido do DAS. */
+  issRetidoDeduzido?: number;
   observacoes: string[];
 }
 
