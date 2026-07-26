@@ -7,6 +7,7 @@ import { decidirRegime } from '@/lib/tributario';
 import type {
   ParametrosSimulacao,
   ResultadoDecisao,
+  ResultadoCenario,
   RegimeTributario,
   FaturamentoMes,
   FolhaMes,
@@ -29,15 +30,32 @@ export interface SimulaoHistoricoItem {
   fator_r: number | null;
   regime_atual: string | null;
   regime_recomendado: string;
-  cenarios: any;
+  /** Cenários serializados no momento do salvamento (snapshot imutável). */
+  cenarios: ResultadoCenario[];
   alertas: string[];
   justificativa: string;
   economia_anual_estimada: number | null;
-  parametros: any;
+  /** Parâmetros de entrada usados na simulação — base da reprodutibilidade. */
+  parametros: Partial<ParametrosSimulacao>;
   created_by: string | null;
   audit_log_id: string | null;
   data_simulacao: string;
 }
+
+const REGIMES_VALIDOS: readonly RegimeTributario[] = [
+  'simples_nacional',
+  'lucro_presumido',
+  'lucro_real',
+];
+
+/** Narrowing defensivo: o jsonb do banco não tem garantia de forma. */
+function normalizarParametros(bruto: unknown): Partial<ParametrosSimulacao> | null {
+  if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) return null;
+  const registro = bruto as Record<string, unknown>;
+  if (typeof registro.faturamentoAnual !== 'number') return null;
+  return registro as Partial<ParametrosSimulacao>;
+}
+
 
 const DEFAULT_PARAMS: ParametrosSimulacao = {
   faturamentoAnual: 1_000_000,
@@ -182,7 +200,26 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  /**
+   * Restaura uma simulação salva: repõe os parâmetros de entrada e o regime
+   * atual do snapshot, permitindo reproduzir e auditar o resultado histórico
+   * com o motor corrente (detecta divergências causadas por mudanças de tabela).
+   */
+  const restaurarSimulacao = (item: SimulaoHistoricoItem) => {
+    const parametrosSnapshot = normalizarParametros(item.parametros);
+    if (!parametrosSnapshot) {
+      toast.error('Snapshot sem parâmetros válidos — não é possível restaurar.');
+      return;
+    }
+    setParametros((atual) => ({ ...atual, ...parametrosSnapshot }));
+    const regimeSnapshot = REGIMES_VALIDOS.find((r) => r === item.regime_atual);
+    setRegimeAtual(regimeSnapshot);
+    setServerResult(null);
+    toast.success('Parâmetros restaurados a partir do histórico');
+  };
+
   return {
+
     parametros,
     setParametros: (p: ParametrosSimulacao | ((prev: ParametrosSimulacao) => ParametrosSimulacao)) => {
       setParametros(p);
@@ -197,6 +234,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     faturamentoMensal,
     folhaMensal,
     historicoSimulacoes,
+    restaurarSimulacao,
     salvarSimulacao,
     sincronizarComServer,
     isSincronizando: decidirRegimeServer.isPending,

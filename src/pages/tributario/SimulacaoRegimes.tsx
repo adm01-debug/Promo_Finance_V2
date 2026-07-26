@@ -2,9 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw } from 'lucide-react';
+import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw, History as HistoryIcon } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
@@ -32,6 +33,7 @@ export default function SimulacaoRegimes() {
     salvarSimulacao,
     temHistoricoSuficiente,
     historicoSimulacoes,
+    restaurarSimulacao,
     faturamentoMensal,
     folhaMensal,
     sincronizarComServer,
@@ -343,23 +345,35 @@ export default function SimulacaoRegimes() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {historicoSimulacoes.slice(0, 5).map((h) => (
-                  <div key={h.id} className="flex items-center justify-between p-2 rounded border text-sm">
-                    <div>
-                      <p className="font-medium">{h.regime_recomendado}</p>
+                  <div key={h.id} className="flex items-center justify-between gap-2 p-2 rounded border text-sm">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{h.regime_recomendado}</p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(h.data_simulacao).toLocaleString('pt-BR')}
                       </p>
                     </div>
-                    {h.economia_anual_estimada && (
-                      <Badge variant="outline" className="text-success">
-                        {formatCurrency(Number(h.economia_anual_estimada))}/ano
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {h.economia_anual_estimada !== null && h.economia_anual_estimada !== undefined && (
+                        <Badge variant="outline" className="text-success">
+                          {formatCurrency(Number(h.economia_anual_estimada))}/ano
+                        </Badge>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => restaurarSimulacao(h)}
+                        aria-label={`Restaurar simulação de ${new Date(h.data_simulacao).toLocaleString('pt-BR')}`}
+                      >
+                        <HistoryIcon className="h-4 w-4 mr-1" aria-hidden="true" />
+                        Restaurar
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </CardContent>
             </Card>
           )}
+
         </div>
       </div>
     </div>
