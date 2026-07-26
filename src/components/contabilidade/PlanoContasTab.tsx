@@ -69,6 +69,8 @@ export function PlanoContasTab({ empresaId }: Props) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ImportarPlanoContasDialog empresaId={empresaId ?? ''} />
+
             <Button 
               variant="outline" 
               onClick={() => setHistoryOpen(true)} 
