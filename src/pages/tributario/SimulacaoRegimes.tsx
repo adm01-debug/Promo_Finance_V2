@@ -34,6 +34,7 @@ export default function SimulacaoRegimes() {
     temHistoricoSuficiente,
     historicoSimulacoes,
     restaurarSimulacao,
+    versaoMotor,
     faturamentoMensal,
     folhaMensal,
     sincronizarComServer,
