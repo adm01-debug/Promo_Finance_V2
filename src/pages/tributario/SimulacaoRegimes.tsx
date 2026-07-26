@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw, History as HistoryIcon, Download } from 'lucide-react';
+import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw, History as HistoryIcon, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
@@ -20,7 +20,7 @@ import { AjustesParametrosAlert } from '@/components/tributario/simulacao/Ajuste
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
 import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
-import { filtrarHistorico, montarLinhasAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
+import { filtrarHistorico, montarLinhasAuditoriaCsv, paginarHistorico } from '@/lib/tributario/historico-simulacao';
 import type { LinhaAuditoriaCsv } from '@/lib/tributario/historico-simulacao';
 import { exportToCSV, type ExportColumn } from '@/lib/export-utils';
 
@@ -48,6 +48,8 @@ export default function SimulacaoRegimes() {
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const [autoLoaded, setAutoLoaded] = useState(false);
   const [somentePendencias, setSomentePendencias] = useState(false);
+  const [paginaHistorico, setPaginaHistorico] = useState(1);
+  const TAMANHO_PAGINA_HISTORICO = 5;
 
   const {
     parametros,
@@ -84,6 +86,17 @@ export default function SimulacaoRegimes() {
   const historicoVisivel = useMemo(
     () => filtrarHistorico(historicoSimulacoes, somentePendencias),
     [historicoSimulacoes, somentePendencias],
+  );
+
+  // Volta ao início sempre que o recorte muda, evitando página órfã.
+  useEffect(() => {
+    setPaginaHistorico(1);
+  }, [somentePendencias, empresaId]);
+
+  // O clamp acontece no helper puro: se a lista encurtar, a página é ajustada.
+  const pagina = useMemo(
+    () => paginarHistorico(historicoVisivel, paginaHistorico, TAMANHO_PAGINA_HISTORICO),
+    [historicoVisivel, paginaHistorico],
   );
 
   // Ajustes críticos exigem confirmação explícita antes de persistir o snapshot,
@@ -492,7 +505,7 @@ export default function SimulacaoRegimes() {
                     Nenhum snapshot com pendências — histórico íntegro.
                   </p>
                 )}
-                {historicoVisivel.slice(0, 5).map((h) => (
+                {pagina.itens.map((h) => (
                   <div key={h.id} className="flex items-center justify-between gap-2 p-2 rounded border text-sm">
                     <div className="min-w-0">
                       <p className="font-medium truncate">{h.regime_recomendado}</p>
