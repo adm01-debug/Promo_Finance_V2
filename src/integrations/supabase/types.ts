@@ -12100,6 +12100,63 @@ export type Database = {
         }
         Relationships: []
       }
+      user_digest_preferences: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          dia_mes: number
+          dia_semana: number
+          email_alternativo: string | null
+          empresas_filtro: string[]
+          frequencia: string
+          hora_envio: number
+          id: string
+          max_alertas: number
+          severidade_minima: string
+          tipos_ignorados: string[]
+          ultimo_envio_em: string | null
+          ultimo_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          dia_mes?: number
+          dia_semana?: number
+          email_alternativo?: string | null
+          empresas_filtro?: string[]
+          frequencia?: string
+          hora_envio?: number
+          id?: string
+          max_alertas?: number
+          severidade_minima?: string
+          tipos_ignorados?: string[]
+          ultimo_envio_em?: string | null
+          ultimo_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          dia_mes?: number
+          dia_semana?: number
+          email_alternativo?: string | null
+          empresas_filtro?: string[]
+          frequencia?: string
+          hora_envio?: number
+          id?: string
+          max_alertas?: number
+          severidade_minima?: string
+          tipos_ignorados?: string[]
+          ultimo_envio_em?: string | null
+          ultimo_hash?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_empresas: {
         Row: {
           ativo: boolean
