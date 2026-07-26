@@ -288,7 +288,43 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // Trilha de auditoria: uma linha por destinatário e por ciclo de execução.
+    const execucaoId = crypto.randomUUID();
+    const ORDEM_SEV: Record<string, number> = { baixa: 1, media: 2, alta: 3, critica: 4 };
+    const logs: Record<string, unknown>[] = [];
+
+    const resumo = (alertasEnvio: readonly AlertaDigest[]) => {
+      let sev: string | null = null;
+      let multa = 0;
+      const empresas = new Set<string>();
+      for (const a of alertasEnvio) {
+        empresas.add(a.empresaId);
+        multa += typeof a.valor === 'number' && Number.isFinite(a.valor) ? Math.max(0, a.valor) : 0;
+        const atual = ORDEM_SEV[String(a.severidade)] ?? 0;
+        if (atual > 0 && (sev === null || atual > (ORDEM_SEV[sev] ?? 0))) sev = String(a.severidade);
+      }
+      return {
+        total_alertas: alertasEnvio.length,
+        total_empresas: empresas.size,
+        severidade_maxima: sev,
+        multa_total: Number(multa.toFixed(2)),
+      };
+    };
+
+    for (const ign of ignorados) {
+      logs.push({
+        execucao_id: execucaoId,
+        user_id: ign.userId,
+        email: '(preferência)',
+        situacao: 'ignorado',
+        motivo: ign.motivo,
+        duplicado: ign.motivo.toLowerCase().includes('duplic'),
+        simulado,
+      });
+    }
+
     for (const envio of envios) {
+
       const digest = construirDigest(envio.alertas, {
         remetenteNome: 'Hub Tributário',
         urlBase: Deno.env.get('APP_PUBLIC_URL') ?? undefined,
@@ -313,10 +349,31 @@ Deno.serve(async (req: Request) => {
         if (!resposta.ok) {
           // Falha individual não derruba o lote: os alertas deste destinatário
           // simplesmente não são marcados e voltam no próximo ciclo.
-          falhas.push({ email: envio.email, detalhe: (await resposta.text()).slice(0, 200) });
+          const detalhe = (await resposta.text()).slice(0, 200);
+          falhas.push({ email: envio.email, detalhe });
+          logs.push({
+            execucao_id: execucaoId,
+            user_id: envio.userId,
+            email: envio.email,
+            situacao: 'falhou',
+            erro: detalhe,
+            hash_conteudo: envio.hash,
+            simulado: false,
+            ...resumo(envio.alertas),
+          });
           continue;
         }
       }
+
+      logs.push({
+        execucao_id: execucaoId,
+        user_id: envio.userId,
+        email: envio.email,
+        situacao: simulado ? 'simulado' : 'enviado',
+        hash_conteudo: envio.hash,
+        simulado,
+        ...resumo(envio.alertas),
+      });
 
       for (const a of envio.alertas) {
         const id = idPorChave.get(`${a.empresaId}|${PREFIXO_ALERTA}:${a.tipo}:${a.competencia}|${a.titulo}`)
@@ -331,6 +388,14 @@ Deno.serve(async (req: Request) => {
           .eq('user_id', envio.userId);
       }
     }
+
+    // A auditoria nunca pode derrubar o lote: falha de log é apenas reportada.
+    let logErro: string | null = null;
+    if (logs.length > 0) {
+      const { error: logErr } = await admin.from('digest_envios_log').insert(logs);
+      if (logErr) logErro = logErr.message;
+    }
+
 
     // ---- Idempotência: marca somente o que foi efetivamente enviado --------
     if (idsEnviados.size > 0) {
@@ -349,11 +414,14 @@ Deno.serve(async (req: Request) => {
     return json({
       success: falhas.length === 0,
       simulado,
+      execucaoId,
+      logErro,
       enviados: envios.length - falhas.length,
       alertasMarcados: idsEnviados.size,
       falhas,
       ignorados,
     });
+
   } catch (erro) {
     const mensagem = erro instanceof Error ? erro.message : 'Erro desconhecido';
     return json({ error: 'Erro inesperado', details: mensagem }, 500);
