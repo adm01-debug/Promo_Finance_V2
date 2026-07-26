@@ -7744,7 +7744,9 @@ export type Database = {
       }
       lancamentos_contabeis: {
         Row: {
+          competencia: string | null
           created_at: string
+          created_by: string | null
           data_lancamento: string
           empresa_id: string | null
           historico: string | null
@@ -7752,11 +7754,14 @@ export type Database = {
           numero_lancamento: number | null
           origem: string | null
           status: string
+          updated_at: string
           user_id: string
           valor_total: number
         }
         Insert: {
+          competencia?: string | null
           created_at?: string
+          created_by?: string | null
           data_lancamento?: string
           empresa_id?: string | null
           historico?: string | null
@@ -7764,11 +7769,14 @@ export type Database = {
           numero_lancamento?: number | null
           origem?: string | null
           status?: string
+          updated_at?: string
           user_id?: string
           valor_total?: number
         }
         Update: {
+          competencia?: string | null
           created_at?: string
+          created_by?: string | null
           data_lancamento?: string
           empresa_id?: string | null
           historico?: string | null
@@ -7776,6 +7784,7 @@ export type Database = {
           numero_lancamento?: number | null
           origem?: string | null
           status?: string
+          updated_at?: string
           user_id?: string
           valor_total?: number
         }
@@ -8830,26 +8839,32 @@ export type Database = {
       }
       partidas_contabeis: {
         Row: {
-          conta_contabil_id: string | null
+          conta_id: string | null
           created_at: string | null
+          historico_complementar: string | null
           id: string
           lancamento_id: string | null
+          ordem: number | null
           tipo: string
           valor: number
         }
         Insert: {
-          conta_contabil_id?: string | null
+          conta_id?: string | null
           created_at?: string | null
+          historico_complementar?: string | null
           id?: string
           lancamento_id?: string | null
+          ordem?: number | null
           tipo: string
           valor: number
         }
         Update: {
-          conta_contabil_id?: string | null
+          conta_id?: string | null
           created_at?: string | null
+          historico_complementar?: string | null
           id?: string
           lancamento_id?: string | null
+          ordem?: number | null
           tipo?: string
           valor?: number
         }
@@ -9155,42 +9170,57 @@ export type Database = {
       }
       plano_contas: {
         Row: {
+          aceita_lancamento: boolean
           ativo: boolean | null
           centro_resultado: string | null
           codigo: string
+          codigo_referencial: string | null
           created_at: string | null
           descricao: string | null
           empresa_id: string | null
           id: string
           natureza: string | null
+          nivel: number
           nome: string
+          parent_id: string | null
           tipo: string | null
+          updated_at: string
           user_id: string | null
         }
         Insert: {
+          aceita_lancamento?: boolean
           ativo?: boolean | null
           centro_resultado?: string | null
           codigo: string
+          codigo_referencial?: string | null
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
           natureza?: string | null
+          nivel?: number
           nome: string
+          parent_id?: string | null
           tipo?: string | null
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
+          aceita_lancamento?: boolean
           ativo?: boolean | null
           centro_resultado?: string | null
           codigo?: string
+          codigo_referencial?: string | null
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
           natureza?: string | null
+          nivel?: number
           nome?: string
+          parent_id?: string | null
           tipo?: string | null
+          updated_at?: string
           user_id?: string | null
         }
         Relationships: [
@@ -9242,6 +9272,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "plano_contas_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
           },
         ]
       }

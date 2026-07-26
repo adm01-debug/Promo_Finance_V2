@@ -17,6 +17,8 @@ import { usePlanoContaHistory } from '@/hooks/usePlanoContaHistory';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
 import { PlanoContaHistoryPanel } from './PlanoContaHistoryPanel';
+import { ImportarPlanoContasDialog } from './ImportarPlanoContasDialog';
+
 
 interface Props { empresaId?: string }
 
@@ -69,6 +71,8 @@ export function PlanoContasTab({ empresaId }: Props) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ImportarPlanoContasDialog empresaId={empresaId ?? ''} />
+
             <Button 
               variant="outline" 
               onClick={() => setHistoryOpen(true)} 
