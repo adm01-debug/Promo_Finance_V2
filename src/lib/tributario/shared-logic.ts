@@ -26,6 +26,12 @@ export interface ParametrosSimulacao {
   aliquotaICMS?: number;
   /** Alíquota ISS efetiva (0..1), default 0.05 (teto LC 116/2003). */
   aliquotaISS?: number;
+  /** Percentual (0..100) da receita proveniente de industrialização própria (Anexo II). */
+  percentualIndustria?: number;
+  /** Percentual (0..100) da receita de revenda/comércio (Anexo I). */
+  percentualRevenda?: number;
+  /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
+  atividadePrincipal?: string;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
