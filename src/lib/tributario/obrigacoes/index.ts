@@ -5,3 +5,4 @@ export * from './conformidade';
 export * from './historico';
 export * from './alertas';
 export * from './comparativo';
+export * from './digest';
