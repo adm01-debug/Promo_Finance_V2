@@ -73,11 +73,15 @@ export default function ObservabilidadeDigest() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <div className="relative">
+        <PageBackground />
         <PageHeader
           title="Observabilidade do Digest"
-          description="Entregas, descartes e falhas do resumo fiscal enviado por e-mail."
+          subtitle="Entregas, descartes e falhas do resumo fiscal enviado por e-mail."
+          icon={Mail}
         />
+
+        <div className="space-y-6 p-4 md:p-6">
 
         <div className="flex flex-wrap items-center gap-3">
           <Select value={dias} onValueChange={setDias}>
@@ -101,7 +105,7 @@ export default function ObservabilidadeDigest() {
         </div>
 
         {error ? (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               Não foi possível carregar o histórico de envios. Esta página é restrita a
@@ -315,7 +319,8 @@ export default function ObservabilidadeDigest() {
             )}
           </CardContent>
         </Card>
-      </PageBackground>
+        </div>
+      </div>
     </MainLayout>
   );
 }
