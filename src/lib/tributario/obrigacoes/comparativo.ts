@@ -182,7 +182,9 @@ export function compararConformidade(
       scoreAnterior,
       delta,
       direcao: scoreAnterior === null ? ('estavel' as DirecaoTendencia) : direcaoDe(delta),
-      media: tendencia.media,
+      // `analisarTendencia` devolve 100 para série vazia (ausência de falhas);
+      // no ranking isso seria enganoso, então empresa sem dados tem média 0.
+      media: atual ? tendencia.media : 0,
       multaAcumulada: tendencia.multaAcumulada,
       obrigacoesVencidas: atual?.vencidasPendentes ?? 0,
       totalObrigacoes: atual?.total ?? 0,
