@@ -428,6 +428,17 @@ export default function SimulacaoRegimes() {
                     </>
                   )}
                 </div>
+                <div className="flex items-center gap-2 pt-2">
+                  <Switch
+                    id="filtro-pendencias-historico"
+                    checked={somentePendencias}
+                    onCheckedChange={setSomentePendencias}
+                  />
+                  <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
+                    Somente snapshots com pendências
+                  </Label>
+                </div>
+
               </CardHeader>
               <CardContent className="space-y-2">
                 {historicoVisivel.length === 0 && (
