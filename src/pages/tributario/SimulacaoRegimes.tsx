@@ -474,16 +474,39 @@ export default function SimulacaoRegimes() {
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-2 pt-2">
-                  <Switch
-                    id="filtro-pendencias-historico"
-                    checked={somentePendencias}
-                    onCheckedChange={setSomentePendencias}
-                  />
-                  <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
-                    Somente snapshots com pendências
-                  </Label>
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="filtro-pendencias-historico"
+                      checked={somentePendencias}
+                      onCheckedChange={setSomentePendencias}
+                    />
+                    <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
+                      Somente snapshots com pendências
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="ordenacao-historico" className="text-xs font-normal">
+                      Ordenar por
+                    </Label>
+                    <Select
+                      value={ordenacao}
+                      onValueChange={(v) => setOrdenacao(v as OrdenacaoHistorico)}
+                    >
+                      <SelectTrigger id="ordenacao-historico" className="h-8 w-[190px] text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ORDENACOES_HISTORICO.map((o) => (
+                          <SelectItem key={o.valor} value={o.valor} className="text-xs">
+                            {o.rotulo}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
 
                 <div className="pt-2">
                   <Button
