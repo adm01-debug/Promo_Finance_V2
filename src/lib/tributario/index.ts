@@ -10,3 +10,4 @@ export * from './simular-real';
 export * from './decidir-regime';
 export * from './irpfm';
 export * from './projecao-reforma';
+export * from './versao';
