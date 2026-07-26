@@ -234,6 +234,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     faturamentoMensal,
     folhaMensal,
     historicoSimulacoes,
+    restaurarSimulacao,
     salvarSimulacao,
     sincronizarComServer,
     isSincronizando: decidirRegimeServer.isPending,
