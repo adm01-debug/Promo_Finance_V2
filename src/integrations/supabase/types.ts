@@ -10211,6 +10211,8 @@ export type Database = {
           ncm_id: string | null
           protocolo_id: string
           updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
         }
         Insert: {
           cest?: string | null
@@ -10221,6 +10223,8 @@ export type Database = {
           ncm_id?: string | null
           protocolo_id: string
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Update: {
           cest?: string | null
@@ -10231,6 +10235,8 @@ export type Database = {
           ncm_id?: string | null
           protocolo_id?: string
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Relationships: [
           {
@@ -12545,6 +12551,8 @@ export type Database = {
           regiao: Database["public"]["Enums"]["regiao_brasil"]
           sigla: Database["public"]["Enums"]["uf_brasil"]
           updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
         }
         Insert: {
           aliquota_fcp?: number
@@ -12560,6 +12568,8 @@ export type Database = {
           regiao: Database["public"]["Enums"]["regiao_brasil"]
           sigla: Database["public"]["Enums"]["uf_brasil"]
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Update: {
           aliquota_fcp?: number
@@ -12575,6 +12585,8 @@ export type Database = {
           regiao?: Database["public"]["Enums"]["regiao_brasil"]
           sigla?: Database["public"]["Enums"]["uf_brasil"]
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Relationships: []
       }
