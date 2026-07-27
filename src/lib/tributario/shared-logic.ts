@@ -725,7 +725,22 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
   // Defesa: margemLucro ausente/inválida não pode propagar NaN para o total.
   const margemLucro = Number.isFinite(p.margemLucro) ? Number(p.margemLucro) : 0;
-  const lucro = p.faturamentoAnual * (margemLucro / 100);
+
+  // Cenário trimestral: usa o lucro por trimestre informado ou o rateio pela
+  // sazonalidade da receita.
+  const trimestreInformado = p.lucroTrimestral?.length === 4;
+  const lucrosTrim = trimestreInformado
+    ? p.lucroTrimestral!.map((v) => (Number.isFinite(v) ? Number(v) : 0))
+    : distribuirTrimestres(p).map((f) => f * (margemLucro / 100));
+
+  // O resultado ANUAL precisa partir do MESMO resultado econômico usado no
+  // trimestral, senão o comparativo de periodicidade compara bases distintas
+  // (defeito que inflava/anulava `economiaPeriodicidade`). Quando o usuário
+  // informa o lucro de cada trimestre, o lucro do ano é a soma algébrica deles.
+  const lucro = trimestreInformado
+    ? lucrosTrim.reduce((acc, v) => acc + v, 0)
+    : p.faturamentoAnual * (margemLucro / 100);
+
   // Trava dos 30% (Lei 9.065/95, arts. 15 e 16): o estoque de prejuízo fiscal e
   // de base negativa reduz a base tributável em no máximo 30% do lucro do período.
   const compIrpj = compensarPrejuizo(lucro, p.prejuizoFiscalAcumulado ?? 0);
@@ -733,11 +748,6 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const irpjAnual = irpjPeriodoAnual(compIrpj.baseAjustada);
   const csllAnual = Math.max(0, compCsll.baseAjustada) * 0.09;
 
-  // Cenário trimestral: usa o lucro por trimestre informado ou o rateio pela
-  // sazonalidade da receita.
-  const lucrosTrim = p.lucroTrimestral?.length === 4
-    ? p.lucroTrimestral.map((v) => (Number.isFinite(v) ? Number(v) : 0))
-    : distribuirTrimestres(p).map((f) => f * (margemLucro / 100));
   const trim = apurarRealTrimestral(
     lucrosTrim,
     p.prejuizoFiscalAcumulado ?? 0,
@@ -750,6 +760,7 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const csll = usaTrimestral ? trim.csll : csllAnual;
   const alternativa = usaTrimestral ? irpjAnual + csllAnual : trim.irpj + trim.csll;
   const economiaPeriodicidade = alternativa - (irpj + csll);
+
   const baseCred = (p.comprasComCredito || 0) + (p.despesasOperacionais || 0);
   const pis = Math.max(0, p.faturamentoAnual * 0.0165 - baseCred * 0.0165);
   const cofins = Math.max(0, p.faturamentoAnual * 0.076 - baseCred * 0.076);
