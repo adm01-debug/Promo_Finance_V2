@@ -38,6 +38,19 @@ export function ParametrosForm({
 }: Props) {
   /** Valida o CNAE informado contra o catálogo fiscal interno. */
   const resolucaoCnae = useResolucaoCnae(parametros.cnaePrincipal ?? null);
+  /** Último código cujo RAT já foi aplicado — evita sobrescrever ajuste manual. */
+  const ratAplicadoRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const registro = resolucaoCnae.registro;
+    if (!registro) return;
+    if (ratAplicadoRef.current === registro.codigoNumerico) return;
+    ratAplicadoRef.current = registro.codigoNumerico;
+    if (parametros.aliquotaRAT === registro.rat_padrao) return;
+    setParametros({ ...parametros, aliquotaRAT: registro.rat_padrao });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolucaoCnae.registro]);
+
 
   /**
    * Derivação de encargos patronais a partir do CNAE.
