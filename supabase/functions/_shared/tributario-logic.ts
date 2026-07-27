@@ -594,6 +594,12 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
       `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
     );
   }
+  observacoes.push('IRPJ apurado trimestralmente (Lei 9.430/96, art. 1º): adicional de 10% sobre a base que exceder R$ 60 mil por trimestre.');
+  if (efeitoSazonalidade > 1) {
+    observacoes.push(
+      `Sazonalidade da receita eleva o adicional de IRPJ em R$ ${efeitoSazonalidade.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} frente a uma distribuição uniforme entre os trimestres.`,
+    );
+  }
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
