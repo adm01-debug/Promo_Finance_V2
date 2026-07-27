@@ -23,6 +23,11 @@ import {
   type ResultadoOverlay,
 } from '@/lib/tributario/icms/overlay';
 import { definirTabelaUfsEfetiva } from '@/lib/tributario/icms/tabelas';
+import {
+  aplicarOverlayNcm,
+  type ResultadoOverlayNcm,
+} from '@/lib/tributario/ipi-iss/overlay-ncm';
+import { definirTabelaTipiEfetiva } from '@/lib/tributario/ipi-iss/tabelas';
 import type { UF } from '@/lib/tributario/icms/types';
 
 export interface CatalogosFiscaisData {
@@ -32,6 +37,8 @@ export interface CatalogosFiscaisData {
   ufsAusentes: UF[];
   /** Catálogo municipal de ISS validado contra a faixa legal da LC 116. */
   overlayIss: ResultadoOverlayIss;
+  /** Catálogo de NCMs validado contra o teto de IPI e o formato de 8 dígitos. */
+  overlayNcm: ResultadoOverlayNcm;
 }
 
 export function useCatalogosFiscais() {
