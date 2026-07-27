@@ -10,7 +10,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Factory, Info } from 'lucide-react';
+import { useCatalogoIssMunicipal } from '@/hooks/useCatalogoIssMunicipal';
+import {
+  compararComSugestaoIss,
+  resolverAliquotaIss,
+  TABELA_ISS_VAZIA,
+} from '@/lib/tributario/ipi-iss/overlay-iss';
 import {
   LISTA_LC116,
   TIPI,
@@ -155,6 +162,36 @@ function IpiSimulador() {
           <CardContent><p className="text-2xl font-semibold tabular-nums">{brl(r.valorTotalNota)}</p></CardContent></Card>
       </div>
 
+      {comparacao.status !== 'sem_catalogo' && comparacao.sugestao && (
+        <Alert variant={comparacao.status === 'divergente' ? 'destructive' : 'default'}>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="flex flex-wrap items-center gap-2">
+            <span>
+              Catálogo municipal para {comparacao.sugestao.municipio}/{comparacao.sugestao.uf}
+              {comparacao.sugestao.itemCodigo
+                ? ` (item ${comparacao.sugestao.itemCodigo})`
+                : ' (alíquota geral)'}
+              : {pct(comparacao.sugestao.aliquota)}
+              {comparacao.status === 'divergente'
+                ? ` — informado difere em ${comparacao.diferencaPp.toFixed(2)} p.p.`
+                : ' — alíquota informada confere.'}
+            </span>
+            {comparacao.sugestao.baseLegal && (
+              <Badge variant="outline">{comparacao.sugestao.baseLegal}</Badge>
+            )}
+            {comparacao.status === 'divergente' && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setAliquota(Number((comparacao.sugestao!.aliquota * 100).toFixed(4)))}
+              >
+                Aplicar alíquota do catálogo
+              </Button>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Alertas alertas={r.alertas} />
       <Card>
         <CardHeader><CardTitle>Memória de cálculo</CardTitle></CardHeader>
@@ -176,12 +213,21 @@ function IssSimulador() {
   const [tomadorPj, setTomadorPj] = useState(true);
   const [simples, setSimples] = useState(false);
 
+  const { data: catalogoIss } = useCatalogoIssMunicipal();
+
   const r = useMemo(() => calcularIss({
     itemLc116: item, valorServico, materiais, subempreitadas,
     aliquotaMunicipal: aliquota / 100,
     municipioPrestador: prestador, municipioTomador: tomador, municipioExecucao: execucao,
     tomadorPessoaJuridica: tomadorPj, prestadorSimplesNacional: simples,
   }), [item, valorServico, materiais, subempreitadas, aliquota, prestador, tomador, execucao, tomadorPj, simples]);
+
+  // A sugestão segue o município COMPETENTE (LC 116, art. 3º), não o prestador.
+  const comparacao = useMemo(() => {
+    const tabela = catalogoIss?.tabela ?? TABELA_ISS_VAZIA;
+    const sugestao = resolverAliquotaIss(tabela, { municipio: r.municipioCompetente }, item);
+    return compararComSugestaoIss(aliquota / 100, sugestao);
+  }, [catalogoIss, r.municipioCompetente, item, aliquota]);
 
   return (
     <div className="space-y-6">
@@ -255,6 +301,36 @@ function IssSimulador() {
           {r.issRetidoPeloTomador && <Badge variant="destructive">ISS retido pelo tomador</Badge>}
         </CardContent>
       </Card>
+
+      {comparacao.status !== 'sem_catalogo' && comparacao.sugestao && (
+        <Alert variant={comparacao.status === 'divergente' ? 'destructive' : 'default'}>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="flex flex-wrap items-center gap-2">
+            <span>
+              Catálogo municipal para {comparacao.sugestao.municipio}/{comparacao.sugestao.uf}
+              {comparacao.sugestao.itemCodigo
+                ? ` (item ${comparacao.sugestao.itemCodigo})`
+                : ' (alíquota geral)'}
+              : {pct(comparacao.sugestao.aliquota)}
+              {comparacao.status === 'divergente'
+                ? ` — informado difere em ${comparacao.diferencaPp.toFixed(2)} p.p.`
+                : ' — alíquota informada confere.'}
+            </span>
+            {comparacao.sugestao.baseLegal && (
+              <Badge variant="outline">{comparacao.sugestao.baseLegal}</Badge>
+            )}
+            {comparacao.status === 'divergente' && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setAliquota(Number((comparacao.sugestao!.aliquota * 100).toFixed(4)))}
+              >
+                Aplicar alíquota do catálogo
+              </Button>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Alertas alertas={r.alertas} />
       <Card>
