@@ -14,6 +14,7 @@ import {
   ufsAusentesNoBanco,
   type ResultadoOverlay,
 } from '@/lib/tributario/icms/overlay';
+import { definirTabelaUfsEfetiva } from '@/lib/tributario/icms/tabelas';
 import type { UF } from '@/lib/tributario/icms/types';
 
 export interface CatalogosFiscaisData {
@@ -40,9 +41,14 @@ export function useCatalogosFiscais() {
         aliquota_fcp: uf.aliquota_fcp,
       }));
 
+      const overlay = aplicarOverlayUfs(registros);
+      // A tabela efetiva do motor passa a refletir o catálogo versionado.
+      // Somente valores já validados pelo overlay chegam aqui.
+      definirTabelaUfsEfetiva(overlay.tabela);
+
       return {
         painel: resumirPainelCatalogos({ ufs, interestaduais, faixas }),
-        overlay: aplicarOverlayUfs(registros),
+        overlay,
         ufsAusentes: ufsAusentesNoBanco(registros),
       };
     },
