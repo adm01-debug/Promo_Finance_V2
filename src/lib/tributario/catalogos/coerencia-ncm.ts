@@ -5,7 +5,7 @@
 // Módulo puro: recebe os registros já lidos do banco e devolve as divergências.
 // Nenhum I/O, nenhuma dependência de React ou Supabase — 100% testável.
 
-import { TIPI, buscarTipi } from '../ipi-iss/tabelas';
+import { TIPI, buscarTipiCanonica } from '../ipi-iss/tabelas';
 import { classificarNcmMonofasico, normalizarNcm } from '../monofasico/classificar';
 
 /** Recorte do registro de `ncms` relevante para a comparação. */
@@ -126,7 +126,7 @@ export function compararNcmsComCatalogo(
 export function ncmsForaDaTipi(registros: readonly NcmBanco[]): string[] {
   return registros
     .map((r) => normalizarNcm(r?.codigo ?? ''))
-    .filter((c) => c.length === 8 && buscarTipi(c) === undefined)
+    .filter((c) => c.length === 8 && buscarTipiCanonica(c) === undefined)
     .sort();
 }
 
