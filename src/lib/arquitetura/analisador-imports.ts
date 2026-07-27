@@ -151,6 +151,9 @@ export function construirGrafoObservado(raiz: string, modulos: readonly Modulo[]
 
   for (const modulo of modulos) {
     for (const arquivo of arquivosDoModulo(raiz, modulo)) {
+      // Um arquivo pertence ao módulo com o caminho mais específico. Isso permite
+      // que um módulo reivindique arquivos individuais dentro do diretório de outro.
+      if (moduloDoArquivo(arquivo, indice) !== modulo.id) continue;
       let conteudo: string;
       try {
         conteudo = readFileSync(resolve(raiz, arquivo), 'utf8');
