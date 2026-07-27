@@ -1,10 +1,12 @@
 import {
   aliquotaInternaDe, fcpDe, resolverAliquotaInterestadual,
 } from './tabelas';
+import { resolverMvaSt } from './overlay-mva';
 import type {
   InputDifal, InputIcmsSt, InputMvaAjustada, LinhaIcms,
-  ResultadoDifal, ResultadoIcmsSt,
+  ResultadoDifal, ResultadoIcmsSt, SituacaoIcmsSt,
 } from './types';
+
 
 /** Arredonda para 2 casas evitando erro de ponto flutuante (half-up). */
 export function round2(valor: number): number {
