@@ -689,6 +689,34 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
 }
 
 
+/**
+ * Apura IRPJ/CSLL do Lucro Real em regime TRIMESTRAL.
+ *
+ * Cada trimestre é um período de apuração autônomo: o adicional usa o limite de
+ * R$ 60 mil e um trimestre com prejuízo só reduz os seguintes pela trava dos
+ * 30% (Lei 9.065/95). É por isso que o trimestral costuma ser mais caro que o
+ * anual em empresas com resultado irregular.
+ */
+export function apurarRealTrimestral(
+  lucrosTrimestrais: number[],
+  estoqueIrpj: number,
+  estoqueCsll: number,
+): { irpj: number; csll: number; compensadoIrpj: number; compensadoCsll: number; saldoIrpj: number; saldoCsll: number } {
+  let sIrpj = Math.max(0, estoqueIrpj);
+  let sCsll = Math.max(0, estoqueCsll);
+  let irpj = 0, csll = 0, cIrpj = 0, cCsll = 0;
+  for (const bruto of lucrosTrimestrais) {
+    const lucro = Number.isFinite(bruto) ? Number(bruto) : 0;
+    const ci = compensarPrejuizo(lucro, sIrpj);
+    const cc = compensarPrejuizo(lucro, sCsll);
+    sIrpj = ci.saldo; sCsll = cc.saldo;
+    cIrpj += ci.compensado; cCsll += cc.compensado;
+    irpj += irpjPeriodoTrimestral(ci.baseAjustada);
+    csll += Math.max(0, cc.baseAjustada) * 0.09;
+  }
+  return { irpj, csll, compensadoIrpj: cIrpj, compensadoCsll: cCsll, saldoIrpj: sIrpj, saldoCsll: sCsll };
+}
+
 export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
   // Defesa: margemLucro ausente/inválida não pode propagar NaN para o total.
@@ -698,10 +726,26 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   // de base negativa reduz a base tributável em no máximo 30% do lucro do período.
   const compIrpj = compensarPrejuizo(lucro, p.prejuizoFiscalAcumulado ?? 0);
   const compCsll = compensarPrejuizo(lucro, p.baseNegativaCsllAcumulada ?? 0);
-  const baseIrpjReal = compIrpj.baseAjustada;
-  const baseCsllReal = compCsll.baseAjustada;
-  const irpj = Math.max(0, baseIrpjReal * 0.15 + (baseIrpjReal > 240000 ? (baseIrpjReal - 240000) * 0.10 : 0));
-  const csll = Math.max(0, baseCsllReal * 0.09);
+  const irpjAnual = irpjPeriodoAnual(compIrpj.baseAjustada);
+  const csllAnual = Math.max(0, compCsll.baseAjustada) * 0.09;
+
+  // Cenário trimestral: usa o lucro por trimestre informado ou o rateio pela
+  // sazonalidade da receita.
+  const lucrosTrim = p.lucroTrimestral?.length === 4
+    ? p.lucroTrimestral.map((v) => (Number.isFinite(v) ? Number(v) : 0))
+    : distribuirTrimestres(p).map((f) => f * (margemLucro / 100));
+  const trim = apurarRealTrimestral(
+    lucrosTrim,
+    p.prejuizoFiscalAcumulado ?? 0,
+    p.baseNegativaCsllAcumulada ?? 0,
+  );
+
+  const periodicidade: PeriodicidadeApuracao = p.periodicidadeApuracao ?? 'anual';
+  const usaTrimestral = periodicidade === 'trimestral';
+  const irpj = usaTrimestral ? trim.irpj : irpjAnual;
+  const csll = usaTrimestral ? trim.csll : csllAnual;
+  const alternativa = usaTrimestral ? irpjAnual + csllAnual : trim.irpj + trim.csll;
+  const economiaPeriodicidade = alternativa - (irpj + csll);
   const baseCred = (p.comprasComCredito || 0) + (p.despesasOperacionais || 0);
   const pis = Math.max(0, p.faturamentoAnual * 0.0165 - baseCred * 0.0165);
   const cofins = Math.max(0, p.faturamentoAnual * 0.076 - baseCred * 0.076);
