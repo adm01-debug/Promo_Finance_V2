@@ -9,16 +9,126 @@
 import type { AjusteParametro } from './diagnostico-parametros';
 import type { ParametrosSimulacao } from './types';
 
-/** Snapshot é utilizável apenas se trouxer, no mínimo, o faturamento anual. */
+/** Campos numéricos do snapshot, com piso e teto legais aplicados na leitura. */
+const CAMPOS_NUMERICOS: Record<string, { min: number; max: number }> = {
+  faturamentoAnual: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  folhaAnual: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  margemLucro: { min: -100, max: 100 },
+  percentualServicos: { min: 0, max: 100 },
+  percentualRevenda: { min: 0, max: 100 },
+  percentualIndustria: { min: 0, max: 100 },
+  percentualExportacao: { min: 0, max: 100 },
+  comprasComCredito: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  comprasComCreditoICMS: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  despesasOperacionais: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  aliquotaICMS: { min: 0, max: 1 },
+  aliquotaISS: { min: 0, max: 1 },
+  aliquotaRAT: { min: 0, max: 0.06 },
+  aliquotaTerceiros: { min: 0, max: 0.1 },
+  presuncaoIrpjServicos: { min: 0.08, max: 0.32 },
+  presuncaoCsllServicos: { min: 0.12, max: 0.32 },
+  sublimiteEstadual: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  issRetidoFonte: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  prejuizoFiscalAcumulado: { min: 0, max: Number.MAX_SAFE_INTEGER },
+  baseNegativaCsllAcumulada: { min: 0, max: Number.MAX_SAFE_INTEGER },
+};
+
+const CAMPOS_TEXTO = ['uf', 'atividadePrincipal', 'cnaePrincipal'] as const;
+
+/** Converte valores jsonb heterogêneos (number | string numérica) em número finito. */
+function numeroFinito(valor: unknown): number | null {
+  if (typeof valor === 'number') return Number.isFinite(valor) ? valor : null;
+  if (typeof valor === 'string' && valor.trim() !== '') {
+    const n = Number(valor);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function clamp(v: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, v));
+}
+
+/** Aceita apenas séries mensais bem-formadas; descarta a série inteira se corrompida. */
+function serieMensal(
+  valor: unknown,
+  chaves: readonly string[],
+  opcionais: readonly string[] = [],
+): Record<string, number>[] | null {
+  if (!Array.isArray(valor) || valor.length === 0 || valor.length > 120) return null;
+  const itens: Record<string, number>[] = [];
+  for (const bruto of valor) {
+    if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) return null;
+    const registro = bruto as Record<string, unknown>;
+    const item: Record<string, number> = {};
+    for (const chave of chaves) {
+      const n = numeroFinito(registro[chave]);
+      if (n === null) return null;
+      item[chave] = n;
+    }
+    for (const chave of opcionais) {
+      const n = numeroFinito(registro[chave]);
+      if (n !== null) item[chave] = n;
+    }
+    if (item.mes < 1 || item.mes > 12) return null;
+    itens.push(item);
+  }
+  return itens;
+}
+
+/**
+ * Snapshot é utilizável apenas se trouxer, no mínimo, um faturamento anual
+ * finito. Os demais campos são validados e limitados individualmente: um valor
+ * corrompido é descartado sem invalidar o registro inteiro, preservando a
+ * reprodutibilidade do histórico.
+ */
 export function normalizarParametrosSnapshot(
   bruto: unknown,
 ): Partial<ParametrosSimulacao> | null {
   if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) return null;
   const registro = bruto as Record<string, unknown>;
-  if (typeof registro.faturamentoAnual !== 'number') return null;
-  if (!Number.isFinite(registro.faturamentoAnual)) return null;
-  return registro as Partial<ParametrosSimulacao>;
+  const faturamentoAnual = numeroFinito(registro.faturamentoAnual);
+  if (faturamentoAnual === null || faturamentoAnual < 0) return null;
+
+  const saida: Record<string, unknown> = {};
+
+  for (const [campo, limite] of Object.entries(CAMPOS_NUMERICOS)) {
+    if (registro[campo] === undefined || registro[campo] === null) continue;
+    const n = numeroFinito(registro[campo]);
+    if (n === null) continue;
+    saida[campo] = clamp(n, limite.min, limite.max);
+  }
+  saida.faturamentoAnual = faturamentoAnual;
+
+  for (const campo of CAMPOS_TEXTO) {
+    const v = registro[campo];
+    if (typeof v === 'string' && v.trim() !== '') saida[campo] = v.trim().slice(0, 120);
+  }
+
+  if (registro.periodicidadeApuracao === 'anual' || registro.periodicidadeApuracao === 'trimestral') {
+    saida.periodicidadeApuracao = registro.periodicidadeApuracao;
+  }
+
+  if (Array.isArray(registro.lucroTrimestral) && registro.lucroTrimestral.length === 4) {
+    const trimestres = registro.lucroTrimestral.map(numeroFinito);
+    if (trimestres.every((v): v is number => v !== null)) saida.lucroTrimestral = trimestres;
+  }
+
+  const faturamentoMensal = serieMensal(
+    registro.faturamentoMensal,
+    ['ano', 'mes', 'receita_bruta'],
+    ['receita_servicos', 'receita_revenda', 'receita_industria', 'receita_exportacao'],
+  );
+  if (faturamentoMensal) saida.faturamentoMensal = faturamentoMensal;
+
+  const folhaMensal = serieMensal(registro.folhaMensal, [
+    'ano', 'mes', 'salarios', 'pro_labore', 'encargos', 'total_folha',
+  ]);
+  if (folhaMensal) saida.folhaMensal = folhaMensal;
+
+  return saida as Partial<ParametrosSimulacao>;
 }
+
 
 /** Filtra apenas os itens que satisfazem integralmente o contrato de ajuste. */
 export function normalizarAjustesAplicados(bruto: unknown): AjusteParametro[] {
