@@ -60,16 +60,46 @@ export const TIPI: readonly ItemTipi[] = [
   { ncm: '22030000', descricao: 'Cervejas de malte', aliquota: 0, situacao: 'nao_tributada' },
 ] as const;
 
-const TIPI_INDEX = new Map(TIPI.map((i) => [i.ncm, i]));
+const TIPI_INDEX: Record<string, ItemTipi> = Object.fromEntries(
+  TIPI.map((i) => [i.ncm, i]),
+);
 
 /** Normaliza o NCM removendo pontos, traços e espaços. */
 export function normalizarNcm(ncm: string): string {
-  return ncm.replace(/\D/g, '');
+  return (ncm ?? '').replace(/\D/g, '');
+}
+
+/**
+ * Tabela de IPI efetiva usada em runtime. Por padrão é o índice da TIPI
+ * embarcada; pode ser substituída pelo overlay já validado do catálogo do
+ * banco via `definirTabelaTipiEfetiva`. Nunca aceita valores não validados —
+ * o chamador deve usar `aplicarOverlayNcm` antes.
+ */
+let tabelaTipiEfetiva: Record<string, ItemTipi> = TIPI_INDEX;
+
+/** Substitui a tabela efetiva de IPI (uso exclusivo do carregador de catálogos). */
+export function definirTabelaTipiEfetiva(tabela: Record<string, ItemTipi>): void {
+  tabelaTipiEfetiva = tabela;
+}
+
+/** Restaura a TIPI canônica embarcada no código. */
+export function resetarTabelaTipiEfetiva(): void {
+  tabelaTipiEfetiva = TIPI_INDEX;
+}
+
+/** Tabela de IPI atualmente em uso pelo motor. */
+export function obterTabelaTipiEfetiva(): Record<string, ItemTipi> {
+  return tabelaTipiEfetiva;
 }
 
 /** Busca o item da TIPI pelo NCM (aceita máscara). Retorna `undefined` se não catalogado. */
 export function buscarTipi(ncm: string): ItemTipi | undefined {
-  return TIPI_INDEX.get(normalizarNcm(ncm));
+  return tabelaTipiEfetiva[normalizarNcm(ncm)];
+}
+
+/** Busca estritamente na TIPI embarcada, ignorando o overlay (uso das guardas de drift). */
+export function buscarTipiCanonica(ncm: string): ItemTipi | undefined {
+  return TIPI_INDEX[normalizarNcm(ncm)];
 }
 
 /**

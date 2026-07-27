@@ -23,6 +23,11 @@ import {
   type ResultadoOverlay,
 } from '@/lib/tributario/icms/overlay';
 import { definirTabelaUfsEfetiva } from '@/lib/tributario/icms/tabelas';
+import {
+  aplicarOverlayNcm,
+  type ResultadoOverlayNcm,
+} from '@/lib/tributario/ipi-iss/overlay-ncm';
+import { definirTabelaTipiEfetiva } from '@/lib/tributario/ipi-iss/tabelas';
 import type { UF } from '@/lib/tributario/icms/types';
 
 export interface CatalogosFiscaisData {
@@ -32,6 +37,8 @@ export interface CatalogosFiscaisData {
   ufsAusentes: UF[];
   /** Catálogo municipal de ISS validado contra a faixa legal da LC 116. */
   overlayIss: ResultadoOverlayIss;
+  /** Catálogo de NCMs validado contra o teto de IPI e o formato de 8 dígitos. */
+  overlayNcm: ResultadoOverlayNcm;
 }
 
 export function useCatalogosFiscais() {
@@ -63,11 +70,18 @@ export function useCatalogosFiscais() {
       const overlayIss = aplicarOverlayIss(issMunicipal);
       definirTabelaIssEfetiva(overlayIss.tabela);
 
+      // IPI: o catálogo `ncms` sobrepõe a TIPI embarcada após validação de
+      // formato (8 dígitos) e de teto (300%). Registros inválidos são
+      // rejeitados e o motor segue com a alíquota canônica do código.
+      const overlayNcm = aplicarOverlayNcm(ncms);
+      definirTabelaTipiEfetiva(overlayNcm.tabela);
+
       return {
         painel: resumirPainelCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
         overlay,
         ufsAusentes: ufsAusentesNoBanco(registros),
         overlayIss,
+        overlayNcm,
       };
     },
   });
