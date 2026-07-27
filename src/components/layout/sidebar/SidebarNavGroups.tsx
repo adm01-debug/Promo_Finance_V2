@@ -218,6 +218,7 @@ const navGroups: NavGroup[] = [
       { label: 'Guia de Estilo', icon: Palette, href: '/style-guide', highlight: true },
       { label: 'API & Integrações', icon: Code2, href: '/admin/api', highlight: true },
       { label: 'Campos Customizados', icon: Settings2, href: '/admin/campos-customizados', highlight: true },
+      { label: 'Arquitetura Modular', icon: Code2, href: '/tributario/arquitetura' },
 
     ],
   },
