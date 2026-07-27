@@ -138,6 +138,7 @@ const PreferenciasDigestPage = lazy(() => import('./pages/tributario/Preferencia
 const ObservabilidadeDigestPage = lazy(() => import('./pages/tributario/ObservabilidadeDigest'));
 const CatalogosFiscaisPage = lazy(() => import('./pages/tributario/CatalogosFiscais'));
 const AuditoriaOverlayPage = lazy(() => import('./pages/tributario/AuditoriaOverlay'));
+const ArquiteturaModularPage = lazy(() => import('./pages/tributario/ArquiteturaModular'));
 const OrganizacoesPage = lazy(() => import('./pages/organizacoes/Organizacoes'));
 const AceitarConvitePage = lazy(() => import('./pages/organizacoes/AceitarConvite'));
 
@@ -218,6 +219,7 @@ function AppRoutes() {
             <Route path="/tributario/projecao-reforma" element={<ProtectedRoute><ProjecaoReformaPage /></ProtectedRoute>} />
             <Route path="/tributario" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
             <Route path="/tributario/catalogos-fiscais" element={<ProtectedRoute><CatalogosFiscaisPage /></ProtectedRoute>} />
+            <Route path="/tributario/arquitetura" element={<ProtectedRoute><ArquiteturaModularPage /></ProtectedRoute>} />
             <Route path="/tributario/auditoria-overlay" element={<ProtectedRoute><AuditoriaOverlayPage /></ProtectedRoute>} />
             <Route path="/tributario/dashboard" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
             <Route path="/tributario/recomendacao" element={<ProtectedRoute><RecomendacaoExecutiva /></ProtectedRoute>} />
