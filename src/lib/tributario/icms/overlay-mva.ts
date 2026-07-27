@@ -25,19 +25,10 @@
  */
 
 import { isUF } from './tabelas';
-import type { UF } from './types';
+import type { SituacaoIcmsSt, UF } from './types';
 
 /** Papel da UF no protocolo de ST. */
 export type PapelProtocolo = 'ORIGEM' | 'DESTINO' | 'AMBOS';
-
-/** Situação jurídica da mercadoria para efeito de ICMS. */
-export type SituacaoIcmsSt =
-  | 'tributada'
-  | 'isenta'
-  | 'nao_tributada'
-  | 'aliquota_zero'
-  | 'imune'
-  | 'suspensa';
 
 /** Situações em que NÃO há operação subsequente tributada — logo, não há ST. */
 export const SITUACOES_SEM_ST: readonly SituacaoIcmsSt[] = [
