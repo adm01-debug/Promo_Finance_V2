@@ -92,7 +92,7 @@ export default function ArquiteturaModular() {
         </p>
       </header>
 
-      <Alert variant={conforme ? 'default' : 'destructive'}>
+      <Alert variant={conforme ? 'success' : 'error'}>
         {conforme ? (
           <CheckCircle2 className="h-4 w-4 text-success" aria-hidden />
         ) : (
