@@ -273,7 +273,7 @@ function IssSimulador() {
       </Card>
 
       {comparacao.status !== 'sem_catalogo' && comparacao.sugestao && (
-        <Alert variant={comparacao.status === 'divergente' ? 'destructive' : 'default'}>
+        <Alert variant={comparacao.status === 'divergente' ? 'warning' : 'default'}>
           <Info className="h-4 w-4" />
           <AlertDescription className="flex flex-wrap items-center gap-2">
             <span>
