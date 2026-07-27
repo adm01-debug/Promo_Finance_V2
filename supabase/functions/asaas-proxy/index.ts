@@ -3,7 +3,7 @@
 // Proxy seguro para API ASAAS - Full Feature Set
 // ============================================
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { validatePayload, createErrorResponse, AsaasProxySchema, corsHeaders } from '../_shared/validation.ts'
 import { withRetry, createCircuitBreaker } from '../_shared/resilience.ts'
 

@@ -13,7 +13,7 @@
  */
 
 // deno-lint-ignore-file no-explicit-any
-import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 // `node-forge` é carregado dinamicamente em `pfxToPem` para não exigir a
 // dependência em testes locais que só exercitam parsing/soap.
 

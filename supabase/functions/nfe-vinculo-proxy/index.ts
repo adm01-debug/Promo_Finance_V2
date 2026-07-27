@@ -1,7 +1,7 @@
 // Edge Function proxy autenticado para RPCs nfe_* (SECURITY DEFINER).
 // Frontend não chama mais RPCs diretamente: valida JWT e usa service_role.
 // Auditoria: logs estruturados + persistência em audit_logs por chamada.
-import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 import {
   auditedRpc,
   beginAudit,

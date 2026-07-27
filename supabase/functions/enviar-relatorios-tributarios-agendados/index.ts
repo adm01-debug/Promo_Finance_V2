@@ -2,7 +2,7 @@
 // EDGE FUNCTION: enviar-relatorios-tributarios-agendados (P7)
 // Cron diário 06:00 — drena agendamentos vencidos, gera PDF e envia por e-mail.
 // ============================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { PDFDocument, StandardFonts, rgb } from 'https://esm.sh/pdf-lib@1.17.1';
 import { createLogger } from '../_shared/observability.ts';
 

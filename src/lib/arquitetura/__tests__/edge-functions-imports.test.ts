@@ -29,6 +29,9 @@ function listarArquivos(dir: string, acc: string[] = []): string[] {
 
 const ARQUIVOS = listarArquivos(RAIZ_FUNCOES);
 
+/** Versão única do cliente Supabase permitida nas Edge Functions. */
+const VERSAO_CANONICA_SUPABASE_JS = '2.49.4';
+
 const REGEX_ESPECIFICADOR = /from\s+['"]([^'"]+)['"]/g;
 
 interface ImportObservado {
@@ -54,15 +57,25 @@ describe('Edge Functions — conformidade de imports Deno', () => {
     expect(IMPORTS.length).toBeGreaterThan(0);
   });
 
-  it('não usa subpaths inexistentes de @supabase/supabase-js', () => {
-    const invalidos = IMPORTS.filter(({ especificador }) =>
-      /@supabase\/supabase-js(@[\d.]+)?\/(?!$)/.test(especificador),
+  it('usa uma única versão canônica de @supabase/supabase-js', () => {
+    const versoes = new Set(
+      IMPORTS.map(({ especificador }) =>
+        especificador.match(/@supabase\/supabase-js@([\d.]+)/)?.[1],
+      ).filter((v): v is string => Boolean(v)),
     );
     expect(
-      invalidos.map((i) => `${i.arquivo} -> ${i.especificador}`),
-      'o pacote supabase-js não expõe subpaths (ex.: /cors); use ../_shared/cors.ts',
-    ).toEqual([]);
+      [...versoes],
+      'versões divergentes do supabase-js causam comportamento inconsistente entre funções',
+    ).toEqual([VERSAO_CANONICA_SUPABASE_JS]);
   });
+
+  it('não importa @supabase/supabase-js sem versão fixada', () => {
+    const flutuantes = IMPORTS.filter(({ especificador }) =>
+      /@supabase\/supabase-js(?![@\d])/.test(especificador),
+    );
+    expect(flutuantes.map((i) => `${i.arquivo} -> ${i.especificador}`)).toEqual([]);
+  });
+
 
   it('não usa o alias "@/" do frontend dentro das funções', () => {
     const invalidos = IMPORTS.filter(({ especificador }) => especificador.startsWith('@/'));

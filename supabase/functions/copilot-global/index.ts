@@ -1,6 +1,6 @@
 // Edge: copilot-global
 // Assistente IA contextual para todas as páginas. SSE streaming via Lovable AI Gateway.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
 

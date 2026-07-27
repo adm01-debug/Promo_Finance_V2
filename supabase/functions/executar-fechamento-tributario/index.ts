@@ -2,7 +2,7 @@
 // EDGE: executar-fechamento-tributario (P10)
 // 6 etapas validadas + auditoria + bloqueio
 // ============================================
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { createLogger } from "../_shared/observability.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";

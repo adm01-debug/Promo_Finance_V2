@@ -1,7 +1,7 @@
 // SCIM 2.0 server — Users + Groups com provisioning real em user_empresas + user_roles
 // Path: /functions/v1/scim-server/scim/v2/{ServiceProviderConfig|ResourceTypes|Schemas|Users|Groups}/{id?}
 import { corsHeaders } from "../_shared/cors.ts";
-import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2.45.0";
+import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;

@@ -2,7 +2,7 @@
  * Cabeçalhos CORS canônicos das Edge Functions.
  *
  * Por que este arquivo existe: diversas funções importavam `corsHeaders` de
- * `npm:@supabase/supabase-js/cors`, um subpath que NÃO existe no pacote — o que
+ * `npm:@supabase/supabase-js@2.49.4/cors`, um subpath que NÃO existe no pacote — o que
  * derruba a função com erro de módulo já no boot. Aqui centralizamos a lista de
  * headers permitidos, incluindo os `x-supabase-client-*` que o cliente JS envia.
  */

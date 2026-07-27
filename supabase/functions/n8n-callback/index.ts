@@ -5,7 +5,7 @@
 //  - create_alert           → insere em alerts (type, severity, title, message, metadata)
 //  - log                    → registra em audit_logs (action, table_name, new_data)
 // Autenticação opcional via header x-n8n-secret (env N8N_CALLBACK_SECRET).
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
