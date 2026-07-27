@@ -94,7 +94,7 @@ export const MODULOS: readonly Modulo[] = [
     camada: 1,
     funcao: 'CRUD de empresas, faturamento, folha, produtos e parâmetros fiscais.',
     caminhos: ['src/pages/Empresas.tsx', 'src/components/empresas'],
-    dependencias: ['M01', 'M11', 'M12'],
+    dependencias: ['M01', 'M09', 'M11', 'M12'],
     puro: false,
   },
   {
@@ -103,7 +103,7 @@ export const MODULOS: readonly Modulo[] = [
     camada: 1,
     funcao: 'Dashboards, gráficos e exportação de relatórios profissionais.',
     caminhos: ['src/pages/tributario', 'src/lib/tributario/relatorio-pdf.ts'],
-    dependencias: ['M01', 'M02', 'M04'],
+    dependencias: ['M01', 'M02', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09', 'M10', 'M11', 'M12'],
     puro: false,
   },
   {
@@ -156,7 +156,7 @@ export const MODULOS: readonly Modulo[] = [
       'src/lib/tributario/pis-cofins',
       'src/lib/tributario/irpj-csll',
     ],
-    dependencias: ['M11'],
+    dependencias: ['M09', 'M11'],
     puro: true,
   },
   {
@@ -186,6 +186,11 @@ export const MODULOS: readonly Modulo[] = [
       'src/lib/tributario/decidir-regime.ts',
       'src/lib/tributario/recomendar-empresa.ts',
       'src/lib/tributario/diagnostico-parametros.ts',
+      'src/lib/tributario/catalogos/coerencia-ncm.ts',
+      'src/lib/tributario/catalogos/coerencia-iss.ts',
+      'src/lib/tributario/catalogos/coerencia-mva.ts',
+      'src/lib/tributario/catalogos/coerencia-ufs.ts',
+      'src/lib/tributario/catalogos/resumo-mva.ts',
     ],
     dependencias: ['M07', 'M08', 'M09', 'M11'],
     puro: true,
@@ -200,7 +205,7 @@ export const MODULOS: readonly Modulo[] = [
       'src/lib/tributario/aliquotas-simples.ts',
       'src/lib/tributario/rbt12.ts',
     ],
-    dependencias: [],
+    dependencias: ['M12'],
     puro: true,
   },
   {
