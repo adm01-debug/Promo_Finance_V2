@@ -240,10 +240,15 @@ export default function Organizacoes() {
                     onSubmit={(event) => {
                       event.preventDefault();
                       criarConvite.mutate(novoConvite, {
-                        onSuccess: () => {
-                          toast.success('Convite gerado. Copie o link e envie ao convidado.');
+                        onSuccess: (convite) => {
+                          toast.success(
+                            convite.emailEnviado
+                              ? `Convite enviado por e-mail para ${convite.email_convidado}.`
+                              : 'Convite gerado. Copie o link e envie ao convidado.',
+                          );
                           setNovoConvite({ email: '', papel: 'MEMBRO' });
                         },
+
                         onError: (erro) => toast.error(mensagemErro(erro)),
                       });
                     }}
