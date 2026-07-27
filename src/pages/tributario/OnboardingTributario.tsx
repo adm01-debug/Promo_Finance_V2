@@ -56,6 +56,9 @@ export default function OnboardingTributario() {
     (e) => (e.cnpj || '').replace(/\D/g, '') === (cnpjData?.cnpj || ''),
   );
 
+  /** CNAE retornado pelo CNPJá validado contra o catálogo fiscal interno. */
+  const resolucaoCnae = useResolucaoCnae(cnpjData?.cnaePrincipal?.codigo ?? null);
+
   // Persistência de rascunho
   useEffect(() => {
     try {
