@@ -208,6 +208,8 @@ const navGroups: NavGroup[] = [
       { label: 'Eventos JIT (SSO)', icon: ShieldCheck, href: '/admin/sso-jit-events' },
       { label: 'Privacidade & LGPD', icon: Shield, href: '/configuracoes/privacidade', highlight: true },
       { label: 'Usuários', icon: UserCog, href: '/usuarios' },
+      { label: 'Organizações & Equipes', icon: Users, href: '/organizacoes', highlight: true },
+
       { label: 'Integrações Hub', icon: Zap, href: '/integracoes', highlight: true },
       { label: 'Portal do Cliente', icon: Globe, href: '/portal-cliente', highlight: true },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
