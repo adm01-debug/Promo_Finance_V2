@@ -36,6 +36,69 @@ function decidirRegimeInternal(p: ParametrosSimulacao, ano: number, mes: number,
   return { cenarios, recomendado, segundoLugar, economiaAnualVsAtual: economia, alertas, justificativa };
 }
 
+/** Converte para número finito ou `undefined` (aceita string numérica de legado). */
+function numeroFinito(v: unknown): number | undefined {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  if (typeof v === 'string' && v.trim() !== '') {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  }
+  return undefined;
+}
+
+function clamp(v: number, min: number, max: number) {
+  return Math.min(Math.max(v, min), max);
+}
+
+/** Campos numéricos aceitos no override, com faixa legal de saneamento. */
+const CAMPOS_NUMERICOS: Record<string, [number, number]> = {
+  percentualIndustria: [0, 100],
+  percentualRevenda: [0, 100],
+  aliquotaICMS: [0, 1],
+  aliquotaISS: [0, 1],
+  sublimiteEstadual: [0, Number.MAX_SAFE_INTEGER],
+  issRetidoFonte: [0, Number.MAX_SAFE_INTEGER],
+  aliquotaRAT: [0, 0.06],
+  aliquotaTerceiros: [0, 0.08],
+  presuncaoIrpjServicos: [0.08, 0.32],
+  presuncaoCsllServicos: [0.12, 0.32],
+  comprasComCreditoICMS: [0, Number.MAX_SAFE_INTEGER],
+  prejuizoFiscalAcumulado: [0, Number.MAX_SAFE_INTEGER],
+  baseNegativaCsllAcumulada: [0, Number.MAX_SAFE_INTEGER],
+};
+
+/**
+ * Normaliza `parametrosOverride` preservando os campos avançados do motor
+ * (periodicidade, prejuízos, alíquotas, presunções) que antes eram descartados,
+ * causando divergência entre o cálculo do cliente e o do servidor.
+ */
+function normalizarOverride(raw: unknown): Partial<ParametrosSimulacao> {
+  const out: Record<string, unknown> = {};
+  if (!raw || typeof raw !== 'object') return out;
+  const src = raw as Record<string, unknown>;
+
+  for (const [campo, [min, max]] of Object.entries(CAMPOS_NUMERICOS)) {
+    const n = numeroFinito(src[campo]);
+    if (n !== undefined) out[campo] = clamp(n, min, max);
+  }
+
+  if (typeof src.atividadePrincipal === 'string') {
+    out.atividadePrincipal = src.atividadePrincipal.slice(0, 120);
+  }
+  if (typeof src.cnaePrincipal === 'string') {
+    out.cnaePrincipal = src.cnaePrincipal.slice(0, 120);
+  }
+  if (src.periodicidadeApuracao === 'anual' || src.periodicidadeApuracao === 'trimestral') {
+    out.periodicidadeApuracao = src.periodicidadeApuracao;
+  }
+  if (Array.isArray(src.lucroTrimestral) && src.lucroTrimestral.length === 4) {
+    const tri = src.lucroTrimestral.map((v) => numeroFinito(v));
+    if (tri.every((v) => v !== undefined)) out.lucroTrimestral = tri as number[];
+  }
+
+  return out as Partial<ParametrosSimulacao>;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
