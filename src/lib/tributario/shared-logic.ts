@@ -621,7 +621,15 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const presIrpjServ = p.presuncaoIrpjServicos ?? 0.32;
   const presCsllServ = p.presuncaoCsllServicos ?? 0.32;
   const baseIrpj = rs * presIrpjServ + rc * 0.08;
-  const irpj = baseIrpj * 0.15 + (baseIrpj > 240000 ? (baseIrpj - 240000) * 0.10 : 0);
+  // Apuração do IRPJ no Lucro Presumido é OBRIGATORIAMENTE trimestral
+  // (Lei 9.430/96, art. 1º), com adicional de 10% sobre o que exceder
+  // R$ 60.000 em cada trimestre. Sob sazonalidade, isso custa mais do que a
+  // conta anual equivalente — diferença capturada aqui.
+  const trimestres = distribuirTrimestres(p);
+  const basesTrimestrais = trimestres.map((f) => f * ps * presIrpjServ + f * pc * 0.08);
+  const irpj = basesTrimestrais.reduce((acc, b) => acc + irpjPeriodoTrimestral(b), 0);
+  const irpjEquivalenteAnual = irpjPeriodoAnual(baseIrpj);
+  const efeitoSazonalidade = irpj - irpjEquivalenteAnual;
   const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
