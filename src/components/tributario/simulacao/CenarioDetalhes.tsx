@@ -7,6 +7,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import type { ResultadoCenario } from '@/lib/tributario';
+import { PeriodicidadeComparativoCard } from './PeriodicidadeComparativoCard';
+
 
 export function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
   if (!cenario.elegivel) {
@@ -62,6 +64,10 @@ export function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
             )}
           </div>
         )}
+
+        <PeriodicidadeComparativoCard cenario={cenario} />
+
+
 
         {cenario.observacoes.length > 0 && (
           <div className="text-sm space-y-1 p-3 rounded bg-muted/30">
