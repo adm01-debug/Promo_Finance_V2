@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +12,9 @@ import { useCriarEmpresa, useAtualizarEmpresa, type Empresa } from '@/hooks/useE
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { TABELA_FPAS, resolverFpasPorCnae, buscarFpas } from '@/lib/tributario/folha/fpas-terceiros';
+import { useResolucaoCnae } from '@/hooks/useCnaes';
+import { CnaeCatalogoInfo } from './CnaeCatalogoInfo';
+
 
 /** Converte uma fração decimal (0.058) para percentual (5.8), preservando null. */
 function paraPercentual(valor: number | null | undefined): number | null {
@@ -157,11 +160,20 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
   };
 
   /**
+   * Marca que o CNAE foi editado pelo usuário nesta sessão do formulário.
+   * Sem isso, a derivação assíncrona do catálogo sobrescreveria RAT/Terceiros
+   * já persistidos ao abrir uma empresa em edição — apagando ajustes manuais
+   * (FAP individual, por exemplo) que o usuário fez de propósito.
+   */
+  const cnaeEditadoRef = useRef(false);
+
+  /**
    * Ao digitar o CNAE, deriva automaticamente o FPAS e a alíquota de Terceiros.
    * A derivação é apenas uma sugestão: o usuário pode sobrescrever ambos manualmente.
    */
   const handleCnaeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const masked = applyCnaeMask(e.target.value);
+    cnaeEditadoRef.current = true;
     setValue('cnae_principal', masked, { shouldValidate: true });
     const digitos = masked.replace(/\D/g, '');
     if (digitos.length >= 2) {
@@ -172,6 +184,7 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
       });
     }
   };
+
 
   /** Seleção manual de FPAS sincroniza a alíquota de Terceiros correspondente. */
   const handleFpasChange = (codigo: string) => {
@@ -226,6 +239,17 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
   const fpasValue = watch('codigo_fpas');
   const cnaeDigitos = (cnaeValue || '').replace(/\D/g, '');
   const fpasSugerido = cnaeDigitos.length >= 2 ? resolverFpasPorCnae(cnaeDigitos) : null;
+
+  // Catálogo fiscal: fonte de verdade para RAT por atividade (a tabela FPAS
+  // cobre apenas Terceiros). Só aplica quando o usuário editou o CNAE agora.
+  const resolucaoCnae = useResolucaoCnae(cnaeValue);
+  const ratCatalogo = resolucaoCnae.registro?.rat_padrao ?? null;
+
+  useEffect(() => {
+    if (!cnaeEditadoRef.current || ratCatalogo === null) return;
+    setValue('aliquota_rat', Number((ratCatalogo * 100).toFixed(2)), { shouldValidate: true });
+  }, [ratCatalogo, setValue]);
+
 
 
   return (
@@ -382,7 +406,9 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
                 ? `Sugestão: FPAS ${fpasSugerido.codigo} — ${fpasSugerido.descricao} (Terceiros ${(fpasSugerido.aliquotaTerceiros * 100).toFixed(1)}%)`
                 : 'Informe o CNAE para derivar o FPAS automaticamente.'}
             </p>
+            <CnaeCatalogoInfo resolucao={resolucaoCnae} digitos={cnaeDigitos.length} />
             {errors.cnae_principal && <p className="text-sm text-destructive">{errors.cnae_principal.message}</p>}
+
           </div>
 
           <div className="space-y-2">
