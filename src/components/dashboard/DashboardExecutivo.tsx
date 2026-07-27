@@ -355,9 +355,13 @@ export const DashboardExecutivo = () => {
               <MetasFinanceirasPanel />
             </motion.div>
             <motion.div variants={itemVariants}>
+              <AlertasCatalogosFiscaisCard />
+            </motion.div>
+            <motion.div variants={itemVariants}>
               <AlertasOrcamento />
             </motion.div>
           </div>
+
         </div>
       </motion.div>
 
