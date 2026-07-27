@@ -9392,6 +9392,66 @@ export type Database = {
           },
         ]
       }
+      overlay_rejeicoes_auditoria: {
+        Row: {
+          campo: string
+          catalogo: string
+          created_at: string
+          descricao: string | null
+          id: string
+          identificador: string
+          motivo: string
+          observacao: string | null
+          ocorrencias: number
+          primeira_deteccao: string
+          referencia: string
+          resolvido_em: string | null
+          resolvido_por: string | null
+          severidade: string
+          ultima_deteccao: string
+          updated_at: string
+          valor_recebido: string | null
+        }
+        Insert: {
+          campo: string
+          catalogo: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          identificador: string
+          motivo: string
+          observacao?: string | null
+          ocorrencias?: number
+          primeira_deteccao?: string
+          referencia: string
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          severidade?: string
+          ultima_deteccao?: string
+          updated_at?: string
+          valor_recebido?: string | null
+        }
+        Update: {
+          campo?: string
+          catalogo?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          identificador?: string
+          motivo?: string
+          observacao?: string | null
+          ocorrencias?: number
+          primeira_deteccao?: string
+          referencia?: string
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          severidade?: string
+          ultima_deteccao?: string
+          updated_at?: string
+          valor_recebido?: string | null
+        }
+        Relationships: []
+      }
       parcelas_acordo: {
         Row: {
           acordo_id: string | null
