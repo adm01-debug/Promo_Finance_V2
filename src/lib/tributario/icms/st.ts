@@ -120,9 +120,17 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
     ufDestino: input.ufDestino,
     situacao: situacaoIcms,
   });
-  alertas.push(...resolucao.alertas);
-
   const stAfastadaPorRegraJuridica = resolucao.bloqueio !== null;
+  // A MVA informada manualmente prevalece sobre o protocolo (o usuário pode
+  // conhecer regime especial/pauta local); nesse caso só os avisos de bloqueio
+  // jurídico são relevantes.
+  const usouProtocolo = !stAfastadaPorRegraJuridica && mvaInformada === null && resolucao.encontrado;
+  if (stAfastadaPorRegraJuridica || usouProtocolo) alertas.push(...resolucao.alertas);
+  if (resolucao.encontrado && mvaInformada !== null) {
+    alertas.push(
+      `MVA informada manualmente prevaleceu sobre a do protocolo ${resolucao.protocolo}.`,
+    );
+  }
   const mvaOriginal = stAfastadaPorRegraJuridica
     ? 0
     : (mvaInformada ?? resolucao.mvaOriginal);
@@ -198,8 +206,8 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
     totalRecolher,
     valorTotalNota: round2(baseBruta + ipi + totalRecolher),
     operacaoInterestadual,
-    protocoloSt: mvaInformada !== null && !resolucao.encontrado ? null : resolucao.protocolo,
-    cestSt: resolucao.cest,
+    protocoloSt: usouProtocolo ? resolucao.protocolo : null,
+    cestSt: resolucao.encontrado ? resolucao.cest : null,
     situacaoIcms,
     stAfastadaPorRegraJuridica,
     linhas,
