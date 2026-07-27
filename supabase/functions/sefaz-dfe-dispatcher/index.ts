@@ -4,7 +4,7 @@
 //
 // Política pura em ./policy.ts (testada em policy_test.ts com 1000 cenários).
 
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { corsHeaders } from "../_shared/cors.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { createLogger } from "../_shared/logger.ts";
 import { getRequestId, correlationResponseHeaders } from "../_shared/correlation.ts";

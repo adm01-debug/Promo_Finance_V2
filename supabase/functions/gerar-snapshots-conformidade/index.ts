@@ -12,7 +12,7 @@
  *  - JWT de usuário com papel `admin`.
  */
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { corsHeaders } from "../_shared/cors.ts";
 import { z } from 'npm:zod@3.23.8';
 
 import { gerarCalendario, competenciasAoRedor } from '../_shared/obrigacoes/calendario.ts';
