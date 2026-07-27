@@ -47,7 +47,12 @@ export interface ParametrosSimulacao {
   aliquotaTerceiros?: number;
   /** CNAE principal da empresa; usado para derivar a alíquota de terceiros quando não informada. */
   cnaePrincipal?: string;
+  /** Presunção IRPJ sobre serviços (fração). Default 0,32; transporte 0,08/0,16. */
+  presuncaoIrpjServicos?: number;
+  /** Presunção CSLL sobre serviços (fração). Default 0,32; transporte/hospitalar 0,12. */
+  presuncaoCsllServicos?: number;
 }
+
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
   motivoInelegibilidade?: string;
