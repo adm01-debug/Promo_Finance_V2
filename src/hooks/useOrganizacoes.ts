@@ -191,8 +191,25 @@ export function useCriarConvite(organizacaoId: string | null) {
         .select()
         .single();
       if (error) throw error;
-      return data as ConviteOrganizacao;
+
+      const convite = data as ConviteOrganizacao;
+
+      // Envio do e-mail é best-effort: falha de provedor não invalida o convite,
+      // que continua acessível pelo link copiável na UI.
+      let emailEnviado = false;
+      try {
+        const { data: envio } = await supabase.functions.invoke<{ enviado?: boolean }>(
+          'enviar-convite-organizacao',
+          { body: { convite_id: convite.id, origin: window.location.origin } },
+        );
+        emailEnviado = envio?.enviado === true;
+      } catch {
+        emailEnviado = false;
+      }
+
+      return { ...convite, emailEnviado };
     },
+
     onSuccess: () => {
       if (organizacaoId) {
         void queryClient.invalidateQueries({ queryKey: CHAVE.convites(organizacaoId) });
