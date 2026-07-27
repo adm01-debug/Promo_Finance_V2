@@ -29,6 +29,9 @@ function listarArquivos(dir: string, acc: string[] = []): string[] {
 
 const ARQUIVOS = listarArquivos(RAIZ_FUNCOES);
 
+/** Versão única do cliente Supabase permitida nas Edge Functions. */
+const VERSAO_CANONICA_SUPABASE_JS = '2.49.4';
+
 const REGEX_ESPECIFICADOR = /from\s+['"]([^'"]+)['"]/g;
 
 interface ImportObservado {
