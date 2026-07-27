@@ -53,6 +53,7 @@ const ROTULO_CATALOGO: Record<CatalogoOverlay, string> = {
   iss: 'ISS municipal',
   ncm: 'NCM / TIPI',
   monofasico: 'Monofásico',
+  mva_st: 'MVA/ST por protocolo',
 };
 
 const dataHora = (iso: string | null) =>
@@ -77,6 +78,7 @@ export default function AuditoriaOverlay() {
       iss: dados.overlayIss.rejeitadas,
       ncm: dados.overlayNcm.rejeitadas,
       monofasico: dados.overlayMonofasico.rejeitadas,
+      mva_st: dados.overlayMva.rejeitadas,
     });
   }, [catalogos.data]);
 

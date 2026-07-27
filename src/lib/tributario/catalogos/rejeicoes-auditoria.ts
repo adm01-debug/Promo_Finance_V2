@@ -16,8 +16,9 @@ import type {
   ResultadoOverlayMonofasico,
   MotivoRejeicaoMonofasico,
 } from '@/lib/tributario/monofasico/overlay-monofasico';
+import type { ResultadoOverlayMva, MotivoRejeicaoMva } from '@/lib/tributario/icms/overlay-mva';
 
-export type CatalogoOverlay = 'icms' | 'iss' | 'ncm' | 'monofasico';
+export type CatalogoOverlay = 'icms' | 'iss' | 'ncm' | 'monofasico' | 'mva_st';
 export type SeveridadeRejeicao = 'critico' | 'atencao';
 
 /** Linha normalizada de auditoria — espelha `public.overlay_rejeicoes_auditoria`. */
@@ -40,6 +41,7 @@ export interface EntradaColetaRejeicoes {
   iss?: ResultadoOverlayIss['rejeitadas'];
   ncm?: ResultadoOverlayNcm['rejeitadas'];
   monofasico?: ResultadoOverlayMonofasico['rejeitadas'];
+  mva_st?: ResultadoOverlayMva['rejeitadas'];
 }
 
 const CAMPO_ICMS: Record<MotivoRejeicao, string> = {
@@ -63,6 +65,18 @@ const CAMPO_NCM: Record<MotivoRejeicaoNcm, string> = {
   duplicado: 'codigo',
   aliquota_invalida: 'aliquota_ipi',
   aliquota_fora_da_faixa: 'aliquota_ipi',
+};
+
+const CAMPO_MVA: Record<MotivoRejeicaoMva, string> = {
+  ncm_invalido: 'ncm_codigo',
+  protocolo_invalido: 'protocolo_id',
+  mva_invalida: 'mva_original',
+  mva_fora_da_faixa: 'mva_original',
+  vigencia_invalida: 'vigente_de/vigente_ate',
+  duplicado: 'protocolo_id+ncm_codigo',
+  sem_uf_signataria: 'protocolos_st_ufs',
+  uf_desconhecida: 'uf',
+  papel_invalido: 'papel',
 };
 
 const CAMPO_MONOFASICO: Record<MotivoRejeicaoMonofasico, string> = {
@@ -141,6 +155,18 @@ export function coletarRejeicoesOverlay(entrada: EntradaColetaRejeicoes): Rejeic
     });
   }
 
+  for (const r of entrada.mva_st ?? []) {
+    linhas.push({
+      catalogo: 'mva_st',
+      identificador: `${r.protocolo || '—'}#${r.ncm || '—'}`,
+      descricao: `Protocolo ${r.protocolo || '—'}`,
+      campo: CAMPO_MVA[r.motivo] ?? 'desconhecido',
+      motivo: r.motivo,
+      valorRecebido: serializarValor(r.valor),
+      severidade: severidadePorMotivo(r.motivo),
+    });
+  }
+
   return linhas;
 }
 
@@ -154,7 +180,7 @@ export interface ResumoRejeicoes {
 
 /** Agrega as linhas auditáveis para os cartões de topo da tela. */
 export function resumirRejeicoes(linhas: RejeicaoAuditavel[]): ResumoRejeicoes {
-  const porCatalogo: Record<CatalogoOverlay, number> = { icms: 0, iss: 0, ncm: 0, monofasico: 0 };
+  const porCatalogo: Record<CatalogoOverlay, number> = { icms: 0, iss: 0, ncm: 0, monofasico: 0, mva_st: 0 };
   const motivos = new Map<string, number>();
   let criticos = 0;
 

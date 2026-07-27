@@ -19,7 +19,7 @@ const corsHeaders = {
 };
 
 const RejeicaoSchema = z.object({
-  catalogo: z.enum(["icms", "iss", "ncm", "monofasico"]),
+  catalogo: z.enum(["icms", "iss", "ncm", "monofasico", "mva_st"]),
   identificador: z.string().min(1).max(120),
   descricao: z.string().max(300).nullable().optional(),
   campo: z.string().min(1).max(80),
