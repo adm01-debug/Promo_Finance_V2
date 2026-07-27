@@ -34,13 +34,22 @@ describe('normalizarParametrosSnapshot', () => {
     ['array', [] as unknown],
     ['string', 'x'],
     ['sem faturamento', { margemLucro: 10 }],
-    ['faturamento string', { faturamentoAnual: '1000' }],
+    ['faturamento não numérico', { faturamentoAnual: 'abc' }],
     ['faturamento NaN', { faturamentoAnual: Number.NaN }],
     ['faturamento Infinity', { faturamentoAnual: Number.POSITIVE_INFINITY }],
   ])('rejeita %s', (_label, entrada) => {
     expect(normalizarParametrosSnapshot(entrada)).toBeNull();
   });
+
+  // jsonb legado gravou números como string em parte dos registros: coagir é
+  // preferível a descartar o snapshot inteiro e perder a reprodutibilidade.
+  it('coage faturamento persistido como string numérica', () => {
+    expect(normalizarParametrosSnapshot({ faturamentoAnual: '1000' })).toEqual({
+      faturamentoAnual: 1000,
+    });
+  });
 });
+
 
 describe('normalizarAjustesAplicados', () => {
   it('retorna lista vazia para entradas não-array (registros legados)', () => {
