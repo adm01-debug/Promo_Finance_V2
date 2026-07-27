@@ -9,6 +9,7 @@
 
 import { compararFaixasComCatalogo } from './coerencia';
 import { compararItensIssComCatalogo, type ItemIssBanco } from './coerencia-iss';
+import { compararMvaComCatalogo, type EntradaCoerenciaMva } from './coerencia-mva';
 import { compararNcmsComCatalogo, type NcmBanco } from './coerencia-ncm';
 import { compararUfsComCatalogo, validarMarcadorFcp } from './coerencia-ufs';
 import { validarInterestaduais } from './painel';
@@ -24,7 +25,8 @@ export type CatalogoId =
   | 'interestaduais'
   | 'faixas_simples'
   | 'itens_iss'
-  | 'ncms';
+  | 'ncms'
+  | 'protocolos_st';
 
 /**
  * Gravidade do alerta:
@@ -67,6 +69,7 @@ export const TITULOS_CATALOGO: Record<CatalogoId, string> = {
   faixas_simples: 'Faixas do Simples Nacional',
   itens_iss: 'Itens da LC 116/2003 (ISS)',
   ncms: 'NCMs (TIPI, monofásico e ST)',
+  protocolos_st: 'Protocolos de ST (MVA)',
 };
 
 /** Campos cuja divergência altera diretamente o valor calculado do tributo. */
@@ -83,6 +86,13 @@ const CAMPOS_CRITICOS = new Set([
   'rbt12_ate',
   'parcela_deduzir',
   'catalogo_vazio',
+  'sem_protocolo',
+  'mva_invalida',
+  'mva_divergente',
+  'protocolo_sem_ufs',
+  'ncm_desconhecido',
+  'uf_invalida',
+  'vinculo_duplicado',
 ]);
 
 function severidade(campo: string): SeveridadeAlerta {
@@ -148,6 +158,8 @@ export interface EntradaAlertasCatalogos {
   faixas: readonly FaixaSimplesCatalogo[];
   itensIss?: readonly ItemIssBanco[];
   ncms?: readonly NcmBanco[];
+  /** Vínculos e UFs signatárias dos protocolos de ST (overlay de MVA). */
+  mvaSt?: EntradaCoerenciaMva;
 }
 
 /**
@@ -236,6 +248,26 @@ export function gerarAlertasCatalogos(
   if (ncms && !vazio('ncms', ncms.length)) {
     for (const d of compararNcmsComCatalogo(ncms)) {
       alertas.push(montar('ncms', `NCM ${d.ncm}`, d.campo, d.valorCodigo, d.valorBanco));
+    }
+  }
+
+  // --- Protocolos de ST (MVA) ---------------------------------------------
+  if (entrada.mvaSt && !vazio('protocolos_st', entrada.mvaSt.vinculos.length)) {
+    for (const d of compararMvaComCatalogo({ ...entrada.mvaSt, ncms: entrada.mvaSt.ncms ?? ncms })) {
+      alertas.push(
+        montar(
+          'protocolos_st',
+          d.item,
+          d.campo,
+          d.valorCodigo,
+          d.valorBanco,
+          d.campo === 'sem_protocolo'
+            ? `${d.item} — sem_protocolo: NCM marcado como sujeito à ST sem vínculo de protocolo vigente`
+            : d.campo === 'cobertura_parcial'
+              ? `${d.item} — cobertura_parcial: ${d.valorBanco} de ${d.valorCodigo} UFs signatárias cadastradas`
+              : undefined,
+        ),
+      );
     }
   }
 
