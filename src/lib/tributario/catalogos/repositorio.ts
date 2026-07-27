@@ -3,6 +3,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { AnexoSimples } from '../types';
 import type { RegistroIssMunicipalBanco } from '../ipi-iss/overlay-iss';
+import type { NcmBanco } from './coerencia-ncm';
+
 import type {
   AliquotaInterestadualCatalogo,
   FaixaSimplesCatalogo,
@@ -89,7 +91,26 @@ export interface ItemListaIssCatalogo {
   aliquota_maxima: number;
 }
 
+/** Catálogo de NCMs versionado no banco (IPI, monofásico e ST). */
+export async function buscarNcms(): Promise<NcmBanco[]> {
+  const { data, error } = await supabase
+    .from('ncms')
+    .select('codigo, descricao, aliquota_ipi, monofasico_pis_cofins, sujeito_st, mva_padrao')
+    .order('codigo');
+
+  if (error) throw error;
+  return (data ?? []).map((n) => ({
+    codigo: n.codigo,
+    descricao: n.descricao,
+    aliquota_ipi: Number(n.aliquota_ipi),
+    monofasico_pis_cofins: Boolean(n.monofasico_pis_cofins),
+    sujeito_st: Boolean(n.sujeito_st),
+    mva_padrao: n.mva_padrao === null ? null : Number(n.mva_padrao),
+  }));
+}
+
 export async function buscarItensListaIss(): Promise<ItemListaIssCatalogo[]> {
+
   const { data, error } = await supabase
     .from('itens_lista_iss')
     .select('codigo, descricao, retem_no_tomador, aliquota_minima, aliquota_maxima')
