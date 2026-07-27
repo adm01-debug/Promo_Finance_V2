@@ -3,6 +3,8 @@
 
 export type RegimeTributario = 'simples_nacional' | 'lucro_presumido' | 'lucro_real';
 export type AnexoSimples = 'I' | 'II' | 'III' | 'IV' | 'V';
+/** Período de apuração de IRPJ/CSLL (Lei 9.430/96). */
+export type PeriodicidadeApuracao = 'trimestral' | 'anual';
 
 export interface FaturamentoMes {
   ano: number; mes: number; receita_bruta: number;
