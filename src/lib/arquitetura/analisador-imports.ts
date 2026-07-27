@@ -28,6 +28,8 @@ export interface ArestaObservada {
   readonly arquivo: string;
   /** Especificador de import literal. */
   readonly especificador: string;
+  /** `true` quando o import é `import type` / `export type` (sem acoplamento em runtime). */
+  readonly tipoApenas: boolean;
 }
 
 export interface RelatorioDrift {
@@ -37,6 +39,8 @@ export interface RelatorioDrift {
   readonly declaradasSemUso: readonly { de: ModuloId; para: ModuloId }[];
   /** Arestas que invertem a direção das camadas (dependência para camada superior). */
   readonly inversoesDeCamada: readonly ArestaObservada[];
+  /** Arestas puramente de tipo (informativas — não geram acoplamento em runtime). */
+  readonly apenasTipos: readonly ArestaObservada[];
 }
 
 function normalizarPosix(caminho: string): string {
@@ -106,13 +110,22 @@ function construirIndice(modulos: readonly Modulo[]): Map<string, ModuloId> {
 }
 
 /** Extrai os especificadores de import de um arquivo-fonte. */
-export function extrairImports(conteudo: string): string[] {
-  const encontrados: string[] = [];
+export interface ImportExtraido {
+  readonly especificador: string;
+  readonly tipoApenas: boolean;
+}
+
+export function extrairImports(conteudo: string): ImportExtraido[] {
+  const encontrados: ImportExtraido[] = [];
   RE_IMPORT.lastIndex = 0;
   let m: RegExpExecArray | null;
   while ((m = RE_IMPORT.exec(conteudo)) !== null) {
-    const spec = m[1] ?? m[2];
-    if (spec) encontrados.push(spec);
+    const especificador = m[1] ?? m[2];
+    if (!especificador) continue;
+    encontrados.push({
+      especificador,
+      tipoApenas: /^(?:import|export)\s+type\s/.test(m[0]),
+    });
   }
   return encontrados;
 }
@@ -144,12 +157,12 @@ export function construirGrafoObservado(raiz: string, modulos: readonly Modulo[]
       } catch {
         continue;
       }
-      for (const especificador of extrairImports(conteudo)) {
+      for (const { especificador, tipoApenas } of extrairImports(conteudo)) {
         const alvo = resolverEspecificador(arquivo, especificador);
         if (!alvo) continue;
         const destino = moduloDoArquivo(alvo, indice);
         if (!destino || destino === modulo.id) continue;
-        arestas.push({ de: modulo.id, para: destino, arquivo, especificador });
+        arestas.push({ de: modulo.id, para: destino, arquivo, especificador, tipoApenas });
       }
     }
   }
@@ -169,8 +182,13 @@ export function analisarDrift(raiz: string, modulos: readonly Modulo[] = MODULOS
   const vistas = new Set<string>();
   const naoDeclaradas: ArestaObservada[] = [];
   const inversoesDeCamada: ArestaObservada[] = [];
+  const apenasTipos: ArestaObservada[] = [];
 
   for (const aresta of observadas) {
+    if (aresta.tipoApenas) {
+      apenasTipos.push(aresta);
+      continue;
+    }
     const chave = `${aresta.de}->${aresta.para}`;
     vistas.add(chave);
     if (!declarado.has(chave)) naoDeclaradas.push(aresta);
@@ -187,5 +205,5 @@ export function analisarDrift(raiz: string, modulos: readonly Modulo[] = MODULOS
     declaradasSemUso.push({ de, para });
   }
 
-  return { naoDeclaradas, declaradasSemUso, inversoesDeCamada };
+  return { naoDeclaradas, declaradasSemUso, inversoesDeCamada, apenasTipos };
 }
