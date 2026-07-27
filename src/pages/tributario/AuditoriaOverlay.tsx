@@ -237,7 +237,7 @@ export default function AuditoriaOverlay() {
               {registros.isLoading ? (
                 <Skeleton className="h-40 w-full" />
               ) : registros.isError ? (
-                <Alert variant="destructive">
+                <Alert variant="error">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>Falha ao carregar o histórico de auditoria.</AlertDescription>
                 </Alert>
