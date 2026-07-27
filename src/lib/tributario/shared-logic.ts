@@ -771,10 +771,21 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
       `Saldo de prejuízo fiscal a compensar: R$ ${compIrpj.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (sem prazo de prescrição).`,
     );
   }
-  if (lucro <= 240000) {
-    observacoes.push('Sem adicional de IRPJ: lucro anual ≤ R$ 240k.');
+  if (usaTrimestral) {
+    observacoes.push('Apuração TRIMESTRAL: adicional de 10% sobre a base que exceder R$ 60 mil em cada trimestre, sem transporte de limite entre períodos.');
+  } else if (lucro <= 240000) {
+    observacoes.push('Apuração ANUAL: sem adicional de IRPJ (lucro anual ≤ R$ 240k).');
   } else {
-    observacoes.push('Adicional de IRPJ de 10% sobre o lucro excedente a R$ 240k.');
+    observacoes.push('Apuração ANUAL: adicional de 10% sobre o lucro excedente a R$ 240k.');
+  }
+  if (Math.abs(economiaPeriodicidade) > 1) {
+    const melhor = economiaPeriodicidade > 0 ? periodicidade : (usaTrimestral ? 'anual' : 'trimestral');
+    const delta = Math.abs(economiaPeriodicidade).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    observacoes.push(
+      economiaPeriodicidade > 0
+        ? `A opção ${melhor} economiza R$ ${delta} de IRPJ+CSLL frente à alternativa.`
+        : `Atenção: a periodicidade ${melhor} reduziria IRPJ+CSLL em R$ ${delta}. Avalie a mudança na 1ª quota do ano (opção irretratável).`,
+    );
   }
   if (margemLucro < 8) {
     observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
@@ -790,10 +801,13 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
-    prejuizoFiscalCompensado: compIrpj.compensado,
-    prejuizoFiscalSaldo: compIrpj.saldo,
-    baseNegativaCsllCompensada: compCsll.compensado,
-    baseNegativaCsllSaldo: compCsll.saldo,
+    prejuizoFiscalCompensado: usaTrimestral ? trim.compensadoIrpj : compIrpj.compensado,
+    prejuizoFiscalSaldo: usaTrimestral ? trim.saldoIrpj : compIrpj.saldo,
+    baseNegativaCsllCompensada: usaTrimestral ? trim.compensadoCsll : compCsll.compensado,
+    baseNegativaCsllSaldo: usaTrimestral ? trim.saldoCsll : compCsll.saldo,
+    periodicidadeApuracao: periodicidade,
+    irpjCsllPeriodicidadeAlternativa: alternativa,
+    economiaPeriodicidade,
     observacoes,
   };
 
