@@ -229,3 +229,39 @@ export function sugerirAliquotaMunicipal(
 ): AliquotaIssResolvida | null {
   return resolverAliquotaIss(tabelaEfetiva, identificacao, itemCodigo);
 }
+
+/* ------------------------------------------------------------------ */
+/* Confronto entre a alíquota informada e o catálogo municipal.        */
+/* ------------------------------------------------------------------ */
+
+export type StatusSugestaoIss = 'sem_catalogo' | 'conforme' | 'divergente';
+
+export interface ComparacaoSugestaoIss {
+  status: StatusSugestaoIss;
+  sugestao: AliquotaIssResolvida | null;
+  /** Diferença em pontos percentuais (informada − catálogo); 0 quando não há catálogo. */
+  diferencaPp: number;
+}
+
+/** Tolerância de 0,005 p.p. absorve ruído de arredondamento do input em %. */
+const TOLERANCIA = 5e-5;
+
+/**
+ * Compara a alíquota informada pelo usuário com a do catálogo municipal.
+ * Função pura: nunca altera o cálculo, apenas informa a divergência.
+ */
+export function compararComSugestaoIss(
+  aliquotaInformada: number,
+  sugestao: AliquotaIssResolvida | null,
+): ComparacaoSugestaoIss {
+  if (!sugestao) return { status: 'sem_catalogo', sugestao: null, diferencaPp: 0 };
+  if (!Number.isFinite(aliquotaInformada)) {
+    return { status: 'divergente', sugestao, diferencaPp: 0 };
+  }
+  const delta = aliquotaInformada - sugestao.aliquota;
+  return {
+    status: Math.abs(delta) <= TOLERANCIA ? 'conforme' : 'divergente',
+    sugestao,
+    diferencaPp: Math.round(delta * 1e6) / 1e4,
+  };
+}
