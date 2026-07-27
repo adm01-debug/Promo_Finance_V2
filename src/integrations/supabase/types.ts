@@ -2511,6 +2511,54 @@ export type Database = {
         }
         Relationships: []
       }
+      beneficios_fiscais: {
+        Row: {
+          base_legal: string | null
+          codigo: string
+          created_at: string
+          criterios: Json
+          descricao: string | null
+          id: string
+          nome: string
+          percentual: number | null
+          tipo: string
+          uf: Database["public"]["Enums"]["uf_brasil"] | null
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          base_legal?: string | null
+          codigo: string
+          created_at?: string
+          criterios?: Json
+          descricao?: string | null
+          id?: string
+          nome: string
+          percentual?: number | null
+          tipo?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"] | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          base_legal?: string | null
+          codigo?: string
+          created_at?: string
+          criterios?: Json
+          descricao?: string | null
+          id?: string
+          nome?: string
+          percentual?: number | null
+          tipo?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"] | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
       bitrix_field_mappings: {
         Row: {
           ativo: boolean | null
@@ -5730,6 +5778,54 @@ export type Database = {
         }
         Relationships: []
       }
+      estrategias_elisao: {
+        Row: {
+          ativo: boolean
+          base_legal: string | null
+          categoria: string | null
+          codigo: string
+          created_at: string
+          descricao: string | null
+          economia_estimada_percentual: number | null
+          id: string
+          nome: string
+          regimes_aplicaveis: string[]
+          requisitos: Json
+          risco: Database["public"]["Enums"]["nivel_risco"]
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          codigo: string
+          created_at?: string
+          descricao?: string | null
+          economia_estimada_percentual?: number | null
+          id?: string
+          nome: string
+          regimes_aplicaveis?: string[]
+          requisitos?: Json
+          risco?: Database["public"]["Enums"]["nivel_risco"]
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          codigo?: string
+          created_at?: string
+          descricao?: string | null
+          economia_estimada_percentual?: number | null
+          id?: string
+          nome?: string
+          regimes_aplicaveis?: string[]
+          requisitos?: Json
+          risco?: Database["public"]["Enums"]["nivel_risco"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       evidencias_pacotes: {
         Row: {
           created_at: string | null
@@ -6051,6 +6147,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      faixas_simples_nacional: {
+        Row: {
+          aliquota: number
+          anexo: string
+          created_at: string
+          faixa: number
+          id: string
+          parcela_deduzir: number
+          rbt12_ate: number
+          rbt12_de: number
+          reparticao: Json
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          anexo: string
+          created_at?: string
+          faixa: number
+          id?: string
+          parcela_deduzir?: number
+          rbt12_ate: number
+          rbt12_de: number
+          reparticao?: Json
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          anexo?: string
+          created_at?: string
+          faixa?: number
+          id?: string
+          parcela_deduzir?: number
+          rbt12_ate?: number
+          rbt12_de?: number
+          reparticao?: Json
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
       }
       faturamento_mensal: {
         Row: {
@@ -10005,6 +10146,128 @@ export type Database = {
             columns: ["conta_receber_id"]
             isOneToOne: false
             referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      protocolos_st: {
+        Row: {
+          base_legal: string | null
+          codigo: string
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          segmento: string | null
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          base_legal?: string | null
+          codigo: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          segmento?: string | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          base_legal?: string | null
+          codigo?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          segmento?: string | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
+      protocolos_st_ncms: {
+        Row: {
+          cest: string | null
+          created_at: string
+          id: string
+          mva_original: number | null
+          ncm_codigo: string
+          ncm_id: string | null
+          protocolo_id: string
+          updated_at: string
+        }
+        Insert: {
+          cest?: string | null
+          created_at?: string
+          id?: string
+          mva_original?: number | null
+          ncm_codigo: string
+          ncm_id?: string | null
+          protocolo_id: string
+          updated_at?: string
+        }
+        Update: {
+          cest?: string | null
+          created_at?: string
+          id?: string
+          mva_original?: number | null
+          ncm_codigo?: string
+          ncm_id?: string | null
+          protocolo_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "protocolos_st_ncms_ncm_id_fkey"
+            columns: ["ncm_id"]
+            isOneToOne: false
+            referencedRelation: "ncms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "protocolos_st_ncms_protocolo_id_fkey"
+            columns: ["protocolo_id"]
+            isOneToOne: false
+            referencedRelation: "protocolos_st"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      protocolos_st_ufs: {
+        Row: {
+          created_at: string
+          id: string
+          papel: string
+          protocolo_id: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          papel?: string
+          protocolo_id: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          papel?: string
+          protocolo_id?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "protocolos_st_ufs_protocolo_id_fkey"
+            columns: ["protocolo_id"]
+            isOneToOne: false
+            referencedRelation: "protocolos_st"
             referencedColumns: ["id"]
           },
         ]
