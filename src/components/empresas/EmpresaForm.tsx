@@ -160,11 +160,20 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
   };
 
   /**
+   * Marca que o CNAE foi editado pelo usuário nesta sessão do formulário.
+   * Sem isso, a derivação assíncrona do catálogo sobrescreveria RAT/Terceiros
+   * já persistidos ao abrir uma empresa em edição — apagando ajustes manuais
+   * (FAP individual, por exemplo) que o usuário fez de propósito.
+   */
+  const cnaeEditadoRef = useRef(false);
+
+  /**
    * Ao digitar o CNAE, deriva automaticamente o FPAS e a alíquota de Terceiros.
    * A derivação é apenas uma sugestão: o usuário pode sobrescrever ambos manualmente.
    */
   const handleCnaeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const masked = applyCnaeMask(e.target.value);
+    cnaeEditadoRef.current = true;
     setValue('cnae_principal', masked, { shouldValidate: true });
     const digitos = masked.replace(/\D/g, '');
     if (digitos.length >= 2) {
@@ -175,6 +184,7 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
       });
     }
   };
+
 
   /** Seleção manual de FPAS sincroniza a alíquota de Terceiros correspondente. */
   const handleFpasChange = (codigo: string) => {
