@@ -70,6 +70,10 @@ export interface ParametrosSimulacao {
    * de mercadorias (serviços não geram crédito de ICMS).
    */
   comprasComCreditoICMS?: number;
+  /** Prejuízo fiscal de IRPJ acumulado (positivo). Trava de 30% na compensação. */
+  prejuizoFiscalAcumulado?: number;
+  /** Base negativa de CSLL acumulada (positivo). Trava de 30% na compensação. */
+  baseNegativaCsllAcumulada?: number;
 }
 
 
@@ -95,6 +99,10 @@ export interface ResultadoCenario {
   icmsCredito?: number;
   /** Saldo credor de ICMS transportado para o período seguinte (crédito > débito). */
   icmsSaldoCredor?: number;
+  prejuizoFiscalCompensado?: number;
+  prejuizoFiscalSaldo?: number;
+  baseNegativaCsllCompensada?: number;
+  baseNegativaCsllSaldo?: number;
   observacoes: string[];
 }
 
