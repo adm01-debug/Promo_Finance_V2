@@ -11,7 +11,7 @@
  * - MINOR: nova regra fiscal (ex.: CPP Anexo IV, FPAS/Terceiros).
  * - PATCH: correção de cálculo sem nova regra.
  */
-export const VERSAO_MOTOR_TRIBUTARIO = '3.6.0' as const;
+export const VERSAO_MOTOR_TRIBUTARIO = '3.7.0' as const;
 
 export type VersaoMotorTributario = typeof VERSAO_MOTOR_TRIBUTARIO;
 
