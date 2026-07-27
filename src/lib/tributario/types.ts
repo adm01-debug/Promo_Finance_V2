@@ -51,8 +51,18 @@ export interface ParametrosSimulacao {
   aliquotaTerceiros?: number;
   /** CNAE principal (deriva a alíquota de terceiros quando não informada). */
   cnaePrincipal?: string;
-
+  /**
+   * Presunção IRPJ sobre receita de serviços (fração). Default 0,32.
+   * Transporte de cargas 0,08; passageiros 0,16; hospitalares 0,08 (Lei 9.249/95, art. 15).
+   */
+  presuncaoIrpjServicos?: number;
+  /**
+   * Presunção CSLL sobre receita de serviços (fração). Default 0,32.
+   * Transporte e serviços hospitalares 0,12 (Lei 9.249/95, art. 20).
+   */
+  presuncaoCsllServicos?: number;
 }
+
 
 export interface ResultadoCenario {
   regime: RegimeTributario;

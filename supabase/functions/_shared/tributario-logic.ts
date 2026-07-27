@@ -47,7 +47,12 @@ export interface ParametrosSimulacao {
   aliquotaTerceiros?: number;
   /** CNAE principal da empresa; usado para derivar a alíquota de terceiros quando não informada. */
   cnaePrincipal?: string;
+  /** Presunção IRPJ sobre serviços (fração). Default 0,32; transporte 0,08/0,16. */
+  presuncaoIrpjServicos?: number;
+  /** Presunção CSLL sobre serviços (fração). Default 0,32; transporte/hospitalar 0,12. */
+  presuncaoCsllServicos?: number;
 }
+
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
   motivoInelegibilidade?: string;
@@ -222,6 +227,13 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     aliquotaRAT: p.aliquotaRAT === undefined ? undefined : clamp(num(p.aliquotaRAT, 0.02), 0, 0.06),
     aliquotaTerceiros: p.aliquotaTerceiros === undefined ? undefined : clamp(num(p.aliquotaTerceiros, 0.058), 0, 0.1),
     issRetidoFonte: Math.max(0, num(p.issRetidoFonte, 0)),
+    presuncaoIrpjServicos: p.presuncaoIrpjServicos === undefined
+      ? undefined
+      : clamp(num(p.presuncaoIrpjServicos, 0.32), 0.08, 0.32),
+    presuncaoCsllServicos: p.presuncaoCsllServicos === undefined
+      ? undefined
+      : clamp(num(p.presuncaoCsllServicos, 0.32), 0.12, 0.32),
+
     sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
   };
 }
@@ -430,9 +442,12 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const rc = p.faturamentoAnual * pc;
   const aliqICMS = p.aliquotaICMS ?? 0.18;
   const aliqISS = p.aliquotaISS ?? 0.05;
-  const baseIrpj = rs * 0.32 + rc * 0.08;
+  const presIrpjServ = p.presuncaoIrpjServicos ?? 0.32;
+  const presCsllServ = p.presuncaoCsllServicos ?? 0.32;
+  const baseIrpj = rs * presIrpjServ + rc * 0.08;
   const irpj = baseIrpj * 0.15 + (baseIrpj > 240000 ? (baseIrpj - 240000) * 0.10 : 0);
-  const csll = (rs * 0.32 + rc * 0.12) * 0.09;
+  const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
+
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
   const icms = rc * aliqICMS;
@@ -444,7 +459,7 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     observacoes: [
-      'Presunção 8% comércio / 32% serviços.',
+      `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
       'PIS/COFINS cumulativo.',
       `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
     ],

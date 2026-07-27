@@ -52,7 +52,20 @@ export interface ParametrosSimulacao {
   aliquotaTerceiros?: number;
   /** CNAE principal da empresa; usado para derivar a alíquota de terceiros quando não informada. */
   cnaePrincipal?: string;
+  /**
+   * Percentual de presunção do IRPJ sobre a receita de serviços (fração).
+   * Default 0,32 (serviços em geral, art. 15 §1º III "a" da Lei 9.249/95).
+   * Transporte de cargas usa 0,08; transporte de passageiros 0,16;
+   * serviços hospitalares/diagnóstico por imagem 0,08.
+   */
+  presuncaoIrpjServicos?: number;
+  /**
+   * Percentual de presunção da CSLL sobre a receita de serviços (fração).
+   * Default 0,32; transporte e serviços hospitalares usam 0,12 (Lei 9.249/95, art. 20).
+   */
+  presuncaoCsllServicos?: number;
 }
+
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
   motivoInelegibilidade?: string;
@@ -242,6 +255,13 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     aliquotaRAT: p.aliquotaRAT === undefined ? undefined : clamp(num(p.aliquotaRAT, 0.02), 0, 0.06),
     aliquotaTerceiros: p.aliquotaTerceiros === undefined ? undefined : clamp(num(p.aliquotaTerceiros, 0.058), 0, 0.1),
     issRetidoFonte: Math.max(0, num(p.issRetidoFonte, 0)),
+    presuncaoIrpjServicos: p.presuncaoIrpjServicos === undefined
+      ? undefined
+      : clamp(num(p.presuncaoIrpjServicos, 0.32), 0.08, 0.32),
+    presuncaoCsllServicos: p.presuncaoCsllServicos === undefined
+      ? undefined
+      : clamp(num(p.presuncaoCsllServicos, 0.32), 0.12, 0.32),
+
     sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
   };
 }
@@ -466,9 +486,14 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const rc = p.faturamentoAnual * pc;
   const aliqICMS = p.aliquotaICMS ?? 0.18;
   const aliqISS = p.aliquotaISS ?? 0.05;
-  const baseIrpj = rs * 0.32 + rc * 0.08;
+  // Presunção da receita de serviços: 32% é apenas o caso geral. Transporte de
+  // cargas (8%/12%), passageiros (16%/12%) e serviços hospitalares (8%/12%)
+  // têm percentuais legais próprios (Lei 9.249/95, arts. 15 e 20).
+  const presIrpjServ = p.presuncaoIrpjServicos ?? 0.32;
+  const presCsllServ = p.presuncaoCsllServicos ?? 0.32;
+  const baseIrpj = rs * presIrpjServ + rc * 0.08;
   const irpj = baseIrpj * 0.15 + (baseIrpj > 240000 ? (baseIrpj - 240000) * 0.10 : 0);
-  const csll = (rs * 0.32 + rc * 0.12) * 0.09;
+  const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
   const icms = rc * aliqICMS;
@@ -480,9 +505,10 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     observacoes: [
-      'Presunção 8% comércio / 32% serviços.',
+      `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
       'PIS/COFINS cumulativo.',
       `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
+
     ],
   };
 }
