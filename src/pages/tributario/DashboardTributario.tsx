@@ -111,6 +111,9 @@ export default function DashboardTributario() {
                 </Badge>
               )}
 
+              <SaudeCatalogosBadge className="self-center" />
+
+
               <Button
                 variant="outline"
                 size="sm"
