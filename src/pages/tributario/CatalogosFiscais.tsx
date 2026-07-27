@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle, CheckCircle2, Database, RefreshCw } from 'lucide-react';
 import { useCatalogosFiscais } from '@/hooks/useCatalogosFiscais';
 import type { SituacaoCatalogo } from '@/lib/tributario/catalogos/painel';
+import { descreverRejeicoesNcm } from '@/lib/tributario/ipi-iss/overlay-ncm';
 
 const SITUACAO_LABEL: Record<SituacaoCatalogo, string> = {
   ok: 'Coerente',
