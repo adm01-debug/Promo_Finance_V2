@@ -137,6 +137,7 @@ const ComparativoConformidadePage = lazy(() => import('./pages/tributario/Compar
 const PreferenciasDigestPage = lazy(() => import('./pages/tributario/PreferenciasDigest'));
 const ObservabilidadeDigestPage = lazy(() => import('./pages/tributario/ObservabilidadeDigest'));
 const CatalogosFiscaisPage = lazy(() => import('./pages/tributario/CatalogosFiscais'));
+const AuditoriaOverlayPage = lazy(() => import('./pages/tributario/AuditoriaOverlay'));
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
