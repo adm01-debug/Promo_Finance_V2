@@ -16,6 +16,7 @@ import { AlertTriangle, CheckCircle2, Database, RefreshCw } from 'lucide-react';
 import { useCatalogosFiscais } from '@/hooks/useCatalogosFiscais';
 import type { SituacaoCatalogo } from '@/lib/tributario/catalogos/painel';
 import { descreverRejeicoesNcm } from '@/lib/tributario/ipi-iss/overlay-ncm';
+import { descreverRejeicoesMonofasico } from '@/lib/tributario/monofasico/overlay-monofasico';
 
 const SITUACAO_LABEL: Record<SituacaoCatalogo, string> = {
   ok: 'Coerente',
@@ -260,6 +261,59 @@ export default function CatalogosFiscais() {
                   {data.overlayNcm.rejeitadas.length > 0 && (
                     <ul className="space-y-1 text-destructive">
                       {descreverRejeicoesNcm(data.overlayNcm.rejeitadas).map((m, i) => (
+                        <li key={`${i}-${m}`}>• {m}</li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-base">PIS/COFINS — overlay monofásico (NCM)</CardTitle>
+                    <Badge
+                      variant={
+                        data.overlayMonofasico.rejeitadas.length > 0 ? 'destructive' : 'default'
+                      }
+                    >
+                      {Object.keys(data.overlayMonofasico.override).length} override(s)
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    O marcador <code>monofasico_pis_cofins</code> do catálogo é a fonte de verdade
+                    do enquadramento. As alíquotas continuam vindo dos grupos legais do motor —
+                    NCMs incluídos sem grupo mapeado exigem alíquota informada manualmente.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <p className="text-muted-foreground">
+                    {data.overlayMonofasico.inclusoes.length} inclusão(ões) ·{' '}
+                    {data.overlayMonofasico.exclusoes.length} exclusão(ões) frente ao catálogo
+                    embarcado.
+                  </p>
+
+                  {data.overlayMonofasico.inclusoes.length > 0 && (
+                    <ul className="space-y-1">
+                      {data.overlayMonofasico.inclusoes.map((i) => (
+                        <li key={i.ncm}>• NCM {i.ncm}: incluído no monofásico — {i.descricao}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {data.overlayMonofasico.exclusoes.length > 0 && (
+                    <ul className="space-y-1 text-warning">
+                      {data.overlayMonofasico.exclusoes.map((e) => (
+                        <li key={e.ncm}>
+                          • NCM {e.ncm}: excluído pelo catálogo (grupo {e.grupo} não se aplica)
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {data.overlayMonofasico.rejeitadas.length > 0 && (
+                    <ul className="space-y-1 text-destructive">
+                      {descreverRejeicoesMonofasico(data.overlayMonofasico.rejeitadas).map((m, i) => (
                         <li key={`${i}-${m}`}>• {m}</li>
                       ))}
                     </ul>

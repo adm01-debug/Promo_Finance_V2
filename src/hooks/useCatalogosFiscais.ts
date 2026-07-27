@@ -28,6 +28,11 @@ import {
   type ResultadoOverlayNcm,
 } from '@/lib/tributario/ipi-iss/overlay-ncm';
 import { definirTabelaTipiEfetiva } from '@/lib/tributario/ipi-iss/tabelas';
+import {
+  aplicarOverlayMonofasico,
+  type ResultadoOverlayMonofasico,
+} from '@/lib/tributario/monofasico/overlay-monofasico';
+import { definirOverrideMonofasico } from '@/lib/tributario/monofasico/classificar';
 import type { UF } from '@/lib/tributario/icms/types';
 
 export interface CatalogosFiscaisData {
@@ -39,6 +44,8 @@ export interface CatalogosFiscaisData {
   overlayIss: ResultadoOverlayIss;
   /** Catálogo de NCMs validado contra o teto de IPI e o formato de 8 dígitos. */
   overlayNcm: ResultadoOverlayNcm;
+  /** Marcador monofásico do catálogo sobrepondo o classificador embarcado. */
+  overlayMonofasico: ResultadoOverlayMonofasico;
 }
 
 export function useCatalogosFiscais() {
@@ -76,12 +83,19 @@ export function useCatalogosFiscais() {
       const overlayNcm = aplicarOverlayNcm(ncms);
       definirTabelaTipiEfetiva(overlayNcm.tabela);
 
+      // Monofásico: o marcador `monofasico_pis_cofins` do catálogo sobrepõe o
+      // classificador embarcado (inclui ou exclui NCMs da tributação
+      // concentrada). Alíquotas continuam vindo dos grupos legais do motor.
+      const overlayMonofasico = aplicarOverlayMonofasico(ncms);
+      definirOverrideMonofasico(overlayMonofasico.override);
+
       return {
         painel: resumirPainelCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
         overlay,
         ufsAusentes: ufsAusentesNoBanco(registros),
         overlayIss,
         overlayNcm,
+        overlayMonofasico,
       };
     },
   });
