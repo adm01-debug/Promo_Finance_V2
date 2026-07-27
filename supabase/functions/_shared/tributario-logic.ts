@@ -227,6 +227,13 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     aliquotaRAT: p.aliquotaRAT === undefined ? undefined : clamp(num(p.aliquotaRAT, 0.02), 0, 0.06),
     aliquotaTerceiros: p.aliquotaTerceiros === undefined ? undefined : clamp(num(p.aliquotaTerceiros, 0.058), 0, 0.1),
     issRetidoFonte: Math.max(0, num(p.issRetidoFonte, 0)),
+    presuncaoIrpjServicos: p.presuncaoIrpjServicos === undefined
+      ? undefined
+      : clamp(num(p.presuncaoIrpjServicos, 0.32), 0.08, 0.32),
+    presuncaoCsllServicos: p.presuncaoCsllServicos === undefined
+      ? undefined
+      : clamp(num(p.presuncaoCsllServicos, 0.32), 0.12, 0.32),
+
     sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
   };
 }
