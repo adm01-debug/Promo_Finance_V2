@@ -305,6 +305,10 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     prejuizoFiscalAcumulado: Math.max(0, num(p.prejuizoFiscalAcumulado, 0)),
     baseNegativaCsllAcumulada: Math.max(0, num(p.baseNegativaCsllAcumulada, 0)),
     sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
+    periodicidadeApuracao: p.periodicidadeApuracao === 'trimestral' ? 'trimestral' : (p.periodicidadeApuracao === 'anual' ? 'anual' : undefined),
+    lucroTrimestral: Array.isArray(p.lucroTrimestral) && p.lucroTrimestral.length === 4
+      ? p.lucroTrimestral.map((v) => num(v, 0))
+      : undefined,
   };
 }
 
