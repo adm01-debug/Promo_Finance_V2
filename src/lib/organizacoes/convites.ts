@@ -59,7 +59,10 @@ export function emailValido(email: string): boolean {
 
 /** Token opaco de 256 bits em hexadecimal (não adivinhável). */
 export function gerarTokenConvite(
-  aleatorio: (bytes: Uint8Array) => Uint8Array = (b) => crypto.getRandomValues(b),
+  aleatorio: (bytes: Uint8Array) => Uint8Array = (b) => {
+    crypto.getRandomValues(b);
+    return b;
+  },
 ): string {
   const bytes = aleatorio(new Uint8Array(32));
   return Array.from(bytes)
