@@ -1,10 +1,14 @@
 // COMPONENTE: Formulário de Parâmetros da Simulação
 // Extraído de SimulacaoRegimes.tsx (modularização)
 
+import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useResolucaoCnae } from '@/hooks/useCnaes';
+import { CnaeCatalogoInfo } from '@/components/empresas/CnaeCatalogoInfo';
+import { resolverFpasPorCnae } from '@/lib/tributario/folha/fpas-terceiros';
 import type { ParametrosSimulacao, RegimeTributario } from '@/lib/tributario';
 
 interface EmpresaOption {
@@ -33,6 +37,39 @@ export function ParametrosForm({
   setParametros,
   temHistoricoSuficiente,
 }: Props) {
+  /** Valida o CNAE informado contra o catálogo fiscal interno. */
+  const resolucaoCnae = useResolucaoCnae(parametros.cnaePrincipal ?? null);
+  /** Último código cujo RAT já foi aplicado — evita sobrescrever ajuste manual. */
+  const ratAplicadoRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const registro = resolucaoCnae.registro;
+    if (!registro) return;
+    if (ratAplicadoRef.current === registro.codigoNumerico) return;
+    ratAplicadoRef.current = registro.codigoNumerico;
+    if (parametros.aliquotaRAT === registro.rat_padrao) return;
+    setParametros({ ...parametros, aliquotaRAT: registro.rat_padrao });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolucaoCnae.registro]);
+
+
+  /**
+   * Derivação de encargos patronais a partir do CNAE.
+   *
+   * FPAS/Terceiros vêm da tabela de enquadramento; o RAT só é sobrescrito
+   * quando o código consta do catálogo — caso contrário mantemos o valor
+   * atual em vez de degradar em silêncio para o piso de 1%.
+   */
+  const handleCnaeChange = (valor: string) => {
+    const digitos = valor.replace(/\D/g, '');
+    const fpas = digitos.length >= 2 ? resolverFpasPorCnae(digitos) : null;
+    setParametros({
+      ...parametros,
+      cnaePrincipal: valor,
+      ...(fpas ? { aliquotaTerceiros: fpas.aliquotaTerceiros } : {}),
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -240,15 +277,18 @@ export function ParametrosForm({
               type="text"
               placeholder="Ex.: 47.11-3/02"
               value={parametros.cnaePrincipal ?? ''}
-              onChange={(e) =>
-                setParametros({ ...parametros, cnaePrincipal: e.target.value })
-              }
+              onChange={(e) => handleCnaeChange(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Define automaticamente o FPAS e a alíquota de terceiros quando o campo
-              abaixo é deixado em branco.
+              Define automaticamente o FPAS, a alíquota de terceiros e o RAT quando
+              o código consta do catálogo fiscal.
             </p>
+            <CnaeCatalogoInfo
+              resolucao={resolucaoCnae}
+              digitos={(parametros.cnaePrincipal ?? '').replace(/\D/g, '').length}
+            />
           </div>
+
 
           <div className="space-y-2">
 

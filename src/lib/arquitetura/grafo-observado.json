@@ -3,6 +3,7 @@
   "arestasObservadas": [
     "M01->M12",
     "M02->M09",
+    "M03->M02",
     "M03->M07",
     "M03->M08",
     "M03->M09",
@@ -14,7 +15,7 @@
     "M10->M08",
     "M11->M12"
   ],
-  "totalImportsAnalisados": 42,
+  "totalImportsAnalisados": 44,
   "driftResumo": {
     "naoDeclaradas": 0,
     "inversoesDeCamada": 0,
@@ -23,7 +24,6 @@
       "M02->M11",
       "M02->M12",
       "M03->M01",
-      "M03->M02",
       "M03->M04",
       "M03->M05",
       "M03->M06",
