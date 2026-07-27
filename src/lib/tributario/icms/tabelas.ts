@@ -51,16 +51,40 @@ export const UFS: UF[] = Object.keys(ALIQUOTAS_UF).sort() as UF[];
 const REGIOES_ORIGEM_REDUZIDA: readonly RegiaoFiscal[] = ['S', 'SE'];
 const REGIOES_DESTINO_REDUZIDA: readonly RegiaoFiscal[] = ['N', 'NE', 'CO'];
 
+/**
+ * Tabela efetiva usada em runtime pelo motor. Por padrão é a constante
+ * canônica; pode ser substituída pelo overlay validado do catálogo do banco
+ * via `definirTabelaUfsEfetiva`. Nunca aceita valores não validados — o
+ * chamador deve usar `aplicarOverlayUfs` antes.
+ */
+let tabelaEfetiva: Record<UF, AliquotaUf> = ALIQUOTAS_UF;
+
+/** Substitui a tabela efetiva (uso exclusivo do carregador de catálogos). */
+export function definirTabelaUfsEfetiva(tabela: Record<UF, AliquotaUf>): void {
+  tabelaEfetiva = tabela;
+}
+
+/** Restaura as constantes canônicas do código. */
+export function resetarTabelaUfsEfetiva(): void {
+  tabelaEfetiva = ALIQUOTAS_UF;
+}
+
+/** Tabela atualmente em uso pelo motor. */
+export function obterTabelaUfsEfetiva(): Record<UF, AliquotaUf> {
+  return tabelaEfetiva;
+}
+
 export function isUF(valor: unknown): valor is UF {
   return typeof valor === 'string' && valor.toUpperCase() in ALIQUOTAS_UF;
 }
 
 /** Retorna os parâmetros da UF; lança erro explícito para UF desconhecida. */
 export function buscarUf(uf: UF): AliquotaUf {
-  const item = ALIQUOTAS_UF[uf];
+  const item = tabelaEfetiva[uf] ?? ALIQUOTAS_UF[uf];
   if (!item) throw new Error(`UF desconhecida: ${String(uf)}`);
   return item;
 }
+
 
 export function aliquotaInternaDe(uf: UF): number {
   return buscarUf(uf).interna;
