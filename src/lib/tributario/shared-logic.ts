@@ -74,6 +74,10 @@ export interface ParametrosSimulacao {
   prejuizoFiscalAcumulado?: number;
   /** Base negativa de CSLL acumulada (positivo). Trava de 30% na compensação. */
   baseNegativaCsllAcumulada?: number;
+  /** Período de apuração de IRPJ/CSLL no Lucro Real ('anual' por default). */
+  periodicidadeApuracao?: PeriodicidadeApuracao;
+  /** Lucro real por trimestre (4 posições), quando conhecido. */
+  lucroTrimestral?: number[];
 }
 
 
