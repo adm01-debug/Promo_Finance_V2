@@ -594,7 +594,9 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const rc = p.faturamentoAnual * (1 - ps);
   const aliqICMS = p.aliquotaICMS ?? 0.18;
   const aliqISS = p.aliquotaISS ?? 0.05;
-  const icms = Math.max(0, rc * aliqICMS - (p.comprasComCredito || 0) * aliqICMS);
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  const icms = apuracaoICMS.icms;
+
   const iss = rs * aliqISS;
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
