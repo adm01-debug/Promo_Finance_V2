@@ -33,10 +33,11 @@ export default function CatalogosFiscais() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <PageBackground />
+      <div className="space-y-6">
         <PageHeader
           title="Catálogos Fiscais"
-          description="Coerência entre a base versionada e as tabelas do motor tributário"
+          subtitle="Coerência entre a base versionada e as tabelas do motor tributário"
           icon={Database}
           actions={
             <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
@@ -48,7 +49,7 @@ export default function CatalogosFiscais() {
 
         <div className="space-y-6">
           {error && (
-            <Alert variant="destructive">
+            <Alert variant="error">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 Não foi possível carregar os catálogos: {(error as Error).message}
@@ -66,7 +67,7 @@ export default function CatalogosFiscais() {
 
           {data && (
             <>
-              <Alert variant={data.situacaoGeral === 'ok' ? 'default' : 'destructive'}>
+              <Alert variant={data.situacaoGeral === 'ok' ? 'success' : 'error'}>
                 {data.situacaoGeral === 'ok' ? (
                   <CheckCircle2 className="h-4 w-4" />
                 ) : (
@@ -118,7 +119,7 @@ export default function CatalogosFiscais() {
             </>
           )}
         </div>
-      </PageBackground>
+      </div>
     </MainLayout>
   );
 }
