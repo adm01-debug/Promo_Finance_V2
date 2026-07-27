@@ -104,7 +104,70 @@ export async function buscarFaixasSimples(
   return aplicarVigencia(normalizadas, referencia);
 }
 
+/** CNAE do catálogo fiscal, com os parâmetros que o motor consome. */
+export interface CnaeCatalogo {
+  /** Código formatado (ex.: `32.99-0/99`). */
+  codigo: string;
+  /** Código apenas dígitos (ex.: `3299099`) — chave de busca tolerante. */
+  codigoNumerico: string;
+  descricao: string;
+  anexo_simples: AnexoSimples | null;
+  sujeito_fator_r: boolean;
+  vedado_simples: boolean;
+  presuncao_irpj: number;
+  presuncao_csll: number;
+  rat_padrao: number;
+  terceiros_padrao: number;
+}
+
+/** Remove qualquer pontuação do código CNAE, preservando somente dígitos. */
+export function normalizarCodigoCnae(codigo: string): string {
+  return String(codigo ?? '').replace(/\D/g, '');
+}
+
+/**
+ * Catálogo de CNAEs. Diferente dos demais, esta tabela não é versionada por
+ * vigência — o código CNAE em si é estável; o que muda são os parâmetros
+ * derivados, atualizados no próprio registro.
+ */
+export async function buscarCnaes(): Promise<CnaeCatalogo[]> {
+  const { data, error } = await supabase
+    .from('cnaes')
+    .select(
+      'codigo, descricao, anexo_simples, sujeito_fator_r, vedado_simples, presuncao_irpj, presuncao_csll, rat_padrao, terceiros_padrao',
+    )
+    .order('codigo');
+
+  if (error) throw error;
+
+  return (data ?? []).map((c) => ({
+    codigo: c.codigo,
+    codigoNumerico: normalizarCodigoCnae(c.codigo),
+    descricao: c.descricao,
+    anexo_simples: (c.anexo_simples as AnexoSimples | null) ?? null,
+    sujeito_fator_r: Boolean(c.sujeito_fator_r),
+    vedado_simples: Boolean(c.vedado_simples),
+    presuncao_irpj: Number(c.presuncao_irpj),
+    presuncao_csll: Number(c.presuncao_csll),
+    rat_padrao: Number(c.rat_padrao),
+    terceiros_padrao: Number(c.terceiros_padrao),
+  }));
+}
+
+/**
+ * Busca um CNAE ignorando diferenças de formatação entre a fonte (Receita,
+ * CNPJá, digitação manual) e o catálogo. Retorna `null` quando não catalogado
+ * — cabe ao chamador decidir entre erro e fallback conservador.
+ */
+export async function buscarCnaePorCodigo(codigo: string): Promise<CnaeCatalogo | null> {
+  const alvo = normalizarCodigoCnae(codigo);
+  if (alvo.length === 0) return null;
+  const catalogo = await buscarCnaes();
+  return catalogo.find((c) => c.codigoNumerico === alvo) ?? null;
+}
+
 /** Item da lista anexa da LC 116/2003, conforme catálogo do banco. */
+
 export interface ItemListaIssCatalogo {
   codigo: string;
   descricao: string;
