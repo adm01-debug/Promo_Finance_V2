@@ -15,6 +15,10 @@ export interface UfCatalogo {
   aliquota_fcp: number;
   exige_antecipacao: boolean;
   difal_base_dupla: boolean;
+  /** Início de vigência do registro (ISO yyyy-mm-dd). */
+  vigente_de: string;
+  /** Fim de vigência; `null` = vigente por prazo indeterminado. */
+  vigente_ate: string | null;
 }
 
 export interface AliquotaInterestadualCatalogo {

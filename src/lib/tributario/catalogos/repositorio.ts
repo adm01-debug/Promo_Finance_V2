@@ -12,8 +12,26 @@ import type {
 } from './types';
 
 /** Data de referência ISO (yyyy-mm-dd) usada nos filtros de vigência. */
-function hojeIso(): string {
+export function hojeIso(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Normaliza uma data de referência arbitrária para ISO `yyyy-mm-dd`.
+ *
+ * Defensivo por desenho: entradas inválidas (string vazia, `Invalid Date`,
+ * formato inesperado) degradam para a data de hoje em vez de derrubar o
+ * cálculo — um catálogo sem recorte válido é pior que o recorte corrente.
+ */
+export function normalizarReferencia(entrada?: string | Date | null): string {
+  if (!entrada) return hojeIso();
+  if (entrada instanceof Date) {
+    return Number.isNaN(entrada.getTime()) ? hojeIso() : entrada.toISOString().slice(0, 10);
+  }
+  const texto = String(entrada).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+  const data = new Date(texto);
+  return Number.isNaN(data.getTime()) ? hojeIso() : data.toISOString().slice(0, 10);
 }
 
 function aplicarVigencia<T extends { vigente_de: string; vigente_ate: string | null }>(
@@ -25,18 +43,22 @@ function aplicarVigencia<T extends { vigente_de: string; vigente_ate: string | n
   );
 }
 
-export async function buscarUfs(): Promise<UfCatalogo[]> {
+export async function buscarUfs(referencia: string = hojeIso()): Promise<UfCatalogo[]> {
   const { data, error } = await supabase
     .from('ufs')
-    .select('sigla, nome, codigo_ibge, regiao, aliquota_interna_padrao, possui_fcp, aliquota_fcp, exige_antecipacao, difal_base_dupla')
+    .select('sigla, nome, codigo_ibge, regiao, aliquota_interna_padrao, possui_fcp, aliquota_fcp, exige_antecipacao, difal_base_dupla, vigente_de, vigente_ate')
     .order('sigla');
 
   if (error) throw error;
-  return (data ?? []).map((uf) => ({
+  const normalizadas = (data ?? []).map((uf) => ({
     ...uf,
     aliquota_interna_padrao: Number(uf.aliquota_interna_padrao),
     aliquota_fcp: Number(uf.aliquota_fcp),
   })) as UfCatalogo[];
+
+  // Alíquotas internas mudam por lei estadual com data certa: o motor precisa
+  // enxergar apenas a versão vigente na data da operação.
+  return aplicarVigencia(normalizadas, referencia);
 }
 
 export async function buscarAliquotasInterestaduais(
@@ -144,7 +166,9 @@ export async function buscarItensListaIss(
  * item (nulo = alíquota geral do município). A validação de faixa legal fica a
  * cargo do overlay — aqui só normalizamos o formato.
  */
-export async function buscarAliquotasIssMunicipais(): Promise<RegistroIssMunicipalBanco[]> {
+export async function buscarAliquotasIssMunicipais(
+  referencia: string = hojeIso(),
+): Promise<RegistroIssMunicipalBanco[]> {
   const { data, error } = await supabase
     .from('aliquotas_iss_municipal')
     .select('codigo_ibge, municipio, uf, aliquota, vigente_de, vigente_ate, base_legal, itens_lista_iss(codigo)')
@@ -152,7 +176,7 @@ export async function buscarAliquotasIssMunicipais(): Promise<RegistroIssMunicip
 
   if (error) throw error;
 
-  return (data ?? []).map((r) => {
+  const normalizados = (data ?? []).map((r) => {
     const item = r.itens_lista_iss as { codigo: string } | null;
     return {
       codigo_ibge: r.codigo_ibge,
@@ -165,4 +189,48 @@ export async function buscarAliquotasIssMunicipais(): Promise<RegistroIssMunicip
       base_legal: r.base_legal,
     } satisfies RegistroIssMunicipalBanco;
   });
+
+  // O overlay revalida a vigência, mas filtrar aqui evita transportar
+  // registros revogados até a camada de validação.
+  return normalizados.filter(
+    (r) =>
+      (r.vigente_de === null || r.vigente_de === undefined || r.vigente_de <= referencia) &&
+      (r.vigente_ate === null || r.vigente_ate === undefined || r.vigente_ate >= referencia),
+  );
+}
+
+/** NCM vinculado a protocolo de ST, já recortado pela vigência. */
+export interface ProtocoloStNcmCatalogo {
+  protocolo_id: string;
+  ncm_codigo: string;
+  mva_original: number | null;
+  cest: string | null;
+  vigente_de: string;
+  vigente_ate: string | null;
+}
+
+/**
+ * NCMs sujeitos a protocolo de ST vigentes na data de referência.
+ * Protocolos denunciados deixam de produzir MVA a partir da data de encerramento.
+ */
+export async function buscarProtocolosStNcms(
+  referencia: string = hojeIso(),
+): Promise<ProtocoloStNcmCatalogo[]> {
+  const { data, error } = await supabase
+    .from('protocolos_st_ncms')
+    .select('protocolo_id, ncm_codigo, mva_original, cest, vigente_de, vigente_ate')
+    .order('ncm_codigo');
+
+  if (error) throw error;
+
+  const normalizados = (data ?? []).map((p) => ({
+    protocolo_id: p.protocolo_id,
+    ncm_codigo: p.ncm_codigo,
+    mva_original: p.mva_original === null ? null : Number(p.mva_original),
+    cest: p.cest,
+    vigente_de: p.vigente_de,
+    vigente_ate: p.vigente_ate,
+  }));
+
+  return aplicarVigencia(normalizados, referencia);
 }
