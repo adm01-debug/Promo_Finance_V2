@@ -4543,6 +4543,50 @@ export type Database = {
           },
         ]
       }
+      convites: {
+        Row: {
+          convidado_por: string
+          created_at: string
+          email_convidado: string
+          expira_em: string
+          id: string
+          organizacao_id: string
+          papel_proposto: Database["public"]["Enums"]["org_papel"]
+          token: string
+          utilizado_em: string | null
+        }
+        Insert: {
+          convidado_por: string
+          created_at?: string
+          email_convidado: string
+          expira_em?: string
+          id?: string
+          organizacao_id: string
+          papel_proposto?: Database["public"]["Enums"]["org_papel"]
+          token?: string
+          utilizado_em?: string | null
+        }
+        Update: {
+          convidado_por?: string
+          created_at?: string
+          email_convidado?: string
+          expira_em?: string
+          id?: string
+          organizacao_id?: string
+          papel_proposto?: Database["public"]["Enums"]["org_papel"]
+          token?: string
+          utilizado_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "convites_organizacao_id_fkey"
+            columns: ["organizacao_id"]
+            isOneToOne: false
+            referencedRelation: "organizacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creditos_tributarios: {
         Row: {
           competencia_origem: string | null
@@ -9391,6 +9435,83 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
         ]
+      }
+      organizacao_membros: {
+        Row: {
+          aceito_em: string | null
+          ativo: boolean
+          convidado_por: string | null
+          created_at: string
+          id: string
+          organizacao_id: string
+          papel_na_org: Database["public"]["Enums"]["org_papel"]
+          updated_at: string
+          usuario_id: string
+        }
+        Insert: {
+          aceito_em?: string | null
+          ativo?: boolean
+          convidado_por?: string | null
+          created_at?: string
+          id?: string
+          organizacao_id: string
+          papel_na_org?: Database["public"]["Enums"]["org_papel"]
+          updated_at?: string
+          usuario_id: string
+        }
+        Update: {
+          aceito_em?: string | null
+          ativo?: boolean
+          convidado_por?: string | null
+          created_at?: string
+          id?: string
+          organizacao_id?: string
+          papel_na_org?: Database["public"]["Enums"]["org_papel"]
+          updated_at?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizacao_membros_organizacao_id_fkey"
+            columns: ["organizacao_id"]
+            isOneToOne: false
+            referencedRelation: "organizacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizacoes: {
+        Row: {
+          ativo: boolean
+          cnpj: string | null
+          created_at: string
+          id: string
+          nome: string
+          responsavel_id: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          cnpj?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          responsavel_id: string
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          cnpj?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          responsavel_id?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       overlay_rejeicoes_auditoria: {
         Row: {
@@ -15045,6 +15166,14 @@ export type Database = {
         Args: { _fingerprint: string; _user_id: string }
         Returns: boolean
       }
+      is_org_membro: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_org_responsavel: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_token_valid: {
         Args: { p_token_hash: string }
         Returns: {
@@ -15410,6 +15539,7 @@ export type Database = {
         | "CANCELLED"
         | "REJECTED"
         | "EXPIRED"
+      org_papel: "RESPONSAVEL" | "ADMIN" | "MEMBRO" | "LEITOR"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
       regiao_brasil: "NORTE" | "NORDESTE" | "CENTRO_OESTE" | "SUDESTE" | "SUL"
       regime_tributario_enum:
@@ -15673,6 +15803,7 @@ export const Constants = {
         "REJECTED",
         "EXPIRED",
       ],
+      org_papel: ["RESPONSAVEL", "ADMIN", "MEMBRO", "LEITOR"],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
       regiao_brasil: ["NORTE", "NORDESTE", "CENTRO_OESTE", "SUDESTE", "SUL"],
       regime_tributario_enum: [
