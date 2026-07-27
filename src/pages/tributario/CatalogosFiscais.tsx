@@ -321,6 +321,78 @@ export default function CatalogosFiscais() {
                 </CardContent>
               </Card>
 
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-base">ICMS-ST — overlay de MVA por protocolo</CardTitle>
+                    <Badge variant={RESUMO_MVA_VARIANT[resumoMva.situacao]}>
+                      {resumoMva.totalProtocolos} protocolo(s)
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    A MVA só é aplicada entre UFs signatárias do protocolo, observados o papel de
+                    cada uma e a vigência. Isenção, não incidência, alíquota zero, imunidade e
+                    suspensão afastam a retenção, ainda que exista MVA cadastrada.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <p className="text-muted-foreground">
+                    {resumoMva.totalVinculos} vínculo(s) válido(s) · {resumoMva.totalNcms} NCM(s) ·{' '}
+                    {resumoMva.ufsCobertas.length} UF(s) cobertas ·{' '}
+                    {resumoMva.totalBloqueios} bloqueio(s) por regra jurídica.
+                  </p>
+
+                  {resumoMva.totalProtocolos === 0 && (
+                    <p className="text-muted-foreground">
+                      Nenhum protocolo produz efeito no momento. O motor segue operando com a MVA
+                      informada manualmente na simulação.
+                    </p>
+                  )}
+
+                  {resumoMva.protocolos.length > 0 && (
+                    <ul className="space-y-1">
+                      {resumoMva.protocolos.map((p) => (
+                        <li key={p.protocoloId}>
+                          • <span className="font-medium">{p.protocoloCodigo}</span>: MVA{' '}
+                          {formatarFaixaMva(p)} · {p.ncms.length} NCM(s) ·{' '}
+                          {p.origens.length} UF(s) remetentes / {p.destinos.length} destinatárias
+                          {p.ufsAusentes.length > 0 && (
+                            <span className="text-muted-foreground">
+                              {' '}— sem cobertura: {p.ufsAusentes.join(', ')}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {resumoMva.ufsSemCobertura.length > 0 && resumoMva.totalProtocolos > 0 && (
+                    <p className="text-warning">
+                      UF(s) sem qualquer protocolo cadastrado:{' '}
+                      {resumoMva.ufsSemCobertura.join(', ')}.
+                    </p>
+                  )}
+
+                  {data.overlayMva.rejeitadas.length > 0 && (
+                    <ul className="space-y-1 text-destructive">
+                      {descreverRejeicoesMva(data.overlayMva.rejeitadas).map((m, i) => (
+                        <li key={`${i}-${m}`}>• {m}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {data.overlayMva.bloqueadas.length > 0 && (
+                    <ul className="space-y-1 text-warning">
+                      {descreverBloqueiosMva(data.overlayMva.bloqueadas).map((m, i) => (
+                        <li key={`${i}-${m}`}>• {m}</li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
+
+
+
             </>
           )}
         </div>
