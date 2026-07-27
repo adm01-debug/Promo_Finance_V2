@@ -214,6 +214,7 @@ function AppRoutes() {
             <Route path="/tributario/projecao-reforma" element={<ProtectedRoute><ProjecaoReformaPage /></ProtectedRoute>} />
             <Route path="/tributario" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
             <Route path="/tributario/catalogos-fiscais" element={<ProtectedRoute><CatalogosFiscaisPage /></ProtectedRoute>} />
+            <Route path="/tributario/auditoria-overlay" element={<ProtectedRoute><AuditoriaOverlayPage /></ProtectedRoute>} />
             <Route path="/tributario/dashboard" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
             <Route path="/tributario/recomendacao" element={<ProtectedRoute><RecomendacaoExecutiva /></ProtectedRoute>} />
             <Route path="/tributario/pf-vinculada" element={<ProtectedRoute><PfVinculada /></ProtectedRoute>} />
