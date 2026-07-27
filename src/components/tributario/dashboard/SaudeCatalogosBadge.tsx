@@ -3,7 +3,7 @@
 // Exibe SEMPRE (mesmo saudável, como confirmação de lastro) e abre um popover
 // com o detalhamento proativo quando há divergência entre banco e motor ou
 // registros recusados pelos overlays.
-import { CheckCircle2, Database, ShieldAlert, TriangleAlert } from 'lucide-react';
+import { CheckCircle2, Database, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ const ESTILO: Record<
   atencao: {
     classe: 'border-warning/30 bg-warning/10 text-warning hover:bg-warning/20',
     rotulo: 'Catálogos em atenção',
-    Icone: TriangleAlert,
+    Icone: AlertTriangle,
   },
   critico: {
     classe: 'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20',
