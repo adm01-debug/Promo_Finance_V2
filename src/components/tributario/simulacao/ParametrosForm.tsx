@@ -240,15 +240,18 @@ export function ParametrosForm({
               type="text"
               placeholder="Ex.: 47.11-3/02"
               value={parametros.cnaePrincipal ?? ''}
-              onChange={(e) =>
-                setParametros({ ...parametros, cnaePrincipal: e.target.value })
-              }
+              onChange={(e) => handleCnaeChange(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Define automaticamente o FPAS e a alíquota de terceiros quando o campo
-              abaixo é deixado em branco.
+              Define automaticamente o FPAS, a alíquota de terceiros e o RAT quando
+              o código consta do catálogo fiscal.
             </p>
+            <CnaeCatalogoInfo
+              resolucao={resolucaoCnae}
+              digitos={(parametros.cnaePrincipal ?? '').replace(/\D/g, '').length}
+            />
           </div>
+
 
           <div className="space-y-2">
 
