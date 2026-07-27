@@ -312,7 +312,7 @@ export default function AuditoriaOverlay() {
             </CardContent>
           </Card>
         </div>
-      </PageBackground>
+      </div>
     </MainLayout>
   );
 }
