@@ -110,10 +110,12 @@ export default function AuditoriaOverlay() {
 
   return (
     <MainLayout>
-      <PageBackground>
+      <div className="relative">
+        <PageBackground />
         <PageHeader
           title="Auditoria de Overlays"
-          description="Registros de catálogo recusados pelos overlays fiscais, com motivo, campo e valor recebido."
+          subtitle="Registros de catálogo recusados pelos overlays fiscais, com motivo, campo e valor recebido."
+          icon={ShieldAlert}
         />
 
         <div className="space-y-6">
