@@ -338,12 +338,13 @@ export default function CatalogosFiscais() {
                 </CardContent>
               </Card>
 
+              {resumoMva && (
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="text-base">ICMS-ST — overlay de MVA por protocolo</CardTitle>
-                    <Badge variant={RESUMO_MVA_VARIANT[resumoMva!.situacao]}>
-                      {resumoMva!.totalProtocolos} protocolo(s)
+                    <Badge variant={RESUMO_MVA_VARIANT[resumoMva.situacao]}>
+                      {resumoMva.totalProtocolos} protocolo(s)
                     </Badge>
                   </div>
                   <CardDescription>
@@ -354,21 +355,21 @@ export default function CatalogosFiscais() {
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <p className="text-muted-foreground">
-                    {resumoMva!.totalVinculos} vínculo(s) válido(s) · {resumoMva!.totalNcms} NCM(s) ·{' '}
-                    {resumoMva!.ufsCobertas.length} UF(s) cobertas ·{' '}
-                    {resumoMva!.totalBloqueios} bloqueio(s) por regra jurídica.
+                    {resumoMva.totalVinculos} vínculo(s) válido(s) · {resumoMva.totalNcms} NCM(s) ·{' '}
+                    {resumoMva.ufsCobertas.length} UF(s) cobertas ·{' '}
+                    {resumoMva.totalBloqueios} bloqueio(s) por regra jurídica.
                   </p>
 
-                  {resumoMva!.totalProtocolos === 0 && (
+                  {resumoMva.totalProtocolos === 0 && (
                     <p className="text-muted-foreground">
                       Nenhum protocolo produz efeito no momento. O motor segue operando com a MVA
                       informada manualmente na simulação.
                     </p>
                   )}
 
-                  {resumoMva!.protocolos.length > 0 && (
+                  {resumoMva.protocolos.length > 0 && (
                     <ul className="space-y-1">
-                      {resumoMva!.protocolos.map((p) => (
+                      {resumoMva.protocolos.map((p) => (
                         <li key={p.protocoloId}>
                           • <span className="font-medium">{p.protocoloCodigo}</span>: MVA{' '}
                           {formatarFaixaMva(p)} · {p.ncms.length} NCM(s) ·{' '}
@@ -383,10 +384,10 @@ export default function CatalogosFiscais() {
                     </ul>
                   )}
 
-                  {resumoMva!.ufsSemCobertura.length > 0 && resumoMva!.totalProtocolos > 0 && (
+                  {resumoMva.ufsSemCobertura.length > 0 && resumoMva.totalProtocolos > 0 && (
                     <p className="text-warning">
                       UF(s) sem qualquer protocolo cadastrado:{' '}
-                      {resumoMva!.ufsSemCobertura.join(', ')}.
+                      {resumoMva.ufsSemCobertura.join(', ')}.
                     </p>
                   )}
 
@@ -407,6 +408,7 @@ export default function CatalogosFiscais() {
                   )}
                 </CardContent>
               </Card>
+              )}
 
 
 
