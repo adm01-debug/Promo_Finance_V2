@@ -325,6 +325,66 @@ export function ParametrosForm({
 
         </div>
 
+        <div className="space-y-2">
+          <Label>Periodicidade de apuração (Lucro Real)</Label>
+          <Select
+            value={parametros.periodicidadeApuracao ?? 'anual'}
+            onValueChange={(v) =>
+              setParametros({ ...parametros, periodicidadeApuracao: v as 'anual' | 'trimestral' })
+            }
+          >
+            <SelectTrigger aria-label="Selecionar periodicidade de apuração do Lucro Real">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="anual">Anual (estimativa mensal + ajuste)</SelectItem>
+              <SelectItem value="trimestral">Trimestral (períodos autônomos)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Opção irretratável para todo o ano-calendário (Lei 9.430/96, art. 3º). O Lucro Presumido
+            é sempre trimestral.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="prejuizo-fiscal">Prejuízo fiscal acumulado (R$)</Label>
+            <Input
+              id="prejuizo-fiscal"
+              type="number"
+              min={0}
+              value={parametros.prejuizoFiscalAcumulado ?? 0}
+              onChange={(e) =>
+                setParametros({
+                  ...parametros,
+                  prejuizoFiscalAcumulado: Math.max(0, Number(e.target.value)),
+                })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="base-negativa-csll">Base negativa de CSLL (R$)</Label>
+            <Input
+              id="base-negativa-csll"
+              type="number"
+              min={0}
+              value={parametros.baseNegativaCsllAcumulada ?? 0}
+              onChange={(e) =>
+                setParametros({
+                  ...parametros,
+                  baseNegativaCsllAcumulada: Math.max(0, Number(e.target.value)),
+                })
+              }
+            />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Compensação limitada a 30% do lucro do período (Lei 9.065/95, arts. 15 e 16).
+        </p>
+
+
 
       </CardContent>
     </Card>
