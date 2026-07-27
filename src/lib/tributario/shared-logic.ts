@@ -3,6 +3,8 @@
 
 export type RegimeTributario = 'simples_nacional' | 'lucro_presumido' | 'lucro_real';
 export type AnexoSimples = 'I' | 'II' | 'III' | 'IV' | 'V';
+/** Período de apuração de IRPJ/CSLL (Lei 9.430/96). */
+export type PeriodicidadeApuracao = 'trimestral' | 'anual';
 
 export interface FaturamentoMes {
   ano: number; mes: number; receita_bruta: number;
@@ -74,6 +76,10 @@ export interface ParametrosSimulacao {
   prejuizoFiscalAcumulado?: number;
   /** Base negativa de CSLL acumulada (positivo). Trava de 30% na compensação. */
   baseNegativaCsllAcumulada?: number;
+  /** Período de apuração de IRPJ/CSLL no Lucro Real ('anual' por default). */
+  periodicidadeApuracao?: PeriodicidadeApuracao;
+  /** Lucro real por trimestre (4 posições), quando conhecido. */
+  lucroTrimestral?: number[];
 }
 
 
@@ -103,6 +109,16 @@ export interface ResultadoCenario {
   prejuizoFiscalSaldo?: number;
   baseNegativaCsllCompensada?: number;
   baseNegativaCsllSaldo?: number;
+  /** Periodicidade de apuração de IRPJ/CSLL efetivamente aplicada. */
+  periodicidadeApuracao?: PeriodicidadeApuracao;
+  /** Bases de IRPJ por trimestre (apuração trimestral). */
+  irpjBasesTrimestrais?: number[];
+  /** Custo extra de IRPJ pela sazonalidade (trimestral − anual equivalente). */
+  efeitoSazonalidadeIrpj?: number;
+  /** IRPJ+CSLL devido na periodicidade alternativa (comparativo do Lucro Real). */
+  irpjCsllPeriodicidadeAlternativa?: number;
+  /** Economia estimada ao adotar a periodicidade recomendada no Lucro Real. */
+  economiaPeriodicidade?: number;
   observacoes: string[];
 }
 
@@ -289,6 +305,10 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     prejuizoFiscalAcumulado: Math.max(0, num(p.prejuizoFiscalAcumulado, 0)),
     baseNegativaCsllAcumulada: Math.max(0, num(p.baseNegativaCsllAcumulada, 0)),
     sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
+    periodicidadeApuracao: p.periodicidadeApuracao === 'trimestral' ? 'trimestral' : (p.periodicidadeApuracao === 'anual' ? 'anual' : undefined),
+    lucroTrimestral: Array.isArray(p.lucroTrimestral) && p.lucroTrimestral.length === 4
+      ? p.lucroTrimestral.map((v) => num(v, 0))
+      : undefined,
   };
 }
 
@@ -531,6 +551,49 @@ export function apurarIcmsNaoCumulativo(
   };
 }
 
+/**
+ * IRPJ de um período de apuração TRIMESTRAL.
+ *
+ * Lei 9.430/96, art. 4º: o adicional de 10% incide sobre a parcela da base que
+ * exceder R$ 20.000/mês do período — R$ 60.000 no trimestre. Não existe
+ * "sobra" de limite entre trimestres, o que torna o adicional convexo em
+ * relação à sazonalidade da receita/lucro.
+ */
+export function irpjPeriodoTrimestral(base: number): number {
+  const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
+  return b * 0.15 + (b > 60000 ? (b - 60000) * 0.10 : 0);
+}
+
+/** IRPJ de um período ANUAL (adicional sobre o excedente a R$ 240.000). */
+export function irpjPeriodoAnual(base: number): number {
+  const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
+  return b * 0.15 + (b > 240000 ? (b - 240000) * 0.10 : 0);
+}
+
+/**
+ * Distribui o faturamento anual em 4 trimestres.
+ *
+ * Usa o histórico mensal informado (sazonalidade real) quando disponível;
+ * caso contrário assume distribuição uniforme (1/4 por trimestre), que é
+ * neutra em relação ao adicional.
+ */
+export function distribuirTrimestres(p: ParametrosSimulacao): number[] {
+  const total = Math.max(0, Number.isFinite(p.faturamentoAnual) ? Number(p.faturamentoAnual) : 0);
+  const meses = p.faturamentoMensal;
+  if (meses?.length) {
+    const acc = [0, 0, 0, 0];
+    let soma = 0;
+    for (const m of meses) {
+      const mes = Number(m?.mes);
+      const receita = Math.max(0, Number.isFinite(Number(m?.receita_bruta)) ? Number(m.receita_bruta) : 0);
+      if (!Number.isFinite(mes) || mes < 1 || mes > 12) continue;
+      acc[Math.floor((mes - 1) / 3)] += receita;
+      soma += receita;
+    }
+    if (soma > 0) return acc.map((v) => (v / soma) * total);
+  }
+  return [total / 4, total / 4, total / 4, total / 4];
+}
 
 /**
  * Compensação de prejuízos fiscais / base negativa com a trava dos 30%.
@@ -578,7 +641,15 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const presIrpjServ = p.presuncaoIrpjServicos ?? 0.32;
   const presCsllServ = p.presuncaoCsllServicos ?? 0.32;
   const baseIrpj = rs * presIrpjServ + rc * 0.08;
-  const irpj = baseIrpj * 0.15 + (baseIrpj > 240000 ? (baseIrpj - 240000) * 0.10 : 0);
+  // Apuração do IRPJ no Lucro Presumido é OBRIGATORIAMENTE trimestral
+  // (Lei 9.430/96, art. 1º), com adicional de 10% sobre o que exceder
+  // R$ 60.000 em cada trimestre. Sob sazonalidade, isso custa mais do que a
+  // conta anual equivalente — diferença capturada aqui.
+  const trimestres = distribuirTrimestres(p);
+  const basesTrimestrais = trimestres.map((f) => f * ps * presIrpjServ + f * pc * 0.08);
+  const irpj = basesTrimestrais.reduce((acc, b) => acc + irpjPeriodoTrimestral(b), 0);
+  const irpjEquivalenteAnual = irpjPeriodoAnual(baseIrpj);
+  const efeitoSazonalidade = irpj - irpjEquivalenteAnual;
   const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
@@ -602,16 +673,53 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
       `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
     );
   }
+  observacoes.push('IRPJ apurado trimestralmente (Lei 9.430/96, art. 1º): adicional de 10% sobre a base que exceder R$ 60 mil por trimestre.');
+  if (efeitoSazonalidade > 1) {
+    observacoes.push(
+      `Sazonalidade da receita eleva o adicional de IRPJ em R$ ${efeitoSazonalidade.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} frente a uma distribuição uniforme entre os trimestres.`,
+    );
+  }
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
+    periodicidadeApuracao: 'trimestral',
+    irpjBasesTrimestrais: basesTrimestrais,
+    efeitoSazonalidadeIrpj: efeitoSazonalidade,
     observacoes,
   };
 }
 
+
+/**
+ * Apura IRPJ/CSLL do Lucro Real em regime TRIMESTRAL.
+ *
+ * Cada trimestre é um período de apuração autônomo: o adicional usa o limite de
+ * R$ 60 mil e um trimestre com prejuízo só reduz os seguintes pela trava dos
+ * 30% (Lei 9.065/95). É por isso que o trimestral costuma ser mais caro que o
+ * anual em empresas com resultado irregular.
+ */
+export function apurarRealTrimestral(
+  lucrosTrimestrais: number[],
+  estoqueIrpj: number,
+  estoqueCsll: number,
+): { irpj: number; csll: number; compensadoIrpj: number; compensadoCsll: number; saldoIrpj: number; saldoCsll: number } {
+  let sIrpj = Math.max(0, estoqueIrpj);
+  let sCsll = Math.max(0, estoqueCsll);
+  let irpj = 0, csll = 0, cIrpj = 0, cCsll = 0;
+  for (const bruto of lucrosTrimestrais) {
+    const lucro = Number.isFinite(bruto) ? Number(bruto) : 0;
+    const ci = compensarPrejuizo(lucro, sIrpj);
+    const cc = compensarPrejuizo(lucro, sCsll);
+    sIrpj = ci.saldo; sCsll = cc.saldo;
+    cIrpj += ci.compensado; cCsll += cc.compensado;
+    irpj += irpjPeriodoTrimestral(ci.baseAjustada);
+    csll += Math.max(0, cc.baseAjustada) * 0.09;
+  }
+  return { irpj, csll, compensadoIrpj: cIrpj, compensadoCsll: cCsll, saldoIrpj: sIrpj, saldoCsll: sCsll };
+}
 
 export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
@@ -622,10 +730,26 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   // de base negativa reduz a base tributável em no máximo 30% do lucro do período.
   const compIrpj = compensarPrejuizo(lucro, p.prejuizoFiscalAcumulado ?? 0);
   const compCsll = compensarPrejuizo(lucro, p.baseNegativaCsllAcumulada ?? 0);
-  const baseIrpjReal = compIrpj.baseAjustada;
-  const baseCsllReal = compCsll.baseAjustada;
-  const irpj = Math.max(0, baseIrpjReal * 0.15 + (baseIrpjReal > 240000 ? (baseIrpjReal - 240000) * 0.10 : 0));
-  const csll = Math.max(0, baseCsllReal * 0.09);
+  const irpjAnual = irpjPeriodoAnual(compIrpj.baseAjustada);
+  const csllAnual = Math.max(0, compCsll.baseAjustada) * 0.09;
+
+  // Cenário trimestral: usa o lucro por trimestre informado ou o rateio pela
+  // sazonalidade da receita.
+  const lucrosTrim = p.lucroTrimestral?.length === 4
+    ? p.lucroTrimestral.map((v) => (Number.isFinite(v) ? Number(v) : 0))
+    : distribuirTrimestres(p).map((f) => f * (margemLucro / 100));
+  const trim = apurarRealTrimestral(
+    lucrosTrim,
+    p.prejuizoFiscalAcumulado ?? 0,
+    p.baseNegativaCsllAcumulada ?? 0,
+  );
+
+  const periodicidade: PeriodicidadeApuracao = p.periodicidadeApuracao ?? 'anual';
+  const usaTrimestral = periodicidade === 'trimestral';
+  const irpj = usaTrimestral ? trim.irpj : irpjAnual;
+  const csll = usaTrimestral ? trim.csll : csllAnual;
+  const alternativa = usaTrimestral ? irpjAnual + csllAnual : trim.irpj + trim.csll;
+  const economiaPeriodicidade = alternativa - (irpj + csll);
   const baseCred = (p.comprasComCredito || 0) + (p.despesasOperacionais || 0);
   const pis = Math.max(0, p.faturamentoAnual * 0.0165 - baseCred * 0.0165);
   const cofins = Math.max(0, p.faturamentoAnual * 0.076 - baseCred * 0.076);
@@ -651,10 +775,21 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
       `Saldo de prejuízo fiscal a compensar: R$ ${compIrpj.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (sem prazo de prescrição).`,
     );
   }
-  if (lucro <= 240000) {
-    observacoes.push('Sem adicional de IRPJ: lucro anual ≤ R$ 240k.');
+  if (usaTrimestral) {
+    observacoes.push('Apuração TRIMESTRAL: adicional de 10% sobre a base que exceder R$ 60 mil em cada trimestre, sem transporte de limite entre períodos.');
+  } else if (lucro <= 240000) {
+    observacoes.push('Apuração ANUAL: sem adicional de IRPJ (lucro anual ≤ R$ 240k).');
   } else {
-    observacoes.push('Adicional de IRPJ de 10% sobre o lucro excedente a R$ 240k.');
+    observacoes.push('Apuração ANUAL: adicional de 10% sobre o lucro excedente a R$ 240k.');
+  }
+  if (Math.abs(economiaPeriodicidade) > 1) {
+    const melhor = economiaPeriodicidade > 0 ? periodicidade : (usaTrimestral ? 'anual' : 'trimestral');
+    const delta = Math.abs(economiaPeriodicidade).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    observacoes.push(
+      economiaPeriodicidade > 0
+        ? `A opção ${melhor} economiza R$ ${delta} de IRPJ+CSLL frente à alternativa.`
+        : `Atenção: a periodicidade ${melhor} reduziria IRPJ+CSLL em R$ ${delta}. Avalie a mudança na 1ª quota do ano (opção irretratável).`,
+    );
   }
   if (margemLucro < 8) {
     observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
@@ -670,10 +805,13 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
-    prejuizoFiscalCompensado: compIrpj.compensado,
-    prejuizoFiscalSaldo: compIrpj.saldo,
-    baseNegativaCsllCompensada: compCsll.compensado,
-    baseNegativaCsllSaldo: compCsll.saldo,
+    prejuizoFiscalCompensado: usaTrimestral ? trim.compensadoIrpj : compIrpj.compensado,
+    prejuizoFiscalSaldo: usaTrimestral ? trim.saldoIrpj : compIrpj.saldo,
+    baseNegativaCsllCompensada: usaTrimestral ? trim.compensadoCsll : compCsll.compensado,
+    baseNegativaCsllSaldo: usaTrimestral ? trim.saldoCsll : compCsll.saldo,
+    periodicidadeApuracao: periodicidade,
+    irpjCsllPeriodicidadeAlternativa: alternativa,
+    economiaPeriodicidade,
     observacoes,
   };
 

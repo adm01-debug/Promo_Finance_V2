@@ -4,6 +4,9 @@ export type RegimeTributario = 'simples_nacional' | 'lucro_presumido' | 'lucro_r
 
 export type AnexoSimples = 'I' | 'II' | 'III' | 'IV' | 'V';
 
+/** Período de apuração de IRPJ/CSLL (Lei 9.430/96). */
+export type PeriodicidadeApuracao = 'trimestral' | 'anual';
+
 export interface FaturamentoMes {
   ano: number;
   mes: number;
@@ -77,6 +80,17 @@ export interface ParametrosSimulacao {
    * Compensação limitada a 30% da base positiva (Lei 9.065/95, art. 16).
    */
   baseNegativaCsllAcumulada?: number;
+  /**
+   * Período de apuração de IRPJ/CSLL no Lucro Real: 'anual' (estimativa mensal
+   * com ajuste anual) ou 'trimestral'. Default 'anual'. No Lucro Presumido a
+   * apuração é sempre trimestral por força de lei.
+   */
+  periodicidadeApuracao?: PeriodicidadeApuracao;
+  /**
+   * Lucro real por trimestre (4 posições), quando conhecido. Permite avaliar o
+   * custo da apuração trimestral em cenários com resultados irregulares.
+   */
+  lucroTrimestral?: number[];
 }
 
 
@@ -126,6 +140,16 @@ export interface ResultadoCenario {
   baseNegativaCsllCompensada?: number;
   /** Saldo de base negativa de CSLL a compensar em períodos futuros. */
   baseNegativaCsllSaldo?: number;
+  /** Periodicidade do período de apuração de IRPJ/CSLL efetivamente aplicada. */
+  periodicidadeApuracao?: PeriodicidadeApuracao;
+  /** Bases de IRPJ por trimestre (quando a apuração é trimestral). */
+  irpjBasesTrimestrais?: number[];
+  /** Custo adicional de IRPJ decorrente da sazonalidade (trimestral − anual equivalente). */
+  efeitoSazonalidadeIrpj?: number;
+  /** IRPJ+CSLL que seria devido na periodicidade alternativa (comparativo Real). */
+  irpjCsllPeriodicidadeAlternativa?: number;
+  /** Economia estimada ao adotar a periodicidade recomendada no Lucro Real. */
+  economiaPeriodicidade?: number;
 
   observacoes: string[];
 }

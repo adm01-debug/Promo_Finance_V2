@@ -62,7 +62,7 @@ describe('simularReal', () => {
     const r = simularReal({ ...base, faturamentoAnual: 1_000_000, margemLucro: 10 });
     // lucro = 100k
     expect(r.irpj).toBeCloseTo(100_000 * 0.15, 2);
-    expect(r.observacoes.some((o) => /Sem adicional/.test(o))).toBe(true);
+    expect(r.observacoes.some((o) => /sem adicional/i.test(o))).toBe(true);
   });
 
   it('lucro zero gera IRPJ/CSLL zero (lucro real ≤ 0)', () => {
