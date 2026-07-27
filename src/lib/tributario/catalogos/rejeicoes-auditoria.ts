@@ -19,7 +19,14 @@ import type {
 import type { ResultadoOverlayMva, MotivoRejeicaoMva } from '@/lib/tributario/icms/overlay-mva';
 import type { AlertaCatalogo } from './alertas';
 
-export type CatalogoOverlay = 'icms' | 'iss' | 'ncm' | 'monofasico' | 'mva_st';
+export type CatalogoOverlay =
+  | 'icms'
+  | 'iss'
+  | 'ncm'
+  | 'monofasico'
+  | 'mva_st'
+  | 'interestaduais'
+  | 'faixas_simples';
 export type SeveridadeRejeicao = 'critico' | 'atencao';
 
 /** Linha normalizada de auditoria — espelha `public.overlay_rejeicoes_auditoria`. */
