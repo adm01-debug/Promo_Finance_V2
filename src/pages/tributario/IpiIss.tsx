@@ -162,36 +162,6 @@ function IpiSimulador() {
           <CardContent><p className="text-2xl font-semibold tabular-nums">{brl(r.valorTotalNota)}</p></CardContent></Card>
       </div>
 
-      {comparacao.status !== 'sem_catalogo' && comparacao.sugestao && (
-        <Alert variant={comparacao.status === 'divergente' ? 'destructive' : 'default'}>
-          <Info className="h-4 w-4" />
-          <AlertDescription className="flex flex-wrap items-center gap-2">
-            <span>
-              Catálogo municipal para {comparacao.sugestao.municipio}/{comparacao.sugestao.uf}
-              {comparacao.sugestao.itemCodigo
-                ? ` (item ${comparacao.sugestao.itemCodigo})`
-                : ' (alíquota geral)'}
-              : {pct(comparacao.sugestao.aliquota)}
-              {comparacao.status === 'divergente'
-                ? ` — informado difere em ${comparacao.diferencaPp.toFixed(2)} p.p.`
-                : ' — alíquota informada confere.'}
-            </span>
-            {comparacao.sugestao.baseLegal && (
-              <Badge variant="outline">{comparacao.sugestao.baseLegal}</Badge>
-            )}
-            {comparacao.status === 'divergente' && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setAliquota(Number((comparacao.sugestao!.aliquota * 100).toFixed(4)))}
-              >
-                Aplicar alíquota do catálogo
-              </Button>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <Alertas alertas={r.alertas} />
       <Card>
         <CardHeader><CardTitle>Memória de cálculo</CardTitle></CardHeader>
