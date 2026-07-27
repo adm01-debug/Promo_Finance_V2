@@ -8,7 +8,7 @@
 //
 // Autenticação: JWT validado em código (verify_jwt = false é o padrão do
 // deploy). Escrita exige papel admin ou manager, checado no servidor.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {

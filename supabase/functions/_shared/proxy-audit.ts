@@ -1,7 +1,7 @@
 // Auditoria compartilhada para Edge Function proxies.
 // Fornece logging estruturado + persistência opcional em audit_logs
 // com request_id, usuário autenticado, RPC alvo, duração e resultado.
-import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
+import type { SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 import { createLogger, Logger } from "./logger.ts";
 import { CORRELATION_HEADER, correlationResponseHeaders, getRequestId } from "./correlation.ts";
 

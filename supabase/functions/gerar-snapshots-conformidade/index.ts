@@ -11,7 +11,7 @@
  *  - header `x-cron-secret` igual ao service role (uso interno do pg_cron);
  *  - JWT de usuário com papel `admin`.
  */
-import { createClient } from 'npm:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeaders } from "../_shared/cors.ts";
 import { z } from 'npm:zod@3.23.8';
 

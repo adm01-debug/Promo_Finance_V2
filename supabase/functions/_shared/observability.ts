@@ -1,7 +1,7 @@
 // Logger estruturado não-bloqueante para Edge Functions
 // Faz buffer em memória e flush async para tabela edge_function_logs
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 interface LogEntry {
   function_name: string;

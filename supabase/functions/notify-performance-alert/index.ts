@@ -1,6 +1,6 @@
 // Envia notificação (Slack e/ou e-mail via Resend) para alertas críticos de performance.
 // Chamado pelo trigger DB `performance_alerts_notify_trigger` via pg_net após INSERT crítico.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

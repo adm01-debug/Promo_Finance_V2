@@ -3,7 +3,7 @@
 // extrai CNPJ + validade, salva o .pfx no bucket privado `nfe-certificados` e
 // persiste os metadados criptografados via RPC certificado_upsert.
 
-import { createClient } from 'npm:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeaders } from "../_shared/cors.ts";
 import forge from 'npm:node-forge@1.3.1';
 import { z } from 'npm:zod@3.23.8';

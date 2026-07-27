@@ -10,7 +10,7 @@
 // exponencial no banco reagenda automaticamente. Falhas de contrato (400/422)
 // devem passar `retryable=false` para promover ao DLQ imediatamente.
 
-import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 export type WebhookClaim = {
   id: string;

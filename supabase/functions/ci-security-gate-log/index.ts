@@ -3,7 +3,7 @@
 // Autenticado por segredo compartilhado (X-CI-Gate-Secret) — NÃO usa JWT
 // pois a chamada vem do runner do GitHub Actions, sem sessão de usuário.
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
