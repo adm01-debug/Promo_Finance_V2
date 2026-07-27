@@ -541,10 +541,6 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
-    prejuizoFiscalCompensado: compIrpj.compensado,
-    prejuizoFiscalSaldo: compIrpj.saldo,
-    baseNegativaCsllCompensada: compCsll.compensado,
-    baseNegativaCsllSaldo: compCsll.saldo,
     observacoes,
   };
 }
@@ -605,6 +601,10 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
+    prejuizoFiscalCompensado: compIrpj.compensado,
+    prejuizoFiscalSaldo: compIrpj.saldo,
+    baseNegativaCsllCompensada: compCsll.compensado,
+    baseNegativaCsllSaldo: compCsll.saldo,
     observacoes,
   };
 }
