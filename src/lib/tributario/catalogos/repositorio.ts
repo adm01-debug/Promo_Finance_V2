@@ -3,6 +3,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { AnexoSimples } from '../types';
 import type { RegistroIssMunicipalBanco } from '../ipi-iss/overlay-iss';
+import type { NcmBanco } from './coerencia-ncm';
+
 import type {
   AliquotaInterestadualCatalogo,
   FaixaSimplesCatalogo,
