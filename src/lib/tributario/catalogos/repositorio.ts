@@ -125,13 +125,18 @@ export async function buscarItensListaIss(
     .order('codigo');
 
   if (error) throw error;
-  return (data ?? []).map((i) => ({
+  const normalizados = (data ?? []).map((i) => ({
     codigo: i.codigo,
     descricao: i.descricao,
     retem_no_tomador: Boolean(i.retem_no_tomador),
     aliquota_minima: Number(i.aliquota_minima),
     aliquota_maxima: Number(i.aliquota_maxima),
+    vigente_de: i.vigente_de,
+    vigente_ate: i.vigente_ate,
   }));
+
+  // Itens revogados da lista da LC 116 não devem alimentar as guardas do motor.
+  return aplicarVigencia(normalizados, referencia);
 }
 
 /**
