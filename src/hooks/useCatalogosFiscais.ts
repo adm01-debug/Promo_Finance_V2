@@ -51,7 +51,10 @@ export interface CatalogosFiscaisData {
   overlayNcm: ResultadoOverlayNcm;
   /** Marcador monofásico do catálogo sobrepondo o classificador embarcado. */
   overlayMonofasico: ResultadoOverlayMonofasico;
+  /** Alertas proativos de divergência, com item e campo divergentes. */
+  alertas: ResumoAlertasCatalogos;
 }
+
 
 export function useCatalogosFiscais() {
   return useQuery<CatalogosFiscaisData>({
