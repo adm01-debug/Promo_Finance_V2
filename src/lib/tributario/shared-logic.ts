@@ -262,6 +262,10 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     folhaAnual: Math.max(0, num(p.folhaAnual, 0)),
     comprasComCredito: Math.max(0, num(p.comprasComCredito, 0)),
     despesasOperacionais: Math.max(0, num(p.despesasOperacionais, 0)),
+    comprasComCreditoICMS: p.comprasComCreditoICMS === undefined
+      ? undefined
+      : Math.max(0, num(p.comprasComCreditoICMS, 0)),
+
     aliquotaICMS: p.aliquotaICMS === undefined ? undefined : clamp(num(p.aliquotaICMS, 0.18), 0, 1),
     aliquotaISS: p.aliquotaISS === undefined ? undefined : clamp(num(p.aliquotaISS, 0.05), 0, 1),
     aliquotaRAT: p.aliquotaRAT === undefined ? undefined : clamp(num(p.aliquotaRAT, 0.02), 0, 0.06),
