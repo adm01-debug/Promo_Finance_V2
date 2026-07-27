@@ -50,6 +50,20 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Cliente vinculado ao JWT do chamador: valida a identidade de verdade.
+    const sbUser = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: userData, error: userError } = await sbUser.auth.getUser();
+    const userId = userData?.user?.id;
+    if (userError || !userId) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const sb = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -63,13 +77,24 @@ Deno.serve(async (req) => {
       anoReferencia: z.number().int().optional().nullable(),
       mesReferencia: z.number().int().min(1).max(12).optional().nullable(),
       parametrosOverride: z.record(z.any()).optional().nullable(),
-      regimeAtual: z.enum(['simples', 'presumido', 'real']).optional().nullable(),
+      regimeAtual: z.enum(['simples_nacional', 'lucro_presumido', 'lucro_real']).optional().nullable(),
       persist: z.boolean().optional(),
     }).passthrough();
     const parsed = validatePayload(DecidirBodySchema, raw, 'decidir-regime');
     if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
     const { empresaId, anoReferencia, mesReferencia, parametrosOverride, regimeAtual, persist = true } = parsed.data as Record<string, any>;
 
+    // Autorização multi-tenant: a leitura passa pelo RLS do próprio usuário.
+    const { data: empresaPermitida } = await sbUser
+      .from('empresas')
+      .select('id')
+      .eq('id', empresaId)
+      .maybeSingle();
+    if (!empresaPermitida) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const hoje = new Date();
     const ano = anoReferencia ?? hoje.getFullYear();
@@ -98,19 +123,20 @@ Deno.serve(async (req) => {
       || faturamentoMensal.slice(0, 12).reduce((a, f) => a + f.receita_bruta, 0);
     const folhaAnual = folhaMensal
       .filter((f) => f.ano === ano)
-      .reduce((a, f) => a + f.total_folha, 0)
-      || folhaMensal.slice(0, 12).reduce((a, f) => a + f.total_folha, 0);
+      .reduce((a, f) => a + f.total_falha_placeholder ?? 0, 0);
 
     const params: ParametrosSimulacao = {
-      faturamentoAnual: parametrosOverride?.faturamentoAnual ?? faturamentoAnual,
+      ...normalizarOverride(parametrosOverride),
+      faturamentoAnual: numeroFinito(parametrosOverride?.faturamentoAnual) ?? faturamentoAnual,
       faturamentoMensal,
       folhaMensal,
-      folhaAnual: parametrosOverride?.folhaAnual ?? folhaAnual,
-      margemLucro: parametrosOverride?.margemLucro ?? 15,
-      percentualServicos: parametrosOverride?.percentualServicos ?? 50,
-      comprasComCredito: parametrosOverride?.comprasComCredito ?? 0,
-      despesasOperacionais: parametrosOverride?.despesasOperacionais ?? 0,
+      folhaAnual: numeroFinito(parametrosOverride?.folhaAnual) ?? folhaAnualCalculado(folhaMensal, ano),
+      margemLucro: numeroFinito(parametrosOverride?.margemLucro) ?? 15,
+      percentualServicos: numeroFinito(parametrosOverride?.percentualServicos) ?? 50,
+      comprasComCredito: numeroFinito(parametrosOverride?.comprasComCredito) ?? 0,
+      despesasOperacionais: numeroFinito(parametrosOverride?.despesasOperacionais) ?? 0,
     };
+
 
     // CACHE LOOKUP
     const cacheable = !parametrosOverride || Object.keys(parametrosOverride).length === 0;
