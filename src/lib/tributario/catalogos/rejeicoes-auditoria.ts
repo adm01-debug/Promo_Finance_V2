@@ -219,7 +219,8 @@ export function coletarDriftMvaAuditavel(
     .map((a) => ({
       catalogo: 'mva_st' as const,
       identificador: a.item,
-      descricao: a.mensagem,
+      // A API limita a descrição a 300 caracteres; trunca defensivamente.
+      descricao: a.mensagem.slice(0, 300),
       campo: a.campo,
       // Prefixo `drift_` evita colisão com os motivos de rejeição do overlay,
       // preservando a leitura correta do agregado por motivo.
