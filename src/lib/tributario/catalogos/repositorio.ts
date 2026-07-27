@@ -2,6 +2,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import type { AnexoSimples } from '../types';
+import type { RegistroIssMunicipalBanco } from '../ipi-iss/overlay-iss';
 import type {
   AliquotaInterestadualCatalogo,
   FaixaSimplesCatalogo,
@@ -77,4 +78,57 @@ export async function buscarFaixasSimples(
   }));
 
   return aplicarVigencia(normalizadas, referencia);
+}
+
+/** Item da lista anexa da LC 116/2003, conforme catálogo do banco. */
+export interface ItemListaIssCatalogo {
+  codigo: string;
+  descricao: string;
+  retem_no_tomador: boolean;
+  aliquota_minima: number;
+  aliquota_maxima: number;
+}
+
+export async function buscarItensListaIss(): Promise<ItemListaIssCatalogo[]> {
+  const { data, error } = await supabase
+    .from('itens_lista_iss')
+    .select('codigo, descricao, retem_no_tomador, aliquota_minima, aliquota_maxima')
+    .order('codigo');
+
+  if (error) throw error;
+  return (data ?? []).map((i) => ({
+    codigo: i.codigo,
+    descricao: i.descricao,
+    retem_no_tomador: Boolean(i.retem_no_tomador),
+    aliquota_minima: Number(i.aliquota_minima),
+    aliquota_maxima: Number(i.aliquota_maxima),
+  }));
+}
+
+/**
+ * Alíquotas municipais de ISS. O join com `itens_lista_iss` traz o código do
+ * item (nulo = alíquota geral do município). A validação de faixa legal fica a
+ * cargo do overlay — aqui só normalizamos o formato.
+ */
+export async function buscarAliquotasIssMunicipais(): Promise<RegistroIssMunicipalBanco[]> {
+  const { data, error } = await supabase
+    .from('aliquotas_iss_municipal')
+    .select('codigo_ibge, municipio, uf, aliquota, vigente_de, vigente_ate, base_legal, itens_lista_iss(codigo)')
+    .order('codigo_ibge');
+
+  if (error) throw error;
+
+  return (data ?? []).map((r) => {
+    const item = r.itens_lista_iss as { codigo: string } | null;
+    return {
+      codigo_ibge: r.codigo_ibge,
+      municipio: r.municipio,
+      uf: r.uf as string,
+      item_codigo: item?.codigo ?? null,
+      aliquota: Number(r.aliquota),
+      vigente_de: r.vigente_de,
+      vigente_ate: r.vigente_ate,
+      base_legal: r.base_legal,
+    } satisfies RegistroIssMunicipalBanco;
+  });
 }
