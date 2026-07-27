@@ -767,6 +767,81 @@ export type Database = {
           },
         ]
       }
+      aliquotas_interestaduais: {
+        Row: {
+          aliquota: number
+          aliquota_importado: number
+          created_at: string
+          id: string
+          uf_destino: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          aliquota_importado?: number
+          created_at?: string
+          id?: string
+          uf_destino: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          aliquota_importado?: number
+          created_at?: string
+          id?: string
+          uf_destino?: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
+      aliquotas_internas_uf: {
+        Row: {
+          aliquota: number
+          aliquota_fcp: number
+          base_legal: string | null
+          categoria_produto: string
+          created_at: string
+          id: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          aliquota_fcp?: number
+          base_legal?: string | null
+          categoria_produto?: string
+          created_at?: string
+          id?: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          aliquota_fcp?: number
+          base_legal?: string | null
+          categoria_produto?: string
+          created_at?: string
+          id?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
       allowed_countries: {
         Row: {
           ativo: boolean | null
@@ -12006,6 +12081,54 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
         ]
+      }
+      ufs: {
+        Row: {
+          aliquota_fcp: number
+          aliquota_interna_padrao: number
+          codigo_ibge: number
+          created_at: string
+          difal_base_dupla: boolean
+          exige_antecipacao: boolean
+          id: string
+          nome: string
+          observacoes: string | null
+          possui_fcp: boolean
+          regiao: Database["public"]["Enums"]["regiao_brasil"]
+          sigla: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+        }
+        Insert: {
+          aliquota_fcp?: number
+          aliquota_interna_padrao?: number
+          codigo_ibge: number
+          created_at?: string
+          difal_base_dupla?: boolean
+          exige_antecipacao?: boolean
+          id?: string
+          nome: string
+          observacoes?: string | null
+          possui_fcp?: boolean
+          regiao: Database["public"]["Enums"]["regiao_brasil"]
+          sigla: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Update: {
+          aliquota_fcp?: number
+          aliquota_interna_padrao?: number
+          codigo_ibge?: number
+          created_at?: string
+          difal_base_dupla?: boolean
+          exige_antecipacao?: boolean
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          possui_fcp?: boolean
+          regiao?: Database["public"]["Enums"]["regiao_brasil"]
+          sigla?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_action_audit: {
         Row: {
