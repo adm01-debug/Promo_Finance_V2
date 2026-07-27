@@ -42,7 +42,7 @@ import {
   type FiltrosAuditoriaOverlay,
 } from '@/hooks/useOverlayRejeicoesAuditoria';
 import {
-  coletarDriftMvaAuditavel,
+  coletarDriftCatalogoAuditavel,
   coletarRejeicoesOverlay,
   descreverMotivo,
   resumirRejeicoes,
@@ -55,6 +55,8 @@ const ROTULO_CATALOGO: Record<CatalogoOverlay, string> = {
   ncm: 'NCM / TIPI',
   monofasico: 'Monofásico',
   mva_st: 'MVA/ST por protocolo',
+  interestaduais: 'Alíquotas interestaduais',
+  faixas_simples: 'Faixas do Simples Nacional',
 };
 
 const dataHora = (iso: string | null) =>
@@ -82,9 +84,10 @@ export default function AuditoriaOverlay() {
         monofasico: dados.overlayMonofasico.rejeitadas,
         mva_st: dados.overlayMva.rejeitadas,
       }),
-      // Drift de cadastro do catálogo de MVA/ST: o registro não foi descartado,
-      // mas está sem lastro ou divergente do catálogo de NCMs.
-      ...coletarDriftMvaAuditavel(dados.alertas.alertas),
+      // Drift de cadastro de QUALQUER catálogo fiscal (UFs, interestaduais,
+      // faixas do Simples, ISS, NCM e MVA/ST): o registro não foi descartado,
+      // mas diverge do catálogo canônico ou está sem lastro.
+      ...coletarDriftCatalogoAuditavel(dados.alertas.alertas),
     ];
   }, [catalogos.data]);
 
