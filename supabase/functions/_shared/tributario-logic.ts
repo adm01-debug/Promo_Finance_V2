@@ -459,7 +459,7 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     observacoes: [
-      'Presunção 8% comércio / 32% serviços.',
+      `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
       'PIS/COFINS cumulativo.',
       `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
     ],
