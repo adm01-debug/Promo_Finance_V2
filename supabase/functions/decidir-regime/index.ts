@@ -36,6 +36,69 @@ function decidirRegimeInternal(p: ParametrosSimulacao, ano: number, mes: number,
   return { cenarios, recomendado, segundoLugar, economiaAnualVsAtual: economia, alertas, justificativa };
 }
 
+/** Converte para número finito ou `undefined` (aceita string numérica de legado). */
+function numeroFinito(v: unknown): number | undefined {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  if (typeof v === 'string' && v.trim() !== '') {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  }
+  return undefined;
+}
+
+function clamp(v: number, min: number, max: number) {
+  return Math.min(Math.max(v, min), max);
+}
+
+/** Campos numéricos aceitos no override, com faixa legal de saneamento. */
+const CAMPOS_NUMERICOS: Record<string, [number, number]> = {
+  percentualIndustria: [0, 100],
+  percentualRevenda: [0, 100],
+  aliquotaICMS: [0, 1],
+  aliquotaISS: [0, 1],
+  sublimiteEstadual: [0, Number.MAX_SAFE_INTEGER],
+  issRetidoFonte: [0, Number.MAX_SAFE_INTEGER],
+  aliquotaRAT: [0, 0.06],
+  aliquotaTerceiros: [0, 0.08],
+  presuncaoIrpjServicos: [0.08, 0.32],
+  presuncaoCsllServicos: [0.12, 0.32],
+  comprasComCreditoICMS: [0, Number.MAX_SAFE_INTEGER],
+  prejuizoFiscalAcumulado: [0, Number.MAX_SAFE_INTEGER],
+  baseNegativaCsllAcumulada: [0, Number.MAX_SAFE_INTEGER],
+};
+
+/**
+ * Normaliza `parametrosOverride` preservando os campos avançados do motor
+ * (periodicidade, prejuízos, alíquotas, presunções) que antes eram descartados,
+ * causando divergência entre o cálculo do cliente e o do servidor.
+ */
+function normalizarOverride(raw: unknown): Partial<ParametrosSimulacao> {
+  const out: Record<string, unknown> = {};
+  if (!raw || typeof raw !== 'object') return out;
+  const src = raw as Record<string, unknown>;
+
+  for (const [campo, [min, max]] of Object.entries(CAMPOS_NUMERICOS)) {
+    const n = numeroFinito(src[campo]);
+    if (n !== undefined) out[campo] = clamp(n, min, max);
+  }
+
+  if (typeof src.atividadePrincipal === 'string') {
+    out.atividadePrincipal = src.atividadePrincipal.slice(0, 120);
+  }
+  if (typeof src.cnaePrincipal === 'string') {
+    out.cnaePrincipal = src.cnaePrincipal.slice(0, 120);
+  }
+  if (src.periodicidadeApuracao === 'anual' || src.periodicidadeApuracao === 'trimestral') {
+    out.periodicidadeApuracao = src.periodicidadeApuracao;
+  }
+  if (Array.isArray(src.lucroTrimestral) && src.lucroTrimestral.length === 4) {
+    const tri = src.lucroTrimestral.map((v) => numeroFinito(v));
+    if (tri.every((v) => v !== undefined)) out.lucroTrimestral = tri as number[];
+  }
+
+  return out as Partial<ParametrosSimulacao>;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -45,6 +108,20 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Cliente vinculado ao JWT do chamador: valida a identidade de verdade.
+    const sbUser = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: userData, error: userError } = await sbUser.auth.getUser();
+    const userId = userData?.user?.id;
+    if (userError || !userId) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -63,13 +140,24 @@ Deno.serve(async (req) => {
       anoReferencia: z.number().int().optional().nullable(),
       mesReferencia: z.number().int().min(1).max(12).optional().nullable(),
       parametrosOverride: z.record(z.any()).optional().nullable(),
-      regimeAtual: z.enum(['simples', 'presumido', 'real']).optional().nullable(),
+      regimeAtual: z.enum(['simples_nacional', 'lucro_presumido', 'lucro_real']).optional().nullable(),
       persist: z.boolean().optional(),
     }).passthrough();
     const parsed = validatePayload(DecidirBodySchema, raw, 'decidir-regime');
     if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
     const { empresaId, anoReferencia, mesReferencia, parametrosOverride, regimeAtual, persist = true } = parsed.data as Record<string, any>;
 
+    // Autorização multi-tenant: a leitura passa pelo RLS do próprio usuário.
+    const { data: empresaPermitida } = await sbUser
+      .from('empresas')
+      .select('id')
+      .eq('id', empresaId)
+      .maybeSingle();
+    if (!empresaPermitida) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const hoje = new Date();
     const ano = anoReferencia ?? hoje.getFullYear();
@@ -102,15 +190,17 @@ Deno.serve(async (req) => {
       || folhaMensal.slice(0, 12).reduce((a, f) => a + f.total_folha, 0);
 
     const params: ParametrosSimulacao = {
-      faturamentoAnual: parametrosOverride?.faturamentoAnual ?? faturamentoAnual,
+      ...normalizarOverride(parametrosOverride),
+      faturamentoAnual: numeroFinito(parametrosOverride?.faturamentoAnual) ?? faturamentoAnual,
       faturamentoMensal,
       folhaMensal,
-      folhaAnual: parametrosOverride?.folhaAnual ?? folhaAnual,
-      margemLucro: parametrosOverride?.margemLucro ?? 15,
-      percentualServicos: parametrosOverride?.percentualServicos ?? 50,
-      comprasComCredito: parametrosOverride?.comprasComCredito ?? 0,
-      despesasOperacionais: parametrosOverride?.despesasOperacionais ?? 0,
+      folhaAnual: numeroFinito(parametrosOverride?.folhaAnual) ?? folhaAnual,
+      margemLucro: numeroFinito(parametrosOverride?.margemLucro) ?? 15,
+      percentualServicos: numeroFinito(parametrosOverride?.percentualServicos) ?? 50,
+      comprasComCredito: numeroFinito(parametrosOverride?.comprasComCredito) ?? 0,
+      despesasOperacionais: numeroFinito(parametrosOverride?.despesasOperacionais) ?? 0,
     };
+
 
     // CACHE LOOKUP
     const cacheable = !parametrosOverride || Object.keys(parametrosOverride).length === 0;
@@ -126,7 +216,7 @@ Deno.serve(async (req) => {
       if (cached?.decisao) {
         // Log cache hit in audit trail
         await sb.from('tax_audit_trail').insert({
-          user_id: claims.claims.sub,
+          user_id: userId,
           empresa_id: empresaId,
           ano, mes,
           action: 'cache_hit',
@@ -180,7 +270,7 @@ Deno.serve(async (req) => {
 
     // Log simulation in audit trail
     await sb.from('tax_audit_trail').insert({
-      user_id: claims.claims.sub,
+      user_id: userId,
       empresa_id: empresaId,
       ano, mes,
       action: 'simulated',
