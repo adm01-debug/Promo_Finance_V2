@@ -216,7 +216,7 @@ Deno.serve(async (req) => {
       if (cached?.decisao) {
         // Log cache hit in audit trail
         await sb.from('tax_audit_trail').insert({
-          user_id: claims.claims.sub,
+          user_id: userId,
           empresa_id: empresaId,
           ano, mes,
           action: 'cache_hit',
@@ -270,7 +270,7 @@ Deno.serve(async (req) => {
 
     // Log simulation in audit trail
     await sb.from('tax_audit_trail').insert({
-      user_id: claims.claims.sub,
+      user_id: userId,
       empresa_id: empresaId,
       ano, mes,
       action: 'simulated',
