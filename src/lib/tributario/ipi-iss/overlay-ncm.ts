@@ -88,6 +88,8 @@ function arredondar(v: number): number {
  */
 export function normalizarAliquotaIpi(valor: number | string | null | undefined): number | null {
   if (valor === null || valor === undefined) return null;
+  // `Number('')` e `Number('   ')` são 0 — string vazia é ausência de dado, não zero.
+  if (typeof valor === 'string' && valor.trim() === '') return null;
   const bruto = typeof valor === 'string' ? Number(valor.trim().replace(',', '.')) : valor;
   if (typeof bruto !== 'number' || !Number.isFinite(bruto) || bruto < 0) return null;
   return arredondar(bruto > 1 ? bruto / 100 : bruto);
