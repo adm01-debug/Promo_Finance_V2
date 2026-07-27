@@ -485,6 +485,42 @@ function terceirosPorCnaeMotor(p: ParametrosSimulacao): number {
   return TERCEIROS_POR_DIVISAO_CNAE[divisao] ?? TERCEIROS_PADRAO;
 }
 
+/**
+ * Apuração do ICMS pelo regime de compensação (não-cumulatividade).
+ *
+ * A não-cumulatividade do ICMS é norma constitucional (CF/88, art. 155, §2º, I)
+ * e independe do regime de apuração do IRPJ: uma empresa de comércio no Lucro
+ * Presumido credita-se do imposto das aquisições exatamente como no Lucro Real.
+ * Tratar o ICMS como cumulativo no Presumido superestimava a carga do regime em
+ * até ~10,8 p.p. e invertia a recomendação em ~15% dos cenários simulados.
+ *
+ * Somente aquisições vinculadas a saídas tributadas geram crédito, por isso, na
+ * ausência de `comprasComCreditoICMS`, as compras são rateadas pela participação
+ * da receita de mercadorias (serviços tributados por ISS não geram crédito).
+ */
+export function apurarIcmsNaoCumulativo(
+  p: ParametrosSimulacao,
+  receitaMercadorias: number,
+  aliquota: number,
+): { icms: number; credito: number; saldoCredor: number; debito: number } {
+  const participacaoMercadorias = p.faturamentoAnual > 0
+    ? Math.max(0, Math.min(1, receitaMercadorias / p.faturamentoAnual))
+    : 0;
+  const comprasICMS = p.comprasComCreditoICMS !== undefined
+    ? Math.max(0, p.comprasComCreditoICMS)
+    : Math.max(0, p.comprasComCredito || 0) * participacaoMercadorias;
+
+  const debito = receitaMercadorias * aliquota;
+  const credito = comprasICMS * aliquota;
+  const saldo = debito - credito;
+  return {
+    icms: Math.max(0, saldo),
+    credito,
+    saldoCredor: saldo < 0 ? -saldo : 0,
+    debito,
+  };
+}
+
 
 export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
