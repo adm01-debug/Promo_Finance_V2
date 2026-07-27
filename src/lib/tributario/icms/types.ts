@@ -56,8 +56,11 @@ export interface InputIcmsSt {
   descontos?: number;
   /** IPI destacado — integra a base da ST, mas não a base própria em revenda. */
   ipi?: number;
-  /** MVA-ST original do protocolo, em decimal. */
-  mvaOriginal: number;
+  /**
+   * MVA-ST original do protocolo, em decimal. Opcional: quando omitida e o
+   * `ncm` for informado, a MVA é resolvida no overlay de protocolos de ST.
+   */
+  mvaOriginal?: number;
   /** Origem da mercadoria (define o uso da alíquota de 4%). */
   origem?: OrigemMercadoria;
   /** Override da alíquota interna de destino, em decimal. */
