@@ -17,9 +17,16 @@ import type {
   MotivoRejeicaoMonofasico,
 } from '@/lib/tributario/monofasico/overlay-monofasico';
 import type { ResultadoOverlayMva, MotivoRejeicaoMva } from '@/lib/tributario/icms/overlay-mva';
-import type { AlertaCatalogo } from './alertas';
+import type { AlertaCatalogo, CatalogoId } from './alertas';
 
-export type CatalogoOverlay = 'icms' | 'iss' | 'ncm' | 'monofasico' | 'mva_st';
+export type CatalogoOverlay =
+  | 'icms'
+  | 'iss'
+  | 'ncm'
+  | 'monofasico'
+  | 'mva_st'
+  | 'interestaduais'
+  | 'faixas_simples';
 export type SeveridadeRejeicao = 'critico' | 'atencao';
 
 /** Linha normalizada de auditoria — espelha `public.overlay_rejeicoes_auditoria`. */
@@ -181,7 +188,15 @@ export interface ResumoRejeicoes {
 
 /** Agrega as linhas auditáveis para os cartões de topo da tela. */
 export function resumirRejeicoes(linhas: RejeicaoAuditavel[]): ResumoRejeicoes {
-  const porCatalogo: Record<CatalogoOverlay, number> = { icms: 0, iss: 0, ncm: 0, monofasico: 0, mva_st: 0 };
+  const porCatalogo: Record<CatalogoOverlay, number> = {
+    icms: 0,
+    iss: 0,
+    ncm: 0,
+    monofasico: 0,
+    mva_st: 0,
+    interestaduais: 0,
+    faixas_simples: 0,
+  };
   const motivos = new Map<string, number>();
   let criticos = 0;
 
@@ -214,10 +229,37 @@ export function resumirRejeicoes(linhas: RejeicaoAuditavel[]): ResumoRejeicoes {
 export function coletarDriftMvaAuditavel(
   alertas: readonly AlertaCatalogo[],
 ): RejeicaoAuditavel[] {
+  return coletarDriftCatalogoAuditavel(alertas).filter((l) => l.catalogo === 'mva_st');
+}
+
+/**
+ * Mapa catálogo de origem do alerta → bucket persistido na trilha de auditoria.
+ * Espelha o CHECK de `public.overlay_rejeicoes_auditoria.catalogo`.
+ */
+const BUCKET_POR_CATALOGO: Record<CatalogoId, CatalogoOverlay> = {
+  ufs: 'icms',
+  interestaduais: 'interestaduais',
+  faixas_simples: 'faixas_simples',
+  itens_iss: 'iss',
+  ncms: 'ncm',
+  protocolos_st: 'mva_st',
+};
+
+/**
+ * Converte alertas de DRIFT de QUALQUER catálogo fiscal em linhas auditáveis.
+ *
+ * Ao contrário de `coletarRejeicoesOverlay`, o registro aqui não foi descartado
+ * pelo overlay: ele foi aceito, mas diverge do catálogo canônico embarcado ou
+ * carece de lastro. São falhas de CADASTRO e compartilham a mesma trilha de
+ * correção (`overlay_rejeicoes_auditoria`).
+ */
+export function coletarDriftCatalogoAuditavel(
+  alertas: readonly AlertaCatalogo[],
+): RejeicaoAuditavel[] {
   return alertas
-    .filter((a) => a.catalogo === 'protocolos_st')
+    .filter((a) => BUCKET_POR_CATALOGO[a.catalogo] !== undefined)
     .map((a) => ({
-      catalogo: 'mva_st' as const,
+      catalogo: BUCKET_POR_CATALOGO[a.catalogo],
       identificador: a.item,
       // A API limita a descrição a 300 caracteres; trunca defensivamente.
       descricao: a.mensagem.slice(0, 300),
