@@ -16,6 +16,9 @@ import { useAllEmpresas, useCriarEmpresa } from '@/hooks/useEmpresas';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { StepConvidarContador } from '@/components/tributario/onboarding/StepConvidarContador';
+import { useResolucaoCnae } from '@/hooks/useCnaes';
+import { CnaeCatalogoInfo } from '@/components/empresas/CnaeCatalogoInfo';
+import { resolverFpasPorCnae } from '@/lib/tributario/folha/fpas-terceiros';
 
 type Step = 1 | 2 | 3 | 4;
 
