@@ -7,6 +7,7 @@ import {
   buscarItensListaIss,
   buscarNcms,
   buscarUfs,
+  normalizarReferencia,
 } from '@/lib/tributario/catalogos/repositorio';
 import {
   aplicarOverlayIss,
@@ -61,6 +62,8 @@ export interface CatalogosFiscaisData {
   alertas: ResumoAlertasCatalogos;
   /** Saúde consolidada (divergências + rejeições dos overlays). */
   saude: SaudeCatalogos;
+  /** Data (ISO) efetivamente usada para recortar a vigência dos catálogos. */
+  referencia: string;
 }
 
 /**
@@ -85,18 +88,28 @@ function descreverRejeicoesIss(
 }
 
 
-export function useCatalogosFiscais() {
+/**
+ * Carrega os catálogos fiscais recortados pela vigência.
+ *
+ * @param dataReferencia data da operação (ISO `yyyy-mm-dd` ou `Date`).
+ *   Omitida = hoje. Toda a cadeia (leitura → overlay → tabela efetiva do
+ *   motor) usa a MESMA data, garantindo que um cálculo retroativo empregue a
+ *   versão do catálogo vigente à época do fato gerador.
+ */
+export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
+  const referencia = normalizarReferencia(dataReferencia);
+
   return useQuery<CatalogosFiscaisData>({
-    queryKey: ['catalogos-fiscais', 'painel'],
+    queryKey: ['catalogos-fiscais', 'painel', referencia],
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const [ufs, interestaduais, faixas, issMunicipal, itensIss, ncms] = await Promise.all([
-        buscarUfs(),
-        buscarAliquotasInterestaduais(),
-        buscarFaixasSimples(),
-        buscarAliquotasIssMunicipais(),
-        buscarItensListaIss(),
-        buscarNcms(),
+        buscarUfs(referencia),
+        buscarAliquotasInterestaduais(referencia),
+        buscarFaixasSimples(referencia),
+        buscarAliquotasIssMunicipais(referencia),
+        buscarItensListaIss(referencia),
+        buscarNcms(referencia),
       ]);
 
       const registros = ufs.map((uf) => ({
@@ -111,7 +124,7 @@ export function useCatalogosFiscais() {
       definirTabelaUfsEfetiva(overlay.tabela);
 
       // ISS: somente registros dentro do piso/teto da LC 116 chegam ao motor.
-      const overlayIss = aplicarOverlayIss(issMunicipal);
+      const overlayIss = aplicarOverlayIss(issMunicipal, referencia);
       definirTabelaIssEfetiva(overlayIss.tabela);
 
       // IPI: o catálogo `ncms` sobrepõe a TIPI embarcada após validação de
@@ -136,6 +149,7 @@ export function useCatalogosFiscais() {
         overlayNcm,
         overlayMonofasico,
         alertas,
+        referencia,
         saude: calcularSaudeCatalogos({
           alertas,
           rejeicoes: {
