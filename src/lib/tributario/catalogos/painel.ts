@@ -10,6 +10,11 @@ import {
   descreverDivergenciasIss,
   type ItemIssBanco,
 } from './coerencia-iss';
+import {
+  compararNcmsComCatalogo,
+  descreverDivergenciasNcm,
+  type NcmBanco,
+} from './coerencia-ncm';
 import { compararUfsComCatalogo, validarMarcadorFcp } from './coerencia-ufs';
 import type {
   AliquotaInterestadualCatalogo,
@@ -22,7 +27,7 @@ export type SituacaoCatalogo = 'ok' | 'divergente' | 'vazio';
 
 export interface StatusCatalogo {
   /** Identificador estável, usado como key de renderização. */
-  id: 'ufs' | 'interestaduais' | 'faixas_simples' | 'itens_iss';
+  id: 'ufs' | 'interestaduais' | 'faixas_simples' | 'itens_iss' | 'ncms';
   titulo: string;
   situacao: SituacaoCatalogo;
   /** Quantidade de registros carregados do banco. */
@@ -130,8 +135,10 @@ export function resumirPainelCatalogos(entrada: {
   faixas: readonly FaixaSimplesCatalogo[];
   /** Itens da LC 116 vindos do banco. Omitido = catálogo não consultado. */
   itensIss?: readonly ItemIssBanco[];
+  /** Catálogo de NCMs do banco. Omitido = catálogo não consultado. */
+  ncms?: readonly NcmBanco[];
 }): ResumoPainelCatalogos {
-  const { ufs, interestaduais, faixas, itensIss } = entrada;
+  const { ufs, interestaduais, faixas, itensIss, ncms } = entrada;
 
   const problemasUfs = [
     ...compararUfsComCatalogo(ufs).map((d) =>
@@ -186,6 +193,18 @@ export function resumirPainelCatalogos(entrada: {
       registros: itensIss.length,
       esperado: null,
       problemas: problemasIss,
+    });
+  }
+
+  if (ncms) {
+    const problemasNcm = descreverDivergenciasNcm(compararNcmsComCatalogo(ncms));
+    catalogos.push({
+      id: 'ncms',
+      titulo: 'NCMs (TIPI, monofásico e ST)',
+      situacao: situacao(ncms.length, problemasNcm),
+      registros: ncms.length,
+      esperado: null,
+      problemas: problemasNcm,
     });
   }
 
