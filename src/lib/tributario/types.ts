@@ -67,6 +67,16 @@ export interface ParametrosSimulacao {
    * participação da receita de mercadorias.
    */
   comprasComCreditoICMS?: number;
+  /**
+   * Prejuízo fiscal de IRPJ acumulado de períodos anteriores (valor positivo).
+   * A compensação é limitada a 30% do lucro real do período (Lei 9.065/95, art. 15).
+   */
+  prejuizoFiscalAcumulado?: number;
+  /**
+   * Base de cálculo negativa de CSLL acumulada (valor positivo).
+   * Compensação limitada a 30% da base positiva (Lei 9.065/95, art. 16).
+   */
+  baseNegativaCsllAcumulada?: number;
 }
 
 
@@ -104,6 +114,18 @@ export interface ResultadoCenario {
   issRetidoDeduzido?: number;
   /** CPP patronal recolhida fora do DAS (Anexo IV do Simples Nacional). */
   cppForaDAS?: number;
+  /** Crédito de ICMS apropriado sobre aquisições (não-cumulatividade). */
+  icmsCredito?: number;
+  /** Saldo credor de ICMS transportado ao período seguinte. */
+  icmsSaldoCredor?: number;
+  /** Prejuízo fiscal de IRPJ efetivamente compensado no período (trava de 30%). */
+  prejuizoFiscalCompensado?: number;
+  /** Saldo de prejuízo fiscal de IRPJ a compensar em períodos futuros. */
+  prejuizoFiscalSaldo?: number;
+  /** Base negativa de CSLL efetivamente compensada no período (trava de 30%). */
+  baseNegativaCsllCompensada?: number;
+  /** Saldo de base negativa de CSLL a compensar em períodos futuros. */
+  baseNegativaCsllSaldo?: number;
 
   observacoes: string[];
 }

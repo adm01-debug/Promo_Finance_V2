@@ -278,6 +278,8 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
       ? undefined
       : clamp(num(p.presuncaoCsllServicos, 0.32), 0.12, 0.32),
 
+    prejuizoFiscalAcumulado: Math.max(0, num(p.prejuizoFiscalAcumulado, 0)),
+    baseNegativaCsllAcumulada: Math.max(0, num(p.baseNegativaCsllAcumulada, 0)),
     sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
   };
 }
@@ -522,6 +524,30 @@ export function apurarIcmsNaoCumulativo(
 }
 
 
+/**
+ * Compensação de prejuízos fiscais / base negativa com a trava dos 30%.
+ *
+ * Lei 9.065/95, arts. 15 e 16: o prejuízo fiscal de IRPJ e a base negativa de
+ * CSLL de períodos anteriores podem ser compensados sem prazo, mas a redução
+ * fica limitada a 30% do lucro real (ou da base positiva) do período corrente.
+ * Quando o período apura prejuízo, nada é compensado e o prejuízo do exercício
+ * se acumula ao estoque para períodos futuros.
+ */
+export function compensarPrejuizo(
+  basePositiva: number,
+  estoqueAcumulado: number,
+): { baseAjustada: number; compensado: number; saldo: number } {
+  const estoque = Math.max(0, Number.isFinite(estoqueAcumulado) ? estoqueAcumulado : 0);
+  const base = Number.isFinite(basePositiva) ? basePositiva : 0;
+  if (base <= 0) {
+    // Prejuízo do período soma-se ao estoque; nada a compensar.
+    return { baseAjustada: 0, compensado: 0, saldo: estoque + Math.abs(Math.min(0, base)) };
+  }
+  const limite = base * 0.30;
+  const compensado = Math.min(estoque, limite);
+  return { baseAjustada: base - compensado, compensado, saldo: estoque - compensado };
+}
+
 export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
   if (p.faturamentoAnual > LIMITE_PRESUMIDO) {
@@ -584,8 +610,14 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   // Defesa: margemLucro ausente/inválida não pode propagar NaN para o total.
   const margemLucro = Number.isFinite(p.margemLucro) ? Number(p.margemLucro) : 0;
   const lucro = p.faturamentoAnual * (margemLucro / 100);
-  const irpj = Math.max(0, lucro * 0.15 + (lucro > 240000 ? (lucro - 240000) * 0.10 : 0));
-  const csll = Math.max(0, lucro * 0.09);
+  // Trava dos 30% (Lei 9.065/95, arts. 15 e 16): o estoque de prejuízo fiscal e
+  // de base negativa reduz a base tributável em no máximo 30% do lucro do período.
+  const compIrpj = compensarPrejuizo(lucro, p.prejuizoFiscalAcumulado ?? 0);
+  const compCsll = compensarPrejuizo(lucro, p.baseNegativaCsllAcumulada ?? 0);
+  const baseIrpjReal = compIrpj.baseAjustada;
+  const baseCsllReal = compCsll.baseAjustada;
+  const irpj = Math.max(0, baseIrpjReal * 0.15 + (baseIrpjReal > 240000 ? (baseIrpjReal - 240000) * 0.10 : 0));
+  const csll = Math.max(0, baseCsllReal * 0.09);
   const baseCred = (p.comprasComCredito || 0) + (p.despesasOperacionais || 0);
   const pis = Math.max(0, p.faturamentoAnual * 0.0165 - baseCred * 0.0165);
   const cofins = Math.max(0, p.faturamentoAnual * 0.076 - baseCred * 0.076);
@@ -601,6 +633,16 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [`Lucro estimado: ${margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
+  if (compIrpj.compensado > 0 || compCsll.compensado > 0) {
+    observacoes.push(
+      `Compensação de prejuízos limitada a 30% do lucro (Lei 9.065/95): IRPJ R$ ${compIrpj.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / CSLL R$ ${compCsll.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`,
+    );
+  }
+  if (compIrpj.saldo > 0) {
+    observacoes.push(
+      `Saldo de prejuízo fiscal a compensar: R$ ${compIrpj.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (sem prazo de prescrição).`,
+    );
+  }
   if (lucro <= 240000) {
     observacoes.push('Sem adicional de IRPJ: lucro anual ≤ R$ 240k.');
   } else {
@@ -620,6 +662,10 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
+    prejuizoFiscalCompensado: compIrpj.compensado,
+    prejuizoFiscalSaldo: compIrpj.saldo,
+    baseNegativaCsllCompensada: compCsll.compensado,
+    baseNegativaCsllSaldo: compCsll.saldo,
     observacoes,
   };
 
