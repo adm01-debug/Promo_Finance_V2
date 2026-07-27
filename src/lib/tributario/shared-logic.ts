@@ -609,10 +609,18 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   if (margemLucro < 8) {
     observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
   }
+  if (apuracaoICMS.saldoCredor > 0) {
+    observacoes.push(
+      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
+    );
+  }
   return {
     regime: 'lucro_real', nome: 'Lucro Real', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
+    icmsCredito: apuracaoICMS.credito,
+    icmsSaldoCredor: apuracaoICMS.saldoCredor,
     observacoes,
   };
+
 }
