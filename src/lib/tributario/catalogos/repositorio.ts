@@ -89,31 +89,39 @@ export interface ItemListaIssCatalogo {
   retem_no_tomador: boolean;
   aliquota_minima: number;
   aliquota_maxima: number;
+  vigente_de: string;
+  vigente_ate: string | null;
 }
 
 /** Catálogo de NCMs versionado no banco (IPI, monofásico e ST). */
-export async function buscarNcms(): Promise<NcmBanco[]> {
+export async function buscarNcms(referencia: string = hojeIso()): Promise<NcmBanco[]> {
   const { data, error } = await supabase
     .from('ncms')
-    .select('codigo, descricao, aliquota_ipi, monofasico_pis_cofins, sujeito_st, mva_padrao')
+    .select('codigo, descricao, aliquota_ipi, monofasico_pis_cofins, sujeito_st, mva_padrao, vigente_de, vigente_ate')
     .order('codigo');
 
   if (error) throw error;
-  return (data ?? []).map((n) => ({
+  const normalizados = (data ?? []).map((n) => ({
     codigo: n.codigo,
     descricao: n.descricao,
     aliquota_ipi: Number(n.aliquota_ipi),
     monofasico_pis_cofins: Boolean(n.monofasico_pis_cofins),
     sujeito_st: Boolean(n.sujeito_st),
     mva_padrao: n.mva_padrao === null ? null : Number(n.mva_padrao),
+    vigente_de: n.vigente_de,
+    vigente_ate: n.vigente_ate,
   }));
+
+  // Só chega ao motor o recorte vigente na data de referência.
+  return aplicarVigencia(normalizados, referencia);
 }
 
-export async function buscarItensListaIss(): Promise<ItemListaIssCatalogo[]> {
-
+export async function buscarItensListaIss(
+  referencia: string = hojeIso(),
+): Promise<ItemListaIssCatalogo[]> {
   const { data, error } = await supabase
     .from('itens_lista_iss')
-    .select('codigo, descricao, retem_no_tomador, aliquota_minima, aliquota_maxima')
+    .select('codigo, descricao, retem_no_tomador, aliquota_minima, aliquota_maxima, vigente_de, vigente_ate')
     .order('codigo');
 
   if (error) throw error;
