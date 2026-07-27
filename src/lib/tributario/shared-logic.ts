@@ -64,7 +64,14 @@ export interface ParametrosSimulacao {
    * Default 0,32; transporte e serviços hospitalares usam 0,12 (Lei 9.249/95, art. 20).
    */
   presuncaoCsllServicos?: number;
+  /**
+   * Valor anual de aquisições de mercadorias/insumos que geram crédito de ICMS.
+   * Quando ausente, é derivado de `comprasComCredito` na proporção da receita
+   * de mercadorias (serviços não geram crédito de ICMS).
+   */
+  comprasComCreditoICMS?: number;
 }
+
 
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
