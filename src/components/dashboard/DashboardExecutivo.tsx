@@ -25,6 +25,8 @@ import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 import { AlertasOrcamento } from './AlertasOrcamento';
+import { AlertasCatalogosFiscaisCard } from './AlertasCatalogosFiscaisCard';
+
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
