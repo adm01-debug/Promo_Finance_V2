@@ -265,6 +265,11 @@ export default function OnboardingTributario() {
                     <InfoRow label="Regime atual" value={regimeLabel(cnpjData.regimeAtual)} />
                     <InfoRow label="CNAE principal" value={cnpjData.cnaePrincipal?.codigo || '—'} />
                   </div>
+                  <CnaeCatalogoInfo
+                    resolucao={resolucaoCnae}
+                    digitos={(cnpjData.cnaePrincipal?.codigo || '').replace(/\D/g, '').length}
+                  />
+
                   <Button
                     variant="outline"
                     onClick={handleCriarEmpresa}
