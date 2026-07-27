@@ -175,3 +175,39 @@ describe('coerência do catálogo de MVA/ST', () => {
     }
   });
 });
+
+describe('drift de MVA/ST na trilha de auditoria', () => {
+  it('converte alertas de protocolo em linhas auditáveis do catálogo mva_st', async () => {
+    const { coletarDriftMvaAuditavel, resumirRejeicoes } = await import(
+      '@/lib/tributario/catalogos/rejeicoes-auditoria'
+    );
+    const resumo = gerarAlertasCatalogos({
+      ufs: [],
+      interestaduais: [],
+      faixas: [],
+      ncms: [ncm('40111000')],
+      mvaSt: { vinculos: [vinculo({ mva_original: 0.9 })], ufs: [] },
+    });
+
+    const linhas = coletarDriftMvaAuditavel(resumo.alertas);
+    expect(linhas.length).toBeGreaterThan(0);
+    expect(linhas.every((l) => l.catalogo === 'mva_st')).toBe(true);
+    // Motivos de drift não colidem com os motivos de rejeição do overlay.
+    expect(linhas.every((l) => l.motivo.startsWith('drift_'))).toBe(true);
+    // Limites da API de persistência.
+    expect(linhas.every((l) => (l.descricao ?? '').length <= 300)).toBe(true);
+    expect(linhas.every((l) => l.identificador.length > 0 && l.identificador.length <= 120)).toBe(true);
+    expect(linhas.every((l) => l.campo.length <= 80 && l.motivo.length <= 80)).toBe(true);
+
+    const agregado = resumirRejeicoes(linhas);
+    expect(agregado.porCatalogo.mva_st).toBe(linhas.length);
+  });
+
+  it('ignora alertas de outros catálogos', async () => {
+    const { coletarDriftMvaAuditavel } = await import(
+      '@/lib/tributario/catalogos/rejeicoes-auditoria'
+    );
+    const resumo = gerarAlertasCatalogos({ ufs: [], interestaduais: [], faixas: [] });
+    expect(coletarDriftMvaAuditavel(resumo.alertas)).toEqual([]);
+  });
+});

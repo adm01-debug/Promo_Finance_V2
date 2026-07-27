@@ -42,6 +42,7 @@ import {
   type FiltrosAuditoriaOverlay,
 } from '@/hooks/useOverlayRejeicoesAuditoria';
 import {
+  coletarDriftMvaAuditavel,
   coletarRejeicoesOverlay,
   descreverMotivo,
   resumirRejeicoes,
@@ -73,13 +74,18 @@ export default function AuditoriaOverlay() {
   const detectadas = useMemo(() => {
     const dados = catalogos.data;
     if (!dados) return [];
-    return coletarRejeicoesOverlay({
-      icms: dados.overlay.rejeitadas,
-      iss: dados.overlayIss.rejeitadas,
-      ncm: dados.overlayNcm.rejeitadas,
-      monofasico: dados.overlayMonofasico.rejeitadas,
-      mva_st: dados.overlayMva.rejeitadas,
-    });
+    return [
+      ...coletarRejeicoesOverlay({
+        icms: dados.overlay.rejeitadas,
+        iss: dados.overlayIss.rejeitadas,
+        ncm: dados.overlayNcm.rejeitadas,
+        monofasico: dados.overlayMonofasico.rejeitadas,
+        mva_st: dados.overlayMva.rejeitadas,
+      }),
+      // Drift de cadastro do catálogo de MVA/ST: o registro não foi descartado,
+      // mas está sem lastro ou divergente do catálogo de NCMs.
+      ...coletarDriftMvaAuditavel(dados.alertas.alertas),
+    ];
   }, [catalogos.data]);
 
   const resumo = useMemo(() => resumirRejeicoes(detectadas), [detectadas]);
