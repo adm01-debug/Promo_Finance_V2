@@ -767,6 +767,131 @@ export type Database = {
           },
         ]
       }
+      aliquotas_interestaduais: {
+        Row: {
+          aliquota: number
+          aliquota_importado: number
+          created_at: string
+          id: string
+          uf_destino: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          aliquota_importado?: number
+          created_at?: string
+          id?: string
+          uf_destino: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          aliquota_importado?: number
+          created_at?: string
+          id?: string
+          uf_destino?: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
+      aliquotas_internas_uf: {
+        Row: {
+          aliquota: number
+          aliquota_fcp: number
+          base_legal: string | null
+          categoria_produto: string
+          created_at: string
+          id: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          aliquota_fcp?: number
+          base_legal?: string | null
+          categoria_produto?: string
+          created_at?: string
+          id?: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          aliquota_fcp?: number
+          base_legal?: string | null
+          categoria_produto?: string
+          created_at?: string
+          id?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
+      aliquotas_iss_municipal: {
+        Row: {
+          aliquota: number
+          base_legal: string | null
+          codigo_ibge: number
+          created_at: string
+          id: string
+          item_lista_id: string | null
+          municipio: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          base_legal?: string | null
+          codigo_ibge: number
+          created_at?: string
+          id?: string
+          item_lista_id?: string | null
+          municipio: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          base_legal?: string | null
+          codigo_ibge?: number
+          created_at?: string
+          id?: string
+          item_lista_id?: string | null
+          municipio?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aliquotas_iss_municipal_item_lista_id_fkey"
+            columns: ["item_lista_id"]
+            isOneToOne: false
+            referencedRelation: "itens_lista_iss"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       allowed_countries: {
         Row: {
           ativo: boolean | null
@@ -2386,6 +2511,54 @@ export type Database = {
         }
         Relationships: []
       }
+      beneficios_fiscais: {
+        Row: {
+          base_legal: string | null
+          codigo: string
+          created_at: string
+          criterios: Json
+          descricao: string | null
+          id: string
+          nome: string
+          percentual: number | null
+          tipo: string
+          uf: Database["public"]["Enums"]["uf_brasil"] | null
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          base_legal?: string | null
+          codigo: string
+          created_at?: string
+          criterios?: Json
+          descricao?: string | null
+          id?: string
+          nome: string
+          percentual?: number | null
+          tipo?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"] | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          base_legal?: string | null
+          codigo?: string
+          created_at?: string
+          criterios?: Json
+          descricao?: string | null
+          id?: string
+          nome?: string
+          percentual?: number | null
+          tipo?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"] | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
       bitrix_field_mappings: {
         Row: {
           ativo: boolean | null
@@ -3499,6 +3672,54 @@ export type Database = {
           tipo?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      cnaes: {
+        Row: {
+          anexo_simples: string | null
+          atividade: Database["public"]["Enums"]["atividade_economica"] | null
+          codigo: string
+          created_at: string
+          descricao: string
+          id: string
+          presuncao_csll: number
+          presuncao_irpj: number
+          rat_padrao: number
+          sujeito_fator_r: boolean
+          terceiros_padrao: number
+          updated_at: string
+          vedado_simples: boolean
+        }
+        Insert: {
+          anexo_simples?: string | null
+          atividade?: Database["public"]["Enums"]["atividade_economica"] | null
+          codigo: string
+          created_at?: string
+          descricao: string
+          id?: string
+          presuncao_csll?: number
+          presuncao_irpj?: number
+          rat_padrao?: number
+          sujeito_fator_r?: boolean
+          terceiros_padrao?: number
+          updated_at?: string
+          vedado_simples?: boolean
+        }
+        Update: {
+          anexo_simples?: string | null
+          atividade?: Database["public"]["Enums"]["atividade_economica"] | null
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          presuncao_csll?: number
+          presuncao_irpj?: number
+          rat_padrao?: number
+          sujeito_fator_r?: boolean
+          terceiros_padrao?: number
+          updated_at?: string
+          vedado_simples?: boolean
         }
         Relationships: []
       }
@@ -5557,6 +5778,54 @@ export type Database = {
         }
         Relationships: []
       }
+      estrategias_elisao: {
+        Row: {
+          ativo: boolean
+          base_legal: string | null
+          categoria: string | null
+          codigo: string
+          created_at: string
+          descricao: string | null
+          economia_estimada_percentual: number | null
+          id: string
+          nome: string
+          regimes_aplicaveis: string[]
+          requisitos: Json
+          risco: Database["public"]["Enums"]["nivel_risco"]
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          codigo: string
+          created_at?: string
+          descricao?: string | null
+          economia_estimada_percentual?: number | null
+          id?: string
+          nome: string
+          regimes_aplicaveis?: string[]
+          requisitos?: Json
+          risco?: Database["public"]["Enums"]["nivel_risco"]
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          codigo?: string
+          created_at?: string
+          descricao?: string | null
+          economia_estimada_percentual?: number | null
+          id?: string
+          nome?: string
+          regimes_aplicaveis?: string[]
+          requisitos?: Json
+          risco?: Database["public"]["Enums"]["nivel_risco"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       evidencias_pacotes: {
         Row: {
           created_at: string | null
@@ -5878,6 +6147,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      faixas_simples_nacional: {
+        Row: {
+          aliquota: number
+          anexo: string
+          created_at: string
+          faixa: number
+          id: string
+          parcela_deduzir: number
+          rbt12_ate: number
+          rbt12_de: number
+          reparticao: Json
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          anexo: string
+          created_at?: string
+          faixa: number
+          id?: string
+          parcela_deduzir?: number
+          rbt12_ate: number
+          rbt12_de: number
+          reparticao?: Json
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          anexo?: string
+          created_at?: string
+          faixa?: number
+          id?: string
+          parcela_deduzir?: number
+          rbt12_ate?: number
+          rbt12_de?: number
+          reparticao?: Json
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
       }
       faturamento_mensal: {
         Row: {
@@ -7585,6 +7899,39 @@ export type Database = {
         }
         Relationships: []
       }
+      itens_lista_iss: {
+        Row: {
+          aliquota_maxima: number
+          aliquota_minima: number
+          codigo: string
+          created_at: string
+          descricao: string
+          id: string
+          retem_no_tomador: boolean
+          updated_at: string
+        }
+        Insert: {
+          aliquota_maxima?: number
+          aliquota_minima?: number
+          codigo: string
+          created_at?: string
+          descricao: string
+          id?: string
+          retem_no_tomador?: boolean
+          updated_at?: string
+        }
+        Update: {
+          aliquota_maxima?: number
+          aliquota_minima?: number
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          retem_no_tomador?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       itens_pedido_compra: {
         Row: {
           created_at: string | null
@@ -8431,6 +8778,48 @@ export type Database = {
           timeout_ms?: number
           updated_at?: string
           webhook_url?: string
+        }
+        Relationships: []
+      }
+      ncms: {
+        Row: {
+          aliquota_ipi: number
+          cest: string | null
+          codigo: string
+          created_at: string
+          descricao: string
+          id: string
+          monofasico_pis_cofins: boolean
+          mva_padrao: number | null
+          observacoes: string | null
+          sujeito_st: boolean
+          updated_at: string
+        }
+        Insert: {
+          aliquota_ipi?: number
+          cest?: string | null
+          codigo: string
+          created_at?: string
+          descricao: string
+          id?: string
+          monofasico_pis_cofins?: boolean
+          mva_padrao?: number | null
+          observacoes?: string | null
+          sujeito_st?: boolean
+          updated_at?: string
+        }
+        Update: {
+          aliquota_ipi?: number
+          cest?: string | null
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          monofasico_pis_cofins?: boolean
+          mva_padrao?: number | null
+          observacoes?: string | null
+          sujeito_st?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
@@ -9757,6 +10146,128 @@ export type Database = {
             columns: ["conta_receber_id"]
             isOneToOne: false
             referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      protocolos_st: {
+        Row: {
+          base_legal: string | null
+          codigo: string
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          segmento: string | null
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          base_legal?: string | null
+          codigo: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          segmento?: string | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          base_legal?: string | null
+          codigo?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          segmento?: string | null
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: []
+      }
+      protocolos_st_ncms: {
+        Row: {
+          cest: string | null
+          created_at: string
+          id: string
+          mva_original: number | null
+          ncm_codigo: string
+          ncm_id: string | null
+          protocolo_id: string
+          updated_at: string
+        }
+        Insert: {
+          cest?: string | null
+          created_at?: string
+          id?: string
+          mva_original?: number | null
+          ncm_codigo: string
+          ncm_id?: string | null
+          protocolo_id: string
+          updated_at?: string
+        }
+        Update: {
+          cest?: string | null
+          created_at?: string
+          id?: string
+          mva_original?: number | null
+          ncm_codigo?: string
+          ncm_id?: string | null
+          protocolo_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "protocolos_st_ncms_ncm_id_fkey"
+            columns: ["ncm_id"]
+            isOneToOne: false
+            referencedRelation: "ncms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "protocolos_st_ncms_protocolo_id_fkey"
+            columns: ["protocolo_id"]
+            isOneToOne: false
+            referencedRelation: "protocolos_st"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      protocolos_st_ufs: {
+        Row: {
+          created_at: string
+          id: string
+          papel: string
+          protocolo_id: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          papel?: string
+          protocolo_id: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          papel?: string
+          protocolo_id?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "protocolos_st_ufs_protocolo_id_fkey"
+            columns: ["protocolo_id"]
+            isOneToOne: false
+            referencedRelation: "protocolos_st"
             referencedColumns: ["id"]
           },
         ]
@@ -12007,6 +12518,54 @@ export type Database = {
           },
         ]
       }
+      ufs: {
+        Row: {
+          aliquota_fcp: number
+          aliquota_interna_padrao: number
+          codigo_ibge: number
+          created_at: string
+          difal_base_dupla: boolean
+          exige_antecipacao: boolean
+          id: string
+          nome: string
+          observacoes: string | null
+          possui_fcp: boolean
+          regiao: Database["public"]["Enums"]["regiao_brasil"]
+          sigla: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+        }
+        Insert: {
+          aliquota_fcp?: number
+          aliquota_interna_padrao?: number
+          codigo_ibge: number
+          created_at?: string
+          difal_base_dupla?: boolean
+          exige_antecipacao?: boolean
+          id?: string
+          nome: string
+          observacoes?: string | null
+          possui_fcp?: boolean
+          regiao: Database["public"]["Enums"]["regiao_brasil"]
+          sigla: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Update: {
+          aliquota_fcp?: number
+          aliquota_interna_padrao?: number
+          codigo_ibge?: number
+          created_at?: string
+          difal_base_dupla?: boolean
+          exige_antecipacao?: boolean
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          possui_fcp?: boolean
+          regiao?: Database["public"]["Enums"]["regiao_brasil"]
+          sigla?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_action_audit: {
         Row: {
           action_type: string
@@ -14127,6 +14686,7 @@ export type Database = {
         Returns: undefined
       }
       detect_query_regressions: { Args: never; Returns: Json }
+      empresa_acessivel: { Args: { _empresa_id: string }; Returns: boolean }
       enqueue_webhook_retry: {
         Args: {
           p_error: string
@@ -14720,6 +15280,7 @@ export type Database = {
         | "contador"
       approval_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT" | "CRITICAL"
       approval_status: "PENDING" | "APPROVED" | "REJECTED"
+      atividade_economica: "INDUSTRIA" | "COMERCIO" | "SERVICOS" | "MISTA"
       delivery_outcome:
         | "SUCCESS"
         | "FAILED"
@@ -14755,6 +15316,7 @@ export type Database = {
         | "procEventoNFe"
         | "resCTe"
         | "procCTe"
+      nivel_risco: "BAIXO" | "MEDIO" | "ALTO"
       order_status:
         | "PENDING"
         | "MATCHED"
@@ -14765,7 +15327,21 @@ export type Database = {
         | "REJECTED"
         | "EXPIRED"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
+      regiao_brasil: "NORTE" | "NORDESTE" | "CENTRO_OESTE" | "SUDESTE" | "SUL"
+      regime_tributario_enum:
+        | "MEI"
+        | "SIMPLES"
+        | "PRESUMIDO"
+        | "REAL"
+        | "ARBITRADO"
       sefaz_ambiente: "homologacao" | "producao"
+      status_workflow:
+        | "IDENTIFICADO"
+        | "EM_ANALISE"
+        | "APROVADO"
+        | "EM_EXECUCAO"
+        | "CONCLUIDO"
+        | "CANCELADO"
       tipo_alerta_tributario:
         | "vencimento_apuracao"
         | "vencimento_darf"
@@ -14779,6 +15355,39 @@ export type Database = {
         | "retencao_pendente"
         | "nfe_rejeitada"
         | "saldo_negativo"
+      tipo_destinatario:
+        | "CONTRIBUINTE_REVENDA"
+        | "CONTRIBUINTE_USO_CONSUMO"
+        | "NAO_CONTRIBUINTE"
+        | "EXTERIOR"
+      uf_brasil:
+        | "AC"
+        | "AL"
+        | "AP"
+        | "AM"
+        | "BA"
+        | "CE"
+        | "DF"
+        | "ES"
+        | "GO"
+        | "MA"
+        | "MT"
+        | "MS"
+        | "MG"
+        | "PA"
+        | "PB"
+        | "PR"
+        | "PE"
+        | "PI"
+        | "RJ"
+        | "RN"
+        | "RS"
+        | "RO"
+        | "RR"
+        | "SC"
+        | "SP"
+        | "SE"
+        | "TO"
       vehicle_type: "MOTORCYCLE" | "CAR" | "VAN" | "TRUCK"
     }
     CompositeTypes: {
@@ -14928,6 +15537,7 @@ export const Constants = {
       ],
       approval_priority: ["LOW", "MEDIUM", "HIGH", "URGENT", "CRITICAL"],
       approval_status: ["PENDING", "APPROVED", "REJECTED"],
+      atividade_economica: ["INDUSTRIA", "COMERCIO", "SERVICOS", "MISTA"],
       delivery_outcome: [
         "SUCCESS",
         "FAILED",
@@ -14968,6 +15578,7 @@ export const Constants = {
         "resCTe",
         "procCTe",
       ],
+      nivel_risco: ["BAIXO", "MEDIO", "ALTO"],
       order_status: [
         "PENDING",
         "MATCHED",
@@ -14979,7 +15590,23 @@ export const Constants = {
         "EXPIRED",
       ],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
+      regiao_brasil: ["NORTE", "NORDESTE", "CENTRO_OESTE", "SUDESTE", "SUL"],
+      regime_tributario_enum: [
+        "MEI",
+        "SIMPLES",
+        "PRESUMIDO",
+        "REAL",
+        "ARBITRADO",
+      ],
       sefaz_ambiente: ["homologacao", "producao"],
+      status_workflow: [
+        "IDENTIFICADO",
+        "EM_ANALISE",
+        "APROVADO",
+        "EM_EXECUCAO",
+        "CONCLUIDO",
+        "CANCELADO",
+      ],
       tipo_alerta_tributario: [
         "vencimento_apuracao",
         "vencimento_darf",
@@ -14993,6 +15620,41 @@ export const Constants = {
         "retencao_pendente",
         "nfe_rejeitada",
         "saldo_negativo",
+      ],
+      tipo_destinatario: [
+        "CONTRIBUINTE_REVENDA",
+        "CONTRIBUINTE_USO_CONSUMO",
+        "NAO_CONTRIBUINTE",
+        "EXTERIOR",
+      ],
+      uf_brasil: [
+        "AC",
+        "AL",
+        "AP",
+        "AM",
+        "BA",
+        "CE",
+        "DF",
+        "ES",
+        "GO",
+        "MA",
+        "MT",
+        "MS",
+        "MG",
+        "PA",
+        "PB",
+        "PR",
+        "PE",
+        "PI",
+        "RJ",
+        "RN",
+        "RS",
+        "RO",
+        "RR",
+        "SC",
+        "SP",
+        "SE",
+        "TO",
       ],
       vehicle_type: ["MOTORCYCLE", "CAR", "VAN", "TRUCK"],
     },
