@@ -63,6 +63,10 @@ export function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
           </div>
         )}
 
+        <PeriodicidadeComparativoCard cenario={cenario} />
+
+
+
         {cenario.observacoes.length > 0 && (
           <div className="text-sm space-y-1 p-3 rounded bg-muted/30">
             <p className="font-medium">Observações:</p>
