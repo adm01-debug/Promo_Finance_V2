@@ -141,6 +141,22 @@ export const GRUPOS_MONOFASICOS: GrupoMonofasico[] = [
   },
 ];
 
+/**
+ * Grupo genérico usado quando o catálogo do banco marca como monofásico um NCM
+ * que o catálogo embarcado não cobre. Sem alíquota de indústria: o cálculo
+ * emite alerta pedindo informação manual em vez de presumir base legal.
+ */
+export const GRUPO_MONOFASICO_CATALOGO: GrupoMonofasico = {
+  chave: 'CATALOGO_BANCO',
+  nome: 'Monofásico — catálogo fiscal',
+  descricao: 'NCM marcado como monofásico no catálogo versionado, sem grupo legal mapeado no motor',
+  baseLegal: 'Catálogo fiscal (ncms.monofasico_pis_cofins)',
+  revenda: ZERO,
+  prioridade: 100,
+  prefixos: [],
+  ncms: [],
+};
+
 export const GRUPOS_POR_CHAVE: Record<string, GrupoMonofasico> = Object.fromEntries(
   GRUPOS_MONOFASICOS.map((g) => [g.chave, g]),
 );

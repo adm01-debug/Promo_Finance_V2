@@ -2,7 +2,7 @@
 // Estratégia: normaliza o NCM (8 dígitos), tenta o match exato mais longo do catálogo
 // e, na ausência, cai para o prefixo de grupo mais específico.
 
-import { GRUPOS_MONOFASICOS } from './grupos';
+import { GRUPOS_MONOFASICOS, GRUPO_MONOFASICO_CATALOGO } from './grupos';
 import type { ClassificacaoMonofasica, GrupoMonofasico, NcmMonofasico } from './types';
 
 /** Remove pontos, espaços e caracteres não numéricos; limita a 8 dígitos. */
@@ -29,7 +29,7 @@ function melhor(a: Candidato | null, b: Candidato): Candidato {
  * Classifica um NCM no catálogo monofásico.
  * Retorna `null` quando o NCM não está sujeito à tributação concentrada.
  */
-export function classificarNcmMonofasico(ncm: string): ClassificacaoMonofasica | null {
+export function classificarNcmMonofasicoCanonico(ncm: string): ClassificacaoMonofasica | null {
   const alvo = normalizarNcm(ncm);
   // NCM abaixo de 4 dígitos não permite classificação segura.
   if (alvo.length < 4) return null;
@@ -63,7 +63,54 @@ export function classificarNcmMonofasico(ncm: string): ClassificacaoMonofasica |
   };
 }
 
-/** Conveniência booleana para validações e filtros. */
+
+/**
+ * OVERRIDE DE RUNTIME — marcador monofásico vindo do catálogo `ncms` do banco.
+ * Preenchido apenas com registros já validados por `aplicarOverlayMonofasico`.
+ * Chave: NCM normalizado com 8 dígitos. Valor: é (ou não) monofásico.
+ */
+let overrideMonofasico: Record<string, boolean> = {};
+
+export function definirOverrideMonofasico(override: Record<string, boolean>): void {
+  overrideMonofasico = { ...override };
+}
+
+export function resetarOverrideMonofasico(): void {
+  overrideMonofasico = {};
+}
+
+export function obterOverrideMonofasico(): Record<string, boolean> {
+  return { ...overrideMonofasico };
+}
+
+/**
+ * Classifica um NCM aplicando, quando existir, o override do catálogo do banco.
+ * Esta é a função consumida pelo motor de cálculo; a versão canônica permanece
+ * exposta para as guardas de coerência (que precisam comparar banco × código).
+ */
+export function classificarNcmMonofasico(ncm: string): ClassificacaoMonofasica | null {
+  const alvo = normalizarNcm(ncm);
+  const canonico = classificarNcmMonofasicoCanonico(alvo);
+  const marcado = alvo.length === 8 ? overrideMonofasico[alvo] : undefined;
+
+  if (marcado === undefined) return canonico;
+  // Banco desmarcou o NCM: prevalece o catálogo versionado.
+  if (marcado === false) return null;
+  // Banco marcou um NCM que o catálogo embarcado não cobre: classificamos no
+  // grupo genérico, sem alíquota de indústria (o motor emite alerta e exige
+  // informação manual em vez de inventar base legal).
+  if (canonico) return canonico;
+  return {
+    monofasico: true,
+    grupo: GRUPO_MONOFASICO_CATALOGO,
+    ncmNormalizado: alvo,
+    item: null,
+    digitosCasados: 8,
+    origem: 'ncm_exato',
+  };
+}
+
+/** Conveniência booleana para validações e filtros (com override aplicado). */
 export function isNcmMonofasico(ncm: string): boolean {
   return classificarNcmMonofasico(ncm) !== null;
 }

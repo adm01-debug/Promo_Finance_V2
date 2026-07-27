@@ -6,7 +6,7 @@
 // Nenhum I/O, nenhuma dependência de React ou Supabase — 100% testável.
 
 import { TIPI, buscarTipiCanonica } from '../ipi-iss/tabelas';
-import { classificarNcmMonofasico, normalizarNcm } from '../monofasico/classificar';
+import { classificarNcmMonofasicoCanonico, normalizarNcm } from '../monofasico/classificar';
 
 /** Recorte do registro de `ncms` relevante para a comparação. */
 export interface NcmBanco {
@@ -100,7 +100,7 @@ export function compararNcmsComCatalogo(
 
   // 2) Marcador monofásico e sanidade do MVA para todo o catálogo do banco.
   for (const [codigo, registro] of porCodigo) {
-    const esperadoMono = classificarNcmMonofasico(codigo) !== null;
+    const esperadoMono = classificarNcmMonofasicoCanonico(codigo) !== null;
     const doBanco = Boolean(registro.monofasico_pis_cofins);
     if (esperadoMono !== doBanco) {
       divergencias.push({

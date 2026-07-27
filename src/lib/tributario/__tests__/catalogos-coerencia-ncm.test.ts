@@ -8,7 +8,7 @@ import {
   type NcmBanco,
 } from '@/lib/tributario/catalogos/coerencia-ncm';
 import { TIPI } from '@/lib/tributario/ipi-iss/tabelas';
-import { classificarNcmMonofasico, normalizarNcm } from '@/lib/tributario/monofasico/classificar';
+import { classificarNcmMonofasicoCanonico, normalizarNcm } from '@/lib/tributario/monofasico/classificar';
 
 /** Constrói o espelho perfeito da TIPI, como o banco deveria estar. */
 function catalogoEspelho(): NcmBanco[] {
@@ -18,7 +18,7 @@ function catalogoEspelho(): NcmBanco[] {
       codigo,
       descricao: i.descricao,
       aliquota_ipi: i.aliquota,
-      monofasico_pis_cofins: classificarNcmMonofasico(codigo) !== null,
+      monofasico_pis_cofins: classificarNcmMonofasicoCanonico(codigo) !== null,
       sujeito_st: false,
       mva_padrao: null,
     };
