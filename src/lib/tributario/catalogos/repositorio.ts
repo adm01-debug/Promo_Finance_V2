@@ -202,6 +202,8 @@ export async function buscarAliquotasIssMunicipais(
 /** NCM vinculado a protocolo de ST, já recortado pela vigência. */
 export interface ProtocoloStNcmCatalogo {
   protocolo_id: string;
+  /** Código do protocolo/convênio (ex.: "ICMS 41/2008"). */
+  protocolo_codigo: string | null;
   ncm_codigo: string;
   mva_original: number | null;
   cest: string | null;
@@ -211,26 +213,67 @@ export interface ProtocoloStNcmCatalogo {
 
 /**
  * NCMs sujeitos a protocolo de ST vigentes na data de referência.
- * Protocolos denunciados deixam de produzir MVA a partir da data de encerramento.
+ * Protocolos denunciados deixam de produzir MVA a partir da data de
+ * encerramento — o recorte considera a vigência do vínculo E a do protocolo.
  */
 export async function buscarProtocolosStNcms(
   referencia: string = hojeIso(),
 ): Promise<ProtocoloStNcmCatalogo[]> {
   const { data, error } = await supabase
     .from('protocolos_st_ncms')
-    .select('protocolo_id, ncm_codigo, mva_original, cest, vigente_de, vigente_ate')
+    .select(
+      'protocolo_id, ncm_codigo, mva_original, cest, vigente_de, vigente_ate, protocolos_st!inner(codigo, vigente_de, vigente_ate)',
+    )
     .order('ncm_codigo');
 
   if (error) throw error;
 
-  const normalizados = (data ?? []).map((p) => ({
-    protocolo_id: p.protocolo_id,
-    ncm_codigo: p.ncm_codigo,
-    mva_original: p.mva_original === null ? null : Number(p.mva_original),
-    cest: p.cest,
-    vigente_de: p.vigente_de,
-    vigente_ate: p.vigente_ate,
-  }));
+  const normalizados = (data ?? []).map((p) => {
+    const protocolo = p.protocolos_st as
+      | { codigo: string; vigente_de: string; vigente_ate: string | null }
+      | null;
+    // O vínculo só vale enquanto o protocolo também estiver vigente: usa-se a
+    // interseção das duas janelas temporais.
+    const de = [p.vigente_de, protocolo?.vigente_de].filter(Boolean).sort().pop() as string;
+    const ates = [p.vigente_ate, protocolo?.vigente_ate].filter(Boolean).sort() as string[];
+
+    return {
+      protocolo_id: p.protocolo_id,
+      protocolo_codigo: protocolo?.codigo ?? null,
+      ncm_codigo: p.ncm_codigo,
+      mva_original: p.mva_original === null ? null : Number(p.mva_original),
+      cest: p.cest,
+      vigente_de: de,
+      vigente_ate: ates.length > 0 ? ates[0] : null,
+    } satisfies ProtocoloStNcmCatalogo;
+  });
 
   return aplicarVigencia(normalizados, referencia);
 }
+
+/** UF signatária de um protocolo de ST, com o papel exercido. */
+export interface ProtocoloStUfCatalogo {
+  protocolo_id: string;
+  uf: string;
+  papel: string;
+}
+
+/**
+ * UFs signatárias dos protocolos de ST. Sem esse vínculo a MVA não pode ser
+ * aplicada: o protocolo só obriga as unidades federadas signatárias.
+ */
+export async function buscarProtocolosStUfs(): Promise<ProtocoloStUfCatalogo[]> {
+  const { data, error } = await supabase
+    .from('protocolos_st_ufs')
+    .select('protocolo_id, uf, papel')
+    .order('uf');
+
+  if (error) throw error;
+
+  return (data ?? []).map((r) => ({
+    protocolo_id: r.protocolo_id,
+    uf: String(r.uf),
+    papel: String(r.papel ?? 'AMBOS'),
+  }));
+}
+

@@ -17,13 +17,14 @@ import type { CatalogoId, ResumoAlertasCatalogos } from './alertas';
 import { TITULOS_CATALOGO } from './alertas';
 
 /** Overlays que podem recusar registros do banco. */
-export type OverlayId = 'icms' | 'iss' | 'ncm' | 'monofasico';
+export type OverlayId = 'icms' | 'iss' | 'ncm' | 'monofasico' | 'mva_st';
 
 export const TITULOS_OVERLAY: Record<OverlayId, string> = {
   icms: 'Overlay ICMS (UFs/FCP)',
   iss: 'Overlay ISS municipal',
   ncm: 'Overlay NCM (TIPI)',
   monofasico: 'Overlay monofásico PIS/COFINS',
+  mva_st: 'Overlay MVA/ST por protocolo',
 };
 
 /** Classificação legível da saúde dos catálogos. */

@@ -6,6 +6,8 @@ import {
   buscarFaixasSimples,
   buscarItensListaIss,
   buscarNcms,
+  buscarProtocolosStNcms,
+  buscarProtocolosStUfs,
   buscarUfs,
   normalizarReferencia,
 } from '@/lib/tributario/catalogos/repositorio';
@@ -45,6 +47,14 @@ import {
   type ResultadoOverlayMonofasico,
 } from '@/lib/tributario/monofasico/overlay-monofasico';
 import { definirOverrideMonofasico } from '@/lib/tributario/monofasico/classificar';
+import {
+  aplicarOverlayMvaSt,
+  definirIndiceMvaStEfetivo,
+  descreverBloqueiosMva,
+  descreverRejeicoesMva,
+  type RegraJuridicaNcm,
+  type ResultadoOverlayMva,
+} from '@/lib/tributario/icms/overlay-mva';
 import type { UF } from '@/lib/tributario/icms/types';
 
 export interface CatalogosFiscaisData {
@@ -58,6 +68,8 @@ export interface CatalogosFiscaisData {
   overlayNcm: ResultadoOverlayNcm;
   /** Marcador monofásico do catálogo sobrepondo o classificador embarcado. */
   overlayMonofasico: ResultadoOverlayMonofasico;
+  /** MVA/ST por protocolo validada e recortada pela vigência. */
+  overlayMva: ResultadoOverlayMva;
   /** Alertas proativos de divergência, com item e campo divergentes. */
   alertas: ResumoAlertasCatalogos;
   /** Saúde consolidada (divergências + rejeições dos overlays). */
@@ -103,13 +115,17 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
     queryKey: ['catalogos-fiscais', 'painel', referencia],
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const [ufs, interestaduais, faixas, issMunicipal, itensIss, ncms] = await Promise.all([
+      const [
+        ufs, interestaduais, faixas, issMunicipal, itensIss, ncms, protocolosNcms, protocolosUfs,
+      ] = await Promise.all([
         buscarUfs(referencia),
         buscarAliquotasInterestaduais(referencia),
         buscarFaixasSimples(referencia),
         buscarAliquotasIssMunicipais(referencia),
         buscarItensListaIss(referencia),
         buscarNcms(referencia),
+        buscarProtocolosStNcms(referencia),
+        buscarProtocolosStUfs(),
       ]);
 
       const registros = ufs.map((uf) => ({
@@ -139,6 +155,21 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
       const overlayMonofasico = aplicarOverlayMonofasico(ncms);
       definirOverrideMonofasico(overlayMonofasico.override);
 
+      // MVA/ST: o catálogo de protocolos alimenta o motor de ICMS-ST, mas as
+      // regras jurídicas do NCM (não sujeito a ST, isenção, NT, alíquota zero)
+      // prevalecem sobre a MVA cadastrada — nunca se retém imposto presumido
+      // sobre operação subsequente não tributada.
+      const regras: Record<string, RegraJuridicaNcm> = Object.fromEntries(
+        ncms.map((n) => [n.codigo, { sujeitoSt: n.sujeito_st } satisfies RegraJuridicaNcm]),
+      );
+      const overlayMva = aplicarOverlayMvaSt({
+        ncms: protocolosNcms,
+        ufs: protocolosUfs,
+        regras,
+        referencia,
+      });
+      definirIndiceMvaStEfetivo(overlayMva.indice);
+
       const alertas = gerarAlertasCatalogos({ ufs, interestaduais, faixas, itensIss, ncms });
 
       return {
@@ -148,6 +179,7 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
         overlayIss,
         overlayNcm,
         overlayMonofasico,
+        overlayMva,
         alertas,
         referencia,
         saude: calcularSaudeCatalogos({
@@ -157,6 +189,10 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
             iss: descreverRejeicoesIss(overlayIss.rejeitadas),
             ncm: descreverRejeicoesNcm(overlayNcm.rejeitadas),
             monofasico: descreverRejeicoesMonofasico(overlayMonofasico.rejeitadas),
+            mva_st: [
+              ...descreverRejeicoesMva(overlayMva.rejeitadas),
+              ...descreverBloqueiosMva(overlayMva.bloqueadas),
+            ],
           },
         }),
 

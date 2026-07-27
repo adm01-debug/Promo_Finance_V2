@@ -56,8 +56,11 @@ export interface InputIcmsSt {
   descontos?: number;
   /** IPI destacado — integra a base da ST, mas não a base própria em revenda. */
   ipi?: number;
-  /** MVA-ST original do protocolo, em decimal. */
-  mvaOriginal: number;
+  /**
+   * MVA-ST original do protocolo, em decimal. Opcional: quando omitida e o
+   * `ncm` for informado, a MVA é resolvida no overlay de protocolos de ST.
+   */
+  mvaOriginal?: number;
   /** Origem da mercadoria (define o uso da alíquota de 4%). */
   origem?: OrigemMercadoria;
   /** Override da alíquota interna de destino, em decimal. */
@@ -74,7 +77,27 @@ export interface InputIcmsSt {
   aplicarFcp?: boolean;
   /** Override do FCP de destino, em decimal. */
   aliquotaFcp?: number;
+  /**
+   * NCM da mercadoria. Quando informado e a MVA não for fornecida, o motor
+   * resolve a MVA no overlay de protocolos de ST vigente (origem→destino).
+   */
+  ncm?: string;
+  /**
+   * Situação jurídica do ICMS na operação subsequente. Isenção, não
+   * incidência, alíquota zero, imunidade ou suspensão afastam a ST, ainda que
+   * exista MVA cadastrada em protocolo.
+   */
+  situacaoIcms?: SituacaoIcmsSt;
 }
+
+/** Situação jurídica da mercadoria para efeito de ICMS/ST. */
+export type SituacaoIcmsSt =
+  | 'tributada'
+  | 'isenta'
+  | 'nao_tributada'
+  | 'aliquota_zero'
+  | 'imune'
+  | 'suspensa';
 
 export interface ResultadoIcmsSt {
   baseIcmsProprio: number;
@@ -95,9 +118,18 @@ export interface ResultadoIcmsSt {
   /** Custo total da nota para o adquirente. */
   valorTotalNota: number;
   operacaoInterestadual: boolean;
+  /** Protocolo de ST que forneceu a MVA, quando resolvida pelo overlay. */
+  protocoloSt: string | null;
+  /** CEST do vínculo protocolo × NCM, quando cadastrado. */
+  cestSt: string | null;
+  /** Situação jurídica considerada na apuração. */
+  situacaoIcms: SituacaoIcmsSt;
+  /** `true` quando a regra jurídica afastou a retenção (isenção, NT, zero…). */
+  stAfastadaPorRegraJuridica: boolean;
   linhas: LinhaIcms[];
   alertas: string[];
 }
+
 
 export interface InputDifal {
   ufOrigem: UF;
