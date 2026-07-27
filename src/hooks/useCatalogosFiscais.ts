@@ -2,9 +2,15 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   buscarAliquotasInterestaduais,
+  buscarAliquotasIssMunicipais,
   buscarFaixasSimples,
   buscarUfs,
 } from '@/lib/tributario/catalogos/repositorio';
+import {
+  aplicarOverlayIss,
+  definirTabelaIssEfetiva,
+  type ResultadoOverlayIss,
+} from '@/lib/tributario/ipi-iss/overlay-iss';
 import {
   resumirPainelCatalogos,
   type ResumoPainelCatalogos,
@@ -22,6 +28,8 @@ export interface CatalogosFiscaisData {
   overlay: ResultadoOverlay;
   /** UFs conhecidas pelo motor e ausentes no catálogo do banco. */
   ufsAusentes: UF[];
+  /** Catálogo municipal de ISS validado contra a faixa legal da LC 116. */
+  overlayIss: ResultadoOverlayIss;
 }
 
 export function useCatalogosFiscais() {
@@ -29,10 +37,11 @@ export function useCatalogosFiscais() {
     queryKey: ['catalogos-fiscais', 'painel'],
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const [ufs, interestaduais, faixas] = await Promise.all([
+      const [ufs, interestaduais, faixas, issMunicipal] = await Promise.all([
         buscarUfs(),
         buscarAliquotasInterestaduais(),
         buscarFaixasSimples(),
+        buscarAliquotasIssMunicipais(),
       ]);
 
       const registros = ufs.map((uf) => ({
@@ -46,10 +55,15 @@ export function useCatalogosFiscais() {
       // Somente valores já validados pelo overlay chegam aqui.
       definirTabelaUfsEfetiva(overlay.tabela);
 
+      // ISS: somente registros dentro do piso/teto da LC 116 chegam ao motor.
+      const overlayIss = aplicarOverlayIss(issMunicipal);
+      definirTabelaIssEfetiva(overlayIss.tabela);
+
       return {
         painel: resumirPainelCatalogos({ ufs, interestaduais, faixas }),
         overlay,
         ufsAusentes: ufsAusentesNoBanco(registros),
+        overlayIss,
       };
     },
   });
