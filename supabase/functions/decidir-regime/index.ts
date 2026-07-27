@@ -123,14 +123,15 @@ Deno.serve(async (req) => {
       || faturamentoMensal.slice(0, 12).reduce((a, f) => a + f.receita_bruta, 0);
     const folhaAnual = folhaMensal
       .filter((f) => f.ano === ano)
-      .reduce((a, f) => a + f.total_falha_placeholder ?? 0, 0);
+      .reduce((a, f) => a + f.total_folha, 0)
+      || folhaMensal.slice(0, 12).reduce((a, f) => a + f.total_folha, 0);
 
     const params: ParametrosSimulacao = {
       ...normalizarOverride(parametrosOverride),
       faturamentoAnual: numeroFinito(parametrosOverride?.faturamentoAnual) ?? faturamentoAnual,
       faturamentoMensal,
       folhaMensal,
-      folhaAnual: numeroFinito(parametrosOverride?.folhaAnual) ?? folhaAnualCalculado(folhaMensal, ano),
+      folhaAnual: numeroFinito(parametrosOverride?.folhaAnual) ?? folhaAnual,
       margemLucro: numeroFinito(parametrosOverride?.margemLucro) ?? 15,
       percentualServicos: numeroFinito(parametrosOverride?.percentualServicos) ?? 50,
       comprasComCredito: numeroFinito(parametrosOverride?.comprasComCredito) ?? 0,
