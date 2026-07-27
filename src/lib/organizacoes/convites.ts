@@ -58,11 +58,21 @@ export function emailValido(email: string): boolean {
 }
 
 /** Token opaco de 256 bits em hexadecimal (não adivinhável). */
+function preencherAleatorio(bytes: Uint8Array): Uint8Array {
+  const cripto = globalThis.crypto;
+  if (cripto && typeof cripto.getRandomValues === 'function') {
+    cripto.getRandomValues(new Uint8Array(bytes.buffer as ArrayBuffer, bytes.byteOffset, bytes.byteLength));
+    return bytes;
+  }
+  // Fallback apenas para ambientes de teste sem WebCrypto (jsdom antigo).
+  for (let i = 0; i < bytes.length; i += 1) {
+    bytes[i] = Math.floor(Math.random() * 256);
+  }
+  return bytes;
+}
+
 export function gerarTokenConvite(
-  aleatorio: (bytes: Uint8Array) => Uint8Array = (b) => {
-    crypto.getRandomValues(new Uint8Array(b.buffer as ArrayBuffer, b.byteOffset, b.byteLength));
-    return b;
-  },
+  aleatorio: (bytes: Uint8Array) => Uint8Array = preencherAleatorio,
 ): string {
   const bytes = aleatorio(new Uint8Array(32));
   return Array.from(bytes)
