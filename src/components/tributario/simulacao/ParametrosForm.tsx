@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useResolucaoCnae } from '@/hooks/useCnaes';
+import { CnaeCatalogoInfo } from '@/components/empresas/CnaeCatalogoInfo';
+import { resolverFpasPorCnae } from '@/lib/tributario/folha/fpas-terceiros';
 import type { ParametrosSimulacao, RegimeTributario } from '@/lib/tributario';
 
 interface EmpresaOption {
