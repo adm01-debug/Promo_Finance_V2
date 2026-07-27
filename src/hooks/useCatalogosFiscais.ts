@@ -70,11 +70,18 @@ export function useCatalogosFiscais() {
       const overlayIss = aplicarOverlayIss(issMunicipal);
       definirTabelaIssEfetiva(overlayIss.tabela);
 
+      // IPI: o catálogo `ncms` sobrepõe a TIPI embarcada após validação de
+      // formato (8 dígitos) e de teto (300%). Registros inválidos são
+      // rejeitados e o motor segue com a alíquota canônica do código.
+      const overlayNcm = aplicarOverlayNcm(ncms);
+      definirTabelaTipiEfetiva(overlayNcm.tabela);
+
       return {
         painel: resumirPainelCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
         overlay,
         ufsAusentes: ufsAusentesNoBanco(registros),
         overlayIss,
+        overlayNcm,
       };
     },
   });
