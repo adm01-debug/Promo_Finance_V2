@@ -52,7 +52,20 @@ export interface ParametrosSimulacao {
   aliquotaTerceiros?: number;
   /** CNAE principal da empresa; usado para derivar a alíquota de terceiros quando não informada. */
   cnaePrincipal?: string;
+  /**
+   * Percentual de presunção do IRPJ sobre a receita de serviços (fração).
+   * Default 0,32 (serviços em geral, art. 15 §1º III "a" da Lei 9.249/95).
+   * Transporte de cargas usa 0,08; transporte de passageiros 0,16;
+   * serviços hospitalares/diagnóstico por imagem 0,08.
+   */
+  presuncaoIrpjServicos?: number;
+  /**
+   * Percentual de presunção da CSLL sobre a receita de serviços (fração).
+   * Default 0,32; transporte e serviços hospitalares usam 0,12 (Lei 9.249/95, art. 20).
+   */
+  presuncaoCsllServicos?: number;
 }
+
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
   motivoInelegibilidade?: string;
