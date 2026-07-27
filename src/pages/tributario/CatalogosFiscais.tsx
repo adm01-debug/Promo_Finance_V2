@@ -67,21 +67,21 @@ export default function CatalogosFiscais() {
 
           {data && (
             <>
-              <Alert variant={data.situacaoGeral === 'ok' ? 'success' : 'error'}>
-                {data.situacaoGeral === 'ok' ? (
+              <Alert variant={data.painel.situacaoGeral === 'ok' ? 'success' : 'error'}>
+                {data.painel.situacaoGeral === 'ok' ? (
                   <CheckCircle2 className="h-4 w-4" />
                 ) : (
                   <AlertTriangle className="h-4 w-4" />
                 )}
                 <AlertDescription>
-                  {data.situacaoGeral === 'ok'
-                    ? `${data.totalRegistros} registros verificados — nenhuma divergência entre banco e motor.`
-                    : `${data.totalProblemas} problema(s) detectado(s) em ${data.totalRegistros} registros verificados.`}
+                  {data.painel.situacaoGeral === 'ok'
+                    ? `${data.painel.totalRegistros} registros verificados — nenhuma divergência entre banco e motor.`
+                    : `${data.painel.totalProblemas} problema(s) detectado(s) em ${data.painel.totalRegistros} registros verificados.`}
                 </AlertDescription>
               </Alert>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.catalogos.map((catalogo) => (
+                {data.painel.catalogos.map((catalogo) => (
                   <Card key={catalogo.id}>
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between gap-2">
