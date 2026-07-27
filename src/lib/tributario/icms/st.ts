@@ -107,42 +107,65 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
       : 'Alíquota interna da UF de origem',
   });
 
-  const mvaOriginal = Math.max(0, Number.isFinite(input.mvaOriginal) ? input.mvaOriginal : 0);
+  // ── MVA: informada manualmente OU resolvida no overlay de protocolos ──
+  // A resolução por protocolo respeita as UFs signatárias e as regras
+  // jurídicas de isenção/não tributado/alíquota zero: nesses casos não há
+  // operação subsequente tributada, logo não há imposto presumido a reter.
+  const situacaoIcms: SituacaoIcmsSt = input.situacaoIcms ?? 'tributada';
+  const mvaInformada = Number.isFinite(input.mvaOriginal) ? Math.max(0, input.mvaOriginal as number) : null;
+
+  const resolucao = resolverMvaSt({
+    ncm: input.ncm ?? '',
+    ufOrigem: input.ufOrigem,
+    ufDestino: input.ufDestino,
+    situacao: situacaoIcms,
+  });
+  alertas.push(...resolucao.alertas);
+
+  const stAfastadaPorRegraJuridica = resolucao.bloqueio !== null;
+  const mvaOriginal = stAfastadaPorRegraJuridica
+    ? 0
+    : (mvaInformada ?? resolucao.mvaOriginal);
+
   const mvaAjustada = operacaoInterestadual
     ? calcularMvaAjustada({ mvaOriginal, aliquotaInterestadual, aliquotaInterna: aliquotaInternaDestino })
     : mvaOriginal;
 
-  const pmpf = money(input.pmpf);
+  const pmpf = stAfastadaPorRegraJuridica ? 0 : money(input.pmpf);
   const usouPmpf = pmpf > 0;
   if (usouPmpf) {
     alertas.push('Base da ST definida por PMPF/pauta fiscal; a MVA foi desconsiderada.');
   }
 
   const baseStCheia = usouPmpf ? pmpf : (baseBruta + ipi) * (1 + mvaAjustada);
-  const baseSt = round2(baseStCheia * (1 - reducaoSt));
+  const baseSt = stAfastadaPorRegraJuridica ? 0 : round2(baseStCheia * (1 - reducaoSt));
 
   linhas.push({
     rubrica: usouPmpf ? 'Base ST (PMPF)' : 'Base ST (MVA ajustada)',
     base: baseSt,
     aliquota: usouPmpf ? 0 : mvaAjustada,
     valor: baseSt,
-    fundamento: usouPmpf
-      ? 'Convênio ICMS 142/2018 — preço médio ponderado a consumidor final'
-      : 'Convênio ICMS 52/2017, cláusula décima primeira',
+    fundamento: stAfastadaPorRegraJuridica
+      ? 'Sem operação subsequente tributada — ST inaplicável'
+      : usouPmpf
+        ? 'Convênio ICMS 142/2018 — preço médio ponderado a consumidor final'
+        : 'Convênio ICMS 52/2017, cláusula décima primeira',
   });
 
   const icmsStBruto = round2(baseSt * aliquotaInternaDestino);
-  const icmsSt = round2(Math.max(0, icmsStBruto - icmsProprio));
+  const icmsSt = stAfastadaPorRegraJuridica ? 0 : round2(Math.max(0, icmsStBruto - icmsProprio));
 
   linhas.push({
     rubrica: 'ICMS-ST',
     base: baseSt,
-    aliquota: aliquotaInternaDestino,
+    aliquota: stAfastadaPorRegraJuridica ? 0 : aliquotaInternaDestino,
     valor: icmsSt,
-    fundamento: 'Convênio ICMS 142/2018 — ST bruto deduzido do ICMS próprio',
+    fundamento: stAfastadaPorRegraJuridica
+      ? 'ST afastada por isenção, não incidência, alíquota zero, imunidade ou suspensão'
+      : 'Convênio ICMS 142/2018 — ST bruto deduzido do ICMS próprio',
   });
 
-  const aplicarFcp = input.aplicarFcp ?? false;
+  const aplicarFcp = (input.aplicarFcp ?? false) && !stAfastadaPorRegraJuridica;
   const aliquotaFcp = aplicarFcp
     ? (input.aliquotaFcp !== undefined ? rate(input.aliquotaFcp) : fcpDe(input.ufDestino))
     : 0;
@@ -175,9 +198,14 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
     totalRecolher,
     valorTotalNota: round2(baseBruta + ipi + totalRecolher),
     operacaoInterestadual,
+    protocoloSt: mvaInformada !== null && !resolucao.encontrado ? null : resolucao.protocolo,
+    cestSt: resolucao.cest,
+    situacaoIcms,
+    stAfastadaPorRegraJuridica,
     linhas,
     alertas,
   };
+
 }
 
 /**
