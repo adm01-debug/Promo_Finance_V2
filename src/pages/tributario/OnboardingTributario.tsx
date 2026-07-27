@@ -83,25 +83,33 @@ export default function OnboardingTributario() {
 
   const handleCriarEmpresa = async () => {
     if (!cnpjData) return;
+    // Parâmetros de folha derivados na criação: sem isso a empresa nasce com
+    // RAT/Terceiros nulos e o comparativo de regimes subestima os encargos
+    // patronais do Lucro Presumido/Real.
+    const digitosCnae = (cnpjData.cnaePrincipal?.codigo || '').replace(/\D/g, '');
+    const fpas = digitosCnae.length >= 2 ? resolverFpasPorCnae(digitosCnae) : null;
     try {
       const nova = await criarEmpresa.mutateAsync({
         razao_social: cnpjData.razaoSocial || `Empresa ${cnpjData.cnpj}`,
         nome_fantasia: cnpjData.nomeFantasia || null,
         cnpj: cnpjData.cnpj,
-        regime_tributario: cnpjData.regimeAtual,
         cnae_principal: cnpjData.cnaePrincipal?.codigo || null,
+        codigo_fpas: fpas?.codigo ?? null,
+        aliquota_rat: resolucaoCnae.registro?.rat_padrao ?? 0.02,
+        aliquota_terceiros: fpas?.aliquotaTerceiros ?? 0.058,
         endereco: cnpjData.endereco?.logradouro || null,
         cidade: cnpjData.endereco?.cidade || null,
         estado: cnpjData.endereco?.uf || null,
         cep: cnpjData.endereco?.cep || null,
         ativo: true,
-      } as never);
+      });
       setEmpresaSelecionadaId(nova.id);
       toast.success('Empresa criada com dados do CNPJá');
     } catch {
       // useCriarEmpresa já trata o erro via toast
     }
   };
+
 
   const handleConcluir = () => {
     if (!empresaSelecionadaId) {
