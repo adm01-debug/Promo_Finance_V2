@@ -61,14 +61,14 @@ export default function AceitarConvite() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!tokenValido && (
-            <Alert variant="destructive">
+            <Alert variant="error">
               <ShieldAlert className="h-4 w-4" />
               <AlertDescription>Link de convite inválido ou incompleto.</AlertDescription>
             </Alert>
           )}
 
           {erro && (
-            <Alert variant="destructive">
+            <Alert variant="error">
               <ShieldAlert className="h-4 w-4" />
               <AlertDescription>{erro}</AlertDescription>
             </Alert>
