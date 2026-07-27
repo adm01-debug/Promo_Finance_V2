@@ -4,6 +4,7 @@ import {
   buscarAliquotasInterestaduais,
   buscarAliquotasIssMunicipais,
   buscarFaixasSimples,
+  buscarItensListaIss,
   buscarUfs,
 } from '@/lib/tributario/catalogos/repositorio';
 import {
@@ -37,11 +38,12 @@ export function useCatalogosFiscais() {
     queryKey: ['catalogos-fiscais', 'painel'],
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const [ufs, interestaduais, faixas, issMunicipal] = await Promise.all([
+      const [ufs, interestaduais, faixas, issMunicipal, itensIss] = await Promise.all([
         buscarUfs(),
         buscarAliquotasInterestaduais(),
         buscarFaixasSimples(),
         buscarAliquotasIssMunicipais(),
+        buscarItensListaIss(),
       ]);
 
       const registros = ufs.map((uf) => ({
@@ -60,7 +62,7 @@ export function useCatalogosFiscais() {
       definirTabelaIssEfetiva(overlayIss.tabela);
 
       return {
-        painel: resumirPainelCatalogos({ ufs, interestaduais, faixas }),
+        painel: resumirPainelCatalogos({ ufs, interestaduais, faixas, itensIss }),
         overlay,
         ufsAusentes: ufsAusentesNoBanco(registros),
         overlayIss,

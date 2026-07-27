@@ -5,6 +5,11 @@
 // para renderização. Toda a lógica é determinística e testável isoladamente.
 
 import { compararFaixasComCatalogo, descreverDivergencias } from './coerencia';
+import {
+  compararItensIssComCatalogo,
+  descreverDivergenciasIss,
+  type ItemIssBanco,
+} from './coerencia-iss';
 import { compararUfsComCatalogo, validarMarcadorFcp } from './coerencia-ufs';
 import type {
   AliquotaInterestadualCatalogo,
@@ -17,7 +22,7 @@ export type SituacaoCatalogo = 'ok' | 'divergente' | 'vazio';
 
 export interface StatusCatalogo {
   /** Identificador estável, usado como key de renderização. */
-  id: 'ufs' | 'interestaduais' | 'faixas_simples';
+  id: 'ufs' | 'interestaduais' | 'faixas_simples' | 'itens_iss';
   titulo: string;
   situacao: SituacaoCatalogo;
   /** Quantidade de registros carregados do banco. */
@@ -123,8 +128,10 @@ export function resumirPainelCatalogos(entrada: {
   ufs: readonly UfCatalogo[];
   interestaduais: readonly AliquotaInterestadualCatalogo[];
   faixas: readonly FaixaSimplesCatalogo[];
+  /** Itens da LC 116 vindos do banco. Omitido = catálogo não consultado. */
+  itensIss?: readonly ItemIssBanco[];
 }): ResumoPainelCatalogos {
-  const { ufs, interestaduais, faixas } = entrada;
+  const { ufs, interestaduais, faixas, itensIss } = entrada;
 
   const problemasUfs = [
     ...compararUfsComCatalogo(ufs).map((d) =>
@@ -169,6 +176,18 @@ export function resumirPainelCatalogos(entrada: {
       problemas: problemasFaixas,
     },
   ];
+
+  if (itensIss) {
+    const problemasIss = descreverDivergenciasIss(compararItensIssComCatalogo(itensIss));
+    catalogos.push({
+      id: 'itens_iss',
+      titulo: 'Itens da lista de serviços (LC 116/2003)',
+      situacao: situacao(itensIss.length, problemasIss),
+      registros: itensIss.length,
+      esperado: null,
+      problemas: problemasIss,
+    });
+  }
 
   const situacaoGeral = catalogos.reduce<SituacaoCatalogo>(
     (pior, c) => (PESO_SITUACAO[c.situacao] > PESO_SITUACAO[pior] ? c.situacao : pior),
