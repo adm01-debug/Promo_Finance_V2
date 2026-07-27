@@ -223,6 +223,49 @@ export default function CatalogosFiscais() {
                 </CardContent>
               </Card>
 
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-base">IPI — overlay da TIPI (NCM)</CardTitle>
+                    <Badge
+                      variant={data.overlayNcm.rejeitadas.length > 0 ? 'destructive' : 'default'}
+                    >
+                      {Object.keys(data.overlayNcm.tabela).length} NCM(s)
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    Alíquotas de IPI do catálogo sobrepõem a TIPI embarcada após validação de
+                    formato (8 dígitos) e do teto de 300%. Registros inválidos são descartados
+                    e o motor mantém o valor canônico do código.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <p className="text-muted-foreground">
+                    {data.overlayNcm.aplicadas.length} sobreposição(ões) ·{' '}
+                    {data.overlayNcm.adicionados.length} NCM(s) além da TIPI embarcada.
+                  </p>
+
+                  {data.overlayNcm.aplicadas.length > 0 && (
+                    <ul className="space-y-1">
+                      {data.overlayNcm.aplicadas.map((a) => (
+                        <li key={a.ncm}>
+                          • NCM {a.ncm}: código {(a.valorCodigo * 100).toFixed(2)}% → banco{' '}
+                          {(a.valorBanco * 100).toFixed(2)}%
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {data.overlayNcm.rejeitadas.length > 0 && (
+                    <ul className="space-y-1 text-destructive">
+                      {descreverRejeicoesNcm(data.overlayNcm.rejeitadas).map((m, i) => (
+                        <li key={`${i}-${m}`}>• {m}</li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
+
             </>
           )}
         </div>
