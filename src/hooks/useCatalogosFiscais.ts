@@ -18,6 +18,11 @@ import {
   type ResumoPainelCatalogos,
 } from '@/lib/tributario/catalogos/painel';
 import {
+  gerarAlertasCatalogos,
+  type ResumoAlertasCatalogos,
+} from '@/lib/tributario/catalogos/alertas';
+
+import {
   aplicarOverlayUfs,
   ufsAusentesNoBanco,
   type ResultadoOverlay,
