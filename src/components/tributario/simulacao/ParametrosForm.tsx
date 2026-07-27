@@ -36,6 +36,26 @@ export function ParametrosForm({
   setParametros,
   temHistoricoSuficiente,
 }: Props) {
+  /** Valida o CNAE informado contra o catálogo fiscal interno. */
+  const resolucaoCnae = useResolucaoCnae(parametros.cnaePrincipal ?? null);
+
+  /**
+   * Derivação de encargos patronais a partir do CNAE.
+   *
+   * FPAS/Terceiros vêm da tabela de enquadramento; o RAT só é sobrescrito
+   * quando o código consta do catálogo — caso contrário mantemos o valor
+   * atual em vez de degradar em silêncio para o piso de 1%.
+   */
+  const handleCnaeChange = (valor: string) => {
+    const digitos = valor.replace(/\D/g, '');
+    const fpas = digitos.length >= 2 ? resolverFpasPorCnae(digitos) : null;
+    setParametros({
+      ...parametros,
+      cnaePrincipal: valor,
+      ...(fpas ? { aliquotaTerceiros: fpas.aliquotaTerceiros } : {}),
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
