@@ -21,7 +21,7 @@
  */
 
 import { TIPI, normalizarNcm } from './tabelas';
-import type { ItemTipi, SituacaoTipi } from './types';
+import type { ItemTipi, SituacaoIpi } from './types';
 
 /** Recorte do registro de `ncms` relevante para o overlay de IPI. */
 export interface RegistroNcmBanco {
@@ -99,7 +99,7 @@ export function normalizarAliquotaIpi(valor: number | string | null | undefined)
  * jurídicas distintas que o catálogo, hoje, não carrega). Para NCMs novos,
  * caímos na leitura conservadora: alíquota zero ⇒ `aliquota_zero`.
  */
-function derivarSituacao(aliquota: number, base?: ItemTipi): SituacaoTipi {
+function derivarSituacao(aliquota: number, base?: ItemTipi): SituacaoIpi {
   if (base) {
     // Se o banco passou a tributar um NCM antes NT/imune/zero, a situação vira tributada.
     if (aliquota > EPSILON) return 'tributada';
