@@ -39,7 +39,7 @@ export function ParametrosForm({
 }: Props) {
   /** Valida o CNAE informado contra o catálogo fiscal interno. */
   const resolucaoCnae = useResolucaoCnae(parametros.cnaePrincipal ?? null);
-  /** Último código cujo RAT já foi aplicado — evita sobrescrever ajuste manual. */
+  /** Último código cujos parâmetros do catálogo já foram aplicados — evita sobrescrever ajuste manual. */
   const ratAplicadoRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -47,10 +47,22 @@ export function ParametrosForm({
     if (!registro) return;
     if (ratAplicadoRef.current === registro.codigoNumerico) return;
     ratAplicadoRef.current = registro.codigoNumerico;
-    if (parametros.aliquotaRAT === registro.rat_padrao) return;
-    setParametros({ ...parametros, aliquotaRAT: registro.rat_padrao });
+    const jaAplicado =
+      parametros.aliquotaRAT === registro.rat_padrao &&
+      parametros.presuncaoIrpjServicos === registro.presuncao_irpj &&
+      parametros.presuncaoCsllServicos === registro.presuncao_csll;
+    if (jaAplicado) return;
+    // Presunção do Lucro Presumido é atributo legal da atividade (Lei 9.249/95):
+    // transporte de cargas 8%/12%, passageiros 16%/12%, serviços em geral 32%.
+    setParametros({
+      ...parametros,
+      aliquotaRAT: registro.rat_padrao,
+      presuncaoIrpjServicos: registro.presuncao_irpj,
+      presuncaoCsllServicos: registro.presuncao_csll,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolucaoCnae.registro]);
+
 
 
   /**
