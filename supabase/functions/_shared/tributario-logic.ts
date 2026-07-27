@@ -442,9 +442,12 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const rc = p.faturamentoAnual * pc;
   const aliqICMS = p.aliquotaICMS ?? 0.18;
   const aliqISS = p.aliquotaISS ?? 0.05;
-  const baseIrpj = rs * 0.32 + rc * 0.08;
+  const presIrpjServ = p.presuncaoIrpjServicos ?? 0.32;
+  const presCsllServ = p.presuncaoCsllServicos ?? 0.32;
+  const baseIrpj = rs * presIrpjServ + rc * 0.08;
   const irpj = baseIrpj * 0.15 + (baseIrpj > 240000 ? (baseIrpj - 240000) * 0.10 : 0);
-  const csll = (rs * 0.32 + rc * 0.12) * 0.09;
+  const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
+
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
   const icms = rc * aliqICMS;
