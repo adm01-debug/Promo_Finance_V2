@@ -842,6 +842,56 @@ export type Database = {
         }
         Relationships: []
       }
+      aliquotas_iss_municipal: {
+        Row: {
+          aliquota: number
+          base_legal: string | null
+          codigo_ibge: number
+          created_at: string
+          id: string
+          item_lista_id: string | null
+          municipio: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
+        }
+        Insert: {
+          aliquota: number
+          base_legal?: string | null
+          codigo_ibge: number
+          created_at?: string
+          id?: string
+          item_lista_id?: string | null
+          municipio: string
+          uf: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Update: {
+          aliquota?: number
+          base_legal?: string | null
+          codigo_ibge?: number
+          created_at?: string
+          id?: string
+          item_lista_id?: string | null
+          municipio?: string
+          uf?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aliquotas_iss_municipal_item_lista_id_fkey"
+            columns: ["item_lista_id"]
+            isOneToOne: false
+            referencedRelation: "itens_lista_iss"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       allowed_countries: {
         Row: {
           ativo: boolean | null
@@ -3574,6 +3624,54 @@ export type Database = {
           tipo?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      cnaes: {
+        Row: {
+          anexo_simples: string | null
+          atividade: Database["public"]["Enums"]["atividade_economica"] | null
+          codigo: string
+          created_at: string
+          descricao: string
+          id: string
+          presuncao_csll: number
+          presuncao_irpj: number
+          rat_padrao: number
+          sujeito_fator_r: boolean
+          terceiros_padrao: number
+          updated_at: string
+          vedado_simples: boolean
+        }
+        Insert: {
+          anexo_simples?: string | null
+          atividade?: Database["public"]["Enums"]["atividade_economica"] | null
+          codigo: string
+          created_at?: string
+          descricao: string
+          id?: string
+          presuncao_csll?: number
+          presuncao_irpj?: number
+          rat_padrao?: number
+          sujeito_fator_r?: boolean
+          terceiros_padrao?: number
+          updated_at?: string
+          vedado_simples?: boolean
+        }
+        Update: {
+          anexo_simples?: string | null
+          atividade?: Database["public"]["Enums"]["atividade_economica"] | null
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          presuncao_csll?: number
+          presuncao_irpj?: number
+          rat_padrao?: number
+          sujeito_fator_r?: boolean
+          terceiros_padrao?: number
+          updated_at?: string
+          vedado_simples?: boolean
         }
         Relationships: []
       }
@@ -7660,6 +7758,39 @@ export type Database = {
         }
         Relationships: []
       }
+      itens_lista_iss: {
+        Row: {
+          aliquota_maxima: number
+          aliquota_minima: number
+          codigo: string
+          created_at: string
+          descricao: string
+          id: string
+          retem_no_tomador: boolean
+          updated_at: string
+        }
+        Insert: {
+          aliquota_maxima?: number
+          aliquota_minima?: number
+          codigo: string
+          created_at?: string
+          descricao: string
+          id?: string
+          retem_no_tomador?: boolean
+          updated_at?: string
+        }
+        Update: {
+          aliquota_maxima?: number
+          aliquota_minima?: number
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          retem_no_tomador?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       itens_pedido_compra: {
         Row: {
           created_at: string | null
@@ -8506,6 +8637,48 @@ export type Database = {
           timeout_ms?: number
           updated_at?: string
           webhook_url?: string
+        }
+        Relationships: []
+      }
+      ncms: {
+        Row: {
+          aliquota_ipi: number
+          cest: string | null
+          codigo: string
+          created_at: string
+          descricao: string
+          id: string
+          monofasico_pis_cofins: boolean
+          mva_padrao: number | null
+          observacoes: string | null
+          sujeito_st: boolean
+          updated_at: string
+        }
+        Insert: {
+          aliquota_ipi?: number
+          cest?: string | null
+          codigo: string
+          created_at?: string
+          descricao: string
+          id?: string
+          monofasico_pis_cofins?: boolean
+          mva_padrao?: number | null
+          observacoes?: string | null
+          sujeito_st?: boolean
+          updated_at?: string
+        }
+        Update: {
+          aliquota_ipi?: number
+          cest?: string | null
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          monofasico_pis_cofins?: boolean
+          mva_padrao?: number | null
+          observacoes?: string | null
+          sujeito_st?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
