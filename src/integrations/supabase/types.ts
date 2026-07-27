@@ -7909,6 +7909,8 @@ export type Database = {
           id: string
           retem_no_tomador: boolean
           updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
         }
         Insert: {
           aliquota_maxima?: number
@@ -7919,6 +7921,8 @@ export type Database = {
           id?: string
           retem_no_tomador?: boolean
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Update: {
           aliquota_maxima?: number
@@ -7929,6 +7933,8 @@ export type Database = {
           id?: string
           retem_no_tomador?: boolean
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Relationships: []
       }
@@ -8794,6 +8800,8 @@ export type Database = {
           observacoes: string | null
           sujeito_st: boolean
           updated_at: string
+          vigente_ate: string | null
+          vigente_de: string
         }
         Insert: {
           aliquota_ipi?: number
@@ -8807,6 +8815,8 @@ export type Database = {
           observacoes?: string | null
           sujeito_st?: boolean
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Update: {
           aliquota_ipi?: number
@@ -8820,6 +8830,8 @@ export type Database = {
           observacoes?: string | null
           sujeito_st?: boolean
           updated_at?: string
+          vigente_ate?: string | null
+          vigente_de?: string
         }
         Relationships: []
       }

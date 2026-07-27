@@ -16,6 +16,9 @@ export interface NcmBanco {
   monofasico_pis_cofins: boolean;
   sujeito_st: boolean;
   mva_padrao: number | null;
+  /** Vigência do registro no catálogo (opcional nas comparações em memória). */
+  vigente_de?: string;
+  vigente_ate?: string | null;
 }
 
 export type CampoDivergenteNcm =
