@@ -112,7 +112,9 @@ export const MODULOS: readonly Modulo[] = [
     camada: 2,
     funcao: 'Coordena o cálculo de múltiplos regimes, compara e persiste resultados.',
     caminhos: [
-      'supabase/functions/simular-regime',
+      'supabase/functions/simular-simples',
+      'supabase/functions/simular-presumido',
+      'supabase/functions/simular-real',
       'supabase/functions/decidir-regime',
       'src/hooks/useSimulacaoRegimes.ts',
     ],
@@ -125,7 +127,7 @@ export const MODULOS: readonly Modulo[] = [
     camada: 2,
     funcao: 'Máquina de estados de longa duração para teses e transações tributárias.',
     caminhos: ['src/lib/tributario/elisao'],
-    dependencias: ['M01', 'M06', 'M12'],
+    dependencias: ['M06', 'M12'],
     puro: false,
   },
   {
