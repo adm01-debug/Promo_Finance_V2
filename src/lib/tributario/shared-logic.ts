@@ -531,8 +531,51 @@ export function apurarIcmsNaoCumulativo(
   };
 }
 
+/**
+ * IRPJ de um período de apuração TRIMESTRAL.
+ *
+ * Lei 9.430/96, art. 4º: o adicional de 10% incide sobre a parcela da base que
+ * exceder R$ 20.000/mês do período — R$ 60.000 no trimestre. Não existe
+ * "sobra" de limite entre trimestres, o que torna o adicional convexo em
+ * relação à sazonalidade da receita/lucro.
+ */
+export function irpjPeriodoTrimestral(base: number): number {
+  const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
+  return b * 0.15 + (b > 60000 ? (b - 60000) * 0.10 : 0);
+}
+
+/** IRPJ de um período ANUAL (adicional sobre o excedente a R$ 240.000). */
+export function irpjPeriodoAnual(base: number): number {
+  const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
+  return b * 0.15 + (b > 240000 ? (b - 240000) * 0.10 : 0);
+}
 
 /**
+ * Distribui o faturamento anual em 4 trimestres.
+ *
+ * Usa o histórico mensal informado (sazonalidade real) quando disponível;
+ * caso contrário assume distribuição uniforme (1/4 por trimestre), que é
+ * neutra em relação ao adicional.
+ */
+export function distribuirTrimestres(p: ParametrosSimulacao): number[] {
+  const total = Math.max(0, Number.isFinite(p.faturamentoAnual) ? Number(p.faturamentoAnual) : 0);
+  const meses = p.faturamentoMensal;
+  if (meses?.length) {
+    const acc = [0, 0, 0, 0];
+    let soma = 0;
+    for (const m of meses) {
+      const mes = Number(m?.mes);
+      const receita = Math.max(0, Number.isFinite(Number(m?.receita_bruta)) ? Number(m.receita_bruta) : 0);
+      if (!Number.isFinite(mes) || mes < 1 || mes > 12) continue;
+      acc[Math.floor((mes - 1) / 3)] += receita;
+      soma += receita;
+    }
+    if (soma > 0) return acc.map((v) => (v / soma) * total);
+  }
+  return [total / 4, total / 4, total / 4, total / 4];
+}
+
+
  * Compensação de prejuízos fiscais / base negativa com a trava dos 30%.
  *
  * Lei 9.065/95, arts. 15 e 16: o prejuízo fiscal de IRPJ e a base negativa de
