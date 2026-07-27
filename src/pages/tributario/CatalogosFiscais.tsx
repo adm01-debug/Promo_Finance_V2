@@ -173,6 +173,56 @@ export default function CatalogosFiscais() {
                 </CardContent>
               </Card>
 
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-base">
+                      ISS municipal (LC 116/2003)
+                    </CardTitle>
+                    <Badge
+                      variant={data.overlayIss.rejeitadas.length > 0 ? 'destructive' : 'default'}
+                    >
+                      {data.overlayIss.municipiosCobertos} município(s)
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    Alíquotas municipais validadas contra o piso de 2% (art. 8º-A) e o teto
+                    de 5% (art. 8º, II). Registros fora da faixa legal são descartados.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <p className="text-muted-foreground">
+                    {data.overlayIss.aceitas.length} alíquota(s) vigente(s) —{' '}
+                    {data.overlayIss.aceitas.filter((a) => a.itemCodigo !== null).length}{' '}
+                    específica(s) por item da lista.
+                  </p>
+
+                  {data.overlayIss.aceitas.filter((a) => a.itemCodigo !== null).length > 0 && (
+                    <ul className="space-y-1">
+                      {data.overlayIss.aceitas
+                        .filter((a) => a.itemCodigo !== null)
+                        .map((a) => (
+                          <li key={`${a.codigoIbge}-${a.itemCodigo}`}>
+                            • {a.municipio}/{a.uf} — item {a.itemCodigo}:{' '}
+                            {(a.aliquota * 100).toFixed(2)}%
+                          </li>
+                        ))}
+                    </ul>
+                  )}
+
+                  {data.overlayIss.rejeitadas.length > 0 && (
+                    <ul className="space-y-1 text-destructive">
+                      {data.overlayIss.rejeitadas.map((r, i) => (
+                        <li key={`${r.codigoIbge}-${r.motivo}-${i}`}>
+                          • {r.municipio || '(sem município)'}
+                          {r.itemCodigo ? ` item ${r.itemCodigo}` : ''} descartado: {r.motivo}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
+
             </>
           )}
         </div>
