@@ -138,6 +138,8 @@ const PreferenciasDigestPage = lazy(() => import('./pages/tributario/Preferencia
 const ObservabilidadeDigestPage = lazy(() => import('./pages/tributario/ObservabilidadeDigest'));
 const CatalogosFiscaisPage = lazy(() => import('./pages/tributario/CatalogosFiscais'));
 const AuditoriaOverlayPage = lazy(() => import('./pages/tributario/AuditoriaOverlay'));
+const OrganizacoesPage = lazy(() => import('./pages/organizacoes/Organizacoes'));
+const AceitarConvitePage = lazy(() => import('./pages/organizacoes/AceitarConvite'));
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
@@ -198,6 +200,8 @@ function AppRoutes() {
             <Route path="/aprovacoes" element={<ProtectedRoute><Aprovacoes /></ProtectedRoute>} />
             <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
             <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+            <Route path="/organizacoes" element={<ProtectedRoute><OrganizacoesPage /></ProtectedRoute>} />
+            <Route path="/convite/:token" element={<AceitarConvitePage />} />
             <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
             <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
             <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
