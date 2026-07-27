@@ -18,6 +18,11 @@ import {
   type ResumoPainelCatalogos,
 } from '@/lib/tributario/catalogos/painel';
 import {
+  gerarAlertasCatalogos,
+  type ResumoAlertasCatalogos,
+} from '@/lib/tributario/catalogos/alertas';
+
+import {
   aplicarOverlayUfs,
   ufsAusentesNoBanco,
   type ResultadoOverlay,
@@ -46,7 +51,10 @@ export interface CatalogosFiscaisData {
   overlayNcm: ResultadoOverlayNcm;
   /** Marcador monofásico do catálogo sobrepondo o classificador embarcado. */
   overlayMonofasico: ResultadoOverlayMonofasico;
+  /** Alertas proativos de divergência, com item e campo divergentes. */
+  alertas: ResumoAlertasCatalogos;
 }
+
 
 export function useCatalogosFiscais() {
   return useQuery<CatalogosFiscaisData>({
@@ -96,6 +104,8 @@ export function useCatalogosFiscais() {
         overlayIss,
         overlayNcm,
         overlayMonofasico,
+        alertas: gerarAlertasCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
+
       };
     },
   });
