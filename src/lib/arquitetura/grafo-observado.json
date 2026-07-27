@@ -1,0 +1,48 @@
+{
+  "geradoPor": "bun run scripts/gerar-grafo-arquitetura.ts",
+  "arestasObservadas": [
+    "M01->M12",
+    "M02->M09",
+    "M03->M07",
+    "M03->M08",
+    "M03->M09",
+    "M03->M11",
+    "M03->M12",
+    "M04->M12",
+    "M07->M09",
+    "M10->M07",
+    "M10->M08",
+    "M11->M12"
+  ],
+  "totalImportsAnalisados": 42,
+  "driftResumo": {
+    "naoDeclaradas": 0,
+    "inversoesDeCamada": 0,
+    "declaradasSemUso": [
+      "M02->M01",
+      "M02->M11",
+      "M02->M12",
+      "M03->M01",
+      "M03->M02",
+      "M03->M04",
+      "M03->M05",
+      "M03->M06",
+      "M03->M10",
+      "M04->M07",
+      "M04->M08",
+      "M04->M09",
+      "M04->M11",
+      "M05->M06",
+      "M05->M12",
+      "M06->M07",
+      "M06->M10",
+      "M06->M11",
+      "M06->M12",
+      "M07->M11",
+      "M08->M11",
+      "M09->M11",
+      "M10->M09",
+      "M10->M11"
+    ]
+  }
+}
