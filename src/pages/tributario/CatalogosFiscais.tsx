@@ -116,6 +116,63 @@ export default function CatalogosFiscais() {
                   </Card>
                 ))}
               </div>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-base">
+                      Overlay de alíquotas (banco → motor)
+                    </CardTitle>
+                    <Badge
+                      variant={
+                        data.overlay.rejeitadas.length > 0 || data.ufsAusentes.length > 0
+                          ? 'destructive'
+                          : 'default'
+                      }
+                    >
+                      {data.overlay.aplicadas.length} sobreposição(ões)
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    Valores do banco aplicados sobre as constantes canônicas. Registros
+                    inconsistentes são descartados e o motor mantém o valor do código.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  {data.overlay.aplicadas.length === 0 ? (
+                    <p className="text-muted-foreground">
+                      Nenhuma sobreposição necessária — banco e motor idênticos.
+                    </p>
+                  ) : (
+                    <ul className="space-y-1">
+                      {data.overlay.aplicadas.map((a) => (
+                        <li key={`${a.uf}-${a.campo}`}>
+                          • {a.uf} — {a.campo}: motor{' '}
+                          {(a.valorCodigo * 100).toFixed(2)}% → banco{' '}
+                          {(a.valorBanco * 100).toFixed(2)}%
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {data.overlay.rejeitadas.length > 0 && (
+                    <ul className="space-y-1 text-destructive">
+                      {data.overlay.rejeitadas.map((r, i) => (
+                        <li key={`${r.sigla}-${r.motivo}-${i}`}>
+                          • {r.sigla || '(vazio)'} descartado: {r.motivo}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {data.ufsAusentes.length > 0 && (
+                    <p className="text-destructive">
+                      UFs ausentes no banco: {data.ufsAusentes.join(', ')}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
             </>
           )}
         </div>
