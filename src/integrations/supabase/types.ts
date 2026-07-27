@@ -14127,6 +14127,7 @@ export type Database = {
         Returns: undefined
       }
       detect_query_regressions: { Args: never; Returns: Json }
+      empresa_acessivel: { Args: { _empresa_id: string }; Returns: boolean }
       enqueue_webhook_retry: {
         Args: {
           p_error: string
@@ -14720,6 +14721,7 @@ export type Database = {
         | "contador"
       approval_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT" | "CRITICAL"
       approval_status: "PENDING" | "APPROVED" | "REJECTED"
+      atividade_economica: "INDUSTRIA" | "COMERCIO" | "SERVICOS" | "MISTA"
       delivery_outcome:
         | "SUCCESS"
         | "FAILED"
@@ -14755,6 +14757,7 @@ export type Database = {
         | "procEventoNFe"
         | "resCTe"
         | "procCTe"
+      nivel_risco: "BAIXO" | "MEDIO" | "ALTO"
       order_status:
         | "PENDING"
         | "MATCHED"
@@ -14765,7 +14768,21 @@ export type Database = {
         | "REJECTED"
         | "EXPIRED"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
+      regiao_brasil: "NORTE" | "NORDESTE" | "CENTRO_OESTE" | "SUDESTE" | "SUL"
+      regime_tributario_enum:
+        | "MEI"
+        | "SIMPLES"
+        | "PRESUMIDO"
+        | "REAL"
+        | "ARBITRADO"
       sefaz_ambiente: "homologacao" | "producao"
+      status_workflow:
+        | "IDENTIFICADO"
+        | "EM_ANALISE"
+        | "APROVADO"
+        | "EM_EXECUCAO"
+        | "CONCLUIDO"
+        | "CANCELADO"
       tipo_alerta_tributario:
         | "vencimento_apuracao"
         | "vencimento_darf"
@@ -14779,6 +14796,39 @@ export type Database = {
         | "retencao_pendente"
         | "nfe_rejeitada"
         | "saldo_negativo"
+      tipo_destinatario:
+        | "CONTRIBUINTE_REVENDA"
+        | "CONTRIBUINTE_USO_CONSUMO"
+        | "NAO_CONTRIBUINTE"
+        | "EXTERIOR"
+      uf_brasil:
+        | "AC"
+        | "AL"
+        | "AP"
+        | "AM"
+        | "BA"
+        | "CE"
+        | "DF"
+        | "ES"
+        | "GO"
+        | "MA"
+        | "MT"
+        | "MS"
+        | "MG"
+        | "PA"
+        | "PB"
+        | "PR"
+        | "PE"
+        | "PI"
+        | "RJ"
+        | "RN"
+        | "RS"
+        | "RO"
+        | "RR"
+        | "SC"
+        | "SP"
+        | "SE"
+        | "TO"
       vehicle_type: "MOTORCYCLE" | "CAR" | "VAN" | "TRUCK"
     }
     CompositeTypes: {
@@ -14928,6 +14978,7 @@ export const Constants = {
       ],
       approval_priority: ["LOW", "MEDIUM", "HIGH", "URGENT", "CRITICAL"],
       approval_status: ["PENDING", "APPROVED", "REJECTED"],
+      atividade_economica: ["INDUSTRIA", "COMERCIO", "SERVICOS", "MISTA"],
       delivery_outcome: [
         "SUCCESS",
         "FAILED",
@@ -14968,6 +15019,7 @@ export const Constants = {
         "resCTe",
         "procCTe",
       ],
+      nivel_risco: ["BAIXO", "MEDIO", "ALTO"],
       order_status: [
         "PENDING",
         "MATCHED",
@@ -14979,7 +15031,23 @@ export const Constants = {
         "EXPIRED",
       ],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
+      regiao_brasil: ["NORTE", "NORDESTE", "CENTRO_OESTE", "SUDESTE", "SUL"],
+      regime_tributario_enum: [
+        "MEI",
+        "SIMPLES",
+        "PRESUMIDO",
+        "REAL",
+        "ARBITRADO",
+      ],
       sefaz_ambiente: ["homologacao", "producao"],
+      status_workflow: [
+        "IDENTIFICADO",
+        "EM_ANALISE",
+        "APROVADO",
+        "EM_EXECUCAO",
+        "CONCLUIDO",
+        "CANCELADO",
+      ],
       tipo_alerta_tributario: [
         "vencimento_apuracao",
         "vencimento_darf",
@@ -14993,6 +15061,41 @@ export const Constants = {
         "retencao_pendente",
         "nfe_rejeitada",
         "saldo_negativo",
+      ],
+      tipo_destinatario: [
+        "CONTRIBUINTE_REVENDA",
+        "CONTRIBUINTE_USO_CONSUMO",
+        "NAO_CONTRIBUINTE",
+        "EXTERIOR",
+      ],
+      uf_brasil: [
+        "AC",
+        "AL",
+        "AP",
+        "AM",
+        "BA",
+        "CE",
+        "DF",
+        "ES",
+        "GO",
+        "MA",
+        "MT",
+        "MS",
+        "MG",
+        "PA",
+        "PB",
+        "PR",
+        "PE",
+        "PI",
+        "RJ",
+        "RN",
+        "RS",
+        "RO",
+        "RR",
+        "SC",
+        "SP",
+        "SE",
+        "TO",
       ],
       vehicle_type: ["MOTORCYCLE", "CAR", "VAN", "TRUCK"],
     },
