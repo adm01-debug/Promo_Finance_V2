@@ -17,6 +17,7 @@ import type {
   MotivoRejeicaoMonofasico,
 } from '@/lib/tributario/monofasico/overlay-monofasico';
 import type { ResultadoOverlayMva, MotivoRejeicaoMva } from '@/lib/tributario/icms/overlay-mva';
+import type { AlertaCatalogo } from './alertas';
 
 export type CatalogoOverlay = 'icms' | 'iss' | 'ncm' | 'monofasico' | 'mva_st';
 export type SeveridadeRejeicao = 'critico' | 'atencao';
@@ -199,4 +200,31 @@ export function resumirRejeicoes(linhas: RejeicaoAuditavel[]): ResumoRejeicoes {
       .map(([motivo, quantidade]) => ({ motivo, quantidade }))
       .sort((a, b) => b.quantidade - a.quantidade),
   };
+}
+
+/**
+ * Converte os alertas de DRIFT do catálogo de MVA/ST em linhas auditáveis.
+ *
+ * Diferença conceitual em relação a `coletarRejeicoesOverlay`: aqui o registro
+ * não foi descartado pelo overlay — ele foi aceito, mas diverge do catálogo de
+ * NCMs ou carece de lastro (protocolo sem UF signatária, NCM sujeito à ST sem
+ * protocolo). São falhas de CADASTRO que precisam da mesma trilha de correção,
+ * por isso compartilham a tabela `overlay_rejeicoes_auditoria`.
+ */
+export function coletarDriftMvaAuditavel(
+  alertas: readonly AlertaCatalogo[],
+): RejeicaoAuditavel[] {
+  return alertas
+    .filter((a) => a.catalogo === 'protocolos_st')
+    .map((a) => ({
+      catalogo: 'mva_st' as const,
+      identificador: a.item,
+      descricao: a.mensagem,
+      campo: a.campo,
+      // Prefixo `drift_` evita colisão com os motivos de rejeição do overlay,
+      // preservando a leitura correta do agregado por motivo.
+      motivo: `drift_${a.campo}`,
+      valorRecebido: a.valorBanco === null ? null : String(a.valorBanco),
+      severidade: a.severidade,
+    }));
 }
