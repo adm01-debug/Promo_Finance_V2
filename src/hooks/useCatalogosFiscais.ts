@@ -170,7 +170,16 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
       });
       definirIndiceMvaStEfetivo(overlayMva.indice);
 
-      const alertas = gerarAlertasCatalogos({ ufs, interestaduais, faixas, itensIss, ncms });
+      const alertas = gerarAlertasCatalogos({
+        ufs,
+        interestaduais,
+        faixas,
+        itensIss,
+        ncms,
+        // Guarda de drift do catálogo de MVA/ST: NCMs sujeitos à ST sem
+        // protocolo, MVAs fora de faixa e protocolos sem UFs signatárias.
+        mvaSt: { vinculos: protocolosNcms, ufs: protocolosUfs, ncms },
+      });
 
       return {
         painel: resumirPainelCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
