@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   aplicarOverlayIss,
+  compararComSugestaoIss,
   definirTabelaIssEfetiva,
   normalizarAliquotaIss,
   normalizarMunicipio,
@@ -127,5 +128,31 @@ describe('runtime', () => {
     expect(sugerirAliquotaMunicipal({ municipio: 'São Paulo' })?.aliquota).toBe(0.05);
     resetarTabelaIssEfetiva();
     expect(sugerirAliquotaMunicipal({ municipio: 'São Paulo' })).toBeNull();
+  });
+});
+
+describe('compararComSugestaoIss', () => {
+  const { tabela } = aplicarOverlayIss([SP(), SP({ item_codigo: '1.01', aliquota: 0.02 })]);
+  const geral = resolverAliquotaIss(tabela, { codigoIbge: 3550308 }, '7.02');
+
+  it('sem catálogo não emite divergência', () => {
+    const c = compararComSugestaoIss(0.03, null);
+    expect(c.status).toBe('sem_catalogo');
+    expect(c.diferencaPp).toBe(0);
+  });
+
+  it('considera conforme dentro da tolerância de arredondamento', () => {
+    expect(compararComSugestaoIss(0.05, geral).status).toBe('conforme');
+    expect(compararComSugestaoIss(0.050001, geral).status).toBe('conforme');
+  });
+
+  it('reporta divergência em pontos percentuais com sinal', () => {
+    const c = compararComSugestaoIss(0.03, geral);
+    expect(c.status).toBe('divergente');
+    expect(c.diferencaPp).toBeCloseTo(-2, 6);
+  });
+
+  it('trata alíquota informada não finita como divergente', () => {
+    expect(compararComSugestaoIss(Number.NaN, geral).status).toBe('divergente');
   });
 });
