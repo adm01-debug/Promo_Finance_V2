@@ -51,6 +51,11 @@ export interface ParametrosSimulacao {
   presuncaoIrpjServicos?: number;
   /** Presunção CSLL sobre serviços (fração). Default 0,32; transporte/hospitalar 0,12. */
   presuncaoCsllServicos?: number;
+  /**
+   * Aquisições anuais que geram crédito de ICMS. Ausente => rateio de
+   * `comprasComCredito` pela participação da receita de mercadorias.
+   */
+  comprasComCreditoICMS?: number;
 }
 
 export interface ResultadoCenario {
@@ -67,6 +72,10 @@ export interface ResultadoCenario {
   issRetidoDeduzido?: number;
   /** CPP patronal recolhida fora do DAS (Anexo IV). */
   cppForaDAS?: number;
+  /** Crédito de ICMS apropriado sobre aquisições (não-cumulatividade). */
+  icmsCredito?: number;
+  /** Saldo credor de ICMS transportado ao período seguinte. */
+  icmsSaldoCredor?: number;
   observacoes: string[];
 }
 
@@ -222,6 +231,9 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     folhaAnual: Math.max(0, num(p.folhaAnual, 0)),
     comprasComCredito: Math.max(0, num(p.comprasComCredito, 0)),
     despesasOperacionais: Math.max(0, num(p.despesasOperacionais, 0)),
+    comprasComCreditoICMS: p.comprasComCreditoICMS === undefined
+      ? undefined
+      : Math.max(0, num(p.comprasComCreditoICMS, 0)),
     aliquotaICMS: p.aliquotaICMS === undefined ? undefined : clamp(num(p.aliquotaICMS, 0.18), 0, 1),
     aliquotaISS: p.aliquotaISS === undefined ? undefined : clamp(num(p.aliquotaISS, 0.05), 0, 1),
     aliquotaRAT: p.aliquotaRAT === undefined ? undefined : clamp(num(p.aliquotaRAT, 0.02), 0, 0.06),
@@ -426,6 +438,27 @@ function terceirosPorCnaeMotor(p: ParametrosSimulacao): number {
 }
 
 
+/**
+ * Apuração do ICMS pelo regime de compensação (CF/88, art. 155, §2º, I).
+ * Espelha `src/lib/tributario/shared-logic.ts` (validado por teste de paridade).
+ */
+export function apurarIcmsNaoCumulativo(
+  p: ParametrosSimulacao,
+  receitaMercadorias: number,
+  aliquota: number,
+): { icms: number; credito: number; saldoCredor: number; debito: number } {
+  const participacaoMercadorias = p.faturamentoAnual > 0
+    ? Math.max(0, Math.min(1, receitaMercadorias / p.faturamentoAnual))
+    : 0;
+  const comprasICMS = p.comprasComCreditoICMS !== undefined
+    ? Math.max(0, p.comprasComCreditoICMS)
+    : Math.max(0, p.comprasComCredito || 0) * participacaoMercadorias;
+  const debito = receitaMercadorias * aliquota;
+  const credito = comprasICMS * aliquota;
+  const saldo = debito - credito;
+  return { icms: Math.max(0, saldo), credito, saldoCredor: saldo < 0 ? -saldo : 0, debito };
+}
+
 export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
   if (p.faturamentoAnual > LIMITE_PRESUMIDO) {
@@ -450,19 +483,33 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
 
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
-  const icms = rc * aliqICMS;
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  const icms = apuracaoICMS.icms;
   const iss = rs * aliqISS;
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
+  const observacoes = [
+    `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
+    'PIS/COFINS cumulativo.',
+    `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
+  ];
+  if (apuracaoICMS.credito > 0) {
+    observacoes.push(
+      `ICMS não-cumulativo (CF art. 155 §2º I): crédito de R$ ${apuracaoICMS.credito.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} sobre aquisições abatido do débito.`,
+    );
+  }
+  if (apuracaoICMS.saldoCredor > 0) {
+    observacoes.push(
+      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
+    );
+  }
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
-    observacoes: [
-      `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
-      'PIS/COFINS cumulativo.',
-      `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
-    ],
+    icmsCredito: apuracaoICMS.credito,
+    icmsSaldoCredor: apuracaoICMS.saldoCredor,
+    observacoes,
   };
 }
 
@@ -481,7 +528,8 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const rc = p.faturamentoAnual * (1 - ps);
   const aliqICMS = p.aliquotaICMS ?? 0.18;
   const aliqISS = p.aliquotaISS ?? 0.05;
-  const icms = Math.max(0, rc * aliqICMS - (p.comprasComCredito || 0) * aliqICMS);
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  const icms = apuracaoICMS.icms;
   const iss = rs * aliqISS;
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
@@ -494,10 +542,17 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   if (margemLucro < 8) {
     observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
   }
+  if (apuracaoICMS.saldoCredor > 0) {
+    observacoes.push(
+      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
+    );
+  }
   return {
     regime: 'lucro_real', nome: 'Lucro Real', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
+    icmsCredito: apuracaoICMS.credito,
+    icmsSaldoCredor: apuracaoICMS.saldoCredor,
     observacoes,
   };
 }
