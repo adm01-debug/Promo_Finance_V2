@@ -104,6 +104,8 @@ export function useCatalogosFiscais() {
         overlayIss,
         overlayNcm,
         overlayMonofasico,
+        alertas: gerarAlertasCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
+
       };
     },
   });
