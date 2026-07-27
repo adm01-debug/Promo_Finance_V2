@@ -575,7 +575,7 @@ export function distribuirTrimestres(p: ParametrosSimulacao): number[] {
   return [total / 4, total / 4, total / 4, total / 4];
 }
 
-
+/**
  * Compensação de prejuízos fiscais / base negativa com a trava dos 30%.
  *
  * Lei 9.065/95, arts. 15 e 16: o prejuízo fiscal de IRPJ e a base negativa de
