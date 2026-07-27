@@ -91,8 +91,13 @@ export interface ResultadoCenario {
   issRetidoDeduzido?: number;
   /** CPP patronal recolhida fora do DAS (Anexo IV do Simples Nacional). */
   cppForaDAS?: number;
+  /** Crédito de ICMS apropriado sobre aquisições (não-cumulatividade). */
+  icmsCredito?: number;
+  /** Saldo credor de ICMS transportado para o período seguinte (crédito > débito). */
+  icmsSaldoCredor?: number;
   observacoes: string[];
 }
+
 
 export const ANEXOS: Record<AnexoSimples, Array<{ faixa: number; ate: number; aliq: number; pd: number }>> = {
   I: [
