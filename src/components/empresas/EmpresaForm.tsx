@@ -406,7 +406,9 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
                 ? `Sugestão: FPAS ${fpasSugerido.codigo} — ${fpasSugerido.descricao} (Terceiros ${(fpasSugerido.aliquotaTerceiros * 100).toFixed(1)}%)`
                 : 'Informe o CNAE para derivar o FPAS automaticamente.'}
             </p>
+            <CnaeCatalogoInfo resolucao={resolucaoCnae} digitos={cnaeDigitos.length} />
             {errors.cnae_principal && <p className="text-sm text-destructive">{errors.cnae_principal.message}</p>}
+
           </div>
 
           <div className="space-y-2">
