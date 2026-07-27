@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +12,9 @@ import { useCriarEmpresa, useAtualizarEmpresa, type Empresa } from '@/hooks/useE
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { TABELA_FPAS, resolverFpasPorCnae, buscarFpas } from '@/lib/tributario/folha/fpas-terceiros';
+import { useResolucaoCnae } from '@/hooks/useCnaes';
+import { CnaeCatalogoInfo } from './CnaeCatalogoInfo';
+
 
 /** Converte uma fração decimal (0.058) para percentual (5.8), preservando null. */
 function paraPercentual(valor: number | null | undefined): number | null {
