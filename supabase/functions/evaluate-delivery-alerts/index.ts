@@ -14,7 +14,7 @@
 // Deduplicação: usa min_interval_seconds do config para não repetir por pedido.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { corsHeaders } from "../_shared/cors.ts";
 
 type AlertType = "DRIVER_STOPPED" | "ROUTE_DEVIATION" | "LATE_DELIVERY";
 type Severity = "INFO" | "WARNING" | "CRITICAL";

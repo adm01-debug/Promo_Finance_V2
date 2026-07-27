@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js";
+import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'npm:zod@3.23.8';
 
