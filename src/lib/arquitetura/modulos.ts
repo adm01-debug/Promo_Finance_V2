@@ -190,6 +190,7 @@ export const MODULOS: readonly Modulo[] = [
       'src/lib/tributario/catalogos/coerencia-iss.ts',
       'src/lib/tributario/catalogos/coerencia-mva.ts',
       'src/lib/tributario/catalogos/coerencia-ufs.ts',
+      'src/lib/tributario/catalogos/resumo-mva.ts',
     ],
     dependencias: ['M07', 'M08', 'M09', 'M11'],
     puro: true,
