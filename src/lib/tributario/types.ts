@@ -80,6 +80,17 @@ export interface ParametrosSimulacao {
    * Compensação limitada a 30% da base positiva (Lei 9.065/95, art. 16).
    */
   baseNegativaCsllAcumulada?: number;
+  /**
+   * Período de apuração de IRPJ/CSLL no Lucro Real: 'anual' (estimativa mensal
+   * com ajuste anual) ou 'trimestral'. Default 'anual'. No Lucro Presumido a
+   * apuração é sempre trimestral por força de lei.
+   */
+  periodicidadeApuracao?: PeriodicidadeApuracao;
+  /**
+   * Lucro real por trimestre (4 posições), quando conhecido. Permite avaliar o
+   * custo da apuração trimestral em cenários com resultados irregulares.
+   */
+  lucroTrimestral?: number[];
 }
 
 
