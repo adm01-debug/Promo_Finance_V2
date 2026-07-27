@@ -21,6 +21,10 @@ import {
   gerarAlertasCatalogos,
   type ResumoAlertasCatalogos,
 } from '@/lib/tributario/catalogos/alertas';
+import {
+  calcularSaudeCatalogos,
+  type SaudeCatalogos,
+} from '@/lib/tributario/catalogos/saude';
 
 import {
   aplicarOverlayUfs,
@@ -30,11 +34,13 @@ import {
 import { definirTabelaUfsEfetiva } from '@/lib/tributario/icms/tabelas';
 import {
   aplicarOverlayNcm,
+  descreverRejeicoesNcm,
   type ResultadoOverlayNcm,
 } from '@/lib/tributario/ipi-iss/overlay-ncm';
 import { definirTabelaTipiEfetiva } from '@/lib/tributario/ipi-iss/tabelas';
 import {
   aplicarOverlayMonofasico,
+  descreverRejeicoesMonofasico,
   type ResultadoOverlayMonofasico,
 } from '@/lib/tributario/monofasico/overlay-monofasico';
 import { definirOverrideMonofasico } from '@/lib/tributario/monofasico/classificar';
@@ -53,6 +59,29 @@ export interface CatalogosFiscaisData {
   overlayMonofasico: ResultadoOverlayMonofasico;
   /** Alertas proativos de divergência, com item e campo divergentes. */
   alertas: ResumoAlertasCatalogos;
+  /** Saúde consolidada (divergências + rejeições dos overlays). */
+  saude: SaudeCatalogos;
+}
+
+/**
+ * Traduz rejeições do overlay de ICMS em mensagens legíveis.
+ * Registros rejeitados NÃO chegam ao motor — o cálculo segue com o valor
+ * canônico do código, por isso precisam ser sinalizados ao usuário.
+ */
+function descreverRejeicoesIcms(
+  rejeicoes: ResultadoOverlay['rejeitadas'],
+): string[] {
+  return rejeicoes.map((r) => `UF ${r.sigla}: ${r.motivo.replace(/_/g, ' ')}`);
+}
+
+/** Traduz rejeições do overlay de ISS municipal em mensagens legíveis. */
+function descreverRejeicoesIss(
+  rejeicoes: ResultadoOverlayIss['rejeitadas'],
+): string[] {
+  return rejeicoes.map(
+    (r) =>
+      `${r.municipio || r.codigoIbge || 'município desconhecido'} · item ${r.itemCodigo ?? '—'}: ${r.motivo.replace(/_/g, ' ')}`,
+  );
 }
 
 
@@ -97,6 +126,8 @@ export function useCatalogosFiscais() {
       const overlayMonofasico = aplicarOverlayMonofasico(ncms);
       definirOverrideMonofasico(overlayMonofasico.override);
 
+      const alertas = gerarAlertasCatalogos({ ufs, interestaduais, faixas, itensIss, ncms });
+
       return {
         painel: resumirPainelCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
         overlay,
@@ -104,7 +135,16 @@ export function useCatalogosFiscais() {
         overlayIss,
         overlayNcm,
         overlayMonofasico,
-        alertas: gerarAlertasCatalogos({ ufs, interestaduais, faixas, itensIss, ncms }),
+        alertas,
+        saude: calcularSaudeCatalogos({
+          alertas,
+          rejeicoes: {
+            icms: descreverRejeicoesIcms(overlay.rejeitadas),
+            iss: descreverRejeicoesIss(overlayIss.rejeitadas),
+            ncm: descreverRejeicoesNcm(overlayNcm.rejeitadas),
+            monofasico: descreverRejeicoesMonofasico(overlayMonofasico.rejeitadas),
+          },
+        }),
 
       };
     },

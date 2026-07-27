@@ -30,6 +30,7 @@ import { CopilotTributarioFloat } from '@/components/tributario/dashboard/Copilo
 import { DRETributariaPanel } from '@/components/tributario/dashboard/DRETributariaPanel';
 import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
 import { HeatmapTributarioAnual } from '@/components/tributario/dashboard/HeatmapTributarioAnual';
+import { SaudeCatalogosBadge } from '@/components/tributario/dashboard/SaudeCatalogosBadge';
 import { UploadNotaFiscalOCR } from '@/components/tributario/dashboard/UploadNotaFiscalOCR';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
@@ -110,6 +111,9 @@ export default function DashboardTributario() {
                   {REGIME_LABEL[empresaSelecionada.regime_tributario] ?? empresaSelecionada.regime_tributario}
                 </Badge>
               )}
+
+              <SaudeCatalogosBadge className="self-center" />
+
 
               <Button
                 variant="outline"
