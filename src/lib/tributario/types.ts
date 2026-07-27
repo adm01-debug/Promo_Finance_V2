@@ -126,6 +126,16 @@ export interface ResultadoCenario {
   baseNegativaCsllCompensada?: number;
   /** Saldo de base negativa de CSLL a compensar em períodos futuros. */
   baseNegativaCsllSaldo?: number;
+  /** Periodicidade do período de apuração de IRPJ/CSLL efetivamente aplicada. */
+  periodicidadeApuracao?: PeriodicidadeApuracao;
+  /** Bases de IRPJ por trimestre (quando a apuração é trimestral). */
+  irpjBasesTrimestrais?: number[];
+  /** Custo adicional de IRPJ decorrente da sazonalidade (trimestral − anual equivalente). */
+  efeitoSazonalidadeIrpj?: number;
+  /** IRPJ+CSLL que seria devido na periodicidade alternativa (comparativo Real). */
+  irpjCsllPeriodicidadeAlternativa?: number;
+  /** Economia estimada ao adotar a periodicidade recomendada no Lucro Real. */
+  economiaPeriodicidade?: number;
 
   observacoes: string[];
 }
