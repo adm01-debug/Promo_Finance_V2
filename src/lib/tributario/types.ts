@@ -61,7 +61,14 @@ export interface ParametrosSimulacao {
    * Transporte e serviços hospitalares 0,12 (Lei 9.249/95, art. 20).
    */
   presuncaoCsllServicos?: number;
+  /**
+   * Aquisições anuais que geram crédito de ICMS (não-cumulatividade,
+   * CF/88 art. 155 §2º I). Ausente => rateio de `comprasComCredito` pela
+   * participação da receita de mercadorias.
+   */
+  comprasComCreditoICMS?: number;
 }
+
 
 
 export interface ResultadoCenario {
