@@ -548,22 +548,36 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
-  const icms = rc * aliqICMS;
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  const icms = apuracaoICMS.icms;
   const iss = rs * aliqISS;
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
+  const observacoes = [
+    `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
+    'PIS/COFINS cumulativo.',
+    `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
+  ];
+  if (apuracaoICMS.credito > 0) {
+    observacoes.push(
+      `ICMS não-cumulativo (CF art. 155 §2º I): crédito de R$ ${apuracaoICMS.credito.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} sobre aquisições abatido do débito.`,
+    );
+  }
+  if (apuracaoICMS.saldoCredor > 0) {
+    observacoes.push(
+      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
+    );
+  }
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
-    observacoes: [
-      `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
-      'PIS/COFINS cumulativo.',
-      `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
-
-    ],
+    icmsCredito: apuracaoICMS.credito,
+    icmsSaldoCredor: apuracaoICMS.saldoCredor,
+    observacoes,
   };
 }
+
 
 export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
