@@ -240,6 +240,17 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
   const cnaeDigitos = (cnaeValue || '').replace(/\D/g, '');
   const fpasSugerido = cnaeDigitos.length >= 2 ? resolverFpasPorCnae(cnaeDigitos) : null;
 
+  // Catálogo fiscal: fonte de verdade para RAT por atividade (a tabela FPAS
+  // cobre apenas Terceiros). Só aplica quando o usuário editou o CNAE agora.
+  const resolucaoCnae = useResolucaoCnae(cnaeValue);
+  const ratCatalogo = resolucaoCnae.registro?.rat_padrao ?? null;
+
+  useEffect(() => {
+    if (!cnaeEditadoRef.current || ratCatalogo === null) return;
+    setValue('aliquota_rat', Number((ratCatalogo * 100).toFixed(2)), { shouldValidate: true });
+  }, [ratCatalogo, setValue]);
+
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
