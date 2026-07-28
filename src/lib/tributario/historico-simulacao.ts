@@ -177,7 +177,7 @@ export function mesclarSnapshotParametros(
   for (const campo of CAMPOS_OPCIONAIS_SNAPSHOT) {
     if (snapshot[campo] === undefined) delete mesclado[campo];
   }
-  return mesclado as ParametrosSimulacao;
+  return mesclado as unknown as ParametrosSimulacao;
 }
 
 
