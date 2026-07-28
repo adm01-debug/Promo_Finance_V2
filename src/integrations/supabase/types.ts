@@ -7775,6 +7775,7 @@ export type Database = {
           reason: string
           resolved_at: string | null
           resolved_by: string | null
+          resolved_reason: string | null
           sample_ids: string[] | null
           severity: string
           updated_at: string
@@ -7790,6 +7791,7 @@ export type Database = {
           reason: string
           resolved_at?: string | null
           resolved_by?: string | null
+          resolved_reason?: string | null
           sample_ids?: string[] | null
           severity: string
           updated_at?: string
@@ -7805,6 +7807,7 @@ export type Database = {
           reason?: string
           resolved_at?: string | null
           resolved_by?: string | null
+          resolved_reason?: string | null
           sample_ids?: string[] | null
           severity?: string
           updated_at?: string
@@ -14741,7 +14744,7 @@ export type Database = {
       cleanup_rpc_observability_metrics: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
       close_stale_integrity_alerts: {
-        Args: { p_domains: string[]; p_hour: string }
+        Args: { p_domains: string[]; p_grace?: string; p_hour: string }
         Returns: number
       }
       compare_pg_stat_baseline: {
@@ -14971,7 +14974,7 @@ export type Database = {
         Returns: Json
       }
       get_integrity_alerts: {
-        Args: { p_hours?: number; p_only_open?: boolean }
+        Args: { p_incluir_resolvidos?: boolean; p_limit?: number }
         Returns: {
           affected_count: number
           alert_hour: string
@@ -14981,6 +14984,7 @@ export type Database = {
           invariant: string
           reason: string
           resolved_at: string
+          resolved_reason: string
           sample_ids: string[]
           severity: string
         }[]
@@ -15266,7 +15270,10 @@ export type Database = {
         Returns: string
       }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
-      resolve_integrity_alert: { Args: { p_id: string }; Returns: Json }
+      resolve_integrity_alert: {
+        Args: { p_alert_id: string }
+        Returns: boolean
+      }
       resolve_sso_providers_for_domain: {
         Args: { p_domain: string }
         Returns: {

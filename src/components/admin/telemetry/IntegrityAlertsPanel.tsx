@@ -19,6 +19,7 @@ interface IntegrityAlertRow {
   sample_ids: string[] | null;
   alert_hour: string;
   resolved_at: string | null;
+  resolved_reason: string | null;
   created_at: string;
 }
 
@@ -194,6 +195,7 @@ export function IntegrityAlertsPanel() {
                         <Badge
                           variant="outline"
                           className="text-[10px] border-green-500/40 text-green-600"
+                          title={r.resolved_reason ?? "Encerrado"}
                         >
                           <CheckCircle2 className="h-3 w-3 mr-1" /> Encerrado
                         </Badge>
@@ -211,6 +213,11 @@ export function IntegrityAlertsPanel() {
                       <div className="text-muted-foreground/70 text-[10px] font-mono truncate">
                         {r.invariant}
                       </div>
+                      {r.resolved_at && r.resolved_reason ? (
+                        <div className="text-green-600/80 text-[10px] truncate">
+                          {r.resolved_reason}
+                        </div>
+                      ) : null}
                     </td>
                     <td className="py-2 text-right tabular-nums">{r.affected_count ?? "—"}</td>
                     <td className="py-2 text-right text-muted-foreground whitespace-nowrap">
