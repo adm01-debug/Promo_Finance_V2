@@ -10,11 +10,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { BellOff, BellRing, Loader2 } from 'lucide-react';
+import { SilenciamentosExpirando } from '@/components/admin/SilenciamentosExpirando';
 import {
   useFrontendErrorAlertState,
   useSilenciarAlertaErro,
   type FrontendErrorAlertState,
 } from '@/hooks/useFrontendErrorLogs';
+
 
 const fmt = (v: string | null) =>
   v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
