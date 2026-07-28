@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -11,7 +10,7 @@ interface UserSession {
   device_info: string | null;
   ip_address: string | null;
   user_agent: string | null;
-  last_activity: string;
+  last_active: string;
   created_at: string;
   is_current: boolean;
   revoked: boolean;
@@ -76,14 +75,14 @@ export function useSessions() {
         .select('*')
         .eq('user_id', user.id)
         .eq('revoked', false)
-        .order('last_activity', { ascending: false });
+        .order('last_active', { ascending: false });
 
       if (error) {
         logger.error('[useSessions] Erro ao buscar sessões:', error);
         return;
       }
 
-      setSessions(data || []);
+      setSessions(((data ?? []) as unknown as UserSession[]));
     } catch {
       // Silently fail - sessions will remain empty
     } finally {
@@ -119,7 +118,7 @@ export function useSessions() {
           ip_address: ipAddress,
           user_agent: navigator.userAgent,
           is_current: true,
-          last_activity: new Date().toISOString(),
+          last_active: new Date().toISOString(),
         });
 
       if (error) {
@@ -179,7 +178,7 @@ export function useSessions() {
     try {
       await supabase
         .from('user_sessions')
-        .update({ last_activity: new Date().toISOString() })
+        .update({ last_active: new Date().toISOString() })
         .eq('id', sessionId);
     } catch {
       // Silently fail - activity update is not critical

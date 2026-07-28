@@ -249,7 +249,7 @@ export function MFASettings() {
                             )}
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {formatDistanceToNow(new Date(session.last_activity), {
+                              {formatDistanceToNow(new Date(session.last_active), {
                                 addSuffix: true,
                                 locale: ptBR,
                               })}

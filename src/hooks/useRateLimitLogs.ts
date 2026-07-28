@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -8,7 +7,7 @@ interface RateLimitLog {
   id: string;
   ip_address: string;
   endpoint: string;
-  requests_count: number;
+  request_count: number;
   window_start: string;
   blocked: boolean;
   created_at: string;
@@ -61,7 +60,7 @@ export function useRateLimitLogs() {
         return;
       }
 
-      setLogs(logsData || []);
+      setLogs(((logsData ?? []) as unknown as RateLimitLog[]));
 
       // Fetch blocked IPs
       const { data: blockedData, error: blockedError } = await supabase
@@ -74,17 +73,18 @@ export function useRateLimitLogs() {
         return;
       }
 
-      setBlockedIPs(blockedData || []);
+      setBlockedIPs(((blockedData ?? []) as unknown as BlockedIP[]));
 
       // Calculate stats
-      if (logsData) {
-        const totalRequests = logsData.reduce((sum, log) => sum + log.requests_count, 0);
-        const blockedRequests = logsData.filter(log => log.blocked).length;
-        const uniqueIPs = new Set(logsData.map(log => log.ip_address)).size;
+      const typedLogs = (logsData ?? []) as unknown as RateLimitLog[];
+      if (typedLogs.length >= 0) {
+        const totalRequests = typedLogs.reduce((sum, log) => sum + log.request_count, 0);
+        const blockedRequests = typedLogs.filter(log => log.blocked).length;
+        const uniqueIPs = new Set(typedLogs.map(log => log.ip_address)).size;
 
         // Top endpoints
-        const endpointCounts = logsData.reduce((acc, log) => {
-          acc[log.endpoint] = (acc[log.endpoint] || 0) + log.requests_count;
+        const endpointCounts = typedLogs.reduce((acc, log) => {
+          acc[log.endpoint] = (acc[log.endpoint] || 0) + log.request_count;
           return acc;
         }, {} as Record<string, number>);
 
@@ -94,8 +94,8 @@ export function useRateLimitLogs() {
           .slice(0, 10);
 
         // Top IPs
-        const ipCounts = logsData.reduce((acc, log) => {
-          acc[log.ip_address] = (acc[log.ip_address] || 0) + log.requests_count;
+        const ipCounts = typedLogs.reduce((acc, log) => {
+          acc[log.ip_address] = (acc[log.ip_address] || 0) + log.request_count;
           return acc;
         }, {} as Record<string, number>);
 
