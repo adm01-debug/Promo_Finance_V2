@@ -9,8 +9,11 @@ import { Switch } from '@/components/ui/switch';
 import { Calculator, Save, RefreshCw, FileDown, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { calcularTodosRegimes, type InputCalculadora, type ResultadoRegime } from '@/lib/tributario/calculadora';
+import { calcularTodosRegimes, type InputCalculadora, type ResultadoRegime, type AtividadePresumido } from '@/lib/tributario/calculadora';
+import { derivarAtividadePresumido, normalizarCnae } from '@/lib/tributario/calculadora/atividade-cnae';
+import { Input } from '@/components/ui/input';
 import { NumberField } from '@/components/tributario/calculadora/NumberField';
+
 import { ResultadoBreakdown } from '@/components/tributario/calculadora/ResultadoBreakdown';
 import { MemoriaCalculo } from '@/components/tributario/calculadora/MemoriaCalculo';
 import { ComparativoRegimes } from '@/components/tributario/calculadora/ComparativoRegimes';
