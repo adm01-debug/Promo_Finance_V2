@@ -52,6 +52,16 @@ interface CoberturaFiscalPayload {
   ufs: CoberturaUF[];
 }
 
+/** Registro da última recarga idempotente dos seeds fiscais. */
+interface UltimaCargaFiscal {
+  origem?: string;
+  status?: string;
+  checksum?: string;
+  criticos?: number;
+  vinculos_normalizados?: number;
+  last_updated?: string | null;
+}
+
 function formatarData(iso: string | null): string {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -93,6 +103,20 @@ export function CoberturaFiscalUFPanel() {
       },
       staleTime: 300_000,
     });
+
+  /** Última carga idempotente registrada pelo job agendado de seeds fiscais. */
+  const { data: carga } = useQuery<UltimaCargaFiscal>({
+    queryKey: ["ultima-carga-fiscal"],
+    queryFn: async () => {
+      const { data, error } = await supabaseDyn.rpc<UltimaCargaFiscal>(
+        "get_ultima_carga_fiscal",
+        {},
+      );
+      if (error) throw error;
+      return (data ?? {}) as UltimaCargaFiscal;
+    },
+    staleTime: 300_000,
+  });
 
   const ufs = useMemo(() => data?.ufs ?? [], [data]);
 
@@ -252,6 +276,19 @@ export function CoberturaFiscalUFPanel() {
                   )}
                 </TableBody>
               </Table>
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/30 p-3">
+              <p className="text-xs font-medium text-foreground">
+                Última carga dos seeds fiscais
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {carga?.last_updated
+                  ? `${formatarData(carga.last_updated)} · origem: ${carga.origem ?? "—"} · situação: ${
+                      carga.status === "sem_alteracao" ? "sem alteração" : (carga.status ?? "—")
+                    } · versão ${carga.checksum?.slice(0, 8) ?? "—"} · ${carga.criticos ?? 0} crítico(s)`
+                  : "Nenhuma carga registrada ainda. O job diário roda às 03:20."}
+              </p>
             </div>
 
             <p className="text-xs text-muted-foreground">
