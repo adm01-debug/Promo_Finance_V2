@@ -28,6 +28,7 @@ const BITRIX_CLIENT_ID = Deno.env.get("BITRIX24_CLIENT_ID");
 const BITRIX_CLIENT_SECRET = Deno.env.get("BITRIX24_CLIENT_SECRET");
 
 interface SyncBody {
+  full_name?: string;
   avatar_url?: string | null;
   telefone?: string | null;
 }
