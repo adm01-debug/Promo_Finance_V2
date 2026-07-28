@@ -17,7 +17,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(16);
+SELECT plan(17);
 
 -- Horas de referência determinísticas (fora de qualquer hora real de produção
 -- para não colidir com o unique (domain, invariant, alert_hour)).
@@ -76,7 +76,9 @@ VALUES
   ('financeiro','_t_vivo','critical', timestamptz '2001-01-01 14:00:00+00', 5, 'fixture vivo atual'),
   -- (c) domínio fora da lista -> intocado
   ('entrega','_t_outro','warning', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture outro dominio'),
-  -- (d) recente (dentro da carência de 3h) -> intocado quando há grace
+  -- (d) antigo em domínio com carência -> encerra mesmo com grace de 3h
+  ('nfe_sefaz','_t_gap','critical', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture gap'),
+  -- (e) recente (dentro da carência de 3h) -> intocado quando há grace
   ('nfe_sefaz','_t_recente','warning', timestamptz '2001-01-01 12:00:00+00', 1, 'fixture recente');
 
 -- ---------------------------------------------------------------------------
@@ -136,16 +138,16 @@ SELECT is(
   public.close_stale_integrity_alerts(
     timestamptz '2001-01-01 14:00:00+00', ARRAY['nfe_sefaz'], interval '3 hours'
   ),
-  0,
-  'grace de 3h deve preservar alerta de 12:00 avaliado às 14:00'
+  1,
+  'grace de 3h encerra o alerta de 10:00 e preserva o de 12:00'
 );
 
 SELECT is(
   public.close_stale_integrity_alerts(
     timestamptz '2001-01-01 14:00:00+00', ARRAY['nfe_sefaz'], interval '0'
   ),
-  2,
-  'sem grace, os alertas nfe_sefaz antigos devem encerrar'
+  1,
+  'sem grace, o alerta de 12:00 também deve encerrar'
 );
 
 -- ---------------------------------------------------------------------------
