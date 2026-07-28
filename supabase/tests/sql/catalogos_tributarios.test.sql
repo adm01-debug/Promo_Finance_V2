@@ -16,7 +16,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(81);
+SELECT plan(83);
 
 -- ---------------------------------------------------------------------------
 -- 1) Chaves primárias
@@ -370,6 +370,19 @@ SELECT ok(
     WHERE n.nspname = 'public' AND p.proname = 'cleanup_log_tables')
     LIKE '%catalogos_tributarios_health_history%',
   'cleanup_log_tables deve aplicar retenção ao histórico de saúde fiscal');
+
+
+-- Auto-resolução de alertas tributários corrigidos
+SELECT ok(
+  public.check_catalogos_tributarios_invariants() ? 'auto_resolved'
+  OR public.check_catalogos_tributarios_invariants() ? 'skipped',
+  'verificação retorna contagem de alertas auto-resolvidos');
+
+SELECT ok(
+  (SELECT prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'check_catalogos_tributarios_invariants')
+    LIKE '%resolved_at IS NULL%',
+  'rotina de invariantes fecha alertas tributários já corrigidos');
 
 SELECT * FROM finish();
 
