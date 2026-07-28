@@ -360,6 +360,8 @@ export default function PfVinculada() {
             </Alert>
           </CardContent>
         </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );
