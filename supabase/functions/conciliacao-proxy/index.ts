@@ -9,7 +9,7 @@ import {
   withCorrelation,
 } from "../_shared/proxy-audit.ts";
 import { ConciliacaoProxySchema, validatePayload } from "../_shared/validation.ts";
-import type { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import type { z } from '../_shared/zod.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

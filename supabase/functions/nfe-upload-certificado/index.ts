@@ -6,7 +6,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeaders } from "../_shared/cors.ts";
 import forge from 'npm:node-forge@1.3.1';
-import { z } from 'npm:zod@3.23.8';
+import { z } from '../_shared/zod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 
 const BodySchema = z.object({

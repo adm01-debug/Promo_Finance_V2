@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.4
 import { validateContract } from '../_shared/contract-validator.ts';
 // Mesma instancia de zod usada por `_shared/contract-validator.ts`: importar de
 // outra origem cria dois tipos `ZodType` incompativeis (origem do TS2589/TS2345).
-import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { z } from '../_shared/zod.ts';
 
 // Anotacao explicita: sem ela a inferencia do zod dentro de `validateContract`
 // explodia em profundidade (TS2589).

@@ -7,7 +7,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { verify as verifyJwt } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from '../_shared/zod.ts';
 
 const _TokenSchema = z.object({ token: z.string().min(10) });
 
