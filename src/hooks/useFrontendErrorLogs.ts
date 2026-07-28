@@ -136,6 +136,8 @@ export function useSilenciarAlertaErro() {
     },
     onSuccess: (_data, vars) => {
       queryClient.invalidateQueries({ queryKey: ['frontend-error-alert-state'] });
+      queryClient.invalidateQueries({ queryKey: ['silenciamentos-expirando'] });
+
       toast.success(
         vars.horas > 0
           ? `Alertas silenciados por ${vars.horas}h.`
@@ -148,3 +150,41 @@ export function useSilenciarAlertaErro() {
     },
   });
 }
+
+/**
+ * Silenciamento prestes a expirar (ou recém-expirado) — Gap #28.
+ * `horas_restantes` é negativo quando o prazo já venceu.
+ */
+export interface SilenciamentoExpirando {
+  assinatura: string;
+  severity: string;
+  exemplo_mensagem: string | null;
+  silenciado_ate: string;
+  horas_restantes: number;
+  ja_expirou: boolean;
+  alertas_enviados: number;
+  ocorrencias_no_ultimo_alerta: number;
+}
+
+/**
+ * Lista os silenciamentos que vencem dentro da janela informada.
+ *
+ * A RPC é `SECURITY DEFINER` e exige papel de admin — para os demais papéis a
+ * query falha por design, e a UI simplesmente não renderiza o bloco.
+ */
+export function useSilenciamentosExpirando(horas = 72) {
+  return useQuery({
+    queryKey: ['silenciamentos-expirando', horas],
+    queryFn: async (): Promise<SilenciamentoExpirando[]> => {
+      const { data, error } = await supabase.rpc('get_silenciamentos_expirando', {
+        p_horas: horas,
+      });
+      if (error) throw error;
+      return (data ?? []) as SilenciamentoExpirando[];
+    },
+    staleTime: 60_000,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+

@@ -66,7 +66,9 @@ INSERT INTO _allow VALUES
   ('public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb)', 'authenticated', 'registrarEvento; valida empresa_acessivel'),
   ('public.get_frontend_error_groups(p_desde timestamp with time zone, p_severity text, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
   ('public.get_frontend_error_occurrences(p_assinatura text, p_desde timestamp with time zone, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
-  ('public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer, p_motivo text)', 'authenticated', 'AlertasProativosErros; exige has_role admin e audita em audit_logs');
+  ('public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer, p_motivo text)', 'authenticated', 'AlertasProativosErros; exige has_role admin e audita em audit_logs'),
+  ('public.get_silenciamentos_expirando(p_horas integer)', 'authenticated', 'SilenciamentosExpirando (Gap #28); exige has_role admin, somente leitura, clamp de 720h');
+
 
 -- (d) Pré-autenticação — descoberta de SSO por domínio na tela de login.
 --     Retorna apenas metadados públicos do provedor (nome, tipo, domínios).
@@ -488,4 +490,64 @@ BEGIN
   RAISE NOTICE 'PASS: toda política multi-inquilino filtra por dono/empresa/papel.';
 END $$;
 
+
+-- ----------------------------------------------------------------------------
+-- 16) RPCs exclusivas do agendador não podem virar superfície de usuário
+--     (Gap #28). Funções de "claim" gravam estado (trilha de digest, cooldown
+--     de alerta) e devolvem dados operacionais de todo o sistema: se um
+--     usuário logado puder chamá-las, ele consome a janela de idempotência e
+--     suprime a notificação real dos administradores.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_lista text;
+BEGIN
+  SELECT string_agg(p.proname, ', ' ORDER BY p.proname)
+    INTO v_lista
+  FROM pg_proc p
+  JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'public'
+    AND p.proname IN ('claim_silenciamentos_digest', 'claim_frontend_error_alerts')
+    AND (
+      has_function_privilege('anon', p.oid, 'EXECUTE')
+      OR has_function_privilege('authenticated', p.oid, 'EXECUTE')
+    );
+
+  IF v_lista IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: RPCs de agendador executáveis por anon/authenticated: %', v_lista;
+  END IF;
+
+  RAISE NOTICE 'PASS: RPCs de agendador restritas a service_role.';
+END $$;
+
+-- ----------------------------------------------------------------------------
+-- 17) Trilhas de notificação são somente-leitura para o cliente (Gap #28).
+--     A trilha do digest é a trava de idempotência: se o cliente puder
+--     inserir/apagar linhas, ele forja "digest já enviado" e cala o resumo
+--     semanal — ou o dispara em loop.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_lista text;
+BEGIN
+  SELECT string_agg(format('%s:%s', c.relname, pr.privilege_type), ', ')
+    INTO v_lista
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  CROSS JOIN LATERAL (VALUES ('INSERT'), ('UPDATE'), ('DELETE')) AS pr(privilege_type)
+  WHERE n.nspname = 'public'
+    AND c.relname IN ('frontend_error_silence_digest_log', 'frontend_error_alert_state')
+    AND (
+      has_table_privilege('anon', c.oid, pr.privilege_type)
+      OR has_table_privilege('authenticated', c.oid, pr.privilege_type)
+    );
+
+  IF v_lista IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: trilhas de notificação graváveis pelo cliente: %', v_lista;
+  END IF;
+
+  RAISE NOTICE 'PASS: trilhas de notificação são somente-leitura para o cliente.';
+END $$;
+
 ROLLBACK;
+
