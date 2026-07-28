@@ -17,7 +17,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(21);
+SELECT plan(18);
 
 -- ---------------------------------------------------------------------------
 -- 1) Após consolidação (2026-07-11), existe apenas 1 versão canônica
@@ -63,24 +63,21 @@ SELECT is(
 
 
 -- ---------------------------------------------------------------------------
--- 3) Existência das sobrecargas de registrar_evento_receber
+-- 3) registrar_evento_receber consolidada (2026-07-28)
+--    A sobrecarga legada (uuid, text, jsonb) foi removida: ela não validava
+--    sessão nem acesso à empresa e permitia forjar trilha de auditoria.
 -- ---------------------------------------------------------------------------
-SELECT has_function(
-  'public', 'registrar_evento_receber', ARRAY['uuid', 'text', 'jsonb'],
-  'registrar_evento_receber(uuid, text, jsonb) deve existir'
-);
-SELECT has_function(
-  'public', 'registrar_evento_receber', ARRAY['uuid', 'text', 'text', 'jsonb'],
-  'registrar_evento_receber(uuid, text, text, jsonb) deve existir'
-);
-SELECT has_function(
-  'public', 'registrar_evento_receber', ARRAY['uuid', 'text', 'jsonb', 'text'],
-  'registrar_evento_receber(uuid, text, jsonb, text) deve existir'
-);
 SELECT has_function(
   'public', 'registrar_evento_receber',
   ARRAY['uuid', 'text', 'jsonb', 'text', 'text', 'jsonb'],
-  'registrar_evento_receber(uuid, text, jsonb, text, text, jsonb) deve existir'
+  'registrar_evento_receber canônica (6 args) deve existir'
+);
+SELECT is(
+  (SELECT count(*)::int FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname='public' AND p.proname='registrar_evento_receber'),
+  1,
+  'existe apenas 1 sobrecarga de registrar_evento_receber'
 );
 
 -- ---------------------------------------------------------------------------
@@ -89,31 +86,16 @@ SELECT has_function(
 -- ---------------------------------------------------------------------------
 SAVEPOINT tests_data;
 
--- 4a) registrar_evento_receber grava linha em logs_baixa_automatica
-DO $$
-DECLARE
-  v_conta uuid := gen_random_uuid();
-  v_before bigint;
-  v_after bigint;
-BEGIN
-  SELECT count(*) INTO v_before FROM public.logs_baixa_automatica WHERE conta_receber_id = v_conta;
-  PERFORM public.registrar_evento_receber(v_conta, 'teste_regressao', '{"src":"pgtap"}'::jsonb);
-  SELECT count(*) INTO v_after FROM public.logs_baixa_automatica WHERE conta_receber_id = v_conta;
-  PERFORM ok(v_after = v_before + 1, 'registrar_evento_receber(3 args) cria log');
-END $$;
+-- 4a) Sem sessão autenticada, a rotina recusa o registro (blindagem de auditoria)
+SELECT throws_ok(
+  $$ SELECT public.registrar_evento_receber(
+       gen_random_uuid(), 'teste_regressao', '{"src":"pgtap"}'::jsonb
+     ) $$,
+  NULL,
+  'Acesso negado: autenticacao requerida',
+  'registrar_evento_receber exige sessão autenticada'
+);
 
-DO $$
-DECLARE
-  v_conta uuid := gen_random_uuid();
-  v_after bigint;
-BEGIN
-  PERFORM public.registrar_evento_receber(
-    v_conta, 'teste_regressao_4', '{"src":"pgtap"}'::jsonb, 'sistema'
-  );
-  SELECT count(*) INTO v_after FROM public.logs_baixa_automatica
-    WHERE conta_receber_id = v_conta AND tipo = 'sistema';
-  PERFORM ok(v_after >= 1, 'registrar_evento_receber(4 args, com tipo) cria log');
-END $$;
 
 -- 4b) desfazer_conciliacao(uuid, uuid, uuid) apaga a linha correspondente
 DO $$
