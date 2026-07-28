@@ -14964,6 +14964,7 @@ export type Database = {
           total_size_pretty: string
         }[]
       }
+      get_catalogos_tributarios_health: { Args: never; Returns: Json }
       get_cron_jobs: {
         Args: never
         Returns: {
