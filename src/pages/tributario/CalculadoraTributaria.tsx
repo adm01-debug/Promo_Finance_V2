@@ -369,8 +369,25 @@ export default function CalculadoraTributaria() {
                       inputMode="numeric"
                       placeholder="ex.: 4930-2/02"
                       value={form.cnaePreponderante}
-                      onChange={(e) => update('cnaePreponderante', e.target.value)}
+                      onChange={(e) => {
+                        setCnaeManual(true);
+                        update('cnaePreponderante', e.target.value);
+                      }}
                     />
+                    {cnaeEmpresa && !cnaeManual && (
+                      <p className="text-xs text-muted-foreground">
+                        Preenchido pelo cadastro da empresa selecionada.
+                      </p>
+                    )}
+                    {cnaeManual && cnaeEmpresa && cnaeEmpresa !== form.cnaePreponderante && (
+                      <button
+                        type="button"
+                        className="text-xs text-primary underline-offset-2 hover:underline"
+                        onClick={() => setCnaeManual(false)}
+                      >
+                        Usar CNAE do cadastro ({cnaeEmpresa})
+                      </button>
+                    )}
                     {atividadeDerivada && (
                       <p className="text-xs text-muted-foreground">
                         Derivado: <span className="text-foreground">{ROTULO_ATIVIDADE[atividadeDerivada.atividade]}</span>
@@ -380,6 +397,7 @@ export default function CalculadoraTributaria() {
                       </p>
                     )}
                   </div>
+
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Atividade</Label>
                     <Select
