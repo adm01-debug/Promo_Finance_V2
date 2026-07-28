@@ -1,6 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+
+/**
+ * Cliente com schema genérico usado apenas nas consultas com filtros dinâmicos.
+ * Evita a explosão de instanciação de tipos (TS2589) do builder tipado quando
+ * o mesmo builder é reatribuído condicionalmente. Os resultados continuam
+ * validados por asserção explícita para as interfaces deste módulo.
+ */
+const dynamicDb = supabase as unknown as SupabaseClient;
 
 // NOTE: movimentacoes are primarily created by triggers (transferências, pagamentos).
 // Direct inserts should only be used for manual adjustments by admins.
@@ -45,15 +54,16 @@ export function useMovimentacoes(
   return useQuery({
     queryKey: ['movimentacoes', contaBancariaId, filters],
     queryFn: async () => {
-      let query = supabase
-        .from('movimentacoes' as never)
+      const base = dynamicDb
+        .from('movimentacoes')
         .select('*')
         .is('deleted_at', null)
         .order('data_movimentacao', { ascending: false });
 
-      if (contaBancariaId) query = query.eq('conta_bancaria_id', contaBancariaId);
-      if (filters?.startDate) query = query.gte('data_movimentacao', filters.startDate);
-      if (filters?.endDate) query = query.lte('data_movimentacao', filters.endDate);
+      let query: typeof base = base;
+      if (contaBancariaId) query = query.eq('conta_bancaria_id', contaBancariaId) as typeof base;
+      if (filters?.startDate) query = query.gte('data_movimentacao', filters.startDate) as typeof base;
+      if (filters?.endDate) query = query.lte('data_movimentacao', filters.endDate) as typeof base;
 
       const { data, error } = await query.limit(500);
       if (error) throw error;
@@ -189,14 +199,15 @@ export function useFormasPagamento(tipo?: 'entrada' | 'saida' | 'ambos') {
   return useQuery({
     queryKey: ['formas-pagamento', tipo],
     queryFn: async () => {
-      let query = supabase
-        .from('formas_pagamento' as never)
+      const base = dynamicDb
+        .from('formas_pagamento')
         .select('*')
         .eq('ativo', true)
         .order('nome');
 
+      let query: typeof base = base;
       if (tipo && tipo !== 'ambos') {
-        query = query.or(`tipo.eq.${tipo},tipo.eq.ambos`);
+        query = query.or(`tipo.eq.${tipo},tipo.eq.ambos`) as typeof base;
       }
 
       const { data, error } = await query;

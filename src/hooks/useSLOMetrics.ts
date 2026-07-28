@@ -21,7 +21,7 @@ export function useSLOMetrics(diasJanela = 30) {
     queryFn: async (): Promise<SLOMetric[]> => {
       const since = new Date(Date.now() - diasJanela * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
       const { data, error } = await supabase
-        .from('slo_metrics_diarias' as never)
+        .from('slo_metrics_diarias')
         .select('*')
         .gte('data', since)
         .order('data', { ascending: true });

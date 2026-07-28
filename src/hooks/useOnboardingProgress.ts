@@ -18,7 +18,7 @@ export function useOnboardingProgress() {
   const fetchProgress = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
-      .from('user_onboarding_progress' as never)
+      .from('user_onboarding_progress')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle();
@@ -32,7 +32,7 @@ export function useOnboardingProgress() {
 
   const iniciarTour = useCallback(async () => {
     if (!user) return;
-    await supabase.from('user_onboarding_progress' as never).upsert({
+    await supabase.from('user_onboarding_progress').upsert({
       user_id: user.id,
       etapas_completas: [],
       iniciado_em: new Date().toISOString(),
@@ -45,13 +45,13 @@ export function useOnboardingProgress() {
   const completarEtapa = useCallback(async (etapa: string) => {
     if (!user || !progress) return;
     const novas = Array.from(new Set([...(progress.etapas_completas ?? []), etapa]));
-    await supabase.from('user_onboarding_progress' as never).update({ etapas_completas: novas } as never).eq('user_id', user.id);
+    await supabase.from('user_onboarding_progress').update({ etapas_completas: novas } as never).eq('user_id', user.id);
     setProgress({ ...progress, etapas_completas: novas });
   }, [user, progress]);
 
   const finalizar = useCallback(async (pulado = false) => {
     if (!user) return;
-    await supabase.from('user_onboarding_progress' as never).upsert({
+    await supabase.from('user_onboarding_progress').upsert({
       user_id: user.id,
       etapas_completas: progress?.etapas_completas ?? [],
       iniciado_em: progress?.iniciado_em ?? new Date().toISOString(),
@@ -63,7 +63,7 @@ export function useOnboardingProgress() {
 
   const reiniciar = useCallback(async () => {
     if (!user) return;
-    await supabase.from('user_onboarding_progress' as never).upsert({
+    await supabase.from('user_onboarding_progress').upsert({
       user_id: user.id,
       etapas_completas: [],
       iniciado_em: new Date().toISOString(),
