@@ -1,0 +1,195 @@
+-- ============================================================
+-- pgTAP: ciclo de integridade (2026-07-28)
+-- ------------------------------------------------------------
+-- Testes de regressão para:
+--   * CHECK de domínio em integrity_alerts (inclui 'nfe' e 'nfe_sefaz')
+--   * close_stale_integrity_alerts: encerramento, reincidência,
+--     janela de carência, idempotência e isolamento por domínio
+--   * run_integrity_cycle: contrato de retorno e ausência de exceção
+--   * Blindagem de execução (anon/authenticated não executam)
+--
+-- Como rodar:
+--   psql "$DATABASE_URL" -f supabase/tests/sql/integrity_cycle.test.sql
+--   supabase test db
+-- ============================================================
+
+BEGIN;
+
+CREATE EXTENSION IF NOT EXISTS pgtap;
+
+SELECT plan(16);
+
+-- Horas de referência determinísticas (fora de qualquer hora real de produção
+-- para não colidir com o unique (domain, invariant, alert_hour)).
+CREATE TEMP TABLE _t AS
+SELECT
+  timestamptz '2001-01-01 10:00:00+00' AS h_velha,
+  timestamptz '2001-01-01 12:00:00+00' AS h_media,
+  timestamptz '2001-01-01 14:00:00+00' AS h_atual;
+
+-- ---------------------------------------------------------------------------
+-- 1) CHECK de domínio deve aceitar 'nfe' (regressão: bloqueava
+--    check_nfe_xml_path_invariants com 23514)
+-- ---------------------------------------------------------------------------
+SELECT lives_ok(
+  $$INSERT INTO public.integrity_alerts
+      (domain, invariant, severity, alert_hour, affected_count, reason)
+    VALUES ('nfe','_t_layout','warning', timestamptz '2001-01-01 10:00:00+00', 3, 'fixture')$$,
+  'integrity_alerts deve aceitar domain = nfe'
+);
+
+SELECT lives_ok(
+  $$INSERT INTO public.integrity_alerts
+      (domain, invariant, severity, alert_hour, affected_count, reason)
+    VALUES ('nfe_sefaz','_t_gap','critical', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture')$$,
+  'integrity_alerts deve aceitar domain = nfe_sefaz'
+);
+
+SELECT throws_ok(
+  $$INSERT INTO public.integrity_alerts
+      (domain, invariant, severity, alert_hour, affected_count, reason)
+    VALUES ('dominio_inexistente','_t','warning', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture')$$,
+  '23514',
+  NULL,
+  'domínio desconhecido deve ser rejeitado pelo CHECK'
+);
+
+SELECT throws_ok(
+  $$INSERT INTO public.integrity_alerts
+      (domain, invariant, severity, alert_hour, affected_count, reason)
+    VALUES ('nfe','_t','urgentissimo', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture')$$,
+  '23514',
+  NULL,
+  'severidade fora do CHECK deve ser rejeitada'
+);
+
+-- ---------------------------------------------------------------------------
+-- 2) Fixtures do cenário de encerramento
+-- ---------------------------------------------------------------------------
+INSERT INTO public.integrity_alerts
+  (domain, invariant, severity, alert_hour, affected_count, reason)
+VALUES
+  -- (a) antigo e não reincidente -> deve encerrar
+  ('financeiro','_t_orfao','warning', timestamptz '2001-01-01 10:00:00+00', 2, 'fixture orfao'),
+  -- (b) antigo MAS reincidente na hora atual -> deve permanecer aberto
+  ('financeiro','_t_vivo','critical', timestamptz '2001-01-01 10:00:00+00', 5, 'fixture vivo'),
+  ('financeiro','_t_vivo','critical', timestamptz '2001-01-01 14:00:00+00', 5, 'fixture vivo atual'),
+  -- (c) domínio fora da lista -> intocado
+  ('entrega','_t_outro','warning', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture outro dominio'),
+  -- (d) recente (dentro da carência de 3h) -> intocado quando há grace
+  ('nfe_sefaz','_t_recente','warning', timestamptz '2001-01-01 12:00:00+00', 1, 'fixture recente');
+
+-- ---------------------------------------------------------------------------
+-- 3) Encerramento sem carência
+-- ---------------------------------------------------------------------------
+SELECT is(
+  public.close_stale_integrity_alerts(
+    timestamptz '2001-01-01 14:00:00+00', ARRAY['financeiro'], interval '0'
+  ),
+  1,
+  'deve encerrar exatamente 1 alerta (o não reincidente)'
+);
+
+SELECT isnt(
+  (SELECT resolved_at FROM public.integrity_alerts
+    WHERE domain='financeiro' AND invariant='_t_orfao'),
+  NULL,
+  'alerta não reincidente deve ficar com resolved_at preenchido'
+);
+
+SELECT matches(
+  (SELECT resolved_reason FROM public.integrity_alerts
+    WHERE domain='financeiro' AND invariant='_t_orfao'),
+  '^auto:',
+  'resolved_reason deve registrar a origem automática do encerramento'
+);
+
+SELECT is(
+  (SELECT count(*)::int FROM public.integrity_alerts
+    WHERE domain='financeiro' AND invariant='_t_vivo' AND resolved_at IS NULL),
+  2,
+  'invariante reincidente na hora atual não pode ser encerrado'
+);
+
+SELECT is(
+  (SELECT resolved_at FROM public.integrity_alerts
+    WHERE domain='entrega' AND invariant='_t_outro'),
+  NULL,
+  'domínio fora de p_domains deve permanecer intocado'
+);
+
+-- ---------------------------------------------------------------------------
+-- 4) Idempotência — segunda execução não deve encerrar nada de novo
+-- ---------------------------------------------------------------------------
+SELECT is(
+  public.close_stale_integrity_alerts(
+    timestamptz '2001-01-01 14:00:00+00', ARRAY['financeiro'], interval '0'
+  ),
+  0,
+  'reexecução deve ser idempotente (0 novos encerramentos)'
+);
+
+-- ---------------------------------------------------------------------------
+-- 5) Janela de carência — alerta dentro do grace não pode ser encerrado
+-- ---------------------------------------------------------------------------
+SELECT is(
+  public.close_stale_integrity_alerts(
+    timestamptz '2001-01-01 14:00:00+00', ARRAY['nfe_sefaz'], interval '3 hours'
+  ),
+  0,
+  'grace de 3h deve preservar alerta de 12:00 avaliado às 14:00'
+);
+
+SELECT is(
+  public.close_stale_integrity_alerts(
+    timestamptz '2001-01-01 14:00:00+00', ARRAY['nfe_sefaz'], interval '0'
+  ),
+  2,
+  'sem grace, os alertas nfe_sefaz antigos devem encerrar'
+);
+
+-- ---------------------------------------------------------------------------
+-- 6) Guardas de entrada
+-- ---------------------------------------------------------------------------
+SELECT is(
+  public.close_stale_integrity_alerts(NULL, ARRAY['financeiro']),
+  0,
+  'hora nula deve retornar 0 sem efeito colateral'
+);
+
+SELECT is(
+  public.close_stale_integrity_alerts(timestamptz '2001-01-01 14:00:00+00', ARRAY[]::text[]),
+  0,
+  'lista de domínios vazia deve retornar 0 sem efeito colateral'
+);
+
+-- ---------------------------------------------------------------------------
+-- 7) Contrato do ciclo — não pode lançar exceção e deve reportar as 3 frentes
+-- ---------------------------------------------------------------------------
+SELECT lives_ok(
+  $$SELECT public.run_integrity_cycle()$$,
+  'run_integrity_cycle não pode lançar exceção'
+);
+
+SELECT ok(
+  (SELECT public.run_integrity_cycle() ?& ARRAY['nfe_xml','sefaz','alertas_encerrados']),
+  'run_integrity_cycle deve retornar nfe_xml, sefaz e alertas_encerrados'
+);
+
+-- ---------------------------------------------------------------------------
+-- 8) Blindagem — nenhuma role exposta pode executar as rotinas de manutenção
+-- ---------------------------------------------------------------------------
+SELECT ok(
+  NOT has_function_privilege('authenticated', 'public.run_integrity_cycle()', 'EXECUTE')
+  AND NOT has_function_privilege('anon', 'public.run_integrity_cycle()', 'EXECUTE')
+  AND NOT has_function_privilege(
+    'authenticated',
+    'public.close_stale_integrity_alerts(timestamptz, text[], interval)',
+    'EXECUTE'
+  ),
+  'ciclo e encerramento automático não podem ser executáveis por anon/authenticated'
+);
+
+SELECT * FROM finish();
+
+ROLLBACK;
