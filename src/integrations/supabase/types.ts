@@ -7730,6 +7730,48 @@ export type Database = {
         }
         Relationships: []
       }
+      glossario_tributario: {
+        Row: {
+          ativo: boolean
+          base_legal: string | null
+          categoria: string | null
+          created_at: string
+          exemplo: string | null
+          id: string
+          ordem: number
+          sigla: string | null
+          significado: string
+          termo: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          created_at?: string
+          exemplo?: string | null
+          id?: string
+          ordem?: number
+          sigla?: string | null
+          significado: string
+          termo: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          created_at?: string
+          exemplo?: string | null
+          id?: string
+          ordem?: number
+          sigla?: string | null
+          significado?: string
+          termo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       health_scores_operacionais: {
         Row: {
           created_at: string | null
@@ -8282,6 +8324,110 @@ export type Database = {
           },
           {
             foreignKeyName: "historico_score_saude_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      incentivos_fiscais: {
+        Row: {
+          ano_fim: number
+          ano_inicio: number
+          ativo: boolean
+          ato_concessorio: string | null
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          id: string
+          limite_percentual: number
+          limite_valor: number
+          nome: string
+          numero_processo: string | null
+          tipo_incentivo: string
+          updated_at: string
+          valor_utilizado_ano: number
+        }
+        Insert: {
+          ano_fim: number
+          ano_inicio: number
+          ativo?: boolean
+          ato_concessorio?: string | null
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          id?: string
+          limite_percentual?: number
+          limite_valor?: number
+          nome: string
+          numero_processo?: string | null
+          tipo_incentivo: string
+          updated_at?: string
+          valor_utilizado_ano?: number
+        }
+        Update: {
+          ano_fim?: number
+          ano_inicio?: number
+          ativo?: boolean
+          ato_concessorio?: string | null
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          id?: string
+          limite_percentual?: number
+          limite_valor?: number
+          nome?: string
+          numero_processo?: string | null
+          tipo_incentivo?: string
+          updated_at?: string
+          valor_utilizado_ano?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
@@ -10585,6 +10731,140 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "fornecedores"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      per_dcomp: {
+        Row: {
+          competencia_destino: string | null
+          competencia_origem: string
+          created_at: string
+          created_by: string | null
+          creditos_ids: string[]
+          data_decisao: string | null
+          data_protocolo: string | null
+          data_transmissao: string | null
+          empresa_id: string
+          fundamentacao_legal: string | null
+          id: string
+          justificativa: string | null
+          numero_processo: string | null
+          numero_recibo: string | null
+          observacoes: string | null
+          prazo_recurso: string | null
+          status: string
+          tipo: string
+          tipo_credito_origem: string
+          tributo_destino: string | null
+          tributo_origem: string
+          updated_at: string
+          valor_atualizado: number | null
+          valor_compensado: number | null
+          valor_original: number
+        }
+        Insert: {
+          competencia_destino?: string | null
+          competencia_origem: string
+          created_at?: string
+          created_by?: string | null
+          creditos_ids?: string[]
+          data_decisao?: string | null
+          data_protocolo?: string | null
+          data_transmissao?: string | null
+          empresa_id: string
+          fundamentacao_legal?: string | null
+          id?: string
+          justificativa?: string | null
+          numero_processo?: string | null
+          numero_recibo?: string | null
+          observacoes?: string | null
+          prazo_recurso?: string | null
+          status?: string
+          tipo: string
+          tipo_credito_origem: string
+          tributo_destino?: string | null
+          tributo_origem: string
+          updated_at?: string
+          valor_atualizado?: number | null
+          valor_compensado?: number | null
+          valor_original?: number
+        }
+        Update: {
+          competencia_destino?: string | null
+          competencia_origem?: string
+          created_at?: string
+          created_by?: string | null
+          creditos_ids?: string[]
+          data_decisao?: string | null
+          data_protocolo?: string | null
+          data_transmissao?: string | null
+          empresa_id?: string
+          fundamentacao_legal?: string | null
+          id?: string
+          justificativa?: string | null
+          numero_processo?: string | null
+          numero_recibo?: string | null
+          observacoes?: string | null
+          prazo_recurso?: string | null
+          status?: string
+          tipo?: string
+          tipo_credito_origem?: string
+          tributo_destino?: string | null
+          tributo_origem?: string
+          updated_at?: string
+          valor_atualizado?: number | null
+          valor_compensado?: number | null
+          valor_original?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
