@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/table';
 import { useConsultaNCM } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
+import { OfflineBadge } from './OfflineBadge';
 import { ResultBlock, UFS, pct } from './shared';
 
 /**
@@ -116,7 +117,7 @@ export function ConsultaNcmTab() {
           isLoading={query.isLoading}
           error={query.error}
           isEmpty={!query.isLoading && !ncm}
-          actions={<MatchBadge match={d?.match} />}
+          actions={<div className="flex items-center gap-1.5"><OfflineBadge data={d} /><MatchBadge match={d?.match} /></div>}
         >
           <dl className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
             <div>

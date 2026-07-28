@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/select';
 import { useConsultaUF } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
+import { OfflineBadge } from './OfflineBadge';
 import { ResultBlock, UFS, pct } from './shared';
 
 /**
@@ -75,7 +76,7 @@ export function ConsultaUFTab() {
         isLoading={query.isLoading}
         error={query.error}
         isEmpty={!query.isLoading && !d}
-        actions={<MatchBadge match={d?.match} />}
+        actions={<div className="flex items-center gap-1.5"><OfflineBadge data={d} /><MatchBadge match={d?.match} /></div>}
       >
         <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
           <div>
