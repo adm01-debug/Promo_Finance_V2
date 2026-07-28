@@ -8820,6 +8820,33 @@ export type Database = {
         }
         Relationships: []
       }
+      frontend_error_silence_digest_log: {
+        Row: {
+          assinaturas: string[]
+          created_at: string
+          executado_em: string
+          id: string
+          itens: number
+          janela_horas: number
+        }
+        Insert: {
+          assinaturas?: string[]
+          created_at?: string
+          executado_em?: string
+          id?: string
+          itens?: number
+          janela_horas: number
+        }
+        Update: {
+          assinaturas?: string[]
+          created_at?: string
+          executado_em?: string
+          id?: string
+          itens?: number
+          janela_horas?: number
+        }
+        Relationships: []
+      }
       frontend_performance_logs: {
         Row: {
           created_at: string
@@ -19454,6 +19481,18 @@ export type Database = {
           usuarios_afetados: number
         }[]
       }
+      claim_silenciamentos_digest: {
+        Args: { p_horas?: number; p_min_intervalo_horas?: number }
+        Returns: {
+          alertas_enviados: number
+          assinatura: string
+          exemplo_mensagem: string
+          horas_restantes: number
+          ja_expirou: boolean
+          severity: string
+          silenciado_ate: string
+        }[]
+      }
       cleanup_expired_tokens: { Args: never; Returns: number }
       cleanup_log_tables: { Args: never; Returns: Json }
       cleanup_old_cron_logs: { Args: never; Returns: number }
@@ -19842,6 +19881,19 @@ export type Database = {
           skipped: boolean
           success: boolean
           total_deleted: number
+        }[]
+      }
+      get_silenciamentos_expirando: {
+        Args: { p_horas?: number }
+        Returns: {
+          alertas_enviados: number
+          assinatura: string
+          exemplo_mensagem: string
+          horas_restantes: number
+          ja_expirou: boolean
+          ocorrencias_no_ultimo_alerta: number
+          severity: string
+          silenciado_ate: string
         }[]
       }
       get_table_bloat: {
