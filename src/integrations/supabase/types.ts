@@ -19517,6 +19517,15 @@ export type Database = {
       }
     }
     Functions: {
+      backfill_empresa_id: {
+        Args: { _dry_run?: boolean }
+        Returns: {
+          estrategia: string
+          pendentes: number
+          registros_ajustados: number
+          tabela: string
+        }[]
+      }
       calcular_potencial_elisao: {
         Args: { p_empresa_id: string }
         Returns: {
