@@ -14740,6 +14740,10 @@ export type Database = {
       cleanup_pgss_baseline: { Args: { p_days?: number }; Returns: number }
       cleanup_rpc_observability_metrics: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
+      close_stale_integrity_alerts: {
+        Args: { p_domains: string[]; p_hour: string }
+        Returns: number
+      }
       compare_pg_stat_baseline: {
         Args: { p_label?: string }
         Returns: {
