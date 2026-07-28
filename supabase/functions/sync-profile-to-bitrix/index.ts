@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
   let body: SyncBody;
   try {
     const _raw = await req.json();
-    const _v = await validateContract(_SyncProfileSchema, _raw);
+    const _v = await validateContract<SyncBody>(_SyncProfileSchema, _raw);
     if (!_v.success) return _v.response;
     body = _v.data;
   } catch {
