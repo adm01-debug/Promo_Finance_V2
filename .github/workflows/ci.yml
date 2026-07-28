@@ -71,6 +71,20 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-privilege-baseline.sql
 
+      - name: Tenant isolation gate (probe de runtime como authenticated)
+        # Assume o papel `authenticated` com JWT sintético de um usuário sem
+        # vínculo em user_empresas e sem papel, e varre todas as tabelas com
+        # RLS: qualquer linha visível é vazamento cross-tenant e qualquer erro
+        # dentro de policy vira 401 para o usuário final.
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/security/test-tenant-isolation.sql
+
+
+
 
       - name: Integridade dos catálogos tributários (pgTAP)
         # Valida PK/UNIQUE, enums, formatos e ranges das tabelas fiscais

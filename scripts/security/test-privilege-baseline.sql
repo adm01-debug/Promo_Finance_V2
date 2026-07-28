@@ -431,4 +431,61 @@ BEGIN
   RAISE NOTICE 'PASS: silenciamento de alertas só via RPC admin auditada.';
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- 14) Nenhuma política pode ser criada `TO public` (Gap #27)
+--     `TO public` inclui a identidade `anon`. Quando o predicado depende de
+--     auth.uid() ou de funções sem EXECUTE para anon, o visitante recebe
+--     401/42501 em vez de resultado vazio — a regressão do Gap #23.
+--     Exceção única e explícita: telemetria de erro do frontend, que declara
+--     `TO anon, authenticated` (nunca `public`).
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_lista text;
+BEGIN
+  SELECT string_agg(format('%s.%s', tablename, policyname), ', ' ORDER BY tablename)
+    INTO v_lista
+  FROM pg_policies
+  WHERE schemaname = 'public' AND roles::text = '{public}';
+
+  IF v_lista IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: políticas com TO public (avaliadas para anon): %', v_lista;
+  END IF;
+
+  RAISE NOTICE 'PASS: nenhuma política TO public — superfície anônima é explícita.';
+END $$;
+
+-- ----------------------------------------------------------------------------
+-- 15) Toda política de tabela multi-inquilino precisa de predicado de escopo
+--     (Gap #27). Um predicado `true`/ausente em tabela com empresa_id/user_id
+--     significa que qualquer usuário logado enxerga dados de outros inquilinos.
+--     Observação: em políticas FOR ALL/UPDATE sem WITH CHECK, o Postgres reusa
+--     o USING — por isso o teste aceita `qual` OU `with_check` escopados.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_lista text;
+BEGIN
+  SELECT string_agg(DISTINCT format('%s.%s (%s)', p.tablename, p.policyname, p.cmd), ', ')
+    INTO v_lista
+  FROM pg_policies p
+  WHERE p.schemaname = 'public'
+    AND p.permissive = 'PERMISSIVE'
+    AND p.roles::text ~ 'authenticated|public'
+    AND EXISTS (
+      SELECT 1 FROM information_schema.columns c
+      WHERE c.table_schema = 'public'
+        AND c.table_name = p.tablename
+        AND c.column_name IN ('empresa_id', 'user_id')
+    )
+    AND coalesce(p.qual, '') !~ 'auth\.uid|has_role|empresa_acessivel|is_org|has_permission'
+    AND coalesce(p.with_check, '') !~ 'auth\.uid|has_role|empresa_acessivel|is_org|has_permission';
+
+  IF v_lista IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: políticas sem predicado de inquilino em tabelas multi-empresa: %', v_lista;
+  END IF;
+
+  RAISE NOTICE 'PASS: toda política multi-inquilino filtra por dono/empresa/papel.';
+END $$;
+
 ROLLBACK;
