@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 // HOOK: GESTÃO DE INCENTIVOS FISCAIS
 // Interface para cadastrar/gerenciar incentivos
 
