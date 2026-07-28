@@ -148,9 +148,24 @@ export const AsaasProxySchema = z.object({
   data: z.record(z.any()).optional()
 }).strict();
 
+// `passthrough()` mantinha os campos extras como `unknown`, o que obrigava a
+// funcao a espalhar `as any` e derrubava o type-check em 17 pontos. Declaramos
+// o contrato real do proxy (os parametros que as acoes de fato consomem) e
+// mantemos o passthrough apenas para acoes novas ainda nao mapeadas.
 export const BlingProxySchema = z.object({
-  action: z.string(),
+  action: z.string().min(1).max(80),
+  id: z.union([z.string(), z.number()]).optional(),
+  ids: z.array(z.union([z.string(), z.number()])).optional(),
+  codigo: z.union([z.string(), z.number()]).optional(),
+  baixaId: z.union([z.string(), z.number()]).optional(),
+  idSituacao: z.union([z.string(), z.number()]).optional(),
+  enviarEmail: z.boolean().optional(),
+  data: z.record(z.any()).optional(),
+  filtros: z.record(z.any()).optional(),
+  code: z.string().min(1).optional(),
+  redirect_uri: z.string().url().optional(),
 }).passthrough();
+
 
 
 export const AnalyzeDocumentSchema = z.object({
