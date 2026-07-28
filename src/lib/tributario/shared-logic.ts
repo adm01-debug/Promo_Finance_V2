@@ -837,6 +837,12 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [`Lucro estimado: ${margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
+  if (pExp > 0) {
+    observacoes.push(
+      `Exportação de ${(pExp * 100).toFixed(1)}% da receita: imune a PIS/COFINS, ICMS e ISS (CF/88 arts. 149 §2º I, 155 §2º X "a" e 156 §3º II). IRPJ/CSLL permanecem devidos, e os créditos de PIS/COFINS seguem aproveitáveis.`,
+    );
+  }
+
   if (compIrpj.compensado > 0 || compCsll.compensado > 0) {
     observacoes.push(
       `Compensação de prejuízos limitada a 30% do lucro (Lei 9.065/95): IRPJ R$ ${compIrpj.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / CSLL R$ ${compCsll.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`,
