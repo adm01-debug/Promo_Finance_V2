@@ -270,6 +270,11 @@ export default function AdminTelemetriaPage() {
         {/* Invariantes de Integridade de Dados */}
         <IntegrityAlertsPanel />
 
+        {/* Histórico da retenção diária */}
+        <RetentionHistoryPanel />
+
+
+
 
         {/* Tendência Semanal */}
         <PerformanceAlertsWeeklyTrend />
