@@ -51,6 +51,7 @@ import {
   Tag,
   Code2,
   ClipboardCheck,
+  Search,
   CalendarCheck,
 } from 'lucide-react';
 
@@ -135,6 +136,7 @@ const navGroups: NavGroup[] = [
     icon: FileText,
     items: [
       { label: 'Quantum-Sentinel: Tributário', icon: Scale, href: '/tributario/dashboard', highlight: true, badgeKey: 'tributario' },
+      { label: 'Consulta Rápida Fiscal', icon: Search, href: '/tributario/consulta-rapida', highlight: true },
       { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria/visao-geral' },
       { label: 'Split Payment', icon: ArrowLeftRight, href: '/tributario/split-payment' },
       { label: 'Conciliação Tributária', icon: RefreshCcw, href: '/tributario/conciliacao' },

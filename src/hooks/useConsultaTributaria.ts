@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { chaveConsulta, lerConsulta, salvarConsulta } from '@/lib/offline/fiscal-cache';
+
 
 /** Estratégia de correspondência devolvida pelo endpoint (exata ou fallback). */
 export interface MatchInfo {
@@ -81,6 +83,11 @@ export type ConsultaParams =
       limite?: number;
     };
 
+/** Metadado anexado quando a resposta veio do cache offline. */
+export interface OrigemCache {
+  _offline?: { origem: 'cache'; gravadoEm: number };
+}
+
 /**
  * Invoca a edge function de consulta tributária. Erros de rede/validação são
  * propagados para o React Query tratar (retry/estado de erro na UI).
@@ -96,15 +103,39 @@ export async function consultarTributos<T>(params: ConsultaParams): Promise<T> {
   return data as T;
 }
 
+/**
+ * Consulta com fallback offline: em caso de falha de rede, devolve a última
+ * resposta cacheada (IndexedDB) marcada com `_offline`, para a UI sinalizar
+ * ao contador que o dado pode estar defasado. Sem cache válido, o erro sobe.
+ */
+export async function consultarTributosComCache<T>(params: ConsultaParams): Promise<T> {
+  const chave = chaveConsulta(params);
+  try {
+    const data = await consultarTributos<T>(params);
+    void salvarConsulta(chave, data);
+    return data;
+  } catch (err) {
+    const cache = await lerConsulta<T>(chave);
+    if (cache) {
+      return {
+        ...(cache.payload as object),
+        _offline: { origem: 'cache' as const, gravadoEm: cache.gravadoEm },
+      } as T;
+    }
+    throw err;
+  }
+}
+
 /** Hook genérico de consulta com cache (catálogos mudam raramente). */
 export function useConsultaTributaria<T>(params: ConsultaParams | null, enabled = true) {
   return useQuery<T>({
     queryKey: ['consulta-tributaria', params],
-    queryFn: () => consultarTributos<T>(params as ConsultaParams),
+    queryFn: () => consultarTributosComCache<T>(params as ConsultaParams),
     enabled: enabled && params !== null,
     staleTime: 1000 * 60 * 30,
   });
 }
+
 
 export const useConsultaUF = (uf?: string, extras?: { uf_destino?: string; categoria?: string; municipio?: number }) =>
   useConsultaTributaria<ConsultaUFResult>(uf ? { recurso: 'uf', uf, ...extras } : null);
