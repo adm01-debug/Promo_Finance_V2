@@ -551,5 +551,44 @@ BEGIN
   RAISE NOTICE 'PASS: trilhas de notificação são somente-leitura para o cliente.';
 END $$;
 
-ROLLBACK;
+-- ----------------------------------------------------------------------------
+-- 18) Escrita não pode escapar do inquilino (Gap #29).
+--     Encontrado em produção: `clientes_grupo_update` tinha
+--     USING (empresa_id IS NOT NULL AND ...) mas WITH CHECK (empresa_id IS NULL
+--     OR ...). O usuário lia a linha, gravava empresa_id = NULL e ela sumia de
+--     todas as políticas — perda de dado silenciosa e irreversível pela UI.
+--     Gate detalhado (com probe de runtime) em test-write-isolation.sql; aqui
+--     fica a trava estática, barata, que roda em toda execução da baseline.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE v_txt text;
+BEGIN
+  SELECT string_agg(format('%s.%s (%s)', p.tablename, p.policyname, p.cmd), ', ')
+    INTO v_txt
+  FROM pg_policies p
+  WHERE p.schemaname = 'public'
+    AND p.cmd IN ('INSERT', 'UPDATE', 'ALL')
+    AND ('authenticated' = ANY(p.roles) OR 'public' = ANY(p.roles))
+    AND p.with_check IS NOT NULL
+    AND (
+      -- WITH CHECK aceita órfã enquanto o USING exige vínculo
+      (p.qual IS NOT NULL
+        AND p.qual ~ '\mempresa_id IS NOT NULL\M'
+        AND p.with_check ~ '\mempresa_id IS NULL\M')
+      -- ou WITH CHECK trivial em tabela multi-inquilino
+      OR (btrim(p.with_check) IN ('true', '(true)')
+        AND EXISTS (
+          SELECT 1 FROM information_schema.columns col
+          WHERE col.table_schema = 'public'
+            AND col.table_name = p.tablename
+            AND col.column_name = 'empresa_id'))
+    );
 
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: política(s) de escrita permitem escapar do inquilino: %', v_txt;
+  END IF;
+
+  RAISE NOTICE 'PASS: nenhuma política de escrita permite orfanar ou realocar linha entre inquilinos.';
+END $$;
+
+ROLLBACK;
