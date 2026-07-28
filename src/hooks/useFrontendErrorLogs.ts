@@ -136,6 +136,8 @@ export function useSilenciarAlertaErro() {
     },
     onSuccess: (_data, vars) => {
       queryClient.invalidateQueries({ queryKey: ['frontend-error-alert-state'] });
+      queryClient.invalidateQueries({ queryKey: ['silenciamentos-expirando'] });
+
       toast.success(
         vars.horas > 0
           ? `Alertas silenciados por ${vars.horas}h.`
