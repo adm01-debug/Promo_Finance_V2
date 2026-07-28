@@ -274,6 +274,10 @@ export default function AdminTelemetriaPage() {
         {/* Histórico da retenção diária */}
         <RetentionHistoryPanel />
 
+        {/* Saúde dos catálogos tributários */}
+        <CatalogosTributariosHealthPanel />
+
+
 
 
 
