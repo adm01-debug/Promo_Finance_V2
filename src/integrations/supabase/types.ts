@@ -1182,6 +1182,51 @@ export type Database = {
         }
         Relationships: []
       }
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          expires_at: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          scopes: string[]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       aprovacao_comentarios: {
         Row: {
           comentario: string | null
@@ -2837,6 +2882,36 @@ export type Database = {
           },
         ]
       }
+      bitrix_oauth_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          domain: string | null
+          expires_at: string
+          id: string
+          refresh_token: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          domain?: string | null
+          expires_at: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          domain?: string | null
+          expires_at?: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bitrix_sync_logs: {
         Row: {
           created_at: string | null
@@ -3133,6 +3208,120 @@ export type Database = {
           id?: string
           refresh_token?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      bling_sync_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          detalhes: Json | null
+          finalizado_em: string | null
+          id: string
+          iniciado_em: string
+          mensagem_erro: string | null
+          modulo: string
+          registros_com_erro: number
+          registros_processados: number
+          status: string
+          tipo: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          modulo: string
+          registros_com_erro?: number
+          registros_processados?: number
+          status?: string
+          tipo: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          modulo?: string
+          registros_com_erro?: number
+          registros_processados?: number
+          status?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
+      bling_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          refresh_token: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bling_webhook_events: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string
+          id: string
+          module: string
+          payload: Json | null
+          processed: boolean
+          processed_at: string | null
+          resource_id: string | null
+          retries: number
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          module: string
+          payload?: Json | null
+          processed?: boolean
+          processed_at?: string | null
+          resource_id?: string | null
+          retries?: number
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          module?: string
+          payload?: Json | null
+          processed?: boolean
+          processed_at?: string | null
+          resource_id?: string | null
+          retries?: number
         }
         Relationships: []
       }
