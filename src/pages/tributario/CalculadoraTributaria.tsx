@@ -87,6 +87,8 @@ const DEFAULT_INPUT: CampoInput = {
   irrfSofrido: 0,
   csrfSofrido: 0,
   atividadePresumido: 'comercio',
+  cnaePreponderante: '',
+
   anexoSimples: 'I',
   rbt12: 3_000_000,
   folha12m: 400_000,
