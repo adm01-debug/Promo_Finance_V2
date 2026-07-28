@@ -263,6 +263,21 @@ function clamp(v: number, min: number, max: number): number {
 }
 
 /**
+ * Fração (0..1) da receita bruta destinada à exportação.
+ *
+ * A imunidade das exportações é objetiva e alcança PIS/COFINS
+ * (CF/88 art. 149 §2º I), ICMS (art. 155 §2º X "a") e ISS
+ * (art. 156 §3º II c/c LC 116/2003 art. 2º I). IRPJ e CSLL NÃO são
+ * alcançados: o lucro da operação exportadora permanece tributável.
+ */
+export function fracaoExportacao(p: ParametrosSimulacao): number {
+  const v = num(p.percentualExportacao, 0);
+  return clamp(Number.isFinite(v) ? v : 0, 0, 100) / 100;
+}
+
+
+
+/**
  * Normaliza defensivamente os parâmetros de simulação antes de qualquer cálculo.
  *
  * Motivação (gap detectado em fuzzing de milhares de cenários): entradas fora de
