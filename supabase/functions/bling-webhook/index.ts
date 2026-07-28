@@ -30,8 +30,25 @@ export const handler = async (req: Request) => {
     });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-    const body = await req.json();
-    console.log("Bling webhook received:", JSON.stringify(body));
+    // Autenticação do provedor: assinatura HMAC sobre o corpo BRUTO (ou token
+    // compartilhado). Sem isso qualquer um poderia injetar eventos de estoque
+    // e pedidos via `service_role`.
+    const rawBody = await req.text();
+    const auth = await authenticateWebhook(supabase, {
+      provider: 'bling',
+      req,
+      rawBody,
+      corsHeaders,
+    });
+    if (!auth.ok) return auth.response;
+
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return createErrorResponse("Corpo inválido: JSON malformado", 400);
+    }
+    console.log("Bling webhook received (auth:", auth.mode, ")");
 
     const validation = validatePayload(BlingWebhookSchema, body);
     if (!validation.success) {
