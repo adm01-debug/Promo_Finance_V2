@@ -9,8 +9,11 @@ import { Switch } from '@/components/ui/switch';
 import { Calculator, Save, RefreshCw, FileDown, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { calcularTodosRegimes, type InputCalculadora, type ResultadoRegime } from '@/lib/tributario/calculadora';
+import { calcularTodosRegimes, type InputCalculadora, type ResultadoRegime, type AtividadePresumido } from '@/lib/tributario/calculadora';
+import { derivarAtividadePresumido, normalizarCnae } from '@/lib/tributario/calculadora/atividade-cnae';
+import { Input } from '@/components/ui/input';
 import { NumberField } from '@/components/tributario/calculadora/NumberField';
+
 import { ResultadoBreakdown } from '@/components/tributario/calculadora/ResultadoBreakdown';
 import { MemoriaCalculo } from '@/components/tributario/calculadora/MemoriaCalculo';
 import { ComparativoRegimes } from '@/components/tributario/calculadora/ComparativoRegimes';
@@ -39,7 +42,10 @@ type CampoInput = {
   creditoPisCofinsFretes: number;
   irrfSofrido: number;
   csrfSofrido: number;
-  atividadePresumido: 'comercio' | 'industria' | 'servicos_geral' | 'transporte_cargas' | 'servicos_hospitalares';
+  atividadePresumido: AtividadePresumido;
+  /** CNAE preponderante — quando informado, deriva a atividade automaticamente. */
+  cnaePreponderante: string;
+
   anexoSimples: 'I' | 'II' | 'III' | 'IV' | 'V';
   rbt12: number;
   folha12m: number;
@@ -47,6 +53,18 @@ type CampoInput = {
   categoriaSeletivo: 'nenhum' | 'bebidas_alcoolicas' | 'fumo' | 'veiculos' | 'bens_luxo';
   reducaoReforma: number;
 };
+
+const ROTULO_ATIVIDADE: Record<AtividadePresumido, string> = {
+  comercio: 'Comércio (8% IRPJ / 12% CSLL)',
+  industria: 'Indústria (8% / 12%)',
+  servicos_geral: 'Serviços em geral (32%)',
+  servicos_profissionais: 'Serviços profissionais (32%)',
+  transporte_cargas: 'Transporte de cargas (8% / 12%)',
+  transporte_passageiros: 'Transporte de passageiros (16% / 12%)',
+  servicos_hospitalares: 'Serviços hospitalares (8% / 12%)',
+};
+
+
 
 const DEFAULT_INPUT: CampoInput = {
   receitaBrutaAnual: 3_000_000,
@@ -69,6 +87,8 @@ const DEFAULT_INPUT: CampoInput = {
   irrfSofrido: 0,
   csrfSofrido: 0,
   atividadePresumido: 'comercio',
+  cnaePreponderante: '',
+
   anexoSimples: 'I',
   rbt12: 3_000_000,
   folha12m: 400_000,
@@ -77,7 +97,7 @@ const DEFAULT_INPUT: CampoInput = {
   reducaoReforma: 0,
 };
 
-function buildInput(f: CampoInput): InputCalculadora {
+function buildInput(f: CampoInput, atividadeDerivada?: AtividadePresumido): InputCalculadora {
   const receitas = { receitaBrutaAnual: f.receitaBrutaAnual, percentualServicos: f.percentualServicos };
   const folha = { folhaAnual: f.folhaAnual, aliquotaRat: f.aliquotaRat, aliquotaTerceiros: f.aliquotaTerceiros };
   const estadualMunicipal = { aliquotaIcms: f.aliquotaIcms, aliquotaIss: f.aliquotaIss, creditoIcmsCompras: f.creditoIcmsCompras };
@@ -99,7 +119,7 @@ function buildInput(f: CampoInput): InputCalculadora {
     },
     lucroPresumido: {
       receitas, folha, estadualMunicipal, retencoes,
-      atividade: f.atividadePresumido,
+      atividade: atividadeDerivada ?? f.atividadePresumido,
     },
     simples: {
       receitas, anexo: f.anexoSimples, rbt12: f.rbt12, folha12m: f.folha12m,
@@ -143,7 +163,20 @@ export default function CalculadoraTributaria() {
 
   const update = <K extends keyof CampoInput>(k: K, v: CampoInput[K]) => setForm((p) => ({ ...p, [k]: v }));
 
-  const resultado = useMemo(() => calcularTodosRegimes(buildInput(form)), [form]);
+  /**
+   * Quando o CNAE preponderante é válido, a atividade presumida é derivada dele
+   * (Lei 9.249/95, arts. 15 e 20), eliminando erro de seleção manual.
+   */
+  const atividadeDerivada = useMemo(
+    () => (normalizarCnae(form.cnaePreponderante) ? derivarAtividadePresumido(form.cnaePreponderante) : null),
+    [form.cnaePreponderante],
+  );
+
+  const resultado = useMemo(
+    () => calcularTodosRegimes(buildInput(form, atividadeDerivada?.atividade)),
+    [form, atividadeDerivada],
+  );
+
   const resultadoAtivo: ResultadoRegime | undefined = resultado.cenarios.find(
     (c) => c.regime === regimeSelecionado,
   ) ?? resultado.cenarios[0];
@@ -315,19 +348,47 @@ export default function CalculadoraTributaria() {
 
                 <TabsContent value="lucro_presumido" className="mt-0 space-y-3">
                   <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground" htmlFor="cnae-presumido">
+                      CNAE preponderante
+                    </Label>
+                    <Input
+                      id="cnae-presumido"
+                      inputMode="numeric"
+                      placeholder="ex.: 4930-2/02"
+                      value={form.cnaePreponderante}
+                      onChange={(e) => update('cnaePreponderante', e.target.value)}
+                    />
+                    {atividadeDerivada && (
+                      <p className="text-xs text-muted-foreground">
+                        Derivado: <span className="text-foreground">{ROTULO_ATIVIDADE[atividadeDerivada.atividade]}</span>
+                        {' · '}
+                        {(atividadeDerivada.presuncaoIrpj * 100).toFixed(0)}% IRPJ /{' '}
+                        {(atividadeDerivada.presuncaoCsll * 100).toFixed(0)}% CSLL — {atividadeDerivada.fundamento}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Atividade</Label>
-                    <Select value={form.atividadePresumido} onValueChange={(v) => update('atividadePresumido', v as CampoInput['atividadePresumido'])}>
+                    <Select
+                      value={form.atividadePresumido}
+                      onValueChange={(v) => update('atividadePresumido', v as CampoInput['atividadePresumido'])}
+                      disabled={Boolean(atividadeDerivada)}
+                    >
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="comercio">Comércio (8% IRPJ / 12% CSLL)</SelectItem>
-                        <SelectItem value="industria">Indústria (8% / 12%)</SelectItem>
-                        <SelectItem value="servicos_geral">Serviços em geral (32%)</SelectItem>
-                        <SelectItem value="transporte_cargas">Transporte de cargas (8% / 12%)</SelectItem>
-                        <SelectItem value="servicos_hospitalares">Serviços hospitalares (8% / 12%)</SelectItem>
+                        {(Object.keys(ROTULO_ATIVIDADE) as Array<keyof typeof ROTULO_ATIVIDADE>).map((k) => (
+                          <SelectItem key={k} value={k}>{ROTULO_ATIVIDADE[k]}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
+                    {atividadeDerivada && (
+                      <p className="text-xs text-muted-foreground">
+                        Limpe o CNAE para escolher a atividade manualmente.
+                      </p>
+                    )}
                   </div>
                 </TabsContent>
+
 
                 <TabsContent value="simples_nacional" className="mt-0 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
