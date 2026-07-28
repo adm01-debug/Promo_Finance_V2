@@ -282,6 +282,9 @@ export default function AdminTelemetriaPage() {
 
         <CatalogosTributariosHistoryPanel />
 
+        {/* Cobertura de dados fiscais por UF */}
+        <CoberturaFiscalUFPanel />
+
 
 
 
