@@ -315,19 +315,47 @@ export default function CalculadoraTributaria() {
 
                 <TabsContent value="lucro_presumido" className="mt-0 space-y-3">
                   <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground" htmlFor="cnae-presumido">
+                      CNAE preponderante
+                    </Label>
+                    <Input
+                      id="cnae-presumido"
+                      inputMode="numeric"
+                      placeholder="ex.: 4930-2/02"
+                      value={form.cnaePreponderante}
+                      onChange={(e) => update('cnaePreponderante', e.target.value)}
+                    />
+                    {atividadeDerivada && (
+                      <p className="text-xs text-muted-foreground">
+                        Derivado: <span className="text-foreground">{ROTULO_ATIVIDADE[atividadeDerivada.atividade]}</span>
+                        {' · '}
+                        {(atividadeDerivada.presuncaoIrpj * 100).toFixed(0)}% IRPJ /{' '}
+                        {(atividadeDerivada.presuncaoCsll * 100).toFixed(0)}% CSLL — {atividadeDerivada.fundamento}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Atividade</Label>
-                    <Select value={form.atividadePresumido} onValueChange={(v) => update('atividadePresumido', v as CampoInput['atividadePresumido'])}>
+                    <Select
+                      value={form.atividadePresumido}
+                      onValueChange={(v) => update('atividadePresumido', v as CampoInput['atividadePresumido'])}
+                      disabled={Boolean(atividadeDerivada)}
+                    >
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="comercio">Comércio (8% IRPJ / 12% CSLL)</SelectItem>
-                        <SelectItem value="industria">Indústria (8% / 12%)</SelectItem>
-                        <SelectItem value="servicos_geral">Serviços em geral (32%)</SelectItem>
-                        <SelectItem value="transporte_cargas">Transporte de cargas (8% / 12%)</SelectItem>
-                        <SelectItem value="servicos_hospitalares">Serviços hospitalares (8% / 12%)</SelectItem>
+                        {(Object.keys(ROTULO_ATIVIDADE) as Array<keyof typeof ROTULO_ATIVIDADE>).map((k) => (
+                          <SelectItem key={k} value={k}>{ROTULO_ATIVIDADE[k]}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
+                    {atividadeDerivada && (
+                      <p className="text-xs text-muted-foreground">
+                        Limpe o CNAE para escolher a atividade manualmente.
+                      </p>
+                    )}
                   </div>
                 </TabsContent>
+
 
                 <TabsContent value="simples_nacional" className="mt-0 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
