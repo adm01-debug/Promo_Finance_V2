@@ -206,7 +206,7 @@ export function PerformanceAlertsPanel() {
                   <tr key={`${r.source}-${r.alert_key}-${idx}`} className="border-b border-muted/40">
                     <td className="py-2">{severityBadge(r.severity)}</td>
                     <td className="py-2 text-muted-foreground">
-                      {r.source === "pg_stat_statements" ? "pg_stat" : "telemetry"}
+                      {sourceLabel(r.source)}
                     </td>
                     <td className="py-2 max-w-md">
                       <div className="truncate" title={r.reason || ""}>
@@ -222,10 +222,10 @@ export function PerformanceAlertsPanel() {
                       ) : null}
                     </td>
                     <td className="py-2 text-right tabular-nums">
-                      {r.current_value != null ? `${Math.round(r.current_value)}ms` : "—"}
+                      {formatMetric(r.source, r.alert_key, r.current_value)}
                     </td>
                     <td className="py-2 text-right tabular-nums text-muted-foreground">
-                      {r.baseline_value != null ? `${Math.round(r.baseline_value)}ms` : "—"}
+                      {formatMetric(r.source, r.alert_key, r.baseline_value)}
                     </td>
                     <td className="py-2 text-right tabular-nums">
                       {r.ratio != null ? `${Number(r.ratio).toFixed(2)}x` : "—"}
