@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
     if (!authHeader) return new Response('Unauthorized', { status: 401, headers: corsHeaders });
 
     const raw = await req.json();
-    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { z } = await import('../_shared/zod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
     const Schema = z.object({
       faturamentoAnual: z.number().nonnegative(),

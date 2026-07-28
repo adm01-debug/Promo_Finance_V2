@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
 
   try {
     const raw = await req.json();
-    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { z } = await import('../_shared/zod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
     const AlertShape = z.record(z.any());
     const Schema = z.union([z.object({ alert: AlertShape }).passthrough(), AlertShape]);

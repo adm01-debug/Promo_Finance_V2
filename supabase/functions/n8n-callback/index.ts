@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     }
 
     const raw = await req.json().catch(() => null);
-    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+    const { z } = await import('../_shared/zod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
     const Schema = z.object({
       action: z.enum(['create_task', 'update_driver_approval', 'create_alert', 'log']),
