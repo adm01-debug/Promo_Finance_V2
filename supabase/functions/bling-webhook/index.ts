@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { BlingWebhookSchema, corsHeaders, validatePayload, createErrorResponse, isWebhookProcessed } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { authenticateWebhook } from '../_shared/webhook-auth.ts';
 
 
 export const handler = async (req: Request) => {
