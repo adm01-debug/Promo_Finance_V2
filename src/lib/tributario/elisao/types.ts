@@ -11,7 +11,18 @@ export interface ContextoEmpresa {
   receita_exportacao?: number;
   receita_importacao?: number;
   patrimonio_liquido?: number;
+  /**
+   * Base de cálculo do JCP restrita pela Lei 14.789/2023 art. 14: capital social
+   * integralizado, reservas de capital de ágio, reservas de lucros (exceto incentivos),
+   * ações em tesouraria e lucros/prejuízos acumulados. Quando ausente, usa o PL contábil.
+   */
+  patrimonio_liquido_base_jcp?: number;
   lucro_liquido?: number;
+  /** Saldo de lucros acumulados em balanço (conta do PL). */
+  lucros_acumulados?: number;
+  /** Saldo de reservas de lucros em balanço (conta do PL). */
+  reservas_lucros?: number;
+
   folha_total_anual?: number;
   despesas_pd?: number;
   beneficio_icms_anual?: number;
