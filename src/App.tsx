@@ -84,6 +84,7 @@ const AdminEdgeHealth = lazy(() => import('./pages/AdminEdgeHealth'));
 const AdminSystemHealth = lazy(() => import('./pages/AdminSystemHealth'));
 const SRECommandCenter = lazy(() => import('./pages/admin/SRECommandCenter'));
 const AdminBloatMonitor = lazy(() => import('./pages/admin/AdminBloatMonitor'));
+const AdminErrosFrontend = lazy(() => import('./pages/admin/AdminErrosFrontend'));
 const CentroPrivacidadeLGPD = lazy(() => import('./pages/CentroPrivacidadeLGPD'));
 const FiltrosSalvos = lazy(() => import('./pages/configuracoes/FiltrosSalvos'));
 const MinhasPreferencias = lazy(() => import('./pages/configuracoes/MinhasPreferencias'));
