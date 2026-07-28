@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.frontend_error_logs_sanitize() FROM PUBLIC, anon, authenticated;
