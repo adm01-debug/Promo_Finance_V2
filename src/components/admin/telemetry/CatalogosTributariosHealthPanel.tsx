@@ -24,6 +24,10 @@ interface CatalogoHealth {
   criticos: number;
   avisos: number;
   infos: number;
+  /** Alertas tributários encerrados automaticamente nas últimas 24h. */
+  auto_resolvidos_24h: number;
+  /** Alertas tributários ainda em aberto. */
+  alertas_abertos: number;
   saudavel: boolean;
   achados: AchadoCatalogo[];
 }
@@ -117,10 +121,22 @@ export function CatalogosTributariosHealthPanel() {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div className="rounded-lg border border-border bg-card p-3">
+                <p className="text-xs text-muted-foreground">Alertas em aberto</p>
+                <p className="text-2xl font-semibold text-foreground">{data?.alertas_abertos ?? 0}</p>
+              </div>
+              <div className="rounded-lg border border-success/30 bg-success/5 p-3">
+                <p className="text-xs text-muted-foreground">Auto-resolvidos (24h)</p>
+                <p className="text-2xl font-semibold text-success">{data?.auto_resolvidos_24h ?? 0}</p>
+              </div>
+            </div>
+
             <p className="text-xs text-muted-foreground">
               Última gravação de alerta fiscal: {formatarData(data?.ultima_verificacao ?? null)} · Verificado em{" "}
               {formatarData(data?.gerado_em ?? null)}
             </p>
+
 
             {achados.length === 0 ? (
               <div className="flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 p-3 text-sm text-success">
