@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { logger } from '@/lib/logger';
 import { SLOPanel } from '@/components/admin/SLOPanel';
+import { FiscalHealthBadge } from '@/components/admin/FiscalHealthBadge';
 
 // Consolida em uma única visão SRE (SLO, Edge, Telemetria) — item #17 do plano.
 const AdminSystemHealth = lazy(() => import('@/pages/AdminSystemHealth'));
@@ -84,14 +85,17 @@ export default function SRECommandCenter() {
   return (
     <MainLayout>
       <div className="p-6 space-y-6">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold flex items-center gap-2">
-            <Gauge className="h-6 w-6 text-primary" aria-hidden />
-            SRE Command Center
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Visão unificada de confiabilidade — {meta.description}.
-          </p>
+        <header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold flex items-center gap-2">
+              <Gauge className="h-6 w-6 text-primary" aria-hidden />
+              SRE Command Center
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Visão unificada de confiabilidade — {meta.description}.
+            </p>
+          </div>
+          <FiscalHealthBadge />
         </header>
 
         <Tabs value={tab} onValueChange={handleTabChange} className="space-y-4">
