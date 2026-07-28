@@ -19819,6 +19819,7 @@ export type Database = {
           cmd: string
           policy_name: string
           tabela: string
+          vinculo: string
         }[]
       }
       generate_reconciliation_suggestions: {
