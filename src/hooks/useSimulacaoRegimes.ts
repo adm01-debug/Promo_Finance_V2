@@ -20,6 +20,7 @@ import {
 } from '@/lib/tributario/diagnostico-parametros';
 import {
   normalizarParametrosSnapshot as normalizarParametros,
+  mesclarSnapshotParametros,
   normalizarAjustesAplicados as normalizarAjustes,
   resumirAuditoriaHistorico,
   type ResumoAuditoriaHistorico,
@@ -282,7 +283,9 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
       toast.error('Snapshot sem parâmetros válidos — não é possível restaurar.');
       return;
     }
-    setParametros((atual) => ({ ...atual, ...parametrosSnapshot }));
+    // Reprodutibilidade: campos avançados ausentes no snapshot são removidos do
+    // estado corrente, senão vazariam para dentro do cenário histórico.
+    setParametros((atual) => mesclarSnapshotParametros(atual, parametrosSnapshot));
     const regimeSnapshot = REGIMES_VALIDOS.find((r) => r === item.regime_atual);
     setRegimeAtual(regimeSnapshot);
     setServerResult(null);

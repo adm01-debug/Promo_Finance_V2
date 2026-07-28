@@ -129,6 +129,58 @@ export function normalizarParametrosSnapshot(
   return saida as Partial<ParametrosSimulacao>;
 }
 
+/**
+ * Campos OPCIONAIS do snapshot. Ao restaurar, qualquer um deles que não conste
+ * no registro salvo precisa ser REMOVIDO do estado corrente — caso contrário
+ * parâmetros avançados digitados depois (lucro por trimestre, prejuízos,
+ * periodicidade, presunções) vazariam para dentro do cenário histórico e o
+ * recálculo deixaria de reproduzir o snapshot.
+ */
+const CAMPOS_OPCIONAIS_SNAPSHOT = [
+  'percentualRevenda',
+  'percentualIndustria',
+  'percentualExportacao',
+  'comprasComCredito',
+  'comprasComCreditoICMS',
+  'despesasOperacionais',
+  'aliquotaICMS',
+  'aliquotaISS',
+  'aliquotaRAT',
+  'aliquotaTerceiros',
+  'presuncaoIrpjServicos',
+  'presuncaoCsllServicos',
+  'sublimiteEstadual',
+  'issRetidoFonte',
+  'prejuizoFiscalAcumulado',
+  'baseNegativaCsllAcumulada',
+  'periodicidadeApuracao',
+  'lucroTrimestral',
+  'faturamentoMensal',
+  'folhaMensal',
+  'uf',
+  'atividadePrincipal',
+  'cnaePrincipal',
+] as const satisfies ReadonlyArray<keyof ParametrosSimulacao>;
+
+/**
+ * Mescla um snapshot normalizado sobre os parâmetros correntes de forma
+ * REPRODUTÍVEL: os campos obrigatórios do estado atual são preservados como
+ * fallback, mas todo campo opcional ausente no snapshot é zerado.
+ *
+ * Função pura — não muta `atual`.
+ */
+export function mesclarSnapshotParametros(
+  atual: ParametrosSimulacao,
+  snapshot: Partial<ParametrosSimulacao>,
+): ParametrosSimulacao {
+  const mesclado: Record<string, unknown> = { ...atual, ...snapshot };
+  for (const campo of CAMPOS_OPCIONAIS_SNAPSHOT) {
+    if (snapshot[campo] === undefined) delete mesclado[campo];
+  }
+  return mesclado as unknown as ParametrosSimulacao;
+}
+
+
 
 /** Filtra apenas os itens que satisfazem integralmente o contrato de ajuste. */
 export function normalizarAjustesAplicados(bruto: unknown): AjusteParametro[] {
