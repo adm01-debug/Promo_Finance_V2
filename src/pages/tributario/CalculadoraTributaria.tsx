@@ -97,7 +97,7 @@ const DEFAULT_INPUT: CampoInput = {
   reducaoReforma: 0,
 };
 
-function buildInput(f: CampoInput): InputCalculadora {
+function buildInput(f: CampoInput, atividadeDerivada?: AtividadePresumido): InputCalculadora {
   const receitas = { receitaBrutaAnual: f.receitaBrutaAnual, percentualServicos: f.percentualServicos };
   const folha = { folhaAnual: f.folhaAnual, aliquotaRat: f.aliquotaRat, aliquotaTerceiros: f.aliquotaTerceiros };
   const estadualMunicipal = { aliquotaIcms: f.aliquotaIcms, aliquotaIss: f.aliquotaIss, creditoIcmsCompras: f.creditoIcmsCompras };
