@@ -15232,22 +15232,17 @@ export type Database = {
         }
         Returns: undefined
       }
-      registrar_evento_receber:
-        | {
-            Args: {
-              p_conta_id: string
-              p_detalhes?: Json
-              p_evento?: string
-              p_mensagem?: string
-              p_metadata?: Json
-              p_tipo?: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
-            Returns: string
-          }
+      registrar_evento_receber: {
+        Args: {
+          p_conta_id: string
+          p_detalhes?: Json
+          p_evento?: string
+          p_mensagem?: string
+          p_metadata?: Json
+          p_tipo?: string
+        }
+        Returns: undefined
+      }
       reprocess_dlq: {
         Args: { p_dlq_id: string; p_notes?: string }
         Returns: string
