@@ -9,5 +9,6 @@ export * from './simular-presumido';
 export * from './simular-real';
 export * from './decidir-regime';
 export * from './irpfm';
+export * from './pf-vinculada';
 export * from './projecao-reforma';
 export * from './versao';
