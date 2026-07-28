@@ -1,4 +1,4 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
+// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 // HOOK: CRUD Faturamento + Folha mensal
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

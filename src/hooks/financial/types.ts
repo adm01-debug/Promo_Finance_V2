@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado).
 import type { Tables } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;

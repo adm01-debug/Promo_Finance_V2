@@ -1,4 +1,4 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
+// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
