@@ -822,6 +822,57 @@ BEGIN
   RAISE NOTICE 'PASS: superfície de privilégio de anon restrita à allowlist (append-only de telemetria pré-login).';
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- GATE #22 — trilhas de evidência à prova de adulteração (Gap #34)
+-- ----------------------------------------------------------------------------
+-- Contexto: uma trilha de auditoria só tem valor probatório se o principal que
+-- originou o fato NÃO puder alterá-la ou apagá-la. Policies `FOR ALL` escopadas
+-- por dono/empresa concedem exatamente esse poder — o autor de uma baixa
+-- indevida apaga o próprio rastro. Este gate mantém as tabelas de evidência
+-- append-only para o cliente: UPDATE nunca; DELETE só com prova de papel
+-- administrativo (expurgo legítimo/retenção).
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  -- Tabelas cujo conteúdo é EVIDÊNCIA de uma ação financeira ou fiscal.
+  v_evidence text[] := ARRAY[
+    'elisao_creditos_auditoria',
+    'logs_baixa_automatica',
+    'logs_conciliacao_retroativa',
+    'asaas_audit_trail',
+    'overlay_rejeicoes_auditoria',
+    'auditoria_financeira',
+    'auditoria_tributaria'
+  ];
+  v_txt text;
+BEGIN
+  SELECT string_agg(DISTINCT format('%s/%s(%s)', c.relname, p.polname, p.polcmd), ', ')
+    INTO v_txt
+  FROM pg_policy p
+  JOIN pg_class c ON c.oid = p.polrelid
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'public'
+    AND c.relname = ANY(v_evidence)
+    AND p.polpermissive
+    AND p.polcmd IN ('u', 'd', '*')
+    AND EXISTS (
+      SELECT 1 FROM unnest(p.polroles) r
+      WHERE pg_get_userbyid(r) IN ('authenticated', 'public', 'anon')
+    )
+    AND (
+      -- UPDATE e FOR ALL nunca são aceitáveis: mutação de evidência.
+      p.polcmd IN ('u', '*')
+      -- DELETE só passa se exigir papel administrativo comprovado.
+      OR coalesce(pg_get_expr(p.polqual, p.polrelid), '') NOT LIKE '%has_role%'
+    );
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: trilha de evidência mutável pelo próprio autor: %', v_txt;
+  END IF;
+
+  RAISE NOTICE 'PASS: trilhas de evidência append-only; expurgo apenas com papel administrativo.';
+END $$;
+
 ROLLBACK;
 
 
