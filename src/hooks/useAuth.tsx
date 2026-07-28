@@ -187,10 +187,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          safeTimeout(() => {
+          safeTimeout(async () => {
+            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+              await provisionarUsuario();
+            }
+            if (!mounted) return;
             fetchProfile(session.user.id);
             fetchRoleForEmpresa(session.user.id, getCurrentEmpresaId());
           });
+
 
           if (event === 'SIGNED_IN') {
             const provider = (session.user.app_metadata as Record<string, unknown> | undefined)?.provider as string | undefined;
