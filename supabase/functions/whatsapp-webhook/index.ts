@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { WhatsappWebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts'
+import { authenticateWebhook } from '../_shared/webhook-auth.ts'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -9,8 +10,24 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
-    const rawBody = await req.json()
-    console.log("[whatsapp-webhook] Event received:", JSON.stringify(rawBody))
+    // Sem esta guarda qualquer pessoa poderia marcar cobranças como entregues
+    // ou lidas e injetar registros na trilha de auditoria financeira.
+    const rawText = await req.text()
+    const auth = await authenticateWebhook(supabase, {
+      provider: 'whatsapp',
+      req,
+      rawBody: rawText,
+      corsHeaders,
+    })
+    if (!auth.ok) return auth.response
+
+    let rawBody: unknown
+    try {
+      rawBody = JSON.parse(rawText)
+    } catch {
+      return createErrorResponse('Corpo inválido: JSON malformado', 400)
+    }
+    console.log('[whatsapp-webhook] Event received (auth:', auth.mode, ')')
 
     const validation = validatePayload(WhatsappWebhookSchema, rawBody, "whatsapp-webhook")
     if (!validation.success) {

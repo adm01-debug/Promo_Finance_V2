@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { Bitrix24WebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts'
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
+import { authenticateWebhook } from '../_shared/webhook-auth.ts'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -21,8 +22,23 @@ Deno.serve(async (req) => {
     })
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders)
 
-    const rawBody = await req.json()
-    console.log("[bitrix24-webhook] Event received:", JSON.stringify(rawBody))
+    // Autenticação do provedor antes de qualquer escrita com `service_role`.
+    const rawText = await req.text()
+    const auth = await authenticateWebhook(supabase, {
+      provider: 'bitrix24',
+      req,
+      rawBody: rawText,
+      corsHeaders,
+    })
+    if (!auth.ok) return auth.response
+
+    let rawBody: unknown
+    try {
+      rawBody = JSON.parse(rawText)
+    } catch {
+      return createErrorResponse('Corpo inválido: JSON malformado', 400)
+    }
+    console.log('[bitrix24-webhook] Event received (auth:', auth.mode, ')')
 
     const validation = validatePayload(Bitrix24WebhookSchema, rawBody, "bitrix24-webhook")
     if (!validation.success) {
