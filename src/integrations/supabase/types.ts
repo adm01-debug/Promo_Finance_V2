@@ -8464,6 +8464,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8474,6 +8475,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8484,6 +8486,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8497,6 +8500,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8507,6 +8511,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8517,6 +8522,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8530,6 +8536,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8540,6 +8547,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8550,6 +8558,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8563,6 +8572,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8573,6 +8583,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8583,6 +8594,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8596,6 +8608,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8606,6 +8619,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8616,6 +8630,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8629,6 +8644,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8639,6 +8655,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8649,6 +8666,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8662,6 +8680,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8672,6 +8691,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8682,6 +8702,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8695,6 +8716,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8705,6 +8727,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8715,6 +8738,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8728,6 +8752,7 @@ export type Database = {
           error_stack: string | null
           id: string
           metadata: Json | null
+          severity: string
           url: string | null
           user_agent: string | null
           user_id: string | null
@@ -8738,6 +8763,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -8748,6 +8774,7 @@ export type Database = {
           error_stack?: string | null
           id?: string
           metadata?: Json | null
+          severity?: string
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
