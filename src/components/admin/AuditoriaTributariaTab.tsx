@@ -46,7 +46,7 @@ export function AuditoriaTributariaTab() {
     queryKey: ['auditoria-tributaria-recente'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_auditoria_tributaria_recente' as never)
+        .from('vw_auditoria_tributaria_recente')
         .select('*');
       if (error) throw error;
       return (data ?? []) as unknown as AuditRow[];

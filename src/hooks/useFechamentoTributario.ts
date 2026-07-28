@@ -31,7 +31,7 @@ export function useFechamentoTributario(empresaId?: string, ano?: number, mes?: 
     queryFn: async () => {
       if (!empresaId || !ano || !mes) return null;
       const { data, error } = await supabase
-        .from("fechamentos_tributarios" as never)
+        .from("fechamentos_tributarios")
         .select("*")
         .eq("empresa_id", empresaId)
         .eq("ano", ano)
