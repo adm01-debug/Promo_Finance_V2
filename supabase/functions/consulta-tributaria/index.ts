@@ -13,6 +13,15 @@
 // disponível e sinalizamos a estratégia usada, para o motor tributário decidir.
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://esm.sh/zod@3.23.8';
+import {
+  classificarCenarioST,
+  escolherAliquotaInterna,
+  prefixosHierarquicos,
+  somenteDigitos,
+  vigentes,
+  type MatchInfo,
+} from './helpers.ts';
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -43,15 +52,6 @@ const ParamsSchema = z.object({
 });
 
 type Params = z.infer<typeof ParamsSchema>;
-
-import {
-  classificarCenarioST,
-  escolherAliquotaInterna,
-  prefixosHierarquicos,
-  somenteDigitos,
-  vigentes,
-  type MatchInfo,
-} from './helpers.ts';
 
 
 function json(payload: unknown, status = 200): Response {
