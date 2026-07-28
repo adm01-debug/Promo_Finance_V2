@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { CalculoIvaSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { mensagemErro } from "../_shared/erros.ts";
 
 
 // Alíquotas de transição da Reforma Tributária (P7)
@@ -53,7 +54,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
+    return new Response(JSON.stringify({ error: mensagemErro(e) }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -111,8 +112,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    logger.error('erro_projecao', { error: err.message });
+    logger.error('erro_projecao', { error: mensagemErro(err) });
     await logger.flush();
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
+    return new Response(JSON.stringify({ error: mensagemErro(err) }), { status: 500, headers: corsHeaders });
   }
 });

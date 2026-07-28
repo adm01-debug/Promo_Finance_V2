@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { corsHeaders } from '../_shared/validation.ts'
+import { mensagemErro } from '../_shared/erros.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -28,7 +29,7 @@ Deno.serve(async (req) => {
     health.services.database.status = error ? 'degraded' : 'operational'
   } catch (err) {
     health.services.database.status = 'outage'
-    health.services.database.error = err.message
+    health.services.database.error = mensagemErro(err)
   }
 
   // 2. Check External APIs (Quick ping)
