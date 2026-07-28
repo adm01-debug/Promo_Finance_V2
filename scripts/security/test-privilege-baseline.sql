@@ -774,10 +774,13 @@ DECLARE
   --   do login (boot da app, tela de auth). É append-only: não existe policy de
   --   SELECT para `anon`, e o trigger `frontend_error_logs_sanitize` higieniza
   --   o payload antes da gravação.
+  --   O GRANT é por COLUNA (nunca de tabela): `id` e `created_at` continuam
+  --   sendo carimbados pelo servidor — ver gate #10.
   v_allow text[] := ARRAY['frontend_error_logs:INSERT'];
   v_txt text;
 BEGIN
-  -- 21a
+  -- 21a — cobre tanto GRANT de tabela quanto GRANT por coluna
+  --       (has_table_privilege sozinho é cego para grants column-level).
   SELECT string_agg(DISTINCT format('%s:%s', c.relname, g.privilege_type), ', ')
     INTO v_txt
   FROM pg_class c
@@ -787,7 +790,11 @@ BEGIN
   ) AS g(privilege_type)
   WHERE n.nspname = 'public'
     AND c.relkind IN ('r','p','v','m','f')
-    AND has_table_privilege('anon', c.oid, g.privilege_type)
+    AND (
+      has_table_privilege('anon', c.oid, g.privilege_type)
+      OR (g.privilege_type IN ('SELECT','INSERT','UPDATE','REFERENCES')
+          AND has_any_column_privilege('anon', c.oid, g.privilege_type))
+    )
     AND NOT (format('%s:%s', c.relname, g.privilege_type) = ANY(v_allow));
 
   IF v_txt IS NOT NULL THEN
