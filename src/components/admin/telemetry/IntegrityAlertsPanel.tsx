@@ -195,6 +195,7 @@ export function IntegrityAlertsPanel() {
                         <Badge
                           variant="outline"
                           className="text-[10px] border-green-500/40 text-green-600"
+                          title={r.resolved_reason ?? "Encerrado"}
                         >
                           <CheckCircle2 className="h-3 w-3 mr-1" /> Encerrado
                         </Badge>
