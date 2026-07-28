@@ -15,6 +15,7 @@ import { PerformanceAlertsWeeklyTrend } from "@/components/admin/telemetry/Perfo
 import { IntegrityAlertsPanel } from "@/components/admin/telemetry/IntegrityAlertsPanel";
 import { RetentionHistoryPanel } from "@/components/admin/telemetry/RetentionHistoryPanel";
 import { CatalogosTributariosHealthPanel } from "@/components/admin/telemetry/CatalogosTributariosHealthPanel";
+import { CatalogosTributariosHistoryPanel } from "@/components/admin/telemetry/CatalogosTributariosHistoryPanel";
 
 
 
@@ -278,6 +279,8 @@ export default function AdminTelemetriaPage() {
 
         {/* Saúde dos catálogos tributários */}
         <CatalogosTributariosHealthPanel />
+
+        <CatalogosTributariosHistoryPanel />
 
 
 
