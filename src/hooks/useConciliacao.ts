@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
 import type { TablesInsert, Tables, Json } from '@/integrations/supabase/types';
-import { registrarEventoFinanceiroOrThrow, registrarEventoFinanceiro } from '@/lib/financeiro/registrarEvento';
+import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
