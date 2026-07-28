@@ -17,7 +17,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(21);
+SELECT plan(18);
 
 -- ---------------------------------------------------------------------------
 -- 1) Após consolidação (2026-07-11), existe apenas 1 versão canônica
