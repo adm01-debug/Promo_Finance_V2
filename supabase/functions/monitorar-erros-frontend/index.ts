@@ -9,6 +9,7 @@
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders } from "../_shared/validation.ts";
+import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 interface AlertaErro {
   assinatura: string;
@@ -91,6 +92,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // [auth-guard] Worker interno de agregacao de erros: exige service role ou x-cron-secret.
+  const guard = await exigirChamadaInterna(req);
+  if (!guard.ok) return guard.resposta;
+
 
   const jsonResponse = (body: unknown, status = 200) =>
     new Response(JSON.stringify(body), {
