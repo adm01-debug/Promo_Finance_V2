@@ -50,8 +50,15 @@ export function calcularLucroPresumido(input: InputLucroPresumido): ResultadoReg
   const receitaMercadorias = receitaLiquida * percRevenda;
 
   const [presIrpjPad, presCsllPad] = PRESUNCAO[input.atividade];
-  const presIrpjServ = input.aliquotaIrpjPresuncao ?? 0.32;
-  const presCsllServ = input.aliquotaCsllPresuncao ?? 0.32;
+  // A parcela de serviços só cai na presunção geral de 32% quando a atividade
+  // preponderante é mercantil (comércio/indústria). Atividades de serviço com
+  // percentual próprio (transporte de cargas 8%/12%, passageiros 16%/12%,
+  // hospitalares 8%/12% — Lei 9.249/95, arts. 15 e 20) mantêm o seu percentual
+  // também sobre a receita de serviços, sob pena de superestimar IRPJ/CSLL.
+  const ATIVIDADE_MERCANTIL: readonly AtividadePresumido[] = ['comercio', 'industria'];
+  const ehMercantil = ATIVIDADE_MERCANTIL.includes(input.atividade);
+  const presIrpjServ = input.aliquotaIrpjPresuncao ?? (ehMercantil ? 0.32 : presIrpjPad);
+  const presCsllServ = input.aliquotaCsllPresuncao ?? (ehMercantil ? 0.32 : presCsllPad);
 
   const baseIrpj = receitaMercadorias * presIrpjPad + receitaServicos * presIrpjServ +
     (input.ganhoCapital ?? 0) + (input.rendimentosAplicacoes ?? 0);
@@ -59,7 +66,8 @@ export function calcularLucroPresumido(input: InputLucroPresumido): ResultadoReg
     (input.ganhoCapital ?? 0) + (input.rendimentosAplicacoes ?? 0);
 
   push(memoria, { grupo: 'IRPJ', descricao: `Base IRPJ presumida (${(presIrpjPad * 100).toFixed(0)}% merc / ${(presIrpjServ * 100).toFixed(0)}% serv)`, valor: baseIrpj });
-  push(memoria, { grupo: 'CSLL', descricao: `Base CSLL presumida`, valor: baseCsll });
+  push(memoria, { grupo: 'CSLL', descricao: `Base CSLL presumida (${(presCsllPad * 100).toFixed(0)}% merc / ${(presCsllServ * 100).toFixed(0)}% serv)`, valor: baseCsll });
+
 
   const irpjBase = baseIrpj * 0.15;
   // Adicional considerando trimestre (mais realista): base_anual / 4 vs 60k
