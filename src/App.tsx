@@ -280,6 +280,7 @@ function AppRoutes() {
             <Route path="/tributario/retencoes" element={<ProtectedRoute><RetencoesFontePage /></ProtectedRoute>} />
             <Route path="/tributario/fechamento-mensal" element={<ProtectedRoute><FechamentoMensalPage /></ProtectedRoute>} />
             <Route path="/tributario/glossario" element={<ProtectedRoute><GlossarioTributario /></ProtectedRoute>} />
+            <Route path="/tributario/consulta-rapida" element={<ProtectedRoute><ConsultaRapidaFiscal /></ProtectedRoute>} />
             <Route path="/tributario/monofasico" element={<ProtectedRoute><MonofasicoPage /></ProtectedRoute>} />
             <Route path="/tributario/folha-encargos" element={<ProtectedRoute><FolhaEncargosPage /></ProtectedRoute>} />
             <Route path="/tributario/icms-st" element={<ProtectedRoute><IcmsStDifalPage /></ProtectedRoute>} />
