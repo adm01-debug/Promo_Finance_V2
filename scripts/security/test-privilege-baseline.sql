@@ -752,6 +752,66 @@ BEGIN
 
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- GATE #21 — superfície de privilégio do papel `anon` (Gap #33)
+-- ----------------------------------------------------------------------------
+-- Contexto: RLS default-deny já impede a leitura, mas privilégio de tabela
+-- aberto a `anon` remove a segunda barreira. Bastaria uma policy futura
+-- `TO public` / `USING (true)`, ou uma tabela criada sem RLS, para o conteúdo
+-- virar público no mesmo instante. Este gate mantém `anon` em superfície
+-- mínima e força justificativa explícita para qualquer exceção.
+--
+-- 21a) nenhum objeto de `public` acessível a `anon` fora da allowlist.
+-- 21b) os DEFAULT PRIVILEGES não podem reintroduzir `anon` em objetos futuros.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  -- Allowlist: (objeto, privilégio) legitimamente exposto a visitante anônimo.
+  -- Só entra aqui o que é comprovadamente necessário ANTES do login e cuja
+  -- exposição não permite leitura de dado de inquilino.
+  --
+  --   frontend_error_logs / INSERT — telemetria de erro de JS que ocorre antes
+  --   do login (boot da app, tela de auth). É append-only: não existe policy de
+  --   SELECT para `anon`, e o trigger `frontend_error_logs_sanitize` higieniza
+  --   o payload antes da gravação.
+  v_allow text[] := ARRAY['frontend_error_logs:INSERT'];
+  v_txt text;
+BEGIN
+  -- 21a
+  SELECT string_agg(DISTINCT format('%s:%s', c.relname, g.privilege_type), ', ')
+    INTO v_txt
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  CROSS JOIN LATERAL (
+    SELECT unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'])
+  ) AS g(privilege_type)
+  WHERE n.nspname = 'public'
+    AND c.relkind IN ('r','p','v','m','f')
+    AND has_table_privilege('anon', c.oid, g.privilege_type)
+    AND NOT (format('%s:%s', c.relname, g.privilege_type) = ANY(v_allow));
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: privilégio de anon fora da allowlist em public: %', v_txt;
+  END IF;
+
+  -- 21b
+  SELECT string_agg(DISTINCT format('%s', pg_get_userbyid(d.defaclrole)), ', ')
+    INTO v_txt
+  FROM pg_default_acl d
+  JOIN pg_namespace n ON n.oid = d.defaclnamespace
+  CROSS JOIN LATERAL unnest(d.defaclacl) AS acl
+  WHERE n.nspname = 'public'
+    AND d.defaclobjtype IN ('r','S')
+    AND acl::text LIKE 'anon=%';
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: DEFAULT PRIVILEGES reintroduzem anon em public (papéis: %)', v_txt;
+  END IF;
+
+  RAISE NOTICE 'PASS: superfície de privilégio de anon restrita à allowlist (append-only de telemetria pré-login).';
+END $$;
+
 ROLLBACK;
+
 
 
