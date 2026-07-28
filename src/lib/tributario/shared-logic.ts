@@ -695,11 +695,18 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const irpjEquivalenteAnual = irpjPeriodoAnual(baseIrpj);
   const efeitoSazonalidade = irpj - irpjEquivalenteAnual;
   const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
-  const pis = p.faturamentoAnual * 0.0065;
-  const cofins = p.faturamentoAnual * 0.03;
-  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  // Imunidade objetiva das exportações: exclui a receita exportada da base de
+  // PIS/COFINS (CF art. 149 §2º I), de ICMS (art. 155 §2º X "a") e de ISS
+  // (art. 156 §3º II). IRPJ/CSLL continuam incidindo sobre a presunção.
+  const pExp = fracaoExportacao(p);
+  const imune = 1 - pExp;
+  const receitaTributavelPisCofins = p.faturamentoAnual * imune;
+  const pis = receitaTributavelPisCofins * 0.0065;
+  const cofins = receitaTributavelPisCofins * 0.03;
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc * imune, aliqICMS);
   const icms = apuracaoICMS.icms;
-  const iss = rs * aliqISS;
+  const iss = rs * imune * aliqISS;
+
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [
