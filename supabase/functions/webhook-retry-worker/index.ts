@@ -34,6 +34,13 @@ const HANDLERS: Record<string, (payload: unknown, supabase: ReturnType<typeof se
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
 
+  // [auth-guard] Worker interno: reprocessa webhooks com service role. Sem este
+  // porteiro, qualquer requisição anônima podia forçar replays de cobrança.
+  const guard = await exigirChamadaInterna(req)
+  if (!guard.ok) return guard.resposta
+
+
+
   try {
     const supabase = serviceClient()
     const body = await req.json().catch(() => ({}))
