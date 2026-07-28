@@ -32,6 +32,14 @@ export interface ParametrosSimulacao {
   percentualIndustria?: number;
   /** Percentual (0..100) da receita de revenda/comércio (Anexo I). */
   percentualRevenda?: number;
+  /**
+   * Percentual (0..100) da receita bruta destinada à EXPORTAÇÃO. Recorte
+   * transversal do mix: a parcela exportada é imune a PIS/COFINS
+   * (CF/88 art. 149 §2º I), ICMS (art. 155 §2º X "a") e ISS
+   * (art. 156 §3º II c/c LC 116/2003 art. 2º I). IRPJ/CSLL continuam devidos.
+   */
+  percentualExportacao?: number;
+
   /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
   atividadePrincipal?: string;
   /**
