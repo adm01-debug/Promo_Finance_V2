@@ -283,6 +283,10 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     percentualServicos: servicos,
     percentualIndustria: industria,
     percentualRevenda: revenda,
+    percentualExportacao: p.percentualExportacao === undefined || p.percentualExportacao === null
+      ? undefined
+      : clamp(num(p.percentualExportacao, 0), 0, 100),
+
     folhaAnual: Math.max(0, num(p.folhaAnual, 0)),
     comprasComCredito: Math.max(0, num(p.comprasComCredito, 0)),
     despesasOperacionais: Math.max(0, num(p.despesasOperacionais, 0)),
