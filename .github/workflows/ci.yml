@@ -59,6 +59,19 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f supabase/tests/sql/rls_multi_empresa.sql
 
+      - name: Privilege baseline gate (allowlist global + RLS + cofres)
+        # Falha o pipeline se QUALQUER função SECURITY DEFINER passar a ser
+        # executável por anon/authenticated fora do allowlist justificado,
+        # se alguma tabela de public perder RLS, ou se um cofre de credenciais
+        # (tokens OAuth, chaves de API, certificados) receber GRANT indevido.
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/security/test-privilege-baseline.sql
+
+
       - name: Integridade dos catálogos tributários (pgTAP)
         # Valida PK/UNIQUE, enums, formatos e ranges das tabelas fiscais
         # carregadas por seeds. Falha o build em qualquer "not ok".
