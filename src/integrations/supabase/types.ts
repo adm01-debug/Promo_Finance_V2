@@ -9693,6 +9693,8 @@ export type Database = {
           query_snippet: string | null
           ratio: number | null
           reason: string
+          resolved_at: string | null
+          resolved_reason: string | null
           sample_count: number | null
           severity: string
           source: string
@@ -9708,6 +9710,8 @@ export type Database = {
           query_snippet?: string | null
           ratio?: number | null
           reason: string
+          resolved_at?: string | null
+          resolved_reason?: string | null
           sample_count?: number | null
           severity: string
           source: string
@@ -9723,6 +9727,8 @@ export type Database = {
           query_snippet?: string | null
           ratio?: number | null
           reason?: string
+          resolved_at?: string | null
+          resolved_reason?: string | null
           sample_count?: number | null
           severity?: string
           source?: string
@@ -14984,7 +14990,12 @@ export type Database = {
         }[]
       }
       get_performance_alerts: {
-        Args: { p_days?: number; p_severity?: string; p_source?: string }
+        Args: {
+          p_days?: number
+          p_incluir_resolvidos?: boolean
+          p_severity?: string
+          p_source?: string
+        }
         Returns: {
           alert_hour: string
           alert_key: string
@@ -14996,6 +15007,8 @@ export type Database = {
           query_snippet: string
           ratio: number
           reason: string
+          resolved_at: string
+          resolved_reason: string
           sample_count: number
           severity: string
           source: string
