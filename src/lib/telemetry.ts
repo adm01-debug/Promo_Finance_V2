@@ -93,7 +93,7 @@ async function flushQueues(): Promise<void> {
         url: (p.url ?? window.location.href).slice(0, 2000),
         user_agent: (p.user_agent ?? navigator.userAgent).slice(0, 500),
         severity: p.severity ?? 'error',
-        metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
+        metadata: toJson({ ...(p.context ?? {}), breadcrumbs: p.breadcrumbs }),
       }));
       await supabase.from('frontend_error_logs').insert(rows);
     }
