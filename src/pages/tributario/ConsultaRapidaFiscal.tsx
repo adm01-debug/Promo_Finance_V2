@@ -18,7 +18,7 @@ export default function ConsultaRapidaFiscal() {
         <div className="container relative z-10 mx-auto space-y-6 p-4 sm:p-6">
           <PageHeader
             title="Consulta Rápida Fiscal"
-            description="Alíquotas e regras tributárias por UF, CNAE e NCM, com fallback hierárquico sinalizado."
+            subtitle="Alíquotas e regras tributárias por UF, CNAE e NCM, com fallback hierárquico sinalizado."
             icon={Search}
           />
 
