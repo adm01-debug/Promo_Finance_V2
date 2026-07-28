@@ -5,14 +5,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { IDP_PRESETS } from './IdpPresets';
 
+/**
+ * Projeção pública devolvida por `resolve_sso_providers_for_domain`.
+ * Não inclui `allowed_domains`: a lista de domínios corporativos é dado
+ * sensível de carteira e nunca é exposta na superfície pré-login (Gap #31b).
+ */
 interface Provider {
   id: string;
   nome: string;
   tipo: 'oidc' | 'saml';
   preset: string | null;
-  allowed_domains: string[];
   force_sso_for_domains: boolean;
 }
+
 
 export function SsoLoginButtons({ email }: { email: string }) {
   const [providers, setProviders] = useState<Provider[]>([]);

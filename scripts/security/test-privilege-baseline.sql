@@ -661,5 +661,97 @@ BEGIN
   RAISE NOTICE 'PASS: caminho de leitura sem caches server-only expostos nem SELECT mais permissivo que a escrita.';
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- 20) Toda função SECURITY DEFINER exposta ao cliente precisa de guarda de
+--     autorização no corpo (Gap #31).
+--     Encontrado em produção: `is_org_membro(_org_id, _user_id)` e
+--     `is_org_responsavel(...)` eram SECURITY DEFINER com EXECUTE para
+--     `authenticated` (obrigatório: são avaliadas dentro de policies RLS) e
+--     aceitavam _user_id arbitrário. Qualquer usuário logado podia iterar
+--     (org, user) e reconstruir a composição de todas as organizações —
+--     vazamento de grafo entre inquilinos sem violar nenhuma RLS de tabela.
+--     Guarda mínima aceita: referência a auth.uid(), has_role/has_any_role,
+--     has_permission, empresa_acessivel/empresa_membro_ativo ou RAISE EXCEPTION.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  -- Funções puramente determinísticas sobre catálogo público, sem dado de
+  -- inquilino: isentas por natureza (documentar aqui qualquer nova isenção).
+  v_isentas text[] := ARRAY[
+    'fn_norm_conta_codigo',
+    'normalizar_tipo_partida',
+    'faixa_simples_reparticao_valida',
+    'fe_error_signature',
+    'gerar_sigla_empresa',
+    'handle_updated_at',
+    'update_updated_at_column',
+    -- Descoberta de provedor SSO pré-login: exposição a `anon` é intencional.
+    -- Contrapartida obrigatória verificada em 20c: a projeção não pode devolver
+    -- `allowed_domains` (enumeração da carteira de clientes — Gap #31b).
+    'resolve_sso_providers_for_domain'
+  ];
+  v_txt text;
+
+BEGIN
+  SELECT string_agg(format('%s(%s)', p.proname,
+                           pg_get_function_identity_arguments(p.oid)), ', ')
+    INTO v_txt
+  FROM pg_proc p
+  JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'public'
+    AND p.prosecdef
+    AND p.prokind = 'f'
+    AND NOT (p.proname = ANY(v_isentas))
+    AND (has_function_privilege('anon', p.oid, 'EXECUTE')
+         OR has_function_privilege('authenticated', p.oid, 'EXECUTE'))
+    AND pg_get_functiondef(p.oid) !~* '(auth\.uid|has_role|has_any_role|has_permission|empresa_acessivel|empresa_membro_ativo|RAISE EXCEPTION)';
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: SECURITY DEFINER exposta ao cliente sem guarda de autorização: %', v_txt;
+  END IF;
+
+  -- 20b) toda SECURITY DEFINER precisa de search_path fixo — sem ele, a guarda
+  --      pode ser contornada por shadowing de schema no search_path do chamador.
+  SELECT string_agg(p.proname, ', ') INTO v_txt
+  FROM pg_proc p
+  JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'public'
+    AND p.prosecdef
+    AND (has_function_privilege('anon', p.oid, 'EXECUTE')
+         OR has_function_privilege('authenticated', p.oid, 'EXECUTE'))
+    AND NOT EXISTS (
+      SELECT 1 FROM unnest(coalesce(p.proconfig, ARRAY[]::text[])) c
+      WHERE c LIKE 'search\_path=%'
+    );
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: SECURITY DEFINER exposta sem search_path fixo: %', v_txt;
+  END IF;
+
+  -- 20c) a única SECURITY DEFINER exposta a `anon` (descoberta de SSO) não pode
+  --      devolver a lista de domínios corporativos.
+  IF EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public'
+      AND p.proname = 'resolve_sso_providers_for_domain'
+      AND pg_get_functiondef(p.oid) ~* '\mallowed_domains\M[^;]*\)\s*RETURNS|OUT\s+allowed_domains'
+  ) OR EXISTS (
+    SELECT 1
+    FROM information_schema.parameters par
+    WHERE par.specific_schema = 'public'
+      AND par.specific_name LIKE 'resolve\_sso\_providers\_for\_domain%'
+      AND par.parameter_mode = 'OUT'
+      AND par.parameter_name = 'allowed_domains'
+  ) THEN
+    RAISE EXCEPTION 'FAIL: descoberta SSO pré-login voltou a expor allowed_domains a anon.';
+  END IF;
+
+  RAISE NOTICE 'PASS: toda SECURITY DEFINER exposta ao cliente tem guarda de autorização, search_path fixo e projeção pré-login mínima.';
+
+END $$;
+
 ROLLBACK;
+
 
