@@ -1,3 +1,4 @@
+import { mensagemErro } from './erros.ts';
 /**
  * Simple Load Tester for Edge Functions.
  * Measures latency, throughput, and error rates.
@@ -44,7 +45,7 @@ export async function runLoadTest(url: string, options: {
       } catch (err) {
         totalRequests++;
         failedRequests++;
-        console.error(`Request failed: ${err.message}`);
+        console.error(`Request failed: ${mensagemErro(err)}`);
       }
     }
   };
