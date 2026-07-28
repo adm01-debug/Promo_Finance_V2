@@ -37,7 +37,12 @@ function log(level: LogLevel, event: string, ctx: Record<string, unknown> = {}) 
 }
 
 // ─── Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) ─────────────
-async function withRetry<T>(op: () => Promise<T>, label: string, maxAttempts = 3): Promise<T> {
+// `PromiseLike<T>` (nao `Promise<T>`) e deliberado: o PostgrestFilterBuilder do
+// supabase-js e um thenable, nao um Promise. Com `Promise<T>` a inferencia
+// falhava para `T = unknown` e todo `const { data } = await withRetry(...)`
+// perdia a tipagem da query — origem de 31 erros de type-check nesta funcao.
+async function withRetry<T>(op: () => PromiseLike<T>, label: string, maxAttempts = 3): Promise<T> {
+
   let lastErr: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -245,7 +250,7 @@ Deno.serve(async (req) => {
             supabase
               .from('movimentacoes')
               .select('valor, data_movimentacao, descricao')
-              .eq('empresa_id' as any, empresa.id)
+              .eq('empresa_id', empresa.id)
               .ilike('descricao', '%dividend%')
               .gte(
                 'data_movimentacao',

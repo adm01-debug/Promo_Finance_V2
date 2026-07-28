@@ -223,10 +223,34 @@ export const ExecutarRelatoriosSchema = z.object({
   relatorio_id: z.string().uuid().optional().nullable(),
 }).strict();
 
-export const WhatsappIaProativoSchema = z.object({
-  action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia']),
-  data: z.record(z.any()).optional(),
-}).strict();
+// Uniao discriminada por acao: `data: z.record(z.any()).optional()` aceitava
+// requisicao sem `data` e a funcao desestruturava campos obrigatorios de
+// `undefined` (crash 500) ou enviava WhatsApp com telefone/mensagem vazios.
+// Cada acao agora declara exatamente o payload de que precisa.
+export const WhatsappIaProativoSchema = z.discriminatedUnion("action", [
+  z.object({
+    action: z.literal("analisar-alertas"),
+    data: z.record(z.any()).optional(),
+  }).strict(),
+  z.object({
+    action: z.literal("enviar-mensagem"),
+    data: z.object({
+      telefone: z.string().min(8).max(20),
+      mensagem: z.string().min(1).max(4000),
+      cliente_id: z.string().uuid().optional(),
+      tipo: z.string().max(50).optional(),
+      conta_receber_id: z.string().uuid().optional(),
+    }).strict(),
+  }).strict(),
+  z.object({
+    action: z.literal("gerar-resposta-ia"),
+    data: z.object({
+      pergunta_cliente: z.string().min(1).max(2000),
+      contexto: z.string().max(4000).optional(),
+    }).strict(),
+  }).strict(),
+]);
+
 
 export const ExpertAgentSchema = z.object({
   messages: z.array(z.object({
