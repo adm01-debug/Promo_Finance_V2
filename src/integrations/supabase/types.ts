@@ -472,6 +472,7 @@ export type Database = {
         Row: {
           acao_url: string | null
           created_at: string
+          empresa_id: string | null
           entidade_id: string | null
           entidade_tipo: string | null
           id: string
@@ -485,6 +486,7 @@ export type Database = {
         Insert: {
           acao_url?: string | null
           created_at?: string
+          empresa_id?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
           id?: string
@@ -498,6 +500,7 @@ export type Database = {
         Update: {
           acao_url?: string | null
           created_at?: string
+          empresa_id?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
           id?: string
@@ -508,7 +511,64 @@ export type Database = {
           titulo?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       alertas_preditivos: {
         Row: {
@@ -16014,6 +16074,7 @@ export type Database = {
         Row: {
           atendida_em: string | null
           created_at: string
+          empresa_id: string | null
           id: string
           justificativa: string | null
           payload_resposta: Json | null
@@ -16027,6 +16088,7 @@ export type Database = {
         Insert: {
           atendida_em?: string | null
           created_at?: string
+          empresa_id?: string | null
           id?: string
           justificativa?: string | null
           payload_resposta?: Json | null
@@ -16040,6 +16102,7 @@ export type Database = {
         Update: {
           atendida_em?: string | null
           created_at?: string
+          empresa_id?: string | null
           id?: string
           justificativa?: string | null
           payload_resposta?: Json | null
@@ -16050,7 +16113,64 @@ export type Database = {
           user_email?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_lgpd_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       sped_contabil_arquivos: {
         Row: {
