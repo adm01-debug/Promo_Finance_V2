@@ -384,6 +384,9 @@ export function ParametrosForm({
           Compensação limitada a 30% do lucro do período (Lei 9.065/95, arts. 15 e 16).
         </p>
 
+        <LucroTrimestralFields parametros={parametros} setParametros={setParametros} />
+
+
 
 
       </CardContent>
