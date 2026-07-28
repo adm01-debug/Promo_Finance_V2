@@ -4,7 +4,7 @@ import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, ShieldAlert, Info, Radio } from "lucide-react";
+import { AlertTriangle, RefreshCw, ShieldAlert, Info, Radio, CheckCircle2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -22,7 +22,11 @@ interface AlertRow {
   query_snippet: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;
+  /** Preenchido quando o sintoma deixou de existir (ex.: automação voltou a rodar). */
+  resolved_at: string | null;
+  resolved_reason: string | null;
 }
+
 
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
 
@@ -71,25 +75,31 @@ function severityBadge(sev: string) {
 
 export function PerformanceAlertsPanel() {
   const [days, setDays] = useState(1);
+  const [incluirResolvidos, setIncluirResolvidos] = useState(false);
   const [realtimeOn, setRealtimeOn] = useState(false);
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, refetch, isRefetching } = useQuery<AlertRow[]>({
-    queryKey: ["performance-alerts", days],
+    queryKey: ["performance-alerts", days, incluirResolvidos],
     queryFn: async () => {
       const { data, error } = await supabaseDyn.rpc<AlertRow[]>("get_performance_alerts", {
         p_days: days,
         p_severity: null,
         p_source: null,
+        p_incluir_resolvidos: incluirResolvidos,
       });
       if (error) throw error;
-      return ((data as unknown as AlertRow[]) || []).sort(
-        (a, b) => (SEVERITY_ORDER[a.severity] ?? 9) - (SEVERITY_ORDER[b.severity] ?? 9),
-      );
+      // Abertos primeiro; dentro de cada grupo, por severidade.
+      return ((data as unknown as AlertRow[]) || []).sort((a, b) => {
+        const resolvido = Number(Boolean(a.resolved_at)) - Number(Boolean(b.resolved_at));
+        if (resolvido !== 0) return resolvido;
+        return (SEVERITY_ORDER[a.severity] ?? 9) - (SEVERITY_ORDER[b.severity] ?? 9);
+      });
     },
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
+
 
   // Toast on new critical alerts (dedup by id across refetches)
   const seenIds = useRef<Set<string> | null>(null);
@@ -100,7 +110,11 @@ export function PerformanceAlertsPanel() {
       seenIds.current = new Set(data.map((a) => a.id));
       return;
     }
-    const fresh = data.filter((a) => a.severity === "critical" && !seenIds.current!.has(a.id));
+    // Alerta já encerrado é histórico: nunca deve gerar notificação.
+    const fresh = data.filter(
+      (a) => a.severity === "critical" && !a.resolved_at && !seenIds.current!.has(a.id),
+    );
+
     fresh.forEach((a) => {
       toast.error(`🚨 Regressão crítica detectada`, {
         description: a.reason || a.alert_key,
@@ -146,13 +160,19 @@ export function PerformanceAlertsPanel() {
   }, [queryClient]);
 
 
+  // Os contadores refletem apenas incidentes abertos — encerrados não pesam no topo.
   const counts = data.reduce(
     (acc, r) => {
+      if (r.resolved_at) {
+        acc.resolvidos = (acc.resolvidos || 0) + 1;
+        return acc;
+      }
       acc[r.severity] = (acc[r.severity] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>,
   );
+
 
   return (
     <Card>
@@ -184,31 +204,58 @@ export function PerformanceAlertsPanel() {
                 {counts.info} info
               </Badge>
             ) : null}
+            {counts.resolvidos ? (
+              <Badge
+                variant="outline"
+                className="text-[10px] border-green-500/40 text-green-600"
+              >
+                <CheckCircle2 className="h-3 w-3 mr-1" /> {counts.resolvidos} encerrado
+                {counts.resolvidos > 1 ? "s" : ""}
+              </Badge>
+            ) : null}
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant={incluirResolvidos ? "secondary" : "outline"}
+            size="sm"
+            className="text-xs h-8"
+            onClick={() => setIncluirResolvidos((v) => !v)}
+            aria-pressed={incluirResolvidos}
+          >
+            {incluirResolvidos ? "Ocultar encerrados" : "Mostrar encerrados"}
+          </Button>
           <select
             value={days}
             onChange={(e) => setDays(Number(e.target.value))}
             className="text-xs bg-background border rounded px-2 py-1"
+            aria-label="Período dos alertas"
           >
             <option value={1}>24h</option>
             <option value={3}>3 dias</option>
             <option value={7}>7 dias</option>
             <option value={30}>30 dias</option>
           </select>
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isRefetching}
+            aria-label="Atualizar alertas"
+          >
             <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
           </Button>
         </div>
+
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando alertas...</p>
         ) : data.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            ✅ Nenhum alerta de regressão detectado no período.
+            ✅ Nenhum alerta {incluirResolvidos ? "" : "em aberto "}no período.
           </p>
+
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -226,8 +273,22 @@ export function PerformanceAlertsPanel() {
               </thead>
               <tbody>
                 {data.slice(0, 100).map((r, idx) => (
-                  <tr key={`${r.source}-${r.alert_key}-${idx}`} className="border-b border-muted/40">
-                    <td className="py-2">{severityBadge(r.severity)}</td>
+                  <tr
+                    key={`${r.source}-${r.alert_key}-${idx}`}
+                    className={`border-b border-muted/40 ${r.resolved_at ? "opacity-60" : ""}`}
+                  >
+                    <td className="py-2">
+                      {r.resolved_at ? (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] border-green-500/40 text-green-600"
+                        >
+                          <CheckCircle2 className="h-3 w-3 mr-1" /> Encerrado
+                        </Badge>
+                      ) : (
+                        severityBadge(r.severity)
+                      )}
+                    </td>
                     <td className="py-2 text-muted-foreground">
                       {sourceLabel(r.source)}
                     </td>
@@ -235,6 +296,14 @@ export function PerformanceAlertsPanel() {
                       <div className="truncate" title={r.reason || ""}>
                         {r.reason || r.alert_key}
                       </div>
+                      {r.resolved_reason ? (
+                        <div
+                          className="truncate text-green-600/80 text-[10px]"
+                          title={r.resolved_reason}
+                        >
+                          {r.resolved_reason}
+                        </div>
+                      ) : null}
                       {r.query_snippet ? (
                         <div
                           className="truncate text-muted-foreground/70 text-[10px] font-mono"
@@ -244,6 +313,7 @@ export function PerformanceAlertsPanel() {
                         </div>
                       ) : null}
                     </td>
+
                     <td className="py-2 text-right tabular-nums">
                       {formatMetric(r.source, r.alert_key, r.current_value)}
                     </td>
