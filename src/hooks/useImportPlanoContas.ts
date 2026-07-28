@@ -1,4 +1,3 @@
-// @ts-nocheck — colunas novas (parent_id, nivel, aceita_lancamento, codigo_referencial)
 // ainda ausentes em integrations/supabase/types.ts (gerado). Remover após regenerar os types.
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

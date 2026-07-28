@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { saveAs } from "file-saver";

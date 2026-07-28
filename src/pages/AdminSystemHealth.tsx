@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';

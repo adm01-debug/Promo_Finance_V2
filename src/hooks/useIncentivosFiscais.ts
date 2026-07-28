@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: GESTÃO DE INCENTIVOS FISCAIS
 // Interface para cadastrar/gerenciar incentivos
 
