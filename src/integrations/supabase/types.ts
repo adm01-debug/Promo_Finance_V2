@@ -19119,6 +19119,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      delete_cron_job: { Args: { job_id: number }; Returns: boolean }
       desfazer_conciliacao: {
         Args: {
           p_conciliacao_id: string
@@ -19132,6 +19133,19 @@ export type Database = {
         Returns: undefined
       }
       detect_query_regressions: { Args: never; Returns: Json }
+      detectar_duplicidades_financeiras: {
+        Args: { p_empresa_id: string; p_tabela?: string }
+        Returns: {
+          contraparte_id: string
+          data_vencimento: string
+          entidade_tipo: string
+          ids: string[]
+          numero_documento: string
+          ocorrencias: number
+          valor: number
+          valor_total: number
+        }[]
+      }
       drop_old_partitions: {
         Args: { p_retention_months: number; p_table: string }
         Returns: Json
@@ -19256,6 +19270,7 @@ export type Database = {
         }
         Returns: Json
       }
+      gerar_alertas_vencimento: { Args: never; Returns: number }
       gerar_contas_recorrentes: { Args: never; Returns: number }
       gerar_numero_acordo: { Args: never; Returns: string }
       gerar_sigla_empresa: { Args: { _nome: string }; Returns: string }
@@ -19697,6 +19712,10 @@ export type Database = {
       }
       sefaz_run_observability_checks: { Args: never; Returns: Json }
       snapshot_table_bloat: { Args: never; Returns: Json }
+      toggle_cron_job: {
+        Args: { is_active: boolean; job_id: number }
+        Returns: boolean
+      }
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
         Returns: boolean
