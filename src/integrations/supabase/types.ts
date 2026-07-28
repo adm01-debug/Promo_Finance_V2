@@ -15266,6 +15266,7 @@ export type Database = {
         Returns: string
       }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
+      resolve_integrity_alert: { Args: { p_id: string }; Returns: Json }
       resolve_sso_providers_for_domain: {
         Args: { p_domain: string }
         Returns: {
