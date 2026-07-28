@@ -94,6 +94,20 @@ export function CoberturaFiscalUFPanel() {
       staleTime: 300_000,
     });
 
+  /** Última carga idempotente registrada pelo job agendado de seeds fiscais. */
+  const { data: carga } = useQuery<UltimaCargaFiscal>({
+    queryKey: ["ultima-carga-fiscal"],
+    queryFn: async () => {
+      const { data, error } = await supabaseDyn.rpc<UltimaCargaFiscal>(
+        "get_ultima_carga_fiscal",
+        {},
+      );
+      if (error) throw error;
+      return (data ?? {}) as UltimaCargaFiscal;
+    },
+    staleTime: 300_000,
+  });
+
   const ufs = useMemo(() => data?.ufs ?? [], [data]);
 
   const ufsComGap = useMemo(
