@@ -6838,105 +6838,6 @@ export type Database = {
         }
         Relationships: []
       }
-      frontend_error_logs_2026_01: {
-        Row: {
-          created_at: string
-          error_message: string | null
-          error_stack: string | null
-          id: string
-          metadata: Json | null
-          url: string | null
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
-          id?: string
-          metadata?: Json | null
-          url?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
-          id?: string
-          metadata?: Json | null
-          url?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      frontend_error_logs_2026_02: {
-        Row: {
-          created_at: string
-          error_message: string | null
-          error_stack: string | null
-          id: string
-          metadata: Json | null
-          url: string | null
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
-          id?: string
-          metadata?: Json | null
-          url?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
-          id?: string
-          metadata?: Json | null
-          url?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      frontend_error_logs_2026_03: {
-        Row: {
-          created_at: string
-          error_message: string | null
-          error_stack: string | null
-          id: string
-          metadata: Json | null
-          url: string | null
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
-          id?: string
-          metadata?: Json | null
-          url?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
-          id?: string
-          metadata?: Json | null
-          url?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       frontend_error_logs_2026_04: {
         Row: {
           created_at: string
@@ -15277,6 +15178,17 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      purge_old_rows: {
+        Args: {
+          p_batch?: number
+          p_column: string
+          p_days: number
+          p_max_batches?: number
+          p_table: unknown
+          p_where?: string
+        }
+        Returns: number
       }
       record_failed_login: {
         Args: { p_email: string; p_ip_address?: unknown }
