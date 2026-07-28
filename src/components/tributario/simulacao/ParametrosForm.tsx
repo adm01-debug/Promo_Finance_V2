@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useResolucaoCnae } from '@/hooks/useCnaes';
 import { CnaeCatalogoInfo } from '@/components/empresas/CnaeCatalogoInfo';
 import { resolverFpasPorCnae } from '@/lib/tributario/folha/fpas-terceiros';
+import { LucroTrimestralFields } from './LucroTrimestralFields';
 import type { ParametrosSimulacao, RegimeTributario } from '@/lib/tributario';
 
 interface EmpresaOption {
