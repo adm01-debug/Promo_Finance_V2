@@ -54,23 +54,9 @@ function json(payload: unknown, status = 200): Response {
   });
 }
 
-/** Remove pontuação de códigos (NCM "2202.10.00" → "22021000"). */
-const somenteDigitos = (valor: string): string => valor.replace(/\D+/g, '');
+// Funções puras de normalização/vigência/fallback vivem em `helpers.ts`
+// (testadas em `index.test.ts` sem tocar no banco).
 
-/** Data de hoje em ISO (usada para filtrar vigência). */
-const hoje = (): string => new Date().toISOString().slice(0, 10);
-
-/** Aplica o filtro de vigência padrão (vigente_de <= hoje < vigente_ate). */
-// deno-lint-ignore no-explicit-any
-function vigentes<T>(rows: any[] | null): T[] {
-  const ref = hoje();
-  return ((rows ?? []) as T[]).filter((r) => {
-    const rec = r as unknown as { vigente_de?: string | null; vigente_ate?: string | null };
-    if (rec.vigente_de && rec.vigente_de > ref) return false;
-    if (rec.vigente_ate && rec.vigente_ate < ref) return false;
-    return true;
-  });
-}
 
 // ---------------------------------------------------------------------------
 // Recurso: UF
