@@ -1,5 +1,5 @@
-// PÁGINA: PF Vinculada — Lei 15.270/2025 (IRPFM)
-// Imposto Mínimo PF sobre dividendos > R$ 50k/mês
+// PÁGINA: PF Vinculada — Lei 15.270/2025
+// Simulação anual do sócio (IRPF + IRRF 10% + IRPFM + INSS) e visão mensal de dividendos.
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,12 +8,19 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowDown, AlertTriangle, TrendingDown, Info } from 'lucide-react';
 import {
   calcularIRPFMMensal,
   calcularIRPFMAnual,
   IRPFM_LIMITE_ISENCAO_MENSAL,
 } from '@/lib/tributario';
+import {
+  otimizarProLabore,
+  simularPessoaFisica,
+  type ParametrosSimulacaoPF,
+} from '@/lib/tributario/pf-vinculada';
+import { ResultadoPf } from '@/components/tributario/pf/ResultadoPf';
 import { formatCurrency } from '@/lib/formatters';
 
 const MESES = [
