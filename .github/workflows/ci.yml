@@ -339,7 +339,7 @@ jobs:
   post-merge-audit:
     name: Post-merge Simulation Audit
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [quality-gate, e2e]
+    needs: [quality-gate, tenant-policy-gate, e2e]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Simulation Audit
