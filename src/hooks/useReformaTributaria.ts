@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 // HOOK: useReformaTributaria
 // Gestão completa do módulo contábil da Reforma
 // Dados 100% reais (operacoes_tributaveis + apuracoes_tributarias)

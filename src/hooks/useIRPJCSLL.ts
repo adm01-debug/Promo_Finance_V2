@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 // HOOK: IRPJ/CSLL - LUCRO REAL
 // Gerencia apurações de IRPJ e CSLL
 

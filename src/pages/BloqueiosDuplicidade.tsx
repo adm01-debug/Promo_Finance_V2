@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
