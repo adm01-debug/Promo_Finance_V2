@@ -99,20 +99,20 @@ Deno.serve(async (req) => {
 
     const economiaAcumulada = projecoes.reduce((acc, p) => acc + (tributosAtuais - p.totalTributos), 0);
 
-    logger.info('projecao_concluida', { duration: Date.now() - t0 });
+    logger.info('projecao_concluida', { duration_ms: Date.now() - t0 });
     await logger.flush();
 
     return new Response(JSON.stringify({
       cargaAtual,
       projecoes,
       economiaAcumulada,
-      parametros: body
+      parametros: parsed.data
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    logger.error('erro_projecao', { error: mensagemErro(err) });
+    logger.error('erro_projecao', { error_message: mensagemErro(err) });
     await logger.flush();
     return new Response(JSON.stringify({ error: mensagemErro(err) }), { status: 500, headers: corsHeaders });
   }
