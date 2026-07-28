@@ -338,4 +338,34 @@ BEGIN
   RAISE NOTICE 'PASS: telemetria de erros append-only e com carimbo do servidor.';
 END $$;
 
+-- ---------------------------------------------------------------------------
+-- 11) Alerta proativo de erros: estado e claim restritos ao backend
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE r text;
+BEGIN
+  FOREACH r IN ARRAY ARRAY['anon', 'authenticated'] LOOP
+    IF has_table_privilege(r, 'public.frontend_error_alert_state', 'INSERT')
+       OR has_table_privilege(r, 'public.frontend_error_alert_state', 'UPDATE')
+       OR has_table_privilege(r, 'public.frontend_error_alert_state', 'DELETE') THEN
+      RAISE EXCEPTION 'FAIL: % pode gravar em frontend_error_alert_state (burlaria cooldown de alertas).', r;
+    END IF;
+    IF has_function_privilege(
+         r,
+         'public.claim_frontend_error_alerts(integer,integer,integer,integer)',
+         'EXECUTE') THEN
+      RAISE EXCEPTION 'FAIL: % pode executar claim_frontend_error_alerts (dispararia alertas).', r;
+    END IF;
+  END LOOP;
+
+  IF NOT has_function_privilege(
+       'service_role',
+       'public.claim_frontend_error_alerts(integer,integer,integer,integer)',
+       'EXECUTE') THEN
+    RAISE EXCEPTION 'FAIL: service_role perdeu EXECUTE em claim_frontend_error_alerts; monitor ficaria cego.';
+  END IF;
+
+  RAISE NOTICE 'PASS: alerta proativo de erros restrito ao backend.';
+END $$;
+
 ROLLBACK;
