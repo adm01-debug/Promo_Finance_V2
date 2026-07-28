@@ -74,15 +74,15 @@ export function useConciliacao() {
           mensagem += ` (Ajuste de centavos: R$ ${ajusteCentavos.toFixed(2)})`;
         }
 
-        await supabase.rpc('registrar_evento_receber', {
-          p_conta_id: contaReceberId,
-          p_tipo: 'conciliacao',
-          p_mensagem: mensagem,
-          p_metadata: { 
-            transacao_banco: transacao, 
-            ajuste_centavos: ajusteCentavos,
-            regra_aplicada: regraAplicada 
-          }
+        await registrarEventoFinanceiroOrThrow('receber', {
+          contaId: contaReceberId,
+          tipo: 'conciliacao',
+          mensagem,
+          metadata: {
+            transacao_banco: transacao,
+            ajuste_centavos: ajusteCentavos ?? null,
+            regra_aplicada: regraAplicada,
+          } as unknown as Json,
         });
         
         await supabase.from('contas_receber').update({ 
@@ -96,15 +96,15 @@ export function useConciliacao() {
           mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos || 0).toFixed(2)})`;
         }
 
-        await supabase.rpc('registrar_evento_pagar', {
-          p_conta_id: contaPagarId,
-          p_tipo: 'conciliacao',
-          p_mensagem: mensagem,
-          p_metadata: { 
-            transacao_banco: transacao, 
-            ajuste_centavos: ajusteCentavos,
-            regra_aplicada: regraAplicada 
-          }
+        await registrarEventoFinanceiroOrThrow('pagar', {
+          contaId: contaPagarId,
+          tipo: 'conciliacao',
+          mensagem,
+          metadata: {
+            transacao_banco: transacao,
+            ajuste_centavos: ajusteCentavos ?? null,
+            regra_aplicada: regraAplicada,
+          } as unknown as Json,
         });
       }
     },
