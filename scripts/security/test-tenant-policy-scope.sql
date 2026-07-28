@@ -18,6 +18,8 @@
 \pset pager off
 
 -- Isenções compartilhadas pelos dois blocos.
+DROP VIEW IF EXISTS gate25_tabelas_tenant;
+DROP VIEW IF EXISTS gate25_exempt;
 CREATE TEMP VIEW gate25_exempt AS
 SELECT unnest(ARRAY[
   'profiles','user_empresas','user_roles','sso_providers','sso_role_mappings',
@@ -154,3 +156,6 @@ BEGIN
 END $$;
 
 \echo '✅ Gate #25 aprovado — isolamento por empresa preservado em todas as policies.'
+
+DROP VIEW IF EXISTS gate25_tabelas_tenant;
+DROP VIEW IF EXISTS gate25_exempt;
