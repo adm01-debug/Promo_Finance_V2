@@ -20130,6 +20130,27 @@ export type Database = {
         Returns: Json
       }
       sefaz_run_observability_checks: { Args: never; Returns: Json }
+      silenciar_alerta_erro_frontend: {
+        Args: { p_assinatura: string; p_horas?: number; p_motivo?: string }
+        Returns: {
+          alertas_enviados: number
+          assinatura: string
+          created_at: string
+          exemplo_mensagem: string | null
+          ocorrencias_no_ultimo_alerta: number
+          primeiro_alerta_em: string
+          severity: string
+          silenciado_ate: string | null
+          ultimo_alerta_em: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "frontend_error_alert_state"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       snapshot_table_bloat: { Args: never; Returns: Json }
       toggle_cron_job: {
         Args: { is_active: boolean; job_id: number }

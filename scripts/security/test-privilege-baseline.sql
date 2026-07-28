@@ -65,7 +65,8 @@ INSERT INTO _allow VALUES
   ('public.registrar_evento_pagar(p_conta_id uuid, p_tipo text, p_mensagem text, p_metadata jsonb)', 'authenticated', 'registrarEvento; valida empresa_acessivel'),
   ('public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb)', 'authenticated', 'registrarEvento; valida empresa_acessivel'),
   ('public.get_frontend_error_groups(p_desde timestamp with time zone, p_severity text, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
-  ('public.get_frontend_error_occurrences(p_assinatura text, p_desde timestamp with time zone, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo');
+  ('public.get_frontend_error_occurrences(p_assinatura text, p_desde timestamp with time zone, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
+  ('public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer, p_motivo text)', 'authenticated', 'AlertasProativosErros; exige has_role admin e audita em audit_logs');
 
 -- (d) Pré-autenticação — descoberta de SSO por domínio na tela de login.
 --     Retorna apenas metadados públicos do provedor (nome, tipo, domínios).
@@ -397,6 +398,37 @@ BEGIN
   END IF;
 
   RAISE NOTICE 'PASS: canário do probe anônimo é descartado pelo gatilho de sanitização.';
+END $$;
+
+-- ----------------------------------------------------------------------------
+-- 13) Silenciamento de alertas de erro é auditado e restrito (Gap #26)
+--     A tabela de estado não pode aceitar escrita direta do cliente e a RPC
+--     silenciar_alerta_erro_frontend jamais pode ser executável por anon.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_grants text;
+BEGIN
+  IF has_function_privilege('anon', 'public.silenciar_alerta_erro_frontend(text, integer, text)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'FAIL: anon pode executar silenciar_alerta_erro_frontend.';
+  END IF;
+
+  IF NOT has_function_privilege('authenticated', 'public.silenciar_alerta_erro_frontend(text, integer, text)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'FAIL: authenticated perdeu EXECUTE em silenciar_alerta_erro_frontend (UI admin quebraria).';
+  END IF;
+
+  SELECT string_agg(DISTINCT privilege_type, ',') INTO v_grants
+  FROM information_schema.role_table_grants
+  WHERE table_schema = 'public'
+    AND table_name = 'frontend_error_alert_state'
+    AND grantee IN ('anon', 'authenticated')
+    AND privilege_type IN ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE');
+
+  IF v_grants IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: escrita direta em frontend_error_alert_state concedida ao cliente (%).', v_grants;
+  END IF;
+
+  RAISE NOTICE 'PASS: silenciamento de alertas só via RPC admin auditada.';
 END $$;
 
 ROLLBACK;

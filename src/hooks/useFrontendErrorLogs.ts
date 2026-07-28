@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -109,5 +110,41 @@ export function useFrontendErrorAlertState() {
     },
     staleTime: 60_000,
     refetchOnWindowFocus: false,
+  });
+}
+
+/**
+ * Silencia (ou reativa) os alertas proativos de uma assinatura de erro — Gap #26.
+ *
+ * A escrita nunca acontece direto na tabela: `frontend_error_alert_state` não
+ * concede UPDATE ao cliente. Passamos pela RPC `silenciar_alerta_erro_frontend`,
+ * que valida o papel de admin, limita a janela a 720h e grava a ação na trilha
+ * de auditoria. `horas = 0` reativa os alertas imediatamente.
+ */
+export function useSilenciarAlertaErro() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { assinatura: string; horas: number; motivo?: string }) => {
+      const { data, error } = await supabase.rpc('silenciar_alerta_erro_frontend', {
+        p_assinatura: params.assinatura,
+        p_horas: params.horas,
+        p_motivo: params.motivo ?? null,
+      });
+      if (error) throw error;
+      return data as unknown as FrontendErrorAlertState;
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['frontend-error-alert-state'] });
+      toast.success(
+        vars.horas > 0
+          ? `Alertas silenciados por ${vars.horas}h.`
+          : 'Alertas reativados para esta assinatura.',
+      );
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : 'Falha ao atualizar o silenciamento.';
+      toast.error(msg);
+    },
   });
 }
