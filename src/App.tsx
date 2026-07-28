@@ -125,6 +125,7 @@ const Logistica = lazy(() => import('./pages/Logistica'));
 const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
 const ThemeDiagnostics = lazy(() => import('./pages/ThemeDiagnostics'));
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
+const ConsultaRapidaFiscal = lazy(() => import('./pages/tributario/ConsultaRapidaFiscal'));
 const MonofasicoPage = lazy(() => import('./pages/tributario/Monofasico'));
 const FolhaEncargosPage = lazy(() => import('./pages/tributario/FolhaEncargos'));
 const IcmsStDifalPage = lazy(() => import('./pages/tributario/IcmsStDifal'));
@@ -279,6 +280,7 @@ function AppRoutes() {
             <Route path="/tributario/retencoes" element={<ProtectedRoute><RetencoesFontePage /></ProtectedRoute>} />
             <Route path="/tributario/fechamento-mensal" element={<ProtectedRoute><FechamentoMensalPage /></ProtectedRoute>} />
             <Route path="/tributario/glossario" element={<ProtectedRoute><GlossarioTributario /></ProtectedRoute>} />
+            <Route path="/tributario/consulta-rapida" element={<ProtectedRoute><ConsultaRapidaFiscal /></ProtectedRoute>} />
             <Route path="/tributario/monofasico" element={<ProtectedRoute><MonofasicoPage /></ProtectedRoute>} />
             <Route path="/tributario/folha-encargos" element={<ProtectedRoute><FolhaEncargosPage /></ProtectedRoute>} />
             <Route path="/tributario/icms-st" element={<ProtectedRoute><IcmsStDifalPage /></ProtectedRoute>} />
