@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'npm:zod@3.23.8';
 
@@ -46,7 +46,7 @@ function normalizePhone(v: unknown): string | null {
 }
 
 /** Obtém token Bitrix válido: tenta tabela `bitrix_oauth_tokens`, faz refresh se preciso, cai em env. */
-async function getBitrixToken(admin: ReturnType<typeof createClient>): Promise<string | null> {
+async function getBitrixToken(admin: SupabaseClient<any, "public", any>): Promise<string | null> {
   const { data: tokenRow } = await admin
     .from("bitrix_oauth_tokens")
     .select("access_token, refresh_token, expires_at")
