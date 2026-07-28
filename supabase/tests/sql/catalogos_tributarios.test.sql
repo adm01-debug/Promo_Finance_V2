@@ -245,12 +245,17 @@ SELECT ok(
   'repartição de cada faixa deve somar 100%'
 );
 
-SELECT throws_ok(
-  $$UPDATE public.faixas_simples_nacional
-       SET reparticao = '{"irpj":10,"csll":10}'::jsonb
-     WHERE anexo = 'I' AND faixa = 1$$,
-  '23514', NULL, 'repartição que não fecha 100% deve ser rejeitada'
-);
+-- Requer privilégio de UPDATE; em runners somente-leitura o teste é pulado
+SELECT CASE
+  WHEN has_table_privilege(current_user, 'public.faixas_simples_nacional', 'UPDATE') THEN
+    throws_ok(
+      $$UPDATE public.faixas_simples_nacional
+           SET reparticao = '{"irpj":10,"csll":10}'::jsonb
+         WHERE anexo = 'I' AND faixa = 1$$,
+      '23514', NULL, 'repartição que não fecha 100% deve ser rejeitada')
+  ELSE
+    skip('sem privilégio de UPDATE neste papel', 1)
+END;
 
 SELECT is(
   (SELECT count(*) FROM public.ncms WHERE sujeito_st AND mva_padrao IS NULL)::int,
