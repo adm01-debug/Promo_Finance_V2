@@ -1263,31 +1263,48 @@ export type Database = {
           compensacao_prejuizos: number | null
           created_at: string | null
           created_by: string | null
+          csll_a_pagar: number
           csll_aliquota: number | null
+          csll_base: number
+          csll_total: number
           csll_valor: number | null
           csrf_retido: number | null
+          data_transmissao: string | null
           empresa_id: string
           estimativas_pagas: number | null
           exclusoes_permanentes: number | null
           exclusoes_temporarias: number | null
           id: string
+          irpj_a_pagar: number
+          irpj_adicional: number
+          irpj_adicional_base: number
           irpj_aliquota_adicional: number | null
           irpj_aliquota_normal: number | null
+          irpj_incentivos_deducoes: number
+          irpj_normal: number
+          irpj_total: number
           irpj_valor: number | null
           irrf_retido: number | null
           lucro_antes_impostos: number | null
           lucro_contabil: number | null
           lucro_real: number | null
           lucro_real_antes_compensacao: number | null
+          mes: number | null
+          numero_recibo: string | null
           outros_incentivos: number | null
           pat_deducao: number | null
           periodo_fim: string
           periodo_inicio: string
           saldo_negativo_anterior: number | null
+          saldo_negativo_csll: number
+          saldo_negativo_irpj: number
           status: string | null
           tipo_apuracao: string | null
           total_adicoes: number | null
           total_exclusoes: number | null
+          total_tributos: number
+          trimestre: number | null
+          updated_at: string
         }
         Insert: {
           adicional_irpj?: number | null
@@ -1300,31 +1317,48 @@ export type Database = {
           compensacao_prejuizos?: number | null
           created_at?: string | null
           created_by?: string | null
+          csll_a_pagar?: number
           csll_aliquota?: number | null
+          csll_base?: number
+          csll_total?: number
           csll_valor?: number | null
           csrf_retido?: number | null
+          data_transmissao?: string | null
           empresa_id: string
           estimativas_pagas?: number | null
           exclusoes_permanentes?: number | null
           exclusoes_temporarias?: number | null
           id?: string
+          irpj_a_pagar?: number
+          irpj_adicional?: number
+          irpj_adicional_base?: number
           irpj_aliquota_adicional?: number | null
           irpj_aliquota_normal?: number | null
+          irpj_incentivos_deducoes?: number
+          irpj_normal?: number
+          irpj_total?: number
           irpj_valor?: number | null
           irrf_retido?: number | null
           lucro_antes_impostos?: number | null
           lucro_contabil?: number | null
           lucro_real?: number | null
           lucro_real_antes_compensacao?: number | null
+          mes?: number | null
+          numero_recibo?: string | null
           outros_incentivos?: number | null
           pat_deducao?: number | null
           periodo_fim: string
           periodo_inicio: string
           saldo_negativo_anterior?: number | null
+          saldo_negativo_csll?: number
+          saldo_negativo_irpj?: number
           status?: string | null
           tipo_apuracao?: string | null
           total_adicoes?: number | null
           total_exclusoes?: number | null
+          total_tributos?: number
+          trimestre?: number | null
+          updated_at?: string
         }
         Update: {
           adicional_irpj?: number | null
@@ -1337,31 +1371,48 @@ export type Database = {
           compensacao_prejuizos?: number | null
           created_at?: string | null
           created_by?: string | null
+          csll_a_pagar?: number
           csll_aliquota?: number | null
+          csll_base?: number
+          csll_total?: number
           csll_valor?: number | null
           csrf_retido?: number | null
+          data_transmissao?: string | null
           empresa_id?: string
           estimativas_pagas?: number | null
           exclusoes_permanentes?: number | null
           exclusoes_temporarias?: number | null
           id?: string
+          irpj_a_pagar?: number
+          irpj_adicional?: number
+          irpj_adicional_base?: number
           irpj_aliquota_adicional?: number | null
           irpj_aliquota_normal?: number | null
+          irpj_incentivos_deducoes?: number
+          irpj_normal?: number
+          irpj_total?: number
           irpj_valor?: number | null
           irrf_retido?: number | null
           lucro_antes_impostos?: number | null
           lucro_contabil?: number | null
           lucro_real?: number | null
           lucro_real_antes_compensacao?: number | null
+          mes?: number | null
+          numero_recibo?: string | null
           outros_incentivos?: number | null
           pat_deducao?: number | null
           periodo_fim?: string
           periodo_inicio?: string
           saldo_negativo_anterior?: number | null
+          saldo_negativo_csll?: number
+          saldo_negativo_irpj?: number
           status?: string | null
           tipo_apuracao?: string | null
           total_adicoes?: number | null
           total_exclusoes?: number | null
+          total_tributos?: number
+          trimestre?: number | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -3465,6 +3516,7 @@ export type Database = {
       bloqueios_duplicidade: {
         Row: {
           created_at: string | null
+          dados_tentativa: Json
           empresa_id: string | null
           id: string
           motivo: string | null
@@ -3473,6 +3525,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          dados_tentativa?: Json
           empresa_id?: string | null
           id?: string
           motivo?: string | null
@@ -3481,6 +3534,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          dados_tentativa?: Json
           empresa_id?: string | null
           id?: string
           motivo?: string | null
@@ -4037,6 +4091,7 @@ export type Database = {
           orcamento_realizado: number | null
           parent_id: string | null
           responsavel: string | null
+          tipo: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -4052,6 +4107,7 @@ export type Database = {
           orcamento_realizado?: number | null
           parent_id?: string | null
           responsavel?: string | null
+          tipo?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -4067,6 +4123,7 @@ export type Database = {
           orcamento_realizado?: number | null
           parent_id?: string | null
           responsavel?: string | null
+          tipo?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -4856,6 +4913,7 @@ export type Database = {
       contas_receber: {
         Row: {
           anexo_url: string | null
+          bitrix_deal_id: string | null
           categoria_id: string | null
           categoria_nome: string | null
           centro_custo_id: string | null
@@ -4896,6 +4954,7 @@ export type Database = {
         }
         Insert: {
           anexo_url?: string | null
+          bitrix_deal_id?: string | null
           categoria_id?: string | null
           categoria_nome?: string | null
           centro_custo_id?: string | null
@@ -4936,6 +4995,7 @@ export type Database = {
         }
         Update: {
           anexo_url?: string | null
+          bitrix_deal_id?: string | null
           categoria_id?: string | null
           categoria_nome?: string | null
           centro_custo_id?: string | null
@@ -7189,19 +7249,40 @@ export type Database = {
       evidencias_pacotes: {
         Row: {
           created_at: string | null
+          escopos: string[]
+          gerado_por_email: string | null
           id: string
+          manifest: Json
+          periodo_fim: string | null
+          periodo_inicio: string | null
+          storage_path: string | null
+          tamanho_bytes: number | null
           url: string | null
           verificacao_id: string | null
         }
         Insert: {
           created_at?: string | null
+          escopos?: string[]
+          gerado_por_email?: string | null
           id?: string
+          manifest?: Json
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
+          storage_path?: string | null
+          tamanho_bytes?: number | null
           url?: string | null
           verificacao_id?: string | null
         }
         Update: {
           created_at?: string | null
+          escopos?: string[]
+          gerado_por_email?: string | null
           id?: string
+          manifest?: Json
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
+          storage_path?: string | null
+          tamanho_bytes?: number | null
           url?: string | null
           verificacao_id?: string | null
         }
@@ -7629,6 +7710,7 @@ export type Database = {
           impostos_municipais: number | null
           mes: number | null
           mes_referencia: string
+          observacoes: string | null
           receita_bruta: number | null
           receita_exportacao: number | null
           receita_industria: number | null
@@ -7648,6 +7730,7 @@ export type Database = {
           impostos_municipais?: number | null
           mes?: number | null
           mes_referencia: string
+          observacoes?: string | null
           receita_bruta?: number | null
           receita_exportacao?: number | null
           receita_industria?: number | null
@@ -7667,6 +7750,7 @@ export type Database = {
           impostos_municipais?: number | null
           mes?: number | null
           mes_referencia?: string
+          observacoes?: string | null
           receita_bruta?: number | null
           receita_exportacao?: number | null
           receita_industria?: number | null
@@ -8117,6 +8201,8 @@ export type Database = {
           id: string
           mes: number | null
           mes_referencia: string
+          numero_funcionarios: number | null
+          observacoes: string | null
           pro_labore: number | null
           qtd_funcionarios: number | null
           salarios: number | null
@@ -8133,6 +8219,8 @@ export type Database = {
           id?: string
           mes?: number | null
           mes_referencia: string
+          numero_funcionarios?: number | null
+          observacoes?: string | null
           pro_labore?: number | null
           qtd_funcionarios?: number | null
           salarios?: number | null
@@ -8149,6 +8237,8 @@ export type Database = {
           id?: string
           mes?: number | null
           mes_referencia?: string
+          numero_funcionarios?: number | null
+          observacoes?: string | null
           pro_labore?: number | null
           qtd_funcionarios?: number | null
           salarios?: number | null
@@ -8300,29 +8390,68 @@ export type Database = {
       }
       fornecedores: {
         Row: {
+          ativo: boolean
+          cidade: string | null
           cnpj: string | null
+          cnpj_cpf: string | null
+          contato: string | null
           created_at: string | null
+          email: string | null
+          endereco: string | null
+          estado: string | null
           id: string
+          limite_credito: number | null
+          nome: string | null
           nome_fantasia: string | null
+          observacoes: string | null
+          ramo_atividade: string | null
           razao_social: string
+          score: number | null
+          telefone: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          ativo?: boolean
+          cidade?: string | null
           cnpj?: string | null
+          cnpj_cpf?: string | null
+          contato?: string | null
           created_at?: string | null
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
           id?: string
+          limite_credito?: number | null
+          nome?: string | null
           nome_fantasia?: string | null
+          observacoes?: string | null
+          ramo_atividade?: string | null
           razao_social: string
+          score?: number | null
+          telefone?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          ativo?: boolean
+          cidade?: string | null
           cnpj?: string | null
+          cnpj_cpf?: string | null
+          contato?: string | null
           created_at?: string | null
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
           id?: string
+          limite_credito?: number | null
+          nome?: string | null
           nome_fantasia?: string | null
+          observacoes?: string | null
+          ramo_atividade?: string | null
           razao_social?: string
+          score?: number | null
+          telefone?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -10904,6 +11033,8 @@ export type Database = {
       notas_fiscais: {
         Row: {
           chave_acesso: string | null
+          cliente_cnpj: string | null
+          cliente_nome: string | null
           created_at: string | null
           data_emissao: string | null
           empresa_id: string | null
@@ -10911,6 +11042,8 @@ export type Database = {
           numero: string | null
           serie: string | null
           status: string | null
+          valor_desconto: number
+          valor_frete: number
           valor_icms: number | null
           valor_produtos: number | null
           valor_total: number | null
@@ -10918,6 +11051,8 @@ export type Database = {
         }
         Insert: {
           chave_acesso?: string | null
+          cliente_cnpj?: string | null
+          cliente_nome?: string | null
           created_at?: string | null
           data_emissao?: string | null
           empresa_id?: string | null
@@ -10925,6 +11060,8 @@ export type Database = {
           numero?: string | null
           serie?: string | null
           status?: string | null
+          valor_desconto?: number
+          valor_frete?: number
           valor_icms?: number | null
           valor_produtos?: number | null
           valor_total?: number | null
@@ -10932,6 +11069,8 @@ export type Database = {
         }
         Update: {
           chave_acesso?: string | null
+          cliente_cnpj?: string | null
+          cliente_nome?: string | null
           created_at?: string | null
           data_emissao?: string | null
           empresa_id?: string | null
@@ -10939,6 +11078,8 @@ export type Database = {
           numero?: string | null
           serie?: string | null
           status?: string | null
+          valor_desconto?: number
+          valor_frete?: number
           valor_icms?: number | null
           valor_produtos?: number | null
           valor_total?: number | null
@@ -11317,63 +11458,162 @@ export type Database = {
       }
       operacoes_tributaveis: {
         Row: {
+          apuracao_id: string | null
+          base_calculo: number
           cbs_aliquota: number | null
           cbs_credito: number | null
           cbs_valor: number | null
+          cfop: string | null
+          cliente_id: string | null
+          cnpj_cpf_contraparte: string | null
+          cofins_aliquota: number
           cofins_valor: number | null
+          competencia: string | null
           created_at: string | null
           data_operacao: string | null
+          documento_chave: string | null
+          documento_numero: string | null
+          documento_serie: string | null
+          documento_tipo: string
           empresa_id: string | null
+          erro_mensagem: string | null
+          fornecedor_id: string | null
           ibs_aliquota: number | null
           ibs_credito: number | null
           ibs_valor: number | null
+          icms_aliquota: number
           icms_valor: number | null
           id: string
+          is_aliquota: number
+          is_categoria: string | null
           is_valor: number | null
+          isento: boolean
+          iss_aliquota: number
           iss_valor: number | null
+          motivo_isencao: string | null
+          ncm: string | null
+          nome_contraparte: string | null
+          nota_fiscal_id: string | null
+          pis_aliquota: number
           pis_valor: number | null
+          reducao_aliquota: number
+          regime_especial: string | null
+          split_payment: boolean
+          split_payment_valor: number
           status: string | null
           tipo_operacao: string | null
+          uf_destino: string | null
+          uf_origem: string | null
+          updated_at: string
+          valor_desconto: number
+          valor_frete: number
+          valor_operacao: number
           valor_total: number | null
         }
         Insert: {
+          apuracao_id?: string | null
+          base_calculo?: number
           cbs_aliquota?: number | null
           cbs_credito?: number | null
           cbs_valor?: number | null
+          cfop?: string | null
+          cliente_id?: string | null
+          cnpj_cpf_contraparte?: string | null
+          cofins_aliquota?: number
           cofins_valor?: number | null
+          competencia?: string | null
           created_at?: string | null
           data_operacao?: string | null
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_tipo?: string
           empresa_id?: string | null
+          erro_mensagem?: string | null
+          fornecedor_id?: string | null
           ibs_aliquota?: number | null
           ibs_credito?: number | null
           ibs_valor?: number | null
+          icms_aliquota?: number
           icms_valor?: number | null
           id?: string
+          is_aliquota?: number
+          is_categoria?: string | null
           is_valor?: number | null
+          isento?: boolean
+          iss_aliquota?: number
           iss_valor?: number | null
+          motivo_isencao?: string | null
+          ncm?: string | null
+          nome_contraparte?: string | null
+          nota_fiscal_id?: string | null
+          pis_aliquota?: number
           pis_valor?: number | null
+          reducao_aliquota?: number
+          regime_especial?: string | null
+          split_payment?: boolean
+          split_payment_valor?: number
           status?: string | null
           tipo_operacao?: string | null
+          uf_destino?: string | null
+          uf_origem?: string | null
+          updated_at?: string
+          valor_desconto?: number
+          valor_frete?: number
+          valor_operacao?: number
           valor_total?: number | null
         }
         Update: {
+          apuracao_id?: string | null
+          base_calculo?: number
           cbs_aliquota?: number | null
           cbs_credito?: number | null
           cbs_valor?: number | null
+          cfop?: string | null
+          cliente_id?: string | null
+          cnpj_cpf_contraparte?: string | null
+          cofins_aliquota?: number
           cofins_valor?: number | null
+          competencia?: string | null
           created_at?: string | null
           data_operacao?: string | null
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_tipo?: string
           empresa_id?: string | null
+          erro_mensagem?: string | null
+          fornecedor_id?: string | null
           ibs_aliquota?: number | null
           ibs_credito?: number | null
           ibs_valor?: number | null
+          icms_aliquota?: number
           icms_valor?: number | null
           id?: string
+          is_aliquota?: number
+          is_categoria?: string | null
           is_valor?: number | null
+          isento?: boolean
+          iss_aliquota?: number
           iss_valor?: number | null
+          motivo_isencao?: string | null
+          ncm?: string | null
+          nome_contraparte?: string | null
+          nota_fiscal_id?: string | null
+          pis_aliquota?: number
           pis_valor?: number | null
+          reducao_aliquota?: number
+          regime_especial?: string | null
+          split_payment?: boolean
+          split_payment_valor?: number
           status?: string | null
           tipo_operacao?: string | null
+          uf_destino?: string | null
+          uf_origem?: string | null
+          updated_at?: string
+          valor_desconto?: number
+          valor_frete?: number
+          valor_operacao?: number
           valor_total?: number | null
         }
         Relationships: [
@@ -12646,6 +12886,7 @@ export type Database = {
           saldo_disponivel: number | null
           status: string | null
           tipo: string | null
+          trimestre_origem: number | null
           valor_acumulado: number | null
           valor_compensado: number | null
           valor_original: number | null
@@ -12662,6 +12903,7 @@ export type Database = {
           saldo_disponivel?: number | null
           status?: string | null
           tipo?: string | null
+          trimestre_origem?: number | null
           valor_acumulado?: number | null
           valor_compensado?: number | null
           valor_original?: number | null
@@ -12678,6 +12920,7 @@ export type Database = {
           saldo_disponivel?: number | null
           status?: string | null
           tipo?: string | null
+          trimestre_origem?: number | null
           valor_acumulado?: number | null
           valor_compensado?: number | null
           valor_original?: number | null
@@ -13707,6 +13950,7 @@ export type Database = {
           created_by: string | null
           descricao: string | null
           empresa_id: string | null
+          entidade_id: string | null
           entidade_nome: string | null
           id: string
           lancamento_tipo: string | null
@@ -13723,6 +13967,7 @@ export type Database = {
           created_by?: string | null
           descricao?: string | null
           empresa_id?: string | null
+          entidade_id?: string | null
           entidade_nome?: string | null
           id?: string
           lancamento_tipo?: string | null
@@ -13739,6 +13984,7 @@ export type Database = {
           created_by?: string | null
           descricao?: string | null
           empresa_id?: string | null
+          entidade_id?: string | null
           entidade_nome?: string | null
           id?: string
           lancamento_tipo?: string | null
@@ -14542,28 +14788,85 @@ export type Database = {
       }
       retencoes_fonte: {
         Row: {
+          aliquota: number
+          cnpj_participante: string | null
+          codigo_receita: string | null
+          competencia: string | null
+          conta_pagar_id: string | null
+          conta_receber_id: string | null
           created_at: string | null
+          darf_gerado: boolean
           data_fato_gerador: string | null
+          data_recolhimento: string | null
+          data_retencao: string | null
+          data_vencimento: string | null
           empresa_id: string | null
           id: string
+          nome_participante: string | null
+          nota_fiscal_id: string | null
+          numero_documento: string | null
+          observacoes: string | null
+          status: string
           tipo_imposto: string | null
+          tipo_operacao: string | null
+          tipo_retencao: string | null
           valor: number | null
+          valor_base: number
+          valor_retido: number
         }
         Insert: {
+          aliquota?: number
+          cnpj_participante?: string | null
+          codigo_receita?: string | null
+          competencia?: string | null
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
           created_at?: string | null
+          darf_gerado?: boolean
           data_fato_gerador?: string | null
+          data_recolhimento?: string | null
+          data_retencao?: string | null
+          data_vencimento?: string | null
           empresa_id?: string | null
           id?: string
+          nome_participante?: string | null
+          nota_fiscal_id?: string | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          status?: string
           tipo_imposto?: string | null
+          tipo_operacao?: string | null
+          tipo_retencao?: string | null
           valor?: number | null
+          valor_base?: number
+          valor_retido?: number
         }
         Update: {
+          aliquota?: number
+          cnpj_participante?: string | null
+          codigo_receita?: string | null
+          competencia?: string | null
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
           created_at?: string | null
+          darf_gerado?: boolean
           data_fato_gerador?: string | null
+          data_recolhimento?: string | null
+          data_retencao?: string | null
+          data_vencimento?: string | null
           empresa_id?: string | null
           id?: string
+          nome_participante?: string | null
+          nota_fiscal_id?: string | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          status?: string
           tipo_imposto?: string | null
+          tipo_operacao?: string | null
+          tipo_retencao?: string | null
           valor?: number | null
+          valor_base?: number
+          valor_retido?: number
         }
         Relationships: [
           {
@@ -17280,6 +17583,7 @@ export type Database = {
           id: string
           meta_mensal: number | null
           nome: string
+          telefone: string | null
         }
         Insert: {
           ativo?: boolean | null
@@ -17289,6 +17593,7 @@ export type Database = {
           id?: string
           meta_mensal?: number | null
           nome: string
+          telefone?: string | null
         }
         Update: {
           ativo?: boolean | null
@@ -17298,6 +17603,7 @@ export type Database = {
           id?: string
           meta_mensal?: number | null
           nome?: string
+          telefone?: string | null
         }
         Relationships: [
           {
