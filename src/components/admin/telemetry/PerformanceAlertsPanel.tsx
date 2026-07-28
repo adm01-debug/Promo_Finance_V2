@@ -272,8 +272,22 @@ export function PerformanceAlertsPanel() {
               </thead>
               <tbody>
                 {data.slice(0, 100).map((r, idx) => (
-                  <tr key={`${r.source}-${r.alert_key}-${idx}`} className="border-b border-muted/40">
-                    <td className="py-2">{severityBadge(r.severity)}</td>
+                  <tr
+                    key={`${r.source}-${r.alert_key}-${idx}`}
+                    className={`border-b border-muted/40 ${r.resolved_at ? "opacity-60" : ""}`}
+                  >
+                    <td className="py-2">
+                      {r.resolved_at ? (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] border-green-500/40 text-green-600"
+                        >
+                          <CheckCircle2 className="h-3 w-3 mr-1" /> Encerrado
+                        </Badge>
+                      ) : (
+                        severityBadge(r.severity)
+                      )}
+                    </td>
                     <td className="py-2 text-muted-foreground">
                       {sourceLabel(r.source)}
                     </td>
@@ -281,6 +295,14 @@ export function PerformanceAlertsPanel() {
                       <div className="truncate" title={r.reason || ""}>
                         {r.reason || r.alert_key}
                       </div>
+                      {r.resolved_reason ? (
+                        <div
+                          className="truncate text-green-600/80 text-[10px]"
+                          title={r.resolved_reason}
+                        >
+                          {r.resolved_reason}
+                        </div>
+                      ) : null}
                       {r.query_snippet ? (
                         <div
                           className="truncate text-muted-foreground/70 text-[10px] font-mono"
@@ -290,6 +312,7 @@ export function PerformanceAlertsPanel() {
                         </div>
                       ) : null}
                     </td>
+
                     <td className="py-2 text-right tabular-nums">
                       {formatMetric(r.source, r.alert_key, r.current_value)}
                     </td>
