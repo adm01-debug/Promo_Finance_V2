@@ -96,9 +96,17 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-write-isolation.sql
 
-
-
-
+      - name: Tenant policy scope gate (Gate #25)
+        # Falha quando uma policy baseada apenas em has_role protege tabela
+        # multi-inquilino — por coluna empresa_id (vínculo direto) ou por FK
+        # para tabela com empresa_id (vínculo indireto). Sem
+        # empresa_acessivel(...) o admin de uma empresa alcança as demais.
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/security/test-tenant-policy-scope.sql
 
 
       - name: Integridade dos catálogos tributários (pgTAP)
