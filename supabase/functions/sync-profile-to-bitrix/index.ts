@@ -2,7 +2,9 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.4
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'npm:zod@3.23.8';
 
-const _SyncProfileSchema = z.object({
+// Anotacao explicita: sem ela a inferencia do zod dentro de `validateContract`
+// explodia em profundidade (TS2589).
+const _SyncProfileSchema: z.ZodType<SyncBody> = z.object({
   full_name: z.string().optional(),
   avatar_url: z.string().url().nullable().optional(),
   telefone: z.string().nullable().optional(),
