@@ -8,8 +8,28 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
 import { onCLS, onFID, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
+
+/**
+ * Converte um objeto arbitrário em `Json` serializável.
+ *
+ * Breadcrumbs carregam `Record<string, unknown>` fornecido pelo chamador, que
+ * pode conter valores não serializáveis (funções, Map, referências cíclicas,
+ * `undefined`). O round-trip por JSON normaliza tudo isso e garante que o
+ * payload enviado ao banco seja exatamente o que a coluna `jsonb` aceita —
+ * evitando tanto erro de tipo quanto falha silenciosa de insert em runtime.
+ */
+function toJson(value: unknown): Json {
+  try {
+    return JSON.parse(JSON.stringify(value ?? {})) as Json;
+  } catch {
+    // Referência cíclica ou getter que lança: preserva-se o erro, perde-se o anexo.
+    return { _unserializable: true };
+  }
+}
+
 
 // Breadcrumbs para rastreamento de ações do usuário e chamadas Supabase
 type BreadcrumbData = Record<string, unknown> | undefined;
