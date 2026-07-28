@@ -22,7 +22,11 @@ interface AlertRow {
   query_snippet: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;
+  /** Preenchido quando o sintoma deixou de existir (ex.: automação voltou a rodar). */
+  resolved_at: string | null;
+  resolved_reason: string | null;
 }
+
 
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
 
