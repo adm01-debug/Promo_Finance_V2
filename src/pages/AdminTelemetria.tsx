@@ -267,6 +267,10 @@ export default function AdminTelemetriaPage() {
         {/* Alertas de Regressão */}
         <PerformanceAlertsPanel />
 
+        {/* Invariantes de Integridade de Dados */}
+        <IntegrityAlertsPanel />
+
+
         {/* Tendência Semanal */}
         <PerformanceAlertsWeeklyTrend />
 
