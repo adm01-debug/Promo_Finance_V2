@@ -16,7 +16,7 @@
  *  - header `x-cron-secret` conferido contra `integration_secrets`;
  *  - JWT de usuário com papel `admin`.
  */
-import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeaders } from "../_shared/cors.ts";
 import { z } from 'npm:zod@3.23.8';
 
@@ -57,7 +57,7 @@ const json = (body: unknown, status = 200) =>
 
 /** E-mails dos administradores — fallback quando não há preferências. */
 async function destinatariosAdmin(
-  admin: ReturnType<typeof createClient>,
+  admin: SupabaseClient<any, "public", any>,
 ): Promise<string[]> {
   const { data: adminRoles } = await admin.from('user_roles').select('user_id').eq('role', 'admin');
   const adminIds = (adminRoles ?? []).map((r) => r.user_id as string);

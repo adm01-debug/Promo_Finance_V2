@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { Bitrix24WebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts'
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
 import { authenticateWebhook } from '../_shared/webhook-auth.ts'
+import { mensagemErro } from '../_shared/erros.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -61,6 +62,6 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('Erro bitrix24 webhook:', error)
-    return createErrorResponse(error.message, 500)
+    return createErrorResponse(mensagemErro(error), 500)
   }
 })

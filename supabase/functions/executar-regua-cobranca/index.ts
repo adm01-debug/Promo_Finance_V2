@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import { mensagemErro } from "../_shared/erros.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -148,7 +149,7 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('Erro régua cobrança:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: mensagemErro(error) }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

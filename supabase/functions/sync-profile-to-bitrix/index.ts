@@ -1,12 +1,19 @@
-import { createClient } from "npm:@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 import { validateContract } from '../_shared/contract-validator.ts';
-import { z } from 'npm:zod@3.23.8';
+// Mesma instancia de zod usada por `_shared/contract-validator.ts`: importar de
+// outra origem cria dois tipos `ZodType` incompativeis (origem do TS2589/TS2345).
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
-const _SyncProfileSchema = z.object({
+// Anotacao explicita: sem ela a inferencia do zod dentro de `validateContract`
+// explodia em profundidade (TS2589).
+const _SyncProfileSchema: z.ZodType<SyncBody> = z.object({
   full_name: z.string().optional(),
   avatar_url: z.string().url().nullable().optional(),
   telefone: z.string().nullable().optional(),
-}).passthrough();
+// `.strict()` no lugar de `.passthrough()`: alem de rejeitar campos nao
+// previstos, o passthrough gerava um tipo recursivo que estourava o
+// type-check (TS2589) neste ponto de validacao.
+}).strict();
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,6 +30,7 @@ const BITRIX_CLIENT_ID = Deno.env.get("BITRIX24_CLIENT_ID");
 const BITRIX_CLIENT_SECRET = Deno.env.get("BITRIX24_CLIENT_SECRET");
 
 interface SyncBody {
+  full_name?: string;
   avatar_url?: string | null;
   telefone?: string | null;
 }
@@ -46,7 +54,7 @@ function normalizePhone(v: unknown): string | null {
 }
 
 /** Obtém token Bitrix válido: tenta tabela `bitrix_oauth_tokens`, faz refresh se preciso, cai em env. */
-async function getBitrixToken(admin: ReturnType<typeof createClient>): Promise<string | null> {
+async function getBitrixToken(admin: SupabaseClient<any, "public", any>): Promise<string | null> {
   const { data: tokenRow } = await admin
     .from("bitrix_oauth_tokens")
     .select("access_token, refresh_token, expires_at")
@@ -135,9 +143,9 @@ Deno.serve(async (req) => {
   let body: SyncBody;
   try {
     const _raw = await req.json();
-    const _v = await validateContract(_SyncProfileSchema, _raw);
+    const _v = await validateContract<SyncBody>(_SyncProfileSchema, _raw);
     if (!_v.success) return _v.response;
-    body = _v.data as unknown as SyncBody;
+    body = _v.data;
   } catch {
     return jsonResp({ error: "invalid_json" }, 400);
   }

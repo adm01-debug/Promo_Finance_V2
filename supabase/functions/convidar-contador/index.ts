@@ -3,7 +3,6 @@
 // Gera token assinado para acesso read-only e envia e-mail via Resend
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { z } from 'https://esm.sh/zod@3.23.8';
 import { create as createJwt, getNumericDate } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { validateContract } from "../_shared/contract-validator.ts";

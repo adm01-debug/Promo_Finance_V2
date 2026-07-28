@@ -3,6 +3,7 @@ import { ConcurrencyLimiter } from '../_shared/concurrency-limiter.ts'
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { exigirPapel } from "../_shared/auth-guard.ts";
+import { mensagemErro } from "../_shared/erros.ts";
 
 const _WebhookSimSchema = z.object({
   run_id: z.string().uuid(),
@@ -158,13 +159,13 @@ Deno.serve(async (req) => {
 
       } catch (err) {
         failureCount++
-        errors.push(err.message)
+        errors.push(mensagemErro(err))
         await supabase.from('webhook_simulation_results').insert({
           run_id,
           scenario_name: `${scenario.name} #${i+1} (Erro)`,
           payload,
           success: false,
-          error_message: err.message
+          error_message: mensagemErro(err)
         })
       }
     }
@@ -193,7 +194,7 @@ Deno.serve(async (req) => {
     })
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: mensagemErro(error) }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

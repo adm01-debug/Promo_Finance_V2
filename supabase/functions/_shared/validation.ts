@@ -1,5 +1,5 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger, LogLevel } from "./logger.ts";
 
 /**
@@ -76,7 +76,7 @@ export function createErrorResponse(message: string, status = 400, details?: unk
  * Deduplica webhooks baseados em ID do provedor para evitar processamento duplo.
  */
 export async function isWebhookProcessed(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient<any, "public", any>,
   tableName: string,
   providerIdColumn: string,
   providerId: string,
@@ -148,9 +148,24 @@ export const AsaasProxySchema = z.object({
   data: z.record(z.any()).optional()
 }).strict();
 
+// `passthrough()` mantinha os campos extras como `unknown`, o que obrigava a
+// funcao a espalhar `as any` e derrubava o type-check em 17 pontos. Declaramos
+// o contrato real do proxy (os parametros que as acoes de fato consomem) e
+// mantemos o passthrough apenas para acoes novas ainda nao mapeadas.
 export const BlingProxySchema = z.object({
-  action: z.string(),
+  action: z.string().min(1).max(80),
+  id: z.union([z.string(), z.number()]).optional(),
+  ids: z.array(z.union([z.string(), z.number()])).optional(),
+  codigo: z.union([z.string(), z.number()]).optional(),
+  baixaId: z.union([z.string(), z.number()]).optional(),
+  idSituacao: z.union([z.string(), z.number()]).optional(),
+  enviarEmail: z.boolean().optional(),
+  data: z.record(z.any()).optional(),
+  filtros: z.record(z.any()).optional(),
+  code: z.string().min(1).optional(),
+  redirect_uri: z.string().url().optional(),
 }).passthrough();
+
 
 
 export const AnalyzeDocumentSchema = z.object({
@@ -223,10 +238,34 @@ export const ExecutarRelatoriosSchema = z.object({
   relatorio_id: z.string().uuid().optional().nullable(),
 }).strict();
 
-export const WhatsappIaProativoSchema = z.object({
-  action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia']),
-  data: z.record(z.any()).optional(),
-}).strict();
+// Uniao discriminada por acao: `data: z.record(z.any()).optional()` aceitava
+// requisicao sem `data` e a funcao desestruturava campos obrigatorios de
+// `undefined` (crash 500) ou enviava WhatsApp com telefone/mensagem vazios.
+// Cada acao agora declara exatamente o payload de que precisa.
+export const WhatsappIaProativoSchema = z.discriminatedUnion("action", [
+  z.object({
+    action: z.literal("analisar-alertas"),
+    data: z.record(z.any()).optional(),
+  }).strict(),
+  z.object({
+    action: z.literal("enviar-mensagem"),
+    data: z.object({
+      telefone: z.string().min(8).max(20),
+      mensagem: z.string().min(1).max(4000),
+      cliente_id: z.string().uuid().optional(),
+      tipo: z.string().max(50).optional(),
+      conta_receber_id: z.string().uuid().optional(),
+    }).strict(),
+  }).strict(),
+  z.object({
+    action: z.literal("gerar-resposta-ia"),
+    data: z.object({
+      pergunta_cliente: z.string().min(1).max(2000),
+      contexto: z.string().max(4000).optional(),
+    }).strict(),
+  }).strict(),
+]);
+
 
 export const ExpertAgentSchema = z.object({
   messages: z.array(z.object({

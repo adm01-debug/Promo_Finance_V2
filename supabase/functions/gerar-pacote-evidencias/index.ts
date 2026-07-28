@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import JSZip from "https://esm.sh/jszip@3.10.1";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
@@ -66,8 +66,8 @@ const ESCOPO_CONFIG: Record<Escopo, { table: string; dateCol: string; filename: 
 
 async function processarPacote(
   body: Body,
-  user: { id: string; email: string | null | undefined },
-  admin: ReturnType<typeof createClient>,
+  user: { id: string; email?: string | null },
+  admin: SupabaseClient<any, "public", any>,
   emit: Emit,
 ) {
   const inicioISO = `${body.periodo_inicio}T00:00:00.000Z`;

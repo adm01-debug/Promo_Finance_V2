@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4"
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
 import { validateContract } from "../_shared/contract-validator.ts"
 import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import { mensagemErro } from "../_shared/erros.ts";
 
 const WhatsappAnalyzerBodySchema = z.object({
   record: z.object({
@@ -89,7 +90,7 @@ serve(async (req) => {
     })
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: mensagemErro(error) }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
     })

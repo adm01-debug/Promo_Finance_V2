@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { WhatsappWebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts'
 import { authenticateWebhook } from '../_shared/webhook-auth.ts'
+import { mensagemErro } from '../_shared/erros.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -44,7 +45,10 @@ Deno.serve(async (req) => {
         .from('execucoes_cobranca')
         .update({ 
           status: status === 'read' ? 'lido' : status === 'delivered' ? 'entregue' : 'enviado',
-          metadata: { ...rawBody, updated_at: new Date().toISOString() }
+          // Persistimos o payload ja validado (`body`), nao o `rawBody` cru: alem de
+          // `unknown` nao ser espalhavel, gravar o corpo bruto guardaria campos
+          // arbitrarios enviados por terceiros dentro do metadata.
+          metadata: { ...body, updated_at: new Date().toISOString() }
         })
         .eq('provider_message_id', messageId)
 
@@ -74,7 +78,7 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('Erro whatsapp webhook:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: mensagemErro(error) }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

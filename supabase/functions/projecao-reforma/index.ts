@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -98,21 +99,21 @@ Deno.serve(async (req) => {
 
     const economiaAcumulada = projecoes.reduce((acc, p) => acc + (tributosAtuais - p.totalTributos), 0);
 
-    logger.info('projecao_concluida', { duration: Date.now() - t0 });
+    logger.info('projecao_concluida', { duration_ms: Date.now() - t0 });
     await logger.flush();
 
     return new Response(JSON.stringify({
       cargaAtual,
       projecoes,
       economiaAcumulada,
-      parametros: body
+      parametros: parsed.data
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    logger.error('erro_projecao', { error: err.message });
+    logger.error('erro_projecao', { error_message: mensagemErro(err) });
     await logger.flush();
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
+    return new Response(JSON.stringify({ error: mensagemErro(err) }), { status: 500, headers: corsHeaders });
   }
 });

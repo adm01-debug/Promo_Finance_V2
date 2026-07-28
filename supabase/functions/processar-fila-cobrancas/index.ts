@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
+import { mensagemErro } from "../_shared/erros.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -86,7 +87,7 @@ Deno.serve(async (req) => {
         results.push({ id: item.id, success })
       } catch (e) {
         console.error(`Falha ao processar item ${item.id}:`, e)
-        await supabase.from('fila_cobrancas').update({ status: 'falhou', erro: e.message }).eq('id', item.id)
+        await supabase.from('fila_cobrancas').update({ status: 'falhou', erro: mensagemErro(e) }).eq('id', item.id)
       }
     }
 
@@ -95,7 +96,7 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('Erro processar fila:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: mensagemErro(error) }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

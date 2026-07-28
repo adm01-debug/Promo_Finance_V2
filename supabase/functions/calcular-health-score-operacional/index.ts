@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { OptionalEmpresaIdSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
@@ -17,22 +17,62 @@ function clamp(n: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, n));
 }
 
+/**
+ * O client Deno e criado sem os tipos gerados do banco, entao cada `select`
+ * devolve `{ coluna: unknown }`. Em vez de anotar o callback (o que colidia com
+ * a inferencia e produzia 15 erros de type-check), normalizamos a leitura num
+ * unico ponto: o formato esperado e declarado explicitamente pelo chamador.
+ */
+function linhas<T>(data: unknown): T[] {
+  return Array.isArray(data) ? (data as T[]) : [];
+}
+
+function paraNumero(v: unknown): number {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 async function calcularEmpresa(
-  client: ReturnType<typeof createClient>,
-  empresaId: string | null
+  // Tipo explicito: `ReturnType<typeof createClient>` resolve os genericos sem
+  // vinculo (`SupabaseClient<unknown, never, ...>`) e nao aceita o client real.
+  client: SupabaseClient<any, "public", any>,
+  empresaId: string,
 ) {
+  // `alertas`, `solicitacoes_lgpd` e `transacoes_bancarias` nao possuem
+  // `empresa_id`. Sem estas duas resolucoes os scores 3, 4 e 6 eram calculados
+  // sobre a base inteira: o health score de uma empresa refletia o
+  // comportamento de outros inquilinos. Resolvemos o vinculo indireto uma vez.
+  const { data: perfisRaw } = await client
+    .from("profiles")
+    .select("user_id")
+    .eq("empresa_id", empresaId);
+  const usuariosEmpresa = linhas<{ user_id: string | null }>(perfisRaw)
+    .map((p) => p.user_id)
+    .filter((id): id is string => typeof id === "string");
+
+  const { data: contasRaw } = await client
+    .from("contas_bancarias")
+    .select("id, saldo_atual")
+    .eq("empresa_id", empresaId);
+  const contasEmpresa = linhas<{ id: string; saldo_atual: unknown }>(contasRaw);
+  const idsContas = contasEmpresa.map((c) => c.id);
+
   // 1) Tributário: % apurações com status finalizado nos últimos 3 meses
   let scoreTrib = 50;
   try {
-    const { data: aps } = await client
+    const { data } = await client
       .from("apuracoes_tributarias")
       .select("status")
       .eq("empresa_id", empresaId)
-      .gte("competencia", new Date(new Date().setMonth(new Date().getMonth() - 3))
-        .toISOString()
-        .slice(0, 10));
-    if (aps && aps.length > 0) {
-      const ok = aps.filter((a: { status: string | null }) => a.status === "finalizado").length;
+      .gte(
+        "competencia",
+        new Date(new Date().setMonth(new Date().getMonth() - 3))
+          .toISOString()
+          .slice(0, 10),
+      );
+    const aps = linhas<{ status: string | null }>(data);
+    if (aps.length > 0) {
+      const ok = aps.filter((a) => a.status === "finalizado").length;
       scoreTrib = clamp((ok / aps.length) * 100);
     } else {
       scoreTrib = 70;
@@ -42,64 +82,76 @@ async function calcularEmpresa(
   // 2) Financeiro: saldo positivo + inadimplência baixa
   let scoreFin = 50;
   try {
-    const { data: contas } = await client
-      .from("contas_bancarias")
-      .select("saldo_atual")
-      .eq("empresa_id", empresaId);
-    const saldoTotal = (contas ?? []).reduce(
-      (s: number, c: { saldo_atual: number | null }) => s + (Number(c.saldo_atual) || 0),
-      0
+    const saldoTotal = contasEmpresa.reduce(
+      (s, c) => s + paraNumero(c.saldo_atual),
+      0,
     );
-    const { data: vencidas } = await client
+    const { data: vencidasRaw } = await client
       .from("contas_receber")
       .select("valor")
       .eq("empresa_id", empresaId)
       .eq("status", "vencido");
-    const totalVencido = (vencidas ?? []).reduce(
-      (s: number, c: { valor: number | null }) => s + (Number(c.valor) || 0),
-      0
+    const totalVencido = linhas<{ valor: unknown }>(vencidasRaw).reduce(
+      (s, c) => s + paraNumero(c.valor),
+      0,
     );
     const ratio = saldoTotal > 0 ? totalVencido / saldoTotal : 1;
     scoreFin = clamp(saldoTotal > 0 ? 100 - ratio * 50 : 30);
   } catch { /* default */ }
 
-  // 3) Operacional: % conciliação
+  // 3) Operacional: % conciliação (escopo: contas bancárias desta empresa)
   let scoreOp = 60;
   try {
-    const { data: txs } = await client
-      .from("transacoes_bancarias")
-      .select("conciliada")
-      .gte("data", new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().slice(0, 10));
-    if (txs && txs.length > 0) {
-      const conc = txs.filter((t: { conciliada: boolean | null }) => t.conciliada).length;
-      scoreOp = clamp((conc / txs.length) * 100);
+    if (idsContas.length > 0) {
+      const { data } = await client
+        .from("transacoes_bancarias")
+        .select("conciliada")
+        .in("conta_bancaria_id", idsContas)
+        .gte(
+          "data",
+          new Date(new Date().setDate(new Date().getDate() - 30))
+            .toISOString()
+            .slice(0, 10),
+        );
+      const txs = linhas<{ conciliada: boolean | null }>(data);
+      if (txs.length > 0) {
+        const conc = txs.filter((t) => t.conciliada === true).length;
+        scoreOp = clamp((conc / txs.length) * 100);
+      }
     }
   } catch { /* default */ }
 
-  // 4) LGPD: solicitações abertas há mais de 7 dias
+  // 4) LGPD: solicitações abertas há mais de 7 dias (usuários desta empresa)
   let scoreLgpd = 100;
   try {
-    const { data: solicAbertas } = await client
-      .from("solicitacoes_lgpd")
-      .select("created_at")
-      .in("status", ["aberta", "em_analise"]);
-    if (solicAbertas && solicAbertas.length > 0) {
-      const atrasadas = solicAbertas.filter(
-        (s: { created_at: string }) =>
+    if (usuariosEmpresa.length > 0) {
+      const { data } = await client
+        .from("solicitacoes_lgpd")
+        .select("created_at")
+        .in("user_id", usuariosEmpresa)
+        .in("status", ["aberta", "em_analise"]);
+      const solicAbertas = linhas<{ created_at: string | null }>(data);
+      if (solicAbertas.length > 0) {
+        const atrasadas = solicAbertas.filter((s) =>
+          s.created_at !== null &&
           Date.now() - new Date(s.created_at).getTime() > 7 * 24 * 3600 * 1000
-      ).length;
-      scoreLgpd = clamp(100 - atrasadas * 20);
+        ).length;
+        scoreLgpd = clamp(100 - atrasadas * 20);
+      }
     }
   } catch { /* default */ }
 
   // 5) Cadastros: empresa tem regime + cnae
   let scoreCad = 50;
   try {
-    const { data: empresa } = await client
+    const { data } = await client
       .from("empresas")
       .select("regime_tributario, cnae_principal")
       .eq("id", empresaId)
       .maybeSingle();
+    const empresa = data as
+      | { regime_tributario: unknown; cnae_principal: unknown }
+      | null;
     if (empresa) {
       let v = 0;
       if (empresa.regime_tributario) v += 50;
@@ -108,18 +160,26 @@ async function calcularEmpresa(
     }
   } catch { /* default */ }
 
-  // 6) Engajamento: alertas atendidos
+  // 6) Engajamento: alertas atendidos (usuários desta empresa)
   let scoreEng = 60;
   try {
-    const { data: alertas } = await client
-      .from("alertas")
-      .select("lido")
-      .gte("created_at", new Date(new Date().setDate(new Date().getDate() - 30)).toISOString());
-    if (alertas && alertas.length > 0) {
-      const lidos = alertas.filter((a: { lido: boolean | null }) => a.lido).length;
-      scoreEng = clamp((lidos / alertas.length) * 100);
+    if (usuariosEmpresa.length > 0) {
+      const { data } = await client
+        .from("alertas")
+        .select("lido")
+        .in("user_id", usuariosEmpresa)
+        .gte(
+          "created_at",
+          new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+        );
+      const alertas = linhas<{ lido: boolean | null }>(data);
+      if (alertas.length > 0) {
+        const lidos = alertas.filter((a) => a.lido === true).length;
+        scoreEng = clamp((lidos / alertas.length) * 100);
+      }
     }
   } catch { /* default */ }
+
 
   const total =
     scoreTrib * PESOS.tributario +

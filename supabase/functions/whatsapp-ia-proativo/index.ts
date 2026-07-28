@@ -47,7 +47,8 @@ serve(async (req) => {
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details);
     }
-    const { action, data } = validation.data;
+    const parsed = validation.data;
+    const action = parsed.action;
 
     console.log('[whatsapp-ia-proativo] Ação:', action);
 
@@ -183,7 +184,7 @@ serve(async (req) => {
     }
 
     if (action === 'enviar-mensagem') {
-      const { telefone, mensagem, cliente_id, tipo } = data;
+      const { telefone, mensagem, cliente_id } = parsed.data;
       
       // Formatar número
       const numeroFormatado = formatarTelefone(telefone);
@@ -194,7 +195,7 @@ serve(async (req) => {
 
       // Registrar no histórico
       await supabase.from('historico_cobranca_whatsapp').insert({
-        conta_receber_id: data.conta_receber_id || null,
+        conta_receber_id: parsed.data.conta_receber_id ?? null,
         cliente_id,
         telefone: numeroFormatado,
         mensagem,
@@ -211,7 +212,7 @@ serve(async (req) => {
     }
 
     if (action === 'gerar-resposta-ia') {
-      const { pergunta_cliente, contexto } = data;
+      const { pergunta_cliente, contexto } = parsed.data;
 
       if (!lovableApiKey) {
         return new Response(JSON.stringify({

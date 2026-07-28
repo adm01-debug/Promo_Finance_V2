@@ -39,8 +39,22 @@ Deno.serve(async (req) => {
 
     // --- OAuth Actions ---
     if (action === "oauth_callback") {
-      return await handleOAuthCallback(supabase, params, userId);
+      // `code` e `redirect_uri` sao opcionais no schema geral (as demais acoes
+      // nao os usam), entao a obrigatoriedade e exigida aqui. Sem esta guarda a
+      // troca de token seguia com `undefined` e falhava no Bling com erro opaco.
+      if (!params.code || !params.redirect_uri) {
+        return jsonResponse(
+          { error: "oauth_callback exige 'code' e 'redirect_uri'." },
+          400,
+        );
+      }
+      return await handleOAuthCallback(
+        supabase,
+        { code: params.code, redirect_uri: params.redirect_uri },
+        userId,
+      );
     }
+
 
     // --- Gap #3: Token revocation ---
     if (action === "revogar_token") {

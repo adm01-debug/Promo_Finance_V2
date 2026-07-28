@@ -5,7 +5,7 @@
 // Política pura em ./policy.ts (testada em policy_test.ts com 1000 cenários).
 
 import { corsHeaders } from "../_shared/cors.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 import { createLogger } from "../_shared/logger.ts";
 import { getRequestId, correlationResponseHeaders } from "../_shared/correlation.ts";
 import { ConcurrencyLimiter } from "../_shared/concurrency-limiter.ts";
@@ -209,7 +209,7 @@ Deno.serve(async (req) => {
 });
 
 async function invokePuller(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient<any, "public", any>,
   e: EligibleCnpj,
   logger: ReturnType<typeof createLogger>,
   requestId: string,
