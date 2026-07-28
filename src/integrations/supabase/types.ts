@@ -19674,6 +19674,33 @@ export type Database = {
         Args: { p_job_name?: string; p_limit?: number }
         Returns: Json
       }
+      get_frontend_error_groups: {
+        Args: { p_desde?: string; p_limit?: number; p_severity?: string }
+        Returns: {
+          assinatura: string
+          exemplo_mensagem: string
+          ocorrencias: number
+          primeira_ocorrencia: string
+          severity: string
+          ultima_ocorrencia: string
+          urls_distintas: number
+          usuarios_afetados: number
+        }[]
+      }
+      get_frontend_error_occurrences: {
+        Args: { p_assinatura: string; p_desde?: string; p_limit?: number }
+        Returns: {
+          created_at: string
+          error_message: string
+          error_stack: string
+          id: string
+          metadata: Json
+          severity: string
+          url: string
+          user_agent: string
+          user_id: string
+        }[]
+      }
       get_integrity_alerts: {
         Args: { p_incluir_resolvidos?: boolean; p_limit?: number }
         Returns: {
