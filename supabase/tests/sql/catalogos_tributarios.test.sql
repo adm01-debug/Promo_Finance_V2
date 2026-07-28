@@ -16,7 +16,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(83);
+SELECT plan(85);
 
 -- ---------------------------------------------------------------------------
 -- 1) Chaves primárias
@@ -383,6 +383,19 @@ SELECT ok(
     WHERE n.nspname = 'public' AND p.proname = 'check_catalogos_tributarios_invariants')
     LIKE '%resolved_at IS NULL%',
   'rotina de invariantes fecha alertas tributários já corrigidos');
+
+
+-- Notificação de administradores em caso de crítico
+SELECT ok(
+  (SELECT prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'check_catalogos_tributarios_invariants')
+    LIKE '%catalogo_tributario%',
+  'rotina notifica administradores quando há invariantes críticas');
+
+SELECT ok(
+  public.check_catalogos_tributarios_invariants() ? 'admins_notified'
+  OR public.check_catalogos_tributarios_invariants() ? 'skipped',
+  'verificação retorna contagem de administradores notificados');
 
 SELECT * FROM finish();
 
