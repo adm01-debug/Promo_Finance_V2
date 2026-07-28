@@ -482,8 +482,11 @@ BEGIN
         AND c.table_name = p.tablename
         AND c.column_name IN ('empresa_id', 'user_id')
     )
-    AND coalesce(p.qual, '') !~ 'auth\.uid|has_role|empresa_acessivel|is_org|has_permission'
-    AND coalesce(p.with_check, '') !~ 'auth\.uid|has_role|empresa_acessivel|is_org|has_permission';
+    -- `empresa_membro_ativo` (Gap #29) é predicado de inquilino legítimo: só
+    -- responde sobre vínculo ativo do próprio auth.uid().
+    AND coalesce(p.qual, '')       !~ 'auth\.uid|has_role|empresa_acessivel|empresa_membro_ativo|is_org|has_permission'
+    AND coalesce(p.with_check, '') !~ 'auth\.uid|has_role|empresa_acessivel|empresa_membro_ativo|is_org|has_permission';
+
 
   IF v_lista IS NOT NULL THEN
     RAISE EXCEPTION 'FAIL: políticas sem predicado de inquilino em tabelas multi-empresa: %', v_lista;
