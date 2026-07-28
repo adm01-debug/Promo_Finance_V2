@@ -594,4 +594,72 @@ BEGIN
   RAISE NOTICE 'PASS: nenhuma política de escrita permite orfanar ou realocar linha entre inquilinos.';
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- 19) Caminho de LEITURA: caches e trilhas server-only não podem ser lidos por
+--     `authenticated` (Gap #30).
+--     Encontrado em produção: `cnpja_cache` guardava o payload cadastral completo
+--     (razão social, endereço, QSA/sócios) de CNPJs consultados por TODOS os
+--     inquilinos, com policy SELECT `true`. Qualquer usuário logado podia enumerar
+--     o cache global — vazamento cross-tenant e PII de sócios (LGPD). A tabela é
+--     escrita/lida apenas pela edge function `cnpja-lookup` via service_role.
+--     Mesma classe: `overlay_rejeicoes_auditoria` (valores brutos de catálogo
+--     externo) tinha escrita restrita a admin/manager mas leitura aberta.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  -- Tabelas cujo acesso deve ser exclusivamente server-side (service_role).
+  v_server_only text[] := ARRAY['cnpja_cache'];
+  v_txt text;
+BEGIN
+  -- 19a) nenhum privilégio de tabela para anon/authenticated nas server-only
+  SELECT string_agg(format('%s→%s (%s)', g.table_name, g.grantee, g.privilege_type), ', ')
+    INTO v_txt
+  FROM information_schema.role_table_grants g
+  WHERE g.table_schema = 'public'
+    AND g.table_name = ANY(v_server_only)
+    AND g.grantee IN ('anon', 'authenticated', 'PUBLIC');
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: grants indevidos em tabela server-only: %', v_txt;
+  END IF;
+
+  -- 19b) nenhuma policy expondo essas tabelas a anon/authenticated
+  SELECT string_agg(format('%s.%s (%s)', p.tablename, p.policyname, p.cmd), ', ')
+    INTO v_txt
+  FROM pg_policies p
+  WHERE p.schemaname = 'public'
+    AND p.tablename = ANY(v_server_only)
+    AND (p.roles && ARRAY['anon', 'authenticated', 'public']::name[]);
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: policy expõe tabela server-only a cliente: %', v_txt;
+  END IF;
+
+  -- 19c) leitura não pode ser mais permissiva que a escrita na mesma tabela:
+  --      se INSERT/UPDATE/DELETE exigem papel (has_role) e o SELECT é `true`,
+  --      a trilha vaza para todo usuário logado.
+  SELECT string_agg(format('%s.%s', s.tablename, s.policyname), ', ')
+    INTO v_txt
+  FROM pg_policies s
+  WHERE s.schemaname = 'public'
+    AND s.cmd = 'SELECT'
+    AND 'authenticated' = ANY(s.roles)
+    AND btrim(s.qual) IN ('true', '(true)')
+    AND EXISTS (
+      SELECT 1 FROM pg_policies w
+      WHERE w.schemaname = s.schemaname
+        AND w.tablename = s.tablename
+        AND w.cmd IN ('INSERT', 'UPDATE', 'DELETE')
+        AND 'authenticated' = ANY(w.roles)
+        AND coalesce(w.with_check, w.qual) ~ 'has_role|has_any_role|empresa_membro_ativo|auth\.uid'
+    );
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: SELECT aberto em tabela cuja escrita exige papel/inquilino: %', v_txt;
+  END IF;
+
+  RAISE NOTICE 'PASS: caminho de leitura sem caches server-only expostos nem SELECT mais permissivo que a escrita.';
+END $$;
+
 ROLLBACK;
+
