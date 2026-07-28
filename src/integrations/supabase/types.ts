@@ -9314,6 +9314,122 @@ export type Database = {
         }
         Relationships: []
       }
+      operacoes_icms: {
+        Row: {
+          created_at: string
+          data_operacao: string
+          difal: number
+          empresa_id: string
+          fcp: number
+          finalidade: string | null
+          icms_operacao_propria: number
+          icms_st: number
+          id: string
+          ncm: string
+          tipo_destinatario: Database["public"]["Enums"]["tipo_destinatario"]
+          tipo_operacao: string
+          tributos_aplicaveis: Json
+          tributos_nao_aplicaveis: Json
+          uf_destino: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem: Database["public"]["Enums"]["uf_brasil"]
+          updated_at: string
+          valor_operacao: number
+          valor_total_icms: number
+        }
+        Insert: {
+          created_at?: string
+          data_operacao?: string
+          difal?: number
+          empresa_id: string
+          fcp?: number
+          finalidade?: string | null
+          icms_operacao_propria?: number
+          icms_st?: number
+          id?: string
+          ncm: string
+          tipo_destinatario: Database["public"]["Enums"]["tipo_destinatario"]
+          tipo_operacao: string
+          tributos_aplicaveis?: Json
+          tributos_nao_aplicaveis?: Json
+          uf_destino: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          valor_operacao: number
+          valor_total_icms?: number
+        }
+        Update: {
+          created_at?: string
+          data_operacao?: string
+          difal?: number
+          empresa_id?: string
+          fcp?: number
+          finalidade?: string | null
+          icms_operacao_propria?: number
+          icms_st?: number
+          id?: string
+          ncm?: string
+          tipo_destinatario?: Database["public"]["Enums"]["tipo_destinatario"]
+          tipo_operacao?: string
+          tributos_aplicaveis?: Json
+          tributos_nao_aplicaveis?: Json
+          uf_destino?: Database["public"]["Enums"]["uf_brasil"]
+          uf_origem?: Database["public"]["Enums"]["uf_brasil"]
+          updated_at?: string
+          valor_operacao?: number
+          valor_total_icms?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       operacoes_tributaveis: {
         Row: {
           cbs_aliquota: number | null
@@ -9424,6 +9540,126 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      oportunidades_elisao: {
+        Row: {
+          aplicavel: boolean
+          created_at: string
+          custo_implementacao: number | null
+          data_identificacao: string
+          economia_10anos_estimada: number | null
+          economia_anual_estimada: number | null
+          empresa_id: string
+          estrategia_codigo: string
+          id: string
+          inputs_utilizados: Json | null
+          memoria_calculo: string | null
+          motivo_nao_aplicavel: string | null
+          payback_meses: number | null
+          roi_pct: number | null
+          status: Database["public"]["Enums"]["status_workflow"]
+          status_alterado_em: string | null
+          status_alterado_por: string | null
+          updated_at: string
+        }
+        Insert: {
+          aplicavel: boolean
+          created_at?: string
+          custo_implementacao?: number | null
+          data_identificacao?: string
+          economia_10anos_estimada?: number | null
+          economia_anual_estimada?: number | null
+          empresa_id: string
+          estrategia_codigo: string
+          id?: string
+          inputs_utilizados?: Json | null
+          memoria_calculo?: string | null
+          motivo_nao_aplicavel?: string | null
+          payback_meses?: number | null
+          roi_pct?: number | null
+          status?: Database["public"]["Enums"]["status_workflow"]
+          status_alterado_em?: string | null
+          status_alterado_por?: string | null
+          updated_at?: string
+        }
+        Update: {
+          aplicavel?: boolean
+          created_at?: string
+          custo_implementacao?: number | null
+          data_identificacao?: string
+          economia_10anos_estimada?: number | null
+          economia_anual_estimada?: number | null
+          empresa_id?: string
+          estrategia_codigo?: string
+          id?: string
+          inputs_utilizados?: Json | null
+          memoria_calculo?: string | null
+          motivo_nao_aplicavel?: string | null
+          payback_meses?: number | null
+          roi_pct?: number | null
+          status?: Database["public"]["Enums"]["status_workflow"]
+          status_alterado_em?: string | null
+          status_alterado_por?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_estrategia_codigo_fkey"
+            columns: ["estrategia_codigo"]
+            isOneToOne: false
+            referencedRelation: "estrategias_elisao"
+            referencedColumns: ["codigo"]
           },
         ]
       }
@@ -10266,6 +10502,110 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      projecoes_reforma: {
+        Row: {
+          ano: number
+          carga_percentual: number
+          cbs: number
+          created_at: string
+          empresa_id: string
+          ibs: number
+          icms: number
+          id: string
+          imposto_seletivo: number
+          ipi: number
+          iss: number
+          pis_cofins: number
+          tem_split_payment: boolean
+          total_tributos: number
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          carga_percentual: number
+          cbs?: number
+          created_at?: string
+          empresa_id: string
+          ibs?: number
+          icms?: number
+          id?: string
+          imposto_seletivo?: number
+          ipi?: number
+          iss?: number
+          pis_cofins?: number
+          tem_split_payment?: boolean
+          total_tributos: number
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          carga_percentual?: number
+          cbs?: number
+          created_at?: string
+          empresa_id?: string
+          ibs?: number
+          icms?: number
+          id?: string
+          imposto_seletivo?: number
+          ipi?: number
+          iss?: number
+          pis_cofins?: number
+          tem_split_payment?: boolean
+          total_tributos?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       protestos: {
         Row: {
@@ -11957,6 +12297,187 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "contas_bancarias"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulacao_tributos_detalhados: {
+        Row: {
+          adicional: number
+          aliquota: number
+          base_calculo: number
+          base_legal: string
+          created_at: string
+          creditos: number
+          fcp: number
+          id: string
+          memoria_calculo: Json | null
+          regime: Database["public"]["Enums"]["regime_tributario_enum"]
+          retencoes: number
+          simulacao_id: string
+          tributo: string
+          valor_apurado: number
+        }
+        Insert: {
+          adicional?: number
+          aliquota: number
+          base_calculo: number
+          base_legal: string
+          created_at?: string
+          creditos?: number
+          fcp?: number
+          id?: string
+          memoria_calculo?: Json | null
+          regime: Database["public"]["Enums"]["regime_tributario_enum"]
+          retencoes?: number
+          simulacao_id: string
+          tributo: string
+          valor_apurado: number
+        }
+        Update: {
+          adicional?: number
+          aliquota?: number
+          base_calculo?: number
+          base_legal?: string
+          created_at?: string
+          creditos?: number
+          fcp?: number
+          id?: string
+          memoria_calculo?: Json | null
+          regime?: Database["public"]["Enums"]["regime_tributario_enum"]
+          retencoes?: number
+          simulacao_id?: string
+          tributo?: string
+          valor_apurado?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulacao_tributos_detalhados_simulacao_id_fkey"
+            columns: ["simulacao_id"]
+            isOneToOne: false
+            referencedRelation: "simulacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulacoes: {
+        Row: {
+          base_legal_decisao: string | null
+          carga_tributaria_recomendada: number | null
+          created_at: string
+          economia_anual_estimada: number | null
+          empresa_id: string
+          executada_por: string | null
+          hash_inputs: string
+          id: string
+          inputs: Json
+          motivo_recomendacao: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          regime_recomendado:
+            | Database["public"]["Enums"]["regime_tributario_enum"]
+            | null
+          resultado_presumido: Json | null
+          resultado_real: Json | null
+          resultado_simples: Json | null
+          tempo_execucao_ms: number | null
+          updated_at: string
+          versao_motor: string
+        }
+        Insert: {
+          base_legal_decisao?: string | null
+          carga_tributaria_recomendada?: number | null
+          created_at?: string
+          economia_anual_estimada?: number | null
+          empresa_id: string
+          executada_por?: string | null
+          hash_inputs: string
+          id?: string
+          inputs: Json
+          motivo_recomendacao?: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          regime_recomendado?:
+            | Database["public"]["Enums"]["regime_tributario_enum"]
+            | null
+          resultado_presumido?: Json | null
+          resultado_real?: Json | null
+          resultado_simples?: Json | null
+          tempo_execucao_ms?: number | null
+          updated_at?: string
+          versao_motor?: string
+        }
+        Update: {
+          base_legal_decisao?: string | null
+          carga_tributaria_recomendada?: number | null
+          created_at?: string
+          economia_anual_estimada?: number | null
+          empresa_id?: string
+          executada_por?: string | null
+          hash_inputs?: string
+          id?: string
+          inputs?: Json
+          motivo_recomendacao?: string | null
+          periodo_fim?: string
+          periodo_inicio?: string
+          regime_recomendado?:
+            | Database["public"]["Enums"]["regime_tributario_enum"]
+            | null
+          resultado_presumido?: Json | null
+          resultado_real?: Json | null
+          resultado_simples?: Json | null
+          tempo_execucao_ms?: number | null
+          updated_at?: string
+          versao_motor?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
