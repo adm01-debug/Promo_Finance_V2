@@ -14834,6 +14834,10 @@ export type Database = {
         }
         Returns: number
       }
+      escalate_stale_integrity_alerts: {
+        Args: { p_age?: string }
+        Returns: Json
+      }
       export_asaas_audit_csv: {
         Args: { p_empresa_id: string }
         Returns: string
