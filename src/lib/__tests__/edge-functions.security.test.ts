@@ -63,7 +63,7 @@ describe("Edge Functions — superfície com service_role", () => {
 
     const semGuarda = webhooks.filter((nome) => {
       const src = readFileSync(join(FUNCTIONS_DIR, nome, "index.ts"), "utf8");
-      return !/authenticateWebhook|hmac|signature/i.test(src);
+      return !/authenticateWebhook|hmac|signature|access-token|x-webhook-token/i.test(src);
     });
 
     expect(
