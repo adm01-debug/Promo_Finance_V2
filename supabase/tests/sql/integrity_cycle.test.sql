@@ -65,6 +65,7 @@ SELECT throws_ok(
 
 -- ---------------------------------------------------------------------------
 -- 2) Fixtures do cenário de encerramento
+--    (nfe_sefaz/_t_gap @10:00 já foi criado no teste 2 acima)
 -- ---------------------------------------------------------------------------
 INSERT INTO public.integrity_alerts
   (domain, invariant, severity, alert_hour, affected_count, reason)
@@ -76,9 +77,7 @@ VALUES
   ('financeiro','_t_vivo','critical', timestamptz '2001-01-01 14:00:00+00', 5, 'fixture vivo atual'),
   -- (c) domínio fora da lista -> intocado
   ('entrega','_t_outro','warning', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture outro dominio'),
-  -- (d) antigo em domínio com carência -> encerra mesmo com grace de 3h
-  ('nfe_sefaz','_t_gap','critical', timestamptz '2001-01-01 10:00:00+00', 1, 'fixture gap'),
-  -- (e) recente (dentro da carência de 3h) -> intocado quando há grace
+  -- (d) recente (dentro da carência de 3h) -> intocado quando há grace
   ('nfe_sefaz','_t_recente','warning', timestamptz '2001-01-01 12:00:00+00', 1, 'fixture recente');
 
 -- ---------------------------------------------------------------------------
