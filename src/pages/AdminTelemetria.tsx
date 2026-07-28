@@ -276,6 +276,9 @@ export default function AdminTelemetriaPage() {
         {/* Invariantes de Integridade de Dados */}
         <IntegrityAlertsPanel />
 
+        {/* Auditoria de acessos: cross-tenant e uso administrativo anômalo */}
+        <AcessosSuspeitosPanel />
+
         {/* Histórico da retenção diária */}
         <RetentionHistoryPanel />
 
