@@ -66,7 +66,9 @@ INSERT INTO _allow VALUES
   ('public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb)', 'authenticated', 'registrarEvento; valida empresa_acessivel'),
   ('public.get_frontend_error_groups(p_desde timestamp with time zone, p_severity text, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
   ('public.get_frontend_error_occurrences(p_assinatura text, p_desde timestamp with time zone, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
-  ('public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer, p_motivo text)', 'authenticated', 'AlertasProativosErros; exige has_role admin e audita em audit_logs');
+  ('public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer, p_motivo text)', 'authenticated', 'AlertasProativosErros; exige has_role admin e audita em audit_logs'),
+  ('public.get_silenciamentos_expirando(p_horas integer)', 'authenticated', 'SilenciamentosExpirando (Gap #28); exige has_role admin, somente leitura, clamp de 720h');
+
 
 -- (d) Pré-autenticação — descoberta de SSO por domínio na tela de login.
 --     Retorna apenas metadados públicos do provedor (nome, tipo, domínios).
