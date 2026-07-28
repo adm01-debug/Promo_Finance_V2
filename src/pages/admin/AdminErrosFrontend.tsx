@@ -15,6 +15,7 @@ import {
   type ErrorWindow,
   type FrontendErrorGroup,
 } from '@/hooks/useFrontendErrorLogs';
+import { AlertasProativosErros } from '@/components/admin/AlertasProativosErros';
 
 const fmt = (v: string | null) =>
   v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
@@ -204,6 +205,8 @@ export default function AdminErrosFrontend() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertasProativosErros />
     </div>
   );
 }

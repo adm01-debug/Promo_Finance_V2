@@ -76,3 +76,38 @@ export function useFrontendErrorOccurrences(assinatura: string | null, win: Erro
     refetchOnWindowFocus: false,
   });
 }
+
+/**
+ * Estado do alerta proativo por assinatura (Gap #24).
+ * Alimentado pela Edge Function `monitorar-erros-frontend`, que roda a cada
+ * 15 minutos e dispara e-mail/Slack quando uma assinatura ultrapassa o limiar.
+ */
+export interface FrontendErrorAlertState {
+  assinatura: string;
+  severity: string;
+  exemplo_mensagem: string | null;
+  primeiro_alerta_em: string;
+  ultimo_alerta_em: string;
+  ocorrencias_no_ultimo_alerta: number;
+  alertas_enviados: number;
+  silenciado_ate: string | null;
+}
+
+export function useFrontendErrorAlertState() {
+  return useQuery({
+    queryKey: ['frontend-error-alert-state'],
+    queryFn: async (): Promise<FrontendErrorAlertState[]> => {
+      const { data, error } = await supabase
+        .from('frontend_error_alert_state')
+        .select(
+          'assinatura, severity, exemplo_mensagem, primeiro_alerta_em, ultimo_alerta_em, ocorrencias_no_ultimo_alerta, alertas_enviados, silenciado_ate',
+        )
+        .order('ultimo_alerta_em', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []) as FrontendErrorAlertState[];
+    },
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+}

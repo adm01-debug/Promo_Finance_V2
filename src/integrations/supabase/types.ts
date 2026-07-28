@@ -8457,6 +8457,45 @@ export type Database = {
         }
         Relationships: []
       }
+      frontend_error_alert_state: {
+        Row: {
+          alertas_enviados: number
+          assinatura: string
+          created_at: string
+          exemplo_mensagem: string | null
+          ocorrencias_no_ultimo_alerta: number
+          primeiro_alerta_em: string
+          severity: string
+          silenciado_ate: string | null
+          ultimo_alerta_em: string
+          updated_at: string
+        }
+        Insert: {
+          alertas_enviados?: number
+          assinatura: string
+          created_at?: string
+          exemplo_mensagem?: string | null
+          ocorrencias_no_ultimo_alerta?: number
+          primeiro_alerta_em?: string
+          severity?: string
+          silenciado_ate?: string | null
+          ultimo_alerta_em?: string
+          updated_at?: string
+        }
+        Update: {
+          alertas_enviados?: number
+          assinatura?: string
+          created_at?: string
+          exemplo_mensagem?: string | null
+          ocorrencias_no_ultimo_alerta?: number
+          primeiro_alerta_em?: string
+          severity?: string
+          silenciado_ate?: string | null
+          ultimo_alerta_em?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       frontend_error_logs: {
         Row: {
           created_at: string
@@ -19396,6 +19435,25 @@ export type Database = {
         }[]
       }
       check_nfe_xml_path_invariants: { Args: never; Returns: Json }
+      claim_frontend_error_alerts: {
+        Args: {
+          p_cooldown_minutes?: number
+          p_limit?: number
+          p_threshold?: number
+          p_window_minutes?: number
+        }
+        Returns: {
+          assinatura: string
+          exemplo_mensagem: string
+          is_nova: boolean
+          ocorrencias: number
+          primeira_ocorrencia: string
+          severity: string
+          ultima_ocorrencia: string
+          urls_distintas: number
+          usuarios_afetados: number
+        }[]
+      }
       cleanup_expired_tokens: { Args: never; Returns: number }
       cleanup_log_tables: { Args: never; Returns: Json }
       cleanup_old_cron_logs: { Args: never; Returns: number }
@@ -19524,6 +19582,7 @@ export type Database = {
         Args: { _rep: Json }
         Returns: boolean
       }
+      fe_error_signature: { Args: { p_message: string }; Returns: string }
       fn_balancete: {
         Args: {
           p_data_fim: string
