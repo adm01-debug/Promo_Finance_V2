@@ -163,7 +163,20 @@ export default function CalculadoraTributaria() {
 
   const update = <K extends keyof CampoInput>(k: K, v: CampoInput[K]) => setForm((p) => ({ ...p, [k]: v }));
 
-  const resultado = useMemo(() => calcularTodosRegimes(buildInput(form)), [form]);
+  /**
+   * Quando o CNAE preponderante é válido, a atividade presumida é derivada dele
+   * (Lei 9.249/95, arts. 15 e 20), eliminando erro de seleção manual.
+   */
+  const atividadeDerivada = useMemo(
+    () => (normalizarCnae(form.cnaePreponderante) ? derivarAtividadePresumido(form.cnaePreponderante) : null),
+    [form.cnaePreponderante],
+  );
+
+  const resultado = useMemo(
+    () => calcularTodosRegimes(buildInput(form, atividadeDerivada?.atividade)),
+    [form, atividadeDerivada],
+  );
+
   const resultadoAtivo: ResultadoRegime | undefined = resultado.cenarios.find(
     (c) => c.regime === regimeSelecionado,
   ) ?? resultado.cenarios[0];
