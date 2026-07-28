@@ -160,13 +160,19 @@ export function PerformanceAlertsPanel() {
   }, [queryClient]);
 
 
+  // Os contadores refletem apenas incidentes abertos — encerrados não pesam no topo.
   const counts = data.reduce(
     (acc, r) => {
+      if (r.resolved_at) {
+        acc.resolvidos = (acc.resolvidos || 0) + 1;
+        return acc;
+      }
       acc[r.severity] = (acc[r.severity] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>,
   );
+
 
   return (
     <Card>
