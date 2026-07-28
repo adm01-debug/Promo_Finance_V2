@@ -16,6 +16,7 @@ import { IntegrityAlertsPanel } from "@/components/admin/telemetry/IntegrityAler
 import { RetentionHistoryPanel } from "@/components/admin/telemetry/RetentionHistoryPanel";
 import { CatalogosTributariosHealthPanel } from "@/components/admin/telemetry/CatalogosTributariosHealthPanel";
 import { CatalogosTributariosHistoryPanel } from "@/components/admin/telemetry/CatalogosTributariosHistoryPanel";
+import { CoberturaFiscalUFPanel } from "@/components/admin/telemetry/CoberturaFiscalUFPanel";
 
 
 
