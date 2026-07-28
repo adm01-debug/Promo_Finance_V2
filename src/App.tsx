@@ -250,6 +250,7 @@ function AppRoutes() {
             <Route path="/admin/system-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminSystemHealth /></ProtectedRoute>} />
             <Route path="/admin/sre" element={<ProtectedRoute requiredRoles={['admin']}><SRECommandCenter /></ProtectedRoute>} />
             <Route path="/admin/bloat-monitor" element={<ProtectedRoute requiredRoles={['admin']}><AdminBloatMonitor /></ProtectedRoute>} />
+            <Route path="/admin/erros-frontend" element={<ProtectedRoute requiredRoles={['admin']}><AdminErrosFrontend /></ProtectedRoute>} />ున
             <Route path="/admin/sso" element={<ProtectedRoute requiredRoles={['admin']}><SSOAdmin /></ProtectedRoute>} />
             <Route path="/admin/sso-jit-events" element={<ProtectedRoute requiredRoles={['admin']}><SSOJitEvents /></ProtectedRoute>} />
             <Route path="/admin/scim-audit" element={<ProtectedRoute requiredRoles={['admin']}><ScimAudit /></ProtectedRoute>} />
