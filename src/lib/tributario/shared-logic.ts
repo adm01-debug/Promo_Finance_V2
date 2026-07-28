@@ -493,7 +493,9 @@ export function simularSimples(
 
   return {
     regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
-    irpj: das * d.irpj, csll: das * d.csll, pis: das * d.pis, cofins: das * d.cofins,
+    irpj: das * d.irpj, csll: das * d.csll,
+    pis: das * d.pis * imune, cofins: das * d.cofins * imune,
+
     cpp, icms, iss,
     cbs: 0, ibs: 0,
     totalTributos,
