@@ -107,6 +107,18 @@ jobs:
           MIGRATION_REVISION: ${{ github.sha }}
         run: bun run scripts/security/test-rpc-runtime.ts
 
+      - name: Anonymous HTTP surface probe (RLS + grants)
+        # Gap #25 — probe real com a identidade `anon` sobre tabelas sensíveis e
+        # RPCs administrativas. Falha se houver vazamento de linhas, escrita
+        # anônima aceita ou regressão de policy (401 onde deveria haver 200 []).
+        if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CI_GATE_LOG_SECRET: ${{ secrets.CI_GATE_LOG_SECRET }}
+          MIGRATION_REVISION: ${{ github.sha }}
+        run: bun run scripts/security/test-anon-surface.ts
+
       - name: Export function privileges snapshot (CSV + JSON)
 
         # Gera um resumo por função × role para inspeção e download no CI.
