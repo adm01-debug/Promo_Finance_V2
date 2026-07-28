@@ -14716,6 +14716,7 @@ export type Database = {
         }
         Returns: string
       }
+      check_catalogos_tributarios_invariants: { Args: never; Returns: Json }
       check_integrity_invariants: { Args: never; Returns: Json }
       check_login_lockout: {
         Args: { p_email: string }
@@ -15345,6 +15346,15 @@ export type Database = {
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
         Returns: boolean
+      }
+      validar_catalogos_tributarios: {
+        Args: never
+        Returns: {
+          afetados: number
+          detalhe: string
+          invariante: string
+          severidade: string
+        }[]
       }
       watch_cron_failures: {
         Args: { p_lookback_minutes?: number; p_stale_hours?: number }

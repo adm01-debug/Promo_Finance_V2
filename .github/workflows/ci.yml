@@ -59,6 +59,24 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f supabase/tests/sql/rls_multi_empresa.sql
 
+      - name: Integridade dos catálogos tributários (pgTAP)
+        # Valida PK/UNIQUE, enums, formatos e ranges das tabelas fiscais
+        # carregadas por seeds. Falha o build em qualquer "not ok".
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f supabase/tests/sql/catalogos_tributarios.test.sql 2>&1 | tee catalogos.tap
+          if grep -q "not ok" catalogos.tap; then
+            echo "::error::Catálogos tributários com invariantes violadas."
+            grep "not ok" catalogos.tap
+            exit 1
+          fi
+          echo "✅ Catálogos tributários íntegros."
+
+
       - name: Runtime RPC privilege matrix (anon / authenticated / service_role)
         # Invoca cada RPC nfe_* e conciliacao_* via /rest/v1/rpc/<fn> com três
         # identidades reais e valida contra a matriz de exceções controladas.
