@@ -14956,9 +14956,10 @@ export type Database = {
           username: string
         }[]
       }
-      get_cron_run_history:
-        | { Args: never; Returns: Json }
-        | { Args: { p_job_name?: string; p_limit?: number }; Returns: Json }
+      get_cron_run_history: {
+        Args: { p_job_name?: string; p_limit?: number }
+        Returns: Json
+      }
       get_integrity_alerts: {
         Args: { p_hours?: number; p_only_open?: boolean }
         Returns: {
