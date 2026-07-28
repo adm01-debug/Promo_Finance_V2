@@ -63,7 +63,9 @@ INSERT INTO _allow VALUES
   ('public.get_retencoes_pendentes_count(p_empresa_id uuid)',      'authenticated', 'useAlertasTributarios; valida empresa_acessivel'),
   ('public.registrar_auditoria_config(_tipo_acao text, _empresa_id uuid, _detalhes jsonb)', 'authenticated', 'useUserEmpresas; valida empresa_acessivel'),
   ('public.registrar_evento_pagar(p_conta_id uuid, p_tipo text, p_mensagem text, p_metadata jsonb)', 'authenticated', 'registrarEvento; valida empresa_acessivel'),
-  ('public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb)', 'authenticated', 'registrarEvento; valida empresa_acessivel');
+  ('public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb)', 'authenticated', 'registrarEvento; valida empresa_acessivel'),
+  ('public.get_frontend_error_groups(p_desde timestamp with time zone, p_severity text, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
+  ('public.get_frontend_error_occurrences(p_assinatura text, p_desde timestamp with time zone, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo');
 
 -- (d) Pré-autenticação — descoberta de SSO por domínio na tela de login.
 --     Retorna apenas metadados públicos do provedor (nome, tipo, domínios).
