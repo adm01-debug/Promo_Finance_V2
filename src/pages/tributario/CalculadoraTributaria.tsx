@@ -161,7 +161,20 @@ export default function CalculadoraTributaria() {
     }
   }, [usarDadosReais, dadosReais]);
 
+  /**
+   * O CNAE preponderante da empresa selecionada alimenta a derivação de presunção.
+   * Só sobrescreve enquanto o usuário não tiver digitado um CNAE manualmente
+   * (rastreado por `cnaeManual`), preservando a intenção explícita do operador.
+   */
+  const [cnaeManual, setCnaeManual] = useState(false);
+  const cnaeEmpresa = empresaSelecionada?.cnae_principal ?? '';
+  useEffect(() => {
+    if (cnaeManual) return;
+    setForm((p) => (p.cnaePreponderante === cnaeEmpresa ? p : { ...p, cnaePreponderante: cnaeEmpresa }));
+  }, [cnaeEmpresa, cnaeManual]);
+
   const update = <K extends keyof CampoInput>(k: K, v: CampoInput[K]) => setForm((p) => ({ ...p, [k]: v }));
+
 
   /**
    * Quando o CNAE preponderante é válido, a atividade presumida é derivada dele
@@ -356,8 +369,25 @@ export default function CalculadoraTributaria() {
                       inputMode="numeric"
                       placeholder="ex.: 4930-2/02"
                       value={form.cnaePreponderante}
-                      onChange={(e) => update('cnaePreponderante', e.target.value)}
+                      onChange={(e) => {
+                        setCnaeManual(true);
+                        update('cnaePreponderante', e.target.value);
+                      }}
                     />
+                    {cnaeEmpresa && !cnaeManual && (
+                      <p className="text-xs text-muted-foreground">
+                        Preenchido pelo cadastro da empresa selecionada.
+                      </p>
+                    )}
+                    {cnaeManual && cnaeEmpresa && cnaeEmpresa !== form.cnaePreponderante && (
+                      <button
+                        type="button"
+                        className="text-xs text-primary underline-offset-2 hover:underline"
+                        onClick={() => setCnaeManual(false)}
+                      >
+                        Usar CNAE do cadastro ({cnaeEmpresa})
+                      </button>
+                    )}
                     {atividadeDerivada && (
                       <p className="text-xs text-muted-foreground">
                         Derivado: <span className="text-foreground">{ROTULO_ATIVIDADE[atividadeDerivada.atividade]}</span>
@@ -367,6 +397,7 @@ export default function CalculadoraTributaria() {
                       </p>
                     )}
                   </div>
+
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Atividade</Label>
                     <Select
