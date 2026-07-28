@@ -26,6 +26,29 @@ interface AlertRow {
 
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
 
+const SOURCE_LABELS: Record<string, string> = {
+  pg_stat_statements: "pg_stat",
+  query_telemetry: "telemetry",
+  cron: "automação",
+};
+
+function sourceLabel(source: string): string {
+  return SOURCE_LABELS[source] ?? source;
+}
+
+/**
+ * Alertas de origens distintas não compartilham unidade: telemetria mede
+ * latência (ms), enquanto alertas de automação medem ocorrências ou horas.
+ */
+function formatMetric(source: string, alertKey: string, value: number | null): string {
+  if (value == null) return "—";
+  if (source !== "cron") return `${Math.round(value)}ms`;
+  if (alertKey.startsWith("job_stale:")) return `${Number(value).toFixed(1)}h`;
+  if (alertKey.startsWith("job_failed:")) return `${Math.round(value)}x`;
+  return "—";
+}
+
+
 function severityBadge(sev: string) {
   if (sev === "critical")
     return (
@@ -206,7 +229,7 @@ export function PerformanceAlertsPanel() {
                   <tr key={`${r.source}-${r.alert_key}-${idx}`} className="border-b border-muted/40">
                     <td className="py-2">{severityBadge(r.severity)}</td>
                     <td className="py-2 text-muted-foreground">
-                      {r.source === "pg_stat_statements" ? "pg_stat" : "telemetry"}
+                      {sourceLabel(r.source)}
                     </td>
                     <td className="py-2 max-w-md">
                       <div className="truncate" title={r.reason || ""}>
@@ -222,10 +245,10 @@ export function PerformanceAlertsPanel() {
                       ) : null}
                     </td>
                     <td className="py-2 text-right tabular-nums">
-                      {r.current_value != null ? `${Math.round(r.current_value)}ms` : "—"}
+                      {formatMetric(r.source, r.alert_key, r.current_value)}
                     </td>
                     <td className="py-2 text-right tabular-nums text-muted-foreground">
-                      {r.baseline_value != null ? `${Math.round(r.baseline_value)}ms` : "—"}
+                      {formatMetric(r.source, r.alert_key, r.baseline_value)}
                     </td>
                     <td className="py-2 text-right tabular-nums">
                       {r.ratio != null ? `${Number(r.ratio).toFixed(2)}x` : "—"}

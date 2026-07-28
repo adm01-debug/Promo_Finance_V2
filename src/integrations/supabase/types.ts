@@ -15302,6 +15302,10 @@ export type Database = {
         Args: { p_ip_address?: unknown; p_token_hash: string }
         Returns: boolean
       }
+      watch_cron_failures: {
+        Args: { p_lookback_minutes?: number; p_stale_hours?: number }
+        Returns: Json
+      }
       webhook_claim: {
         Args: {
           p_event_type: string
