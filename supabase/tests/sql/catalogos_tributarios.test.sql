@@ -16,7 +16,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(65);
+SELECT plan(72);
 
 -- ---------------------------------------------------------------------------
 -- 1) Chaves primárias
@@ -276,6 +276,45 @@ SELECT is(
      HAVING count(*) FILTER (WHERE item_lista_id IS NULL) = 0) s)::int,
   0, 'todo município deve ter alíquota geral de ISS como fallback'
 );
+
+
+-- ============================================================
+-- Blindagem de acesso: RPC de saúde fiscal e rotina de invariantes
+-- ============================================================
+
+SELECT has_function('public', 'get_catalogos_tributarios_health', ARRAY[]::text[],
+  'RPC get_catalogos_tributarios_health deve existir');
+
+SELECT is(
+  (SELECT prosecdef FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'get_catalogos_tributarios_health'),
+  true, 'get_catalogos_tributarios_health deve ser SECURITY DEFINER');
+
+SELECT ok(
+  NOT has_function_privilege('anon', 'public.get_catalogos_tributarios_health()', 'EXECUTE'),
+  'anon não pode executar get_catalogos_tributarios_health');
+
+SELECT ok(
+  has_function_privilege('authenticated', 'public.get_catalogos_tributarios_health()', 'EXECUTE'),
+  'authenticated pode chamar a RPC (guarda de admin ocorre dentro da função)');
+
+SELECT ok(
+  NOT has_function_privilege('anon', 'public.validar_catalogos_tributarios()', 'EXECUTE')
+  AND NOT has_function_privilege('authenticated', 'public.validar_catalogos_tributarios()', 'EXECUTE'),
+  'validar_catalogos_tributarios não é executável por anon nem authenticated');
+
+-- Sem JWT admin a RPC deve negar acesso (auth.uid() nulo)
+SELECT throws_ok(
+  'SELECT public.get_catalogos_tributarios_health()',
+  '42501',
+  NULL,
+  'get_catalogos_tributarios_health nega acesso sem papel admin');
+
+-- A rotina de invariantes permanece executável por jobs internos (sem JWT)
+SELECT is(
+  (public.check_catalogos_tributarios_invariants() ? 'success')
+  OR (public.check_catalogos_tributarios_invariants() ? 'skipped'),
+  true, 'check_catalogos_tributarios_invariants roda para jobs internos sem JWT');
 
 SELECT * FROM finish();
 
