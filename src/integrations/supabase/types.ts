@@ -14584,6 +14584,51 @@ export type Database = {
         }
         Relationships: []
       }
+      scim_operations_log: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          empresa_id: string | null
+          external_id: string | null
+          id: string
+          operation: string
+          request_body: Json | null
+          resource_type: string
+          response_body: Json | null
+          status_code: number
+          token_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          empresa_id?: string | null
+          external_id?: string | null
+          id?: string
+          operation: string
+          request_body?: Json | null
+          resource_type: string
+          response_body?: Json | null
+          status_code: number
+          token_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          empresa_id?: string | null
+          external_id?: string | null
+          id?: string
+          operation?: string
+          request_body?: Json | null
+          resource_type?: string
+          response_body?: Json | null
+          status_code?: number
+          token_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       scim_setup_checklist: {
         Row: {
           confirmed: boolean
@@ -15759,6 +15804,150 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      sso_role_mappings: {
+        Row: {
+          app_role: Database["public"]["Enums"]["app_role"]
+          created_at: string
+          id: string
+          idp_group: string
+          ordem: number
+          provider_id: string
+          updated_at: string
+        }
+        Insert: {
+          app_role: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          idp_group: string
+          ordem?: number
+          provider_id: string
+          updated_at?: string
+        }
+        Update: {
+          app_role?: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          idp_group?: string
+          ordem?: number
+          provider_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_role_mappings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sso_sandbox_runs: {
+        Row: {
+          batch_id: string | null
+          created_at: string
+          created_by: string | null
+          created_by_email: string | null
+          email_masked: string | null
+          has_errors: boolean
+          id: string
+          input: Json
+          matched_group: string | null
+          outcome: string
+          provider_id: string | null
+          provider_nome: string | null
+          resolved_role: string | null
+          result: Json
+          use_provider_config: boolean
+        }
+        Insert: {
+          batch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          email_masked?: string | null
+          has_errors?: boolean
+          id?: string
+          input?: Json
+          matched_group?: string | null
+          outcome: string
+          provider_id?: string | null
+          provider_nome?: string | null
+          resolved_role?: string | null
+          result?: Json
+          use_provider_config?: boolean
+        }
+        Update: {
+          batch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          email_masked?: string | null
+          has_errors?: boolean
+          id?: string
+          input?: Json
+          matched_group?: string | null
+          outcome?: string
+          provider_id?: string | null
+          provider_nome?: string | null
+          resolved_role?: string | null
+          result?: Json
+          use_provider_config?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_sandbox_runs_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sso_user_groups: {
+        Row: {
+          created_at: string
+          groups: string[]
+          id: string
+          last_synced_at: string
+          matched_group: string | null
+          matched_role: Database["public"]["Enums"]["app_role"] | null
+          provider_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          groups?: string[]
+          id?: string
+          last_synced_at?: string
+          matched_group?: string | null
+          matched_role?: Database["public"]["Enums"]["app_role"] | null
+          provider_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          groups?: string[]
+          id?: string
+          last_synced_at?: string
+          matched_group?: string | null
+          matched_role?: Database["public"]["Enums"]["app_role"] | null
+          provider_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_user_groups_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
           },
         ]
       }
