@@ -14974,7 +14974,7 @@ export type Database = {
         Returns: Json
       }
       get_integrity_alerts: {
-        Args: { p_hours?: number; p_only_open?: boolean }
+        Args: { p_incluir_resolvidos?: boolean; p_limit?: number }
         Returns: {
           affected_count: number
           alert_hour: string
@@ -14984,6 +14984,7 @@ export type Database = {
           invariant: string
           reason: string
           resolved_at: string
+          resolved_reason: string
           sample_ids: string[]
           severity: string
         }[]
@@ -15269,7 +15270,10 @@ export type Database = {
         Returns: string
       }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
-      resolve_integrity_alert: { Args: { p_id: string }; Returns: Json }
+      resolve_integrity_alert: {
+        Args: { p_alert_id: string }
+        Returns: boolean
+      }
       resolve_sso_providers_for_domain: {
         Args: { p_domain: string }
         Returns: {
