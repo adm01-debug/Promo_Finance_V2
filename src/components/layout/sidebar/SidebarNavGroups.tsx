@@ -51,6 +51,7 @@ import {
   Tag,
   Code2,
   ClipboardCheck,
+  Search,
   CalendarCheck,
 } from 'lucide-react';
 
