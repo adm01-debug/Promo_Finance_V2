@@ -142,12 +142,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  /**
+   * Garante perfil, vínculo com a empresa padrão e papel inicial (menor
+   * privilégio) para o usuário autenticado. A RPC é idempotente e nunca
+   * rebaixa papéis já existentes, então pode ser chamada em todo SIGNED_IN.
+   */
+  const provisionarUsuario = async () => {
+    try {
+      const { error } = await supabase.rpc('provisionar_usuario_atual');
+      if (error) {
+        logger.warn('[useAuth] provisionamento automático falhou', error);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      logger.warn('[useAuth] provisionamento automático falhou', err);
+      return false;
+    }
+  };
+
   const refreshProfile = async () => {
     if (user) {
       await fetchProfile(user.id);
       await fetchRoleForEmpresa(user.id, currentEmpresaId);
     }
   };
+
 
   useEffect(() => {
     let mounted = true;
