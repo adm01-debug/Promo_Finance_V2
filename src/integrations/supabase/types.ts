@@ -15015,6 +15015,7 @@ export type Database = {
           total_invariantes: number
         }[]
       }
+      get_cobertura_fiscal_uf: { Args: never; Returns: Json }
       get_cron_jobs: {
         Args: never
         Returns: {
