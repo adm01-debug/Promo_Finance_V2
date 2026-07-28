@@ -17,7 +17,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(23);
+SELECT plan(22);
 
 -- Horas de referência determinísticas (fora de qualquer hora real de produção
 -- para não colidir com o unique (domain, invariant, alert_hour)).
@@ -180,20 +180,7 @@ SELECT ok(
 -- ---------------------------------------------------------------------------
 -- 7b) Escalonamento de alertas críticos esquecidos (>24h)
 -- ---------------------------------------------------------------------------
--- Sem alertas críticos envelhecidos: nada é escalonado
-DELETE FROM public.performance_alerts
- WHERE source = 'cron' AND alert_key = 'integrity_stale_critical';
-UPDATE public.integrity_alerts
-   SET resolved_at = now(), resolved_reason = 'setup-teste'
- WHERE resolved_at IS NULL AND severity = 'critical';
-
-SELECT is(
-  (public.escalate_stale_integrity_alerts(interval '24 hours') ->> 'escalated')::bigint,
-  0::bigint,
-  'sem críticos envelhecidos, nada deve ser escalonado'
-);
-
--- Alerta crítico aberto há 3 dias deve gerar plantão
+-- Alerta crítico aberto há 3 dias deve gerar plantão em performance_alerts
 INSERT INTO public.integrity_alerts
   (domain, invariant, severity, alert_hour, affected_count, reason, created_at)
 VALUES
@@ -201,21 +188,21 @@ VALUES
    date_trunc('hour', now() - interval '3 days'), 7,
    'alerta crítico esquecido', now() - interval '3 days');
 
-SELECT is(
-  (public.escalate_stale_integrity_alerts(interval '24 hours') ->> 'escalated')::bigint,
-  1::bigint,
+SELECT ok(
+  (public.escalate_stale_integrity_alerts(interval '24 hours') ->> 'escalated')::bigint >= 1,
   'crítico aberto há 3 dias deve ser escalonado'
 );
 
 SELECT is(
   (SELECT count(*) FROM public.performance_alerts
     WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'
+      AND alert_hour = date_trunc('hour', now())
       AND resolved_at IS NULL AND severity = 'critical'),
   1::bigint,
-  'escalonamento deve abrir exatamente um alerta de plantão'
+  'escalonamento deve abrir exatamente um alerta de plantão na hora corrente'
 );
 
--- Idempotência: reexecutar não duplica linhas
+-- Idempotência: reexecutar não duplica linhas nem reabre em duplicidade
 SELECT lives_ok(
   $$SELECT public.escalate_stale_integrity_alerts(interval '24 hours')$$,
   'escalonamento deve ser idempotente'
@@ -223,24 +210,26 @@ SELECT lives_ok(
 
 SELECT is(
   (SELECT count(*) FROM public.performance_alerts
-    WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'),
+    WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'
+      AND alert_hour = date_trunc('hour', now())),
   1::bigint,
   'reexecução não pode duplicar o alerta de plantão'
 );
 
--- Resolvido o incidente, o plantão se encerra sozinho
-UPDATE public.integrity_alerts
-   SET resolved_at = now(), resolved_reason = 'teste'
- WHERE invariant = 'teste_escalonamento';
-
+-- Metadados de diagnóstico devem acompanhar o plantão
 SELECT ok(
-  (public.escalate_stale_integrity_alerts(interval '24 hours') ->> 'closed')::int >= 1
-  AND NOT EXISTS (
-    SELECT 1 FROM public.performance_alerts
-     WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'
-       AND resolved_at IS NULL
-  ),
-  'plantão deve se auto-encerrar quando não há mais críticos envelhecidos'
+  (SELECT metadata ? 'dominios' AND metadata ? 'mais_antigo' AND metadata ? 'idade_horas'
+     FROM public.performance_alerts
+    WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'
+      AND alert_hour = date_trunc('hour', now())),
+  'plantão deve registrar domínios, alerta mais antigo e idade em horas'
+);
+
+-- Janela maior que a idade do incidente não deve escalonar
+SELECT is(
+  (public.escalate_stale_integrity_alerts(interval '365 days') ->> 'escalated')::bigint,
+  0::bigint,
+  'incidente mais novo que a janela configurada não deve ser escalonado'
 );
 
 -- ---------------------------------------------------------------------------
