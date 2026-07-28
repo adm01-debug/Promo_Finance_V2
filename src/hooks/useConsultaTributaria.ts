@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { chaveConsulta, lerConsulta, salvarConsulta } from '@/lib/offline/fiscal-cache';
+
 
 /** Estratégia de correspondência devolvida pelo endpoint (exata ou fallback). */
 export interface MatchInfo {
