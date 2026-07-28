@@ -116,13 +116,69 @@ export default function PfVinculada() {
 
       <div className="container mx-auto p-6 space-y-6">
         <header>
-          <h1 className="text-3xl font-bold tracking-tight">PF Vinculada — IRPFM</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Tributação da Pessoa Física</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Imposto Mínimo PF sobre dividendos &gt; R$ {IRPFM_LIMITE_ISENCAO_MENSAL.toLocaleString('pt-BR')}/mês.
-            Vigência: 2026 (Lei 15.270/2025).
+            Lei 15.270/2025 — IRRF de 10% sobre dividendos acima de R${' '}
+            {IRPFM_LIMITE_ISENCAO_MENSAL.toLocaleString('pt-BR')}/mês e IRPFM para renda anual acima de
+            R$ 600.000. Vigência: 2026.
           </p>
         </header>
 
+        <Tabs defaultValue="socio" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="socio">Simulação do sócio</TabsTrigger>
+            <TabsTrigger value="mensal">Distribuição mensal</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="socio" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Inputs do sócio</CardTitle>
+                <CardDescription>
+                  A carga é recalculada em tempo real conforme você altera os valores.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-2">
+                  <Label htmlFor="pf-pro-labore">Pró-labore mensal (R$)</Label>
+                  <Input
+                    id="pf-pro-labore"
+                    type="number"
+                    min={0}
+                    step={500}
+                    value={socio.proLaboreMensal || ''}
+                    onChange={(e) => setSocioCampo('proLaboreMensal', Number(e.target.value))}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="pf-dividendos">Dividendos mensais (R$)</Label>
+                  <Input
+                    id="pf-dividendos"
+                    type="number"
+                    min={0}
+                    step={1000}
+                    value={socio.dividendosMensais || ''}
+                    onChange={(e) => setSocioCampo('dividendosMensais', Number(e.target.value))}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="pf-outras">Outras rendas anuais (R$)</Label>
+                  <Input
+                    id="pf-outras"
+                    type="number"
+                    min={0}
+                    step={1000}
+                    value={socio.outrasRendasAnuais || ''}
+                    onChange={(e) => setSocioCampo('outrasRendasAnuais', Number(e.target.value))}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <ResultadoPf data={simulacaoSocio} otimizacao={otimizacaoSocio} />
+          </TabsContent>
+
+          <TabsContent value="mensal" className="space-y-6">
         <Alert>
           <Info className="h-4 w-4" aria-hidden />
           <AlertTitle>Como funciona o IRPFM</AlertTitle>
