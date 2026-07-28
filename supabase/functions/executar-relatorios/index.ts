@@ -22,6 +22,81 @@ serve(async (req) => {
     }
     const relatorioId = validation.data.relatorio_id || null;
 
+    // ------------------------------------------------------------------
+    // Autorização. A função roda com `service_role`, então sem esta guarda
+    // qualquer pessoa poderia disparar o envio de relatórios de qualquer
+    // empresa (exfiltração de dados financeiros para os destinatários
+    // cadastrados) ou provocar rajadas de e-mail.
+    //
+    // Dois caminhos legítimos:
+    //  1. pg_cron / agendador: header `x-cron-secret` — só lote agendado.
+    //  2. Usuário autenticado: JWT válido + vínculo ativo com a empresa dona
+    //     do relatório — só execução manual de um relatório específico.
+    // ------------------------------------------------------------------
+    const cronSecretEsperado = Deno.env.get('RELATORIOS_CRON_SECRET')?.trim()
+      || Deno.env.get('CRON_DISPATCH_SECRET')?.trim()
+      || null;
+    const cronSecretRecebido = req.headers.get('x-cron-secret')?.trim() || null;
+    const chamadaDeCron = Boolean(
+      cronSecretEsperado && cronSecretRecebido && cronSecretRecebido === cronSecretEsperado,
+    );
+
+    if (chamadaDeCron) {
+      if (relatorioId) {
+        return createErrorResponse(
+          'Execução por cron não pode selecionar um relatório específico',
+          400,
+        );
+      }
+    } else {
+      const authHeader = req.headers.get('Authorization') ?? '';
+      if (!authHeader.startsWith('Bearer ')) {
+        return createErrorResponse('Não autorizado', 401);
+      }
+
+      const supabaseAuth = createClient(
+        supabaseUrl,
+        Deno.env.get('SUPABASE_ANON_KEY')!,
+        { global: { headers: { Authorization: authHeader } } },
+      );
+
+      const { data: userData, error: userError } = await supabaseAuth.auth.getUser();
+      const userId = userData?.user?.id;
+      if (userError || !userId) {
+        return createErrorResponse('Não autorizado', 401);
+      }
+
+      if (!relatorioId) {
+        return createErrorResponse(
+          'Execução manual exige informar o relatório a ser enviado',
+          400,
+        );
+      }
+
+      // O relatório precisa existir e pertencer a uma empresa da qual o
+      // usuário é membro ativo. Resposta genérica evita enumeração de IDs.
+      const { data: alvo } = await supabase
+        .from('relatorios_agendados')
+        .select('id, empresa_id')
+        .eq('id', relatorioId)
+        .maybeSingle();
+
+      if (!alvo) {
+        return createErrorResponse('Relatório não encontrado', 404);
+      }
+
+      const { data: temAcesso, error: acessoError } = await supabaseAuth.rpc(
+        'empresa_membro_ativo',
+        { _empresa_id: alvo.empresa_id },
+      );
+
+      if (acessoError || temAcesso !== true) {
+        console.warn(
+          `[executar-relatorios] Acesso negado: user=${userId} relatorio=${relatorioId}`,
+        );
+        return createErrorResponse('Relatório não encontrado', 404);
+      }
+    }
 
     if (relatorioId) {
       console.log(`[executar-relatorios] Execução manual do relatório: ${relatorioId}`);
