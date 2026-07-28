@@ -36,6 +36,7 @@ export async function aprenderRegra(
   } else {
     const user = (await supabase.auth.getUser()).data.user;
     await supabase.from('regras_conciliacao').insert({
+      nome: `Regra automática — ${entidadeNome}`,
       padrao_descricao: padrao,
       entidade_nome: entidadeNome,
       lancamento_tipo: lancamentoTipo,

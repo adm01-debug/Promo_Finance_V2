@@ -103,6 +103,26 @@ const ALIQUOTA_IRPJ = 0.15;
 const ALIQUOTA_IRPJ_ADICIONAL = 0.10;
 const ALIQUOTA_CSLL = 0.09;
 
+/** Calcula período inicial/final da apuração conforme o tipo (trimestral, mensal ou anual). */
+function periodoApuracao(
+  tipo: 'trimestral' | 'anual' | 'estimativa',
+  ano: number,
+  trimestre?: number,
+  mes?: number,
+): { periodo_inicio: string; periodo_fim: string } {
+  const iso = (y: number, m: number, d: number) =>
+    `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  if (tipo === 'trimestral' && trimestre) {
+    const inicio = (trimestre - 1) * 3 + 1;
+    const fim = inicio + 2;
+    return { periodo_inicio: iso(ano, inicio, 1), periodo_fim: iso(ano, fim, new Date(ano, fim, 0).getDate()) };
+  }
+  if (tipo === 'estimativa' && mes) {
+    return { periodo_inicio: iso(ano, mes, 1), periodo_fim: iso(ano, mes, new Date(ano, mes, 0).getDate()) };
+  }
+  return { periodo_inicio: iso(ano, 1, 1), periodo_fim: iso(ano, 12, 31) };
+}
+
 export function useIRPJCSLL(empresaId?: string) {
   const queryClient = useQueryClient();
 
@@ -165,6 +185,8 @@ export function useIRPJCSLL(empresaId?: string) {
         .from('apuracoes_irpj_csll')
         .insert({
           ...input,
+          // periodo_inicio/periodo_fim são NOT NULL: derivados do tipo de apuração.
+          ...periodoApuracao(input.tipo_apuracao, input.ano, input.trimestre, input.mes),
           status: 'rascunho',
         })
         .select()
@@ -299,6 +321,8 @@ export function useIRPJCSLL(empresaId?: string) {
           empresa_id: input.empresa_id,
           tipo: input.tipo,
           ano_origem: input.ano_origem,
+          // periodo é NOT NULL: primeiro dia do trimestre/ano de origem.
+          periodo: `${input.ano_origem}-${String(((input.trimestre_origem ?? 1) - 1) * 3 + 1).padStart(2, '0')}-01`,
           trimestre_origem: input.trimestre_origem,
           valor_original: input.valor,
           valor_compensado: 0,

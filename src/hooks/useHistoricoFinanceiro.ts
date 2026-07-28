@@ -31,6 +31,11 @@ export interface FolhaRow {
   observacoes?: string | null;
 }
 
+/** Converte ano/mês em uma data (primeiro dia do mês) para a coluna mes_referencia. */
+function mesReferencia(ano: number, mes: number): string {
+  return `${ano}-${String(mes).padStart(2, '0')}-01`;
+}
+
 export function useHistoricoFinanceiro(empresaId?: string) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -72,7 +77,12 @@ export function useHistoricoFinanceiro(empresaId?: string) {
       const { error } = await supabase
         .from('faturamento_mensal')
         .upsert(
-          { ...row, created_by: user?.id ?? null },
+          {
+            ...row,
+            // mes_referencia é NOT NULL no banco: derivado de ano/mês informados.
+            mes_referencia: mesReferencia(row.ano, row.mes),
+            created_by: user?.id ?? null,
+          },
           { onConflict: 'empresa_id,ano,mes' },
         );
       if (error) throw error;
@@ -90,7 +100,11 @@ export function useHistoricoFinanceiro(empresaId?: string) {
       const { error } = await supabase
         .from('folha_pagamento')
         .upsert(
-          { ...row, created_by: user?.id ?? null },
+          {
+            ...row,
+            mes_referencia: mesReferencia(row.ano, row.mes),
+            created_by: user?.id ?? null,
+          },
           { onConflict: 'empresa_id,ano,mes' },
         );
       if (error) throw error;
