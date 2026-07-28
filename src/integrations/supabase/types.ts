@@ -19585,6 +19585,7 @@ export type Database = {
         Returns: string
       }
       empresa_acessivel: { Args: { _empresa_id: string }; Returns: boolean }
+      empresa_membro_ativo: { Args: { _empresa_id: string }; Returns: boolean }
       enqueue_webhook_retry: {
         Args: {
           p_error: string

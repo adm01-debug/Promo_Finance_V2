@@ -67,7 +67,9 @@ INSERT INTO _allow VALUES
   ('public.get_frontend_error_groups(p_desde timestamp with time zone, p_severity text, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
   ('public.get_frontend_error_occurrences(p_assinatura text, p_desde timestamp with time zone, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
   ('public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer, p_motivo text)', 'authenticated', 'AlertasProativosErros; exige has_role admin e audita em audit_logs'),
-  ('public.get_silenciamentos_expirando(p_horas integer)', 'authenticated', 'SilenciamentosExpirando (Gap #28); exige has_role admin, somente leitura, clamp de 720h');
+  ('public.get_silenciamentos_expirando(p_horas integer)', 'authenticated', 'SilenciamentosExpirando (Gap #28); exige has_role admin, somente leitura, clamp de 720h'),
+  ('public.empresa_membro_ativo(_empresa_id uuid)', 'authenticated', 'Predicado de RLS de public.clientes (Gap #29); só responde sobre o vínculo do PRÓPRIO auth.uid(), não vaza nada de terceiros');
+
 
 
 -- (d) Pré-autenticação — descoberta de SSO por domínio na tela de login.
@@ -480,8 +482,11 @@ BEGIN
         AND c.table_name = p.tablename
         AND c.column_name IN ('empresa_id', 'user_id')
     )
-    AND coalesce(p.qual, '') !~ 'auth\.uid|has_role|empresa_acessivel|is_org|has_permission'
-    AND coalesce(p.with_check, '') !~ 'auth\.uid|has_role|empresa_acessivel|is_org|has_permission';
+    -- `empresa_membro_ativo` (Gap #29) é predicado de inquilino legítimo: só
+    -- responde sobre vínculo ativo do próprio auth.uid().
+    AND coalesce(p.qual, '')       !~ 'auth\.uid|has_role|empresa_acessivel|empresa_membro_ativo|is_org|has_permission'
+    AND coalesce(p.with_check, '') !~ 'auth\.uid|has_role|empresa_acessivel|empresa_membro_ativo|is_org|has_permission';
+
 
   IF v_lista IS NOT NULL THEN
     RAISE EXCEPTION 'FAIL: políticas sem predicado de inquilino em tabelas multi-empresa: %', v_lista;
@@ -549,5 +554,44 @@ BEGIN
   RAISE NOTICE 'PASS: trilhas de notificação são somente-leitura para o cliente.';
 END $$;
 
-ROLLBACK;
+-- ----------------------------------------------------------------------------
+-- 18) Escrita não pode escapar do inquilino (Gap #29).
+--     Encontrado em produção: `clientes_grupo_update` tinha
+--     USING (empresa_id IS NOT NULL AND ...) mas WITH CHECK (empresa_id IS NULL
+--     OR ...). O usuário lia a linha, gravava empresa_id = NULL e ela sumia de
+--     todas as políticas — perda de dado silenciosa e irreversível pela UI.
+--     Gate detalhado (com probe de runtime) em test-write-isolation.sql; aqui
+--     fica a trava estática, barata, que roda em toda execução da baseline.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE v_txt text;
+BEGIN
+  SELECT string_agg(format('%s.%s (%s)', p.tablename, p.policyname, p.cmd), ', ')
+    INTO v_txt
+  FROM pg_policies p
+  WHERE p.schemaname = 'public'
+    AND p.cmd IN ('INSERT', 'UPDATE', 'ALL')
+    AND ('authenticated' = ANY(p.roles) OR 'public' = ANY(p.roles))
+    AND p.with_check IS NOT NULL
+    AND (
+      -- WITH CHECK aceita órfã enquanto o USING exige vínculo
+      (p.qual IS NOT NULL
+        AND p.qual ~ '\mempresa_id IS NOT NULL\M'
+        AND p.with_check ~ '\mempresa_id IS NULL\M')
+      -- ou WITH CHECK trivial em tabela multi-inquilino
+      OR (btrim(p.with_check) IN ('true', '(true)')
+        AND EXISTS (
+          SELECT 1 FROM information_schema.columns col
+          WHERE col.table_schema = 'public'
+            AND col.table_name = p.tablename
+            AND col.column_name = 'empresa_id'))
+    );
 
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: política(s) de escrita permitem escapar do inquilino: %', v_txt;
+  END IF;
+
+  RAISE NOTICE 'PASS: nenhuma política de escrita permite orfanar ou realocar linha entre inquilinos.';
+END $$;
+
+ROLLBACK;

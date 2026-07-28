@@ -83,6 +83,21 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-tenant-isolation.sql
 
+      - name: Write isolation gate (escrita cross-tenant)
+        # Cobre o caminho de ESCRITA: WITH CHECK nunca mais permissivo que o
+        # USING (padrão que permitia orfanar a linha zerando empresa_id),
+        # WITH CHECK trivial em tabela multi-inquilino, e probe de runtime em
+        # que UPDATE/DELETE em massa como usuário sem vínculo devem afetar
+        # zero linhas. Tudo dentro de transação com ROLLBACK.
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/security/test-write-isolation.sql
+
+
+
 
 
 
