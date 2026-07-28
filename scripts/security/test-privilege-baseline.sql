@@ -164,6 +164,11 @@ BEGIN
     ('bitrix_oauth_tokens',  'authenticated', ARRAY[]::text[]),
     ('integration_secrets',  'authenticated', ARRAY[]::text[]);
 
+  -- Cofre de sessões da integração Lalamove (cookies/tokens da UAPI):
+  -- leitura apenas para admins autenticados; escrita só via service_role.
+  INSERT INTO _cofres VALUES
+    ('lalamove_uapi_sessions', 'authenticated', ARRAY['SELECT']);
+
   -- (c) administrados pela UI (RLS exige papel admin / empresa acessível)
   INSERT INTO _cofres VALUES
     ('bitrix24_tokens',        'authenticated', ARRAY['SELECT','INSERT','UPDATE','DELETE']),
@@ -366,6 +371,32 @@ BEGIN
   END IF;
 
   RAISE NOTICE 'PASS: alerta proativo de erros restrito ao backend.';
+END $$;
+
+-- ----------------------------------------------------------------------------
+-- 12) Canário do probe HTTP anônimo (Gap #25)
+--     O gate scripts/security/test-anon-surface.ts insere uma linha marcada em
+--     frontend_error_logs a cada execução de CI. O gatilho de sanitização deve
+--     descartá-la, senão o painel administrativo e o alerta proativo (Gap #24)
+--     seriam poluídos por ruído de pipeline.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_antes bigint;
+  v_depois bigint;
+BEGIN
+  SELECT count(*) INTO v_antes FROM public.frontend_error_logs;
+
+  INSERT INTO public.frontend_error_logs (error_message, severity, url)
+  VALUES ('[ci-anon-surface-probe] canário de regressão', 'warning', 'https://ci.local/anon-surface-probe');
+
+  SELECT count(*) INTO v_depois FROM public.frontend_error_logs;
+
+  IF v_depois <> v_antes THEN
+    RAISE EXCEPTION 'FAIL: canário do probe anônimo foi persistido (% linha(s)); o gatilho de sanitização regrediu.', v_depois - v_antes;
+  END IF;
+
+  RAISE NOTICE 'PASS: canário do probe anônimo é descartado pelo gatilho de sanitização.';
 END $$;
 
 ROLLBACK;
