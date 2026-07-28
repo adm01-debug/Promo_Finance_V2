@@ -801,7 +801,10 @@ BEGIN
     RAISE EXCEPTION 'FAIL: privilégio de anon fora da allowlist em public: %', v_txt;
   END IF;
 
-  -- 21b
+  -- 21b — DEFAULT PRIVILEGES dos papéis que ESTE projeto usa para criar
+  --       objetos. `supabase_admin` é gerenciado pela plataforma e não é
+  --       alterável por nós; nenhuma migration deste repositório roda com ele
+  --       (todas executam como `postgres`), portanto está fora do escopo.
   SELECT string_agg(DISTINCT format('%s', pg_get_userbyid(d.defaclrole)), ', ')
     INTO v_txt
   FROM pg_default_acl d
@@ -809,6 +812,7 @@ BEGIN
   CROSS JOIN LATERAL unnest(d.defaclacl) AS acl
   WHERE n.nspname = 'public'
     AND d.defaclobjtype IN ('r','S')
+    AND pg_get_userbyid(d.defaclrole) IN ('postgres', 'service_role')
     AND acl::text LIKE 'anon=%';
 
   IF v_txt IS NOT NULL THEN
