@@ -20137,7 +20137,6 @@ export type Database = {
       resolve_sso_providers_for_domain: {
         Args: { p_domain: string }
         Returns: {
-          allowed_domains: string[]
           force_sso_for_domains: boolean
           id: string
           nome: string
