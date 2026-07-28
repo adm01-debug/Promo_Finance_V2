@@ -253,8 +253,9 @@ export function PerformanceAlertsPanel() {
           <p className="text-sm text-muted-foreground">Carregando alertas...</p>
         ) : data.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            ✅ Nenhum alerta de regressão detectado no período.
+            ✅ Nenhum alerta {incluirResolvidos ? "" : "em aberto "}no período.
           </p>
+
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
