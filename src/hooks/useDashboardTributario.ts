@@ -33,7 +33,7 @@ export function useDashboardTributario(empresaId?: string, periodoMeses: 3 | 6 |
     queryFn: async () => {
       if (!empresaId) return [] as SerieMensal[];
       const { data, error } = await supabase
-        .from('vw_tributario_dashboard' as never)
+        .from('vw_tributario_dashboard')
         .select('competencia, ano, mes, total_tributos, cbs, ibs, imposto_seletivo')
         .eq('empresa_id', empresaId)
         .order('ano', { ascending: false })

@@ -35,7 +35,7 @@ export function useSefazObservability() {
     queryKey: ['sefaz-observability'],
     queryFn: async (): Promise<SefazObservabilityRow[]> => {
       const { data, error } = await supabase
-        .from('v_sefaz_observability' as never)
+        .from('v_sefaz_observability')
         .select('*')
         .order('seconds_since_last', { ascending: false, nullsFirst: true });
       if (error) throw error;

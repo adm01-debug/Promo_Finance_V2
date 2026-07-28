@@ -74,7 +74,7 @@ export default function AdminSystemHealth() {
     queryKey: ['sys-regime-cache'],
     queryFn: async () => {
       const { count } = await supabase
-        .from('regime_decision_cache' as never)
+        .from('regime_decision_cache')
         .select('*', { count: 'exact', head: true })
         .gt('expires_at', new Date().toISOString());
       return { ativos: count ?? 0 };
@@ -87,10 +87,10 @@ export default function AdminSystemHealth() {
     queryKey: ['sys-agendamentos'],
     queryFn: async () => {
       const { count: total } = await supabase
-        .from('relatorios_tributarios_agendados' as never)
+        .from('relatorios_tributarios_agendados')
         .select('*', { count: 'exact', head: true });
       const { count: ativos } = await supabase
-        .from('relatorios_tributarios_agendados' as never)
+        .from('relatorios_tributarios_agendados')
         .select('*', { count: 'exact', head: true })
         .eq('ativo', true);
       return { total: total ?? 0, ativos: ativos ?? 0 };
