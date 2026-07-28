@@ -39,14 +39,13 @@ jobs:
       - name: Lint Deno files
         run: deno lint supabase/functions/ || true
 
-      - name: Type-check pure modules
-        run: |
-          deno check \
-            supabase/functions/sso-test-login/pipeline.ts \
-            supabase/functions/sso-test-login/mocks.ts \
-            supabase/functions/sso-callback/profile-sync-delta.ts \
-            supabase/functions/sso-callback/claims.ts || \
-            { echo "::warning::deno check failed — see above"; exit 1; }
+      # Gate #24 — type-check de TODAS as edge functions e módulos
+      # compartilhados, mais a checagem de fonte única de Zod.
+      # Antes só 4 módulos puros eram verificados aqui, o que deixou 53 erros
+      # de tipagem (e dois arquivos que nem parseavam) chegarem a produção.
+      - name: Gate #24 — Type-check completo das edge functions
+        run: bash scripts/ci/deno-check-functions.sh
+
 
       - name: Run unit tests (no network required)
         run: |
