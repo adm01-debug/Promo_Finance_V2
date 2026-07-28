@@ -119,6 +119,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "acoes_recomendadas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       acordos_parcelamento: {
@@ -258,6 +265,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "acordos_parcelamento_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -635,6 +649,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alertas_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -1347,6 +1368,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "apuracoes_irpj_csll_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       apuracoes_tributarias: {
@@ -1515,6 +1543,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "apuracoes_tributarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -2475,6 +2510,102 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_tributaria: {
+        Row: {
+          acao: string
+          criado_em: string
+          empresa_id: string | null
+          entidade_id: string | null
+          entidade_tipo: string
+          id: string
+          payload_anterior: Json | null
+          payload_novo: Json | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acao: string
+          criado_em?: string
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo: string
+          id?: string
+          payload_anterior?: Json | null
+          payload_novo?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acao?: string
+          criado_em?: string
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string
+          id?: string
+          payload_anterior?: Json | null
+          payload_novo?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       auth_logs: {
         Row: {
           created_at: string | null
@@ -2508,6 +2639,51 @@ export type Database = {
           success?: boolean | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      benchmarks_setoriais: {
+        Row: {
+          carga_media_pct: number
+          carga_p25_pct: number | null
+          carga_p75_pct: number | null
+          cnae_prefix: string
+          created_at: string
+          fonte: string | null
+          id: string
+          regime: string
+          setor: string
+          updated_at: string
+          vigencia_fim: string | null
+          vigencia_inicio: string
+        }
+        Insert: {
+          carga_media_pct: number
+          carga_p25_pct?: number | null
+          carga_p75_pct?: number | null
+          cnae_prefix: string
+          created_at?: string
+          fonte?: string | null
+          id?: string
+          regime: string
+          setor: string
+          updated_at?: string
+          vigencia_fim?: string | null
+          vigencia_inicio?: string
+        }
+        Update: {
+          carga_media_pct?: number
+          carga_p25_pct?: number | null
+          carga_p75_pct?: number | null
+          cnae_prefix?: string
+          created_at?: string
+          fonte?: string | null
+          id?: string
+          regime?: string
+          setor?: string
+          updated_at?: string
+          vigencia_fim?: string | null
+          vigencia_inicio?: string
         }
         Relationships: []
       }
@@ -2652,6 +2828,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "bitrix_field_mappings_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       bitrix_sync_logs: {
@@ -2751,6 +2934,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "bitrix_sync_logs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -3120,6 +3310,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "bloqueios_duplicidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       boletos: {
@@ -3308,6 +3505,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "boletos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       budgets: {
@@ -3392,6 +3596,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "budgets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -3568,6 +3779,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "categorias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
           {
@@ -4010,6 +4228,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "configuracoes_aprovacao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       configuracoes_duplicidade: {
@@ -4210,6 +4435,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "contas_bancarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       contas_pagar: {
@@ -4376,6 +4608,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
           {
@@ -4572,6 +4811,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       contratos: {
@@ -4668,6 +4914,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contratos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -4807,6 +5060,13 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
           {
+            foreignKeyName: "creditos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+          {
             foreignKeyName: "creditos_tributarios_nota_fiscal_id_fkey"
             columns: ["nota_fiscal_id"]
             isOneToOne: false
@@ -4942,6 +5202,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "custom_field_definitions_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -5100,6 +5367,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -5832,6 +6106,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "elisao_alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       elisao_creditos_auditoria: {
@@ -5943,6 +6224,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "elisao_creditos_auditoria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
           {
@@ -6096,6 +6384,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "elisao_simulacoes_regime_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       elisao_tarefas_acionaveis: {
@@ -6200,6 +6495,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "elisao_tarefas_acionaveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       email_verifications: {
@@ -6253,6 +6555,7 @@ export type Database = {
           logo_url: string | null
           nome_fantasia: string | null
           razao_social: string
+          regime_tributario: string | null
           sigla: string | null
           telefone: string | null
           user_id: string
@@ -6277,6 +6580,7 @@ export type Database = {
           logo_url?: string | null
           nome_fantasia?: string | null
           razao_social: string
+          regime_tributario?: string | null
           sigla?: string | null
           telefone?: string | null
           user_id?: string
@@ -6301,6 +6605,7 @@ export type Database = {
           logo_url?: string | null
           nome_fantasia?: string | null
           razao_social?: string
+          regime_tributario?: string | null
           sigla?: string | null
           telefone?: string | null
           user_id?: string
@@ -6404,6 +6709,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "empresas_certificados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -6626,6 +6938,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "execucoes_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       expert_conversations: {
@@ -6710,6 +7029,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "expert_conversations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -6979,6 +7305,127 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "faturamento_mensal_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      fechamentos_tributarios: {
+        Row: {
+          ano: number
+          checklist: Json
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          fechado_em: string | null
+          fechado_por: string | null
+          forcado: boolean
+          id: string
+          justificativa_forcado: string | null
+          mes: number
+          observacoes: string | null
+          score_conformidade: number
+          status: string
+          total_apurado: number
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          checklist?: Json
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          fechado_em?: string | null
+          fechado_por?: string | null
+          forcado?: boolean
+          id?: string
+          justificativa_forcado?: string | null
+          mes: number
+          observacoes?: string | null
+          score_conformidade?: number
+          status?: string
+          total_apurado?: number
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          checklist?: Json
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          fechado_em?: string | null
+          fechado_por?: string | null
+          forcado?: boolean
+          id?: string
+          justificativa_forcado?: string | null
+          mes?: number
+          observacoes?: string | null
+          score_conformidade?: number
+          status?: string
+          total_apurado?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       feedback_conciliacao_ia: {
@@ -7229,6 +7676,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "fluxos_aprovacao_niveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       folha_pagamento: {
@@ -7330,6 +7784,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "folha_pagamento_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       formas_pagamento: {
@@ -7405,6 +7866,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "formas_pagamento_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -7958,6 +8426,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "health_scores_operacionais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       historico_analises_preditivas: {
@@ -8128,6 +8603,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "historico_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       historico_cobranca_whatsapp: {
@@ -8216,6 +8698,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "historico_cobranca_whatsapp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -8448,6 +8937,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "historico_score_saude_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       incentivos_fiscais: {
@@ -8550,6 +9046,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -9367,6 +9870,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "metas_financeiras_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       mfa_sessions: {
@@ -9484,6 +9994,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -9954,6 +10471,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "nfe_recebidas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       notas_fiscais: {
@@ -10047,6 +10571,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "notas_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -10154,6 +10685,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "notas_fiscais_ocr_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -10347,6 +10885,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "operacoes_icms_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       operacoes_tributaveis: {
@@ -10458,6 +11003,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "operacoes_tributaveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -10586,6 +11138,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -10845,6 +11404,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -11188,6 +11754,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       performance_alerts: {
@@ -11503,6 +12076,13 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
           {
+            foreignKeyName: "plano_contas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+          {
             foreignKeyName: "plano_contas_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
@@ -11732,6 +12312,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "prejuizos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       profiles: {
@@ -11870,6 +12457,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "projecoes_reforma_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -12282,6 +12876,103 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "recomendacoes_metas_ia_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      regime_decision_cache: {
+        Row: {
+          ano: number
+          created_at: string
+          decisao: Json
+          empresa_id: string
+          expires_at: string
+          id: string
+          mes: number
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          decisao: Json
+          empresa_id: string
+          expires_at: string
+          id?: string
+          mes: number
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          decisao?: Json
+          empresa_id?: string
+          expires_at?: string
+          id?: string
+          mes?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       regimes_especiais_empresa: {
@@ -12363,6 +13054,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_especiais_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -12481,6 +13179,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       regimes_tributarios: {
@@ -12562,6 +13267,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -12692,6 +13404,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "regras_duplicidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       regras_roteamento_financeiro: {
@@ -12783,6 +13502,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regras_roteamento_financeiro_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -12992,6 +13718,13 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
           {
+            foreignKeyName: "regua_cobranca_status_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+          {
             foreignKeyName: "regua_cobranca_status_titulo_id_fkey"
             columns: ["titulo_id"]
             isOneToOne: false
@@ -13115,6 +13848,115 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      relatorios_tributarios_agendados: {
+        Row: {
+          ano: number
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          destinatarios: string[]
+          dia_envio: number
+          empresa_id: string
+          frequencia: string
+          id: string
+          proximo_envio_em: string | null
+          ultimo_envio_em: string | null
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destinatarios?: string[]
+          dia_envio?: number
+          empresa_id: string
+          frequencia?: string
+          id?: string
+          proximo_envio_em?: string | null
+          ultimo_envio_em?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destinatarios?: string[]
+          dia_envio?: number
+          empresa_id?: string
+          frequencia?: string
+          id?: string
+          proximo_envio_em?: string | null
+          ultimo_envio_em?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       resumos_executivos_semanais: {
@@ -13198,6 +14040,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "resumos_executivos_semanais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       retencoes_fonte: {
@@ -13273,6 +14122,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "retencoes_fonte_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -13657,6 +14513,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "scim_tokens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
           {
@@ -14059,6 +14922,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "simulacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       slo_metrics_diarias: {
@@ -14358,6 +15228,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       split_payment_transacoes: {
@@ -14481,6 +15358,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -14678,6 +15562,112 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      tax_audit_trail: {
+        Row: {
+          action: string
+          ano: number | null
+          created_at: string
+          empresa_id: string | null
+          id: string
+          is_ai_justified: boolean
+          mes: number | null
+          parameters: Json | null
+          prompt: string | null
+          response: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          ano?: number | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          is_ai_justified?: boolean
+          mes?: number | null
+          parameters?: Json | null
+          prompt?: string | null
+          response?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          ano?: number | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          is_ai_justified?: boolean
+          mes?: number | null
+          parameters?: Json | null
+          prompt?: string | null
+          response?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -15005,6 +15995,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "transferencias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -15399,6 +16396,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "user_empresas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       user_filter_presets: {
@@ -15665,6 +16669,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "vendedores_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
       verificacoes_conformidade: {
@@ -15755,6 +16766,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "verificacoes_conformidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -16160,6 +17178,13 @@ export type Database = {
             referencedRelation: "vw_saldos_contas"
             referencedColumns: ["empresa_id"]
           },
+          {
+            foreignKeyName: "whatsapp_conversas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
         ]
       }
     }
@@ -16387,6 +17412,18 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mv_benchmark_setorial: {
+        Row: {
+          amostra: number | null
+          atualizado_em: string | null
+          media: number | null
+          mediana: number | null
+          p25: number | null
+          p75: number | null
+          regime: string | null
+        }
+        Relationships: []
       }
       mv_performance_alerts_weekly: {
         Row: {
@@ -16708,6 +17745,80 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_auditoria_tributaria_recente: {
+        Row: {
+          acao: string | null
+          criado_em: string | null
+          empresa_id: string | null
+          empresa_nome: string | null
+          entidade_id: string | null
+          entidade_tipo: string | null
+          id: string | null
+          payload_anterior: Json | null
+          payload_novo: Json | null
+          user_email: string | null
+          user_id: string | null
+          user_nome: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "auditoria_tributaria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       vw_contas_pagar_painel: {
         Row: {
           anexo_url: string | null
@@ -16803,6 +17914,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
           {
@@ -16919,6 +18037,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "contas_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
           },
         ]
@@ -17129,6 +18254,24 @@ export type Database = {
           nome_conta?: never
           saldo_atual?: never
           ultima_atualizacao?: never
+        }
+        Relationships: []
+      }
+      vw_tributario_dashboard: {
+        Row: {
+          ano: number | null
+          cbs: number | null
+          competencia: string | null
+          empresa_id: string | null
+          ibs: number | null
+          imposto_seletivo: number | null
+          mes: number | null
+          razao_social: string | null
+          regime_tributario: string | null
+          status_apuracao: string | null
+          total_tributos: number | null
+          tributos_novos: number | null
+          tributos_residuais: number | null
         }
         Relationships: []
       }
