@@ -161,7 +161,20 @@ export default function CalculadoraTributaria() {
     }
   }, [usarDadosReais, dadosReais]);
 
+  /**
+   * O CNAE preponderante da empresa selecionada alimenta a derivação de presunção.
+   * Só sobrescreve enquanto o usuário não tiver digitado um CNAE manualmente
+   * (rastreado por `cnaeManual`), preservando a intenção explícita do operador.
+   */
+  const [cnaeManual, setCnaeManual] = useState(false);
+  const cnaeEmpresa = empresaSelecionada?.cnae_principal ?? '';
+  useEffect(() => {
+    if (cnaeManual) return;
+    setForm((p) => (p.cnaePreponderante === cnaeEmpresa ? p : { ...p, cnaePreponderante: cnaeEmpresa }));
+  }, [cnaeEmpresa, cnaeManual]);
+
   const update = <K extends keyof CampoInput>(k: K, v: CampoInput[K]) => setForm((p) => ({ ...p, [k]: v }));
+
 
   /**
    * Quando o CNAE preponderante é válido, a atividade presumida é derivada dele
