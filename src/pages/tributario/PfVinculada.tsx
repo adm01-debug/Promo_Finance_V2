@@ -39,6 +39,19 @@ export default function PfVinculada() {
   );
   const [proLaboreMensal, setProLaboreMensal] = useState(0);
 
+  // Simulação anual do sócio (Etapa 18 — modelo linear do IRPFM)
+  const [socio, setSocio] = useState<ParametrosSimulacaoPF>({
+    proLaboreMensal: 15_000,
+    dividendosMensais: 25_000,
+    outrasRendasAnuais: 120_000,
+  });
+  const simulacaoSocio = useMemo(() => simularPessoaFisica(socio), [socio]);
+  const otimizacaoSocio = useMemo(() => otimizarProLabore(socio), [socio]);
+  const setSocioCampo = (campo: keyof ParametrosSimulacaoPF, valor: number) =>
+    setSocio((prev) => ({ ...prev, [campo]: Number.isFinite(valor) ? valor : 0 }));
+
+
+
   const resultado = useMemo(() => {
     return calcularIRPFMAnual(
       linhas.map((l) => ({ dividendosMensais: l.dividendos, irrfRetido: l.irrf })),
