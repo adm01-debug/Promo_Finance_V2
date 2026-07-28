@@ -143,33 +143,51 @@ BEGIN
 END $$;
 
 -- ----------------------------------------------------------------------------
--- 4) Cofres de credenciais permanecem inacessíveis a anon/authenticated
+-- 4) Cofres de credenciais — matriz de privilégios brutos
+--    (a) NENHUM cofre pode conceder qualquer privilégio a `anon`.
+--    (b) Cofres exclusivos de servidor não podem conceder nada a
+--        `authenticated` — o acesso é apenas via service_role.
+--    (c) Cofres administrados pela UI só podem conceder a `authenticated` os
+--        privilégios que possuem política RLS correspondente.
 -- ----------------------------------------------------------------------------
 DO $$
 DECLARE
-  v_cofres text[] := ARRAY[
-    'bling_tokens', 'bitrix_oauth_tokens', 'bitrix24_tokens',
-    'integration_secrets', 'api_keys', 'empresas_certificados',
-    'password_reset_tokens', 'portal_cliente_tokens'
-  ];
   v_txt text;
 BEGIN
-  SELECT string_agg(format('  - public.%s → %s (%s)', t.relname, g.rolname, g.priv), E'\n')
+  CREATE TEMP TABLE _cofres(tabela text, role_name text, privs text[]) ON COMMIT DROP;
+
+  -- (b) somente service_role
+  INSERT INTO _cofres VALUES
+    ('bling_tokens',         'authenticated', ARRAY[]::text[]),
+    ('bitrix_oauth_tokens',  'authenticated', ARRAY[]::text[]),
+    ('integration_secrets',  'authenticated', ARRAY[]::text[]);
+
+  -- (c) administrados pela UI (RLS exige papel admin / empresa acessível)
+  INSERT INTO _cofres VALUES
+    ('bitrix24_tokens',        'authenticated', ARRAY['SELECT','INSERT','UPDATE','DELETE']),
+    ('api_keys',               'authenticated', ARRAY['SELECT','DELETE']),
+    ('empresas_certificados',  'authenticated', ARRAY['SELECT','INSERT','UPDATE','DELETE']),
+    ('password_reset_tokens',  'authenticated', ARRAY['SELECT','INSERT','DELETE']),
+    ('portal_cliente_tokens',  'authenticated', ARRAY['SELECT','INSERT','UPDATE','DELETE']);
+
+  -- (a) anon nunca pode ter nada
+  INSERT INTO _cofres
+  SELECT DISTINCT tabela, 'anon', ARRAY[]::text[] FROM _cofres;
+
+  SELECT string_agg(format('  - public.%s → %s pode %s (não permitido)', c.tabela, c.role_name, p.priv), E'\n')
     INTO v_txt
-  FROM unnest(v_cofres) AS cofre
-  JOIN pg_class t ON t.relname = cofre
+  FROM _cofres c
+  JOIN pg_class t ON t.relname = c.tabela
   JOIN pg_namespace n ON n.oid = t.relnamespace AND n.nspname = 'public'
-  CROSS JOIN LATERAL (
-    SELECT r.rolname, p.priv
-    FROM (VALUES ('anon'), ('authenticated')) AS r(rolname)
-    CROSS JOIN (VALUES ('SELECT'), ('INSERT'), ('UPDATE'), ('DELETE')) AS p(priv)
-    WHERE has_table_privilege(r.rolname, t.oid, p.priv)
-  ) g;
+  CROSS JOIN (VALUES ('SELECT'), ('INSERT'), ('UPDATE'), ('DELETE')) AS p(priv)
+  WHERE has_table_privilege(c.role_name, t.oid, p.priv)
+    AND NOT (p.priv = ANY (c.privs));
 
   IF v_txt IS NOT NULL THEN
     RAISE EXCEPTION E'FAIL: cofre(s) de credenciais com GRANT indevido:\n%', v_txt;
   END IF;
-  RAISE NOTICE 'PASS: cofres de credenciais restritos a service_role.';
+  RAISE NOTICE 'PASS: cofres de credenciais dentro da matriz de menor privilégio.';
 END $$;
 
 ROLLBACK;
+
