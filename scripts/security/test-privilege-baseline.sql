@@ -399,4 +399,35 @@ BEGIN
   RAISE NOTICE 'PASS: canário do probe anônimo é descartado pelo gatilho de sanitização.';
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- 13) Silenciamento de alertas de erro é auditado e restrito (Gap #26)
+--     A tabela de estado não pode aceitar escrita direta do cliente e a RPC
+--     silenciar_alerta_erro_frontend jamais pode ser executável por anon.
+-- ----------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_grants text;
+BEGIN
+  IF has_function_privilege('anon', 'public.silenciar_alerta_erro_frontend(text, integer, text)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'FAIL: anon pode executar silenciar_alerta_erro_frontend.';
+  END IF;
+
+  IF NOT has_function_privilege('authenticated', 'public.silenciar_alerta_erro_frontend(text, integer, text)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'FAIL: authenticated perdeu EXECUTE em silenciar_alerta_erro_frontend (UI admin quebraria).';
+  END IF;
+
+  SELECT string_agg(DISTINCT privilege_type, ',') INTO v_grants
+  FROM information_schema.role_table_grants
+  WHERE table_schema = 'public'
+    AND table_name = 'frontend_error_alert_state'
+    AND grantee IN ('anon', 'authenticated')
+    AND privilege_type IN ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE');
+
+  IF v_grants IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: escrita direta em frontend_error_alert_state concedida ao cliente (%).', v_grants;
+  END IF;
+
+  RAISE NOTICE 'PASS: silenciamento de alertas só via RPC admin auditada.';
+END $$;
+
 ROLLBACK;
