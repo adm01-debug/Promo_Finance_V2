@@ -24,6 +24,7 @@ interface IntegrityAlertRow {
 }
 
 const DOMAIN_LABEL: Record<string, string> = {
+  seguranca_acesso: "Segurança de acesso",
   entrega: "Entregas",
   screening: "Triagem de motoristas",
   financeiro: "Financeiro",

@@ -13,6 +13,7 @@ import { PerformanceMetrics } from "@/components/admin/telemetry/PerformanceMetr
 import { PerformanceAlertsPanel } from "@/components/admin/telemetry/PerformanceAlertsPanel";
 import { PerformanceAlertsWeeklyTrend } from "@/components/admin/telemetry/PerformanceAlertsWeeklyTrend";
 import { IntegrityAlertsPanel } from "@/components/admin/telemetry/IntegrityAlertsPanel";
+import { AcessosSuspeitosPanel } from "@/components/admin/telemetry/AcessosSuspeitosPanel";
 import { RetentionHistoryPanel } from "@/components/admin/telemetry/RetentionHistoryPanel";
 import { CatalogosTributariosHealthPanel } from "@/components/admin/telemetry/CatalogosTributariosHealthPanel";
 import { CatalogosTributariosHistoryPanel } from "@/components/admin/telemetry/CatalogosTributariosHistoryPanel";
@@ -274,6 +275,9 @@ export default function AdminTelemetriaPage() {
 
         {/* Invariantes de Integridade de Dados */}
         <IntegrityAlertsPanel />
+
+        {/* Auditoria de acessos: cross-tenant e uso administrativo anômalo */}
+        <AcessosSuspeitosPanel />
 
         {/* Histórico da retenção diária */}
         <RetentionHistoryPanel />

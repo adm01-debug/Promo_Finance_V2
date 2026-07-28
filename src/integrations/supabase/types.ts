@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      acessos_suspeitos: {
+        Row: {
+          baseline: number | null
+          created_at: string
+          detalhes: Json
+          empresa_id: string | null
+          id: string
+          janela_fim: string
+          janela_inicio: string
+          ocorrencias: number
+          revisado_em: string | null
+          revisado_por: string | null
+          severidade: string
+          table_name: string | null
+          tipo: string
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          baseline?: number | null
+          created_at?: string
+          detalhes?: Json
+          empresa_id?: string | null
+          id?: string
+          janela_fim: string
+          janela_inicio: string
+          ocorrencias?: number
+          revisado_em?: string | null
+          revisado_por?: string | null
+          severidade: string
+          table_name?: string | null
+          tipo: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          baseline?: number | null
+          created_at?: string
+          detalhes?: Json
+          empresa_id?: string | null
+          id?: string
+          janela_fim?: string
+          janela_inicio?: string
+          ocorrencias?: number
+          revisado_em?: string | null
+          revisado_por?: string | null
+          severidade?: string
+          table_name?: string | null
+          tipo?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       acoes_recomendadas: {
         Row: {
           created_at: string | null
@@ -19815,6 +19869,7 @@ export type Database = {
       }
     }
     Functions: {
+      auditar_acessos_cross_tenant: { Args: { _horas?: number }; Returns: Json }
       backfill_empresa_id: {
         Args: { _dry_run?: boolean }
         Returns: {
@@ -20142,6 +20197,32 @@ export type Database = {
       gerar_contas_recorrentes: { Args: never; Returns: number }
       gerar_numero_acordo: { Args: never; Returns: string }
       gerar_sigla_empresa: { Args: { _nome: string }; Returns: string }
+      get_acessos_suspeitos: {
+        Args: { _horas?: number; _somente_abertos?: boolean }
+        Returns: {
+          baseline: number | null
+          created_at: string
+          detalhes: Json
+          empresa_id: string | null
+          id: string
+          janela_fim: string
+          janela_inicio: string
+          ocorrencias: number
+          revisado_em: string | null
+          revisado_por: string | null
+          severidade: string
+          table_name: string | null
+          tipo: string
+          user_email: string | null
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "acessos_suspeitos"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_active_uapi_token: {
         Args: never
         Returns: {
