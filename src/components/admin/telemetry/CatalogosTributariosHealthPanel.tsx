@@ -24,6 +24,10 @@ interface CatalogoHealth {
   criticos: number;
   avisos: number;
   infos: number;
+  /** Alertas tributários encerrados automaticamente nas últimas 24h. */
+  auto_resolvidos_24h: number;
+  /** Alertas tributários ainda em aberto. */
+  alertas_abertos: number;
   saudavel: boolean;
   achados: AchadoCatalogo[];
 }
