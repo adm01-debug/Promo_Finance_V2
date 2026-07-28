@@ -728,7 +728,28 @@ BEGIN
     RAISE EXCEPTION 'FAIL: SECURITY DEFINER exposta sem search_path fixo: %', v_txt;
   END IF;
 
-  RAISE NOTICE 'PASS: toda SECURITY DEFINER exposta ao cliente tem guarda de autorização e search_path fixo.';
+  -- 20c) a única SECURITY DEFINER exposta a `anon` (descoberta de SSO) não pode
+  --      devolver a lista de domínios corporativos.
+  IF EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public'
+      AND p.proname = 'resolve_sso_providers_for_domain'
+      AND pg_get_functiondef(p.oid) ~* '\mallowed_domains\M[^;]*\)\s*RETURNS|OUT\s+allowed_domains'
+  ) OR EXISTS (
+    SELECT 1
+    FROM information_schema.parameters par
+    WHERE par.specific_schema = 'public'
+      AND par.specific_name LIKE 'resolve\_sso\_providers\_for\_domain%'
+      AND par.parameter_mode = 'OUT'
+      AND par.parameter_name = 'allowed_domains'
+  ) THEN
+    RAISE EXCEPTION 'FAIL: descoberta SSO pré-login voltou a expor allowed_domains a anon.';
+  END IF;
+
+  RAISE NOTICE 'PASS: toda SECURITY DEFINER exposta ao cliente tem guarda de autorização, search_path fixo e projeção pré-login mínima.';
+
 END $$;
 
 ROLLBACK;
