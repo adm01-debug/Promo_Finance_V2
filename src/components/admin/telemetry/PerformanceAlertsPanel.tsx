@@ -26,6 +26,29 @@ interface AlertRow {
 
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
 
+const SOURCE_LABELS: Record<string, string> = {
+  pg_stat_statements: "pg_stat",
+  query_telemetry: "telemetry",
+  cron: "automação",
+};
+
+function sourceLabel(source: string): string {
+  return SOURCE_LABELS[source] ?? source;
+}
+
+/**
+ * Alertas de origens distintas não compartilham unidade: telemetria mede
+ * latência (ms), enquanto alertas de automação medem ocorrências ou horas.
+ */
+function formatMetric(source: string, alertKey: string, value: number | null): string {
+  if (value == null) return "—";
+  if (source !== "cron") return `${Math.round(value)}ms`;
+  if (alertKey.startsWith("job_stale:")) return `${Number(value).toFixed(1)}h`;
+  if (alertKey.startsWith("job_failed:")) return `${Math.round(value)}x`;
+  return "—";
+}
+
+
 function severityBadge(sev: string) {
   if (sev === "critical")
     return (
