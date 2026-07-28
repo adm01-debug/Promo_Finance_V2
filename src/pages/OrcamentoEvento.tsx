@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Target, BarChart3, PieChart as PieChartIcon, Loader2, Filter, ArrowUpDown } from 'lucide-react';

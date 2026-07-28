@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -20,7 +19,7 @@ export function useReguaCobranca(empresaId?: string) {
 export function useUpdateReguaCobranca() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: string; ativo?: boolean; auto_executar?: boolean; dias_gatilho?: number; canais?: string[] }) => {
+    mutationFn: async ({ id, ...data }: { id: string; ativo?: boolean; auto_executar?: boolean; dias_gatilho?: number[]; canais?: string[] }) => {
       const { error } = await supabase.from('regua_cobranca').update(data).eq('id', id);
       if (error) throw error;
     },
@@ -97,12 +96,12 @@ export function useProcessarRegua() {
     },
     onSuccess: (result) => {
       if (result.simulate) {
-        const stats = Array.isArray(result.data) ? result.data[0] : result.data;
+        const stats = (Array.isArray(result.data) ? result.data[0] : result.data) as { total_enfileirados?: number } | null;
         toast.info(`Simulação concluída! ${stats?.total_enfileirados || 0} cobranças seriam disparadas hoje.`);
       } else {
         qc.invalidateQueries({ queryKey: ['fila-cobrancas'] });
         qc.invalidateQueries({ queryKey: ['views', 'metricas-cobranca'] });
-        const stats = Array.isArray(result.data) ? result.data[0] : result.data;
+        const stats = (Array.isArray(result.data) ? result.data[0] : result.data) as { total_enfileirados?: number } | null;
         toast.success(`Régua processada! ${stats?.total_enfileirados || 0} cobranças enfileiradas.`);
       }
     },
