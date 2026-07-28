@@ -213,6 +213,11 @@ export function IntegrityAlertsPanel() {
                       <div className="text-muted-foreground/70 text-[10px] font-mono truncate">
                         {r.invariant}
                       </div>
+                      {r.resolved_at && r.resolved_reason ? (
+                        <div className="text-green-600/80 text-[10px] truncate">
+                          {r.resolved_reason}
+                        </div>
+                      ) : null}
                     </td>
                     <td className="py-2 text-right tabular-nums">{r.affected_count ?? "—"}</td>
                     <td className="py-2 text-right text-muted-foreground whitespace-nowrap">
