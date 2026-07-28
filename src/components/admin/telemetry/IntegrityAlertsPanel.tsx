@@ -83,16 +83,12 @@ export function IntegrityAlertsPanel() {
 
   const resolver = useMutation({
     mutationFn: async (id: string) => {
-      const { data: userData } = await supabase.auth.getUser();
-      const { error } = await supabase
-        .from("integrity_alerts")
-        .update({
-          resolved_at: new Date().toISOString(),
-          resolved_by: userData.user?.id ?? null,
-        })
-        .eq("id", id);
+      // RPC dedicada: a tabela não concede UPDATE a `authenticated`, então um
+      // update direto seria filtrado pela RLS sem erro (falha silenciosa).
+      const { error } = await supabaseDyn.rpc("resolve_integrity_alert", { p_id: id });
       if (error) throw error;
     },
+
     onSuccess: () => {
       toast.success("Alerta marcado como resolvido");
       queryClient.invalidateQueries({ queryKey: ["integrity-alerts"] });
