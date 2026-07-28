@@ -52,6 +52,16 @@ interface CoberturaFiscalPayload {
   ufs: CoberturaUF[];
 }
 
+/** Registro da última recarga idempotente dos seeds fiscais. */
+interface UltimaCargaFiscal {
+  origem?: string;
+  status?: string;
+  checksum?: string;
+  criticos?: number;
+  vinculos_normalizados?: number;
+  last_updated?: string | null;
+}
+
 function formatarData(iso: string | null): string {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("pt-BR", {
