@@ -16,7 +16,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(72);
+SELECT plan(81);
 
 -- ---------------------------------------------------------------------------
 -- 1) Chaves primárias
@@ -320,6 +320,56 @@ SELECT is(
   (public.check_catalogos_tributarios_invariants() ? 'success')
   OR (public.check_catalogos_tributarios_invariants() ? 'skipped'),
   true, 'check_catalogos_tributarios_invariants roda para jobs internos sem JWT');
+
+
+-- ============================================================
+-- Histórico de saúde fiscal (snapshots diários) e retenção
+-- ============================================================
+
+SELECT has_table('public', 'catalogos_tributarios_health_history',
+  'tabela de histórico de saúde fiscal deve existir');
+
+SELECT ok(
+  (SELECT relrowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relname = 'catalogos_tributarios_health_history'),
+  'histórico de saúde fiscal deve ter RLS habilitada');
+
+SELECT ok(
+  NOT has_table_privilege('anon', 'public.catalogos_tributarios_health_history', 'SELECT'),
+  'anon não tem SELECT no histórico de saúde fiscal');
+
+SELECT ok(
+  EXISTS (
+    SELECT 1 FROM pg_index i
+      JOIN pg_class c ON c.oid = i.indrelid
+      JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY (i.indkey)
+     WHERE c.relname = 'catalogos_tributarios_health_history'
+       AND i.indisunique AND a.attname = 'dia'),
+  'histórico deve ter unicidade por dia (idempotência do snapshot)');
+
+SELECT has_function('public', 'get_catalogos_tributarios_history', ARRAY['integer'],
+  'RPC get_catalogos_tributarios_history deve existir');
+
+SELECT is(
+  (SELECT prosecdef FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'get_catalogos_tributarios_history'),
+  true, 'get_catalogos_tributarios_history deve ser SECURITY DEFINER');
+
+SELECT ok(
+  NOT has_function_privilege('anon', 'public.get_catalogos_tributarios_history(integer)', 'EXECUTE'),
+  'anon não pode executar get_catalogos_tributarios_history');
+
+SELECT throws_ok(
+  'SELECT * FROM public.get_catalogos_tributarios_history(30)',
+  '42501',
+  NULL,
+  'get_catalogos_tributarios_history nega acesso sem papel admin');
+
+SELECT ok(
+  (SELECT prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'cleanup_log_tables')
+    LIKE '%catalogos_tributarios_health_history%',
+  'cleanup_log_tables deve aplicar retenção ao histórico de saúde fiscal');
 
 SELECT * FROM finish();
 
