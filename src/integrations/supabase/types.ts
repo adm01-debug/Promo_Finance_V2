@@ -15179,6 +15179,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      purge_old_rows: {
+        Args: {
+          p_batch?: number
+          p_column: string
+          p_days: number
+          p_max_batches?: number
+          p_table: unknown
+          p_where?: string
+        }
+        Returns: number
+      }
       record_failed_login: {
         Args: { p_email: string; p_ip_address?: unknown }
         Returns: {
