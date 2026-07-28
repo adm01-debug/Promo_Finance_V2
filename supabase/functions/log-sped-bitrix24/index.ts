@@ -3,7 +3,7 @@
 // informando se foi BLOQUEADA ou GERADA e a quantidade de erros/avisos retornados.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validatePayload } from '../_shared/validation.ts';
-import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { z } from '../_shared/zod.ts';
 import { createLogger } from '../_shared/observability.ts';
 
 const corsHeaders = {

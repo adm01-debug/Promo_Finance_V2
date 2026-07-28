@@ -5,7 +5,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from '../_shared/zod.ts';
 import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 const _CIBodySchema = z.object({

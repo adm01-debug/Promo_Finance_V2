@@ -3,7 +3,7 @@
 // com a organização. Precisa de service role porque o convidado ainda não
 // possui vínculo (e portanto não passa nas policies de RLS de leitura).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { z } from 'https://esm.sh/zod@3.23.8';
+import { z } from '../_shared/zod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
