@@ -19813,6 +19813,14 @@ export type Database = {
         }[]
       }
       fn_norm_conta_codigo: { Args: { p_codigo: string }; Returns: string }
+      gate_25_policies_sem_tenant: {
+        Args: never
+        Returns: {
+          cmd: string
+          policy_name: string
+          tabela: string
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string
