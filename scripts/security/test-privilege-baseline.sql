@@ -684,9 +684,14 @@ DECLARE
     'fe_error_signature',
     'gerar_sigla_empresa',
     'handle_updated_at',
-    'update_updated_at_column'
+    'update_updated_at_column',
+    -- Descoberta de provedor SSO pré-login: exposição a `anon` é intencional.
+    -- Contrapartida obrigatória verificada em 20c: a projeção não pode devolver
+    -- `allowed_domains` (enumeração da carteira de clientes — Gap #31b).
+    'resolve_sso_providers_for_domain'
   ];
   v_txt text;
+
 BEGIN
   SELECT string_agg(format('%s(%s)', p.proname,
                            pg_get_function_identity_arguments(p.oid)), ', ')
