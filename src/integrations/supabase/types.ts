@@ -18600,6 +18600,18 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_edge_health: {
+        Row: {
+          error_count: number | null
+          error_rate_pct: number | null
+          function_name: string | null
+          last_call_at: string | null
+          p50_ms: number | null
+          p95_ms: number | null
+          total_calls: number | null
+        }
+        Relationships: []
+      }
       vw_fluxo_caixa: {
         Row: {
           dia: string | null
@@ -18746,6 +18758,22 @@ export type Database = {
           nome_conta?: never
           saldo_atual?: never
           ultima_atualizacao?: never
+        }
+        Relationships: []
+      }
+      vw_transferencias_painel: {
+        Row: {
+          asaas_id: string | null
+          chave_pix: string | null
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string | null
+          razao_social: string | null
+          status: string | null
+          tipo_chave: string | null
+          updated_at: string | null
+          valor: number | null
         }
         Relationships: []
       }
