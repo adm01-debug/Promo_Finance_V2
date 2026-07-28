@@ -9,8 +9,9 @@
 # Uso: scripts/ci/deno-check-functions.sh
 set -uo pipefail
 
-FUNCS_DIR="supabase/functions"
 cd "$(dirname "$0")/../.." || exit 1
+
+FUNCS_DIR="supabase/functions"
 
 if [ ! -d "$FUNCS_DIR" ]; then
   echo "::error::Diretório $FUNCS_DIR não encontrado."
@@ -38,44 +39,46 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 2) Type-check de todas as funções
+# 2) Exceções derivadas do grafo real de imports
 # ---------------------------------------------------------------------------
-# Exclusões: funções que dependem de pacotes npm nativos (node-forge) que o
-# `deno check` não consegue resolver sem `node_modules` instalado. Elas seguem
-# cobertas em runtime pelo bundler do Supabase.
-EXCLUIR_REGEX='nfe-upload-certificado|sefaz-manifestar'
+# Funções que dependem (direta ou transitivamente) de pacotes npm nativos
+# (node-forge) não são checáveis offline. A lista é calculada, não hard-coded,
+# para não envelhecer quando um módulo compartilhado passar a importá-los.
+mapfile -t excecoes < <(python3 scripts/ci/listar-excecoes-npm-nativo.py)
+echo "▶ ${#excecoes[@]} arquivos pulados por dependência npm nativa."
 
-mapfile -t alvos < <(
-  find "$FUNCS_DIR" -mindepth 2 -maxdepth 2 -name 'index.ts' \
-    | grep -vE "$EXCLUIR_REGEX" \
-    | sort
+esta_excluido() {
+  local alvo="$1" e
+  for e in "${excecoes[@]}"; do
+    [ "$e" = "$alvo" ] && return 0
+  done
+  return 1
+}
+
+# ---------------------------------------------------------------------------
+# 3) Type-check de todas as funções + módulos compartilhados
+# ---------------------------------------------------------------------------
+alvos=()
+while IFS= read -r arquivo; do
+  esta_excluido "$arquivo" || alvos+=("$arquivo")
+done < <(
+  {
+    find "$FUNCS_DIR" -mindepth 2 -maxdepth 2 -name 'index.ts'
+    find "$FUNCS_DIR/_shared" -name '*.ts' ! -name '*.test.ts'
+  } | sort -u
 )
 
 if [ "${#alvos[@]}" -eq 0 ]; then
-  echo "::error::Nenhuma edge function encontrada para type-check."
+  echo "::error::Nenhum arquivo elegível para type-check."
   exit 1
 fi
 
-echo "▶ Type-check de ${#alvos[@]} edge functions…"
+echo "▶ Type-check de ${#alvos[@]} arquivos…"
 if ! deno check --no-lock "${alvos[@]}"; then
   echo "::error::deno check falhou — corrija os erros de tipagem acima."
   falhas=1
 else
-  echo "  ✓ ${#alvos[@]} funções sem erros de tipagem"
-fi
-
-# ---------------------------------------------------------------------------
-# 3) Módulos compartilhados
-# ---------------------------------------------------------------------------
-mapfile -t compartilhados < <(find "$FUNCS_DIR/_shared" -name '*.ts' ! -name '*.test.ts' | sort)
-if [ "${#compartilhados[@]}" -gt 0 ]; then
-  echo "▶ Type-check de ${#compartilhados[@]} módulos compartilhados…"
-  if ! deno check --no-lock "${compartilhados[@]}"; then
-    echo "::error::deno check falhou em _shared."
-    falhas=1
-  else
-    echo "  ✓ _shared sem erros de tipagem"
-  fi
+  echo "  ✓ ${#alvos[@]} arquivos sem erros de tipagem"
 fi
 
 if [ "$falhas" -ne 0 ]; then
