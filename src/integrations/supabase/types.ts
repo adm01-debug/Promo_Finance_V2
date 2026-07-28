@@ -8254,6 +8254,44 @@ export type Database = {
           },
         ]
       }
+      historico_relatorios: {
+        Row: {
+          dados_relatorio: Json | null
+          duracao_ms: number | null
+          erro_mensagem: string | null
+          executado_em: string
+          id: string
+          relatorio_agendado_id: string
+          status: string
+        }
+        Insert: {
+          dados_relatorio?: Json | null
+          duracao_ms?: number | null
+          erro_mensagem?: string | null
+          executado_em?: string
+          id?: string
+          relatorio_agendado_id: string
+          status?: string
+        }
+        Update: {
+          dados_relatorio?: Json | null
+          duracao_ms?: number | null
+          erro_mensagem?: string | null
+          executado_em?: string
+          id?: string
+          relatorio_agendado_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_relatorios_relatorio_agendado_id_fkey"
+            columns: ["relatorio_agendado_id"]
+            isOneToOne: false
+            referencedRelation: "relatorios_agendados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historico_score_saude: {
         Row: {
           created_at: string | null
@@ -10527,6 +10565,128 @@ export type Database = {
         }
         Relationships: []
       }
+      pagamentos_recorrentes: {
+        Row: {
+          ativo: boolean
+          centro_custo_id: string | null
+          conta_bancaria_id: string | null
+          created_at: string
+          created_by: string
+          data_fim: string | null
+          data_inicio: string
+          descricao: string
+          dia_vencimento: number
+          empresa_id: string
+          fornecedor_id: string | null
+          fornecedor_nome: string
+          frequencia: string
+          id: string
+          observacoes: string | null
+          proxima_geracao: string | null
+          tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"]
+          total_gerado: number
+          ultima_geracao: string | null
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          ativo?: boolean
+          centro_custo_id?: string | null
+          conta_bancaria_id?: string | null
+          created_at?: string
+          created_by?: string
+          data_fim?: string | null
+          data_inicio: string
+          descricao: string
+          dia_vencimento: number
+          empresa_id: string
+          fornecedor_id?: string | null
+          fornecedor_nome: string
+          frequencia: string
+          id?: string
+          observacoes?: string | null
+          proxima_geracao?: string | null
+          tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
+          total_gerado?: number
+          ultima_geracao?: string | null
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          ativo?: boolean
+          centro_custo_id?: string | null
+          conta_bancaria_id?: string | null
+          created_at?: string
+          created_by?: string
+          data_fim?: string | null
+          data_inicio?: string
+          descricao?: string
+          dia_vencimento?: number
+          empresa_id?: string
+          fornecedor_id?: string | null
+          fornecedor_nome?: string
+          frequencia?: string
+          id?: string
+          observacoes?: string | null
+          proxima_geracao?: string | null
+          tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
+          total_gerado?: number
+          ultima_geracao?: string | null
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       parcelas_acordo: {
         Row: {
           acordo_id: string | null
@@ -12562,6 +12722,116 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_contas_receber_painel"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      relatorios_agendados: {
+        Row: {
+          ativo: boolean
+          centro_custo_id: string | null
+          created_at: string
+          created_by: string
+          destinatarios: string[]
+          dia_mes: number | null
+          dia_semana: number | null
+          empresa_id: string | null
+          filtros: Json
+          frequencia: string
+          hora_execucao: string
+          id: string
+          nome: string
+          proximo_envio: string | null
+          tipo_relatorio: string
+          ultimo_envio: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          centro_custo_id?: string | null
+          created_at?: string
+          created_by?: string
+          destinatarios?: string[]
+          dia_mes?: number | null
+          dia_semana?: number | null
+          empresa_id?: string | null
+          filtros?: Json
+          frequencia: string
+          hora_execucao?: string
+          id?: string
+          nome: string
+          proximo_envio?: string | null
+          tipo_relatorio: string
+          ultimo_envio?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          centro_custo_id?: string | null
+          created_at?: string
+          created_by?: string
+          destinatarios?: string[]
+          dia_mes?: number | null
+          dia_semana?: number | null
+          empresa_id?: string | null
+          filtros?: Json
+          frequencia?: string
+          hora_execucao?: string
+          id?: string
+          nome?: string
+          proximo_envio?: string | null
+          tipo_relatorio?: string
+          ultimo_envio?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
@@ -17084,6 +17354,14 @@ export type Database = {
         | "retencao_pendente"
         | "nfe_rejeitada"
         | "saldo_negativo"
+      tipo_cobranca:
+        | "boleto"
+        | "pix"
+        | "transferencia"
+        | "cartao"
+        | "debito_automatico"
+        | "dinheiro"
+        | "cheque"
       tipo_destinatario:
         | "CONTRIBUINTE_REVENDA"
         | "CONTRIBUINTE_USO_CONSUMO"
@@ -17350,6 +17628,15 @@ export const Constants = {
         "retencao_pendente",
         "nfe_rejeitada",
         "saldo_negativo",
+      ],
+      tipo_cobranca: [
+        "boleto",
+        "pix",
+        "transferencia",
+        "cartao",
+        "debito_automatico",
+        "dinheiro",
+        "cheque",
       ],
       tipo_destinatario: [
         "CONTRIBUINTE_REVENDA",
