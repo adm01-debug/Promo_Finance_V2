@@ -3822,6 +3822,36 @@ export type Database = {
         }
         Relationships: []
       }
+      cnpja_cache: {
+        Row: {
+          cnpj: string
+          created_at: string
+          data: Json
+          expires_at: string
+          fetched_at: string
+          situacao_cadastral: string | null
+          updated_at: string
+        }
+        Insert: {
+          cnpj: string
+          created_at?: string
+          data: Json
+          expires_at: string
+          fetched_at?: string
+          situacao_cadastral?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cnpj?: string
+          created_at?: string
+          data?: Json
+          expires_at?: string
+          fetched_at?: string
+          situacao_cadastral?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conciliacoes: {
         Row: {
           conta_bancaria_id: string | null
@@ -11301,6 +11331,7 @@ export type Database = {
           instrucoes: string | null
           nome: string
           tipo_chave: string
+          uso_count: number
         }
         Insert: {
           ativo?: boolean
@@ -11313,6 +11344,7 @@ export type Database = {
           instrucoes?: string | null
           nome: string
           tipo_chave: string
+          uso_count?: number
         }
         Update: {
           ativo?: boolean
@@ -11325,6 +11357,7 @@ export type Database = {
           instrucoes?: string | null
           nome?: string
           tipo_chave?: string
+          uso_count?: number
         }
         Relationships: []
       }
@@ -13470,6 +13503,36 @@ export type Database = {
         }
         Relationships: []
       }
+      scim_setup_checklist: {
+        Row: {
+          confirmed: boolean
+          confirmed_at: string | null
+          created_at: string
+          id: string
+          item_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          item_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          item_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       scim_tokens: {
         Row: {
           ativo: boolean
@@ -14150,6 +14213,116 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      sped_contabil_arquivos: {
+        Row: {
+          ano_calendario: number
+          created_at: string
+          empresa_id: string
+          gerado_por: string | null
+          hash_sha256: string | null
+          id: string
+          periodo_fim: string
+          periodo_inicio: string
+          recibo_transmissao: string | null
+          status: string
+          storage_path: string
+          tipo: string
+          total_lancamentos: number
+          total_linhas: number
+          transmitido_em: string | null
+          updated_at: string
+          validacoes: Json
+        }
+        Insert: {
+          ano_calendario: number
+          created_at?: string
+          empresa_id: string
+          gerado_por?: string | null
+          hash_sha256?: string | null
+          id?: string
+          periodo_fim: string
+          periodo_inicio: string
+          recibo_transmissao?: string | null
+          status?: string
+          storage_path: string
+          tipo: string
+          total_lancamentos?: number
+          total_linhas?: number
+          transmitido_em?: string | null
+          updated_at?: string
+          validacoes?: Json
+        }
+        Update: {
+          ano_calendario?: number
+          created_at?: string
+          empresa_id?: string
+          gerado_por?: string | null
+          hash_sha256?: string | null
+          id?: string
+          periodo_fim?: string
+          periodo_inicio?: string
+          recibo_transmissao?: string | null
+          status?: string
+          storage_path?: string
+          tipo?: string
+          total_lancamentos?: number
+          total_linhas?: number
+          transmitido_em?: string | null
+          updated_at?: string
+          validacoes?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "sped_contabil_arquivos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       split_payment_transacoes: {
         Row: {
@@ -17387,6 +17560,10 @@ export type Database = {
       }
       increment_failed_attempts: {
         Args: { _email: string }
+        Returns: undefined
+      }
+      increment_pix_template_uso: {
+        Args: { p_template_id: string }
         Returns: undefined
       }
       is_country_allowed_for_login: {
