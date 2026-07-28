@@ -55,12 +55,12 @@ export function useUpsertPlanoConta() {
         if (recordId) {
           const empresaTag = input.empresa_id ? `empresa:${input.empresa_id} ` : '';
           await supabase.rpc('log_audit', {
-            _action: isUpdate ? 'UPDATE' : 'INSERT',
-            _table_name: 'plano_contas',
-            _record_id: recordId,
-            _old_data: oldData ? JSON.stringify(oldData) : null,
-            _new_data: data ? JSON.stringify(data) : null,
-            _details: `${empresaTag}conta ${payload.codigo} — ${payload.descricao}`,
+            p_action: isUpdate ? 'UPDATE' : 'INSERT',
+            p_table_name: 'plano_contas',
+            p_record_id: recordId,
+            p_old_data: oldData ? JSON.stringify(oldData) : null,
+            p_new_data: data ? JSON.stringify(data) : null,
+            p_details: `${empresaTag}conta ${payload.codigo} — ${payload.descricao}`,
           });
         }
       } catch (auditErr) {

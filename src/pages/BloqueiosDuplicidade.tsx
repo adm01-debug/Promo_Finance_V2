@@ -27,7 +27,7 @@ export default function BloqueiosDuplicidade() {
   const totalCount = bloqueios?.length || 0;
   const mostTargeted =
     bloqueios?.reduce((acc: Record<string, number>, b) => {
-      const name = b.dados_tentativa?.fornecedor_nome || "N/D";
+      const name = (b.dados_tentativa as { fornecedor_nome?: string } | null)?.fornecedor_nome || "N/D";
       acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {}) || {};

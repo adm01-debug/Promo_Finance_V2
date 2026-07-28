@@ -70,7 +70,7 @@ export function useHistoricoConciliacaoIA() {
         .limit(100);
 
       if (error) throw error;
-      return data as HistoricoConciliacaoIA[];
+      return (data ?? []) as unknown as HistoricoConciliacaoIA[];
     },
   });
 
