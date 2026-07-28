@@ -204,23 +204,49 @@ export function PerformanceAlertsPanel() {
                 {counts.info} info
               </Badge>
             ) : null}
+            {counts.resolvidos ? (
+              <Badge
+                variant="outline"
+                className="text-[10px] border-green-500/40 text-green-600"
+              >
+                <CheckCircle2 className="h-3 w-3 mr-1" /> {counts.resolvidos} encerrado
+                {counts.resolvidos > 1 ? "s" : ""}
+              </Badge>
+            ) : null}
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant={incluirResolvidos ? "secondary" : "outline"}
+            size="sm"
+            className="text-xs h-8"
+            onClick={() => setIncluirResolvidos((v) => !v)}
+            aria-pressed={incluirResolvidos}
+          >
+            {incluirResolvidos ? "Ocultar encerrados" : "Mostrar encerrados"}
+          </Button>
           <select
             value={days}
             onChange={(e) => setDays(Number(e.target.value))}
             className="text-xs bg-background border rounded px-2 py-1"
+            aria-label="Período dos alertas"
           >
             <option value={1}>24h</option>
             <option value={3}>3 dias</option>
             <option value={7}>7 dias</option>
             <option value={30}>30 dias</option>
           </select>
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isRefetching}
+            aria-label="Atualizar alertas"
+          >
             <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
           </Button>
         </div>
+
       </CardHeader>
       <CardContent>
         {isLoading ? (
