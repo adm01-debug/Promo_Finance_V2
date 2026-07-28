@@ -46,7 +46,7 @@ export default function AdminSystemHealth() {
   const { data: edgeHealth } = useQuery({
     queryKey: ['sys-edge-health'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('vw_edge_health' as never).select('*');
+      const { data, error } = await supabase.from('vw_edge_health').select('*');
       if (error) throw error;
       return (data ?? []) as unknown as HealthRow[];
     },
