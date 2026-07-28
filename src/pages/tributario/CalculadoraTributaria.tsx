@@ -54,6 +54,18 @@ type CampoInput = {
   reducaoReforma: number;
 };
 
+const ROTULO_ATIVIDADE: Record<AtividadePresumido, string> = {
+  comercio: 'Comércio (8% IRPJ / 12% CSLL)',
+  industria: 'Indústria (8% / 12%)',
+  servicos_geral: 'Serviços em geral (32%)',
+  servicos_profissionais: 'Serviços profissionais (32%)',
+  transporte_cargas: 'Transporte de cargas (8% / 12%)',
+  transporte_passageiros: 'Transporte de passageiros (16% / 12%)',
+  servicos_hospitalares: 'Serviços hospitalares (8% / 12%)',
+};
+
+
+
 const DEFAULT_INPUT: CampoInput = {
   receitaBrutaAnual: 3_000_000,
   percentualServicos: 30,
