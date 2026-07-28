@@ -17,7 +17,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(17);
+SELECT plan(23);
 
 -- Horas de referência determinísticas (fora de qualquer hora real de produção
 -- para não colidir com o unique (domain, invariant, alert_hour)).
@@ -173,8 +173,63 @@ SELECT lives_ok(
 );
 
 SELECT ok(
-  (SELECT public.run_integrity_cycle() ?& ARRAY['nfe_xml','sefaz','alertas_encerrados']),
-  'run_integrity_cycle deve retornar nfe_xml, sefaz e alertas_encerrados'
+  (SELECT public.run_integrity_cycle() ?& ARRAY['nfe_xml','sefaz','alertas_encerrados','escalonamento']),
+  'run_integrity_cycle deve retornar nfe_xml, sefaz, escalonamento e alertas_encerrados'
+);
+
+-- ---------------------------------------------------------------------------
+-- 7b) Escalonamento de alertas críticos esquecidos (>24h)
+-- ---------------------------------------------------------------------------
+-- Alerta crítico aberto há 3 dias deve gerar plantão em performance_alerts
+INSERT INTO public.integrity_alerts
+  (domain, invariant, severity, alert_hour, affected_count, reason, created_at)
+VALUES
+  ('financeiro', 'teste_escalonamento', 'critical',
+   date_trunc('hour', now() - interval '3 days'), 7,
+   'alerta crítico esquecido', now() - interval '3 days');
+
+SELECT ok(
+  (public.escalate_stale_integrity_alerts(interval '24 hours') ->> 'escalated')::bigint >= 1,
+  'crítico aberto há 3 dias deve ser escalonado'
+);
+
+SELECT is(
+  (SELECT count(*) FROM public.performance_alerts
+    WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'
+      AND alert_hour = date_trunc('hour', now())
+      AND resolved_at IS NULL AND severity = 'critical'),
+  1::bigint,
+  'escalonamento deve abrir exatamente um alerta de plantão na hora corrente'
+);
+
+-- Idempotência: reexecutar não duplica linhas nem reabre em duplicidade
+SELECT lives_ok(
+  $$SELECT public.escalate_stale_integrity_alerts(interval '24 hours')$$,
+  'escalonamento deve ser idempotente'
+);
+
+SELECT is(
+  (SELECT count(*) FROM public.performance_alerts
+    WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'
+      AND alert_hour = date_trunc('hour', now())),
+  1::bigint,
+  'reexecução não pode duplicar o alerta de plantão'
+);
+
+-- Metadados de diagnóstico devem acompanhar o plantão
+SELECT ok(
+  (SELECT metadata ? 'dominios' AND metadata ? 'mais_antigo' AND metadata ? 'idade_horas'
+     FROM public.performance_alerts
+    WHERE source = 'cron' AND alert_key = 'integrity_stale_critical'
+      AND alert_hour = date_trunc('hour', now())),
+  'plantão deve registrar domínios, alerta mais antigo e idade em horas'
+);
+
+-- Janela maior que a idade do incidente não deve escalonar
+SELECT is(
+  (public.escalate_stale_integrity_alerts(interval '365 days') ->> 'escalated')::bigint,
+  0::bigint,
+  'incidente mais novo que a janela configurada não deve ser escalonado'
 );
 
 -- ---------------------------------------------------------------------------
@@ -187,6 +242,12 @@ SELECT ok(
     'authenticated',
     'public.close_stale_integrity_alerts(timestamptz, text[], interval)',
     'EXECUTE'
+  )
+  AND NOT has_function_privilege(
+    'authenticated', 'public.escalate_stale_integrity_alerts(interval)', 'EXECUTE'
+  )
+  AND NOT has_function_privilege(
+    'anon', 'public.escalate_stale_integrity_alerts(interval)', 'EXECUTE'
   ),
   'ciclo e encerramento automático não podem ser executáveis por anon/authenticated'
 );
