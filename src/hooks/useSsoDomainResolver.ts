@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+/**
+ * Projeção pública devolvida por `resolve_sso_providers_for_domain`.
+ * `allowed_domains` foi removido da RPC pré-login: expor a lista de domínios
+ * corporativos permitia a visitantes anônimos enumerar a carteira de clientes
+ * a partir de um único domínio conhecido (Gap #31b).
+ */
 export interface ResolvedSsoProvider {
   id: string;
   nome: string;
   tipo: 'oidc' | 'saml';
   preset: string | null;
-  allowed_domains: string[];
   force_sso_for_domains: boolean;
   ordem: number;
 }
+
 
 interface ResolverState {
   providers: ResolvedSsoProvider[];
