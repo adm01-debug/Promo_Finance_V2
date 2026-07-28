@@ -16722,6 +16722,7 @@ export type Database = {
         }
         Returns: Json
       }
+      gerar_contas_recorrentes: { Args: never; Returns: number }
       gerar_numero_acordo: { Args: never; Returns: string }
       gerar_sigla_empresa: { Args: { _nome: string }; Returns: string }
       get_active_uapi_token: {
