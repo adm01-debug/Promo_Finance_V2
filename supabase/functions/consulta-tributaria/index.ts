@@ -44,8 +44,15 @@ const ParamsSchema = z.object({
 
 type Params = z.infer<typeof ParamsSchema>;
 
-/** Estratégia de correspondência aplicada na busca. */
-type MatchInfo = { estrategia: string; exato: boolean; detalhe?: string };
+import {
+  classificarCenarioST,
+  escolherAliquotaInterna,
+  prefixosHierarquicos,
+  somenteDigitos,
+  vigentes,
+  type MatchInfo,
+} from './helpers.ts';
+
 
 function json(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
