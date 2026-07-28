@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useResolucaoCnae } from '@/hooks/useCnaes';
 import { CnaeCatalogoInfo } from '@/components/empresas/CnaeCatalogoInfo';
 import { resolverFpasPorCnae } from '@/lib/tributario/folha/fpas-terceiros';
+import { LucroTrimestralFields } from './LucroTrimestralFields';
 import type { ParametrosSimulacao, RegimeTributario } from '@/lib/tributario';
 
 interface EmpresaOption {
@@ -383,6 +384,9 @@ export function ParametrosForm({
         <p className="text-xs text-muted-foreground">
           Compensação limitada a 30% do lucro do período (Lei 9.065/95, arts. 15 e 16).
         </p>
+
+        <LucroTrimestralFields parametros={parametros} setParametros={setParametros} />
+
 
 
 
