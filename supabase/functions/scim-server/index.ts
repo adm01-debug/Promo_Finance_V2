@@ -574,13 +574,21 @@ async function putUser(admin: SupabaseClient, providerId: string | null, empresa
   return ok(userToScim((fresh as any).profiles, fresh, empresaId));
 }
 
-async function deleteUser(admin: SupabaseClient, empresaId: string, id: string) {
+async function deleteUser(
+  admin: SupabaseClient,
+  empresaId: string,
+  id: string,
+): Promise<{ resp: Response; userId: string | null; externalId: string | null }> {
   const { data: link } = await admin.from("user_empresas")
     .select("user_id, scim_external_id").eq("id", id).eq("empresa_id", empresaId).maybeSingle();
-  if (!link) return err(404, "User not found");
+  // Retorno uniforme: antes o caminho 404 devolvia um `Response` puro enquanto o
+  // caminho de sucesso devolvia um objeto, e o chamador acessava `.resp` sobre a
+  // uniao — quebrando o type-check e perdendo a auditoria no caso de erro.
+  if (!link) return { resp: err(404, "User not found"), userId: null, externalId: null };
   await admin.from("user_empresas").update({ ativo: false }).eq("id", id);
   return { resp: new Response(null, { status: 204, headers: scimHeaders }), userId: link.user_id as string, externalId: link.scim_external_id as string | null };
 }
+
 
 // ============================== handlers: Groups ==============================
 
