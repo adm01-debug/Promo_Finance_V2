@@ -75,25 +75,31 @@ function severityBadge(sev: string) {
 
 export function PerformanceAlertsPanel() {
   const [days, setDays] = useState(1);
+  const [incluirResolvidos, setIncluirResolvidos] = useState(false);
   const [realtimeOn, setRealtimeOn] = useState(false);
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, refetch, isRefetching } = useQuery<AlertRow[]>({
-    queryKey: ["performance-alerts", days],
+    queryKey: ["performance-alerts", days, incluirResolvidos],
     queryFn: async () => {
       const { data, error } = await supabaseDyn.rpc<AlertRow[]>("get_performance_alerts", {
         p_days: days,
         p_severity: null,
         p_source: null,
+        p_incluir_resolvidos: incluirResolvidos,
       });
       if (error) throw error;
-      return ((data as unknown as AlertRow[]) || []).sort(
-        (a, b) => (SEVERITY_ORDER[a.severity] ?? 9) - (SEVERITY_ORDER[b.severity] ?? 9),
-      );
+      // Abertos primeiro; dentro de cada grupo, por severidade.
+      return ((data as unknown as AlertRow[]) || []).sort((a, b) => {
+        const resolvido = Number(Boolean(a.resolved_at)) - Number(Boolean(b.resolved_at));
+        if (resolvido !== 0) return resolvido;
+        return (SEVERITY_ORDER[a.severity] ?? 9) - (SEVERITY_ORDER[b.severity] ?? 9);
+      });
     },
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
+
 
   // Toast on new critical alerts (dedup by id across refetches)
   const seenIds = useRef<Set<string> | null>(null);
