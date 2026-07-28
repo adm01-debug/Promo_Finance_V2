@@ -30,10 +30,10 @@ export function useRelatoriosTributariosAgendados(empresaId?: string) {
     queryKey: ['relatorios-tributarios-agendados', empresaId],
     queryFn: async () => {
       let q = supabase
-        .from('relatorios_tributarios_agendados' as never)
+        .from('relatorios_tributarios_agendados')
         .select('*')
         .order('created_at', { ascending: false });
-      if (empresaId) q = q.eq('empresa_id' as never, empresaId as never);
+      if (empresaId) q = q.eq('empresa_id', empresaId);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as unknown as RelatorioTributarioAgendado[];
@@ -44,8 +44,8 @@ export function useRelatoriosTributariosAgendados(empresaId?: string) {
   const create = useMutation({
     mutationFn: async (input: CreateAgendamentoInput) => {
       const { data, error } = await supabase
-        .from('relatorios_tributarios_agendados' as never)
-        .insert(input as never)
+        .from('relatorios_tributarios_agendados')
+        .insert(input)
         .select()
         .maybeSingle();
       if (error) throw error;
@@ -61,9 +61,9 @@ export function useRelatoriosTributariosAgendados(empresaId?: string) {
   const toggle = useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
       const { error } = await supabase
-        .from('relatorios_tributarios_agendados' as never)
-        .update({ ativo } as never)
-        .eq('id' as never, id as never);
+        .from('relatorios_tributarios_agendados')
+        .update({ ativo })
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['relatorios-tributarios-agendados'] }),
@@ -72,9 +72,9 @@ export function useRelatoriosTributariosAgendados(empresaId?: string) {
   const remove = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('relatorios_tributarios_agendados' as never)
+        .from('relatorios_tributarios_agendados')
         .delete()
-        .eq('id' as never, id as never);
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {

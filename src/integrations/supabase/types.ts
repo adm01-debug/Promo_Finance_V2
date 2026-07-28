@@ -1670,6 +1670,44 @@ export type Database = {
         }
         Relationships: []
       }
+      asaas_credit_risk_analysis: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          faixa_risco: string
+          id: string
+          metadata: Json
+          recomendacao: string | null
+          score_risco: number
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          faixa_risco: string
+          id?: string
+          metadata?: Json
+          recomendacao?: string | null
+          score_risco: number
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          faixa_risco?: string
+          id?: string
+          metadata?: Json
+          recomendacao?: string | null
+          score_risco?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_credit_risk_analysis_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       asaas_customers: {
         Row: {
           asaas_id: string | null
@@ -5158,6 +5196,105 @@ export type Database = {
           },
         ]
       }
+      convites_contador: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          empresa_id: string
+          expires_at: string
+          id: string
+          nome: string | null
+          revoked_at: string | null
+          token_hash: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email: string
+          empresa_id: string
+          expires_at: string
+          id?: string
+          nome?: string | null
+          revoked_at?: string | null
+          token_hash: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          empresa_id?: string
+          expires_at?: string
+          id?: string
+          nome?: string | null
+          revoked_at?: string | null
+          token_hash?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "convites_contador_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       creditos_tributarios: {
         Row: {
           competencia_origem: string | null
@@ -7177,6 +7314,57 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      execucoes_regua_cobranca: {
+        Row: {
+          canal: string | null
+          conta_receber_id: string | null
+          created_at: string
+          empresa_id: string
+          etapa: string
+          id: string
+          mensagem_erro: string | null
+          metadata: Json
+          status: string
+        }
+        Insert: {
+          canal?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          empresa_id: string
+          etapa: string
+          id?: string
+          mensagem_erro?: string | null
+          metadata?: Json
+          status: string
+        }
+        Update: {
+          canal?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          empresa_id?: string
+          etapa?: string
+          id?: string
+          mensagem_erro?: string | null
+          metadata?: Json
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execucoes_regua_cobranca_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucoes_regua_cobranca_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -18931,6 +19119,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      delete_cron_job: { Args: { job_id: number }; Returns: boolean }
       desfazer_conciliacao: {
         Args: {
           p_conciliacao_id: string
@@ -18944,6 +19133,19 @@ export type Database = {
         Returns: undefined
       }
       detect_query_regressions: { Args: never; Returns: Json }
+      detectar_duplicidades_financeiras: {
+        Args: { p_empresa_id: string; p_tabela?: string }
+        Returns: {
+          contraparte_id: string
+          data_vencimento: string
+          entidade_tipo: string
+          ids: string[]
+          numero_documento: string
+          ocorrencias: number
+          valor: number
+          valor_total: number
+        }[]
+      }
       drop_old_partitions: {
         Args: { p_retention_months: number; p_table: string }
         Returns: Json
@@ -19068,6 +19270,7 @@ export type Database = {
         }
         Returns: Json
       }
+      gerar_alertas_vencimento: { Args: never; Returns: number }
       gerar_contas_recorrentes: { Args: never; Returns: number }
       gerar_numero_acordo: { Args: never; Returns: string }
       gerar_sigla_empresa: { Args: { _nome: string }; Returns: string }
@@ -19509,6 +19712,10 @@ export type Database = {
       }
       sefaz_run_observability_checks: { Args: never; Returns: Json }
       snapshot_table_bloat: { Args: never; Returns: Json }
+      toggle_cron_job: {
+        Args: { is_active: boolean; job_id: number }
+        Returns: boolean
+      }
       use_reset_token: {
         Args: { p_ip_address?: unknown; p_token_hash: string }
         Returns: boolean
