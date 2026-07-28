@@ -30,6 +30,14 @@ export interface ParametrosSimulacao {
   percentualIndustria?: number;
   /** Percentual (0..100) da receita de revenda/comércio (Anexo I). */
   percentualRevenda?: number;
+  /**
+   * Percentual (0..100) da receita bruta destinada à EXPORTAÇÃO. Recorte
+   * transversal do mix: a parcela exportada é imune a PIS/COFINS
+   * (CF/88 art. 149 §2º I), ICMS (art. 155 §2º X "a") e ISS
+   * (art. 156 §3º II c/c LC 116/2003 art. 2º I). IRPJ/CSLL continuam devidos.
+   */
+  percentualExportacao?: number;
+
   /** Descrição da atividade principal — usada para detectar serviços do Anexo IV. */
   atividadePrincipal?: string;
   /** Alíquota ICMS efetiva (0..1), default 0.18. */
@@ -222,6 +230,19 @@ function clamp(v: number, min: number, max: number): number {
 }
 
 /**
+ * Fração (0..1) da receita bruta destinada à exportação.
+ *
+ * A imunidade das exportações é objetiva e alcança PIS/COFINS
+ * (CF/88 art. 149 §2º I), ICMS (art. 155 §2º X "a") e ISS
+ * (art. 156 §3º II c/c LC 116/2003 art. 2º I). IRPJ e CSLL NÃO são
+ * alcançados: o lucro da operação exportadora permanece tributável.
+ */
+export function fracaoExportacao(p: ParametrosSimulacao): number {
+  const v = num(p.percentualExportacao, 0);
+  return clamp(Number.isFinite(v) ? v : 0, 0, 100) / 100;
+}
+
+/**
  * Normaliza defensivamente os parâmetros de simulação antes de qualquer cálculo.
  *
  * Motivação (gap detectado em fuzzing de milhares de cenários): entradas fora de
@@ -250,6 +271,9 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     percentualServicos: servicos,
     percentualIndustria: industria,
     percentualRevenda: revenda,
+    percentualExportacao: p.percentualExportacao === undefined || p.percentualExportacao === null
+      ? undefined
+      : clamp(num(p.percentualExportacao, 0), 0, 100),
     folhaAnual: Math.max(0, num(p.folhaAnual, 0)),
     comprasComCredito: Math.max(0, num(p.comprasComCredito, 0)),
     despesasOperacionais: Math.max(0, num(p.despesasOperacionais, 0)),
@@ -347,21 +371,35 @@ export function simularSimples(
   // Sublimite estadual (LC 123/2006, arts. 19 e 20): ICMS/ISS fora do DAS.
   const sublimite = p.sublimiteEstadual ?? 3_600_000;
   const sublimiteExcedido = rbt12 > sublimite;
-  let icms = das * d.icms;
-  let iss = das * d.iss;
-  let dasFinal = das;
+  // --- Imunidade das exportações (LC 123/2006, art. 18 §14) ----------------
+  // Sobre a receita exportada não incidem as parcelas de PIS, COFINS, ICMS e
+  // ISS do DAS; as demais (IRPJ, CSLL, CPP) permanecem devidas.
+  const pExp = fracaoExportacao(p);
+  const fracaoImuneExport = d.pis + d.cofins + d.icms + d.iss;
+  const descontoExportacao = das * pExp * fracaoImuneExport;
+  const imune = 1 - pExp;
+
+  let icms = das * d.icms * imune;
+  let iss = das * d.iss * imune;
+  let dasFinal = das - descontoExportacao;
   let icmsForaDAS = 0;
   let issForaDAS = 0;
 
+  if (pExp > 0 && descontoExportacao > 0) {
+    obs.push(
+      `Receita de exportação (${(pExp * 100).toFixed(1)}%) imune a PIS/COFINS/ICMS/ISS (LC 123/2006, art. 18 §14): R$ ${descontoExportacao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} excluídos do DAS.`,
+    );
+  }
+
   if (sublimiteExcedido && (d.icms > 0 || d.iss > 0)) {
     const fracaoEstadualMunicipal = d.icms + d.iss;
-    dasFinal = das * (1 - fracaoEstadualMunicipal);
+    dasFinal = das * (1 - fracaoEstadualMunicipal) - das * pExp * (d.pis + d.cofins);
     const pServ = Math.max(0, Math.min(100, p.percentualServicos || 0)) / 100;
     const pMerc = Math.max(0, 1 - pServ);
     const aliqICMS = p.aliquotaICMS ?? 0.18;
     const aliqISS = p.aliquotaISS ?? 0.05;
-    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * aliqICMS : 0;
-    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * aliqISS : 0;
+    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * imune * aliqICMS : 0;
+    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * imune * aliqISS : 0;
     icms = icmsForaDAS;
     iss = issForaDAS;
     obs.push(
@@ -402,7 +440,8 @@ export function simularSimples(
 
   return {
     regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
-    irpj: das * d.irpj, csll: das * d.csll, pis: das * d.pis, cofins: das * d.cofins,
+    irpj: das * d.irpj, csll: das * d.csll,
+    pis: das * d.pis * imune, cofins: das * d.cofins * imune,
     cpp, icms, iss,
     cbs: 0, ibs: 0,
     totalTributos,
@@ -572,16 +611,24 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const efeitoSazonalidade = irpj - irpjEquivalenteAnual;
   const csll = (rs * presCsllServ + rc * 0.12) * 0.09;
 
-  const pis = p.faturamentoAnual * 0.0065;
-  const cofins = p.faturamentoAnual * 0.03;
-  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  // Imunidade objetiva das exportações: exclui a receita exportada da base de
+  // PIS/COFINS (CF art. 149 §2º I), de ICMS (art. 155 §2º X "a") e de ISS
+  // (art. 156 §3º II). IRPJ/CSLL continuam incidindo sobre a presunção.
+  const pExp = fracaoExportacao(p);
+  const imune = 1 - pExp;
+  const receitaTributavelPisCofins = p.faturamentoAnual * imune;
+  const pis = receitaTributavelPisCofins * 0.0065;
+  const cofins = receitaTributavelPisCofins * 0.03;
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc * imune, aliqICMS);
   const icms = apuracaoICMS.icms;
-  const iss = rs * aliqISS;
+  const iss = rs * imune * aliqISS;
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [
     `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
-    'PIS/COFINS cumulativo.',
+    pExp > 0
+      ? `PIS/COFINS cumulativo sobre a receita interna; ${(pExp * 100).toFixed(1)}% de exportação imune (CF art. 149 §2º I).`
+      : 'PIS/COFINS cumulativo.',
     `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
   ];
   if (apuracaoICMS.credito > 0) {
@@ -666,19 +713,30 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const economiaPeriodicidade = alternativa - (irpj + csll);
 
   const baseCred = (p.comprasComCredito || 0) + (p.despesasOperacionais || 0);
-  const pis = Math.max(0, p.faturamentoAnual * 0.0165 - baseCred * 0.0165);
-  const cofins = Math.max(0, p.faturamentoAnual * 0.076 - baseCred * 0.076);
+  const pExp = fracaoExportacao(p);
+  const imune = 1 - pExp;
+  // Exportação: receita imune a PIS/COFINS, mas os créditos permanecem
+  // aproveitáveis (Lei 10.637/02 art. 5º §1º e Lei 10.833/03 art. 6º §1º),
+  // podendo zerar a contribuição do período.
+  const receitaTributavelPisCofins = p.faturamentoAnual * imune;
+  const pis = Math.max(0, receitaTributavelPisCofins * 0.0165 - baseCred * 0.0165);
+  const cofins = Math.max(0, receitaTributavelPisCofins * 0.076 - baseCred * 0.076);
   const ps = p.percentualServicos / 100;
   const rs = p.faturamentoAnual * ps;
   const rc = p.faturamentoAnual * (1 - ps);
   const aliqICMS = p.aliquotaICMS ?? 0.18;
   const aliqISS = p.aliquotaISS ?? 0.05;
-  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc * imune, aliqICMS);
   const icms = apuracaoICMS.icms;
-  const iss = rs * aliqISS;
+  const iss = rs * imune * aliqISS;
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [`Lucro estimado: ${margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
+  if (pExp > 0) {
+    observacoes.push(
+      `Exportação de ${(pExp * 100).toFixed(1)}% da receita: imune a PIS/COFINS, ICMS e ISS (CF/88 arts. 149 §2º I, 155 §2º X "a" e 156 §3º II). IRPJ/CSLL permanecem devidos, e os créditos de PIS/COFINS seguem aproveitáveis.`,
+    );
+  }
   if (compIrpj.compensado > 0 || compCsll.compensado > 0) {
     observacoes.push(
       `Compensação de prejuízos limitada a 30% do lucro (Lei 9.065/95): IRPJ R$ ${compIrpj.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / CSLL R$ ${compCsll.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`,
