@@ -3384,6 +3384,54 @@ export type Database = {
           },
         ]
       }
+      catalogos_fiscais_cargas: {
+        Row: {
+          checksum: string
+          contagens: Json
+          created_at: string
+          criticos: number
+          duracao_ms: number
+          houve_alteracao: boolean
+          id: string
+          last_updated: string
+          mensagem: string | null
+          origem: string
+          status: string
+          updated_at: string
+          vinculos_normalizados: number
+        }
+        Insert: {
+          checksum: string
+          contagens?: Json
+          created_at?: string
+          criticos?: number
+          duracao_ms?: number
+          houve_alteracao?: boolean
+          id?: string
+          last_updated?: string
+          mensagem?: string | null
+          origem?: string
+          status?: string
+          updated_at?: string
+          vinculos_normalizados?: number
+        }
+        Update: {
+          checksum?: string
+          contagens?: Json
+          created_at?: string
+          criticos?: number
+          duracao_ms?: number
+          houve_alteracao?: boolean
+          id?: string
+          last_updated?: string
+          mensagem?: string | null
+          origem?: string
+          status?: string
+          updated_at?: string
+          vinculos_normalizados?: number
+        }
+        Relationships: []
+      }
       catalogos_tributarios_health_history: {
         Row: {
           achados: Json
@@ -15139,6 +15187,7 @@ export type Database = {
           vacuum_count: number
         }[]
       }
+      get_ultima_carga_fiscal: { Args: never; Returns: Json }
       get_user_permissions: { Args: { user_id: string }; Returns: string[] }
       get_user_roles: { Args: { user_id: string }; Returns: string[] }
       has_permission: {
@@ -15287,6 +15336,7 @@ export type Database = {
         }
         Returns: number
       }
+      recarregar_seeds_fiscais: { Args: { p_origem?: string }; Returns: Json }
       record_failed_login: {
         Args: { p_email: string; p_ip_address?: unknown }
         Returns: {
