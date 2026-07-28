@@ -11322,42 +11322,78 @@ export type Database = {
       pix_templates: {
         Row: {
           ativo: boolean
-          beneficiario_nome: string
+          beneficiario_nome: string | null
+          categoria: string | null
+          centro_custo_id: string | null
           chave_pix: string
-          cidade: string
-          created_at: string | null
+          cidade: string | null
+          created_at: string
+          created_by: string | null
+          descricao: string | null
           empresa_id: string | null
+          favorecido_cpf_cnpj: string | null
+          favorecido_nome: string | null
           id: string
           instrucoes: string | null
           nome: string
-          tipo_chave: string
+          tags: string[]
+          tipo_chave: string | null
+          tipo_chave_pix: string | null
+          ultimo_uso: string | null
+          updated_at: string
           uso_count: number
+          valor_fixo: boolean
+          valor_padrao: number
         }
         Insert: {
           ativo?: boolean
-          beneficiario_nome: string
+          beneficiario_nome?: string | null
+          categoria?: string | null
+          centro_custo_id?: string | null
           chave_pix: string
-          cidade: string
-          created_at?: string | null
+          cidade?: string | null
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
           empresa_id?: string | null
+          favorecido_cpf_cnpj?: string | null
+          favorecido_nome?: string | null
           id?: string
           instrucoes?: string | null
           nome: string
-          tipo_chave: string
+          tags?: string[]
+          tipo_chave?: string | null
+          tipo_chave_pix?: string | null
+          ultimo_uso?: string | null
+          updated_at?: string
           uso_count?: number
+          valor_fixo?: boolean
+          valor_padrao?: number
         }
         Update: {
           ativo?: boolean
-          beneficiario_nome?: string
+          beneficiario_nome?: string | null
+          categoria?: string | null
+          centro_custo_id?: string | null
           chave_pix?: string
-          cidade?: string
-          created_at?: string | null
+          cidade?: string | null
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
           empresa_id?: string | null
+          favorecido_cpf_cnpj?: string | null
+          favorecido_nome?: string | null
           id?: string
           instrucoes?: string | null
           nome?: string
-          tipo_chave?: string
+          tags?: string[]
+          tipo_chave?: string | null
+          tipo_chave_pix?: string | null
+          ultimo_uso?: string | null
+          updated_at?: string
           uso_count?: number
+          valor_fixo?: boolean
+          valor_padrao?: number
         }
         Relationships: []
       }
