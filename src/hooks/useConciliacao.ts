@@ -5,7 +5,8 @@ import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-conf
 import { logger } from '@/lib/logger';
 import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
-import type { TablesInsert, Tables } from '@/integrations/supabase/types';
+import type { TablesInsert, Tables, Json } from '@/integrations/supabase/types';
+import { registrarEventoFinanceiroOrThrow, registrarEventoFinanceiro } from '@/lib/financeiro/registrarEvento';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
