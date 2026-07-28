@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 
 export interface SefazObservabilityRow {
   cnpj: string;
@@ -68,14 +69,13 @@ export function useResolveAlert() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: userData } = await supabase.auth.getUser();
-      const { error } = await supabase
-        .from('integrity_alerts')
-        .update({ resolved_at: new Date().toISOString(), resolved_by: userData.user?.id ?? null })
-        .eq('id', id);
+      // A RLS de integrity_alerts só concede leitura a admins; o UPDATE direto
+      // era silenciosamente descartado. A RPC valida a role e encerra o alerta.
+      const { error } = await supabaseDyn.rpc('resolve_integrity_alert', { p_id: id });
       if (error) throw error;
       return id;
     },
+
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['sefaz-integrity-alerts'] });
       qc.invalidateQueries({ queryKey: ['sefaz-observability'] });
