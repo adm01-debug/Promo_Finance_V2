@@ -39,7 +39,10 @@ type CampoInput = {
   creditoPisCofinsFretes: number;
   irrfSofrido: number;
   csrfSofrido: number;
-  atividadePresumido: 'comercio' | 'industria' | 'servicos_geral' | 'transporte_cargas' | 'servicos_hospitalares';
+  atividadePresumido: AtividadePresumido;
+  /** CNAE preponderante — quando informado, deriva a atividade automaticamente. */
+  cnaePreponderante: string;
+
   anexoSimples: 'I' | 'II' | 'III' | 'IV' | 'V';
   rbt12: number;
   folha12m: number;
