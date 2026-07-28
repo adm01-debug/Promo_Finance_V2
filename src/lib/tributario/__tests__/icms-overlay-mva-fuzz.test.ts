@@ -22,6 +22,7 @@ import {
 import { calcularIcmsSt } from '@/lib/tributario/icms/st';
 import { UFS } from '@/lib/tributario/icms/tabelas';
 import type { SituacaoIcmsSt, UF } from '@/lib/tributario/icms/types';
+import type { ResultadoOverlayMva } from '@/lib/tributario/icms/overlay-mva';
 
 /** PRNG determinístico (mulberry32) — reprodutibilidade total das falhas. */
 function prng(seed: number) {
@@ -134,7 +135,7 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
 
     for (let i = 0; i < TOTAL_CENARIOS; i += 1) {
       const c = gerarCenario(rnd);
-      let resultado;
+      let resultado: ResultadoOverlayMva;
       try {
         resultado = aplicarOverlayMvaSt({
           ncms: c.ncms, ufs: c.ufs, regras: c.regras, referencia: c.referencia,

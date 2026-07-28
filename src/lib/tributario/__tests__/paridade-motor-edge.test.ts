@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import * as front from '../shared-logic';
-// @ts-expect-error - módulo Deno compartilhado, tipado de forma equivalente ao front
 import * as edge from '../../../../supabase/functions/_shared/tributario-logic.ts';
 
 /**

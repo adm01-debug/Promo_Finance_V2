@@ -624,7 +624,8 @@ describe('useConciliacaoPage — persistência de filtros no localStorage', () =
     const stored = {
       periodoInicio: '2025-01-01', periodoFim: '', valorMin: '', valorMax: '',
       tipo: 'credito', confiancaIA: 'todos', centroCustoId: 'todos',
-    };
+    } as const;
+
     (window.localStorage.getItem as any).mockReturnValueOnce(JSON.stringify(stored));
 
     const { result } = renderHook(() => useConciliacaoPage(), { wrapper });

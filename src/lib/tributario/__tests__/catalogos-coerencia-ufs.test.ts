@@ -15,6 +15,8 @@ function catalogoEspelhandoCodigo(): UfCatalogo[] {
     aliquota_fcp: ALIQUOTAS_UF[sigla].fcp,
     exige_antecipacao: false,
     difal_base_dupla: false,
+    vigente_de: '2024-01-01',
+    vigente_ate: null,
   }));
 }
 

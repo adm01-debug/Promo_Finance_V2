@@ -16,7 +16,9 @@ import {
 } from '../audit-priority';
 
 describe('audit-priority', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   describe('classifyAuditPriority', () => {
     it('mapeia actions base corretamente', () => {

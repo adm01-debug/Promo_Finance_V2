@@ -93,7 +93,7 @@ describe('convites: status e aceite', () => {
   ])('recusa com motivo correto (%#)', (dados, email, motivo) => {
     const resultado = avaliarAceiteConvite(dados, email, AGORA);
     expect(resultado.aceitavel).toBe(false);
-    if (!resultado.aceitavel) expect(resultado.motivo).toBe(motivo);
+    if (resultado.aceitavel === false) expect(resultado.motivo).toBe(motivo);
   });
 
   it('expiração exatamente no instante atual é considerada expirada', () => {

@@ -12,11 +12,12 @@ import { simularPresumido, simularReal, type ParametrosSimulacao } from '../shar
 const base = (over: Partial<ParametrosSimulacao> = {}): ParametrosSimulacao => ({
   faturamentoAnual: 5_000_000,
   folhaAnual: 1_000_000,
-  custosAnuais: 1_500_000,
-  despesasAnuais: 500_000,
-  percentualServicos: 0.5,
+  comprasComCredito: 1_500_000,
+  despesasOperacionais: 500_000,
+  margemLucro: 15,
+  percentualServicos: 50,
   percentualIndustria: 0,
-  percentualRevenda: 0.5,
+  percentualRevenda: 50,
   ...over,
 });
 
