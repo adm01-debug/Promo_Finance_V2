@@ -20068,6 +20068,7 @@ export type Database = {
       }
       empresa_acessivel: { Args: { _empresa_id: string }; Returns: boolean }
       empresa_membro_ativo: { Args: { _empresa_id: string }; Returns: boolean }
+      empresa_padrao_id: { Args: never; Returns: string }
       enqueue_webhook_retry: {
         Args: {
           p_error: string
@@ -20578,6 +20579,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      provisionar_usuario: { Args: { _user_id: string }; Returns: Json }
+      provisionar_usuario_atual: { Args: never; Returns: Json }
       purge_old_rows: {
         Args: {
           p_batch?: number
