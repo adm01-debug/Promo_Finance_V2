@@ -3384,6 +3384,45 @@ export type Database = {
           },
         ]
       }
+      catalogos_tributarios_health_history: {
+        Row: {
+          achados: Json
+          avisos: number
+          created_at: string
+          criticos: number
+          dia: string
+          id: string
+          infos: number
+          saudavel: boolean
+          total_invariantes: number
+          updated_at: string
+        }
+        Insert: {
+          achados?: Json
+          avisos?: number
+          created_at?: string
+          criticos?: number
+          dia: string
+          id?: string
+          infos?: number
+          saudavel?: boolean
+          total_invariantes?: number
+          updated_at?: string
+        }
+        Update: {
+          achados?: Json
+          avisos?: number
+          created_at?: string
+          criticos?: number
+          dia?: string
+          id?: string
+          infos?: number
+          saudavel?: boolean
+          total_invariantes?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           ativo: boolean | null
@@ -14965,6 +15004,17 @@ export type Database = {
         }[]
       }
       get_catalogos_tributarios_health: { Args: never; Returns: Json }
+      get_catalogos_tributarios_history: {
+        Args: { _dias?: number }
+        Returns: {
+          avisos: number
+          criticos: number
+          dia: string
+          infos: number
+          saudavel: boolean
+          total_invariantes: number
+        }[]
+      }
       get_cron_jobs: {
         Args: never
         Returns: {
