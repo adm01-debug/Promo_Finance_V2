@@ -20,6 +20,7 @@ import {
 } from '@/lib/tributario/diagnostico-parametros';
 import {
   normalizarParametrosSnapshot as normalizarParametros,
+  mesclarSnapshotParametros,
   normalizarAjustesAplicados as normalizarAjustes,
   resumirAuditoriaHistorico,
   type ResumoAuditoriaHistorico,
