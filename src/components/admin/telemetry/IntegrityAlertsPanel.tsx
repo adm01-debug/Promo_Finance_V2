@@ -19,6 +19,7 @@ interface IntegrityAlertRow {
   sample_ids: string[] | null;
   alert_hour: string;
   resolved_at: string | null;
+  resolved_reason: string | null;
   created_at: string;
 }
 
