@@ -58,7 +58,9 @@ export function AlertasProativosErros() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
+        <SilenciamentosExpirando />
         {isLoading && <Skeleton className="h-24 w-full" />}
+
         {isError && (
           <p className="text-sm text-muted-foreground">Não foi possível carregar o histórico de alertas.</p>
         )}
