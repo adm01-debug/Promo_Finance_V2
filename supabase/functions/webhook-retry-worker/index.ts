@@ -4,6 +4,8 @@
 import { corsHeaders, createErrorResponse } from '../_shared/validation.ts'
 import { createLogger } from '../_shared/logger.ts'
 import { serviceClient, markSuccess, markFailure } from '../_shared/webhook-idempotency.ts'
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts'
+
 
 const logger = createLogger('webhook-retry-worker')
 
@@ -33,6 +35,13 @@ const HANDLERS: Record<string, (payload: unknown, supabase: ReturnType<typeof se
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
+
+  // [auth-guard] Worker interno: reprocessa webhooks com service role. Sem este
+  // porteiro, qualquer requisição anônima podia forçar replays de cobrança.
+  const guard = await exigirChamadaInterna(req)
+  if (!guard.ok) return guard.resposta
+
+
 
   try {
     const supabase = serviceClient()

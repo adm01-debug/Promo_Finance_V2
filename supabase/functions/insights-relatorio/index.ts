@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
+import { exigirUsuario } from "../_shared/auth-guard.ts";
 
 const InsightsRelatorioBodySchema = z.object({
   dados: z.unknown(),
@@ -18,6 +19,11 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // [auth-guard] Exige sessao valida: a funcao usa credenciais privilegiadas.
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
+
 
   try {
     // Rate limit: 30 req/min por IP (endpoint IA)

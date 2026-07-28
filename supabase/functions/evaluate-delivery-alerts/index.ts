@@ -15,6 +15,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders } from "../_shared/cors.ts";
+import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 type AlertType = "DRIVER_STOPPED" | "ROUTE_DEVIATION" | "LATE_DELIVERY";
 type Severity = "INFO" | "WARNING" | "CRITICAL";
@@ -64,6 +65,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+
+  // [auth-guard] Endpoint de automacao interna: exige service role ou segredo
+  // rotacionavel em `x-cron-secret`. Sem isso a funcao roda com service role
+  // para qualquer requisicao anonima da internet.
+  const guard = await exigirChamadaInterna(req);
+  if (!guard.ok) return guard.resposta;
+
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,

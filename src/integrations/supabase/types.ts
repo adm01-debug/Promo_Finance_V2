@@ -19940,6 +19940,7 @@ export type Database = {
         Args: { p_template_id: string }
         Returns: undefined
       }
+      internal_job_secret: { Args: never; Returns: string }
       is_country_allowed_for_login: {
         Args: { _country: string }
         Returns: boolean

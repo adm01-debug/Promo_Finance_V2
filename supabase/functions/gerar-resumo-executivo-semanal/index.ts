@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
+import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
 
 const ResumoSemanalBodySchema = z.object({
   empresa_id: z.string().uuid().optional(),
@@ -102,6 +103,11 @@ Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  // [auth-guard] Aceita automacao interna (cron/trigger) ou usuario logado.
+  const guard = await exigirInternaOuUsuario(req);
+  if (!guard.ok) return guard.resposta;
+
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;

@@ -3,6 +3,7 @@
 // Busca configs em n8n_workflow_configs (enabled + faixa de risco compatível),
 // envia webhook a cada uma com retry/backoff e loga em n8n_dispatch_logs.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -75,6 +76,11 @@ async function dispatchWithRetry(
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  // [auth-guard] Aceita automacao interna (cron/trigger) ou usuario logado.
+  const guard = await exigirInternaOuUsuario(req);
+  if (!guard.ok) return guard.resposta;
+
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
   try {

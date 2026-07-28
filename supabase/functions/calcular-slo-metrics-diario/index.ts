@@ -1,6 +1,7 @@
 // Edge: calcular-slo-metrics-diario
 // Agrega métricas das últimas 24h e persiste snapshot em slo_metrics_diarias.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -19,6 +20,13 @@ function percentile(arr: number[], p: number): number {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  // [auth-guard] Endpoint de automacao interna: exige service role ou segredo
+  // rotacionavel em `x-cron-secret`. Sem isso a funcao roda com service role
+  // para qualquer requisicao anonima da internet.
+  const guard = await exigirChamadaInterna(req);
+  if (!guard.ok) return guard.resposta;
+
 
   try {
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);

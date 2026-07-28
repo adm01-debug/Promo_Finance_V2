@@ -2,11 +2,17 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { validatePayload, createErrorResponse, AnalyzeDocumentSchema, corsHeaders } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { exigirUsuario } from "../_shared/auth-guard.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // [auth-guard] Exige sessao valida: a funcao usa credenciais privilegiadas.
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
+
 
   try {
     // Rate limit: 20 req/min por IP (endpoint de IA com custo)

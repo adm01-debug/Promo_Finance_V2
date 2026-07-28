@@ -6,6 +6,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 const _CIBodySchema = z.object({
   matrix: z.string().optional(),
@@ -42,6 +43,13 @@ interface RequestBody {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  // [auth-guard] Endpoint de automacao interna: exige service role ou segredo
+  // rotacionavel em `x-cron-secret`. Sem isso a funcao roda com service role
+  // para qualquer requisicao anonima da internet.
+  const guard = await exigirChamadaInterna(req);
+  if (!guard.ok) return guard.resposta;
+
   if (req.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405);
   }
