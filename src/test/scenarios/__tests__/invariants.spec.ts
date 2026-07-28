@@ -12,7 +12,10 @@ function baseState(): ScenarioState {
     anomalias: [],
     reguaDisparos: [],
     auditLogs: [],
+    nfe: { ultimoNsuHistory: [], recebidas: [], eventos: [] },
+    entregas: [],
   };
+
 }
 
 describe("invariants", () => {

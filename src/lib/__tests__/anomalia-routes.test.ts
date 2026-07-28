@@ -42,7 +42,9 @@ describe('anomalia-routes', () => {
   });
 
   describe('dispatchOpenAnomaliaDrawer', () => {
-    beforeEach(() => vi.restoreAllMocks());
+    beforeEach(() => {
+      vi.restoreAllMocks();
+    });
     it('emite CustomEvent com o id no detail', () => {
       const spy = vi.spyOn(window, 'dispatchEvent');
       dispatchOpenAnomaliaDrawer('anom-42');

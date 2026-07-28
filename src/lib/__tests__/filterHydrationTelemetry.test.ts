@@ -22,7 +22,9 @@ function installStorage(initial: Record<string, string> = {}) {
 }
 
 describe('filterHydrationTelemetry', () => {
-  beforeEach(() => installStorage());
+  beforeEach(() => {
+    installStorage();
+  });
 
   it('registra evento com timestamp ISO', async () => {
     const m = await freshModule();

@@ -61,7 +61,6 @@ describe('correlation-id', () => {
 
   it('gera fallback quando crypto.randomUUID não está disponível', () => {
     const originalCrypto = globalThis.crypto;
-    // @ts-expect-error - simula ambiente sem crypto
     delete (globalThis as { crypto?: unknown }).crypto;
     try {
       const id = newCorrelationId();

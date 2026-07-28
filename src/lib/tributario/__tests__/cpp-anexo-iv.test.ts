@@ -25,7 +25,7 @@ const base = (over: Partial<ParametrosSimulacao> = {}): ParametrosSimulacao => (
 
 describe('CPP fora do DAS — Anexo IV', () => {
   it('classifica construção civil no Anexo IV e cobra CPP por fora', () => {
-    const r = simularSimples(base());
+    const r = simularSimples(base(), 2026, 6);
     expect(r.anexoAplicavel).toBe('IV');
     // 300.000 × (20% + RAT 2%) = 66.000
     expect(r.cppForaDAS).toBeCloseTo(66_000, 2);
@@ -34,22 +34,22 @@ describe('CPP fora do DAS — Anexo IV', () => {
   });
 
   it('o total inclui a CPP por fora, acima do DAS puro', () => {
-    const comFolha = simularSimples(base());
-    const semFolha = simularSimples(base({ folhaAnual: 0 }));
+    const comFolha = simularSimples(base(), 2026, 6);
+    const semFolha = simularSimples(base({ folhaAnual: 0 }), 2026, 6);
     expect(comFolha.totalTributos - semFolha.totalTributos).toBeCloseTo(66_000, 2);
     expect(semFolha.cppForaDAS).toBe(0);
     expect(comFolha.cargaEfetiva).toBeGreaterThan(semFolha.cargaEfetiva);
   });
 
   it('respeita a alíquota RAT informada e a limita a 6%', () => {
-    expect(simularSimples(base({ aliquotaRAT: 0.03 })).cppForaDAS).toBeCloseTo(69_000, 2);
-    expect(simularSimples(base({ aliquotaRAT: 0.99 })).cppForaDAS).toBeCloseTo(78_000, 2);
-    expect(simularSimples(base({ aliquotaRAT: -1 })).cppForaDAS).toBeCloseTo(60_000, 2);
+    expect(simularSimples(base({ aliquotaRAT: 0.03 }), 2026, 6).cppForaDAS).toBeCloseTo(69_000, 2);
+    expect(simularSimples(base({ aliquotaRAT: 0.99 }), 2026, 6).cppForaDAS).toBeCloseTo(78_000, 2);
+    expect(simularSimples(base({ aliquotaRAT: -1 }), 2026, 6).cppForaDAS).toBeCloseTo(60_000, 2);
   });
 
   it('não aplica CPP por fora em anexos onde ela já está no DAS', () => {
     for (const atividade of ['comércio varejista', 'indústria de brindes', 'consultoria']) {
-      const r = simularSimples(base({ atividadePrincipal: atividade, percentualServicos: 0, percentualRevenda: 100 }));
+      const r = simularSimples(base({ atividadePrincipal: atividade, percentualServicos: 0, percentualRevenda: 100 }), 2026, 6);
       expect(r.anexoAplicavel).not.toBe('IV');
       expect(r.cppForaDAS ?? 0).toBe(0);
       expect(r.cpp).toBeGreaterThan(0);
@@ -63,6 +63,8 @@ describe('CPP fora do DAS — Anexo IV', () => {
       const rat = [0, 0.01, 0.02, 0.03][i % 4];
       const r = simularSimples(
         base({ faturamentoAnual, folhaAnual, aliquotaRAT: rat, issRetidoFonte: i % 5 === 0 ? 5_000 : 0 }),
+        2026,
+        6,
       );
       expect(r.anexoAplicavel).toBe('IV');
       expect(Number.isFinite(r.totalTributos)).toBe(true);

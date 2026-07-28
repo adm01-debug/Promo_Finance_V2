@@ -30,6 +30,8 @@ function ufsCoerentes(): UfCatalogo[] {
     possui_fcp: ALIQUOTAS_UF[sigla as keyof typeof ALIQUOTAS_UF].fcp > 0,
     exige_antecipacao: false,
     difal_base_dupla: true,
+    vigente_de: '2024-01-01',
+    vigente_ate: null,
   }));
 }
 

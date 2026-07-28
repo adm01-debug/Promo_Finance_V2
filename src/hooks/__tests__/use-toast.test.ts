@@ -9,9 +9,10 @@ const sonnerMock = vi.hoisted(() => {
 });
 
 vi.mock('sonner', () => {
-  const fn = Object.assign((...args: unknown[]) => sonnerMock.show(...args), {
-    error: (...args: unknown[]) => sonnerMock.error(...args),
-    dismiss: (...args: unknown[]) => sonnerMock.dismiss(...args),
+  type AnyFn = (...args: unknown[]) => unknown;
+  const fn = Object.assign((...args: unknown[]) => (sonnerMock.show as AnyFn)(...args), {
+    error: (...args: unknown[]) => (sonnerMock.error as AnyFn)(...args),
+    dismiss: (...args: unknown[]) => (sonnerMock.dismiss as AnyFn)(...args),
   });
   return { toast: fn };
 });
