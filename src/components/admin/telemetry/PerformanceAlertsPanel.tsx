@@ -49,6 +49,9 @@ function formatMetric(source: string, alertKey: string, value: number | null): s
   if (source !== "cron") return `${Math.round(value)}ms`;
   if (alertKey.startsWith("job_stale:")) return `${Number(value).toFixed(1)}h`;
   if (alertKey.startsWith("job_failed:")) return `${Math.round(value)}x`;
+  // Escalonamento de integridade: o valor é a quantidade de alertas críticos
+  // abertos há mais de 24h aguardando tratamento.
+  if (alertKey === "integrity_stale_critical") return `${Math.round(value)} alerta(s)`;
   return "—";
 }
 
