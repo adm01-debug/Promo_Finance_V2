@@ -62,17 +62,22 @@ async function flushQueues(): Promise<void> {
     // 1. Process errors
     if (errorQueue.length > 0) {
       const batch = errorQueue.splice(0, errorQueue.length);
+      // Os nomes abaixo espelham EXATAMENTE as colunas de frontend_error_logs.
+      // Antes desta correção o payload usava message/stack/context, que não
+      // existem no schema: todo insert falhava com PGRST204 e era engolido
+      // pelo catch, deixando o monitoramento de erros cego em produção.
       const rows = batch.map((p) => ({
         user_id: user?.id ?? null,
-        message: p.message.slice(0, 2000),
-        stack: p.stack?.slice(0, 8000) ?? null,
-        url: p.url ?? window.location.href,
-        user_agent: p.user_agent ?? navigator.userAgent,
+        error_message: p.message.slice(0, 2000),
+        error_stack: p.stack?.slice(0, 8000) ?? null,
+        url: (p.url ?? window.location.href).slice(0, 2000),
+        user_agent: (p.user_agent ?? navigator.userAgent).slice(0, 500),
         severity: p.severity ?? 'error',
-        context: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs } as never,
+        metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
       }));
       await supabase.from('frontend_error_logs').insert(rows);
     }
+
 
     // 2. Process performance metrics
     if (perfQueue.length > 0) {
