@@ -394,6 +394,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           email_addresses: string[] | null
+          empresa_id: string | null
           id: string
           is_enabled: boolean | null
           message_template: string | null
@@ -421,6 +422,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           email_addresses?: string[] | null
+          empresa_id?: string | null
           id?: string
           is_enabled?: boolean | null
           message_template?: string | null
@@ -448,6 +450,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           email_addresses?: string[] | null
+          empresa_id?: string | null
           id?: string
           is_enabled?: boolean | null
           message_template?: string | null
@@ -466,7 +469,64 @@ export type Database = {
           updated_at?: string
           whatsapp_numbers?: string[] | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alert_configurations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       alertas: {
         Row: {
@@ -724,6 +784,7 @@ export type Database = {
         Row: {
           created_at: string
           driver_id: string | null
+          empresa_id: string | null
           id: string
           is_dismissed: boolean | null
           is_read: boolean | null
@@ -737,6 +798,7 @@ export type Database = {
         Insert: {
           created_at?: string
           driver_id?: string | null
+          empresa_id?: string | null
           id?: string
           is_dismissed?: boolean | null
           is_read?: boolean | null
@@ -750,6 +812,7 @@ export type Database = {
         Update: {
           created_at?: string
           driver_id?: string | null
+          empresa_id?: string | null
           id?: string
           is_dismissed?: boolean | null
           is_read?: boolean | null
@@ -774,6 +837,62 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "drivers_safe_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "alerts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
           },
           {
             foreignKeyName: "alerts_order_id_fkey"
@@ -6320,6 +6439,7 @@ export type Database = {
           cancelled_deliveries: number | null
           completed_deliveries: number | null
           created_at: string
+          empresa_id: string | null
           external_rating: number | null
           external_success_rate: number | null
           external_total_deliveries: number | null
@@ -6354,6 +6474,7 @@ export type Database = {
           cancelled_deliveries?: number | null
           completed_deliveries?: number | null
           created_at?: string
+          empresa_id?: string | null
           external_rating?: number | null
           external_success_rate?: number | null
           external_total_deliveries?: number | null
@@ -6388,6 +6509,7 @@ export type Database = {
           cancelled_deliveries?: number | null
           completed_deliveries?: number | null
           created_at?: string
+          empresa_id?: string | null
           external_rating?: number | null
           external_success_rate?: number | null
           external_total_deliveries?: number | null
@@ -6415,7 +6537,64 @@ export type Database = {
           vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
           whitelisted?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "drivers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       edge_function_logs: {
         Row: {
@@ -10002,6 +10181,7 @@ export type Database = {
           distance_meters: number | null
           driver_id: string | null
           duration_minutes: number | null
+          empresa_id: string | null
           estimated_delivery: string | null
           id: string
           internal_notes: string | null
@@ -10040,6 +10220,7 @@ export type Database = {
           distance_meters?: number | null
           driver_id?: string | null
           duration_minutes?: number | null
+          empresa_id?: string | null
           estimated_delivery?: string | null
           id?: string
           internal_notes?: string | null
@@ -10078,6 +10259,7 @@ export type Database = {
           distance_meters?: number | null
           driver_id?: string | null
           duration_minutes?: number | null
+          empresa_id?: string | null
           estimated_delivery?: string | null
           id?: string
           internal_notes?: string | null
@@ -10113,6 +10295,62 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "drivers_safe_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "lalamove_orders_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
@@ -15085,6 +15323,7 @@ export type Database = {
           condition: Json
           created_at: string
           description: string | null
+          empresa_id: string | null
           id: string
           is_active: boolean | null
           name: string
@@ -15095,6 +15334,7 @@ export type Database = {
           condition: Json
           created_at?: string
           description?: string | null
+          empresa_id?: string | null
           id?: string
           is_active?: boolean | null
           name: string
@@ -15105,13 +15345,71 @@ export type Database = {
           condition?: Json
           created_at?: string
           description?: string | null
+          empresa_id?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
           score_impact?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "risk_rules_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       role_permissions: {
         Row: {
