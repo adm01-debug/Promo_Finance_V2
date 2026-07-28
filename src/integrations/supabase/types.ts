@@ -14843,6 +14843,10 @@ export type Database = {
         Args: { p_empresa_id: string }
         Returns: string
       }
+      faixa_simples_reparticao_valida: {
+        Args: { _rep: Json }
+        Returns: boolean
+      }
       fn_balancete: {
         Args: {
           p_data_fim: string

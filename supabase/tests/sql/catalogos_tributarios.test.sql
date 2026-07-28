@@ -16,7 +16,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(58);
+SELECT plan(65);
 
 -- ---------------------------------------------------------------------------
 -- 1) Chaves primárias
@@ -230,6 +230,54 @@ SELECT ok(
   'domínio tributario deve ser aceito por integrity_alerts'
 );
 
+-- ============================================================
+-- Bloco: repartição do Simples, ISS geral e vínculos de ST
+-- ============================================================
+
+SELECT is(
+  (SELECT count(*) FROM public.faixas_simples_nacional WHERE reparticao = '{}'::jsonb)::int,
+  0, 'todas as 30 faixas do Simples devem ter repartição preenchida'
+);
+
+SELECT ok(
+  (SELECT bool_and(public.faixa_simples_reparticao_valida(reparticao))
+     FROM public.faixas_simples_nacional),
+  'repartição de cada faixa deve somar 100%'
+);
+
+SELECT throws_ok(
+  $$UPDATE public.faixas_simples_nacional
+       SET reparticao = '{"irpj":10,"csll":10}'::jsonb
+     WHERE anexo = 'I' AND faixa = 1$$,
+  '23514', NULL, 'repartição que não fecha 100% deve ser rejeitada'
+);
+
+SELECT is(
+  (SELECT count(*) FROM public.ncms WHERE sujeito_st AND mva_padrao IS NULL)::int,
+  0, 'todo NCM sujeito a ST deve ter MVA padrão'
+);
+
+SELECT is(
+  (SELECT count(*) FROM public.protocolos_st_ncms WHERE ncm_id IS NULL)::int,
+  0, 'todo item de protocolo ST deve estar vinculado a um NCM'
+);
+
+SELECT is(
+  (SELECT count(*) FROM public.ufs u
+    WHERE NOT EXISTS (SELECT 1 FROM public.aliquotas_internas_uf a
+                       WHERE a.uf = u.sigla AND a.categoria_produto IN ('GERAL','padrao')))::int,
+  0, 'as 27 UFs devem ter alíquota interna padrão detalhada'
+);
+
+SELECT is(
+  (SELECT count(*) FROM (
+     SELECT codigo_ibge FROM public.aliquotas_iss_municipal
+      GROUP BY codigo_ibge
+     HAVING count(*) FILTER (WHERE item_lista_id IS NULL) = 0) s)::int,
+  0, 'todo município deve ter alíquota geral de ISS como fallback'
+);
+
 SELECT * FROM finish();
+
 
 ROLLBACK;
