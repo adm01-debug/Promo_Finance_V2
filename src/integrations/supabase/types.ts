@@ -15047,6 +15047,20 @@ export type Database = {
         Args: { p_empresa_id: string }
         Returns: number
       }
+      get_retention_history: {
+        Args: { p_days?: number }
+        Returns: {
+          completed_at: string
+          duration_ms: number
+          error_message: string
+          executed_at: string
+          partitions_dropped: number
+          per_table: Json
+          skipped: boolean
+          success: boolean
+          total_deleted: number
+        }[]
+      }
       get_table_bloat: {
         Args: never
         Returns: {

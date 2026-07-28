@@ -13,6 +13,7 @@ import { PerformanceMetrics } from "@/components/admin/telemetry/PerformanceMetr
 import { PerformanceAlertsPanel } from "@/components/admin/telemetry/PerformanceAlertsPanel";
 import { PerformanceAlertsWeeklyTrend } from "@/components/admin/telemetry/PerformanceAlertsWeeklyTrend";
 import { IntegrityAlertsPanel } from "@/components/admin/telemetry/IntegrityAlertsPanel";
+import { RetentionHistoryPanel } from "@/components/admin/telemetry/RetentionHistoryPanel";
 
 
 import { toast } from "sonner";
@@ -269,6 +270,11 @@ export default function AdminTelemetriaPage() {
 
         {/* Invariantes de Integridade de Dados */}
         <IntegrityAlertsPanel />
+
+        {/* Histórico da retenção diária */}
+        <RetentionHistoryPanel />
+
+
 
 
         {/* Tendência Semanal */}
