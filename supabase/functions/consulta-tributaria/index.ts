@@ -102,30 +102,8 @@ async function consultarUF(db: SupabaseClient, p: Params) {
   };
   const internas = vigentes<Interna>(internasRes.data);
 
-  // Fallback da alíquota interna: categoria exata → GERAL/PADRAO → menor alíquota disponível.
-  const alvo = p.categoria?.toUpperCase() ?? null;
-  let escolhida = alvo
-    ? internas.find((i) => (i.categoria_produto ?? '').toUpperCase() === alvo) ?? null
-    : null;
-  let match: MatchInfo = { estrategia: 'categoria_exata', exato: true };
-
-  if (!escolhida) {
-    escolhida =
-      internas.find((i) => ['GERAL', 'PADRAO', 'PADRÃO'].includes((i.categoria_produto ?? '').toUpperCase())) ??
-      null;
-    if (escolhida) {
-      match = {
-        estrategia: 'fallback_categoria_geral',
-        exato: false,
-        detalhe: alvo ? `Categoria "${alvo}" não cadastrada para ${p.uf}` : 'Categoria não informada',
-      };
-    }
-  }
-  if (!escolhida && internas.length > 0) {
-    escolhida = internas[0];
-    match = { estrategia: 'fallback_primeira_disponivel', exato: false };
-  }
-  if (!escolhida) match = { estrategia: 'sem_correspondencia', exato: false };
+  // Fallback da alíquota interna: categoria exata → GERAL/PADRAO → primeira disponível.
+  const { escolhida, match } = escolherAliquotaInterna(internas, p.categoria, p.uf);
 
   return json({
     recurso: 'uf',
@@ -217,9 +195,7 @@ const NCM_SELECT =
 /** Cenário de ST: protocolos que alcançam o NCM na UF informada (e no destino). */
 async function montarCenarioST(db: SupabaseClient, ncmCodigo: string, p: Params) {
   const digitos = somenteDigitos(ncmCodigo);
-  const prefixos = [8, 6, 4, 2]
-    .filter((t) => digitos.length >= t)
-    .map((t) => digitos.slice(0, t));
+  const prefixos = prefixosHierarquicos(digitos, [8, 6, 4, 2]);
 
   const { data, error } = await db
     .from('protocolos_st_ncms')
@@ -235,21 +211,15 @@ async function montarCenarioST(db: SupabaseClient, ncmCodigo: string, p: Params)
     mva_original: number | null;
     protocolo: { ufs?: { uf: string; papel: string }[] } | null;
   };
-  let vinculos = vigentes<Vinculo>(data);
+  const brutos = vigentes<Vinculo>(data);
 
   // Filtra por aderência às UFs de origem/destino quando informadas.
   const ufsAlvo = [p.uf, p.uf_destino].filter(Boolean) as string[];
-  let estrategia = prefixos[0] === digitos ? 'exato' : 'fallback_prefixo';
-  if (ufsAlvo.length > 0) {
-    const filtrados = vinculos.filter((v) =>
-      (v.protocolo?.ufs ?? []).some((u) => ufsAlvo.includes(u.uf)),
-    );
-    if (filtrados.length > 0) {
-      vinculos = filtrados;
-    } else if (vinculos.length > 0) {
-      estrategia = 'fallback_sem_adesao_uf';
-    }
-  }
+  const { vinculos, estrategia } = classificarCenarioST(
+    brutos,
+    ufsAlvo,
+    prefixos[0] === digitos ? 'exato' : 'fallback_prefixo',
+  );
 
   return {
     aplicavel: vinculos.length > 0,
