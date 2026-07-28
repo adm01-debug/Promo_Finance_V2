@@ -7775,6 +7775,7 @@ export type Database = {
           reason: string
           resolved_at: string | null
           resolved_by: string | null
+          resolved_reason: string | null
           sample_ids: string[] | null
           severity: string
           updated_at: string
@@ -7790,6 +7791,7 @@ export type Database = {
           reason: string
           resolved_at?: string | null
           resolved_by?: string | null
+          resolved_reason?: string | null
           sample_ids?: string[] | null
           severity: string
           updated_at?: string
@@ -7805,6 +7807,7 @@ export type Database = {
           reason?: string
           resolved_at?: string | null
           resolved_by?: string | null
+          resolved_reason?: string | null
           sample_ids?: string[] | null
           severity?: string
           updated_at?: string
@@ -14741,7 +14744,7 @@ export type Database = {
       cleanup_rpc_observability_metrics: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
       close_stale_integrity_alerts: {
-        Args: { p_domains: string[]; p_hour: string }
+        Args: { p_domains: string[]; p_grace?: string; p_hour: string }
         Returns: number
       }
       compare_pg_stat_baseline: {
