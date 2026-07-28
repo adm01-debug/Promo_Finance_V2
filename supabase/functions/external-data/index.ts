@@ -232,7 +232,7 @@ Deno.serve(async (req) => {
     // Map external "companies" format to the local format expected by the frontend
     // O select com embed faz o supabase-js tipar `data` como uniao com
     // `GenericStringError[]`. Normalizamos para linhas antes do map.
-    const linhas = (Array.isArray(data) ? data : []) as Record<string, unknown>[];
+    const linhas = (Array.isArray(data) ? data : []) as unknown as Record<string, unknown>[];
     const mappedData = linhas.map((company) => {
       const subData = company[joinTable] as Record<string, unknown> | null;
       const contacts = company.contacts as Array<Record<string, unknown>> | null;
