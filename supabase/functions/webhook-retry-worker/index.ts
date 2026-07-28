@@ -4,6 +4,8 @@
 import { corsHeaders, createErrorResponse } from '../_shared/validation.ts'
 import { createLogger } from '../_shared/logger.ts'
 import { serviceClient, markSuccess, markFailure } from '../_shared/webhook-idempotency.ts'
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts'
+
 
 const logger = createLogger('webhook-retry-worker')
 
