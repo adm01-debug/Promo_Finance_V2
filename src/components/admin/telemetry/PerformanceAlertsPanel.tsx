@@ -110,7 +110,11 @@ export function PerformanceAlertsPanel() {
       seenIds.current = new Set(data.map((a) => a.id));
       return;
     }
-    const fresh = data.filter((a) => a.severity === "critical" && !seenIds.current!.has(a.id));
+    // Alerta já encerrado é histórico: nunca deve gerar notificação.
+    const fresh = data.filter(
+      (a) => a.severity === "critical" && !a.resolved_at && !seenIds.current!.has(a.id),
+    );
+
     fresh.forEach((a) => {
       toast.error(`🚨 Regressão crítica detectada`, {
         description: a.reason || a.alert_key,
