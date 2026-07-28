@@ -294,6 +294,46 @@ BEGIN
   RAISE NOTICE 'PASS: trilha de auditoria append-only e com autoria verificada.';
 END $$;
 
+-- ---------------------------------------------------------------------------
+-- 9) Políticas baseadas em has_role não são avaliadas pelo papel anônimo
+--    (anon sem EXECUTE em has_role => erro 42501 em vez de resultado vazio)
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE v_bad text;
+BEGIN
+  SELECT string_agg(format('  %s.%s', tablename, policyname), E'\n')
+    INTO v_bad
+  FROM pg_policies
+  WHERE schemaname = 'public'
+    AND roles::text = '{public}'
+    AND (coalesce(qual, '') || coalesce(with_check, '')) LIKE '%has_role%';
+
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION E'FAIL: política(s) TO public usando has_role (vazam erro para anon):\n%', v_bad;
+  END IF;
+  RAISE NOTICE 'PASS: políticas com has_role escopadas para authenticated.';
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- 10) Telemetria de erros: cliente não controla id nem carimbo de partição
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE r text;
+BEGIN
+  FOREACH r IN ARRAY ARRAY['anon', 'authenticated'] LOOP
+    IF has_column_privilege(r, 'public.frontend_error_logs', 'created_at', 'INSERT')
+       OR has_column_privilege(r, 'public.frontend_error_logs', 'id', 'INSERT') THEN
+      RAISE EXCEPTION 'FAIL: % pode definir id/created_at em frontend_error_logs (sequestro de partição).', r;
+    END IF;
+    IF NOT has_column_privilege(r, 'public.frontend_error_logs', 'error_message', 'INSERT') THEN
+      RAISE EXCEPTION 'FAIL: % perdeu INSERT em error_message; telemetria ficaria cega.', r;
+    END IF;
+    IF has_table_privilege(r, 'public.frontend_error_logs', 'UPDATE')
+       OR has_table_privilege(r, 'public.frontend_error_logs', 'DELETE') THEN
+      RAISE EXCEPTION 'FAIL: % pode alterar/remover logs de erro (trilha não é append-only).', r;
+    END IF;
+  END LOOP;
+  RAISE NOTICE 'PASS: telemetria de erros append-only e com carimbo do servidor.';
+END $$;
+
 ROLLBACK;
-
-
