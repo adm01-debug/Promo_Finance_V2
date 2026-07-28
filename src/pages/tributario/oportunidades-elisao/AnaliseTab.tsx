@@ -1,4 +1,3 @@
-// @ts-nocheck — depende de types de elisão dinâmicos
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
