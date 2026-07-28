@@ -813,17 +813,24 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const economiaPeriodicidade = alternativa - (irpj + csll);
 
   const baseCred = (p.comprasComCredito || 0) + (p.despesasOperacionais || 0);
-  const pis = Math.max(0, p.faturamentoAnual * 0.0165 - baseCred * 0.0165);
-  const cofins = Math.max(0, p.faturamentoAnual * 0.076 - baseCred * 0.076);
+  const pExp = fracaoExportacao(p);
+  const imune = 1 - pExp;
+  // Exportação: receita imune a PIS/COFINS, mas os créditos permanecem
+  // aproveitáveis (Lei 10.637/02 art. 5º §1º e Lei 10.833/03 art. 6º §1º),
+  // podendo zerar a contribuição do período.
+  const receitaTributavelPisCofins = p.faturamentoAnual * imune;
+  const pis = Math.max(0, receitaTributavelPisCofins * 0.0165 - baseCred * 0.0165);
+  const cofins = Math.max(0, receitaTributavelPisCofins * 0.076 - baseCred * 0.076);
   const ps = p.percentualServicos / 100;
   const rs = p.faturamentoAnual * ps;
   const rc = p.faturamentoAnual * (1 - ps);
   const aliqICMS = p.aliquotaICMS ?? 0.18;
   const aliqISS = p.aliquotaISS ?? 0.05;
-  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc, aliqICMS);
+  const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc * imune, aliqICMS);
   const icms = apuracaoICMS.icms;
 
-  const iss = rs * aliqISS;
+  const iss = rs * imune * aliqISS;
+
   const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [`Lucro estimado: ${margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
