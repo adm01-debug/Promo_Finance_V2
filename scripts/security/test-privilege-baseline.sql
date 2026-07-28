@@ -189,5 +189,111 @@ BEGIN
   RAISE NOTICE 'PASS: cofres de credenciais dentro da matriz de menor privilégio.';
 END $$;
 
+-- ---------------------------------------------------------------------------
+-- 5) Nenhuma política de ESCRITA incondicional alcançável por anônimos
+-- ---------------------------------------------------------------------------
+-- Uma política `FOR INSERT/UPDATE/ALL TO public WITH CHECK (true)` é escrita
+-- aberta à internet: `public` engloba `anon`, e a chave publicável está no
+-- bundle do frontend. Foi exatamente assim que a trilha de auditoria ficou
+-- forjável. Toda política que alcance `anon` precisa de um predicado que
+-- amarre a linha a uma identidade (auth.uid()) ou a um papel (has_role).
+DO $$
+DECLARE v_txt text;
+BEGIN
+  SELECT string_agg(format('  %s.%s [%s] WITH CHECK (%s)',
+                           tablename, policyname, cmd, with_check), E'\n' ORDER BY tablename)
+    INTO v_txt
+  FROM pg_policies
+  WHERE schemaname = 'public'
+    AND cmd IN ('INSERT', 'UPDATE', 'ALL')
+    AND ('anon' = ANY(roles) OR 'public' = ANY(roles))
+    AND btrim(coalesce(with_check, qual, 'true')) IN ('true', '(true)')
+    -- O papel só é de fato alcançável se o GRANT bruto existir.
+    AND has_table_privilege('anon', format('public.%I', tablename)::regclass,
+                            CASE cmd WHEN 'UPDATE' THEN 'UPDATE' ELSE 'INSERT' END);
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION E'FAIL: escrita incondicional exposta a anônimos:\n%', v_txt;
+  END IF;
+  RAISE NOTICE 'PASS: nenhuma política de escrita aberta a anônimos.';
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- 6) Toda view exposta ao cliente precisa ser SECURITY INVOKER
+-- ---------------------------------------------------------------------------
+-- Uma view sem `security_invoker = true` executa com os privilégios do dono
+-- (postgres) e, portanto, IGNORA a RLS das tabelas-base: o cliente enxerga
+-- todas as linhas de todas as empresas. Views agregadoras de painel são o
+-- vetor clássico desse vazamento.
+DO $$
+DECLARE v_txt text;
+BEGIN
+  SELECT string_agg('  public.' || c.relname, E'\n' ORDER BY c.relname)
+    INTO v_txt
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'public'
+    AND c.relkind = 'v'
+    AND (has_table_privilege('anon', c.oid, 'SELECT')
+      OR has_table_privilege('authenticated', c.oid, 'SELECT'))
+    AND coalesce(
+          (SELECT option_value FROM pg_options_to_table(c.reloptions)
+            WHERE option_name = 'security_invoker'), 'off'
+        ) NOT IN ('true', 'on');
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION E'FAIL: view(s) exposta(s) ao cliente sem security_invoker (RLS ignorada):\n%', v_txt;
+  END IF;
+  RAISE NOTICE 'PASS: todas as views expostas rodam com security_invoker.';
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- 7) Materialized views nunca podem ser expostas via Data API
+-- ---------------------------------------------------------------------------
+-- Matviews não suportam RLS nem security_invoker: um GRANT SELECT para
+-- anon/authenticated entrega o conteúdo inteiro, sem filtro de empresa.
+DO $$
+DECLARE v_txt text;
+BEGIN
+  SELECT string_agg('  public.' || c.relname, E'\n' ORDER BY c.relname)
+    INTO v_txt
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'public'
+    AND c.relkind = 'm'
+    AND (has_table_privilege('anon', c.oid, 'SELECT')
+      OR has_table_privilege('authenticated', c.oid, 'SELECT'));
+
+  IF v_txt IS NOT NULL THEN
+    RAISE EXCEPTION E'FAIL: materialized view(s) legíveis pelo cliente (sem RLS possível):\n%', v_txt;
+  END IF;
+  RAISE NOTICE 'PASS: nenhuma materialized view exposta ao cliente.';
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- 8) Trilha de auditoria é append-only e auto-atribuída
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE v_bad text;
+BEGIN
+  IF has_table_privilege('anon', 'public.audit_logs', 'INSERT')
+     OR has_table_privilege('authenticated', 'public.audit_logs', 'UPDATE')
+     OR has_table_privilege('authenticated', 'public.audit_logs', 'DELETE') THEN
+    RAISE EXCEPTION 'FAIL: audit_logs deixou de ser append-only/anon-proof.';
+  END IF;
+
+  SELECT string_agg('  ' || policyname, E'\n')
+    INTO v_bad
+  FROM pg_policies
+  WHERE schemaname = 'public' AND tablename = 'audit_logs' AND cmd = 'INSERT'
+    AND with_check NOT LIKE '%auth.uid()%';
+
+  IF v_bad IS NOT NULL THEN
+    RAISE EXCEPTION E'FAIL: política de INSERT em audit_logs sem amarração de autoria:\n%', v_bad;
+  END IF;
+  RAISE NOTICE 'PASS: trilha de auditoria append-only e com autoria verificada.';
+END $$;
+
 ROLLBACK;
+
 
