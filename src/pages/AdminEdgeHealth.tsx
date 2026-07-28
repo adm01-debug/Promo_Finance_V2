@@ -1,4 +1,3 @@
-// @ts-nocheck — pendente: tabelas/colunas ausentes no schema; remover ao fechar o gap
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -61,7 +60,7 @@ export default function AdminEdgeHealth() {
     queryKey: ['edge-health'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_edge_health' as never)
+        .from('vw_edge_health')
         .select('*');
       if (error) throw error;
       return (data || []) as unknown as HealthRow[];

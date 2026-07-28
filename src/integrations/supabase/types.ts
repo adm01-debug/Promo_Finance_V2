@@ -1182,6 +1182,51 @@ export type Database = {
         }
         Relationships: []
       }
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          expires_at: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          scopes: string[]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       aprovacao_comentarios: {
         Row: {
           comentario: string | null
@@ -2837,6 +2882,36 @@ export type Database = {
           },
         ]
       }
+      bitrix_oauth_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          domain: string | null
+          expires_at: string
+          id: string
+          refresh_token: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          domain?: string | null
+          expires_at: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          domain?: string | null
+          expires_at?: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bitrix_sync_logs: {
         Row: {
           created_at: string | null
@@ -3133,6 +3208,120 @@ export type Database = {
           id?: string
           refresh_token?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      bling_sync_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          detalhes: Json | null
+          finalizado_em: string | null
+          id: string
+          iniciado_em: string
+          mensagem_erro: string | null
+          modulo: string
+          registros_com_erro: number
+          registros_processados: number
+          status: string
+          tipo: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          modulo: string
+          registros_com_erro?: number
+          registros_processados?: number
+          status?: string
+          tipo: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          modulo?: string
+          registros_com_erro?: number
+          registros_processados?: number
+          status?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
+      bling_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          refresh_token: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bling_webhook_events: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string
+          id: string
+          module: string
+          payload: Json | null
+          processed: boolean
+          processed_at: string | null
+          resource_id: string | null
+          retries: number
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          module: string
+          payload?: Json | null
+          processed?: boolean
+          processed_at?: string | null
+          resource_id?: string | null
+          retries?: number
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          module?: string
+          payload?: Json | null
+          processed?: boolean
+          processed_at?: string | null
+          resource_id?: string | null
+          retries?: number
         }
         Relationships: []
       }
@@ -6815,6 +7004,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      eventos_contabilizacao_log: {
+        Row: {
+          created_at: string
+          detalhe: string | null
+          empresa_id: string
+          evento_id: string | null
+          id: string
+          lancamento_id: string | null
+          regra_id: string | null
+          status: string
+          tipo_evento: string
+        }
+        Insert: {
+          created_at?: string
+          detalhe?: string | null
+          empresa_id: string
+          evento_id?: string | null
+          id?: string
+          lancamento_id?: string | null
+          regra_id?: string | null
+          status: string
+          tipo_evento: string
+        }
+        Update: {
+          created_at?: string
+          detalhe?: string | null
+          empresa_id?: string
+          evento_id?: string | null
+          id?: string
+          lancamento_id?: string | null
+          regra_id?: string | null
+          status?: string
+          tipo_evento?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eventos_contabilizacao_log_regra_id_fkey"
+            columns: ["regra_id"]
+            isOneToOne: false
+            referencedRelation: "regras_contabilizacao_automatica"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       evidencias_pacotes: {
         Row: {
@@ -13329,6 +13562,76 @@ export type Database = {
         }
         Relationships: []
       }
+      regras_contabilizacao_automatica: {
+        Row: {
+          ativo: boolean
+          categoria_id: string | null
+          conta_credito_id: string
+          conta_debito_id: string
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          historico_template: string
+          id: string
+          nome: string
+          prioridade: number
+          tipo_evento: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria_id?: string | null
+          conta_credito_id: string
+          conta_debito_id: string
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          historico_template?: string
+          id?: string
+          nome: string
+          prioridade?: number
+          tipo_evento: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria_id?: string | null
+          conta_credito_id?: string
+          conta_debito_id?: string
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          historico_template?: string
+          id?: string
+          nome?: string
+          prioridade?: number
+          tipo_evento?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regras_contabilizacao_automatica_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_contabilizacao_automatica_conta_credito_id_fkey"
+            columns: ["conta_credito_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_contabilizacao_automatica_conta_debito_id_fkey"
+            columns: ["conta_debito_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       regras_duplicidade: {
         Row: {
           ativa: boolean | null
@@ -14392,6 +14695,51 @@ export type Database = {
           shared_with_roles?: string[]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      scim_operations_log: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          empresa_id: string | null
+          external_id: string | null
+          id: string
+          operation: string
+          request_body: Json | null
+          resource_type: string
+          response_body: Json | null
+          status_code: number
+          token_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          empresa_id?: string | null
+          external_id?: string | null
+          id?: string
+          operation: string
+          request_body?: Json | null
+          resource_type: string
+          response_body?: Json | null
+          status_code: number
+          token_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          empresa_id?: string | null
+          external_id?: string | null
+          id?: string
+          operation?: string
+          request_body?: Json | null
+          resource_type?: string
+          response_body?: Json | null
+          status_code?: number
+          token_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -15570,6 +15918,150 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      sso_role_mappings: {
+        Row: {
+          app_role: Database["public"]["Enums"]["app_role"]
+          created_at: string
+          id: string
+          idp_group: string
+          ordem: number
+          provider_id: string
+          updated_at: string
+        }
+        Insert: {
+          app_role: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          idp_group: string
+          ordem?: number
+          provider_id: string
+          updated_at?: string
+        }
+        Update: {
+          app_role?: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          idp_group?: string
+          ordem?: number
+          provider_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_role_mappings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sso_sandbox_runs: {
+        Row: {
+          batch_id: string | null
+          created_at: string
+          created_by: string | null
+          created_by_email: string | null
+          email_masked: string | null
+          has_errors: boolean
+          id: string
+          input: Json
+          matched_group: string | null
+          outcome: string
+          provider_id: string | null
+          provider_nome: string | null
+          resolved_role: string | null
+          result: Json
+          use_provider_config: boolean
+        }
+        Insert: {
+          batch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          email_masked?: string | null
+          has_errors?: boolean
+          id?: string
+          input?: Json
+          matched_group?: string | null
+          outcome: string
+          provider_id?: string | null
+          provider_nome?: string | null
+          resolved_role?: string | null
+          result?: Json
+          use_provider_config?: boolean
+        }
+        Update: {
+          batch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          email_masked?: string | null
+          has_errors?: boolean
+          id?: string
+          input?: Json
+          matched_group?: string | null
+          outcome?: string
+          provider_id?: string | null
+          provider_nome?: string | null
+          resolved_role?: string | null
+          result?: Json
+          use_provider_config?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_sandbox_runs_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sso_user_groups: {
+        Row: {
+          created_at: string
+          groups: string[]
+          id: string
+          last_synced_at: string
+          matched_group: string | null
+          matched_role: Database["public"]["Enums"]["app_role"] | null
+          provider_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          groups?: string[]
+          id?: string
+          last_synced_at?: string
+          matched_group?: string | null
+          matched_role?: Database["public"]["Enums"]["app_role"] | null
+          provider_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          groups?: string[]
+          id?: string
+          last_synced_at?: string
+          matched_group?: string | null
+          matched_role?: Database["public"]["Enums"]["app_role"] | null
+          provider_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_user_groups_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -18108,6 +18600,18 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_edge_health: {
+        Row: {
+          error_count: number | null
+          error_rate_pct: number | null
+          function_name: string | null
+          last_call_at: string | null
+          p50_ms: number | null
+          p95_ms: number | null
+          total_calls: number | null
+        }
+        Relationships: []
+      }
       vw_fluxo_caixa: {
         Row: {
           dia: string | null
@@ -18254,6 +18758,22 @@ export type Database = {
           nome_conta?: never
           saldo_atual?: never
           ultima_atualizacao?: never
+        }
+        Relationships: []
+      }
+      vw_transferencias_painel: {
+        Row: {
+          asaas_id: string | null
+          chave_pix: string | null
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string | null
+          razao_social: string | null
+          status: string | null
+          tipo_chave: string | null
+          updated_at: string | null
+          valor: number | null
         }
         Relationships: []
       }

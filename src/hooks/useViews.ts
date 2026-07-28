@@ -115,7 +115,7 @@ export function useTransferenciasPainel() {
     queryKey: ['views', 'transferencias-painel'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_transferencias_painel' as never)
+        .from('vw_transferencias_painel')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
