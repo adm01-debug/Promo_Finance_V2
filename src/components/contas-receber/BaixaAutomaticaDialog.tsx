@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao } from '@/lib/ofx-parser';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
+import type { Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 
@@ -154,11 +156,11 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           });
 
           // Registra evidência no log
-          await supabase.rpc('registrar_evento_receber', {
-            p_conta_id: m.contaId,
-            p_tipo: 'baixa_automatica',
-            p_mensagem: `Baixa automática realizada via arquivo: ${resultado?.extrato?.nomeArquivo}`,
-            p_metadata: { transacao_banco: m.transacao }
+          await registrarEventoFinanceiroOrThrow('receber', {
+            contaId: m.contaId,
+            tipo: 'baixa_automatica',
+            mensagem: `Baixa automática realizada via arquivo: ${resultado?.extrato?.nomeArquivo}`,
+            metadata: { transacao_banco: m.transacao } as unknown as Json,
           });
         }
       }

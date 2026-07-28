@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { registrarEventoFinanceiro } from '@/lib/financeiro/registrarEvento';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Boleto {
@@ -211,21 +212,35 @@ export function useBoletos() {
     onSuccess: async (data) => {
       // Registrar evento de envio de boleto
       if (data?.conta_receber_id) {
-        await supabase.rpc('registrar_evento_receber', {
-          p_conta_id: data.conta_receber_id,
-          p_tipo: 'envio_boleto',
-          p_mensagem: `Boleto #${data.numero} gerado e enviado para o cliente.`,
-          p_metadata: { boleto_id: data.id, numero: data.numero }
+        const evento = await registrarEventoFinanceiro('receber', {
+          contaId: data.conta_receber_id,
+          tipo: 'envio_boleto',
+          mensagem: `Boleto #${data.numero} gerado e enviado para o cliente.`,
+          metadata: { boleto_id: data.id, numero: data.numero },
         });
+        if (!evento.ok) {
+          toast({
+            title: 'Boleto gerado, mas sem registro na trilha',
+            description: evento.error ?? 'Não foi possível registrar o evento de auditoria.',
+            variant: 'destructive',
+          });
+        }
       }
 
       if (data?.conta_pagar_id) {
-        await supabase.rpc('registrar_evento_pagar', {
-          p_conta_id: data.conta_pagar_id,
-          p_tipo: 'envio_boleto',
-          p_mensagem: `Boleto #${data.numero} gerado para pagamento de fornecedor.`,
-          p_metadata: { boleto_id: data.id, numero: data.numero }
+        const evento = await registrarEventoFinanceiro('pagar', {
+          contaId: data.conta_pagar_id,
+          tipo: 'envio_boleto',
+          mensagem: `Boleto #${data.numero} gerado para pagamento de fornecedor.`,
+          metadata: { boleto_id: data.id, numero: data.numero },
         });
+        if (!evento.ok) {
+          toast({
+            title: 'Boleto gerado, mas sem registro na trilha',
+            description: evento.error ?? 'Não foi possível registrar o evento de auditoria.',
+            variant: 'destructive',
+          });
+        }
       }
 
 

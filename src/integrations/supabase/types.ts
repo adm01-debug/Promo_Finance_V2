@@ -14891,6 +14891,10 @@ export type Database = {
         Returns: undefined
       }
       detect_query_regressions: { Args: never; Returns: Json }
+      drop_old_partitions: {
+        Args: { p_retention_months: number; p_table: string }
+        Returns: Json
+      }
       empresa_acessivel: { Args: { _empresa_id: string }; Returns: boolean }
       enqueue_webhook_retry: {
         Args: {
