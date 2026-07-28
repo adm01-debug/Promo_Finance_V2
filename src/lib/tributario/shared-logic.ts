@@ -419,29 +419,44 @@ export function simularSimples(
   const sublimite = p.sublimiteEstadual ?? 3_600_000;
   const sublimiteExcedido = rbt12 > sublimite;
 
-  let icms = das * d.icms;
-  let iss = das * d.iss;
-  let dasFinal = das;
+  // --- Imunidade das exportações (LC 123/2006, art. 18 §14) ----------------
+  // Sobre a receita exportada não incidem as parcelas de PIS, COFINS, ICMS e
+  // ISS do DAS; as demais (IRPJ, CSLL, CPP) permanecem devidas.
+  const pExp = fracaoExportacao(p);
+  const fracaoImuneExport = d.pis + d.cofins + d.icms + d.iss;
+  const descontoExportacao = das * pExp * fracaoImuneExport;
+  const imune = 1 - pExp;
+
+  let icms = das * d.icms * imune;
+  let iss = das * d.iss * imune;
+  let dasFinal = das - descontoExportacao;
   let icmsForaDAS = 0;
   let issForaDAS = 0;
 
+  if (pExp > 0 && descontoExportacao > 0) {
+    obs.push(
+      `Receita de exportação (${(pExp * 100).toFixed(1)}%) imune a PIS/COFINS/ICMS/ISS (LC 123/2006, art. 18 §14): R$ ${descontoExportacao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} excluídos do DAS.`,
+    );
+  }
+
   if (sublimiteExcedido && (d.icms > 0 || d.iss > 0)) {
     const fracaoEstadualMunicipal = d.icms + d.iss;
-    dasFinal = das * (1 - fracaoEstadualMunicipal);
+    dasFinal = das * (1 - fracaoEstadualMunicipal) - das * pExp * (d.pis + d.cofins);
 
     const pServ = Math.max(0, Math.min(100, p.percentualServicos || 0)) / 100;
     const pMerc = Math.max(0, 1 - pServ);
     const aliqICMS = p.aliquotaICMS ?? 0.18;
     const aliqISS = p.aliquotaISS ?? 0.05;
 
-    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * aliqICMS : 0;
-    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * aliqISS : 0;
+    icmsForaDAS = d.icms > 0 ? p.faturamentoAnual * pMerc * imune * aliqICMS : 0;
+    issForaDAS = d.iss > 0 ? p.faturamentoAnual * pServ * imune * aliqISS : 0;
     icms = icmsForaDAS;
     iss = issForaDAS;
     obs.push(
       `RBT12 (R$ ${rbt12.toLocaleString('pt-BR')}) acima do sublimite estadual de R$ ${sublimite.toLocaleString('pt-BR')}: ICMS e ISS recolhidos FORA do DAS pelo regime normal.`,
     );
   }
+
 
   // --- ISS retido na fonte (LC 116/2003) -----------------------------------
   // O ISS retido pelo tomador é deduzido da parcela de ISS devida no DAS,
