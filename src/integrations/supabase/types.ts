@@ -2996,6 +2996,7 @@ export type Database = {
           attempts_count: number | null
           blocked_at: string | null
           blocked_by: string | null
+          blocked_until: string | null
           created_at: string | null
           expires_at: string | null
           id: string
@@ -3003,12 +3004,16 @@ export type Database = {
           is_permanent: boolean | null
           last_attempt_at: string | null
           metadata: Json | null
+          permanent: boolean
           reason: string
+          unblocked_at: string | null
+          unblocked_by: string | null
         }
         Insert: {
           attempts_count?: number | null
           blocked_at?: string | null
           blocked_by?: string | null
+          blocked_until?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
@@ -3016,12 +3021,16 @@ export type Database = {
           is_permanent?: boolean | null
           last_attempt_at?: string | null
           metadata?: Json | null
+          permanent?: boolean
           reason: string
+          unblocked_at?: string | null
+          unblocked_by?: string | null
         }
         Update: {
           attempts_count?: number | null
           blocked_at?: string | null
           blocked_by?: string | null
+          blocked_until?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
@@ -3029,7 +3038,10 @@ export type Database = {
           is_permanent?: boolean | null
           last_attempt_at?: string | null
           metadata?: Json | null
+          permanent?: boolean
           reason?: string
+          unblocked_at?: string | null
+          unblocked_by?: string | null
         }
         Relationships: []
       }
@@ -5652,6 +5664,45 @@ export type Database = {
           vehicle_plate?: string | null
           vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
           whitelisted?: boolean | null
+        }
+        Relationships: []
+      }
+      edge_function_logs: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          event: string | null
+          function_name: string
+          id: string
+          level: string
+          metadata: Json | null
+          status_code: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          event?: string | null
+          function_name: string
+          id?: string
+          level?: string
+          metadata?: Json | null
+          status_code?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          event?: string | null
+          function_name?: string
+          id?: string
+          level?: string
+          metadata?: Json | null
+          status_code?: number | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -8658,6 +8709,45 @@ export type Database = {
           },
         ]
       }
+      kpis_operacionais: {
+        Row: {
+          categoria: string | null
+          created_at: string
+          id: string
+          meta: number
+          nome: string
+          tendencia: string | null
+          unidade: string | null
+          updated_at: string
+          user_id: string
+          valor_atual: number
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string
+          id?: string
+          meta?: number
+          nome: string
+          tendencia?: string | null
+          unidade?: string | null
+          updated_at?: string
+          user_id: string
+          valor_atual?: number
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string
+          id?: string
+          meta?: number
+          nome?: string
+          tendencia?: string | null
+          unidade?: string | null
+          updated_at?: string
+          user_id?: string
+          valor_atual?: number
+        }
+        Relationships: []
+      }
       lalamove_orders: {
         Row: {
           actual_delivery: string | null
@@ -10038,6 +10128,48 @@ export type Database = {
           },
         ]
       }
+      notification_history: {
+        Row: {
+          body: string | null
+          channel: string
+          created_at: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          read_at: string | null
+          source_ref: string | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          read_at?: string | null
+          source_ref?: string | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          read_at?: string | null
+          source_ref?: string | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       open_finance_consents: {
         Row: {
           authorization_url: string | null
@@ -11310,6 +11442,51 @@ export type Database = {
           },
         ]
       }
+      planos_acao: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          prazo: string | null
+          prioridade: string
+          progresso: number
+          responsavel: string | null
+          status: string
+          tags: string[] | null
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          prazo?: string | null
+          prioridade?: string
+          progresso?: number
+          responsavel?: string | null
+          status?: string
+          tags?: string[] | null
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          prazo?: string | null
+          prioridade?: string
+          progresso?: number
+          responsavel?: string | null
+          status?: string
+          tags?: string[] | null
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       portal_cliente_acessos: {
         Row: {
           acao: string | null
@@ -11828,6 +12005,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_subscriptions: {
+        Row: {
+          ativo: boolean
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          auth?: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       query_telemetry: {
         Row: {
@@ -13168,6 +13381,95 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_filter_subscriptions: {
+        Row: {
+          ativo: boolean
+          canal: string
+          created_at: string
+          frequencia: string
+          id: string
+          saved_filter_id: string
+          ultimo_envio_em: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          canal?: string
+          created_at?: string
+          frequencia?: string
+          id?: string
+          saved_filter_id: string
+          ultimo_envio_em?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          canal?: string
+          created_at?: string
+          frequencia?: string
+          id?: string
+          saved_filter_id?: string
+          ultimo_envio_em?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_filter_subscriptions_saved_filter_id_fkey"
+            columns: ["saved_filter_id"]
+            isOneToOne: false
+            referencedRelation: "saved_filters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_filters: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          empresa_id: string | null
+          entity_type: string
+          filters: Json
+          id: string
+          is_default: boolean
+          is_shared: boolean
+          name: string
+          shared_with_roles: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
+          entity_type: string
+          filters?: Json
+          id?: string
+          is_default?: boolean
+          is_shared?: boolean
+          name: string
+          shared_with_roles?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
+          entity_type?: string
+          filters?: Json
+          id?: string
+          is_default?: boolean
+          is_shared?: boolean
+          name?: string
+          shared_with_roles?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       scim_tokens: {
         Row: {
           ativo: boolean
@@ -13266,6 +13568,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_alerts: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+          type: string
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title: string
+          type: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+          type?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       security_audit_logs: {
         Row: {
@@ -13612,6 +13962,48 @@ export type Database = {
           },
         ]
       }
+      slo_metrics_diarias: {
+        Row: {
+          calculado_em: string
+          cron_jobs_falha: number
+          cron_jobs_sucesso: number
+          data: string
+          edges_health: Json
+          latencia_p50_ms: number
+          latencia_p95_ms: number
+          latencia_p99_ms: number
+          taxa_erro_pct: number
+          total_requisicoes: number
+          uptime_pct: number
+        }
+        Insert: {
+          calculado_em?: string
+          cron_jobs_falha?: number
+          cron_jobs_sucesso?: number
+          data: string
+          edges_health?: Json
+          latencia_p50_ms?: number
+          latencia_p95_ms?: number
+          latencia_p99_ms?: number
+          taxa_erro_pct?: number
+          total_requisicoes?: number
+          uptime_pct?: number
+        }
+        Update: {
+          calculado_em?: string
+          cron_jobs_falha?: number
+          cron_jobs_sucesso?: number
+          data?: string
+          edges_health?: Json
+          latencia_p50_ms?: number
+          latencia_p95_ms?: number
+          latencia_p99_ms?: number
+          taxa_erro_pct?: number
+          total_requisicoes?: number
+          uptime_pct?: number
+        }
+        Relationships: []
+      }
       slow_query_alerts: {
         Row: {
           calls: number
@@ -13716,6 +14108,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      solicitacoes_lgpd: {
+        Row: {
+          atendida_em: string | null
+          created_at: string
+          id: string
+          justificativa: string | null
+          payload_resposta: Json | null
+          status: string
+          tipo: string
+          updated_at: string
+          url_dump: string | null
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          atendida_em?: string | null
+          created_at?: string
+          id?: string
+          justificativa?: string | null
+          payload_resposta?: Json | null
+          status?: string
+          tipo: string
+          updated_at?: string
+          url_dump?: string | null
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          atendida_em?: string | null
+          created_at?: string
+          id?: string
+          justificativa?: string | null
+          payload_resposta?: Json | null
+          status?: string
+          tipo?: string
+          updated_at?: string
+          url_dump?: string | null
+          user_email?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       split_payment_transacoes: {
         Row: {
@@ -14453,6 +14887,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_active_filters: {
+        Row: {
+          created_at: string
+          entity_type: string
+          id: string
+          payload: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_type: string
+          id?: string
+          payload?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_type?: string
+          id?: string
+          payload?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_anomalia_preferences: {
         Row: {
           centros_custo_silenciados: string[]
@@ -14881,28 +15342,37 @@ export type Database = {
       user_sessions: {
         Row: {
           created_at: string | null
+          device_info: string | null
           id: string
           ip_address: unknown
+          is_current: boolean
           last_active: string | null
           revoked: boolean | null
+          revoked_at: string | null
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
+          device_info?: string | null
           id?: string
           ip_address?: unknown
+          is_current?: boolean
           last_active?: string | null
           revoked?: boolean | null
+          revoked_at?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
+          device_info?: string | null
           id?: string
           ip_address?: unknown
+          is_current?: boolean
           last_active?: string | null
           revoked?: boolean | null
+          revoked_at?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -16605,6 +17075,10 @@ export type Database = {
       drop_old_partitions: {
         Args: { p_retention_months: number; p_table: string }
         Returns: Json
+      }
+      duplicate_saved_filter: {
+        Args: { _new_name?: string; _source_id: string }
+        Returns: string
       }
       empresa_acessivel: { Args: { _empresa_id: string }; Returns: boolean }
       enqueue_webhook_retry: {

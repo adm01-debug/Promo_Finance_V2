@@ -86,7 +86,7 @@ export function RateLimitDashboard() {
                 )}
               </div>
               <div className="max-h-[400px] overflow-auto"><Table><TableHeader><TableRow><TableHead>IP</TableHead><TableHead>Endpoint</TableHead><TableHead>Requisições</TableHead><TableHead>Status</TableHead><TableHead>Data</TableHead></TableRow></TableHeader>
-                <TableBody>{filteredLogs.slice(0, 100).map((log) => <TableRow key={log.id}><TableCell className="font-mono text-sm">{maskIp(log.ip_address, maskIpsEnabled)}</TableCell><TableCell className="max-w-[200px] truncate">{log.endpoint}</TableCell><TableCell>{log.requests_count}</TableCell><TableCell>{log.blocked ? <Badge variant="destructive">Bloqueado</Badge> : <Badge variant="secondary">OK</Badge>}</TableCell><TableCell className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}</TableCell></TableRow>)}</TableBody></Table></div>
+                <TableBody>{filteredLogs.slice(0, 100).map((log) => <TableRow key={log.id}><TableCell className="font-mono text-sm">{maskIp(log.ip_address, maskIpsEnabled)}</TableCell><TableCell className="max-w-[200px] truncate">{log.endpoint}</TableCell><TableCell>{log.request_count}</TableCell><TableCell>{log.blocked ? <Badge variant="destructive">Bloqueado</Badge> : <Badge variant="secondary">OK</Badge>}</TableCell><TableCell className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}</TableCell></TableRow>)}</TableBody></Table></div>
             </CardContent></Card>
         </TabsContent>
 
