@@ -17,7 +17,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(22);
+SELECT plan(23);
 
 -- Horas de referência determinísticas (fora de qualquer hora real de produção
 -- para não colidir com o unique (domain, invariant, alert_hour)).
