@@ -6,7 +6,10 @@ const _SyncProfileSchema = z.object({
   full_name: z.string().optional(),
   avatar_url: z.string().url().nullable().optional(),
   telefone: z.string().nullable().optional(),
-}).passthrough();
+// `.strict()` no lugar de `.passthrough()`: alem de rejeitar campos nao
+// previstos, o passthrough gerava um tipo recursivo que estourava o
+// type-check (TS2589) neste ponto de validacao.
+}).strict();
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -137,7 +140,7 @@ Deno.serve(async (req) => {
     const _raw = await req.json();
     const _v = await validateContract(_SyncProfileSchema, _raw);
     if (!_v.success) return _v.response;
-    body = _v.data as unknown as SyncBody;
+    body = _v.data;
   } catch {
     return jsonResp({ error: "invalid_json" }, 400);
   }

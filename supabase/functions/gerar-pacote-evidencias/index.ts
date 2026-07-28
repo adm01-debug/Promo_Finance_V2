@@ -66,7 +66,7 @@ const ESCOPO_CONFIG: Record<Escopo, { table: string; dateCol: string; filename: 
 
 async function processarPacote(
   body: Body,
-  user: { id: string; email: string | null | undefined },
+  user: { id: string; email?: string | null },
   admin: SupabaseClient<any, "public", any>,
   emit: Emit,
 ) {
