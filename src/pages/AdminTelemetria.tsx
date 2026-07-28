@@ -14,6 +14,8 @@ import { PerformanceAlertsPanel } from "@/components/admin/telemetry/Performance
 import { PerformanceAlertsWeeklyTrend } from "@/components/admin/telemetry/PerformanceAlertsWeeklyTrend";
 import { IntegrityAlertsPanel } from "@/components/admin/telemetry/IntegrityAlertsPanel";
 import { RetentionHistoryPanel } from "@/components/admin/telemetry/RetentionHistoryPanel";
+import { CatalogosTributariosHealthPanel } from "@/components/admin/telemetry/CatalogosTributariosHealthPanel";
+
 
 
 import { toast } from "sonner";
