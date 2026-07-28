@@ -15280,6 +15280,7 @@ export type Database = {
       }
       run_daily_cleanup: { Args: never; Returns: Json }
       run_daily_cleanup_with_logging: { Args: never; Returns: undefined }
+      run_integrity_cycle: { Args: never; Returns: Json }
       run_observability_rpc: {
         Args: { _function_name: string }
         Returns: undefined
