@@ -8,13 +8,68 @@ on:
     branches: [ main, master, develop ]
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Gate #25 — bloqueia PR que reintroduza policy GLOBAL em tabela multi-inquilino.
+  # Job dedicado (required check no branch protection) para que a falha apareça
+  # isolada e não seja mascarada por lint/testes do quality-gate.
+  # ---------------------------------------------------------------------------
+  tenant-policy-gate:
+    name: Gate #25 — Tenant Policy Scope
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight — segredo DATABASE_URL obrigatório em PR
+        # Sem o segredo o gate seria silenciosamente pulado, permitindo que uma
+        # policy global voltasse ao main sem detecção. Em PR isso é erro fatal.
+        run: |
+          if [ -z "${DATABASE_URL}" ]; then
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "::error::DATABASE_URL não configurado — Gate #25 não pode validar as policies deste PR."
+              exit 1
+            fi
+            echo "::warning::DATABASE_URL ausente — Gate #25 pulado fora de PR."
+          fi
+
+      - name: Install psql
+        if: ${{ env.DATABASE_URL != '' }}
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+
+      - name: Tenant policy scope gate (Gate #25a/b/c)
+        # 25a: policy só com has_role em tabela com empresa_id (direto ou via FK)
+        # 25b: policy irrestrita (USING true / sem predicado) para anon|authenticated
+        # 25c: função canônica public.gate_25_policies_sem_tenant()
+        if: ${{ env.DATABASE_URL != '' }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/security/test-tenant-policy-scope.sql
+
+      - name: Resumo do gate
+        if: failure()
+        run: |
+          echo "### ❌ Gate #25 falhou" >> "$GITHUB_STEP_SUMMARY"
+          echo "Uma ou mais policies de tabelas multi-inquilino perderam o escopo por empresa." >> "$GITHUB_STEP_SUMMARY"
+          echo "Corrija adicionando \`empresa_acessivel(empresa_id)\` (ou o vínculo via FK) na policy antes do merge." >> "$GITHUB_STEP_SUMMARY"
+
   quality-gate:
     name: Quality Gate & Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      # Necessário no escopo do job: as condições `if: env.DATABASE_URL != ''`
+      # dos steps abaixo não enxergam segredos declarados apenas por step.
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
 
     steps:
       - uses: actions/checkout@v4
+
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -96,17 +151,8 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
             -f scripts/security/test-write-isolation.sql
 
-      - name: Tenant policy scope gate (Gate #25)
-        # Falha quando uma policy baseada apenas em has_role protege tabela
-        # multi-inquilino — por coluna empresa_id (vínculo direto) ou por FK
-        # para tabela com empresa_id (vínculo indireto). Sem
-        # empresa_acessivel(...) o admin de uma empresa alcança as demais.
-        if: ${{ env.DATABASE_URL != '' }}
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
-            -f scripts/security/test-tenant-policy-scope.sql
+      # Gate #25 roda no job dedicado `tenant-policy-gate` (topo deste arquivo).
+
 
 
       - name: Integridade dos catálogos tributários (pgTAP)
@@ -293,7 +339,7 @@ jobs:
   post-merge-audit:
     name: Post-merge Simulation Audit
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [quality-gate, e2e]
+    needs: [quality-gate, tenant-policy-gate, e2e]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Simulation Audit
