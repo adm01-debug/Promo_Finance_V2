@@ -119,7 +119,7 @@ function buildInput(f: CampoInput, atividadeDerivada?: AtividadePresumido): Inpu
     },
     lucroPresumido: {
       receitas, folha, estadualMunicipal, retencoes,
-      atividade: f.atividadePresumido,
+      atividade: atividadeDerivada ?? f.atividadePresumido,
     },
     simples: {
       receitas, anexo: f.anexoSimples, rbt12: f.rbt12, folha12m: f.folha12m,
