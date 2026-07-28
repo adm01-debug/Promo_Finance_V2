@@ -178,6 +178,28 @@ export function ParametrosForm({
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="perc-exportacao">% Exportação</Label>
+          <Input
+            id="perc-exportacao"
+            type="number"
+            min={0}
+            max={100}
+            value={parametros.percentualExportacao ?? 0}
+            onChange={(e) =>
+              setParametros({
+                ...parametros,
+                percentualExportacao: Math.max(0, Math.min(100, Number(e.target.value) || 0)),
+              })
+            }
+          />
+          <p className="text-xs text-muted-foreground">
+            Parcela da receita destinada ao exterior. Imune a PIS/COFINS, ICMS e ISS
+            (CF/88 arts. 149 §2º I, 155 §2º X &quot;a&quot; e 156 §3º II). IRPJ e CSLL continuam devidos.
+          </p>
+        </div>
+
+
+        <div className="space-y-2">
           <Label htmlFor="folha-anual">Folha Anual</Label>
           <Input
             id="folha-anual"
