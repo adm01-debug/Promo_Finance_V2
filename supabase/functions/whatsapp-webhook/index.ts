@@ -45,7 +45,10 @@ Deno.serve(async (req) => {
         .from('execucoes_cobranca')
         .update({ 
           status: status === 'read' ? 'lido' : status === 'delivered' ? 'entregue' : 'enviado',
-          metadata: { ...rawBody, updated_at: new Date().toISOString() }
+          // Persistimos o payload ja validado (`body`), nao o `rawBody` cru: alem de
+          // `unknown` nao ser espalhavel, gravar o corpo bruto guardaria campos
+          // arbitrarios enviados por terceiros dentro do metadata.
+          metadata: { ...body, updated_at: new Date().toISOString() }
         })
         .eq('provider_message_id', messageId)
 
