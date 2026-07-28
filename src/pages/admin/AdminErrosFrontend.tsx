@@ -204,6 +204,8 @@ export default function AdminErrosFrontend() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertasProativosErros />
     </div>
   );
 }
