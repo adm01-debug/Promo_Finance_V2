@@ -1,6 +1,6 @@
 // Edge: copilot-global
 // Assistente IA contextual para todas as páginas. SSE streaming via Lovable AI Gateway.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
 
@@ -79,7 +79,7 @@ const TOOLS = [
   },
 ];
 
-async function executeTool(name: string, sb: ReturnType<typeof createClient>, userId: string) {
+async function executeTool(name: string, sb: SupabaseClient<any, "public", any>, userId: string) {
   try {
     if (name === "consultar_kpis_financeiros") {
       const [{ data: cp }, { data: cr }, { data: contas }] = await Promise.all([

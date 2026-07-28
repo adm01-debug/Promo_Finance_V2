@@ -1,5 +1,5 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger, LogLevel } from "./logger.ts";
 
 /**
@@ -76,7 +76,7 @@ export function createErrorResponse(message: string, status = 400, details?: unk
  * Deduplica webhooks baseados em ID do provedor para evitar processamento duplo.
  */
 export async function isWebhookProcessed(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient<any, "public", any>,
   tableName: string,
   providerIdColumn: string,
   providerId: string,
