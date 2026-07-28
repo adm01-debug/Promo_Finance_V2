@@ -67,7 +67,9 @@ INSERT INTO _allow VALUES
   ('public.get_frontend_error_groups(p_desde timestamp with time zone, p_severity text, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
   ('public.get_frontend_error_occurrences(p_assinatura text, p_desde timestamp with time zone, p_limit integer)', 'authenticated', 'AdminErrosFrontend; exige has_role admin no corpo'),
   ('public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer, p_motivo text)', 'authenticated', 'AlertasProativosErros; exige has_role admin e audita em audit_logs'),
-  ('public.get_silenciamentos_expirando(p_horas integer)', 'authenticated', 'SilenciamentosExpirando (Gap #28); exige has_role admin, somente leitura, clamp de 720h');
+  ('public.get_silenciamentos_expirando(p_horas integer)', 'authenticated', 'SilenciamentosExpirando (Gap #28); exige has_role admin, somente leitura, clamp de 720h'),
+  ('public.empresa_membro_ativo(_empresa_id uuid)', 'authenticated', 'Predicado de RLS de public.clientes (Gap #29); só responde sobre o vínculo do PRÓPRIO auth.uid(), não vaza nada de terceiros');
+
 
 
 -- (d) Pré-autenticação — descoberta de SSO por domínio na tela de login.
