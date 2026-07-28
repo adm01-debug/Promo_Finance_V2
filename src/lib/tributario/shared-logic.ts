@@ -711,7 +711,10 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [
     `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
-    'PIS/COFINS cumulativo.',
+    pExp > 0
+      ? `PIS/COFINS cumulativo sobre a receita interna; ${(pExp * 100).toFixed(1)}% de exportação imune (CF art. 149 §2º I).`
+      : 'PIS/COFINS cumulativo.',
+
     `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
   ];
   if (apuracaoICMS.credito > 0) {
