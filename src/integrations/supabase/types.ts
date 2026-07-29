@@ -20189,6 +20189,14 @@ export type Database = {
           vinculo: string
         }[]
       }
+      gate_27_secdef_sem_search_path: {
+        Args: never
+        Returns: {
+          argumentos: string
+          funcao: string
+          motivo: string
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string

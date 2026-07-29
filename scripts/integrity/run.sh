@@ -74,6 +74,7 @@ TEST_ADMIN_JWT="${TEST_ADMIN_JWT:-}" \
   bash "$DIR/04_endpoints.sh" >> "$OUT"
 
 run_sql "$DIR/05_crons.sql"  crons
+run_sql "$DIR/06_secdef.sql" secdef
 
 FAILS=$(grep -c '"status":"fail"' "$OUT" || true)
 UNVER=$(grep -c '"status":"unverified"' "$OUT" || true)
