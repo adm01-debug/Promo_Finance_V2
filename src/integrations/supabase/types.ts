@@ -20212,6 +20212,13 @@ export type Database = {
           tipo: string
         }[]
       }
+      gate_31_tenant_sem_indice: {
+        Args: never
+        Returns: {
+          motivo: string
+          tabela: string
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string

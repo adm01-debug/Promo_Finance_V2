@@ -101,3 +101,15 @@ linhas, portanto nunca podem receber `SELECT` para `anon`/`authenticated`
 - Job de CI: `views-secure` em `.github/workflows/supabase-linter.yml`
 - Estado atual: 23 views com `security_invoker`, 2 matviews (`mv_benchmark_setorial`,
   `mv_performance_alerts_weekly`) sem grants para roles do app.
+
+## Gate #31 — Índices de tenant nas tabelas com RLS
+
+Toda policy por tenant injeta o predicado `empresa_id = ...` em qualquer query.
+Sem um índice **liderado** por `empresa_id`, o planner recorre a seq scan e o
+custo cresce com o total de linhas de todas as empresas — a base multi-tenant
+degrada exatamente conforme cresce.
+
+- Script: `scripts/integrity/10_tenant_indexes.sql`
+- Função canônica: `public.gate_31_tenant_sem_indice()` (somente owner/service_role)
+- Job de CI: `tenant-indexes` em `.github/workflows/supabase-linter.yml`
+- Remediação aplicada: 27 índices `idx_<tabela>_empresa_id` criados.
