@@ -58,3 +58,19 @@ bloqueia o PR em caso de falha.
 
 > Ao criar/alterar funções, atualize `baseline/schema-counts.json`
 > (`functions`) no mesmo PR, senão o Gate #26 acusa drift.
+
+## Gate #28 — Superfície de execução SECURITY DEFINER
+
+`07_exec_grants.sql` compara quem pode executar funções `SECURITY DEFINER`
+com a allowlist versionada `baseline/allowed-secdef-exec.json`:
+
+- `secdef.anon_exec_allowlist` — visitantes só executam o que foi liberado
+  explicitamente (hoje apenas a descoberta de SSO pré-login).
+- `secdef.auth_exec_allowlist` — usuários logados idem.
+- `secdef.guard_interno` — toda função exposta precisa checar autorização
+  (`has_role`, `empresa_acessivel`, `auth.uid()`…).
+- `secdef.triggers_sem_exec` — funções de gatilho não recebem `EXECUTE`
+  (gatilhos disparam sem esse privilégio).
+
+Ao expor uma nova RPC, adicione-a à allowlist no mesmo PR — caso contrário o
+job `secdef-exec-grants` bloqueia o merge.

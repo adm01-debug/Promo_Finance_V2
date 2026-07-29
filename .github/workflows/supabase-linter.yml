@@ -127,3 +127,33 @@ jobs:
             exit 1
           fi
           echo "✅ Gate #27 aprovado."
+
+  secdef-exec-grants:
+    name: Gate #28 — Superfície de execução SECURITY DEFINER
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar utilitários
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client jq
+
+      - name: Auditar EXECUTE de anon/authenticated
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PROD_DB_URL:-}" ]; then
+            echo "::error::PROD_DB_URL ausente — Gate #28 não pode ser verificado."
+            exit 1
+          fi
+          ALLOW="$(cat scripts/integrity/baseline/allowed-secdef-exec.json)"
+          OUT=$(psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t -F $'\t' \
+                  -v allowed_secdef="$ALLOW" \
+                  -f scripts/integrity/07_exec_grants.sql)
+          echo "$OUT"
+          if echo "$OUT" | grep -q $'\tfail\t'; then
+            echo "::error::Gate #28 falhou — EXECUTE indevido em função SECURITY DEFINER."
+            exit 1
+          fi
+          echo "✅ Gate #28 aprovado."
