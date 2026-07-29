@@ -13,12 +13,14 @@ on:
     paths:
       - 'supabase/migrations/**'
       - 'supabase/functions/**'
+      - 'scripts/integrity/baseline/**'
       - '.github/workflows/supabase-linter.yml'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - 'supabase/migrations/**'
       - 'supabase/functions/**'
+      - 'scripts/integrity/baseline/**'
       - '.github/workflows/supabase-linter.yml'
   workflow_dispatch: {}
 
@@ -76,3 +78,24 @@ jobs:
           name: supabase-lint-report
           path: lint.json
           retention-days: 30
+
+  baseline-drift:
+    name: Gate #26 — Drift de schema/policies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar utilitários
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client jq
+
+      - name: Comparar banco vs. baseline versionado
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PROD_DB_URL:-}" ]; then
+            echo "::warning::PROD_DB_URL ausente — Gate #26 pulado."
+            exit 0
+          fi
+          bash scripts/ci/check-baseline-drift.sh
