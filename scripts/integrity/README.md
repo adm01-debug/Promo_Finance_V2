@@ -29,3 +29,15 @@ Status possíveis: `pass`, `fail`, `unverified`. `unverified` nunca é declarado
 Arquivos em `baseline/` são **versionados**. Qualquer PR que altere schema/RLS/GRANT deve regerar via `dump-baseline.sh` e commitar as mudanças no mesmo PR, caso contrário staging quebra.
 
 A `allowed-public-tables.json` é uma whitelist **manual** — só tabelas explicitamente públicas (catálogo, health, etc.). Nunca sobrescrita pelo dump.
+
+## Gate #26 — Drift de baseline (CI)
+
+`scripts/ci/check-baseline-drift.sh` compara o banco real (`PROD_DB_URL`, somente leitura) com os baselines versionados e falha o PR quando há divergência de:
+
+- contagens de tabelas/views/índices/funções/policies (índices toleram `DRIFT_TOLERANCE`);
+- policies por tabela (`added` / `removed` / `changed`);
+- invariantes que nunca regridem: RLS em 100% das tabelas, `security_invoker` em 100% das views, `anon` restrito à allowlist.
+
+Roda como job `baseline-drift` no workflow `supabase-linter`. Sem `PROD_DB_URL` o job é pulado com warning (nunca aprova silenciosamente um drift real, apenas não verifica).
+
+Alterou schema/RLS/GRANT? Rode `dump-baseline.sh` e commite os baselines no **mesmo PR**.
