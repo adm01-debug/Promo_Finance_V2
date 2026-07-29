@@ -81,10 +81,11 @@ DRIFT="$(jq -n \
   --slurpfile live <(jq -c . "$TMP/policies.json") '
   ($base[0]) as $b | ($live[0]) as $l |
   {
-    added:    [ $l | keys[] | select(($b | has(.)) | not) ],
-    removed:  [ $b | keys[] | select(($l | has(.)) | not) ],
-    changed:  [ $b | keys[] | select($l[.] != null and $l[.] != $b[.])
-                  | . as $k | "\($k): \($b[$k]) -> \($l[$k])" ]
+    added:    [ ($l | keys[]) as $k | select(($b | has($k)) | not) | $k ],
+    removed:  [ ($b | keys[]) as $k | select(($l | has($k)) | not) | $k ],
+    changed:  [ ($b | keys[]) as $k
+                  | select(($l | has($k)) and $l[$k] != $b[$k])
+                  | "\($k): \($b[$k]) -> \($l[$k])" ]
   }')"
 
 for field in added removed changed; do
