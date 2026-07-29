@@ -126,3 +126,12 @@ valor íntegro, então as views entregam:
 - Função canônica: `public.gate_32_pii_sem_mascara()` (somente owner/service_role)
 - Job de CI: `pii-mask` em `.github/workflows/supabase-linter.yml`
 - Remediação aplicada: `vw_contas_receber_painel` e `vw_transferencias_painel`.
+
+## Gate #33 — Índices redundantes (`12_index_bloat.sql`)
+
+Índices que duplicam colunas/opclass/predicado de outro índice (tipicamente de uma
+constraint `UNIQUE`/`PK`) não aceleram leituras e penalizam toda escrita. Foram
+removidos `idx_catalogos_health_history_dia`, `idx_proj_empresa` e
+`idx_fechamentos_empresa_periodo`. A função `public.gate_33_indices_redundantes()`
+detecta reincidências e o job `index-redundante` bloqueia o PR.
+
