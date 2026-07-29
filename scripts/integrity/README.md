@@ -86,3 +86,18 @@ Funções `SECURITY DEFINER` ignoram RLS. Se uma delas lê uma tabela que possui
 - Exceções intencionais são versionadas na cláusula `NOT IN` da função, via migration
   (hoje: `resolve_sso_providers_for_domain`, descoberta de SSO por domínio, pré-login).
 - Job de CI: `rpc-tenant-scope` em `.github/workflows/supabase-linter.yml`
+
+## Gate #30 — Views com `security_invoker` e matviews protegidas
+
+Uma `VIEW` sem `security_invoker = on` executa com os privilégios do owner e
+ignora as policies RLS das tabelas-base — vazando dados entre empresas mesmo
+com o tenant isolado corretamente. `MATERIALIZED VIEWS` não suportam RLS de
+forma alguma: os dados ficam persistidos e qualquer `SELECT` devolve todas as
+linhas, portanto nunca podem receber `SELECT` para `anon`/`authenticated`
+(consumo deve passar por RPC `SECURITY DEFINER` com filtro de tenant).
+
+- Script: `scripts/integrity/09_views.sql`
+- Função canônica: `public.gate_30_views_inseguras()` (somente owner/service_role)
+- Job de CI: `views-secure` em `.github/workflows/supabase-linter.yml`
+- Estado atual: 23 views com `security_invoker`, 2 matviews (`mv_benchmark_setorial`,
+  `mv_performance_alerts_weekly`) sem grants para roles do app.
