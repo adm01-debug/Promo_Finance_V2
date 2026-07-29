@@ -1,7 +1,7 @@
 {
-  "tables": 274,
+  "tables": 276,
   "views": 23,
   "indexes": 902,
-  "functions": 168,
+  "functions": 170,
   "policies": 506
 }
