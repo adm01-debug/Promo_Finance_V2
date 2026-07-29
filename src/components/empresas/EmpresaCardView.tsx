@@ -148,6 +148,14 @@ export function EmpresaCardView({ empresas, getEmpresaStats, selectedEmpresa, se
                         <DropdownMenuItem onClick={() => setSelectedEmpresa(empresa.id)}><CheckCircle2 className="h-4 w-4 mr-2" /> Selecionar Contexto</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => onEdit(empresa)}><Edit className="h-4 w-4 mr-2" /> Editar</DropdownMenuItem>
+                        {empresa.ativo && !empresa.is_padrao && (
+                          <DropdownMenuItem
+                            onClick={() => definirPadrao.mutate(empresa.id)}
+                            disabled={definirPadrao.isPending}
+                          >
+                            <Star className="h-4 w-4 mr-2" /> Definir como padrão
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem><FileText className="h-4 w-4 mr-2" /> Ver Documentos</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => onToggleAtivo(empresa)} className={empresa.ativo ? "text-destructive" : "text-success"}>
