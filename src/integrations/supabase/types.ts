@@ -20227,6 +20227,15 @@ export type Database = {
           objeto: string
         }[]
       }
+      gate_33_indices_redundantes: {
+        Args: never
+        Returns: {
+          indice_equivalente: string
+          indice_redundante: string
+          motivo: string
+          tabela: string
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string
