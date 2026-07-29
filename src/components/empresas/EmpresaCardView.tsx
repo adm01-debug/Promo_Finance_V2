@@ -3,13 +3,13 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { Plus, MoreVertical, Edit, CheckCircle2, XCircle,
   FileText, CreditCard, TrendingUp, TrendingDown, Copy, ArrowUpRight, ArrowDownRight,
-  Wallet, Users,
+  Wallet, Users, Star,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { type Empresa } from '@/hooks/useEmpresas';
+import { type Empresa, useDefinirEmpresaPadrao } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
@@ -119,6 +119,8 @@ interface EmpresaCardViewProps {
 }
 
 export function EmpresaCardView({ empresas, getEmpresaStats, selectedEmpresa, setSelectedEmpresa, onEdit, onToggleAtivo, onAdd, copyToClipboard, formatCNPJ }: EmpresaCardViewProps) {
+  const definirPadrao = useDefinirEmpresaPadrao();
+
   return (
     <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {empresas.map((empresa) => {
@@ -169,6 +171,11 @@ export function EmpresaCardView({ empresas, getEmpresaStats, selectedEmpresa, se
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <Badge variant="outline" className="font-mono text-[10px] cursor-pointer hover:bg-muted transition-colors gap-1 px-2 py-0.5" onClick={() => copyToClipboard(empresa.cnpj)}>{formatCNPJ(empresa.cnpj)}<Copy className="h-2.5 w-2.5" /></Badge>
                     <Badge variant={empresa.ativo ? "default" : "secondary"} className={cn("text-[10px] px-2 py-0.5", empresa.ativo && "bg-success/15 text-success border-success/30")}>{empresa.ativo ? "Ativa" : "Inativa"}</Badge>
+                    {empresa.is_padrao && (
+                      <Badge className="text-[10px] px-2 py-0.5 gap-1 bg-primary/15 text-primary border-primary/30" variant="outline">
+                        <Star className="h-2.5 w-2.5" /> Padrão
+                      </Badge>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-xl bg-success/8 dark:bg-success/12 border border-success/10">
