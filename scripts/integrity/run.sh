@@ -14,6 +14,24 @@ JSON_ONLY=0
 : "${STAGING_PROJECT_REF:?STAGING_PROJECT_REF obrigatório}"
 : "${STAGING_ANON_KEY:?STAGING_ANON_KEY obrigatório}"
 
+# --- Guard anti-vacuidade ---------------------------------------------------
+# Baselines vazios fazem as assertions passarem sem comparar nada. Falha cedo
+# em vez de declarar "aprovado" com um baseline placeholder.
+# `allowed-public-tables.json` é whitelist manual e pode ser legitimamente [].
+for bf in schema-counts.json expected-policies.json; do
+  f="$BASELINE/$bf"
+  if [ ! -s "$f" ] || ! jq -e '(type=="object" and (length>0)) or (type=="array" and (length>0))' "$f" >/dev/null 2>&1; then
+    echo "ERRO: baseline '$bf' ausente ou vazio — regere com scripts/integrity/dump-baseline.sh" >&2
+    exit 1
+  fi
+done
+if ! jq -e 'type=="array"' "$BASELINE/expected-crons.json" >/dev/null 2>&1; then
+  echo "ERRO: baseline 'expected-crons.json' inválido" >&2
+  exit 1
+fi
+
+
+
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 OUT="$TMP/out.jsonl"
