@@ -9996,6 +9996,66 @@ export type Database = {
           },
         ]
       }
+      index_usage_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          idx_scan: number
+          index_name: string
+          is_primary: boolean
+          is_unique: boolean
+          schema_name: string
+          size_bytes: number
+          snapshot_date: string
+          table_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idx_scan?: number
+          index_name: string
+          is_primary?: boolean
+          is_unique?: boolean
+          schema_name: string
+          size_bytes?: number
+          snapshot_date?: string
+          table_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idx_scan?: number
+          index_name?: string
+          is_primary?: boolean
+          is_unique?: boolean
+          schema_name?: string
+          size_bytes?: number
+          snapshot_date?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
+      indices_uso_excecoes: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          index_name: string
+          motivo: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          index_name: string
+          motivo: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          index_name?: string
+          motivo?: string
+        }
+        Relationships: []
+      }
       integration_secrets: {
         Row: {
           chave: string
@@ -19891,6 +19951,7 @@ export type Database = {
           valor_estimado: number
         }[]
       }
+      capture_index_usage_snapshot: { Args: never; Returns: number }
       capture_pg_stat_statements_baseline: {
         Args: { p_label: string }
         Returns: {
@@ -20234,6 +20295,15 @@ export type Database = {
           indice_redundante: string
           motivo: string
           tabela: string
+        }[]
+      }
+      gate_34_indices_nao_utilizados: {
+        Args: { _min_dias?: number }
+        Returns: {
+          dias_observados: number
+          indice: string
+          tabela: string
+          tamanho_kb: number
         }[]
       }
       generate_reconciliation_suggestions: {
