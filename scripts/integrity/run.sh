@@ -83,6 +83,7 @@ run_sql "$DIR/09_views.sql" views
 run_sql "$DIR/10_tenant_indexes.sql" perf
 run_sql "$DIR/11_pii_mask.sql" lgpd
 run_sql "$DIR/12_index_bloat.sql" perf
+run_sql "$DIR/13_unused_indexes.sql" perf
 
 FAILS=$(grep -c '"status":"fail"' "$OUT" || true)
 UNVER=$(grep -c '"status":"unverified"' "$OUT" || true)

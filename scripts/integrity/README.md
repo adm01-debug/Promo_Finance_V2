@@ -135,3 +135,12 @@ removidos `idx_catalogos_health_history_dia`, `idx_proj_empresa` e
 `idx_fechamentos_empresa_periodo`. A função `public.gate_33_indices_redundantes()`
 detecta reincidências e o job `index-redundante` bloqueia o PR.
 
+## Gate #34 — Índices ociosos (`13_unused_indexes.sql`)
+
+`public.capture_index_usage_snapshot()` roda diariamente (cron `capture-index-usage-daily`,
+04:20 UTC) e grava o contador acumulado de scans por índice em
+`public.index_usage_snapshots` (retenção 180 dias). `public.gate_34_indices_nao_utilizados(30)`
+aponta índices não únicos com zero leituras em uma janela de ao menos 30 dias;
+exceções deliberadas ficam em `public.indices_uso_excecoes` com motivo. O job
+`index-ocioso` bloqueia o PR enquanto houver índice ocioso não justificado.
+
