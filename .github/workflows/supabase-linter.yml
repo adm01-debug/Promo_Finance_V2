@@ -99,3 +99,31 @@ jobs:
             exit 0
           fi
           bash scripts/ci/check-baseline-drift.sh
+
+  secdef-search-path:
+    name: Gate #27 — SECURITY DEFINER com search_path fixo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar utilitários
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Auditar funções SECURITY DEFINER
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PROD_DB_URL:-}" ]; then
+            echo "::error::PROD_DB_URL ausente — Gate #27 não pode ser verificado."
+            exit 1
+          fi
+          OUT=$(psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t -F $'\t' \
+                  -f scripts/integrity/06_secdef.sql)
+          echo "$OUT"
+          if echo "$OUT" | grep -q $'\tfail\t'; then
+            echo "::error::Gate #27 falhou — função SECURITY DEFINER sem search_path fixo/seguro."
+            exit 1
+          fi
+          echo "✅ Gate #27 aprovado."
