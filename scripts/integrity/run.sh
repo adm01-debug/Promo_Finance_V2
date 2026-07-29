@@ -47,17 +47,19 @@ emit() {
 
 run_sql() {
   local file="$1" step="$2"
-  local schema_counts allowed policies crons
+  local schema_counts allowed policies crons secdef
   schema_counts="$(cat "$BASELINE/schema-counts.json" 2>/dev/null || echo '{}')"
   allowed="$(cat "$BASELINE/allowed-public-tables.json" 2>/dev/null || echo '[]')"
   policies="$(cat "$BASELINE/expected-policies.json" 2>/dev/null || echo '{}')"
   crons="$(cat "$BASELINE/expected-crons.json" 2>/dev/null || echo '[]')"
+  secdef="$(cat "$BASELINE/allowed-secdef-exec.json" 2>/dev/null || echo '{"anon":[],"authenticated":[]}')"
 
   psql "$STAGING_DB_URL" -v ON_ERROR_STOP=1 -A -t -F $'\t' \
     -v baseline_counts="$schema_counts" \
     -v allow_public="$allowed" \
     -v expected_policies="$policies" \
     -v expected_crons="$crons" \
+    -v allowed_secdef="$secdef" \
     -f "$file" 2>&1 | while IFS=$'\t' read -r ass st exp act detail; do
       [ -z "$ass" ] && continue
       emit "$step" "$ass" "$st" "$exp" "$act" "$detail"
@@ -75,6 +77,7 @@ TEST_ADMIN_JWT="${TEST_ADMIN_JWT:-}" \
 
 run_sql "$DIR/05_crons.sql"  crons
 run_sql "$DIR/06_secdef.sql" secdef
+run_sql "$DIR/07_exec_grants.sql" secdef
 
 FAILS=$(grep -c '"status":"fail"' "$OUT" || true)
 UNVER=$(grep -c '"status":"unverified"' "$OUT" || true)
