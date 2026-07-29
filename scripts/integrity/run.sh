@@ -79,6 +79,7 @@ run_sql "$DIR/05_crons.sql"  crons
 run_sql "$DIR/06_secdef.sql" secdef
 run_sql "$DIR/07_exec_grants.sql" secdef
 run_sql "$DIR/08_rpc_tenant_scope.sql" rpc
+run_sql "$DIR/09_views.sql" views
 
 FAILS=$(grep -c '"status":"fail"' "$OUT" || true)
 UNVER=$(grep -c '"status":"unverified"' "$OUT" || true)
