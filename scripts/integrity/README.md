@@ -113,3 +113,16 @@ degrada exatamente conforme cresce.
 - Função canônica: `public.gate_31_tenant_sem_indice()` (somente owner/service_role)
 - Job de CI: `tenant-indexes` em `.github/workflows/supabase-linter.yml`
 - Remediação aplicada: 27 índices `idx_<tabela>_empresa_id` criados.
+
+## Gate #32 — Mascaramento LGPD de PII em visões
+
+`chave_pix` costuma ser CPF, telefone ou e-mail e permite fraude por desvio de
+pagamento. Papéis operacionais e de leitura não têm necessidade legítima do
+valor íntegro, então as views entregam:
+`CASE WHEN public.pode_ver_dado_sensivel() THEN chave_pix ELSE public.mascarar_chave_pix(chave_pix) END`
+(visível apenas para `admin`, `manager` e `financeiro`).
+
+- Script: `scripts/integrity/11_pii_mask.sql`
+- Função canônica: `public.gate_32_pii_sem_mascara()` (somente owner/service_role)
+- Job de CI: `pii-mask` em `.github/workflows/supabase-linter.yml`
+- Remediação aplicada: `vw_contas_receber_painel` e `vw_transferencias_painel`.
