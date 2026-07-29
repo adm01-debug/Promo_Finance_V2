@@ -74,3 +74,15 @@ com a allowlist versionada `baseline/allowed-secdef-exec.json`:
 
 Ao expor uma nova RPC, adicione-a à allowlist no mesmo PR — caso contrário o
 job `secdef-exec-grants` bloqueia o merge.
+
+## Gate #29 — Escopo por empresa nas RPCs privilegiadas
+
+Funções `SECURITY DEFINER` ignoram RLS. Se uma delas lê uma tabela que possui
+`empresa_id` sem aplicar `empresa_acessivel()` ou filtro explícito por
+`empresa_id`, o resultado atravessa tenants mesmo com as policies corretas.
+
+- Script: `scripts/integrity/08_rpc_tenant_scope.sql`
+- Função canônica: `public.gate_29_rpc_sem_escopo_empresa()` (somente owner/service_role)
+- Exceções intencionais são versionadas na cláusula `NOT IN` da função, via migration
+  (hoje: `resolve_sso_providers_for_domain`, descoberta de SSO por domínio, pré-login).
+- Job de CI: `rpc-tenant-scope` em `.github/workflows/supabase-linter.yml`

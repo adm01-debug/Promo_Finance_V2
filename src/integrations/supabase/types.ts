@@ -20197,6 +20197,13 @@ export type Database = {
           motivo: string
         }[]
       }
+      gate_29_rpc_sem_escopo_empresa: {
+        Args: never
+        Returns: {
+          funcao: string
+          tabelas: string
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string
