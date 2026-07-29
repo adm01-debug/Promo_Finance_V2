@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "jobname": "capture-slow-queries",
+    "schedule": "*/15 * * * *"
+  },
+  {
+    "jobname": "cleanup-rpc-obs-metrics-daily",
+    "schedule": "17 3 * * *"
+  },
+  {
+    "jobname": "cron-failure-watch",
+    "schedule": "10 * * * *"
+  },
+  {
+    "jobname": "daily-log-cleanup",
+    "schedule": "40 3 * * *"
+  },
+  {
+    "jobname": "daily-log-retention",
+    "schedule": "0 3 * * *"
+  },
+  {
+    "jobname": "digest-silenciamentos-erro",
+    "schedule": "0 11 * * 1"
+  },
+  {
+    "jobname": "enviar-digest-conformidade-horario",
+    "schedule": "30 * * * *"
+  },
+  {
+    "jobname": "integrity-invariants-hourly",
+    "schedule": "5 * * * *"
+  },
+  {
+    "jobname": "maintain-monthly-partitions",
+    "schedule": "10 3 * * *"
+  },
+  {
+    "jobname": "monitor-table-bloat-daily",
+    "schedule": "15 3 * * *"
+  },
+  {
+    "jobname": "pgss_baseline_cleanup",
+    "schedule": "0 4 1 * *"
+  },
+  {
+    "jobname": "pgss_weekly_baseline",
+    "schedule": "0 3 * * 0"
+  },
+  {
+    "jobname": "refresh-benchmark-setorial-weekly",
+    "schedule": "0 3 * * 0"
+  },
+  {
+    "jobname": "refresh-performance-alerts-weekly",
+    "schedule": "45 3 * * *"
+  },
+  {
+    "jobname": "sefaz-observability-hourly",
+    "schedule": "5 * * * *"
+  },
+  {
+    "jobname": "update-overdue",
+    "schedule": "0 0 * * *"
+  }
+]
