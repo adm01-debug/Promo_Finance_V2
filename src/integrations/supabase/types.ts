@@ -7231,6 +7231,7 @@ export type Database = {
           estado: string | null
           id: string
           inscricao_estadual: string | null
+          is_padrao: boolean
           logo_url: string | null
           nome_fantasia: string | null
           razao_social: string
@@ -7256,6 +7257,7 @@ export type Database = {
           estado?: string | null
           id?: string
           inscricao_estadual?: string | null
+          is_padrao?: boolean
           logo_url?: string | null
           nome_fantasia?: string | null
           razao_social: string
@@ -7281,6 +7283,7 @@ export type Database = {
           estado?: string | null
           id?: string
           inscricao_estadual?: string | null
+          is_padrao?: boolean
           logo_url?: string | null
           nome_fantasia?: string | null
           razao_social?: string
@@ -20031,6 +20034,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      definir_empresa_padrao: { Args: { _empresa_id: string }; Returns: Json }
       delete_cron_job: { Args: { job_id: number }; Returns: boolean }
       desfazer_conciliacao: {
         Args: {

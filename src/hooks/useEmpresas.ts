@@ -118,3 +118,31 @@ export function useReativarEmpresa() {
     },
   });
 }
+
+/**
+ * Define explicitamente qual empresa é a padrão do tenant.
+ *
+ * A autorização é validada no servidor (`definir_empresa_padrao` exige papel
+ * admin) — a UI apenas reflete o resultado. O banco garante a unicidade:
+ * marcar uma nova padrão desmarca a anterior na mesma transação.
+ */
+export function useDefinirEmpresaPadrao() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (empresaId: string) => {
+      const { error } = await supabase.rpc('definir_empresa_padrao', {
+        _empresa_id: empresaId,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['empresas'] });
+      toast.success('Empresa padrão atualizada!');
+    },
+    onError: (error: Error) => {
+      logger.error('Erro ao definir empresa padrão:', error);
+      toast.error('Erro ao definir empresa padrão: ' + error.message);
+    },
+  });
+}
