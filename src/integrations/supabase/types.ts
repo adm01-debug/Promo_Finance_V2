@@ -20219,6 +20219,14 @@ export type Database = {
           tabela: string
         }[]
       }
+      gate_32_pii_sem_mascara: {
+        Args: never
+        Returns: {
+          coluna: string
+          motivo: string
+          objeto: string
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string
@@ -20556,6 +20564,7 @@ export type Database = {
         Returns: undefined
       }
       maintain_monthly_partitions: { Args: never; Returns: Json }
+      mascarar_chave_pix: { Args: { _valor: string }; Returns: string }
       monitor_table_bloat: { Args: never; Returns: Json }
       nfe_apply_manifestacao: {
         Args: {
@@ -20600,6 +20609,7 @@ export type Database = {
         }[]
       }
       nfe_unlink_conta_pagar: { Args: { p_nfe_id: string }; Returns: Json }
+      pode_ver_dado_sensivel: { Args: never; Returns: boolean }
       processar_regua_cobranca: {
         Args: { p_empresa_id?: string; p_simulate?: boolean }
         Returns: Json

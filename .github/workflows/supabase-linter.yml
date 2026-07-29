@@ -241,3 +241,31 @@ jobs:
             exit 1
           fi
           echo "✅ Gate #31 aprovado."
+
+  pii-mask:
+    name: Gate #32 — Mascaramento LGPD de PII em visões
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar utilitários
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Auditar mascaramento de PII
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PROD_DB_URL:-}" ]; then
+            echo "::error::PROD_DB_URL ausente — Gate #32 não pode ser verificado."
+            exit 1
+          fi
+          OUT=$(psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t -F $'\t' \
+                  -f scripts/integrity/11_pii_mask.sql)
+          echo "$OUT"
+          if echo "$OUT" | grep -q $'\tfail\t'; then
+            echo "::error::Gate #32 falhou — view expõe chave PIX sem mascaramento."
+            exit 1
+          fi
+          echo "✅ Gate #32 aprovado."
