@@ -20204,6 +20204,14 @@ export type Database = {
           tabelas: string
         }[]
       }
+      gate_30_views_inseguras: {
+        Args: never
+        Returns: {
+          motivo: string
+          objeto: string
+          tipo: string
+        }[]
+      }
       generate_reconciliation_suggestions: {
         Args: {
           p_empresa_id: string
