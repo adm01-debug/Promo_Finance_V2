@@ -41,3 +41,20 @@ A `allowed-public-tables.json` é uma whitelist **manual** — só tabelas expli
 Roda como job `baseline-drift` no workflow `supabase-linter`. Sem `PROD_DB_URL` o job é pulado com warning (nunca aprova silenciosamente um drift real, apenas não verifica).
 
 Alterou schema/RLS/GRANT? Rode `dump-baseline.sh` e commite os baselines no **mesmo PR**.
+
+## Gate #27 — SECURITY DEFINER com search_path fixo
+
+`06_secdef.sql` audita todas as funções `SECURITY DEFINER` do schema `public`:
+
+- `secdef.search_path_fixo` — falha se alguma função não tiver `SET search_path`.
+- `secdef.search_path_seguro` — falha se o `search_path` incluir `$user`
+  (schema gravável pelo chamador ⇒ risco de hijacking).
+
+Equivalente no banco: `SELECT * FROM public.gate_27_secdef_sem_search_path();`
+(execução restrita a `service_role`).
+
+No CI, o job `secdef-search-path` de `.github/workflows/supabase-linter.yml`
+bloqueia o PR em caso de falha.
+
+> Ao criar/alterar funções, atualize `baseline/schema-counts.json`
+> (`functions`) no mesmo PR, senão o Gate #26 acusa drift.
