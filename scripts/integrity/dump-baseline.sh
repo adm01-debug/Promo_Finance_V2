@@ -33,16 +33,30 @@ SELECT jsonb_object_agg(tablename, cnt)::text FROM (
 SQL
 
 # --- expected-crons.json ---------------------------------------------------
-psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$OUT/expected-crons.json"
+# Preferimos ler cron.job direto; se o papel não tiver acesso ao schema `cron`,
+# caímos para a RPC pública get_cron_jobs() (exige papel admin).
+if ! psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$OUT/expected-crons.json" 2>/dev/null
 SELECT COALESCE(jsonb_agg(jsonb_build_object('jobname', jobname, 'schedule', schedule)
        ORDER BY jobname), '[]'::jsonb)::text
 FROM cron.job WHERE active = true;
 SQL
+then
+  psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$OUT/expected-crons.json"
+SELECT COALESCE(jsonb_agg(jsonb_build_object('jobname', j.jobname, 'schedule', j.schedule)
+       ORDER BY j.jobname), '[]'::jsonb)::text
+FROM public.get_cron_jobs() j WHERE j.active;
+SQL
+fi
 
 # --- allowed-public-tables.json --------------------------------------------
 # Preserva a whitelist manual — nunca sobrescreve se já existir.
 if [ ! -f "$OUT/allowed-public-tables.json" ]; then
   echo '[]' > "$OUT/allowed-public-tables.json"
 fi
+
+# --- Validação final --------------------------------------------------------
+for f in schema-counts.json expected-policies.json expected-crons.json allowed-public-tables.json; do
+  jq -e . "$OUT/$f" >/dev/null || { echo "ERRO: $f inválido" >&2; exit 1; }
+done
 
 echo "✅ baselines atualizados em $OUT"
