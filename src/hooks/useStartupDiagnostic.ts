@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, verifySupabaseHealth } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 
 export interface DiagnosticResult {
@@ -36,17 +36,36 @@ export const useStartupDiagnostic = () => {
     // 1. Connection Check
     updateStatus('connection', 'loading');
     try {
-      const { error } = await supabase.from('profiles').select('id').limit(1);
-      // PGRST116 = empty result; 401/PGRST301 = anônimo sem permissão (esperado pré-login)
-      if (error && error.code !== 'PGRST116' && error.code !== 'PGRST301' && (error as { status?: number }).status !== 401) {
-         throw error;
+      if (!isAuthenticated) {
+        // Anônimo não tem (nem deve ter) GRANT em tabelas do schema public.
+        // A conectividade é aferida pelo endpoint público de saúde do GoTrue.
+        const health = await verifySupabaseHealth();
+        if (!health.ok) {
+          throw new Error(health.error ?? `HTTP ${health.status ?? '???'}`);
+        }
+        updateStatus('connection', 'success', 'Backend acessível (pré-login).');
+      } else {
+        const { error } = await supabase.from('profiles').select('id').limit(1);
+        // PGRST116 = empty result; 401/PGRST301/42501 = falta de permissão
+        // (esperado enquanto o vínculo do usuário não está provisionado).
+        const status = (error as { status?: number } | null)?.status;
+        if (
+          error &&
+          error.code !== 'PGRST116' &&
+          error.code !== 'PGRST301' &&
+          error.code !== '42501' &&
+          status !== 401
+        ) {
+          throw error;
+        }
+        updateStatus('connection', 'success');
       }
-      updateStatus('connection', 'success');
     } catch (error) {
       logger.error('Diagnostic Error (connection):', error);
       updateStatus('connection', 'error', 'Não foi possível conectar ao banco de dados.');
       setHasError(true);
     }
+
 
     // 2. Tables Check — só roda autenticado (RLS bloqueia anônimos)
     updateStatus('tables', 'loading');

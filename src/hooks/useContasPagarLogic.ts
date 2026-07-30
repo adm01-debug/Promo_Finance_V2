@@ -86,7 +86,12 @@ export function useContasPagarLogic() {
   const deleteMutation = useDeleteContaPagar();
   const updateMutation = useUpdateContaPagar();
 
-  const contas = paginatedResult?.data || [];
+  // A view `vw_contas_pagar_painel` expõe os campos do painel (nomes
+  // desnormalizados) mas não replica colunas internas da tabela base
+  // (`deleted_at`, `transacao_conciliada_id`). A UI só consome os campos do
+  // painel, então normalizamos aqui na fronteira de dados.
+  const contas = (paginatedResult?.data ?? []) as unknown as ContaPagarType[];
+
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 
