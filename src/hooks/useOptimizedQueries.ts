@@ -10,8 +10,19 @@ export function usePrefetchCriticalData() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Prefetch em paralelo para máxima velocidade
-    Promise.all([
+    let cancelado = false;
+
+    /**
+     * O prefetch só pode ocorrer com sessão válida. Sem isso, as tabelas
+     * protegidas por RLS respondem 401 para o papel `anon` e poluem o console
+     * na tela de login.
+     */
+    const prefetch = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (cancelado || !data.session) return;
+
+      // Prefetch em paralelo para máxima velocidade
+      await Promise.all([
       queryClient.prefetchQuery({
         queryKey: ['empresas'],
         queryFn: async () => {
@@ -51,7 +62,14 @@ export function usePrefetchCriticalData() {
         staleTime: STALE_TIMES.static,
         gcTime: GC_TIMES.static,
       }),
-    ]);
+      ]);
+    };
+
+    void prefetch();
+
+    return () => {
+      cancelado = true;
+    };
   }, [queryClient]);
 }
 
