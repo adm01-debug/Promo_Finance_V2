@@ -10,7 +10,10 @@ interface Provider {
   nome: string;
   tipo: 'oidc' | 'saml';
   preset: string | null;
-  allowed_domains: string[];
+  // A RPC `resolve_sso_providers_for_domain` já filtra pelo domínio e, por
+  // segurança, não devolve a lista completa de domínios permitidos.
+  allowed_domains?: string[];
+
   force_sso_for_domains: boolean;
 }
 
