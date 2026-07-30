@@ -271,6 +271,9 @@ export default function AdminTelemetriaPage() {
         {/* Invariantes de Integridade de Dados */}
         <IntegrityAlertsPanel />
 
+        {/* Governança de retenção: políticas vigentes por tabela */}
+        <RetentionPoliciesPanel />
+
         {/* Histórico da retenção diária */}
         <RetentionHistoryPanel />
 
