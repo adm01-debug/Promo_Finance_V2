@@ -20549,6 +20549,23 @@ export type Database = {
           week_start: string
         }[]
       }
+      get_retencao_politicas_status: {
+        Args: never
+        Returns: {
+          ativo: boolean
+          atualizado_em: string
+          coluna: string
+          dias: number
+          filtro: string
+          isenta: boolean
+          linhas_vencidas: number
+          motivo: string
+          registro_mais_antigo: string
+          tabela: string
+          tem_politica: boolean
+          total_linhas: number
+        }[]
+      }
       get_retencoes_pendentes_count: {
         Args: { p_empresa_id: string }
         Returns: number
