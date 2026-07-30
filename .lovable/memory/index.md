@@ -70,3 +70,4 @@ type: reference
 - [Dedup e Auditoria Notificações](mem://features/saved-filter-dedup-audit) — Helper savedFilterDedup (Set + last_seen_at) + view vw_notification_history_duplicates
 - [Revogação Permissões Filtros](mem://features/saved-filter-permission-revocation) — Trigger fn_revoke_orphan_saved_filter_subscriptions + guarda permission_revoked no helper de dedup
 - [Multi-Empresa Consolidada](mem://architecture/multi-empresa-consolidada) — Grupo com vários CNPJs/regimes: EmpresaScopeContext + EmpresaScopeBar (⌘E) + EmpresaBadge (sigla/cor chart-1..8) + EmpresaActionPicker com sugestão IA (recomendar-empresa.ts) + RLS multi-empresa em contas_receber/contas_pagar/clientes/boletos
+- [Retenção de Dados (Gate #35)](mem://architecture/retencao-de-dados) — Política declarativa em retencao_politicas, cleanup_log_tables data-driven, gate 14_retencao.sql no CI e run.sh executando todos os passos
