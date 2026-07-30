@@ -62,7 +62,14 @@ export function usePrefetchCriticalData() {
         staleTime: STALE_TIMES.static,
         gcTime: GC_TIMES.static,
       }),
-    ]);
+      ]);
+    };
+
+    void prefetch();
+
+    return () => {
+      cancelado = true;
+    };
   }, [queryClient]);
 }
 
