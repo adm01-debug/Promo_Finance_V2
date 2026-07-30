@@ -1,0 +1,43 @@
+{
+    "anon": [
+        "resolve_sso_providers_for_domain"
+    ],
+    "authenticated": [
+        "auditar_acessos_cross_tenant",
+        "definir_empresa_padrao",
+        "delete_cron_job",
+        "empresa_acessivel",
+        "empresa_membro_ativo",
+        "empresa_padrao_id",
+        "get_acessos_suspeitos",
+        "get_bloat_history",
+        "get_catalogos_tributarios_health",
+        "get_catalogos_tributarios_history",
+        "get_cobertura_fiscal_uf",
+        "get_cron_jobs",
+        "get_cron_run_history",
+        "get_frontend_error_groups",
+        "get_frontend_error_occurrences",
+        "get_integrity_alerts",
+        "get_performance_alerts",
+        "get_performance_alerts_weekly",
+        "get_retencoes_pendentes_count",
+        "get_retention_history",
+        "get_silenciamentos_expirando",
+        "get_table_bloat",
+        "get_ultima_carga_fiscal",
+        "get_user_permissions",
+        "get_user_roles",
+        "has_role",
+        "is_org_membro",
+        "is_org_responsavel",
+        "provisionar_usuario_atual",
+        "registrar_auditoria_config",
+        "registrar_evento_pagar",
+        "registrar_evento_receber",
+        "resolve_integrity_alert",
+        "resolve_sso_providers_for_domain",
+        "silenciar_alerta_erro_frontend",
+        "toggle_cron_job"
+    ]
+}
