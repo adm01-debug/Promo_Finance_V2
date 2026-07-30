@@ -118,7 +118,7 @@ export function RetentionPoliciesPanel() {
         <CardTitle className="flex items-center gap-2 text-base">
           <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           Políticas de retenção
-          {resumo.semPolitica > 0 ? (
+          {isLoading ? null : resumo.semPolitica > 0 ? (
             <Badge variant="destructive" className="text-[10px]">
               {resumo.semPolitica} sem política
             </Badge>
