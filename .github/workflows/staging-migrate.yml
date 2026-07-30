@@ -1,0 +1,78 @@
+name: staging-migrate
+
+on:
+  workflow_dispatch:
+    inputs:
+      refresh_baseline:
+        description: "Regerar baselines a partir de PROD antes de rodar"
+        type: boolean
+        default: false
+      only_integrity:
+        description: "Pular schema/functions/crons e rodar apenas testes"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Executar em modo dry-run (sem escrever em staging)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: staging-migrate
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+      STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+      STAGING_PROJECT_REF: ${{ secrets.STAGING_PROJECT_REF }}
+      STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      TEST_ADMIN_JWT: ${{ secrets.TEST_ADMIN_JWT }}
+      REQUIRED_SECRETS: ${{ vars.REQUIRED_SECRETS }}
+      PROD_PROJECT_REF: ${{ vars.PROD_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Instalar utilitários
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client jq gettext-base curl
+
+      - name: Instalar Supabase CLI
+        run: |
+          curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin supabase
+          supabase --version
+
+      - name: bun install
+        run: bun install --frozen-lockfile
+
+      - name: Preparar flags
+        id: flags
+        run: |
+          FLAGS=""
+          ${{ inputs.dry_run }}         && FLAGS="$FLAGS --dry-run"        || true
+          ${{ !inputs.refresh_baseline }} && FLAGS="$FLAGS --skip-baseline" || true
+          ${{ inputs.only_integrity }}  && FLAGS="$FLAGS --only-integrity" || true
+          echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
+
+      - name: Executar staging-migrate
+        run: bash scripts/staging-migrate.sh ${{ steps.flags.outputs.flags }}
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-migrate-logs
+          path: |
+            /tmp/staging-migrate-*.jsonl
+            /tmp/integrity-*.jsonl
+          retention-days: 30

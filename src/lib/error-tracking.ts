@@ -1,0 +1,133 @@
+/* eslint-disable no-console -- fallback tracker usa console quando Sentry não está disponível */
+// Error tracking utilities
+// Ready for Sentry integration when API key is provided
+
+interface ErrorContext {
+  userId?: string;
+  email?: string;
+  extra?: Record<string, unknown>;
+  tags?: Record<string, string>;
+}
+
+// Type-safe window access for Sentry
+interface WindowWithSentry extends Window {
+  Sentry?: {
+    captureException: (error: Error, context?: unknown) => void;
+    captureMessage: (message: string, level?: string) => void;
+    setUser: (user: { id: string; email?: string; name?: string } | null) => void;
+    addBreadcrumb: (breadcrumb: { category: string; message: string; data?: Record<string, unknown>; level?: string }) => void;
+  };
+}
+
+declare const window: WindowWithSentry;
+
+interface ErrorTracker {
+  captureException: (error: Error, context?: ErrorContext) => void;
+  captureMessage: (message: string, level?: 'info' | 'warning' | 'error') => void;
+  setUser: (user: { id: string; email?: string; name?: string } | null) => void;
+  addBreadcrumb: (breadcrumb: { category: string; message: string; data?: Record<string, unknown> }) => void;
+}
+
+// Console-based fallback tracker for development
+const consoleTracker: ErrorTracker = {
+  captureException: (error, context) => {
+    console.error('[ErrorTracker] Exception:', error);
+    if (context) {
+      console.error('[ErrorTracker] Context:', context);
+    }
+  },
+  captureMessage: (message, level = 'info') => {
+    const logFn = level === 'error' ? console.error : level === 'warning' ? console.warn : console.info;
+    logFn(`[ErrorTracker] ${level.toUpperCase()}: ${message}`);
+  },
+  setUser: (user) => {
+    if (!import.meta.env.DEV) return;
+    if (user) {
+      console.info('[ErrorTracker] User set:', user.id);
+    } else {
+      console.info('[ErrorTracker] User cleared');
+    }
+  },
+  addBreadcrumb: (breadcrumb) => {
+    if (!import.meta.env.DEV) return;
+    console.debug('[ErrorTracker] Breadcrumb:', breadcrumb.category, '-', breadcrumb.message);
+  },
+};
+
+// Sentry tracker (to be initialized when key is available)
+const sentryTracker: ErrorTracker = {
+  captureException: (error, context) => {
+    if (window.Sentry) {
+      window.Sentry.captureException(error, {
+        user: context?.userId ? { id: context.userId, email: context.email } : undefined,
+        extra: context?.extra,
+        tags: context?.tags,
+      });
+    } else {
+      consoleTracker.captureException(error, context);
+    }
+  },
+  captureMessage: (message, level = 'info') => {
+    if (window.Sentry) {
+      window.Sentry.captureMessage(message, level);
+    } else {
+      consoleTracker.captureMessage(message, level);
+    }
+  },
+  setUser: (user) => {
+    if (window.Sentry) {
+      window.Sentry.setUser(user);
+    }
+    consoleTracker.setUser(user);
+  },
+  addBreadcrumb: (breadcrumb) => {
+    if (window.Sentry) {
+      window.Sentry.addBreadcrumb({
+        category: breadcrumb.category,
+        message: breadcrumb.message,
+        data: breadcrumb.data,
+        level: 'info',
+      });
+    }
+    consoleTracker.addBreadcrumb(breadcrumb);
+  },
+};
+
+// Export the appropriate tracker
+export const errorTracker: ErrorTracker = 
+  typeof window !== 'undefined' && window.Sentry 
+    ? sentryTracker 
+    : consoleTracker;
+
+// Utility function to wrap async functions with error tracking
+export function withErrorTracking<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => Promise<TResult>,
+  context?: Omit<ErrorContext, 'extra'>
+): (...args: TArgs) => Promise<TResult> {
+  return async (...args: TArgs) => {
+    try {
+      return await fn(...args);
+    } catch (error: unknown) {
+      errorTracker.captureException(error as Error, {
+        ...context,
+        extra: { args },
+      });
+      throw error;
+    }
+  };
+}
+
+// React error boundary integration helper
+export function reportErrorToTracker(error: Error, componentStack?: string) {
+  errorTracker.captureException(error, {
+    extra: { componentStack },
+    tags: { type: 'react-error-boundary' },
+  });
+}
+
+// Initialize Sentry (call this when you have the DSN)
+export function initSentry(_dsn: string, _environment: string = 'production') {
+  // This would be called when Sentry is set up
+  // The actual Sentry initialization script would need to be added to index.html
+  if (import.meta.env.DEV) console.info('[ErrorTracker] Ready for Sentry initialization with DSN');
+}

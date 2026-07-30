@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Promo Finance | Sistema Financeiro Corporativo</title>
+    <meta name="title" content="Promo Finance | Sistema Financeiro Corporativo" />
+    <meta name="description" content="Sistema financeiro corporativo completo para gestão de Contas a Pagar, Contas a Receber, Conciliação Bancária e Cobrança." />
+    <meta name="author" content="Promo Finance" />
+    <meta name="theme-color" content="#7c3aed" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- PWA -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Promo Finance" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://promobrindes.com.br/" />
+    <meta property="og:title" content="Promo Finance | Sistema Financeiro Corporativo" />
+    <meta property="og:description" content="Sistema financeiro corporativo completo para gestão de Contas a Pagar, Contas a Receber, Conciliação Bancária e Cobrança." />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://promobrindes.com.br/" />
+    <meta name="twitter:site" content="@PromoBrindes" />
+    <meta name="twitter:title" content="Promo Finance | Sistema Financeiro Corporativo" />
+    <meta name="twitter:description" content="Sistema financeiro corporativo completo para gestão de Contas a Pagar, Contas a Receber, Conciliação Bancária e Cobrança." />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <!-- Fonts - Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Backend (Lovable Cloud) - reduz latência da primeira request -->
+    <link rel="preconnect" href="https://lszcmoymovkpckehlagr.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://lszcmoymovkpckehlagr.supabase.co" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet" />
+
+    <script>
+      // Aplica tema antes do React montar para evitar flash claro.
+      // Na primeira visita (ou quando forçamos um novo padrão), limpamos
+      // qualquer preferência legada e assumimos dark. O flag versionado
+      // permite re-executar o reset em migrações futuras bumpando a versão.
+      (function () {
+        var BOOTSTRAP_KEY = 'theme_bootstrap_v1';
+        var root = document.documentElement;
+        try {
+          if (!localStorage.getItem(BOOTSTRAP_KEY)) {
+            localStorage.removeItem('theme');
+            localStorage.setItem('theme', 'dark');
+            localStorage.setItem(BOOTSTRAP_KEY, '1');
+          }
+          var mode = localStorage.getItem('theme') || 'dark';
+          var isDark = mode === 'dark'
+            || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          root.classList.remove('light', 'dark');
+          root.classList.add(isDark ? 'dark' : 'light');
+        } catch (_) {
+          root.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

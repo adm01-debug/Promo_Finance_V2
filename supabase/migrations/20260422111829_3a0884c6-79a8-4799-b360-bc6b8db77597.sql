@@ -1,0 +1,2 @@
+ALTER TABLE public.sso_sandbox_runs ADD COLUMN IF NOT EXISTS batch_id uuid NULL;
+CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_batch_id ON public.sso_sandbox_runs(batch_id) WHERE batch_id IS NOT NULL;

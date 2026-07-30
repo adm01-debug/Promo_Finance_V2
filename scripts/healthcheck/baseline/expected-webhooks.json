@@ -1,0 +1,44 @@
+[
+  {
+    "name": "asaas-webhook",
+    "auth": "token",
+    "token_env": "ASAAS_WEBHOOK_TOKEN",
+    "token_header": "asaas-access-token",
+    "fixture": "asaas-payment.json",
+    "expect_status": 200,
+    "invalid_status": 403,
+    "max_latency_ms": 3000,
+    "expect_webhook_events": false,
+    "expect_webhooks_log_provider": "asaas"
+  },
+  {
+    "name": "bitrix24-webhook",
+    "auth": "none",
+    "fixture": "bitrix-deal.json",
+    "expect_status": 200,
+    "invalid_status": 400,
+    "max_latency_ms": 3000,
+    "expect_webhook_events": false,
+    "expect_webhooks_log_provider": "bitrix24"
+  },
+  {
+    "name": "whatsapp-webhook",
+    "auth": "none",
+    "fixture": "whatsapp-message.json",
+    "expect_status": 200,
+    "invalid_status": 400,
+    "max_latency_ms": 3000,
+    "expect_webhook_events": false,
+    "expect_webhooks_log_provider": "evolution"
+  },
+  {
+    "name": "bling-webhook",
+    "auth": "none",
+    "fixture": "bling-generic.json",
+    "expect_status": 200,
+    "invalid_status": 400,
+    "max_latency_ms": 3000,
+    "expect_webhook_events": false,
+    "expect_webhooks_log_provider": "bling"
+  }
+]

@@ -1,0 +1,337 @@
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { AuthProvider } from '@/hooks/useAuth';
+import { KeyboardShortcutsProvider } from '@/components/layout/KeyboardShortcutsProvider';
+import { DataPrefetcher } from '@/components/providers/DataPrefetcher';
+import { NavigationTracker } from '@/components/providers/NavigationTracker';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
+import { PageLoading } from '@/components/ui/loading-skeleton';
+import { SkipLinks } from '@/components/accessibility/SkipLinks';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { CommandPalette } from '@/components/command-palette/CommandPalette';
+import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
+import { VisualValidator } from '@/components/ui/ux-validator';
+import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOverlay';
+import { TransitionProvider } from '@/components/layout/transitions';
+import { useSelectiveEmpresaInvalidation } from '@/hooks/useSelectiveEmpresaInvalidation';
+
+
+
+
+
+const Index = lazy(() => import('./pages/Index'));
+const Auth = lazy(() => import('./pages/Auth'));
+const CorporateOnboarding = lazy(() => import('./pages/auth/CorporateOnboarding'));
+const ContasPagar = lazy(() => import('./pages/ContasPagar'));
+const ContasReceber = lazy(() => import('./pages/ContasReceber'));
+const DashboardReceber = lazy(() => import('./pages/DashboardReceber'));
+const DashboardEmpresa = lazy(() => import('./pages/DashboardEmpresa'));
+const BI = lazy(() => import('./pages/BI'));
+const NotasFiscais = lazy(() => import('./pages/NotasFiscais'));
+const FluxoCaixa = lazy(() => import('./pages/FluxoCaixa'));
+const Relatorios = lazy(() => import('./pages/Relatorios'));
+const RelatoriosEntregas = lazy(() => import('./pages/RelatoriosEntregas'));
+const Expert = lazy(() => import('./pages/Expert'));
+const Conciliacao = lazy(() => import('./pages/Conciliacao'));
+const Cobrancas = lazy(() => import('./pages/Cobrancas'));
+const Boletos = lazy(() => import('./pages/Boletos'));
+const Financeiro = lazy(() => import('./pages/Financeiro'));
+const Clientes = lazy(() => import('./pages/Clientes'));
+const Fornecedores = lazy(() => import('./pages/Fornecedores'));
+const Empresas = lazy(() => import('./pages/Empresas'));
+const ContasBancarias = lazy(() => import('./pages/ContasBancarias'));
+const CentroCustos = lazy(() => import('./pages/CentroCustos'));
+const Aprovacoes = lazy(() => import('./pages/Aprovacoes'));
+const Alertas = lazy(() => import('./pages/Alertas'));
+const Configuracoes = lazy(() => import('./pages/Configuracoes'));
+const Usuarios = lazy(() => import('./pages/Usuarios'));
+const AuditLogs = lazy(() => import('./pages/AuditLogs'));
+const Seguranca = lazy(() => import('./pages/Seguranca'));
+const Demonstrativos = lazy(() => import('./pages/Demonstrativos'));
+const PagamentosRecorrentes = lazy(() => import('./pages/PagamentosRecorrentes'));
+const Bitrix24 = lazy(() => import('./pages/Bitrix24'));
+const ReformaTributaria = lazy(() => import('./pages/ReformaTributaria'));
+const SimulacaoRegimes = lazy(() => import('./pages/tributario/SimulacaoRegimes'));
+const HistoricoFinanceiroTributario = lazy(() => import('./pages/tributario/HistoricoFinanceiro'));
+const OportunidadesElisao = lazy(() => import('./pages/tributario/OportunidadesElisao'));
+const CertificadosDigitais = lazy(() => import('./pages/tributario/CertificadosDigitais'));
+const ProjecaoReformaPage = lazy(() => import('./pages/tributario/ProjecaoReforma'));
+const DashboardTributario = lazy(() => import('./pages/tributario/DashboardTributario'));
+const CalculadoraTributaria = lazy(() => import('./pages/tributario/CalculadoraTributaria'));
+const RecomendacaoExecutiva = lazy(() => import('./pages/tributario/RecomendacaoExecutiva'));
+const PfVinculada = lazy(() => import('./pages/tributario/PfVinculada'));
+const OnboardingTributario = lazy(() => import('./pages/tributario/OnboardingTributario'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Asaas = lazy(() => import('./pages/Asaas'));
+const BlingPage = lazy(() => import('./pages/Bling'));
+const Vendedores = lazy(() => import('./pages/Vendedores'));
+const MeuPerfil = lazy(() => import('./pages/MeuPerfil'));
+const Contratos = lazy(() => import('./pages/Contratos'));
+const SimuladorAntecipacaoPage = lazy(() => import('./pages/SimuladorAntecipacao'));
+const AssinaturaDigitalPage = lazy(() => import('./pages/AssinaturaDigital'));
+const ComprovanteOCRPage = lazy(() => import('./pages/ComprovanteOCR'));
+const Movimentacoes = lazy(() => import('./pages/Movimentacoes'));
+const Tesouraria = lazy(() => import('./pages/Tesouraria'));
+const PixHub = lazy(() => import('./pages/PixHub'));
+const OrcamentoEvento = lazy(() => import('./pages/OrcamentoEvento'));
+const BenchmarkingSetorial = lazy(() => import('./pages/BenchmarkingSetorial'));
+const AdminTelemetria = lazy(() => import('./pages/AdminTelemetria'));
+const AdminEdgeHealth = lazy(() => import('./pages/AdminEdgeHealth'));
+const AdminSystemHealth = lazy(() => import('./pages/AdminSystemHealth'));
+const SRECommandCenter = lazy(() => import('./pages/admin/SRECommandCenter'));
+const AdminBloatMonitor = lazy(() => import('./pages/admin/AdminBloatMonitor'));
+const CentroPrivacidadeLGPD = lazy(() => import('./pages/CentroPrivacidadeLGPD'));
+const FiltrosSalvos = lazy(() => import('./pages/configuracoes/FiltrosSalvos'));
+const MinhasPreferencias = lazy(() => import('./pages/configuracoes/MinhasPreferencias'));
+const HistoricoNotificacoes = lazy(() => import('./pages/configuracoes/HistoricoNotificacoes'));
+const SinoNotificacoesFiltros = lazy(() => import('./pages/configuracoes/SinoNotificacoesFiltros'));
+const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
+const BloqueiosDuplicidade = lazy(() => import('./pages/BloqueiosDuplicidade'));
+const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
+const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
+const ScimAudit = lazy(() => import('./pages/admin/ScimAudit'));
+const AuditSsoProfileSync = lazy(() => import('./pages/admin/AuditSsoProfileSync'));
+const SsoEvents = lazy(() => import('./pages/admin/SsoEvents'));
+const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
+const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
+const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
+const AuditoriaIA = lazy(() => import('./pages/admin/AuditoriaIA'));
+const SharedFiltersAdmin = lazy(() => import('./pages/admin/SharedFiltersAdmin'));
+const Contabilidade = lazy(() => import('./pages/Contabilidade'));
+const StyleGuide = lazy(() => import('./pages/StyleGuide'));
+const SplitPaymentPage = lazy(() => import('./pages/tributario/SplitPayment'));
+const ConciliacaoTributariaPage = lazy(() => import('./pages/tributario/ConciliacaoTributaria'));
+const IncentivosFiscaisPage = lazy(() => import('./pages/tributario/IncentivosFiscais'));
+const AuditoriaCompliancePage = lazy(() => import('./pages/tributario/AuditoriaCompliance'));
+const ComparativoRegimesPage = lazy(() => import('./pages/tributario/ComparativoRegimes'));
+const CashbackSimuladorPage = lazy(() => import('./pages/tributario/CashbackSimulador'));
+const ImportacaoXMLPage = lazy(() => import('./pages/tributario/ImportacaoXML'));
+const NfeRecebidasPage = lazy(() => import('./pages/tributario/NfeRecebidas'));
+const SefazObservabilidadePage = lazy(() => import('./pages/tributario/SefazObservabilidade'));
+const SpedExportPage = lazy(() => import('./pages/tributario/SpedExport'));
+const RelatoriosContabeisPage = lazy(() => import('./pages/tributario/RelatoriosContabeis'));
+const PerDcompPage = lazy(() => import('./pages/tributario/PerDcomp'));
+const RetencoesFontePage = lazy(() => import('./pages/tributario/RetencoesFonte'));
+const FechamentoMensalPage = lazy(() => import('./pages/tributario/FechamentoMensal'));
+const InteligenciaOperacionalPage = lazy(() => import('./pages/InteligenciaOperacional'));
+const MetasFinanceirasPage = lazy(() => import('./pages/MetasFinanceiras'));
+const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
+const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
+const Logistica = lazy(() => import('./pages/Logistica'));
+const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
+const ThemeDiagnostics = lazy(() => import('./pages/ThemeDiagnostics'));
+const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
+const MonofasicoPage = lazy(() => import('./pages/tributario/Monofasico'));
+const FolhaEncargosPage = lazy(() => import('./pages/tributario/FolhaEncargos'));
+const IcmsStDifalPage = lazy(() => import('./pages/tributario/IcmsStDifal'));
+const IpiIssPage = lazy(() => import('./pages/tributario/IpiIss'));
+const PisCofinsCreditosPage = lazy(() => import('./pages/tributario/PisCofinsCreditos'));
+const IrpjCsllLucroRealPage = lazy(() => import('./pages/tributario/IrpjCsllLucroReal'));
+const DarfConsolidadoPage = lazy(() => import('./pages/tributario/DarfConsolidado'));
+const ObrigacoesAcessoriasPage = lazy(() => import('./pages/tributario/ObrigacoesAcessorias'));
+const ComparativoConformidadePage = lazy(() => import('./pages/tributario/ComparativoConformidade'));
+const PreferenciasDigestPage = lazy(() => import('./pages/tributario/PreferenciasDigest'));
+const ObservabilidadeDigestPage = lazy(() => import('./pages/tributario/ObservabilidadeDigest'));
+const CatalogosFiscaisPage = lazy(() => import('./pages/tributario/CatalogosFiscais'));
+const AuditoriaOverlayPage = lazy(() => import('./pages/tributario/AuditoriaOverlay'));
+const ArquiteturaModularPage = lazy(() => import('./pages/tributario/ArquiteturaModular'));
+const OrganizacoesPage = lazy(() => import('./pages/organizacoes/Organizacoes'));
+const AceitarConvitePage = lazy(() => import('./pages/organizacoes/AceitarConvite'));
+
+const Orcamentos = lazy(() => import('./pages/Orcamentos'));
+const Categorias = lazy(() => import('./pages/Categorias'));
+const ApiManagement = lazy(() => import('./pages/admin/ApiManagement'));
+const CustomFieldsAdmin = lazy(() => import('./pages/admin/CustomFieldsAdmin'));
+const StatusPage = lazy(() => import('./pages/StatusPage'));
+const Compras = lazy(() => import('./pages/Compras'));
+const Integracoes = lazy(() => import('./pages/Integracoes'));
+const PortalCliente = lazy(() => import('./pages/PortalCliente'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+
+function AppRoutes() {
+  // Sprint 2.3: invalidação seletiva do cache ao trocar de empresa
+  // (evita refetch storm de `queryClient.clear()`).
+  useSelectiveEmpresaInvalidation();
+
+  return (
+    <KeyboardShortcutsProvider>
+      <DataPrefetcher>
+        <NavigationTracker />
+        <SkipLinks />
+        <CommandPalette />
+        <Toaster richColors closeButton position="top-right" />
+        {new URLSearchParams(window.location.search).has('visualDebug') && <VisualValidator />}
+        <VisualCorrectionOverlay />
+        <Suspense fallback={<PageLoading />}>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/corporate" element={<CorporateOnboarding />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/contador/:token" element={<ContadorReadonly />} />
+            <Route path="/status" element={<StatusPage />} />
+            <Route path="/portal-cliente" element={<PortalCliente />} />
+            <Route path="/design-system-debug" element={<DesignSystemDebug />} />
+            <Route path="/theme-diagnostics" element={<ThemeDiagnostics />} />
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
+            <Route path="/dashboard-empresa" element={<ProtectedRoute><DashboardEmpresa /></ProtectedRoute>} />
+            <Route path="/bi" element={<ProtectedRoute><BI /></ProtectedRoute>} />
+            <Route path="/contas-pagar" element={<ProtectedRoute><ContasPagar /></ProtectedRoute>} />
+            <Route path="/contas-pagar/bloqueios" element={<ProtectedRoute><BloqueiosDuplicidade /></ProtectedRoute>} />
+            <Route path="/contas-receber" element={<ProtectedRoute><ContasReceber /></ProtectedRoute>} />
+            <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
+            <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
+            <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+            <Route path="/relatorios/entregas" element={<ProtectedRoute><RelatoriosEntregas /></ProtectedRoute>} />
+            <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
+            <Route path="/conciliacao" element={<ProtectedRoute><Conciliacao /></ProtectedRoute>} />
+            <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
+            <Route path="/boletos" element={<ProtectedRoute><Boletos /></ProtectedRoute>} />
+            <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
+            <Route path="/fornecedores" element={<ProtectedRoute><Fornecedores /></ProtectedRoute>} />
+            <Route path="/empresas" element={<ProtectedRoute><Empresas /></ProtectedRoute>} />
+            <Route path="/contas-bancarias" element={<ProtectedRoute><ContasBancarias /></ProtectedRoute>} />
+            <Route path="/centro-custos" element={<ProtectedRoute><CentroCustos /></ProtectedRoute>} />
+            <Route path="/aprovacoes" element={<ProtectedRoute><Aprovacoes /></ProtectedRoute>} />
+            <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
+            <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+            <Route path="/organizacoes" element={<ProtectedRoute><OrganizacoesPage /></ProtectedRoute>} />
+            <Route path="/convite/:token" element={<AceitarConvitePage />} />
+            <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
+            <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
+            <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
+            <Route path="/integracoes" element={<ProtectedRoute><Integracoes /></ProtectedRoute>} />
+            <Route path="/demonstrativos" element={<ProtectedRoute><Demonstrativos /></ProtectedRoute>} />
+            <Route path="/contabilidade" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Contabilidade /></ProtectedRoute>} />
+            <Route path="/financeiro" element={<ProtectedRoute><Financeiro /></ProtectedRoute>} />
+            <Route path="/pagamentos-recorrentes" element={<ProtectedRoute><PagamentosRecorrentes /></ProtectedRoute>} />
+            <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
+            <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
+            <Route path="/reforma-tributaria/:tab" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
+            <Route path="/tributario/simulacao-regimes" element={<ProtectedRoute><SimulacaoRegimes /></ProtectedRoute>} />
+            <Route path="/tributario/historico-financeiro" element={<ProtectedRoute><HistoricoFinanceiroTributario /></ProtectedRoute>} />
+            <Route path="/tributario/oportunidades-elisao" element={<ProtectedRoute><OportunidadesElisao /></ProtectedRoute>} />
+            <Route path="/tributario/projecao-reforma" element={<ProtectedRoute><ProjecaoReformaPage /></ProtectedRoute>} />
+            <Route path="/tributario" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
+            <Route path="/tributario/catalogos-fiscais" element={<ProtectedRoute><CatalogosFiscaisPage /></ProtectedRoute>} />
+            <Route path="/tributario/arquitetura" element={<ProtectedRoute><ArquiteturaModularPage /></ProtectedRoute>} />
+            <Route path="/tributario/auditoria-overlay" element={<ProtectedRoute><AuditoriaOverlayPage /></ProtectedRoute>} />
+            <Route path="/tributario/dashboard" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
+            <Route path="/tributario/recomendacao" element={<ProtectedRoute><RecomendacaoExecutiva /></ProtectedRoute>} />
+            <Route path="/tributario/pf-vinculada" element={<ProtectedRoute><PfVinculada /></ProtectedRoute>} />
+            <Route path="/tributario/onboarding" element={<ProtectedRoute><OnboardingTributario /></ProtectedRoute>} />
+            <Route path="/tributario/certificados-digitais" element={<ProtectedRoute><CertificadosDigitais /></ProtectedRoute>} />
+            <Route path="/tributario/nfe-recebidas" element={<ProtectedRoute><NfeRecebidasPage /></ProtectedRoute>} />
+            <Route path="/tributario/sefaz-observabilidade" element={<ProtectedRoute><SefazObservabilidadePage /></ProtectedRoute>} />
+            <Route path="/tributario/calculadora" element={<ProtectedRoute><CalculadoraTributaria /></ProtectedRoute>} />
+
+            <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
+            <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
+            <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />
+            <Route path="/meu-perfil" element={<ProtectedRoute><MeuPerfil /></ProtectedRoute>} />
+            <Route path="/contratos" element={<ProtectedRoute><Contratos /></ProtectedRoute>} />
+            <Route path="/simulador-antecipacao" element={<ProtectedRoute><SimuladorAntecipacaoPage /></ProtectedRoute>} />
+            <Route path="/assinatura-digital" element={<ProtectedRoute><AssinaturaDigitalPage /></ProtectedRoute>} />
+            <Route path="/comprovante-ocr" element={<ProtectedRoute><ComprovanteOCRPage /></ProtectedRoute>} />
+            <Route path="/movimentacoes" element={<ProtectedRoute><Movimentacoes /></ProtectedRoute>} />
+            <Route path="/tesouraria" element={<ProtectedRoute><Tesouraria /></ProtectedRoute>} />
+            <Route path="/pix-hub" element={<ProtectedRoute><PixHub /></ProtectedRoute>} />
+            <Route path="/orcamento-evento" element={<ProtectedRoute><OrcamentoEvento /></ProtectedRoute>} />
+            <Route path="/benchmarking" element={<ProtectedRoute><BenchmarkingSetorial /></ProtectedRoute>} />
+            <Route path="/admin/telemetria" element={<ProtectedRoute requiredRoles={['admin']}><AdminTelemetria /></ProtectedRoute>} />
+            <Route path="/admin/edge-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminEdgeHealth /></ProtectedRoute>} />
+            <Route path="/admin/system-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminSystemHealth /></ProtectedRoute>} />
+            <Route path="/admin/sre" element={<ProtectedRoute requiredRoles={['admin']}><SRECommandCenter /></ProtectedRoute>} />
+            <Route path="/admin/bloat-monitor" element={<ProtectedRoute requiredRoles={['admin']}><AdminBloatMonitor /></ProtectedRoute>} />
+            <Route path="/admin/sso" element={<ProtectedRoute requiredRoles={['admin']}><SSOAdmin /></ProtectedRoute>} />
+            <Route path="/admin/sso-jit-events" element={<ProtectedRoute requiredRoles={['admin']}><SSOJitEvents /></ProtectedRoute>} />
+            <Route path="/admin/scim-audit" element={<ProtectedRoute requiredRoles={['admin']}><ScimAudit /></ProtectedRoute>} />
+            <Route path="/audit-sso-profile-sync" element={<ProtectedRoute requiredRoles={['admin']}><AuditSsoProfileSync /></ProtectedRoute>} />
+            <Route path="/admin/sso-events" element={<ProtectedRoute requiredRoles={['admin']}><SsoEvents /></ProtectedRoute>} />
+            <Route path="/admin/insights-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><InsightsIA /></ProtectedRoute>} />
+            <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AnomaliaDetalhe /></ProtectedRoute>} />
+            <Route path="/admin/compliance" element={<ProtectedRoute requiredRoles={['admin']}><ComplianceAuditoria /></ProtectedRoute>} />
+            <Route path="/admin/auditoria-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AuditoriaIA /></ProtectedRoute>} />
+            <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
+            <Route path="/configuracoes/filtros-salvos" element={<ProtectedRoute><FiltrosSalvos /></ProtectedRoute>} />
+            <Route path="/configuracoes/preferencias" element={<ProtectedRoute><MinhasPreferencias /></ProtectedRoute>} />
+            <Route path="/configuracoes/notificacoes/historico" element={<ProtectedRoute><HistoricoNotificacoes /></ProtectedRoute>} />
+            <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
+            <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
+            <Route path="/admin/api" element={<ProtectedRoute requiredRoles={['admin']}><ApiManagement /></ProtectedRoute>} />
+            <Route path="/admin/campos-customizados" element={<ProtectedRoute requiredRoles={['admin']}><CustomFieldsAdmin /></ProtectedRoute>} />
+            <Route path="/logistica" element={<ProtectedRoute><Logistica /></ProtectedRoute>} />
+            <Route path="/tributario/split-payment" element={<ProtectedRoute><SplitPaymentPage /></ProtectedRoute>} />
+            <Route path="/tributario/conciliacao" element={<ProtectedRoute><ConciliacaoTributariaPage /></ProtectedRoute>} />
+            <Route path="/tributario/incentivos" element={<ProtectedRoute><IncentivosFiscaisPage /></ProtectedRoute>} />
+            <Route path="/tributario/auditoria" element={<ProtectedRoute><AuditoriaCompliancePage /></ProtectedRoute>} />
+            <Route path="/tributario/comparativo" element={<ProtectedRoute><ComparativoRegimesPage /></ProtectedRoute>} />
+            <Route path="/tributario/cashback" element={<ProtectedRoute><CashbackSimuladorPage /></ProtectedRoute>} />
+            <Route path="/tributario/importacao-xml" element={<ProtectedRoute><ImportacaoXMLPage /></ProtectedRoute>} />
+            <Route path="/tributario/sped" element={<ProtectedRoute><SpedExportPage /></ProtectedRoute>} />
+            <Route path="/tributario/relatorios-contabeis" element={<ProtectedRoute><RelatoriosContabeisPage /></ProtectedRoute>} />
+            <Route path="/tributario/per-dcomp" element={<ProtectedRoute><PerDcompPage /></ProtectedRoute>} />
+            <Route path="/tributario/retencoes" element={<ProtectedRoute><RetencoesFontePage /></ProtectedRoute>} />
+            <Route path="/tributario/fechamento-mensal" element={<ProtectedRoute><FechamentoMensalPage /></ProtectedRoute>} />
+            <Route path="/tributario/glossario" element={<ProtectedRoute><GlossarioTributario /></ProtectedRoute>} />
+            <Route path="/tributario/monofasico" element={<ProtectedRoute><MonofasicoPage /></ProtectedRoute>} />
+            <Route path="/tributario/folha-encargos" element={<ProtectedRoute><FolhaEncargosPage /></ProtectedRoute>} />
+            <Route path="/tributario/icms-st" element={<ProtectedRoute><IcmsStDifalPage /></ProtectedRoute>} />
+            <Route path="/tributario/ipi-iss" element={<ProtectedRoute><IpiIssPage /></ProtectedRoute>} />
+            <Route path="/tributario/pis-cofins" element={<ProtectedRoute><PisCofinsCreditosPage /></ProtectedRoute>} />
+            <Route path="/tributario/irpj-csll" element={<ProtectedRoute><IrpjCsllLucroRealPage /></ProtectedRoute>} />
+            <Route path="/tributario/darf" element={<ProtectedRoute><DarfConsolidadoPage /></ProtectedRoute>} />
+            <Route path="/tributario/obrigacoes" element={<ProtectedRoute><ObrigacoesAcessoriasPage /></ProtectedRoute>} />
+            <Route path="/tributario/comparativo-conformidade" element={<ProtectedRoute><ComparativoConformidadePage /></ProtectedRoute>} />
+            <Route path="/tributario/preferencias-digest" element={<ProtectedRoute><PreferenciasDigestPage /></ProtectedRoute>} />
+            <Route path="/tributario/observabilidade-digest" element={<ProtectedRoute><ObservabilidadeDigestPage /></ProtectedRoute>} />
+
+
+            <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
+            <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
+            <Route path="/orcamentos" element={<ProtectedRoute><Orcamentos /></ProtectedRoute>} />
+            <Route path="/categorias" element={<ProtectedRoute><Categorias /></ProtectedRoute>} />
+            <Route path="/clientes/portal-tokens" element={<ProtectedRoute><PortalTokensPage /></ProtectedRoute>} />
+            <Route path="/clientes/scoring" element={<ProtectedRoute><ScoringClientesPage /></ProtectedRoute>} />
+
+            <Route path="/compras" element={<ProtectedRoute><Compras /></ProtectedRoute>} />
+            <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </DataPrefetcher>
+    </KeyboardShortcutsProvider>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <TooltipProvider>
+            <AuthProvider>
+              <StartupDiagnostic>
+                <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                  <TransitionProvider>
+                    <AppRoutes />
+                  </TransitionProvider>
+                </BrowserRouter>
+              </StartupDiagnostic>
+            </AuthProvider>
+          </TooltipProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}
+
+
+export default App;

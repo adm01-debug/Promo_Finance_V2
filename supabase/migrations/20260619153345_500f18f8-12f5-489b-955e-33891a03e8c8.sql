@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.profile_sensitive_fields_unchanged(uuid, uuid, text, uuid) FROM anon, public;
+GRANT EXECUTE ON FUNCTION public.profile_sensitive_fields_unchanged(uuid, uuid, text, uuid) TO authenticated, service_role;

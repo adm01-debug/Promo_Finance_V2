@@ -1,0 +1,8 @@
+ALTER TABLE public.asaas_payments 
+ADD COLUMN IF NOT EXISTS nosso_numero TEXT,
+ADD COLUMN IF NOT EXISTS codigo_barras TEXT,
+ADD COLUMN IF NOT EXISTS linha_digitavel TEXT,
+ADD COLUMN IF NOT EXISTS pix_qrcode TEXT,
+ADD COLUMN IF NOT EXISTS pix_copia_cola TEXT,
+ADD COLUMN IF NOT EXISTS link_boleto TEXT,
+ADD COLUMN IF NOT EXISTS link_fatura TEXT;

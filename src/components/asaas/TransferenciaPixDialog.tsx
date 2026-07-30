@@ -1,0 +1,154 @@
+// DIALOG: Transferência Pix ASAAS
+
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { Loader2, Send, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useAsaas } from '@/hooks/useAsaas';
+import { toast } from 'sonner';
+import { validateCPF, validateCNPJ } from '@/lib/validators'; // Assumed to exist or I will create it
+
+interface Props {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  empresaId?: string;
+}
+
+export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props) {
+  const { transferirPix } = useAsaas(empresaId);
+
+  const [valor, setValor] = useState('');
+  const [chavePix, setChavePix] = useState('');
+  const [tipoChave, setTipoChave] = useState('CPF');
+  const [descricao, setDescricao] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isValidKey, setIsValidKey] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!chavePix) {
+      setIsValidKey(null);
+      return;
+    }
+    
+    let valid = true;
+    if (tipoChave === 'CPF') valid = validateCPF(chavePix);
+    else if (tipoChave === 'CNPJ') valid = validateCNPJ(chavePix);
+    else if (tipoChave === 'EMAIL') valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(chavePix);
+    else if (tipoChave === 'PHONE') valid = chavePix.replace(/\D/g, '').length >= 10;
+    
+    setIsValidKey(valid);
+  }, [chavePix, tipoChave]);
+
+  const handleConfirmar = () => {
+    const valorNum = parseFloat(valor);
+    if (!chavePix || isNaN(valorNum) || valorNum <= 0) {
+      toast.error('Preencha valor e chave Pix corretamente');
+      return;
+    }
+    if (isValidKey === false) {
+      toast.error(`A chave Pix informada não é um ${tipoChave} válido`);
+      return;
+    }
+    setConfirmOpen(true);
+  };
+
+  const handleTransferir = async () => {
+    if (!empresaId) {
+      toast.error('Empresa não identificada');
+      return;
+    }
+    setConfirmOpen(false);
+    try {
+      // Gerar chave de idempotência (ex: timestamp + chave + valor)
+      const idempotencyKey = `pix_${Date.now()}_${chavePix}_${valor}`;
+      
+      await transferirPix.mutateAsync({
+        valor: parseFloat(valor),
+        chave_pix: chavePix,
+        tipo_chave: tipoChave,
+        descricao: descricao || undefined,
+        empresa_id: empresaId,
+        idempotency_key: idempotencyKey,
+      });
+      setValor(''); setChavePix(''); setDescricao('');
+      onOpenChange(false);
+    } catch {
+      // handled by hook
+    }
+  };
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[440px]">
+          <DialogHeader>
+            <DialogTitle>Transferência Pix</DialogTitle>
+            <DialogDescription>Envie um Pix diretamente da conta ASAAS</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-2">
+            <div className="space-y-2">
+              <Label>Valor (R$) *</Label>
+              <Input type="number" step="0.01" min="0.01" value={valor} onChange={e => setValor(e.target.value)} placeholder="100.00" />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-1 space-y-2">
+                <Label>Tipo</Label>
+                <Select value={tipoChave} onValueChange={setTipoChave}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CPF">CPF</SelectItem>
+                    <SelectItem value="CNPJ">CNPJ</SelectItem>
+                    <SelectItem value="EMAIL">Email</SelectItem>
+                    <SelectItem value="PHONE">Telefone</SelectItem>
+                    <SelectItem value="EVP">Aleatória</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-2 space-y-2">
+                <Label className="flex justify-between">
+                  Chave Pix *
+                  {isValidKey === true && <span className="text-[10px] text-success flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Válida</span>}
+                  {isValidKey === false && <span className="text-[10px] text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Inválida</span>}
+                </Label>
+                <Input 
+                  value={chavePix} 
+                  onChange={e => setChavePix(e.target.value)} 
+                  placeholder="Chave Pix do destinatário" 
+                  className={isValidKey === false ? 'border-destructive focus-visible:ring-destructive' : ''}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Descrição</Label>
+              <Textarea value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição da transferência..." rows={2} />
+            </div>
+            <Button className="w-full" onClick={handleConfirmar} disabled={transferirPix.isPending || !chavePix || !valor}>
+              {transferirPix.isPending ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Transferindo...</>
+              ) : (
+                <><Send className="h-4 w-4 mr-2" /> Enviar Pix</>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmationDialog
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Confirmar Transferência Pix"
+        message={`Tem certeza que deseja transferir R$ ${parseFloat(valor || '0').toFixed(2)} para a chave ${chavePix}? Esta ação não pode ser desfeita.`}
+        type="danger"
+        confirmText="Sim, Transferir"
+        onConfirm={handleTransferir}
+        isLoading={transferirPix.isPending}
+      />
+    </>
+  );
+}

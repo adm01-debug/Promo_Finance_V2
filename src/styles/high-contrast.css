@@ -1,0 +1,7 @@
+@media (prefers-contrast: high) {
+  :root {
+    --background: #000;
+    --foreground: #fff;
+    --border: #fff;
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "Promo Finance",
+  "short_name": "PromoFinance",
+  "description": "Sistema de Gestão Financeira Empresarial",
+  "theme_color": "#7c3aed",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Ir para o dashboard",
+      "url": "/dashboard"
+    },
+    {
+      "name": "Contas a Pagar",
+      "short_name": "Pagar",
+      "description": "Ver contas a pagar",
+      "url": "/contas-pagar"
+    },
+    {
+      "name": "Contas a Receber",
+      "short_name": "Receber",
+      "description": "Ver contas a receber",
+      "url": "/contas-receber"
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MoreVertical, RefreshCw, Edit, Trash2, Settings2, FileText, type LucideIcon } from 'lucide-react';
+import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
+import type { ContaBancaria } from '@/hooks/useFinancialData';
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
+
+interface Props {
+  conta: ContaBancaria;
+  empresaNome: string;
+  showSaldos: boolean;
+  bancoIcon: LucideIcon;
+  bancoColor: string;
+  onDelete: (conta: ContaBancaria) => void;
+}
+
+export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: BancoIcon, bancoColor, onDelete }: Props) {
+  const [showMapping, setShowMapping] = useState(false);
+  const [mapping, setMapping] = useState<Record<string, string>>(
+    (conta as { mapeamento_extrato?: Record<string, string> }).mapeamento_extrato || {
+      data: 'Data',
+      descricao: 'Descrição',
+      valor: 'Valor',
+      tipo: 'Tipo',
+    },
+  );
+
+  const saveMapping = async () => {
+    const { error } = await supabase
+      .from('contas_bancarias')
+      .update({ mapeamento_extrato: mapping } as never)
+      .eq('id', conta.id);
+    
+    if (error) toast.error('Erro ao salvar mapeamento');
+    else {
+      toast.success('Mapeamento salvo com sucesso');
+      setShowMapping(false);
+    }
+  };
+
+  const percentualDisponivel = conta.saldo_atual > 0 ? (conta.saldo_disponivel / conta.saldo_atual) * 100 : 0;
+
+  return (
+    <motion.div variants={itemVariants}>
+      <Card className={cn("relative overflow-hidden transition-all hover:shadow-lg", !conta.ativo && "opacity-60")}>
+        <div className={cn("absolute top-0 left-0 right-0 h-1", bancoColor)} />
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={cn("p-2 rounded-lg", bancoColor)}>
+                <BancoIcon className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">{conta.banco}</CardTitle>
+                <p className="text-xs text-muted-foreground">Ag: {conta.agencia} | Cc: {conta.conta}</p>
+              </div>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem><RefreshCw className="h-4 w-4 mr-2" />Sincronizar</DropdownMenuItem>
+                <DropdownMenuItem><Edit className="h-4 w-4 mr-2" />Editar</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem><Settings2 className="h-4 w-4 mr-2" />Regras de Conciliação</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowMapping(true)}><FileText className="h-4 w-4 mr-2" />Mapeamento de Extrato</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-destructive" onClick={() => onDelete(conta)}>
+                  <Trash2 className="h-4 w-4 mr-2" />Excluir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm text-muted-foreground">Saldo Atual</span>
+              <Badge variant={conta.ativo ? "default" : "secondary"}>
+                {conta.ativo ? "Ativa" : "Inativa"}
+              </Badge>
+            </div>
+            <p className={cn("text-2xl font-bold", conta.saldo_atual >= 0 ? "text-foreground" : "text-destructive")}>
+              {showSaldos ? formatCurrency(conta.saldo_atual) : '••••••'}
+            </p>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-muted-foreground">Disponível</span>
+              <span className="text-sm font-medium">
+                {showSaldos ? formatCurrency(conta.saldo_disponivel) : '••••••'}
+              </span>
+            </div>
+            <Progress value={percentualDisponivel} className="h-2" />
+          </div>
+          <div className="pt-2 border-t">
+            <p className="text-xs text-muted-foreground">{empresaNome}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={showMapping} onOpenChange={setShowMapping}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mapeamento de Campos CSV</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Coluna Data</Label>
+                <Input value={mapping.data} onChange={e => setMapping({...mapping, data: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Coluna Descrição</Label>
+                <Input value={mapping.descricao} onChange={e => setMapping({...mapping, descricao: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Coluna Valor</Label>
+                <Input value={mapping.valor} onChange={e => setMapping({...mapping, valor: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Coluna Tipo (D/C)</Label>
+                <Input value={mapping.tipo} onChange={e => setMapping({...mapping, tipo: e.target.value})} />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Informe exatamente o nome do cabeçalho como aparece no seu arquivo CSV.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowMapping(false)}>Cancelar</Button>
+            <Button onClick={saveMapping}>Salvar Mapeamento</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
+  );
+}

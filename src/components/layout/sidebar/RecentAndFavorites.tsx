@@ -1,0 +1,230 @@
+/**
+ * Seção de Recentes e Favoritos na Sidebar
+ * Melhora a navegação com acesso rápido
+ */
+
+import { NavLink, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Clock, Star, StarOff, X, ChevronDown, Building2, CheckCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useRecentItems } from '@/hooks/useRecentItems';
+import { useState } from 'react';
+import { useUserEmpresas, getCurrentEmpresaId, setCurrentEmpresaId } from '@/hooks/useUserEmpresas';
+
+interface RecentAndFavoritesProps {
+  collapsed: boolean;
+}
+
+export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
+  const location = useLocation();
+  const { recentItems, favoriteItems, toggleFavorite, isFavorite, clearRecent } = useRecentItems();
+  const [isRecentOpen, setIsRecentOpen] = useState(true);
+  const [isFavoritesOpen, setIsFavoritesOpen] = useState(true);
+  const [isEmpresasOpen, setIsEmpresasOpen] = useState(true);
+  const { data: vinculos = [] } = useUserEmpresas();
+  const currentEmpresaId = getCurrentEmpresaId();
+
+
+  if (collapsed) return null;
+
+  return (
+    <div className="px-3 py-4 space-y-4 border-b border-border bg-muted/20 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" />
+      {/* Quick Company Switcher */}
+      {vinculos.length > 0 && (
+        <div className="space-y-3">
+          <button
+            onClick={() => setIsEmpresasOpen(!isEmpresasOpen)}
+            className="w-full flex items-center gap-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
+          >
+            <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
+              <Building2 className="h-4 w-4" />
+            </div>
+            <span className="flex-1 text-left">Empresas do Grupo</span>
+            <motion.div
+              animate={{ rotate: isEmpresasOpen ? 180 : 0 }}
+              transition={{ duration: 0.4, ease: "backOut" }}
+              className="opacity-40 group-hover:opacity-100"
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+            </motion.div>
+          </button>
+          
+          <AnimatePresence initial={false}>
+            {isEmpresasOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-1 pl-2">
+                  {vinculos.map(v => (
+                    <button
+                      key={v.empresa_id}
+                      onClick={() => setCurrentEmpresaId(v.empresa_id)}
+                      className={cn(
+                        'w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium group/comp',
+                        currentEmpresaId === v.empresa_id
+                          ? 'bg-accent text-accent-foreground'
+                          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
+                      )}
+                    >
+                      <span className="truncate">{v.empresa.nome_fantasia || v.empresa.razao_social}</span>
+                      {currentEmpresaId === v.empresa_id && (
+                        <CheckCircle className="h-3 w-3 text-success shrink-0" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Favoritos */}
+      {favoriteItems.length > 0 && (
+        <div className="space-y-3">
+          <button
+            onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
+            className="w-full flex items-center gap-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
+          >
+            <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
+              <Star className="h-4 w-4" />
+            </div>
+            <span className="flex-1 text-left">Favoritos</span>
+            <motion.div
+              animate={{ rotate: isFavoritesOpen ? 180 : 0 }}
+              transition={{ duration: 0.4, ease: "backOut" }}
+              className="opacity-40 group-hover:opacity-100"
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+            </motion.div>
+          </button>
+          
+          <AnimatePresence initial={false}>
+            {isFavoritesOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-0.5 pl-2">
+                  {favoriteItems.map(item => (
+                    <div key={item.path} className="flex items-center gap-1 group/item">
+                      <NavLink
+                        to={item.path}
+                        className={cn(
+                          'flex-1 px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium',
+                          location.pathname === item.path
+                            ? 'bg-accent text-accent-foreground'
+                            : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
+                        )}
+                      >
+                        {item.label}
+                      </NavLink>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 opacity-0 group-hover/item:opacity-100 transition-all hover:bg-destructive/10 hover:text-destructive rounded-lg"
+                        onClick={() => toggleFavorite(item.path, item.label)}
+                      >
+                        <StarOff className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Recentes */}
+      {recentItems.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <button
+              onClick={() => setIsRecentOpen(!isRecentOpen)}
+              className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
+            >
+              <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
+                <Clock className="h-4 w-4" />
+              </div>
+              <span>Recentes</span>
+              <motion.div
+                animate={{ rotate: isRecentOpen ? 180 : 0 }}
+                transition={{ duration: 0.4, ease: "backOut" }}
+                className="opacity-40 group-hover:opacity-100"
+              >
+                <ChevronDown className="h-3.5 w-3.5" />
+              </motion.div>
+            </button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 opacity-30 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive rounded-md transition-all"
+              onClick={clearRecent}
+              title="Clear history"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+          
+          <AnimatePresence initial={false}>
+            {isRecentOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-0.5 pl-2">
+                  {recentItems.map(item => (
+                    <div key={item.path} className="flex items-center gap-1 group/item">
+                      <NavLink
+                        to={item.path}
+                        className={cn(
+                          'flex-1 px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium',
+                          location.pathname === item.path
+                            ? 'bg-accent text-accent-foreground'
+                            : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
+                        )}
+                      >
+                        {item.label}
+                      </NavLink>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          'h-7 w-7 opacity-0 group-hover/item:opacity-100 transition-all rounded-lg',
+                          isFavorite(item.path) && 'opacity-100'
+                        )}
+                        onClick={() => toggleFavorite(item.path, item.label)}
+                      >
+                        <Star
+                          className={cn(
+                            'h-3.5 w-3.5 transition-all',
+                            isFavorite(item.path)
+                              ? 'text-warning fill-warning'
+                              : 'text-muted-foreground/30 group-hover/item:text-warning'
+                          )}
+                        />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+    </div>
+  );
+}

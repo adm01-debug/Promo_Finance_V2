@@ -1,0 +1,5 @@
+{
+  "evento": "healthcheck.ping",
+  "dados": { "id": "HC_PLACEHOLDER" },
+  "healthcheck_run_id": "__RUN_ID__"
+}

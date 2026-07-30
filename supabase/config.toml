@@ -1,0 +1,120 @@
+project_id = "bwwbeyolnnzppeuhgkcd"
+
+[functions.analise-preditiva]
+verify_jwt = true
+
+[functions.executar-relatorios]
+verify_jwt = false
+
+[functions.bitrix24-sync]
+verify_jwt = true
+
+[functions.bitrix24-webhook]
+verify_jwt = false
+
+[functions.gerar-alertas]
+verify_jwt = false
+
+[functions.expert-agent]
+verify_jwt = false
+
+[functions.conciliacao-ia]
+verify_jwt = true
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.executar-analise-preditiva]
+verify_jwt = false
+
+[functions.analyze-document]
+verify_jwt = false
+
+[functions.open-finance]
+verify_jwt = true
+
+[functions.categorizar-despesa]
+verify_jwt = false
+
+[functions.enviar-alerta-email]
+verify_jwt = false
+
+[functions.analise-fluxo-ia]
+verify_jwt = false
+
+[functions.send-device-alert]
+verify_jwt = false
+
+[functions.get-vapid-key]
+verify_jwt = false
+
+[functions.whatsapp-ia-proativo]
+verify_jwt = false
+
+[functions.asaas-proxy]
+verify_jwt = false
+
+[functions.asaas-webhook]
+verify_jwt = false
+
+[functions.bling-proxy]
+verify_jwt = false
+
+[functions.bling-webhook]
+verify_jwt = false
+
+[functions.external-data]
+verify_jwt = false
+
+[functions.compare-schemas]
+verify_jwt = false
+
+[functions.insights-relatorio]
+verify_jwt = false
+
+[functions.benchmarking-setorial]
+verify_jwt = false
+
+[functions.gerar-alertas-tributarios]
+verify_jwt = false
+
+[functions.gerar-pdf-tributario]
+verify_jwt = false
+
+[functions.enviar-bitrix24-tributario]
+verify_jwt = false
+
+[functions.decidir-regime]
+verify_jwt = false
+
+[functions.cnpja-lookup]
+verify_jwt = false
+
+[functions.validar-token-contador]
+verify_jwt = false
+
+[functions.sso-initiate]
+verify_jwt = false
+
+[functions.sso-callback]
+verify_jwt = false
+
+[functions.sso-logout]
+verify_jwt = false
+
+[functions.scim-server]
+verify_jwt = false
+
+[functions.validate-ip-geo]
+verify_jwt = false
+
+[functions.sefaz-dfe-dispatcher]
+verify_jwt = false
+
+[functions.sefaz-dfe-puxar]
+verify_jwt = false
+
+
+[functions.migrate-helper]
+verify_jwt = false
+

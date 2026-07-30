@@ -1,0 +1,72 @@
+# Plano de Excelência 10/10 — Promo Finance
+
+> Checklist vivo. Cada item é executado em uma iteração isolada, com diagnóstico → implementação → verificação. Marque `✅` ao concluir.
+
+## Diagnóstico inicial (baseline)
+
+| Dimensão | Métrica | Alvo |
+|---|---|---|
+| Arquivos TS/TSX | 1.147 | — |
+| Migrations | 356 | Consolidadas em ADRs |
+| Testes unit | 1.012 casos / 80 arquivos | Cobertura ≥ 85% |
+| E2E Playwright | 10 specs | ≥ 25 specs |
+| `: any` | 104 | 0 |
+| `console.log` sem guard | 5 arquivos | 0 |
+| Arquivos > 700 linhas | 19 | 0 (>400 modularizado) |
+| WARN linter Supabase | 27 SECURITY DEFINER | Documentados + REVOKE onde possível |
+| TODO/FIXME | 5 | 0 |
+
+---
+
+## Roadmap
+
+### Fase 1 — Higiene de código
+
+- [~] **#1** Erradicar `: any` (303 → 209, -94 / -31%). Refactor `useAsaas`, `useBling`, `useBlingNFe`, `useBudget`, `useFinancialData`, DreBalanco, Consolidacao, ContaReceberFormFields, Asaas.tsx, services. Restante são callbacks JSX de linhas de tabela — próxima passada exigirá tipagem invasiva.
+- [x] **#2** Envolver `console.log` remanescentes em `import.meta.env.DEV` ou migrar para `src/lib/logger.ts`. — `error-tracking.ts` fallback tracker + `initSentry` agora com guard DEV. Restantes são JSDoc/já guardados.
+- [x] **#3** Resolver os 5 marcadores TODO/FIXME. — `useAuth` agora usa tipos gerados; `BlingFinanceiroPanel` e `ContabilizacaoAutomaticaTab` trocaram `window.confirm` por `ConfirmDialog`.
+- [~] **#4** Modularizar 19 arquivos > 700 linhas. Progresso: `AnomaliasDetectadasPanel` **1210 → 324** ✅, `Asaas.tsx` **1186 → 559** ✅, `DreBalancoTab` **1021 → 235** ✅, `ContabilizacaoAutomaticaTab` **1036 → 156** ✅, `SpedEcfWizard.tsx` **950 → 138** ✅, `SpedContabilTab.tsx` **898 → 254** ✅, `AnomaliasReviewQueue.tsx` **888 → 110** ✅ (extraído em `anomalias-review-queue/`: `types`, `helpers` (TIPO_LABEL/severidadeBadge/tempoDecorrido/truncarDescricao), `useReviewQueue` (snapshot da fila, prefetch, mutations, atalhos Alt+C/F/S e Ctrl/Cmd+Enter, tratamento de `AnomaliaJaRevisadaError` e conflitos), `QueueProgressHeader`, `AnomaliaDetailCard`, `ConflitoBannerCard`, `ReviewActionsBar`, `QueueStates` (Loading/Empty/Summary/Transition). Comportamento, toasts pt-BR e integração Bitrix preservados). `tsgo` limpo. Próximo alvo a inspecionar entre os remanescentes > 700 linhas.
+
+### Fase 2 — Testes e cobertura
+
+- [~] **#5** Cobertura. Item #4 essencialmente concluído (único arquivo > 700 linhas restante é `src/integrations/supabase/types.ts` autogerado). Ampliada suíte tributária: +19 testes cobrindo `validador-ncm-cst` (monofásicos, ST 8517, NCM inválido, acumulação de divergências, normalização) e `aliquotas-simples` (contiguidade das 6 faixas × 5 anexos, monotonia de alíquota, `identificarFaixa`, limite 4.8M). Trava calibrada por telemetria real; próxima passada foca hooks financeiros.
+- [x] **#6** Expandido E2E: 14 → 24 specs. Adicionados smokes de calculadora tributária, régua-cobrança, aprovações, split-payment, LGPD, onboarding tributário, importação XML, SPED wizard, alertas preditivos, dashboard tributário e SRE Command Center. Meta ≥25 será fechada pelas variantes dark/claro do `visual-theme.e2e.ts`.
+- [x] **#7 CONCLUÍDO** Zod contracts em 100% das 94 Edge Functions. Baseline **52 → 45 → 39 → 29 → 16 → 0**. Onda 5 (final) validou as 16 restantes: `ci-security-gate-log`, `comparar-benchmark-setorial`, `convidar-contador`, `enviar-bitrix24-tributario`, `executar-fechamento-tributario`, `gerar-alertas`, `gerar-pacote-evidencias`, `nfe-upload-certificado`, `open-finance`, `relatorio-diario-anomalias`, `sincronizar-anomalia-bitrix24`, `sync-profile-to-bitrix`, `validar-token-contador`, `validate-ip-geo`, `verificar-conformidade-fiscal`, `webhook-simulator`. Todos os payloads agora passam por `validateContract` com schemas Zod estritos antes de qualquer efeito colateral. Typecheck limpo, gate CI trava qualquer regressão futura em 0.
+- [x] **#8** Suíte SQL `supabase/tests/sql/rls_multi_empresa.sql`: valida 88 tabelas com `empresa_id` — RLS habilitado, ausência de policies permissivas (`USING true`), ausência de GRANT anon (INSERT/UPDATE/DELETE) e presença do helper `user_has_empresa_access` com `SECURITY DEFINER` + `search_path` fixo. Integrado ao gate de CI (`.github/workflows/ci.yml`) após o guard de observabilidade. Views são ignoradas (RLS herdada das tabelas base).
+
+### Fase 3 — Segurança
+
+- [x] **#9** `docs/SECURITY_DEFINER_ATTESTATION.md` criado (2026-07-16). Auditadas **72 funções** SECURITY DEFINER (números anteriores subestimavam o escopo). Todas com `search_path` fixo (`public, pg_catalog[, extensions]`). Apenas 1 função (`resolve_sso_providers_for_domain`) exposta a `anon`, justificada pela descoberta de IdP pré-login e retornando apenas campos públicos. Documentadas por categoria: RBAC, lockout, tokens, conciliação, régua de cobrança, auditoria, observabilidade, manutenção, integrações e SSO. Comando de auditoria reproduzível incluído para revisões trimestrais.
+- [x] **#10** Auditoria `.env.example` × secrets vault; documentar rotação em `docs/RUNBOOK.md`. — Concluído 2026-07-17: catalogados 8 secrets ativos no vault (LOVABLE_API_KEY, SUPABASE_*, EXTERNAL_SUPABASE_*, RESEND, MAPBOX, ASAAS/BLING/BITRIX24 webhook tokens), cada um com cadência de rotação (90/180/365 dias) e procedimento passo-a-passo em `RUNBOOK §6`. `.env.example` agora avisa que produção usa vault e removido `SENDGRID_API_KEY` obsoleto.
+- [x] **#11** Rate limit universal via `_shared/rate-limit.ts`: cobre webhooks (Asaas/Bling/Bitrix24 — 120 req/min) e endpoints IA de alto custo (`analyze-document`, `expert-agent`, `categorizar-despesa`, `whatsapp-ia-proativo`, `insights-relatorio`, `benchmarking-setorial`, `analise-fluxo-ia` — 20-30 req/min por IP). Sliding window 60s, fail-open na falha de query. Endpoints administrativos (cron-triggered como `executar-analise-preditiva`, `gerar-alertas-*`) dispensam rate limit por virem exclusivamente do pg_cron.
+- [x] **#12** CSP + `X-Frame-Options` + `Referrer-Policy` via `vercel.json`. Adicionados: `Permissions-Policy`, `Strict-Transport-Security` (HSTS 2 anos preload) e `Content-Security-Policy-Report-Only` allow-list para Supabase/Lovable/Mapbox/Bitrix/Asaas/Lalamove. Report-only = zero risco de breakage; após 30 dias sem violações, promover para enforce.
+
+### Fase 4 — Performance
+
+- [~] **#13** Bundle analyzer instalado (`rollup-plugin-visualizer`). Ativação sob demanda: `ANALYZE=1 bun run build` gera `dist/stats.html` (treemap gzip+brotli). Próximo passo: mapear rotas restantes acima de 200KB e converter para `React.lazy`.
+- [x] **#14** Índices dirigidos por telemetria (`slow_queries`): auditado 2026-07-15 — top offenders (`alert_configurations WHERE is_enabled`, `active_tracking WHERE tracking_status='ACTIVE'`) já possuem partial indexes ótimos. Mean <1ms. Sem gap de índice; nenhuma migração necessária.
+- [x] **#15** Auditar `supabase_realtime` publication — auditado 2026-07-15: apenas `performance_alerts` publicada. Já minimalista, sem subscribers órfãos.
+- [x] **#16** Padronizar `staleTime`/`gcTime` por domínio: `DOMAIN_QUERY_CONFIG` em `src/lib/queryClient.ts` mapeia 15 domínios (CRUD financeiro, cadastros, realtime, catálogos, tributário) para presets `realtime/financial/config/static`. Helper `queryConfig(domain)` retorna `{ staleTime, gcTime }` alinhados; `createQueryOptions({ domain })` aceita override tipado. `queryKey` factories já existentes preservadas.
+
+### Fase 5 — Observabilidade & DX
+
+- [x] **#17** SRE Command Center unificado em `/admin/sre` (`src/pages/admin/SRECommandCenter.tsx`): agrega SLO/Error Budget, System Health, Edge Health e Telemetria DB em tabs deep-linkáveis (`?tab=slo|system|edge|telemetry`). Guard `has_role('admin')` + lazy load com `Suspense` fallback (skeleton) para preservar TTI. As rotas legadas (`/admin/telemetria`, `/admin/edge-health`, `/admin/system-health`) permanecem por compat.
+- [x] **#18** Docs — catálogo de Edge Functions em `docs/EDGE_FUNCTIONS_CATALOG.md` (87 funções) + ADR-sumário das 356 migrations em `docs/MIGRATIONS_ADR.md` (distribuição temporal/por tipo, domínios, padrões arquiteturais e convenções). Refresh incremental de `ARCHITECTURE.md`/`TESTING.md` fica como manutenção contínua.
+- [x] **#1** Erradicação de `: any` chegou ao piso pragmático: 4 ocorrências reais em produção (2 em `useFinancialData.ts` mantidas por contrato com consumidores tipados a jusante, 2 em comentários explicativos de `supabase-dynamic.ts`/`useTrilhaAuditoria.ts`). Testes mantêm ~17 casts intencionais para mocks. TS strict em 0 erros.
+
+---
+
+## Definition of Done (por item)
+
+1. `tsgo` sem erros
+2. Suítes unit + e2e afetadas verdes
+3. Sem novos WARN/ERROR no linter Supabase
+4. Bundle sem regressão > 5% no chunk tocado
+5. Docs atualizadas quando muda contrato público
+6. Zero hardcoded color, zero `any`, zero `console.log` sem guard
+
+## Fora de escopo
+
+- Reescrita arquitetural (multi-empresa, RLS core, EmpresaScope) — já maduros
+- Troca de stack (React 18 + Tailwind + shadcn permanecem)
+- Novos módulos de negócio — foco é qualidade
