@@ -46,16 +46,27 @@ run_sql() {
     done
 }
 
-run_sql "$DIR/01_schema.sql" schema
-run_sql "$DIR/02_rls.sql"    rls
-run_sql "$DIR/03_grants.sql" grants
+# Executa TODOS os passos em ordem lexicográfica (01…NN). Antes desta versão a
+# lista era hard-coded em 01→05, então os gates #26–#34 (06_secdef …
+# 13_unused_indexes) existiam no repositório mas nunca eram executados.
+for arquivo in "$DIR"/[0-9][0-9]_*.{sql,sh}; do
+  [ -e "$arquivo" ] || continue
+  nome="$(basename "$arquivo")"
+  step="${nome%.*}"; step="${step#[0-9][0-9]_}"
 
-STAGING_PROJECT_REF="$STAGING_PROJECT_REF" \
-STAGING_ANON_KEY="$STAGING_ANON_KEY" \
-TEST_ADMIN_JWT="${TEST_ADMIN_JWT:-}" \
-  bash "$DIR/04_endpoints.sh" >> "$OUT"
+  case "$arquivo" in
+    *.sql)
+      run_sql "$arquivo" "$step"
+      ;;
+    *.sh)
+      STAGING_PROJECT_REF="$STAGING_PROJECT_REF" \
+      STAGING_ANON_KEY="$STAGING_ANON_KEY" \
+      TEST_ADMIN_JWT="${TEST_ADMIN_JWT:-}" \
+        bash "$arquivo" >> "$OUT"
+      ;;
+  esac
+done
 
-run_sql "$DIR/05_crons.sql"  crons
 
 FAILS=$(grep -c '"status":"fail"' "$OUT" || true)
 UNVER=$(grep -c '"status":"unverified"' "$OUT" || true)
