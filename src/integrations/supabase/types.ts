@@ -15294,6 +15294,42 @@ export type Database = {
           },
         ]
       }
+      retencao_politicas: {
+        Row: {
+          ativo: boolean
+          coluna: string | null
+          created_at: string
+          dias: number | null
+          filtro: string | null
+          id: string
+          motivo: string
+          tabela: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          coluna?: string | null
+          created_at?: string
+          dias?: number | null
+          filtro?: string | null
+          id?: string
+          motivo: string
+          tabela: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          coluna?: string | null
+          created_at?: string
+          dias?: number | null
+          filtro?: string | null
+          id?: string
+          motivo?: string
+          tabela?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       retencoes_fonte: {
         Row: {
           aliquota: number
@@ -20304,6 +20340,14 @@ export type Database = {
           indice: string
           tabela: string
           tamanho_kb: number
+        }[]
+      }
+      gate_35_tabelas_sem_retencao: {
+        Args: never
+        Returns: {
+          coluna_temporal: string
+          tabela: string
+          tamanho: string
         }[]
       }
       generate_reconciliation_suggestions: {
