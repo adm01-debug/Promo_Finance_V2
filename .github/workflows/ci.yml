@@ -76,6 +76,25 @@ jobs:
           fi
           echo "✅ Catálogos tributários íntegros."
 
+      - name: Gate #35 — Governança de retenção de dados
+        # Falha o build se alguma tabela de log/histórico/telemetria com coluna
+        # temporal for criada sem política em public.retencao_politicas (TTL ou
+        # isenção justificada), ou se uma política existente apontar para uma
+        # coluna temporal inexistente.
+        if: ${{ env.DATABASE_URL != '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+            -f scripts/integrity/14_retencao.sql 2>&1 | tee retencao.tsv
+          if grep -qP '\tfail\t' retencao.tsv; then
+            echo "::error::Gate #35 reprovado — tabela de log sem política de retenção."
+            grep -P '\tfail\t' retencao.tsv
+            exit 1
+          fi
+          echo "✅ Gate #35 aprovado."
+
 
       - name: Runtime RPC privilege matrix (anon / authenticated / service_role)
         # Invoca cada RPC nfe_* e conciliacao_* via /rest/v1/rpc/<fn> com três
