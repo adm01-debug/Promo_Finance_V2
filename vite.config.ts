@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from 'lovable-tagger';
 import { visualizer } from 'rollup-plugin-visualizer';
+import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
 
 /**
  * Valida que as variáveis VITE_SUPABASE_* estão presentes em builds de produção.
@@ -42,7 +43,7 @@ export default defineConfig(({ mode }) => {
   assertSupabaseEnv(mode, env);
   return {
 
-  plugins: [
+  plugins: [dyadComponentTagger(), 
     react(),
     mode === 'development' && componentTagger(),
     // Analisador de bundle sob demanda: `ANALYZE=1 bun run build`
