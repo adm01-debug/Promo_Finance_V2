@@ -249,7 +249,7 @@ export function useBulkActions<T extends { id: string }>({
           const ids = selectedItems.map(getItemId);
           const { error } = await supabase
             .from(tableName)
-            .update({ status: 'pago' as string })
+            .update({ status: 'pago' } as never)
             .in('id', ids);
           if (error) throw error;
         },

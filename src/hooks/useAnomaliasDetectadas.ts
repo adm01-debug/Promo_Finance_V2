@@ -63,7 +63,7 @@ export function useAnomaliasDetectadas(filtroStatus?: Anomalia["status"]) {
       status: Anomalia["status"];
       observacoes?: string;
     }) => {
-      const update: Record<string, unknown> = {
+      const update: { status: Anomalia["status"]; observacoes: string | null; resolvida_em?: string } = {
         status: input.status,
         observacoes: input.observacoes ?? null,
       };

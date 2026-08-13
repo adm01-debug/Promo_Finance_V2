@@ -744,6 +744,16 @@ export type Database = {
           tipo: string | null
           titulo: string
           valor: number | null
+          user_id: string | null
+          data_lembrete: string | null
+          entidade_tipo: string | null
+          entidade_id: string | null
+          competencia: string | null
+          resolvido_em: string | null
+          resolvido_por: string | null
+          acao_url: string | null
+          acao_label: string | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
@@ -759,6 +769,16 @@ export type Database = {
           tipo?: string | null
           titulo: string
           valor?: number | null
+          user_id?: string | null
+          data_lembrete?: string | null
+          entidade_tipo?: string | null
+          entidade_id?: string | null
+          competencia?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          acao_url?: string | null
+          acao_label?: string | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
@@ -774,6 +794,16 @@ export type Database = {
           tipo?: string | null
           titulo?: string
           valor?: number | null
+          user_id?: string | null
+          data_lembrete?: string | null
+          entidade_tipo?: string | null
+          entidade_id?: string | null
+          competencia?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          acao_url?: string | null
+          acao_label?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -1285,6 +1315,7 @@ export type Database = {
           tipo_anomalia: string | null
           titulo: string | null
           user_id: string | null
+          centro_custo_id: string | null
         }
         Insert: {
           acoes_disponiveis?: string[] | null
@@ -1298,6 +1329,7 @@ export type Database = {
           tipo_anomalia?: string | null
           titulo?: string | null
           user_id?: string | null
+          centro_custo_id?: string | null
         }
         Update: {
           acoes_disponiveis?: string[] | null
@@ -1311,6 +1343,7 @@ export type Database = {
           tipo_anomalia?: string | null
           titulo?: string | null
           user_id?: string | null
+          centro_custo_id?: string | null
         }
         Relationships: [
           {
@@ -1462,25 +1495,25 @@ export type Database = {
       }
       aprovacao_comentarios: {
         Row: {
-          comentario: string | null
+          texto: string | null
           created_at: string | null
           id: string
           solicitacao_id: string | null
-          user_id: string | null
+          usuario_id: string | null
         }
         Insert: {
-          comentario?: string | null
+          texto?: string | null
           created_at?: string | null
           id?: string
           solicitacao_id?: string | null
-          user_id?: string | null
+          usuario_id?: string | null
         }
         Update: {
-          comentario?: string | null
+          texto?: string | null
           created_at?: string | null
           id?: string
           solicitacao_id?: string | null
-          user_id?: string | null
+          usuario_id?: string | null
         }
         Relationships: []
       }
@@ -1745,6 +1778,9 @@ export type Database = {
           total_tributos_residuais: number | null
           updated_at: string | null
           valor_total: number | null
+          created_by: string | null
+          data_transmissao: string | null
+          protocolo_transmissao: string | null
         }
         Insert: {
           ano?: number | null
@@ -1784,6 +1820,9 @@ export type Database = {
           total_tributos_residuais?: number | null
           updated_at?: string | null
           valor_total?: number | null
+          created_by?: string | null
+          data_transmissao?: string | null
+          protocolo_transmissao?: string | null
         }
         Update: {
           ano?: number | null
@@ -1823,6 +1862,9 @@ export type Database = {
           total_tributos_residuais?: number | null
           updated_at?: string | null
           valor_total?: number | null
+          created_by?: string | null
+          data_transmissao?: string | null
+          protocolo_transmissao?: string | null
         }
         Relationships: [
           {
@@ -4997,6 +5039,10 @@ export type Database = {
           user_id: string | null
           valor: number
           valor_pago: number | null
+          tags: string[] | null
+          aprovado_em: string | null
+          data_emissao: string | null
+          created_by: string | null
         }
         Insert: {
           anexo_url?: string | null
@@ -5033,6 +5079,10 @@ export type Database = {
           user_id?: string | null
           valor: number
           valor_pago?: number | null
+          tags?: string[] | null
+          aprovado_em?: string | null
+          data_emissao?: string | null
+          created_by?: string | null
         }
         Update: {
           anexo_url?: string | null
@@ -5069,6 +5119,10 @@ export type Database = {
           user_id?: string | null
           valor?: number
           valor_pago?: number | null
+          tags?: string[] | null
+          aprovado_em?: string | null
+          data_emissao?: string | null
+          created_by?: string | null
         }
         Relationships: [
           {
@@ -5184,6 +5238,11 @@ export type Database = {
           valor_desconto: number | null
           valor_recebido: number | null
           vendedor_id: string | null
+          valor_final: number | null
+          codigo_barras: string | null
+          link_boleto: string | null
+          created_by: string | null
+          frequencia_recorrencia: string | null
         }
         Insert: {
           anexo_url?: string | null
@@ -5225,6 +5284,11 @@ export type Database = {
           valor_desconto?: number | null
           valor_recebido?: number | null
           vendedor_id?: string | null
+          valor_final?: number | null
+          codigo_barras?: string | null
+          link_boleto?: string | null
+          created_by?: string | null
+          frequencia_recorrencia?: string | null
         }
         Update: {
           anexo_url?: string | null
@@ -5266,6 +5330,11 @@ export type Database = {
           valor_desconto?: number | null
           valor_recebido?: number | null
           vendedor_id?: string | null
+          valor_final?: number | null
+          codigo_barras?: string | null
+          link_boleto?: string | null
+          created_by?: string | null
+          frequencia_recorrencia?: string | null
         }
         Relationships: [
           {
@@ -5355,6 +5424,11 @@ export type Database = {
           user_id: string | null
           valor_mensal: number | null
           valor_total: number | null
+          cliente_id: string | null
+          fornecedor_id: string | null
+          dias_aviso_renovacao: number | null
+          observacoes: string | null
+          created_by: string | null
         }
         Insert: {
           created_at?: string | null
@@ -5370,6 +5444,11 @@ export type Database = {
           user_id?: string | null
           valor_mensal?: number | null
           valor_total?: number | null
+          cliente_id?: string | null
+          fornecedor_id?: string | null
+          dias_aviso_renovacao?: number | null
+          observacoes?: string | null
+          created_by?: string | null
         }
         Update: {
           created_at?: string | null
@@ -5385,6 +5464,11 @@ export type Database = {
           user_id?: string | null
           valor_mensal?: number | null
           valor_total?: number | null
+          cliente_id?: string | null
+          fornecedor_id?: string | null
+          dias_aviso_renovacao?: number | null
+          observacoes?: string | null
+          created_by?: string | null
         }
         Relationships: [
           {
@@ -5601,6 +5685,21 @@ export type Database = {
           tipo_tributo: string
           valor_credito: number | null
           valor_utilizado: number | null
+          tipo_credito: string
+          documento_tipo: string | null
+          documento_numero: string | null
+          documento_serie: string | null
+          documento_chave: string | null
+          fornecedor_id: string | null
+          fornecedor_cnpj: string | null
+          fornecedor_nome: string | null
+          valor_base: number
+          aliquota: number
+          competencia_utilizacao: string | null
+          apuracao_id: string | null
+          observacoes: string | null
+          created_by: string | null
+          updated_at: string | null
         }
         Insert: {
           competencia_origem?: string | null
@@ -5614,6 +5713,21 @@ export type Database = {
           tipo_tributo: string
           valor_credito?: number | null
           valor_utilizado?: number | null
+          tipo_credito?: string
+          documento_tipo?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_chave?: string | null
+          fornecedor_id?: string | null
+          fornecedor_cnpj?: string | null
+          fornecedor_nome?: string | null
+          valor_base?: number
+          aliquota?: number
+          competencia_utilizacao?: string | null
+          apuracao_id?: string | null
+          observacoes?: string | null
+          created_by?: string | null
+          updated_at?: string | null
         }
         Update: {
           competencia_origem?: string | null
@@ -5627,6 +5741,21 @@ export type Database = {
           tipo_tributo?: string
           valor_credito?: number | null
           valor_utilizado?: number | null
+          tipo_credito?: string
+          documento_tipo?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_chave?: string | null
+          fornecedor_id?: string | null
+          fornecedor_cnpj?: string | null
+          fornecedor_nome?: string | null
+          valor_base?: number
+          aliquota?: number
+          competencia_utilizacao?: string | null
+          apuracao_id?: string | null
+          observacoes?: string | null
+          created_by?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -8795,10 +8924,10 @@ export type Database = {
       frontend_error_logs: {
         Row: {
           created_at: string
-          error_message: string | null
-          error_stack: string | null
+          message: string | null
+          stack: string | null
           id: string
-          metadata: Json | null
+          context: Json | null
           severity: string
           url: string | null
           user_agent: string | null
@@ -8806,10 +8935,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
+          message?: string | null
+          stack?: string | null
           id?: string
-          metadata?: Json | null
+          context?: Json | null
           severity?: string
           url?: string | null
           user_agent?: string | null
@@ -8817,10 +8946,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          error_message?: string | null
-          error_stack?: string | null
+          message?: string | null
+          stack?: string | null
           id?: string
-          metadata?: Json | null
+          context?: Json | null
           severity?: string
           url?: string | null
           user_agent?: string | null
@@ -9436,6 +9565,8 @@ export type Database = {
           provider: string | null
           provider_message_id: string | null
           status: string | null
+          etapa_anterior: string | null
+          etapa_nova: string
         }
         Insert: {
           canal?: string | null
@@ -9453,6 +9584,8 @@ export type Database = {
           provider?: string | null
           provider_message_id?: string | null
           status?: string | null
+          etapa_anterior?: string | null
+          etapa_nova?: string
         }
         Update: {
           canal?: string | null
@@ -9470,6 +9603,8 @@ export type Database = {
           provider?: string | null
           provider_message_id?: string | null
           status?: string | null
+          etapa_anterior?: string | null
+          etapa_nova?: string
         }
         Relationships: [
           {
@@ -10214,6 +10349,7 @@ export type Database = {
           pedido_id: string
           quantidade: number
           valor_unitario: number
+          valor_total: number
         }
         Insert: {
           created_at?: string | null
@@ -10222,6 +10358,7 @@ export type Database = {
           pedido_id: string
           quantidade?: number
           valor_unitario?: number
+          valor_total?: number
         }
         Update: {
           created_at?: string | null
@@ -10230,6 +10367,7 @@ export type Database = {
           pedido_id?: string
           quantidade?: number
           valor_unitario?: number
+          valor_total?: number
         }
         Relationships: [
           {
@@ -10853,6 +10991,8 @@ export type Database = {
           titulo: string
           user_id: string | null
           valor_meta: number
+          created_by: string | null
+          updated_at: string | null
         }
         Insert: {
           ano: number
@@ -10865,6 +11005,8 @@ export type Database = {
           titulo: string
           user_id?: string | null
           valor_meta: number
+          created_by?: string | null
+          updated_at?: string | null
         }
         Update: {
           ano?: number
@@ -10877,6 +11019,8 @@ export type Database = {
           titulo?: string
           user_id?: string | null
           valor_meta?: number
+          created_by?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -10983,6 +11127,25 @@ export type Database = {
           id: string
           tipo: string | null
           valor: number
+          conta_bancaria_id: string | null
+          conta_pagar_id: string | null
+          conta_receber_id: string | null
+          transferencia_id: string | null
+          data_competencia: string | null
+          categoria_id: string | null
+          centro_custo_id: string | null
+          forma_pagamento_id: string | null
+          numero_documento: string | null
+          observacoes: string | null
+          conciliada: boolean | null
+          conciliada_em: string | null
+          conciliada_por: string | null
+          estornada: boolean | null
+          estornada_em: string | null
+          movimentacao_estorno_id: string | null
+          origem: string | null
+          created_by: string | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
@@ -10993,6 +11156,25 @@ export type Database = {
           id?: string
           tipo?: string | null
           valor?: number
+          conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          transferencia_id?: string | null
+          data_competencia?: string | null
+          categoria_id?: string | null
+          centro_custo_id?: string | null
+          forma_pagamento_id?: string | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          conciliada?: boolean | null
+          conciliada_em?: string | null
+          conciliada_por?: string | null
+          estornada?: boolean | null
+          estornada_em?: string | null
+          movimentacao_estorno_id?: string | null
+          origem?: string | null
+          created_by?: string | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
@@ -11003,6 +11185,25 @@ export type Database = {
           id?: string
           tipo?: string | null
           valor?: number
+          conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          transferencia_id?: string | null
+          data_competencia?: string | null
+          categoria_id?: string | null
+          centro_custo_id?: string | null
+          forma_pagamento_id?: string | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          conciliada?: boolean | null
+          conciliada_em?: string | null
+          conciliada_por?: string | null
+          estornada?: boolean | null
+          estornada_em?: string | null
+          movimentacao_estorno_id?: string | null
+          origem?: string | null
+          created_by?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -11229,6 +11430,10 @@ export type Database = {
           protocolo: string | null
           status: string
           valor: number
+          created_by: string | null
+          observacoes: string | null
+          data_inclusao: string | null
+          data_exclusao: string | null
         }
         Insert: {
           bureau?: string | null
@@ -11243,6 +11448,10 @@ export type Database = {
           protocolo?: string | null
           status?: string
           valor: number
+          created_by?: string | null
+          observacoes?: string | null
+          data_inclusao?: string | null
+          data_exclusao?: string | null
         }
         Update: {
           bureau?: string | null
@@ -11257,6 +11466,10 @@ export type Database = {
           protocolo?: string | null
           status?: string
           valor?: number
+          created_by?: string | null
+          observacoes?: string | null
+          data_inclusao?: string | null
+          data_exclusao?: string | null
         }
         Relationships: [
           {
@@ -11556,6 +11769,8 @@ export type Database = {
           valor_produtos: number | null
           valor_total: number | null
           xml_url: string | null
+          natureza_operacao: string | null
+          created_by: string | null
         }
         Insert: {
           chave_acesso?: string | null
@@ -11574,6 +11789,8 @@ export type Database = {
           valor_produtos?: number | null
           valor_total?: number | null
           xml_url?: string | null
+          natureza_operacao?: string | null
+          created_by?: string | null
         }
         Update: {
           chave_acesso?: string | null
@@ -11592,6 +11809,8 @@ export type Database = {
           valor_produtos?: number | null
           valor_total?: number | null
           xml_url?: string | null
+          natureza_operacao?: string | null
+          created_by?: string | null
         }
         Relationships: [
           {
@@ -12593,6 +12812,8 @@ export type Database = {
           numero_parcela: number
           status: string | null
           valor: number
+          data_pagamento: string | null
+          valor_pago: number | null
         }
         Insert: {
           acordo_id?: string | null
@@ -12602,6 +12823,8 @@ export type Database = {
           numero_parcela: number
           status?: string | null
           valor: number
+          data_pagamento?: string | null
+          valor_pago?: number | null
         }
         Update: {
           acordo_id?: string | null
@@ -12611,6 +12834,8 @@ export type Database = {
           numero_parcela?: number
           status?: string | null
           valor?: number
+          data_pagamento?: string | null
+          valor_pago?: number | null
         }
         Relationships: [
           {
@@ -12758,6 +12983,9 @@ export type Database = {
           previsao_entrega: string | null
           status: string
           valor_total: number
+          user_id: string
+          centro_custo_id: string | null
+          data_entrega_prevista: string | null
         }
         Insert: {
           created_at?: string | null
@@ -12769,6 +12997,9 @@ export type Database = {
           previsao_entrega?: string | null
           status?: string
           valor_total?: number
+          user_id?: string
+          centro_custo_id?: string | null
+          data_entrega_prevista?: string | null
         }
         Update: {
           created_at?: string | null
@@ -12780,6 +13011,9 @@ export type Database = {
           previsao_entrega?: string | null
           status?: string
           valor_total?: number
+          user_id?: string
+          centro_custo_id?: string | null
+          data_entrega_prevista?: string | null
         }
         Relationships: [
           {
@@ -13656,6 +13890,11 @@ export type Database = {
           numero_protesto: string | null
           status: string
           valor: number
+          created_by: string | null
+          observacoes: string | null
+          data_pagamento: string | null
+          data_protocolo: string | null
+          protocolo: string | null
         }
         Insert: {
           cartorio?: string | null
@@ -13672,6 +13911,11 @@ export type Database = {
           numero_protesto?: string | null
           status?: string
           valor: number
+          created_by?: string | null
+          observacoes?: string | null
+          data_pagamento?: string | null
+          data_protocolo?: string | null
+          protocolo?: string | null
         }
         Update: {
           cartorio?: string | null
@@ -13688,6 +13932,11 @@ export type Database = {
           numero_protesto?: string | null
           status?: string
           valor?: number
+          created_by?: string | null
+          observacoes?: string | null
+          data_pagamento?: string | null
+          data_protocolo?: string | null
+          protocolo?: string | null
         }
         Relationships: [
           {
@@ -14157,6 +14406,7 @@ export type Database = {
           reducao_cbs: number | null
           reducao_ibs: number | null
           regime_nome: string
+          reducao_aliquota: number
         }
         Insert: {
           ativo?: boolean | null
@@ -14167,6 +14417,7 @@ export type Database = {
           reducao_cbs?: number | null
           reducao_ibs?: number | null
           regime_nome: string
+          reducao_aliquota?: number
         }
         Update: {
           ativo?: boolean | null
@@ -14177,6 +14428,7 @@ export type Database = {
           reducao_cbs?: number | null
           reducao_ibs?: number | null
           regime_nome?: string
+          reducao_aliquota?: number
         }
         Relationships: [
           {
@@ -15881,6 +16133,7 @@ export type Database = {
           provider_id: string | null
           token_hash: string
           token_prefix: string
+          default_role: string | null
         }
         Insert: {
           ativo?: boolean
@@ -15894,6 +16147,7 @@ export type Database = {
           provider_id?: string | null
           token_hash: string
           token_prefix: string
+          default_role?: string | null
         }
         Update: {
           ativo?: boolean
@@ -15907,6 +16161,7 @@ export type Database = {
           provider_id?: string | null
           token_hash?: string
           token_prefix?: string
+          default_role?: string | null
         }
         Relationships: [
           {
@@ -17472,6 +17727,9 @@ export type Database = {
           status: string
           tipo: string
           valor: number
+          conciliacao_parcial: boolean | null
+          valor_conciliado: number | null
+          conciliada_em: string | null
         }
         Insert: {
           categoria_id?: string | null
@@ -17496,6 +17754,9 @@ export type Database = {
           status?: string
           tipo: string
           valor: number
+          conciliacao_parcial?: boolean | null
+          valor_conciliado?: number | null
+          conciliada_em?: string | null
         }
         Update: {
           categoria_id?: string | null
@@ -17520,6 +17781,9 @@ export type Database = {
           status?: string
           tipo?: string
           valor?: number
+          conciliacao_parcial?: boolean | null
+          valor_conciliado?: number | null
+          conciliada_em?: string | null
         }
         Relationships: [
           {
@@ -17547,6 +17811,35 @@ export type Database = {
           tipo: string | null
           user_id: string | null
           valor: number
+          conta_bancaria_id: string | null
+          conta_pagar_id: string | null
+          taxa: number | null
+          valor_liquido: number | null
+          data_efetivacao: string | null
+          tipo_chave_pix: string | null
+          favorecido_cpf_cnpj: string | null
+          favorecido_banco: string | null
+          favorecido_agencia: string | null
+          favorecido_conta: string | null
+          favorecido_tipo_conta: string | null
+          codigo_barras: string | null
+          linha_digitavel: string | null
+          comprovante_url: string | null
+          protocolo: string | null
+          asaas_transfer_id: string | null
+          asaas_status: string | null
+          erro_mensagem: string | null
+          observacoes: string | null
+          aprovado_por: string | null
+          aprovado_em: string | null
+          cancelado_por: string | null
+          cancelado_em: string | null
+          motivo_cancelamento: string | null
+          movimentacao_id: string | null
+          numero_documento: string | null
+          origem: string | null
+          created_by: string | null
+          updated_at: string | null
         }
         Insert: {
           chave_pix?: string | null
@@ -17563,6 +17856,35 @@ export type Database = {
           tipo?: string | null
           user_id?: string | null
           valor: number
+          conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
+          taxa?: number | null
+          valor_liquido?: number | null
+          data_efetivacao?: string | null
+          tipo_chave_pix?: string | null
+          favorecido_cpf_cnpj?: string | null
+          favorecido_banco?: string | null
+          favorecido_agencia?: string | null
+          favorecido_conta?: string | null
+          favorecido_tipo_conta?: string | null
+          codigo_barras?: string | null
+          linha_digitavel?: string | null
+          comprovante_url?: string | null
+          protocolo?: string | null
+          asaas_transfer_id?: string | null
+          asaas_status?: string | null
+          erro_mensagem?: string | null
+          observacoes?: string | null
+          aprovado_por?: string | null
+          aprovado_em?: string | null
+          cancelado_por?: string | null
+          cancelado_em?: string | null
+          motivo_cancelamento?: string | null
+          movimentacao_id?: string | null
+          numero_documento?: string | null
+          origem?: string | null
+          created_by?: string | null
+          updated_at?: string | null
         }
         Update: {
           chave_pix?: string | null
@@ -17579,6 +17901,35 @@ export type Database = {
           tipo?: string | null
           user_id?: string | null
           valor?: number
+          conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
+          taxa?: number | null
+          valor_liquido?: number | null
+          data_efetivacao?: string | null
+          tipo_chave_pix?: string | null
+          favorecido_cpf_cnpj?: string | null
+          favorecido_banco?: string | null
+          favorecido_agencia?: string | null
+          favorecido_conta?: string | null
+          favorecido_tipo_conta?: string | null
+          codigo_barras?: string | null
+          linha_digitavel?: string | null
+          comprovante_url?: string | null
+          protocolo?: string | null
+          asaas_transfer_id?: string | null
+          asaas_status?: string | null
+          erro_mensagem?: string | null
+          observacoes?: string | null
+          aprovado_por?: string | null
+          aprovado_em?: string | null
+          cancelado_por?: string | null
+          cancelado_em?: string | null
+          motivo_cancelamento?: string | null
+          movimentacao_id?: string | null
+          numero_documento?: string | null
+          origem?: string | null
+          created_by?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -18063,6 +18414,7 @@ export type Database = {
           screen_id: string | null
           updated_at: string | null
           user_id: string
+          empresa_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -18074,6 +18426,7 @@ export type Database = {
           screen_id?: string | null
           updated_at?: string | null
           user_id: string
+          empresa_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -18085,6 +18438,7 @@ export type Database = {
           screen_id?: string | null
           updated_at?: string | null
           user_id?: string
+          empresa_id?: string | null
         }
         Relationships: []
       }
@@ -18687,6 +19041,8 @@ export type Database = {
           response: Json | null
           source: string | null
           status: string | null
+          provider: string | null
+          erro_mensagem: string | null
         }
         Insert: {
           attempts?: number
@@ -18705,6 +19061,8 @@ export type Database = {
           response?: Json | null
           source?: string | null
           status?: string | null
+          provider?: string | null
+          erro_mensagem?: string | null
         }
         Update: {
           attempts?: number
@@ -18723,6 +19081,8 @@ export type Database = {
           response?: Json | null
           source?: string | null
           status?: string | null
+          provider?: string | null
+          erro_mensagem?: string | null
         }
         Relationships: [
           {
@@ -19012,6 +19372,13 @@ export type Database = {
           tipo: string | null
           user_id: string | null
           valor: number | null
+          nome_arquivo: string
+          hash_arquivo: string | null
+          data_inicio: string | null
+          data_fim: string | null
+          total_transacoes: number | null
+          metadados: Json | null
+          created_by: string | null
         }
         Insert: {
           arquivo_origem?: string | null
@@ -19032,6 +19399,13 @@ export type Database = {
           tipo?: string | null
           user_id?: string | null
           valor?: number | null
+          nome_arquivo?: string
+          hash_arquivo?: string | null
+          data_inicio?: string | null
+          data_fim?: string | null
+          total_transacoes?: number | null
+          metadados?: Json | null
+          created_by?: string | null
         }
         Update: {
           arquivo_origem?: string | null
@@ -19052,6 +19426,13 @@ export type Database = {
           tipo?: string | null
           user_id?: string | null
           valor?: number | null
+          nome_arquivo?: string
+          hash_arquivo?: string | null
+          data_inicio?: string | null
+          data_fim?: string | null
+          total_transacoes?: number | null
+          metadados?: Json | null
+          created_by?: string | null
         }
         Relationships: [
           {

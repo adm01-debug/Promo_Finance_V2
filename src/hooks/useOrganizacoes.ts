@@ -256,7 +256,7 @@ export function useAtualizarMembro(organizacaoId: string | null) {
 
       const { error } = await supabase
         .from('organizacao_membros')
-        .update(patch)
+        .update(patch as never)
         .eq('id', input.membro.id);
       if (error) throw error;
     },

@@ -46,3 +46,10 @@ combined_part*.sql
 .env.test
 .env.test.local
 !.env.example
+.dyad/
+
+# Playwright test artifacts
+/test-results/
+/playwright-report/
+/playwright/.cache/
+.last-run.json

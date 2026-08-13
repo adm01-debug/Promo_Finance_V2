@@ -44,7 +44,7 @@ export function useUpdateContrato() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...data }: { id: string; [key: string]: unknown }) => {
-      const { error } = await supabase.from('contratos').update(data).eq('id', id);
+      const { error } = await supabase.from('contratos').update(data as never).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['contratos'] }); toast.success('Contrato atualizado!'); },
