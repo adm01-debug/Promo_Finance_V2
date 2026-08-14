@@ -1,4 +1,3 @@
-
 // HOOK: ALERTAS TRIBUTÁRIOS EM TEMPO REAL
 // Monitoramento de prazos e compliance
 
@@ -8,18 +7,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format, differenceInDays, parseISO } from 'date-fns';
 
-export type TipoAlerta = 
-  | 'vencimento_apuracao' 
-  | 'vencimento_darf' 
+export type TipoAlerta =
+  | 'vencimento_apuracao'
+  | 'vencimento_darf'
   | 'vencimento_obrigacao'
-  | 'prazo_credito' 
-  | 'limite_compensacao' 
+  | 'prazo_credito'
+  | 'limite_compensacao'
   | 'pendencia_conciliacao'
-  | 'inconsistencia_fiscal' 
-  | 'atualizacao_legislacao' 
+  | 'inconsistencia_fiscal'
+  | 'atualizacao_legislacao'
   | 'split_payment'
-  | 'retencao_pendente' 
-  | 'nfe_rejeitada' 
+  | 'retencao_pendente'
+  | 'nfe_rejeitada'
   | 'saldo_negativo';
 
 export type PrioridadeAlerta = 'baixa' | 'media' | 'alta' | 'critica';
@@ -47,11 +46,14 @@ export interface AlertaTributario {
 }
 
 // Ícones e cores por tipo
-export const ALERTA_CONFIG: Record<TipoAlerta, { 
-  icone: string; 
-  cor: string; 
-  label: string;
-}> = {
+export const ALERTA_CONFIG: Record<
+  TipoAlerta,
+  {
+    icone: string;
+    cor: string;
+    label: string;
+  }
+> = {
   vencimento_apuracao: { icone: 'Calculator', cor: 'blue', label: 'Apuração' },
   vencimento_darf: { icone: 'FileText', cor: 'red', label: 'DARF' },
   vencimento_obrigacao: { icone: 'FileCheck', cor: 'orange', label: 'Obrigação' },
@@ -71,13 +73,14 @@ export function useAlertasTributarios(empresaId?: string) {
   const [alertasRealtime, setAlertasRealtime] = useState<AlertaTributario[]>([]);
 
   // Buscar alertas do banco
-  const { data: alertas = [], isLoading, refetch } = useQuery({
+  const {
+    data: alertas = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['alertas-tributarios', empresaId],
     queryFn: async () => {
-      let q = supabase
-        .from('alertas_tributarios')
-        .select('*')
-        .eq('resolvido', false);
+      let q = supabase.from('alertas_tributarios').select('*').eq('resolvido', false);
       if (empresaId) q = q.eq('empresa_id', empresaId);
       const { data, error } = await q
         .order('prioridade', { ascending: false })
@@ -101,15 +104,14 @@ export function useAlertasTributarios(empresaId?: string) {
         },
         (payload) => {
           const novoAlerta = payload.new as AlertaTributario;
-          
+
           // Notificar usuário
-          toast[novoAlerta.prioridade === 'critica' ? 'error' : 'warning'](
-            novoAlerta.titulo,
-            { description: novoAlerta.mensagem }
-          );
+          toast[novoAlerta.prioridade === 'critica' ? 'error' : 'warning'](novoAlerta.titulo, {
+            description: novoAlerta.mensagem,
+          });
 
           // Atualizar lista
-          setAlertasRealtime(prev => [novoAlerta, ...prev]);
+          setAlertasRealtime((prev) => [novoAlerta, ...prev]);
           queryClient.invalidateQueries({ queryKey: ['alertas-tributarios'] });
         }
       )
@@ -133,11 +135,20 @@ export function useAlertasTributarios(empresaId?: string) {
 
   // Criar alerta
   const criarAlerta = useMutation({
-    mutationFn: async (alerta: Omit<AlertaTributario, 'id' | 'created_at' | 'lido' | 'resolvido'>) => {
+    mutationFn: async (
+      alerta: Omit<AlertaTributario, 'id' | 'created_at' | 'lido' | 'resolvido'>
+    ) => {
       const { data, error } = await supabase
         .from('alertas_tributarios')
+        // TODO(2026-08-14): campos de AlertaTributario fora do schema canônico não são enviados:
+        // user_id, data_lembrete, entidade_tipo/id, competencia, resolvido_em/por, acao_url, acao_label
         .insert({
-          ...alerta,
+          empresa_id: alerta.empresa_id,
+          tipo: alerta.tipo,
+          titulo: alerta.titulo,
+          mensagem: alerta.mensagem,
+          prioridade: alerta.prioridade,
+          data_vencimento: alerta.data_vencimento,
           lido: false,
           resolvido: false,
         })
@@ -169,14 +180,11 @@ export function useAlertasTributarios(empresaId?: string) {
 
   // Resolver alerta
   const resolverAlerta = useMutation({
-    mutationFn: async ({ alertaId, userId }: { alertaId: string; userId?: string }) => {
+    mutationFn: async ({ alertaId, userId: _userId }: { alertaId: string; userId?: string }) => {
       const { error } = await supabase
         .from('alertas_tributarios')
-        .update({ 
-          resolvido: true,
-          resolvido_em: new Date().toISOString(),
-          resolvido_por: userId,
-        })
+        // TODO(2026-08-14): resolvido_em/resolvido_por removidos — não existem em alertas_tributarios (types.ts)
+        .update({ resolvido: true })
         .eq('id', alertaId);
 
       if (error) throw error;
@@ -188,107 +196,119 @@ export function useAlertasTributarios(empresaId?: string) {
   });
 
   // Gerar alertas automáticos baseado em dados do sistema
-  const gerarAlertasAutomaticos = useCallback(async (empresaId: string) => {
-    const hoje = new Date();
-    const alertasParaCriar: Omit<AlertaTributario, 'id' | 'created_at' | 'lido' | 'resolvido'>[] = [];
+  const gerarAlertasAutomaticos = useCallback(
+    async (empresaId: string) => {
+      const hoje = new Date();
+      const alertasParaCriar: Omit<AlertaTributario, 'id' | 'created_at' | 'lido' | 'resolvido'>[] =
+        [];
 
-    // Verificar DARFs pendentes
-    const { data: darfsPendentes } = await supabase
-      .from('darfs')
-      .select('id, data_vencimento, codigo_receita, descricao_receita, valor_total')
-      .eq('empresa_id', empresaId)
-      .eq('status', 'gerado');
+      // Verificar DARFs pendentes
+      const { data: darfsPendentes } = await supabase
+        .from('darfs')
+        .select('id, data_vencimento, codigo_receita, descricao_receita, valor_total')
+        .eq('empresa_id', empresaId)
+        .eq('status', 'gerado');
 
-    darfsPendentes?.forEach(darf => {
-      const diasParaVencer = differenceInDays(parseISO(darf.data_vencimento), hoje);
-      
-      if (diasParaVencer <= 3 && diasParaVencer >= 0) {
-        alertasParaCriar.push({
-          empresa_id: empresaId,
-          tipo: 'vencimento_darf',
-          titulo: `DARF ${darf.codigo_receita} vence em ${diasParaVencer} dias`,
-          mensagem: `DARF de ${darf.descricao_receita} no valor de R$ ${darf.valor_total.toFixed(2)} vence em ${format(parseISO(darf.data_vencimento), 'dd/MM/yyyy')}`,
-          prioridade: diasParaVencer === 0 ? 'critica' : diasParaVencer === 1 ? 'alta' : 'media',
-          data_vencimento: darf.data_vencimento,
-          entidade_tipo: 'darf',
-          entidade_id: darf.id,
-          acao_url: '/reforma-tributaria?tab=retencoes',
-          acao_label: 'Ver DARF',
-        });
-      }
-    });
+      darfsPendentes?.forEach((darf) => {
+        const diasParaVencer = differenceInDays(parseISO(darf.data_vencimento), hoje);
 
-    // Verificar retenções pendentes
-    const { data: retencoesPendentes } = await supabase.rpc('get_retencoes_pendentes_count', { p_empresa_id: empresaId });
-    const countRetencoes = (retencoesPendentes as number) || 0;
-
-    if (countRetencoes > 5) {
-      alertasParaCriar.push({
-        empresa_id: empresaId,
-        tipo: 'retencao_pendente',
-        titulo: `${countRetencoes} retenções aguardando DARF`,
-        mensagem: `Existem ${countRetencoes} retenções pendentes sem DARF gerado. Consolide e gere os DARFs.`,
-        prioridade: 'media',
-        acao_url: '/reforma-tributaria?tab=retencoes',
-        acao_label: 'Gerenciar Retenções',
+        if (diasParaVencer <= 3 && diasParaVencer >= 0) {
+          alertasParaCriar.push({
+            empresa_id: empresaId,
+            tipo: 'vencimento_darf',
+            titulo: `DARF ${darf.codigo_receita} vence em ${diasParaVencer} dias`,
+            mensagem: `DARF de ${darf.descricao_receita} no valor de R$ ${darf.valor_total.toFixed(2)} vence em ${format(parseISO(darf.data_vencimento), 'dd/MM/yyyy')}`,
+            prioridade: diasParaVencer === 0 ? 'critica' : diasParaVencer === 1 ? 'alta' : 'media',
+            data_vencimento: darf.data_vencimento,
+            entidade_tipo: 'darf',
+            entidade_id: darf.id,
+            acao_url: '/reforma-tributaria?tab=retencoes',
+            acao_label: 'Ver DARF',
+          });
+        }
       });
-    }
 
-    // Verificar créditos próximos de expirar
-    const { data: creditos } = await supabase
-      .from('creditos_tributarios')
-      .select('id, data_origem, saldo_disponivel, tipo_tributo, competencia_origem')
-      .eq('empresa_id', empresaId)
-      .eq('status', 'disponivel');
+      // Verificar retenções pendentes
+      const { data: retencoesPendentes } = await supabase.rpc('get_retencoes_pendentes_count', {
+        p_empresa_id: empresaId,
+      });
+      const countRetencoes = (retencoesPendentes as number) || 0;
 
-    // Créditos com mais de 5 anos podem expirar
-    creditos?.forEach(credito => {
-      const dataOrigem = parseISO(credito.data_origem);
-      const diasDesdeOrigem = differenceInDays(hoje, dataOrigem);
-      const diasParaExpirar = (5 * 365) - diasDesdeOrigem; // 5 anos para expirar
-
-      if (diasParaExpirar <= 90 && diasParaExpirar > 0) {
+      if (countRetencoes > 5) {
         alertasParaCriar.push({
           empresa_id: empresaId,
-          tipo: 'prazo_credito',
-          titulo: `Crédito ${credito.tipo_tributo} expira em ${diasParaExpirar} dias`,
-          mensagem: `Crédito tributário de R$ ${credito.saldo_disponivel?.toFixed(2)} está próximo de expirar. Utilize antes do vencimento.`,
-          prioridade: diasParaExpirar <= 30 ? 'alta' : 'media',
-          entidade_tipo: 'credito',
-          entidade_id: credito.id,
-          competencia: credito.competencia_origem,
-          acao_url: '/reforma-tributaria?tab=creditos',
-          acao_label: 'Ver Créditos',
+          tipo: 'retencao_pendente',
+          titulo: `${countRetencoes} retenções aguardando DARF`,
+          mensagem: `Existem ${countRetencoes} retenções pendentes sem DARF gerado. Consolide e gere os DARFs.`,
+          prioridade: 'media',
+          acao_url: '/reforma-tributaria?tab=retencoes',
+          acao_label: 'Gerenciar Retenções',
         });
       }
-    });
 
-    // Criar alertas em batch
-    if (alertasParaCriar.length > 0) {
-      for (const alerta of alertasParaCriar) {
-        await criarAlerta.mutateAsync(alerta);
+      // Verificar créditos próximos de expirar
+      const { data: creditos } = await supabase
+        .from('creditos_tributarios')
+        .select('id, data_origem, saldo_disponivel, tipo_tributo, competencia_origem')
+        .eq('empresa_id', empresaId)
+        .eq('status', 'disponivel');
+
+      // Créditos com mais de 5 anos podem expirar
+      creditos?.forEach((credito) => {
+        const dataOrigem = parseISO(credito.data_origem);
+        const diasDesdeOrigem = differenceInDays(hoje, dataOrigem);
+        const diasParaExpirar = 5 * 365 - diasDesdeOrigem; // 5 anos para expirar
+
+        if (diasParaExpirar <= 90 && diasParaExpirar > 0) {
+          alertasParaCriar.push({
+            empresa_id: empresaId,
+            tipo: 'prazo_credito',
+            titulo: `Crédito ${credito.tipo_tributo} expira em ${diasParaExpirar} dias`,
+            mensagem: `Crédito tributário de R$ ${credito.saldo_disponivel?.toFixed(2)} está próximo de expirar. Utilize antes do vencimento.`,
+            prioridade: diasParaExpirar <= 30 ? 'alta' : 'media',
+            entidade_tipo: 'credito',
+            entidade_id: credito.id,
+            competencia: credito.competencia_origem,
+            acao_url: '/reforma-tributaria?tab=creditos',
+            acao_label: 'Ver Créditos',
+          });
+        }
+      });
+
+      // Criar alertas em batch
+      if (alertasParaCriar.length > 0) {
+        for (const alerta of alertasParaCriar) {
+          await criarAlerta.mutateAsync(alerta);
+        }
       }
-    }
 
-    return alertasParaCriar.length;
-  }, [criarAlerta]);
+      return alertasParaCriar.length;
+    },
+    [criarAlerta]
+  );
 
   // Contadores
-  const naoLidos = alertas.filter(a => !a.lido).length;
-  const criticos = alertas.filter(a => a.prioridade === 'critica').length;
-  const porTipo = alertas.reduce((acc, a) => {
-    acc[a.tipo] = (acc[a.tipo] || 0) + 1;
-    return acc;
-  }, {} as Record<TipoAlerta, number>);
+  const naoLidos = alertas.filter((a) => !a.lido).length;
+  const criticos = alertas.filter((a) => a.prioridade === 'critica').length;
+  const porTipo = alertas.reduce(
+    (acc, a) => {
+      acc[a.tipo] = (acc[a.tipo] || 0) + 1;
+      return acc;
+    },
+    {} as Record<TipoAlerta, number>
+  );
 
   // Próximos vencimentos
   const proximosVencimentos = alertas
-    .filter(a => a.data_vencimento)
+    .filter((a) => a.data_vencimento)
     .sort((a, b) => new Date(a.data_vencimento!).getTime() - new Date(b.data_vencimento!).getTime())
     .slice(0, 5);
 
   return {
-    alertas: [...alertasRealtime, ...alertas.filter(a => !alertasRealtime.find(r => r.id === a.id))],
+    alertas: [
+      ...alertasRealtime,
+      ...alertas.filter((a) => !alertasRealtime.find((r) => r.id === a.id)),
+    ],
     isLoading,
     naoLidos,
     criticos,

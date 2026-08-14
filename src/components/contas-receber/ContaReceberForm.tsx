@@ -8,7 +8,12 @@ import { Edit, DollarSign } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
+import {
+  useClientes,
+  useCentrosCusto,
+  useContasBancarias,
+  useEmpresas,
+} from '@/hooks/useFinancialData';
 import { useVendedoresAtivos } from '@/hooks/useVendedores';
 import { useCategorias } from '@/hooks/useCategorias';
 import { toast } from '@/hooks/use-toast';
@@ -49,13 +54,24 @@ const contaReceberSchema = z.object({
 type ContaReceberFormData = z.infer<typeof contaReceberSchema>;
 
 interface ContaReceber {
-  id: string; cliente_id: string | null; cliente_nome: string; descricao: string;
-  valor: number; data_vencimento: string; data_emissao: string; empresa_id: string;
-  centro_custo_id: string | null; categoria_id: string | null; conta_bancaria_id: string | null; tipo_cobranca: string;
+  id: string;
+  cliente_id: string | null;
+  cliente_nome: string;
+  descricao: string;
+  valor: number;
+  data_vencimento: string;
+  data_emissao: string;
+  empresa_id: string;
+  centro_custo_id: string | null;
+  categoria_id: string | null;
+  conta_bancaria_id: string | null;
+  tipo_cobranca: string;
 }
 
 interface ContaReceberFormProps {
-  open: boolean; onOpenChange: (open: boolean) => void; conta?: ContaReceber | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  conta?: ContaReceber | null;
 }
 
 export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberFormProps) {
@@ -74,10 +90,15 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
 
   const form = useForm<ContaReceberFormData>({
     resolver: zodResolver(contaReceberSchema),
-    defaultValues: { 
-      cliente_nome: '', descricao: '', valor: 0, data_vencimento: '', 
-      data_emissao: todayISOLocal(), empresa_id: '', 
-      tipo_cobranca: 'boleto', recorrente: false 
+    defaultValues: {
+      cliente_nome: '',
+      descricao: '',
+      valor: 0,
+      data_vencimento: '',
+      data_emissao: todayISOLocal(),
+      empresa_id: '',
+      tipo_cobranca: 'boleto',
+      recorrente: false,
     },
   });
 
@@ -87,9 +108,13 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   useEffect(() => {
     if (conta && open) {
       form.reset({
-        cliente_id: conta.cliente_id || undefined, cliente_nome: conta.cliente_nome,
-        descricao: conta.descricao, valor: conta.valor, data_vencimento: conta.data_vencimento,
-        data_emissao: conta.data_emissao, empresa_id: conta.empresa_id,
+        cliente_id: conta.cliente_id || undefined,
+        cliente_nome: conta.cliente_nome,
+        descricao: conta.descricao,
+        valor: conta.valor,
+        data_vencimento: conta.data_vencimento,
+        data_emissao: conta.data_emissao,
+        empresa_id: conta.empresa_id,
         centro_custo_id: conta.centro_custo_id || undefined,
         categoria_id: conta.categoria_id || undefined,
         conta_bancaria_id: conta.conta_bancaria_id || undefined,
@@ -97,10 +122,15 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       });
       if (conta.cliente_id) setShowClienteSelect(true);
     } else if (!conta && open) {
-      form.reset({ 
-        cliente_nome: '', descricao: '', valor: 0, data_vencimento: '', 
-        data_emissao: todayISOLocal(), empresa_id: '', 
-        tipo_cobranca: 'boleto', recorrente: false 
+      form.reset({
+        cliente_nome: '',
+        descricao: '',
+        valor: 0,
+        data_vencimento: '',
+        data_emissao: todayISOLocal(),
+        empresa_id: '',
+        tipo_cobranca: 'boleto',
+        recorrente: false,
       });
       setShowClienteSelect(false);
     }
@@ -109,47 +139,91 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const createMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
-      
-      const finalContaId = data.conta_bancaria_id === 'none' ? null : (data.conta_bancaria_id || null);
+
+      const finalContaId =
+        data.conta_bancaria_id === 'none' ? null : data.conta_bancaria_id || null;
 
       const { error } = await supabase.from('contas_receber').insert({
-        cliente_id: data.cliente_id || null, cliente_nome: data.cliente_nome, descricao: data.descricao,
-        valor: data.valor, data_vencimento: data.data_vencimento,
+        cliente_id: data.cliente_id || null,
+        cliente_nome: data.cliente_nome,
+        descricao: data.descricao,
+        valor: data.valor,
+        data_vencimento: data.data_vencimento,
         data_emissao: data.data_emissao || todayISOLocal(),
-        empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
+        empresa_id: data.empresa_id,
+        centro_custo_id: data.centro_custo_id || null,
         categoria_id: data.categoria_id || null,
-        conta_bancaria_id: finalContaId, vendedor_id: data.vendedor_id || null,
-        tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null,
-        codigo_barras: data.codigo_barras || null, chave_pix: data.chave_pix || null,
-        link_boleto: data.link_boleto || null, observacoes: data.observacoes || null,
-        created_by: user.id, status: 'pendente', etapa_cobranca: 'preventiva',
+        conta_bancaria_id: finalContaId,
+        vendedor_id: data.vendedor_id || null,
+        tipo_cobranca: data.tipo_cobranca,
+        numero_documento: data.numero_documento || null,
+        // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
+        chave_pix: data.chave_pix || null,
+        observacoes: data.observacoes || null,
+        // TODO: coluna 'frequencia_recorrencia' não existe em contas_receber no types.ts (removida)
+        user_id: user.id,
+        status: 'pendente',
+        etapa_cobranca: 'preventiva',
         recorrente: data.recorrente || false,
-        frequencia_recorrencia: data.recorrente ? data.frequencia_recorrencia || 'mensal' : null,
       });
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['contas-receber'] }); sounds.success(); confetti.celebrateReceipt(); form.reset(); onOpenChange(false); },
-    onError: (error: unknown) => { sounds.error(); logger.error('Error creating conta receber:', error); toast({ title: 'Erro ao criar conta', description: 'Tente novamente.', variant: 'destructive' }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      sounds.success();
+      confetti.celebrateReceipt();
+      form.reset();
+      onOpenChange(false);
+    },
+    onError: (error: unknown) => {
+      sounds.error();
+      logger.error('Error creating conta receber:', error);
+      toast({
+        title: 'Erro ao criar conta',
+        description: 'Tente novamente.',
+        variant: 'destructive',
+      });
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
-      const { error } = await supabase.from('contas_receber').update({
-        cliente_id: data.cliente_id || null, cliente_nome: data.cliente_nome, descricao: data.descricao,
-        valor: data.valor, data_vencimento: data.data_vencimento,
-        data_emissao: data.data_emissao || todayISOLocal(),
-        empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
-        categoria_id: data.categoria_id || null,
-        conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca,
-        numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null,
-        chave_pix: data.chave_pix || null, link_boleto: data.link_boleto || null,
-        observacoes: data.observacoes || null,
-      }).eq('id', conta.id);
+      const { error } = await supabase
+        .from('contas_receber')
+        .update({
+          cliente_id: data.cliente_id || null,
+          cliente_nome: data.cliente_nome,
+          descricao: data.descricao,
+          valor: data.valor,
+          data_vencimento: data.data_vencimento,
+          data_emissao: data.data_emissao || todayISOLocal(),
+          empresa_id: data.empresa_id,
+          centro_custo_id: data.centro_custo_id || null,
+          categoria_id: data.categoria_id || null,
+          conta_bancaria_id: data.conta_bancaria_id || null,
+          tipo_cobranca: data.tipo_cobranca,
+          numero_documento: data.numero_documento || null,
+          // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
+          chave_pix: data.chave_pix || null,
+          observacoes: data.observacoes || null,
+        })
+        .eq('id', conta.id);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['contas-receber'] }); toast({ title: 'Conta atualizada', description: 'Alterações salvas.' }); onOpenChange(false); },
-    onError: (error: unknown) => { logger.error('Error updating conta receber:', error); toast({ title: 'Erro ao atualizar', description: 'Tente novamente.', variant: 'destructive' }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      toast({ title: 'Conta atualizada', description: 'Alterações salvas.' });
+      onOpenChange(false);
+    },
+    onError: (error: unknown) => {
+      logger.error('Error updating conta receber:', error);
+      toast({
+        title: 'Erro ao atualizar',
+        description: 'Tente novamente.',
+        variant: 'destructive',
+      });
+    },
   });
 
   const onSubmit = (data: ContaReceberFormData) => {
@@ -162,7 +236,10 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
 
   const handleClienteSelect = (clienteId: string) => {
     const cliente = clientes.find((c) => c.id === clienteId);
-    if (cliente) { form.setValue('cliente_id', clienteId); form.setValue('cliente_nome', cliente.razao_social); }
+    if (cliente) {
+      form.setValue('cliente_id', clienteId);
+      form.setValue('cliente_nome', cliente.razao_social);
+    }
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
@@ -172,8 +249,17 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-display">
-            <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center", isEditing ? "bg-secondary/10" : "bg-success/10")}>
-              {isEditing ? <Edit className="h-5 w-5 text-secondary" /> : <DollarSign className="h-5 w-5 text-success" />}
+            <div
+              className={cn(
+                'h-10 w-10 rounded-xl flex items-center justify-center',
+                isEditing ? 'bg-secondary/10' : 'bg-success/10'
+              )}
+            >
+              {isEditing ? (
+                <Edit className="h-5 w-5 text-secondary" />
+              ) : (
+                <DollarSign className="h-5 w-5 text-success" />
+              )}
             </div>
             {isEditing ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
           </DialogTitle>
@@ -182,9 +268,15 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
               <ContaReceberFormFields
-                form={form} isEditing={isEditing} clientes={clientes} empresas={empresas}
-                centrosCusto={centrosCusto} contasBancarias={contasBancarias} vendedores={vendedores}
-                showClienteSelect={showClienteSelect} setShowClienteSelect={setShowClienteSelect}
+                form={form}
+                isEditing={isEditing}
+                clientes={clientes}
+                empresas={empresas}
+                centrosCusto={centrosCusto}
+                contasBancarias={contasBancarias}
+                vendedores={vendedores}
+                showClienteSelect={showClienteSelect}
+                setShowClienteSelect={setShowClienteSelect}
                 onClienteSelect={handleClienteSelect}
                 categorias={categoriasReceita}
               />
@@ -197,10 +289,26 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <ActionButton type="submit" state={isPending ? 'loading' : 'idle'} loadingText="Salvando..." successText="Salvo!"
-                className={cn("gap-2 shadow-lg", isEditing ? "bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25" : "bg-gradient-to-r from-success to-success/80 shadow-success/25 text-success-foreground")}>
-                {isEditing ? 'Salvar Alterações' : isParcelado ? `Criar ${numParcelas} Parcelas` : 'Criar Conta'}
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              <ActionButton
+                type="submit"
+                state={isPending ? 'loading' : 'idle'}
+                loadingText="Salvando..."
+                successText="Salvo!"
+                className={cn(
+                  'gap-2 shadow-lg',
+                  isEditing
+                    ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
+                    : 'bg-gradient-to-r from-success to-success/80 shadow-success/25 text-success-foreground'
+                )}
+              >
+                {isEditing
+                  ? 'Salvar Alterações'
+                  : isParcelado
+                    ? `Criar ${numParcelas} Parcelas`
+                    : 'Criar Conta'}
               </ActionButton>
             </div>
           </form>

@@ -60,7 +60,9 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
   const { data: fornecedores } = useQuery({
     queryKey: ['fornecedores'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('fornecedores').select('id, nome_fantasia, razao_social');
+      const { data, error } = await supabase
+        .from('fornecedores')
+        .select('id, nome_fantasia, razao_social');
       if (error) throw error;
       return data;
     },
@@ -77,33 +79,37 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const valorTotal = values.itens.reduce((acc, item) => acc + (item.quantidade * item.valor_unitario), 0);
+      const valorTotal = values.itens.reduce(
+        (acc, item) => acc + item.quantidade * item.valor_unitario,
+        0
+      );
 
       const { data: pedido, error: pedidoError } = await supabase
         .from('pedidos_compra')
         .insert({
-          user_id: user.id,
+          // TODO: colunas 'user_id' e 'centro_custo_id' não existem em pedidos_compra no types.ts (removidas)
           fornecedor_id: values.fornecedor_id,
-          centro_custo_id: values.centro_custo_id,
-          data_entrega_prevista: values.data_entrega_prevista,
+          previsao_entrega: values.data_entrega_prevista,
           observacoes: values.observacoes,
           valor_total: valorTotal,
-          status: 'pendente_aprovacao'
+          status: 'pendente_aprovacao',
         })
         .select()
         .single();
 
       if (pedidoError) throw pedidoError;
 
-      const itensParaInserir = values.itens.map(item => ({
+      const itensParaInserir = values.itens.map((item) => ({
         pedido_id: pedido.id,
         descricao: item.descricao,
         quantidade: item.quantidade,
         valor_unitario: item.valor_unitario,
-        valor_total: item.quantidade * item.valor_unitario
+        // TODO: coluna 'valor_total' não existe em itens_pedido_compra no types.ts (removida)
       }));
 
       const { error: itensError } = await supabase
@@ -124,7 +130,9 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-xl border-white/10 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-black tracking-tight">Novo Pedido de Compra</DialogTitle>
+          <DialogTitle className="text-2xl font-black tracking-tight">
+            Novo Pedido de Compra
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -143,8 +151,10 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {fornecedores?.map(f => (
-                          <SelectItem key={f.id} value={f.id}>{f.nome_fantasia || f.razao_social}</SelectItem>
+                        {fornecedores?.map((f) => (
+                          <SelectItem key={f.id} value={f.id}>
+                            {f.nome_fantasia || f.razao_social}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -166,8 +176,10 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {centrosCusto?.map(cc => (
-                          <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
+                        {centrosCusto?.map((cc) => (
+                          <SelectItem key={cc.id} value={cc.id}>
+                            {cc.nome}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -179,26 +191,38 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Itens do Pedido</h3>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                  Itens do Pedido
+                </h3>
+                <Button
+                  type="button"
+                  variant="outline"
                   size="sm"
-                  onClick={() => form.setValue('itens', [...form.getValues('itens'), { descricao: '', quantidade: 1, valor_unitario: 0 }])}
+                  onClick={() =>
+                    form.setValue('itens', [
+                      ...form.getValues('itens'),
+                      { descricao: '', quantidade: 1, valor_unitario: 0 },
+                    ])
+                  }
                 >
                   Adicionar Item
                 </Button>
               </div>
 
               {form.watch('itens').map((_, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-4 bg-card/5 rounded-xl border border-white/10">
+                <div
+                  key={index}
+                  className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-4 bg-card/5 rounded-xl border border-white/10"
+                >
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
                       name={`itens.${index}.descricao`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[10px] uppercase font-bold">Descrição</FormLabel>
+                          <FormLabel className="text-[10px] uppercase font-bold">
+                            Descrição
+                          </FormLabel>
                           <FormControl>
                             <Input {...field} className="bg-background border-white/10 h-10" />
                           </FormControl>
@@ -214,11 +238,11 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
                       <FormItem>
                         <FormLabel className="text-[10px] uppercase font-bold">Qtd</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            {...field} 
-                            onChange={e => field.onChange(parseFloat(e.target.value))}
-                            className="bg-background border-white/10 h-10" 
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                            className="bg-background border-white/10 h-10"
                           />
                         </FormControl>
                         <FormMessage />
@@ -232,11 +256,11 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
                       <FormItem>
                         <FormLabel className="text-[10px] uppercase font-bold">Vlr Unit.</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            {...field} 
-                            onChange={e => field.onChange(parseFloat(e.target.value))}
-                            className="bg-background border-white/10 h-10" 
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                            className="bg-background border-white/10 h-10"
                           />
                         </FormControl>
                         <FormMessage />
@@ -262,8 +286,12 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
             />
 
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button type="submit" className="bg-primary font-black">Gerar Pedido</Button>
+              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" className="bg-primary font-black">
+                Gerar Pedido
+              </Button>
             </DialogFooter>
           </form>
         </Form>

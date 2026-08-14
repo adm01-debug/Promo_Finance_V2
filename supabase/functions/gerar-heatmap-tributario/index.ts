@@ -3,8 +3,12 @@
 // Gera heatmap 12m × 8 tributos com intensidade normalizada e variação MoM.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
-interface ReqBody { empresa_id?: string; ano?: number; }
+interface ReqBody {
+  empresa_id?: string;
+  ano?: number;
+}
 interface CelulaHeatmap {
   mes: number;
   tributo: string;
@@ -13,7 +17,16 @@ interface CelulaHeatmap {
   variacao_mom: number | null;
 }
 
-const TRIBUTOS = ['cbs', 'ibs', 'imposto_seletivo', 'pis', 'cofins', 'icms', 'iss', 'irpj_csll'] as const;
+const TRIBUTOS = [
+  'cbs',
+  'ibs',
+  'imposto_seletivo',
+  'pis',
+  'cofins',
+  'icms',
+  'iss',
+  'irpj_csll',
+] as const;
 const ALIQUOTAS: Record<string, number> = {
   cbs: 0.012,
   ibs: 0.017,
@@ -28,6 +41,11 @@ const ALIQUOTAS: Record<string, number> = {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return respostaPreflight();
   if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
+
+  // [auth-guard] Funcao chamada pelo app com o JWT do usuario logado (Authorization
+  // validado via getUser). Fail-closed: sem sessao valida -> 401.
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     const body: ReqBody = await req.json().catch(() => ({}));

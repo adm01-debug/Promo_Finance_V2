@@ -3,19 +3,29 @@
 // Calcula DRE com decomposição fiscal: CBS+IBS+PIS+COFINS+ICMS+ISS+IRPJ+CSLL.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
-interface ReqBody { empresa_id?: string; periodo?: string; }
+interface ReqBody {
+  empresa_id?: string;
+  periodo?: string;
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return respostaPreflight();
   if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
+
+  // [auth-guard] Funcao chamada pelo app com o JWT do usuario logado (Authorization
+  // validado via getUser). Fail-closed: sem sessao valida -> 401.
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     const body: ReqBody = await req.json().catch(() => ({}));
     const empresaId = body?.empresa_id;
     const periodo = body?.periodo;
     if (!empresaId) return jsonComCors({ error: 'empresa_id é obrigatório' }, 400);
-    if (!periodo || !/^\d{4}-\d{2}$/.test(periodo)) return jsonComCors({ error: 'periodo deve ser YYYY-MM' }, 400);
+    if (!periodo || !/^\d{4}-\d{2}$/.test(periodo))
+      return jsonComCors({ error: 'periodo deve ser YYYY-MM' }, 400);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -40,7 +50,11 @@ Deno.serve(async (req) => {
         totalTributosPagos = Number(fat.total_tributos || 0);
       }
 
-      const { data: emp } = await supa.from('empresas').select('regime_tributario').eq('id', empresaId).maybeSingle();
+      const { data: emp } = await supa
+        .from('empresas')
+        .select('regime_tributario')
+        .eq('id', empresaId)
+        .maybeSingle();
       var regime = (emp as any)?.regime_tributario || 'simples';
     } else {
       var regime = 'simples';
@@ -55,8 +69,8 @@ Deno.serve(async (req) => {
     const icms = receitaBruta * 0.04;
     const iss = receitaBruta * 0.025;
     // CBS+IBS já vigentes em 2026 (transição Reforma Tributária)
-    const cbs = receitaBruta * 0.012;  // 12% CBS em 2026
-    const ibs = receitaBruta * 0.017;  // IBS estadual+ municipal parcial
+    const cbs = receitaBruta * 0.012; // 12% CBS em 2026
+    const ibs = receitaBruta * 0.017; // IBS estadual+ municipal parcial
     const impostoSeletivo = receitaBruta * 0.004;
 
     const totalDeducoes = pis + cofins + icms + iss + cbs + ibs + impostoSeletivo;
@@ -66,7 +80,8 @@ Deno.serve(async (req) => {
     const irpj = lucroBruto * 0.15;
     const csll = lucroBruto * 0.09;
     const lucroLiquido = lucroBruto - irpj - csll;
-    const cargaTributariaPct = receitaBruta > 0 ? Math.round((totalDeducoes / receitaBruta) * 1000) / 10 : 0;
+    const cargaTributariaPct =
+      receitaBruta > 0 ? Math.round((totalDeducoes / receitaBruta) * 1000) / 10 : 0;
 
     // Simulação regime ótimo: Lucro Real quando carga > 20%
     let comparativoRegimeOtimo = null;

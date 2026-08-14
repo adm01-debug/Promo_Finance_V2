@@ -163,10 +163,12 @@ export const useComentariosAprovacao = (solicitacaoId: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('aprovacao_comentarios')
-        .select(`
+        .select(
+          `
           *,
           usuario:profiles(full_name, email)
-        `)
+        `
+        )
         .eq('solicitacao_id', solicitacaoId)
         .order('created_at', { ascending: true });
 
@@ -187,10 +189,11 @@ export const useAdicionarComentario = () => {
 
       const { data, error } = await supabase
         .from('aprovacao_comentarios')
+        // TODO(2026-08-14): usuario_id→user_id e texto→comentario (nomes canônicos em aprovacao_comentarios)
         .insert({
           solicitacao_id: solicitacaoId,
-          usuario_id: userData.user.id,
-          texto,
+          user_id: userData.user.id,
+          comentario: texto,
         })
         .select()
         .single();
@@ -199,7 +202,9 @@ export const useAdicionarComentario = () => {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['aprovacao-comentarios', variables.solicitacaoId] });
+      queryClient.invalidateQueries({
+        queryKey: ['aprovacao-comentarios', variables.solicitacaoId],
+      });
     },
   });
 };
@@ -210,10 +215,12 @@ export const useSolicitacoesAprovacao = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('solicitacoes_aprovacao')
-        .select(`
+        .select(
+          `
           *,
           conta_pagar:contas_pagar(id, descricao, valor, fornecedor_nome, data_vencimento, status)
-        `)
+        `
+        )
         .order('solicitado_em', { ascending: false });
 
       if (error) throw error;
@@ -228,10 +235,12 @@ export const useSolicitacoesPendentes = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('solicitacoes_aprovacao')
-        .select(`
+        .select(
+          `
           *,
           conta_pagar:contas_pagar(id, descricao, valor, fornecedor_nome, data_vencimento, status)
-        `)
+        `
+        )
         .eq('status', 'pendente')
         .order('solicitado_em', { ascending: true });
 
@@ -246,7 +255,13 @@ export const useCriarSolicitacaoAprovacao = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ contaPagarId, observacoes }: { contaPagarId: string; observacoes?: string }) => {
+    mutationFn: async ({
+      contaPagarId,
+      observacoes,
+    }: {
+      contaPagarId: string;
+      observacoes?: string;
+    }) => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Usuário não autenticado');
 
@@ -307,10 +322,8 @@ export const useAprovarSolicitacao = () => {
       // Update conta_pagar with approval info
       const { error: cpError } = await supabase
         .from('contas_pagar')
-        .update({
-          aprovado_por: userData.user.id,
-          aprovado_em: new Date().toISOString(),
-        })
+        // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts)
+        .update({ aprovado_por: userData.user.id })
         .eq('id', solicitacao.conta_pagar_id);
 
       if (cpError) throw cpError;

@@ -248,8 +248,9 @@ export function useBulkActions<T extends { id: string }>({
         handler: async (selectedItems: T[]) => {
           const ids = selectedItems.map(getItemId);
           const { error } = await supabase
-            .from(tableName)
-            .update({ status: 'pago' as string })
+            // TODO(2026-08-14): cast do tableName para tabelas com coluna status (mark-done só faz sentido nelas)
+            .from(tableName as 'contas_pagar' | 'contas_receber' | 'boletos' | 'notas_fiscais')
+            .update({ status: 'pago' })
             .in('id', ids);
           if (error) throw error;
         },

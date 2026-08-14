@@ -8,11 +8,13 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
 import { onCLS, onFID, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
 
 // Breadcrumbs para rastreamento de ações do usuário e chamadas Supabase
-type BreadcrumbData = Record<string, unknown> | undefined;
+// (Json para persistir em frontend_error_logs.metadata sem casts)
+type BreadcrumbData = Record<string, Json> | undefined;
 const breadcrumbs: Array<{ message: string; timestamp: string; data?: BreadcrumbData }> = [];
 const MAX_BREADCRUMBS = 20;
 
@@ -30,7 +32,7 @@ interface TelemetryPayload {
   user_agent?: string;
   severity?: Severity;
   breadcrumbs?: typeof breadcrumbs;
-  context?: Record<string, unknown>;
+  context?: Record<string, Json>;
 }
 
 let initialized = false;
@@ -47,7 +49,9 @@ async function flushQueues(): Promise<void> {
   flushing = true;
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     // RLS exige usuário autenticado para inserts nessas tabelas.
     // Quando anônimo, descarta a fila para evitar 401 em loop no console.
@@ -57,19 +61,17 @@ async function flushQueues(): Promise<void> {
       return;
     }
 
-
-
     // 1. Process errors
     if (errorQueue.length > 0) {
       const batch = errorQueue.splice(0, errorQueue.length);
       const rows = batch.map((p) => ({
         user_id: user?.id ?? null,
-        message: p.message.slice(0, 2000),
-        stack: p.stack?.slice(0, 8000) ?? null,
+        error_message: p.message.slice(0, 2000),
+        error_stack: p.stack?.slice(0, 8000) ?? null,
         url: p.url ?? window.location.href,
         user_agent: p.user_agent ?? navigator.userAgent,
         severity: p.severity ?? 'error',
-        context: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs } as never,
+        metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
       }));
       await supabase.from('frontend_error_logs').insert(rows);
     }
@@ -131,7 +133,8 @@ export function initTelemetry(): void {
 
   window.addEventListener('unhandledrejection', (event) => {
     const reason = event.reason;
-    const message = reason instanceof Error ? reason.message : String(reason ?? 'Unhandled rejection');
+    const message =
+      reason instanceof Error ? reason.message : String(reason ?? 'Unhandled rejection');
     reportError({
       message,
       stack: reason instanceof Error ? reason.stack : undefined,
@@ -159,4 +162,3 @@ export function initTelemetry(): void {
 
   logger.info('[telemetry] Inicializado com Web Vitals');
 }
-

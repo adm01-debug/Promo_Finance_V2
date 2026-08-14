@@ -126,10 +126,7 @@ export const getRelativeTime = (date: Date | string): string => {
 
 export const getCNPJFormatted = (cnpj: string): string => {
   const numbers = cnpj.replace(/\D/g, '');
-  return numbers.replace(
-    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
-    '$1.$2.$3/$4-$5'
-  );
+  return numbers.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
 };
 
 export const getStatusLabel = (status: string): string => {
@@ -227,20 +224,45 @@ export const parseCurrencyInput = (value: string): number => {
   if (!cleaned || cleaned === '-' || cleaned === ',' || cleaned === '.') return 0;
   // Normaliza para "1234.56": tira milhar e troca decimal
   const hasComma = cleaned.includes(',');
-  const normalized = hasComma
-    ? cleaned.replace(/\./g, '').replace(',', '.')
-    : cleaned;
+  const normalized = hasComma ? cleaned.replace(/\./g, '').replace(',', '.') : cleaned;
   const n = parseFloat(normalized);
   return Number.isFinite(n) ? n : 0;
 };
 
 export const formatDateForInput = (date: Date | string | null): string => {
   if (!date) return '';
-  const d = toLocalDate(date);
-  if (isNaN(d.getTime())) return '';
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
+  if (typeof date === 'string') {
+    const s = date.trim();
+    // YYYY-MM-DD puro (sem timezone) -> data civil LOCAL (evita o dia anterior em BRT)
+    const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (dateOnly) {
+      const y = Number(dateOnly[1]);
+      const m = Number(dateOnly[2]);
+      const d = Number(dateOnly[3]);
+      const parsed = new Date(y, m - 1, d);
+      if (isNaN(parsed.getTime())) return '';
+      if (parsed.getFullYear() !== y || parsed.getMonth() !== m - 1 || parsed.getDate() !== d) {
+        return '';
+      }
+      return s;
+    }
+    // Datetime completo (com 'T', com ou sem timezone) -> preserva a data civil da string
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+      return s.slice(0, 10);
+    }
+    // Fallback: parse padrao e getters UTC (a data civil de um Date e a UTC)
+    const parsed = new Date(s);
+    if (isNaN(parsed.getTime())) return '';
+    const yyyy = parsed.getUTCFullYear();
+    const mm = String(parsed.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(parsed.getUTCDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  // Date instance -> getters UTC (a data civil de um Date e a UTC)
+  if (isNaN(date.getTime())) return '';
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(date.getUTCDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 };
 
@@ -271,4 +293,6 @@ export const getInitials = (name: string): string => {
 };
 
 export const formatNFNumber = (number: string | number): string =>
-  String(number).padStart(9, '0').replace(/^(\d{3})(\d{3})(\d{3})$/, '$1.$2.$3');
+  String(number)
+    .padStart(9, '0')
+    .replace(/^(\d{3})(\d{3})(\d{3})$/, '$1.$2.$3');

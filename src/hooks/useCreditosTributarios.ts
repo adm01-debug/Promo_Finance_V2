@@ -10,37 +10,37 @@ export interface CreditoTributario {
   empresa_id: string;
   tipo_tributo: 'CBS' | 'IBS' | 'IS';
   tipo_credito: string;
-  
+
   // Documento
   documento_tipo?: string;
   documento_numero?: string;
   documento_serie?: string;
   documento_chave?: string;
   nota_fiscal_id?: string;
-  
+
   // Fornecedor
   fornecedor_id?: string;
   fornecedor_cnpj?: string;
   fornecedor_nome?: string;
-  
+
   // Valores
   valor_base: number;
   aliquota: number;
   valor_credito: number;
-  
+
   // Período
   data_origem: string;
   competencia_origem: string;
   competencia_utilizacao?: string;
-  
+
   // Status
   status: 'disponivel' | 'utilizado' | 'compensado' | 'expirado' | 'estornado' | 'transferido';
-  
+
   // Utilização
   apuracao_id?: string;
   valor_utilizado: number;
   saldo_disponivel?: number;
-  
+
   observacoes?: string;
   created_at: string;
   updated_at: string;
@@ -70,18 +70,22 @@ export function useCreditosTributarios(empresaId?: string) {
   const queryClient = useQueryClient();
 
   // Buscar créditos
-  const { data: creditos, isLoading, error } = useQuery({
+  const {
+    data: creditos,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['creditos_tributarios', empresaId],
     queryFn: async () => {
       let query = supabase
         .from('creditos_tributarios')
         .select('*')
         .order('data_origem', { ascending: false });
-      
+
       if (empresaId && empresaId !== 'all' && empresaId !== 'todas' && empresaId !== 'default') {
         query = query.eq('empresa_id', empresaId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as CreditoTributario[];
@@ -95,11 +99,11 @@ export function useCreditosTributarios(empresaId?: string) {
       let query = supabase
         .from('creditos_tributarios')
         .select('tipo_tributo, status, valor_credito, valor_utilizado, saldo_disponivel');
-      
+
       if (empresaId && empresaId !== 'all' && empresaId !== 'todas' && empresaId !== 'default') {
         query = query.eq('empresa_id', empresaId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
 
@@ -122,7 +126,8 @@ export function useCreditosTributarios(empresaId?: string) {
         resumo[key].total += Number(c.valor_credito) || 0;
         resumo[key].utilizado += Number(c.valor_utilizado) || 0;
         if (c.status === 'disponivel') {
-          resumo[key].disponivel += Number(c.saldo_disponivel) || Number(c.valor_credito) - Number(c.valor_utilizado) || 0;
+          resumo[key].disponivel +=
+            Number(c.saldo_disponivel) || Number(c.valor_credito) - Number(c.valor_utilizado) || 0;
         }
       });
 
@@ -135,15 +140,22 @@ export function useCreditosTributarios(empresaId?: string) {
     mutationFn: async (input: CreateCreditoInput) => {
       const { data, error } = await supabase
         .from('creditos_tributarios')
+        // TODO(2026-08-14): campos de CreateCreditoInput fora do schema canônico não são enviados:
+        // tipo_credito, documento_tipo/numero/chave, fornecedor_id/cnpj/nome, valor_base, aliquota, observacoes
         .insert({
-          ...input,
+          empresa_id: input.empresa_id,
+          tipo_tributo: input.tipo_tributo,
+          valor_credito: input.valor_credito,
+          data_origem: input.data_origem,
+          competencia_origem: input.competencia_origem,
+          nota_fiscal_id: input.nota_fiscal_id,
           status: 'disponivel',
           valor_utilizado: 0,
           saldo_disponivel: input.valor_credito,
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -158,39 +170,48 @@ export function useCreditosTributarios(empresaId?: string) {
 
   // Utilizar crédito
   const utilizarCredito = useMutation({
-    mutationFn: async ({ id, valorUtilizar, apuracaoId }: { id: string; valorUtilizar: number; apuracaoId: string }) => {
+    mutationFn: async ({
+      id,
+      valorUtilizar,
+      apuracaoId: _apuracaoId,
+    }: {
+      id: string;
+      valorUtilizar: number;
+      apuracaoId: string;
+    }) => {
       // Buscar crédito atual
       const { data: credito, error: fetchError } = await supabase
         .from('creditos_tributarios')
         .select('*')
         .eq('id', id)
         .single();
-      
+
       if (fetchError) throw fetchError;
-      
-      const saldoAtual = Number(credito.saldo_disponivel) || (Number(credito.valor_credito) - Number(credito.valor_utilizado));
-      
+
+      const saldoAtual =
+        Number(credito.saldo_disponivel) ||
+        Number(credito.valor_credito) - Number(credito.valor_utilizado);
+
       if (valorUtilizar > saldoAtual) {
         throw new Error('Valor a utilizar maior que saldo disponível');
       }
-      
+
       const novoValorUtilizado = Number(credito.valor_utilizado) + valorUtilizar;
       const novoSaldo = Number(credito.valor_credito) - novoValorUtilizado;
       const novoStatus = novoSaldo <= 0 ? 'utilizado' : 'disponivel';
-      
+
       const { data, error } = await supabase
         .from('creditos_tributarios')
         .update({
           valor_utilizado: novoValorUtilizado,
           saldo_disponivel: novoSaldo,
           status: novoStatus,
-          apuracao_id: apuracaoId,
-          competencia_utilizacao: new Date().toISOString().slice(0, 7) + '-01',
+          // TODO(2026-08-14): apuracao_id/competencia_utilizacao removidos — não existem em creditos_tributarios (types.ts)
         })
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -205,17 +226,17 @@ export function useCreditosTributarios(empresaId?: string) {
 
   // Estornar crédito
   const estornarCredito = useMutation({
-    mutationFn: async ({ id, motivo }: { id: string; motivo: string }) => {
+    mutationFn: async ({ id, motivo: _motivo }: { id: string; motivo: string }) => {
       const { data, error } = await supabase
         .from('creditos_tributarios')
         .update({
           status: 'estornado',
-          observacoes: motivo,
+          // TODO(2026-08-14): observacoes removido — coluna não existe em creditos_tributarios (types.ts)
         })
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -230,31 +251,38 @@ export function useCreditosTributarios(empresaId?: string) {
 
   // Gerar créditos a partir de NF-e
   const gerarCreditosNFe = useMutation({
-    mutationFn: async ({ notaFiscalId, empresaId }: { notaFiscalId: string; empresaId: string }) => {
+    mutationFn: async ({
+      notaFiscalId,
+      empresaId,
+    }: {
+      notaFiscalId: string;
+      empresaId: string;
+    }) => {
       // Buscar nota fiscal
       const { data: nf, error: nfError } = await supabase
         .from('notas_fiscais')
         .select('*')
         .eq('id', notaFiscalId)
         .single();
-      
+
       if (nfError) throw nfError;
-      
+
       // Determinar alíquotas baseado no ano
       const ano = new Date(nf.data_emissao).getFullYear();
-      let aliquotaCBS = 0, aliquotaIBS = 0;
-      
+      let aliquotaCBS = 0,
+        aliquotaIBS = 0;
+
       if (ano >= 2026) {
         aliquotaCBS = ano === 2026 ? 0.009 : ano === 2027 ? 0.009 : 0.088;
         aliquotaIBS = ano === 2026 ? 0.001 : ano === 2027 ? 0.001 : 0.172;
       }
-      
+
       const valorBase = Number(nf.valor_produtos);
       const creditoCBS = valorBase * aliquotaCBS;
       const creditoIBS = valorBase * aliquotaIBS;
-      
+
       const creditos = [];
-      
+
       if (creditoCBS > 0) {
         creditos.push({
           empresa_id: empresaId,
@@ -274,7 +302,7 @@ export function useCreditosTributarios(empresaId?: string) {
           saldo_disponivel: creditoCBS,
         });
       }
-      
+
       if (creditoIBS > 0) {
         creditos.push({
           empresa_id: empresaId,
@@ -294,17 +322,17 @@ export function useCreditosTributarios(empresaId?: string) {
           saldo_disponivel: creditoIBS,
         });
       }
-      
+
       if (creditos.length > 0) {
         const { data, error } = await supabase
           .from('creditos_tributarios')
           .insert(creditos)
           .select();
-        
+
         if (error) throw error;
         return data;
       }
-      
+
       return [];
     },
     onSuccess: (data) => {
