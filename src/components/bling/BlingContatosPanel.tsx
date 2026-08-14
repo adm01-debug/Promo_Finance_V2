@@ -13,6 +13,18 @@ import { Users, Search, Plus, Edit, ArrowUpDown, Trash2, Loader2, MoreHorizontal
 import { useBlingContatos, useBlingContatoMutations } from '@/hooks/useBling';
 import { PaginationControls } from './BlingShared';
 
+interface BlingContato {
+  id: number;
+  nome?: string;
+  fantasia?: string;
+  tipo?: string;
+  numeroDocumento?: string;
+  email?: string;
+  telefone?: string;
+  celular?: string;
+  situacao?: string;
+}
+
 export function BlingContatosPanel() {
   const [pesquisa, setPesquisa] = useState('');
   const [criterio, setCriterio] = useState('1');
@@ -40,7 +52,7 @@ export function BlingContatosPanel() {
     }
   };
 
-  const handleEdit = (c: any) => {
+  const handleEdit = (c: BlingContato) => {
     setFormData({
       nome: c.nome || '', fantasia: c.fantasia || '', tipoPessoa: c.tipo || 'J',
       numeroDocumento: c.numeroDocumento || '', email: c.email || '', telefone: c.telefone || c.celular || ''
@@ -98,7 +110,7 @@ export function BlingContatosPanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {contatos.map((c: any) => (
+                  {contatos.map((c: BlingContato) => (
                     <TableRow key={c.id}>
                       <TableCell className="font-mono text-xs">{c.id}</TableCell>
                       <TableCell className="font-medium">{c.nome || c.fantasia}</TableCell>

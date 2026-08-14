@@ -180,4 +180,4 @@ export default function Logistica() {
   );
 }
 
-const cn = (...classes: any[]) => classes.filter(Boolean).join(' ');
+const cn = (...classes: unknown[]) => classes.filter(Boolean).join(' ');

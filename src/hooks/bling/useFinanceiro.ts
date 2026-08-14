@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { blingAction } from './client';
 
-export function useBlingFinanceiro(tipo: 'receber' | 'pagar', filtros?: Record<string, any>) {
+export function useBlingFinanceiro(tipo: 'receber' | 'pagar', filtros?: Record<string, unknown>) {
   const action = tipo === 'receber' ? 'listar_contas_receber' : 'listar_contas_pagar';
   return useQuery({
     queryKey: ['bling-financeiro', tipo, filtros],
@@ -65,7 +65,7 @@ export function useBlingFinanceiroMutations() {
   return { criarContaReceber, criarContaPagar, darBaixaReceber, darBaixaPagar, estornarBaixaReceber, estornarBaixaPagar, excluirContaReceber, excluirContaPagar };
 }
 
-export function useBlingBorderos(filtros?: Record<string, any>) {
+export function useBlingBorderos(filtros?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['bling-borderos', filtros],
     queryFn: () => blingAction('listar_borderos', { filtros }),

@@ -32,8 +32,8 @@ export function WhatsAppConfigPanel() {
       if (error) throw error;
       toast.success('Mensagem de teste enviada!');
       setConfigured(true);
-    } catch (err: any) {
-      toast.error(err.message || 'Falha no envio. Verifique as configurações.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Falha no envio. Verifique as configurações.');
     } finally {
       setTesting(false);
     }

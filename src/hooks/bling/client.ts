@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 
-export async function blingAction(action: string, params: Record<string, any> = {}) {
+export async function blingAction(action: string, params: Record<string, unknown> = {}) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Não autenticado');
 

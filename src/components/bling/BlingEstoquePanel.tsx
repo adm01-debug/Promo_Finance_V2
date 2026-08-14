@@ -12,6 +12,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Warehouse, MapPin, RefreshCw, Plus, Loader2 } from 'lucide-react';
 import { useBlingEstoque, useBlingDepositos, useBlingEstoqueMutations } from '@/hooks/useBling';
 
+interface BlingSaldo {
+  produto?: { id?: number; nome?: string; codigo?: string };
+  saldoFisicoTotal?: number;
+  saldoVirtualTotal?: number;
+}
+
+interface BlingDeposito {
+  id?: number;
+  descricao?: string;
+  situacao?: string | number;
+  padrao?: boolean;
+}
+
 export function BlingEstoquePanel() {
   const { data, refetch, isFetching } = useBlingEstoque();
   const { data: depositosData, refetch: refetchDepositos, isFetching: fetchingDepositos } = useBlingDepositos();
@@ -57,7 +70,7 @@ export function BlingEstoquePanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {saldos.map((s: any) => (
+                  {saldos.map((s: BlingSaldo) => (
                     <TableRow key={s.produto?.id}>
                       <TableCell className="font-medium">{s.produto?.nome || `#${s.produto?.id}`}</TableCell>
                       <TableCell className="font-mono text-xs">{s.produto?.codigo || '-'}</TableCell>
@@ -96,7 +109,7 @@ export function BlingEstoquePanel() {
               <Table>
                 <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Descrição</TableHead><TableHead>Situação</TableHead><TableHead>Padrão</TableHead></TableRow></TableHeader>
                 <TableBody>
-                  {depositos.map((d: any) => (
+                  {depositos.map((d: BlingDeposito) => (
                     <TableRow key={d.id}>
                       <TableCell className="font-mono text-xs">{d.id}</TableCell>
                       <TableCell className="font-medium">{d.descricao}</TableCell>

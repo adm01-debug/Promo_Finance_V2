@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TabsContent } from '@/components/ui/tabs';
 import { CheckCircle2, RefreshCw } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
+import type { Database } from '@/integrations/supabase/types';
 
 interface AcoesTabProps {
-  tarefasAcionaveis: any[];
+  tarefasAcionaveis: Database['public']['Tables']['elisao_tarefas_acionaveis']['Row'][];
   sincronizarBitrix: { mutate: (id: string) => void; isPending: boolean };
 }
 
@@ -19,7 +20,7 @@ export function AcoesTab({ tarefasAcionaveis, sincronizarBitrix }: AcoesTabProps
           Nenhuma tarefa de recuperação ativa.
         </div>
       ) : (
-        tarefasAcionaveis.map((t: any) => (
+        tarefasAcionaveis.map((t) => (
           <Card key={t.id}>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">

@@ -13,6 +13,13 @@ interface Props {
   empresaId?: string;
 }
 
+interface NfProcessada {
+  id: string;
+  arquivo_nome?: string | null;
+  arquivo_url?: string | null;
+  status?: string;
+}
+
 export function UploadNotaFiscalOCR({ empresaId }: Props) {
   const processar = useProcessarNFMutation(empresaId);
   const lista = useListaNotasFiscaisOCR(empresaId);
@@ -96,7 +103,7 @@ export function UploadNotaFiscalOCR({ empresaId }: Props) {
             <p className="text-xs text-muted-foreground">Nenhuma NF processada ainda.</p>
           ) : (
             <ul className="space-y-1 max-h-48 overflow-y-auto">
-              {(lista.data ?? []).map((nf: any) => (
+              {((lista.data ?? []) as unknown as NfProcessada[]).map((nf) => (
                 <li key={nf.id} className="flex items-center justify-between text-xs p-2 rounded bg-muted/20">
                   <span className="truncate flex-1">{nf.arquivo_nome ?? nf.arquivo_url}</span>
                   <Badge variant={nf.status === 'sucesso' ? 'default' : nf.status === 'erro' ? 'destructive' : 'secondary'} className="text-xs">

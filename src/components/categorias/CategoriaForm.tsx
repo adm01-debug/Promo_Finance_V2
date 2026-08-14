@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useCreateCategoria, useUpdateCategoria, CATEGORY_COLORS, CATEGORY_ICONS, type CategoriaInput } from '@/hooks/useCategorias';
+import { useCreateCategoria, useUpdateCategoria, CATEGORY_COLORS, CATEGORY_ICONS, type Categoria, type CategoriaInput } from '@/hooks/useCategorias';
 import { useEffect } from 'react';
 import * as Icons from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -23,7 +23,7 @@ type CategoriaFormData = z.infer<typeof categoriaSchema>;
 interface CategoriaFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  categoria?: any;
+  categoria?: Categoria;
   defaultType?: 'receita' | 'despesa';
 }
 
@@ -45,7 +45,7 @@ export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'de
     if (categoria) {
       form.reset({
         nome: categoria.nome,
-        tipo: categoria.tipo,
+        tipo: categoria.tipo as 'receita' | 'despesa',
         cor: categoria.cor || CATEGORY_COLORS[0],
         icone: categoria.icone || 'tag',
       });

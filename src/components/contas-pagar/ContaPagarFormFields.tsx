@@ -1,4 +1,4 @@
-import { UseFormReturn } from 'react-hook-form';
+import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { Building2, Calendar, FileText, Tag, CreditCard, Banknote, QrCode, Wallet } from 'lucide-react';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -19,7 +19,7 @@ const tipoCobrancaOptions = [
 ];
 
 interface Props {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FieldValues>;
   empresas: Array<{ id: string; nome_fantasia?: string | null; razao_social: string }>;
   centrosCusto: Array<{ id: string; codigo: string; nome: string }>;
   contasBancarias: Array<{ id: string; banco: string; agencia: string; conta: string }>;

@@ -112,7 +112,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
 export function useCreateContaPagar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Record<string, unknown>) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -141,7 +141,7 @@ export function useCreateContaPagar() {
 export function useUpdateContaPagar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: any) => {
+    mutationFn: async ({ id, ...data }: { id: string } & Record<string, unknown>) => {
       const { error } = await supabase.from('contas_pagar').update(data).eq('id', id);
       if (error) throw error;
     },

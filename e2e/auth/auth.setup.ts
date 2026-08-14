@@ -1,5 +1,5 @@
 import { test as setup, expect } from '@playwright/test';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 const authFile = 'playwright/.auth/user.json';

@@ -9,12 +9,12 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/formatters";
-import { itemVariants } from "./types";
+import { itemVariants, type BloqueioRow } from "./types";
 
 interface BloqueiosTableProps {
-  bloqueios: any[] | undefined;
+  bloqueios: BloqueioRow[] | undefined;
   isLoading: boolean;
-  onOpenDetails: (b: any) => void;
+  onOpenDetails: (b: BloqueioRow) => void;
 }
 
 export function BloqueiosTable({ bloqueios, isLoading, onOpenDetails }: BloqueiosTableProps) {
@@ -107,7 +107,7 @@ export function BloqueiosTable({ bloqueios, isLoading, onOpenDetails }: Bloqueio
                   </TableCell>
                   <TableCell className="p-6">
                     <div className="flex flex-wrap gap-2 max-w-[300px]">
-                      {Object.entries((b.campos_conflitantes as Record<string, any>) || {}).map(([key, val]) => (
+                      {Object.entries((b.campos_conflitantes as Record<string, unknown>) || {}).map(([key, val]) => (
                         <div key={key} className="flex flex-col p-2 bg-card/5 rounded-lg min-w-[80px]">
                           <span className="text-[9px] uppercase font-black text-muted-foreground/60">{key}</span>
                           <span className="text-[11px] font-bold truncate">

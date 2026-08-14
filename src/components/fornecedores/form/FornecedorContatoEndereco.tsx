@@ -1,5 +1,5 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
-import { UseFormReturn } from 'react-hook-form';
+import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import {
   FormControl,
@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { maskPhone } from '@/lib/masks';
 
 interface FornecedorContatoEnderecoProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FieldValues>;
 }
 
 export function FornecedorContatoEndereco({ form }: FornecedorContatoEnderecoProps) {

@@ -14,7 +14,7 @@ import {
   AlertCircle
 } from "lucide-react";
 
-const Section = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => (
+const Section = ({ title, icon: Icon, children }: { title: string, icon: React.ComponentType<{ className?: string }>, children: React.ReactNode }) => (
   <motion.section 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}

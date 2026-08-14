@@ -18,7 +18,7 @@ export function useBlingServicosLogistica() {
   });
 }
 
-export function useBlingRemessas(filtros?: Record<string, any>) {
+export function useBlingRemessas(filtros?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['bling-remessas', filtros],
     queryFn: () => blingAction('listar_remessas', { filtros }),
@@ -26,7 +26,7 @@ export function useBlingRemessas(filtros?: Record<string, any>) {
   });
 }
 
-export function useBlingObjetos(filtros?: Record<string, any>) {
+export function useBlingObjetos(filtros?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['bling-objetos', filtros],
     queryFn: () => blingAction('listar_objetos', { filtros }),

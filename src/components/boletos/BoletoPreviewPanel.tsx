@@ -7,6 +7,14 @@ import { toast } from 'sonner';
 import { BoletoBarcode } from './BoletoBarcode';
 import { BoletoHistorico } from './BoletoHistorico';
 import { Badge } from '@/components/ui/badge';
+import type { Boleto as BoletoDb } from '@/hooks/useBoletos';
+
+interface EventoPagamento {
+  tipo?: string;
+  data?: string | Date;
+  valor?: number;
+  metodo?: string;
+}
 
 interface Boleto {
   id: string; numero: string; linha_digitavel: string; codigo_barras: string;
@@ -14,13 +22,13 @@ interface Boleto {
   sacado_nome: string; sacado_cpf_cnpj: string | null; banco: string; agencia: string;
   conta: string; descricao: string | null; status: string;
   asaas_id?: string | null; external_provider?: string | null;
-  bitrix_id?: string | null; bitrix_status?: string | null; eventos_pagamento?: any[] | null;
+  bitrix_id?: string | null; bitrix_status?: string | null; eventos_pagamento?: EventoPagamento[] | null;
   rastreio_status?: Array<{ status: string; data: string; detalhe: string }>;
 }
 
 interface BoletoPreviewPanelProps {
   boleto: Boleto;
-  onUpdateStatus: (data: { id: string; status: any }) => void;
+  onUpdateStatus: (data: { id: string; status: BoletoDb['status'] }) => void;
 }
 
 export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPanelProps) {
@@ -153,7 +161,7 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
                   <CheckCircle2 className="h-4 w-4" /> Confirmações de Liquidação
                 </h4>
                 <div className="space-y-3">
-                  {boleto.eventos_pagamento.map((evento: any, i: number) => (
+                  {boleto.eventos_pagamento.map((evento: EventoPagamento, i: number) => (
                     <div key={i} className="flex items-center justify-between text-xs bg-card/40 p-2 rounded-lg border border-success/5">
                       <div className="flex items-center gap-2">
                         <TrendingUp className="h-3 w-3 text-success" />

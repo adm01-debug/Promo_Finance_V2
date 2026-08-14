@@ -38,7 +38,6 @@ import { ConformidadeHistoricoCard } from '@/components/tributario/ConformidadeH
 import { ProjecaoConformidadeCard } from '@/components/tributario/ProjecaoConformidadeCard';
 
 import {
-  useConformidadeSnapshots,
   useSalvarConformidadeSnapshots,
 } from '@/hooks/useConformidadeSnapshots';
 

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { blingAction } from './client';
 
-export function useBlingNFe(filtros?: Record<string, any>) {
+export function useBlingNFe(filtros?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['bling-nfe', filtros],
     queryFn: () => blingAction('listar_nfe', { filtros: { limite: 100, ...filtros } }),

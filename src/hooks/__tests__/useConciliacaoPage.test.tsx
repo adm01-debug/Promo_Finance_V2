@@ -13,7 +13,6 @@ import type { ExtratoOFX } from '@/lib/ofx-parser';
 // ---------- Hoisted mocks (compartilhados entre módulo e testes) ----------
 
 const mocks = vi.hoisted(() => {
-  const confirmarMutateAsync = (globalThis as any).__vi_fn?.() ?? undefined;
   return {
     mutations: {
       confirmarConciliacao: { mutateAsync: undefined as any },

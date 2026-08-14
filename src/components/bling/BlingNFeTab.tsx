@@ -9,6 +9,17 @@ import { FileText, RefreshCw, Loader2, Eye, Download, Send, Warehouse, DollarSig
 import { useBlingNFe, useBlingNFeMutations } from '@/hooks/useBling';
 import { PaginationControls } from './BlingShared';
 
+interface BlingNFe {
+  id: number;
+  numero?: string;
+  dataEmissao?: string;
+  contato?: { nome?: string };
+  valorNota?: number;
+  situacao?: number;
+  linkDanfe?: string;
+  xml?: string;
+}
+
 export function BlingNFeTab() {
   const [pagina, setPagina] = useState(1);
   const { data, refetch, isFetching } = useBlingNFe({ pagina });
@@ -47,7 +58,7 @@ export function BlingNFeTab() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {notas.map((n: any) => (
+                  {notas.map((n: BlingNFe) => (
                     <TableRow key={n.id}>
                       <TableCell className="font-mono">{n.numero || '-'}</TableCell>
                       <TableCell>{n.dataEmissao ? new Date(n.dataEmissao).toLocaleDateString('pt-BR') : '-'}</TableCell>
@@ -55,7 +66,7 @@ export function BlingNFeTab() {
                       <TableCell className="text-right font-semibold">R$ {Number(n.valorNota || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
                       <TableCell>
                         <Badge variant={n.situacao === 6 ? 'default' : n.situacao === 7 ? 'destructive' : 'outline'}>
-                          {situacaoNFe[n.situacao] || `#${n.situacao}`}
+                          {situacaoNFe[n.situacao ?? 0] || `#${n.situacao}`}
                         </Badge>
                       </TableCell>
                       <TableCell>

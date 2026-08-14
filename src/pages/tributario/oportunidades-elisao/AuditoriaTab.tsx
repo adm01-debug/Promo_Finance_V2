@@ -9,9 +9,10 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { baixarRelatorioAuditoriaCreditos } from '@/lib/tributario/relatorio-pdf';
+import type { Database } from '@/integrations/supabase/types';
 
 interface AuditoriaTabProps {
-  creditosAuditoria: any[];
+  creditosAuditoria: Database['public']['Tables']['elisao_creditos_auditoria']['Row'][];
   empresaRazaoSocial: string;
   decidirCredito: { mutate: (args: { id: string; status: string }) => void };
 }
@@ -24,7 +25,7 @@ export function AuditoriaTab({ creditosAuditoria, empresaRazaoSocial, decidirCre
           Nenhum crédito pendente de auditoria para esta empresa.
         </div>
       ) : (
-        creditosAuditoria.map((c: any) => (
+        creditosAuditoria.map((c) => (
           <Card key={c.id}>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">

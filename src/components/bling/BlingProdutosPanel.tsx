@@ -13,6 +13,23 @@ import { Package, Search, Plus, Layers, Trash2, Loader2, MoreHorizontal } from '
 import { useBlingProdutos, useBlingProdutoMutations, useBlingVariacoes } from '@/hooks/useBling';
 import { PaginationControls, LoadingSkeleton } from './BlingShared';
 
+interface BlingProduto {
+  id: number;
+  codigo?: string;
+  nome?: string;
+  preco?: number;
+  tipo?: string;
+  formato?: string;
+  situacao?: string;
+}
+
+interface BlingVariacao {
+  id: number;
+  nome?: string;
+  codigo?: string;
+  preco?: number;
+}
+
 export function BlingProdutosPanel() {
   const [nome, setNome] = useState('');
   const [pagina, setPagina] = useState(1);
@@ -66,7 +83,7 @@ export function BlingProdutosPanel() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {produtos.map((p: any) => (
+                    {produtos.map((p: BlingProduto) => (
                       <TableRow key={p.id}>
                         <TableCell className="font-mono text-xs">{p.codigo || '-'}</TableCell>
                         <TableCell className="font-medium">{p.nome}</TableCell>
@@ -169,7 +186,7 @@ export function BlingProdutosPanel() {
               <Table>
                 <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nome</TableHead><TableHead>Código</TableHead><TableHead className="text-right">Preço</TableHead></TableRow></TableHeader>
                 <TableBody>
-                  {variacoes.map((v: any) => (
+                  {variacoes.map((v: BlingVariacao) => (
                     <TableRow key={v.id}>
                       <TableCell className="font-mono text-xs">{v.id}</TableCell>
                       <TableCell>{v.nome}</TableCell>

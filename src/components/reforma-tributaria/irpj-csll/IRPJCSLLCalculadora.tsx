@@ -16,7 +16,13 @@ interface FormCalculo {
 }
 
 interface Props {
-  apuracoesAno: any[];
+  apuracoesAno: Array<{
+    id: string;
+    status: string | null;
+    tipo_apuracao: string | null;
+    trimestre?: number | null;
+    ano: number;
+  }>;
   formCalculo: FormCalculo;
   setFormCalculo: React.Dispatch<React.SetStateAction<FormCalculo>>;
   saldoPrejuizos: { irpj: number; csll: number };

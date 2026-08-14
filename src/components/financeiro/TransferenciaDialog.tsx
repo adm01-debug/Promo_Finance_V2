@@ -76,7 +76,7 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
       onOpenChange(false);
       form.reset();
     },
-    onError: (e: any) => {
+    onError: (e) => {
       toast.error('Erro ao realizar transferência: ' + e.message);
     }
   });

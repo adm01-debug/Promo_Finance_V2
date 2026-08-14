@@ -9,6 +9,15 @@ import { ShoppingCart, RefreshCw, CheckCircle2, XCircle, Loader2, FileText, Ware
 import { useBlingPedidos, useBlingPedidoMutations } from '@/hooks/useBling';
 import { PaginationControls } from './BlingShared';
 
+interface BlingPedido {
+  id: number;
+  numero?: string;
+  data?: string;
+  contato?: { nome?: string };
+  totalProdutos?: number;
+  situacao?: { id?: number };
+}
+
 export function BlingPedidosPanel() {
   const [pagina, setPagina] = useState(1);
   const { data, refetch, isFetching } = useBlingPedidos({ pagina });
@@ -53,8 +62,8 @@ export function BlingPedidosPanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pedidos.map((p: any) => {
-                    const sit = situacaoMap[p.situacao?.id] || { label: `#${p.situacao?.id}`, variant: 'outline' as const };
+                  {pedidos.map((p: BlingPedido) => {
+                    const sit = situacaoMap[p.situacao?.id ?? 0] || { label: `#${p.situacao?.id}`, variant: 'outline' as const };
                     return (
                       <TableRow key={p.id}>
                         <TableCell className="font-mono">{p.numero || p.id}</TableCell>

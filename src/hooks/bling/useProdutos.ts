@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { blingAction } from './client';
 
-export function useBlingProdutos(filtros?: Record<string, any>) {
+export function useBlingProdutos(filtros?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['bling-produtos', filtros],
     queryFn: () => blingAction('listar_produtos', { filtros: { limite: 100, ...filtros } }),

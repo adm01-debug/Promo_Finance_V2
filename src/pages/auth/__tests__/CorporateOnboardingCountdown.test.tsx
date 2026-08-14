@@ -7,7 +7,7 @@
  * inclusive nos últimos 200ms do último tick — impede o invoke.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 const hoisted = vi.hoisted(() => ({

@@ -178,7 +178,9 @@ export async function agendarCobranca(contaId: string): Promise<ActionResult> {
   if (findError || !conta) return { success: false, message: `Conta ${contaId} não encontrada.` };
 
   const etapas = ['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'] as const;
-  const etapaAtual: EtapaCobranca = conta.etapa_cobranca || 'preventiva';
+  const etapaAtual: EtapaCobranca = etapas.includes(conta.etapa_cobranca as EtapaCobranca)
+    ? (conta.etapa_cobranca as EtapaCobranca)
+    : 'preventiva';
   const indiceAtual = etapas.indexOf(etapaAtual);
   const proximaEtapa = etapas[Math.min(indiceAtual + 1, etapas.length - 1)];
 

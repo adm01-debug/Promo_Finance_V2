@@ -3,8 +3,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { TabsContent } from '@/components/ui/tabs';
 import { AlertCircle } from 'lucide-react';
+import type { Database } from '@/integrations/supabase/types';
 
-export function AlertasTab({ alertas }: { alertas: any[] }) {
+export function AlertasTab({ alertas }: { alertas: Database['public']['Tables']['elisao_alertas']['Row'][] }) {
   return (
     <TabsContent value="alertas" className="space-y-4 mt-4">
       {alertas.length === 0 ? (
@@ -12,7 +13,7 @@ export function AlertasTab({ alertas }: { alertas: any[] }) {
           Nenhum alerta de divergência para o período selecionado.
         </div>
       ) : (
-        alertas.map((a: any) => (
+        alertas.map((a) => (
           <Alert key={a.id} variant={a.severidade === 'alta' || a.severidade === 'critica' ? 'error' : 'default'}>
             <AlertCircle className="h-4 w-4" />
             <AlertTitle className="flex items-center justify-between">

@@ -46,6 +46,18 @@ import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
+type DetailStatEntry = { status?: string };
+
+type AuditTrailLog = {
+  id: string;
+  payment_id?: string;
+  action: string;
+  created_at: string;
+  details?: { message?: string } | null;
+  previous_status?: string | null;
+  new_status?: string | null;
+};
+
 export default function Asaas() {
   const { data: empresas, isLoading: loadingEmpresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
@@ -256,7 +268,7 @@ export default function Asaas() {
                       labelFormatter={(label) => `Status: ${statusConfig[label]?.label || label}`}
                     />
                     <Bar dataKey="total_value" radius={[4, 4, 0, 0]} barSize={40}>
-                      {(detailStats || []).map((entry: Record<string, any>, index: number) => (
+                      {(detailStats || []).map((entry: DetailStatEntry, index: number) => (
                         <Cell key={`cell-${index}`} fill={
                           entry.status === 'RECEIVED' || entry.status === 'CONFIRMED' ? '#10b981' :
                             entry.status === 'OVERDUE' ? '#ef4444' :
@@ -407,7 +419,7 @@ export default function Asaas() {
           <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
             {auditTrail
               .filter(a => a.payment_id === selectedPaymentAudit)
-              .map((log: Record<string, any>) => (
+              .map((log: AuditTrailLog) => (
                 <div key={log.id} className="border-b pb-2 last:border-0">
                   <div className="flex justify-between items-start mb-1">
                     <Badge variant="outline" className="text-[10px] uppercase">

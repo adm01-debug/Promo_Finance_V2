@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { SVGProps } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -152,7 +153,7 @@ export function BenchmarkingConcorrentes() {
 }
 
 // Helper icons missing in the file
-function CheckCircle2(props: any) {
+function CheckCircle2(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

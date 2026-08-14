@@ -47,11 +47,11 @@ const supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHAB
 });
 
 // Proxy para interceptar chamadas e adicionar breadcrumbs
-const supabaseProxyHandler: ProxyHandler<any> = {
+const supabaseProxyHandler: ProxyHandler<object> = {
   get(target, prop) {
-    const value = target[prop];
+    const value = (target as Record<PropertyKey, unknown>)[prop];
     if (prop === 'from' && typeof value === 'function') {
-      const fromFn = (...args: any[]) => {
+      const fromFn = (...args: unknown[]) => {
         const tableName = args[0];
         addBreadcrumb(`Supabase: Accessing table ${tableName}`);
         return value.apply(target, args);
@@ -59,11 +59,11 @@ const supabaseProxyHandler: ProxyHandler<any> = {
       return fromFn;
     }
     if (prop === 'functions' && value) {
-      return new Proxy(value, {
+      return new Proxy(value as object, {
         get(fnTarget, fnProp) {
-          const fnValue = fnTarget[fnProp];
+          const fnValue = (fnTarget as Record<PropertyKey, unknown>)[fnProp];
           if (fnProp === 'invoke' && typeof fnValue === 'function') {
-            const invokeFn = (...args: any[]) => {
+            const invokeFn = (...args: unknown[]) => {
               const fnName = args[0];
               const options = (args[1] ?? {}) as {
                 headers?: Record<string, string>;

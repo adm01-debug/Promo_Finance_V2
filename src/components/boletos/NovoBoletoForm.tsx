@@ -119,7 +119,7 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
         <div className="col-span-2"><Label>Descrição (opcional)</Label><Input value={formData.descricao} onChange={(e) => setFormData({ ...formData, descricao: e.target.value })} placeholder="Descrição ou referência do boleto" /></div>
         <div className="col-span-2">
           <Label>Provedor de Emissão</Label>
-          <Select value={formData.provider} onValueChange={(v: any) => setFormData({ ...formData, provider: v })}>
+          <Select value={formData.provider} onValueChange={(v) => setFormData({ ...formData, provider: v as 'system' | 'asaas' })}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione o provedor" />
             </SelectTrigger>

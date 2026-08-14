@@ -14,7 +14,8 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
-  useCobrancaKPIs, useAgingData, useTopDevedores, useEtapasCobranca 
+  useCobrancaKPIs, useAgingData, useTopDevedores, useEtapasCobranca,
+  type CobrancaKPIs, type TopDevedor 
 } from '@/hooks/useCobrancas';
 import { 
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -49,7 +50,7 @@ const etapasRegua = [
   { id: 'juridico', nome: 'Jurídico', dias: 30, descricao: '30 dias após - Escalação', canal: 'Jurídico', icon: AlertTriangle, cor: 'bg-destructive/10 text-destructive border-destructive/20' },
 ];
 
-const getMetricsCanal = (kpis: any) => [
+const getMetricsCanal = (kpis: CobrancaKPIs | undefined) => [
   { canal: 'Email', enviados: Math.round(kpis?.qtdVencidas * 0.8) || 0, abertos: Math.round(kpis?.qtdVencidas * 0.6) || 0, pagos: Math.round(kpis?.qtdRecuperadas * 0.4) || 0, taxaConversao: 42 },
   { canal: 'WhatsApp', enviados: Math.round(kpis?.qtdVencidas * 0.9) || 0, abertos: Math.round(kpis?.qtdVencidas * 0.85) || 0, pagos: Math.round(kpis?.qtdRecuperadas * 0.5) || 0, taxaConversao: 58 },
   { canal: 'SMS', enviados: Math.round(kpis?.qtdVencidas * 0.5) || 0, abertos: Math.round(kpis?.qtdVencidas * 0.3) || 0, pagos: Math.round(kpis?.qtdRecuperadas * 0.1) || 0, taxaConversao: 12 },
@@ -63,7 +64,7 @@ export default function Cobrancas() {
   const { data: topDevedores, isLoading: loadingDevedores } = useTopDevedores(10);
   const { data: etapasCount } = useEtapasCobranca();
   
-  const [selectedDevedor, setSelectedDevedor] = useState<any>(null);
+  const [selectedDevedor, setSelectedDevedor] = useState<TopDevedor | null>(null);
 
   const getEtapaCount = (etapaId: string) => {
     return etapasCount?.find(e => e.etapa === etapaId)?.count || 0;
