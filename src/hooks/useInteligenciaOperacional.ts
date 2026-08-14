@@ -53,7 +53,7 @@ export function useCreatePlanoAcao() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Usuário não autenticado');
       
-      const insertData: any = { ...plano, user_id: userData.user.id };
+      const insertData = { ...plano, user_id: userData.user.id };
       
       const { data, error } = await supabase
         .from('planos_acao')

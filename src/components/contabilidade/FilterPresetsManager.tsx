@@ -17,23 +17,23 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { useFilterPresets } from '@/hooks/useFilterPresets';
+import { useFilterPresets, type FilterPreset } from '@/hooks/useFilterPresets';
 import { useAuth } from '@/hooks/useAuth';
 import { logUserAction } from '@/lib/audit-logger';
 
-interface FilterPresetsManagerProps {
+interface FilterPresetsManagerProps<T> {
   entityType: string;
   empresaId?: string;
-  currentFilters: any;
-  onLoadPreset: (filters: any) => void;
+  currentFilters: T;
+  onLoadPreset: (filters: T) => void;
 }
 
-export function FilterPresetsManager({ 
+export function FilterPresetsManager<T extends object>({ 
   entityType, 
   empresaId, 
   currentFilters, 
   onLoadPreset 
-}: FilterPresetsManagerProps) {
+}: FilterPresetsManagerProps<T>) {
   const { user } = useAuth();
   const { presets, savePreset, deletePreset } = useFilterPresets(entityType, empresaId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,8 +60,8 @@ export function FilterPresetsManager({
     setIsDialogOpen(false);
   };
 
-  const handleLoad = async (preset: any) => {
-    onLoadPreset(preset.filters);
+  const handleLoad = async (preset: FilterPreset) => {
+    onLoadPreset(preset.filters as T);
     
     if (user) {
       await logUserAction({

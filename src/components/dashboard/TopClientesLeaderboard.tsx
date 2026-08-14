@@ -3,7 +3,8 @@ import { Trophy, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { PositionBadge, RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
+import { PositionBadge, RankBadge } from '@/components/ui/rank-badge';
+import { getRankFromScore } from '@/components/ui/rank-badge.utils';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },

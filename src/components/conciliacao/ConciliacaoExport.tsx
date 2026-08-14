@@ -15,6 +15,7 @@ import {
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import type { ConciliacaoFilterState } from '@/components/conciliacao/ConciliacaoFilters';
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -43,7 +44,7 @@ interface ConciliacaoExportProps {
     valorConciliado: number;
     valorPendente: number;
   };
-  filters?: any;
+  filters?: ConciliacaoFilterState;
 }
 
 type ExportScope = 'todas' | 'conciliadas' | 'feedback_ia';

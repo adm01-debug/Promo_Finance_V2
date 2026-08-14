@@ -5,7 +5,7 @@ import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-conf
 import { logger } from '@/lib/logger';
 import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
-import type { TablesInsert, Tables, Json } from '@/integrations/supabase/types';
+import type { TablesInsert, Tables, TablesUpdate, Json } from '@/integrations/supabase/types';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
 
 interface ConfirmarConciliacaoParams {
@@ -43,7 +43,7 @@ export function useConciliacao() {
 
 
       // Atualiza metadados extras na transação bancária
-      const updateData: any = {
+      const updateData: TablesUpdate<'transacoes_bancarias'> = {
         status: 'confirmado',
         data_confirmacao: new Date().toISOString(),
         confirmado_por: user?.id,

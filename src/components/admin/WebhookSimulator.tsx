@@ -8,9 +8,17 @@ import { Play, CheckCircle2, XCircle, Loader2, AlertTriangle, ShieldCheck } from
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+interface WebhookSimulationResult {
+  id: string;
+  success: boolean | null;
+  scenario_name: string;
+  duration_ms: number | null;
+  response_status: number | null;
+}
+
 export function WebhookSimulator() {
   const [isRunning, setIsRunning] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<WebhookSimulationResult[]>([]);
   const [stats, setStats] = useState({ total: 0, success: 0, fail: 0 });
 
   const startSimulation = async () => {
@@ -50,9 +58,9 @@ export function WebhookSimulator() {
       // 3. Monitorar resultados
       pollResults(run.id);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro na simulação:', error);
-      toast.error('Falha ao iniciar simulação: ' + error.message);
+      toast.error('Falha ao iniciar simulação: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
       setIsRunning(false);
     }
   };
@@ -154,7 +162,7 @@ export function WebhookSimulator() {
                   <p>Aguardando início da simulação em massa...</p>
                 </div>
               ) : (
-                results.map((res: any) => (
+                results.map((res) => (
                   <div key={res.id} className="flex items-center justify-between p-2 rounded bg-card/5 border border-white/5">
                     <div className="flex items-center gap-3">
                       {res.success ? (

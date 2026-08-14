@@ -27,7 +27,7 @@ vi.mock('@/integrations/supabase/client', () => ({
       })),
     })),
     functions: {
-      invoke: (...args: any[]) => mockInvoke(...args),
+      invoke: (...args: unknown[]) => mockInvoke(...args),
     },
   },
 }));

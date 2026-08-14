@@ -1,16 +1,5 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-
-type Theme = 'light' | 'dark' | 'system';
-
-interface ThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  /** Limpa a preferência salva e volta ao padrão dark. */
-  resetTheme: () => void;
-  isDark: boolean;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { useEffect, useState, useCallback } from 'react';
+import { ThemeContext, type Theme } from './ThemeContext';
 
 const DEFAULT_THEME: Theme = 'dark';
 const STORAGE_KEY = 'theme';
@@ -65,10 +54,4 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) throw new Error('useTheme must be used within ThemeProvider');
-  return context;
 }

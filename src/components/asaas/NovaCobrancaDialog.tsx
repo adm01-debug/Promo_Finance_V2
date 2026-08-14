@@ -11,11 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { QrCode, Banknote, CreditCard, Loader2, UserPlus, Settings2, RefreshCw } from 'lucide-react';
+import { QrCode, Banknote, CreditCard, Loader2, UserPlus } from 'lucide-react';
 import { useAsaas, type AsaasBillingType } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
 import { CobrancaCardForm } from './CobrancaCardForm';
 import { NovoClienteAsaasForm } from './NovoClienteAsaasForm';
+import { ConfiguracoesAvancadas, SplitCobrancaConfig } from './NovaCobrancaSections';
 
 interface Props {
   open: boolean;
@@ -362,118 +363,20 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
             </div>
 
             {/* Configurações avançadas */}
-            <div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-xs text-muted-foreground gap-1"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-              >
-                <Settings2 className="h-3.5 w-3.5" />
-                {showAdvanced ? 'Ocultar' : 'Mostrar'} configurações avançadas
-              </Button>
-              {showAdvanced && (
-                <div className="mt-3 space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label className="text-xs">Juros ao mês (%)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={juros}
-                        onChange={e => setJuros(e.target.value)}
-                        placeholder="0.00"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">Multa por atraso (%)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="2"
-                        value={multa}
-                        onChange={e => setMulta(e.target.value)}
-                        placeholder="0.00"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label className="text-xs">Desconto (R$)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={descontoValor}
-                        onChange={e => setDescontoValor(e.target.value)}
-                        placeholder="0.00"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">Dias para desconto</Label>
-                      <Input
-                        type="number"
-                        min="0"
-                        value={descontoDias}
-                        onChange={e => setDescontoDias(e.target.value)}
-                        placeholder="0"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <ConfiguracoesAvancadas
+              showAdvanced={showAdvanced} setShowAdvanced={setShowAdvanced}
+              juros={juros} setJuros={setJuros}
+              multa={multa} setMulta={setMulta}
+              descontoValor={descontoValor} setDescontoValor={setDescontoValor}
+              descontoDias={descontoDias} setDescontoDias={setDescontoDias}
+            />
 
             {/* Split Settings */}
-            <div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-xs text-muted-foreground gap-1"
-                onClick={() => setShowSplit(!showSplit)}
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                {showSplit ? 'Remover' : 'Configurar'} Split (Divisão)
-              </Button>
-              {showSplit && (
-                <div className="mt-3 space-y-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label className="text-xs">Wallet ID Destino</Label>
-                      <Input
-                        value={splitWalletId}
-                        onChange={e => setSplitWalletId(e.target.value)}
-                        placeholder="Ex: d7a1..."
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">Percentual (%)</Label>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={splitPercent}
-                        onChange={e => setSplitPercent(e.target.value)}
-                        placeholder="10"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground italic">
-                    O valor será dividido automaticamente na liquidação.
-                  </p>
-                </div>
-              )}
-            </div>
+            <SplitCobrancaConfig
+              showSplit={showSplit} setShowSplit={setShowSplit}
+              splitWalletId={splitWalletId} setSplitWalletId={setSplitWalletId}
+              splitPercent={splitPercent} setSplitPercent={setSplitPercent}
+            />
 
             <Button
               className="w-full"

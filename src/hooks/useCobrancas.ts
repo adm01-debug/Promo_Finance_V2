@@ -76,7 +76,7 @@ export function useContasVencidas() {
 
       if (error) throw error;
 
-      return (data || []).map((conta: any) => ({
+      return (data || []).map((conta) => ({
         id: conta.id,
         cliente_nome: conta.cliente_nome,
         cliente_id: conta.cliente_id,
@@ -87,7 +87,7 @@ export function useContasVencidas() {
         status: conta.status,
         dias_atraso: differenceInDays(new Date(), parseISO(conta.data_vencimento)),
         score: conta.clientes?.score || null,
-      }));
+      })) as ContaVencida[];
     },
   });
 }
@@ -227,8 +227,8 @@ export function useTopDevedores(limit: number = 10) {
 
       if (error) throw error;
 
-      const devedoresPorCliente = (data || []).reduce((acc: Record<string, TopDevedor>, conta: any) => {
-        const key = conta.cliente_id || conta.cliente_nome;
+      const devedoresPorCliente = (data || []).reduce((acc: Record<string, TopDevedor>, conta) => {
+        const key = (conta.cliente_id || conta.cliente_nome) as string;
         if (!acc[key]) {
           acc[key] = {
             cliente_id: conta.cliente_id,

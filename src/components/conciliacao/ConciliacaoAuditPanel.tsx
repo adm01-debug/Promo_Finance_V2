@@ -305,7 +305,7 @@ export function ConciliacaoAuditPanel() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {auditData?.divergencias.filter((d: any) => d.status === 'pendente').length || 0}
+              {auditData?.divergencias.filter((d) => d.status === 'pendente').length || 0}
             </p>
           </CardContent>
         </Card>

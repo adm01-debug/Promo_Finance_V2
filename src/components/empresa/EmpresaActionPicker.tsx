@@ -6,7 +6,7 @@
 import { useMemo } from 'react';
 import { Sparkles, Check, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useEmpresaScope } from '@/contexts/EmpresaScopeContext';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import { EmpresaBadge } from './EmpresaBadge';
 import {
   recomendarEmpresa,

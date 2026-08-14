@@ -8,7 +8,8 @@ import {
 import { useConsultaUF } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
 import { OfflineBadge } from './OfflineBadge';
-import { ResultBlock, UFS, pct } from './shared';
+import { ResultBlock, UFS } from './shared';
+import { pct } from './format';
 
 /**
  * Consulta por UF: alíquota interna + FCP, alíquota interestadual para a UF de

@@ -3,6 +3,23 @@ import { todayISOLocal } from '@/lib/formatters';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+interface ContaRamoRow {
+  valor: number;
+  valor_recebido: number | null;
+  data_vencimento: string;
+  clientes: { ramo_atividade: string | null } | null;
+}
+
+interface AlertaPreditivoRow {
+  id: string;
+  titulo: string;
+  descricao: string | null;
+  probabilidade: number | null;
+  valor_estimado: number | null;
+  data_prevista: string | null;
+  status: string | null;
+}
+
 export interface PredicaoInadimplencia {
   id: string;
   tipo: string;
@@ -75,7 +92,7 @@ export function useInadimplenciaPorRamo() {
         dias_atraso_total: number;
       }>();
 
-      (contas as Array<Record<string, any>> | null)?.forEach((conta) => {
+      (contas as ContaRamoRow[] | null)?.forEach((conta) => {
         const ramo = conta.clientes?.ramo_atividade || "Não informado";
         const valorPendente = conta.valor - (conta.valor_recebido || 0);
         const isVencido = conta.data_vencimento < hoje;
@@ -202,7 +219,7 @@ export function useInadimplenciaPorVendedor() {
 
       const resultado: InadimplenciaPorVendedor[] = [];
       
-      (vendedores as Array<Record<string, any>> | null)?.forEach((vendedor) => {
+      (vendedores as VendedorData[] | null)?.forEach((vendedor) => {
         const stats = porVendedor.get(vendedor.id) || {
           total_contas: 0,
           total_vencido: 0,
@@ -253,7 +270,7 @@ export function usePrevisoesInadimplencia() {
       
       // Se não houver alertas pré-gerados, retornamos vazio para que o front processe via algoritmo local
       // ou podemos disparar um RPC aqui para gerar novos alertas baseados em buckets
-      return (data || []).map((item: any) => ({
+      return (data || []).map((item: AlertaPreditivoRow) => ({
         id: item.id,
         tipo: 'inadimplencia',
         titulo: item.titulo,

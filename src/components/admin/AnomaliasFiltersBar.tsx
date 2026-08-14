@@ -27,10 +27,8 @@ import {
   ViewExportButton,
   type ViewExportColumn,
 } from "@/components/shared/ViewExportButton";
-import {
-  ColumnVisibilityMenu,
-  mergeLockedColumns,
-} from "@/components/shared/ColumnVisibilityMenu";
+import { ColumnVisibilityMenu } from "@/components/shared/ColumnVisibilityMenu";
+import { mergeLockedColumns } from "@/components/shared/ColumnVisibilityMenu.utils";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import {

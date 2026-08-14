@@ -146,7 +146,7 @@ export function FilaTab({
                   <TableRow><TableCell colSpan={5} className="text-center py-4">Carregando...</TableCell></TableRow>
                 ) : syncQueue.length === 0 ? (
                   <TableRow><TableCell colSpan={5} className="text-center py-4 text-muted-foreground">Fila vazia</TableCell></TableRow>
-                ) : syncQueue.slice(0, 5).map((item: Record<string, any>) => (
+                ) : syncQueue.slice(0, 5).map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-mono text-xs truncate max-w-[80px]">{String(item.payment_id).substring(0, 8)}</TableCell>
                     <TableCell>{item.attempts}/{item.max_attempts}</TableCell>

@@ -15,6 +15,7 @@ import {
   IRPFM_LIMITE_ISENCAO_MENSAL,
 } from '@/lib/tributario';
 import { formatCurrency } from '@/lib/formatters';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const MESES = [
   'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
@@ -31,6 +32,8 @@ export default function PfVinculada() {
     Array.from({ length: 12 }, () => ({ dividendos: 0, irrf: 0 })),
   );
   const [proLaboreMensal, setProLaboreMensal] = useState(0);
+  const [uniformeOpen, setUniformeOpen] = useState(false);
+  const [uniformeValor, setUniformeValor] = useState('');
 
   const resultado = useMemo(() => {
     return calcularIRPFMAnual(
@@ -68,8 +71,14 @@ export default function PfVinculada() {
   };
 
   const preencherUniforme = () => {
-    const v = Number(prompt('Valor mensal de dividendos a aplicar nos 12 meses (R$)?') || 0);
+    setUniformeValor('');
+    setUniformeOpen(true);
+  };
+
+  const confirmUniforme = () => {
+    const v = Number(uniformeValor || 0);
     if (v > 0) setLinhas(Array.from({ length: 12 }, () => ({ dividendos: v, irrf: 0 })));
+    setUniformeOpen(false);
   };
 
   useEffect(() => {
@@ -285,6 +294,27 @@ export default function PfVinculada() {
           </CardContent>
         </Card>
       </div>
+      <Dialog open={uniformeOpen} onOpenChange={setUniformeOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Preencher 12 meses</DialogTitle>
+            <DialogDescription>Valor mensal de dividendos a aplicar nos 12 meses (R$)?</DialogDescription>
+          </DialogHeader>
+          <Input
+            type="number"
+            min={0}
+            step={1000}
+            autoFocus
+            value={uniformeValor}
+            onChange={(e) => setUniformeValor(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') confirmUniforme(); }}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setUniformeOpen(false)}>Cancelar</Button>
+            <Button onClick={confirmUniforme}>Aplicar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

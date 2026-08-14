@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Package, Search, Plus, Layers, Trash2, Loader2, MoreHorizontal } from 'lucide-react';
 import { useBlingProdutos, useBlingProdutoMutations, useBlingVariacoes } from '@/hooks/useBling';
 import { PaginationControls, LoadingSkeleton } from './BlingShared';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface BlingProduto {
   id: number;
@@ -42,6 +43,7 @@ export function BlingProdutosPanel() {
   const variacoes = variacoesData?.data || [];
 
   const [prodForm, setProdForm] = useState({ nome: '', codigo: '', preco: '', tipo: 'P', formato: 'S', situacao: 'A' });
+  const [confirmExcluir, setConfirmExcluir] = useState<number | null>(null);
 
   return (
     <div className="space-y-4">
@@ -107,9 +109,7 @@ export function BlingProdutosPanel() {
                                 </DropdownMenuItem>
                               )}
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-destructive" onClick={() => {
-                                if (confirm(`Excluir produto #${p.id}?`)) excluirProdutos.mutate([String(p.id)]);
-                              }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
+                              <DropdownMenuItem className="text-destructive" onClick={() => setConfirmExcluir(p.id)}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -200,6 +200,17 @@ export function BlingProdutosPanel() {
           )}
         </DialogContent>
       </Dialog>
+      <ConfirmDialog
+        open={!!confirmExcluir}
+        onOpenChange={(o) => !o && setConfirmExcluir(null)}
+        title="Excluir produto"
+        description={confirmExcluir !== null ? `Excluir produto #${confirmExcluir}?` : ''}
+        confirmText="Excluir"
+        variant="danger"
+        onConfirm={() => {
+          if (confirmExcluir !== null) excluirProdutos.mutate([String(confirmExcluir)]);
+        }}
+      />
     </div>
   );
 }

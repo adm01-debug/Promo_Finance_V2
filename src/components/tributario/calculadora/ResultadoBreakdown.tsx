@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertCircle, Info } from 'lucide-react';
 import type { ResultadoRegime } from '@/lib/tributario/calculadora';
-import { formatBRL, formatPct } from './NumberField';
+import { formatBRL, formatPct } from './number-field.formatters';
 
 interface Props {
   resultado: ResultadoRegime;

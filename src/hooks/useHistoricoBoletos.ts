@@ -6,7 +6,7 @@ export interface HistoricoEvento {
   boleto_id: string;
   tipo_evento: string;
   descricao: string;
-  metadados: any;
+  metadados: Record<string, unknown> | null;
   created_at: string;
   // Joins
   boleto_numero?: string;

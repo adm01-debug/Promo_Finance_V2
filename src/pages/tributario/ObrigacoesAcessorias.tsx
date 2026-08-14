@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CalendarCheck, Download, Info, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useEmpresaScope } from '@/contexts/EmpresaScopeContext';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import {
   chaveEntrega,
   useEntregasObrigacoes,
@@ -40,30 +40,10 @@ import { ProjecaoConformidadeCard } from '@/components/tributario/ProjecaoConfor
 import {
   useSalvarConformidadeSnapshots,
 } from '@/hooks/useConformidadeSnapshots';
+import { brl, dataBR, SITUACAO_LABEL, SITUACAO_VARIANT } from './obrigacoes-helpers';
+import { CatalogoObrigacoesTable } from './CatalogoObrigacoesTable';
+import { SimuladorMultaCard } from './SimuladorMultaCard';
 
-
-const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const dataBR = (iso: string) => (iso.length === 10 ? iso.split('-').reverse().join('/') : iso);
-const num = (v: string) => {
-  const parsed = Number(v.replace(/\./g, '').replace(',', '.'));
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-const SITUACAO_LABEL: Record<SituacaoObrigacao, string> = {
-  entregue: 'Entregue',
-  vencida: 'Vencida',
-  vence_hoje: 'Vence hoje',
-  proxima: 'Próxima',
-  futura: 'Futura',
-};
-
-const SITUACAO_VARIANT: Record<SituacaoObrigacao, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  entregue: 'secondary',
-  vencida: 'destructive',
-  vence_hoje: 'destructive',
-  proxima: 'default',
-  futura: 'outline',
-};
 
 export default function ObrigacoesAcessorias() {
   const hojeISO = new Date().toISOString().slice(0, 10);
@@ -407,139 +387,30 @@ export default function ObrigacoesAcessorias() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="catalogo" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Catálogo de obrigações</CardTitle>
-                  <CardDescription>Base legal, periodicidade e regra de multa por obrigação.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Obrigação</TableHead>
-                        <TableHead>Periodicidade</TableHead>
-                        <TableHead>Regimes</TableHead>
-                        <TableHead>Base legal</TableHead>
-                        <TableHead className="text-right">Multa mín.</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {OBRIGACOES.map((o) => (
-                        <TableRow key={o.id}>
-                          <TableCell>
-                            <p className="font-medium text-foreground">{o.nome}</p>
-                            <p className="text-xs text-muted-foreground">{o.descricao}</p>
-                          </TableCell>
-                          <TableCell className="capitalize">{o.periodicidade}</TableCell>
-                          <TableCell className="text-muted-foreground">{o.regimes.join(', ')}</TableCell>
-                          <TableCell className="text-muted-foreground">{o.baseLegal}</TableCell>
-                          <TableCell className="text-right tabular-nums">{brl(o.multaMinima)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </TabsContent>
+<TabsContent value="catalogo" className="mt-4">
+  <Card>
+    <CardHeader>
+      <CardTitle>Catálogo de obrigações</CardTitle>
+      <CardDescription>Base legal, periodicidade e regra de multa por obrigação.</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <CatalogoObrigacoesTable />
+    </CardContent>
+  </Card>
+</TabsContent>
 
-            <TabsContent value="multa" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Simulador de multa por entrega em atraso</CardTitle>
-                  <CardDescription>
-                    Multa por mês-calendário ou fração, com piso e teto por obrigação (MP 2.158-35/2001, art. 57).
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="multa-obrigacao">Obrigação</Label>
-                      <Select value={multaObrigacao} onValueChange={setMultaObrigacao}>
-                        <SelectTrigger id="multa-obrigacao">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {OBRIGACOES.map((o) => (
-                            <SelectItem key={o.id} value={o.id}>
-                              {o.nome}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="multa-prazo">Prazo legal</Label>
-                        <Input
-                          id="multa-prazo"
-                          type="date"
-                          value={multaPrazo}
-                          onChange={(e) => setMultaPrazo(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="multa-entrega">Data de entrega</Label>
-                        <Input
-                          id="multa-entrega"
-                          type="date"
-                          value={multaEntrega}
-                          onChange={(e) => setMultaEntrega(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="multa-base">Base de cálculo (faturamento ou tributos declarados)</Label>
-                      <Input
-                        id="multa-base"
-                        inputMode="decimal"
-                        defaultValue="0"
-                        onChange={(e) => setMultaBase(num(e.target.value))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border border-border bg-card p-4">
-                    {multa ? (
-                      <dl className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <dt className="text-muted-foreground">Dias em atraso</dt>
-                          <dd className="tabular-nums text-foreground">{multa.diasAtraso}</dd>
-                        </div>
-                        <div className="flex justify-between">
-                          <dt className="text-muted-foreground">Meses (ou fração)</dt>
-                          <dd className="tabular-nums text-foreground">{multa.mesesAtraso}</dd>
-                        </div>
-                        <div className="flex justify-between">
-                          <dt className="text-muted-foreground">Percentual aplicado</dt>
-                          <dd className="tabular-nums text-foreground">
-                            {(multa.percentual * 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%
-                          </dd>
-                        </div>
-                        <div className="flex justify-between border-t border-border pt-3">
-                          <dt className="font-medium text-foreground">Multa devida</dt>
-                          <dd className="font-semibold tabular-nums text-foreground">{brl(multa.valorDevido)}</dd>
-                        </div>
-                        {(multa.aplicouPiso || multa.aplicouTeto) && (
-                          <Alert>
-                            <Info className="h-4 w-4" />
-                            <AlertDescription>
-                              {multa.aplicouTeto ? 'Teto percentual atingido. ' : ''}
-                              {multa.aplicouPiso ? 'Valor ajustado ao piso legal da obrigação.' : ''}
-                            </AlertDescription>
-                          </Alert>
-                        )}
-                      </dl>
-                    ) : (
-                      <Alert>
-                        <Info className="h-4 w-4" />
-                        <AlertDescription>Preencha datas válidas para simular a multa.</AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+<TabsContent value="multa" className="mt-4">
+  <SimuladorMultaCard
+    multaObrigacao={multaObrigacao}
+    setMultaObrigacao={setMultaObrigacao}
+    multaPrazo={multaPrazo}
+    setMultaPrazo={setMultaPrazo}
+    multaEntrega={multaEntrega}
+    setMultaEntrega={setMultaEntrega}
+    setMultaBase={setMultaBase}
+    multa={multa}
+  />
+</TabsContent>
           </Tabs>
         </div>
       </div>

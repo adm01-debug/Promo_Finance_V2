@@ -1,11 +1,38 @@
 import React from 'react';
 import { motion } from "framer-motion";
-import { ArrowUpRight, ArrowDownRight, CheckCircle2, TrendingUp, TrendingDown, AlertTriangle, Building2, BarChart3, Clock, Zap } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, CheckCircle2, TrendingUp, TrendingDown, AlertTriangle, Building2, BarChart3, Clock, Zap, type LucideIcon } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
 
-const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor, onClick }: any) => (
+interface FuturisticMetricCardProps {
+  title: string;
+  value: string;
+  icon: LucideIcon;
+  glowColor: string;
+  trend?: number;
+  onClick?: () => void;
+}
+
+interface EvolucaoMensalItem {
+  mes: string;
+  receitas: number;
+  lucro: number;
+}
+
+interface FuturisticDashboardProps {
+  kpis: {
+    totalReceber: number;
+    totalPagar: number;
+    totalVencidasReceber: number;
+    variacaoReceita: number;
+    inadimplencia: number;
+  };
+  evolucaoMensal: EvolucaoMensalItem[];
+  onMetricClick: (metric: string) => void;
+}
+
+const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor, onClick }: FuturisticMetricCardProps) => (
   <div 
     onClick={onClick}
     className={cn(
@@ -42,7 +69,7 @@ const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor, onCl
   </div>
 );
 
-export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any) {
+export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: FuturisticDashboardProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -198,7 +225,7 @@ export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any
           </div>
           
           <div className="space-y-4 relative z-10">
-            {evolucaoMensal.slice(0, 5).map((item: any, i: number) => (
+            {evolucaoMensal.slice(0, 5).map((item, i) => (
               <div 
                 key={i} 
                 className="flex justify-between items-center p-4 rounded-xl bg-background/40 backdrop-blur-sm border border-white/5 hover:border-primary/30 transition-all duration-300 group/item"

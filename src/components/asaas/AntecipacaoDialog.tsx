@@ -12,9 +12,15 @@ interface Props {
   empresaId?: string;
 }
 
+interface SimulacaoAntecipacao {
+  totalValue: number;
+  fee: number;
+  netValue: number;
+}
+
 export function AntecipacaoDialog({ paymentId, onClose, empresaId }: Props) {
   const { simularAntecipacao, solicitarAntecipacao } = useAsaas(empresaId);
-  const [simulation, setSimulation] = useState<any>(null);
+  const [simulation, setSimulation] = useState<SimulacaoAntecipacao | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSimulate = async () => {
@@ -22,7 +28,7 @@ export function AntecipacaoDialog({ paymentId, onClose, empresaId }: Props) {
     setLoading(true);
     try {
       const result = await simularAntecipacao.mutateAsync({ payment_id: paymentId });
-      setSimulation(result);
+      setSimulation(result as SimulacaoAntecipacao);
     } catch {
       // toast handled in hook
     } finally {

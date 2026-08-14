@@ -3,20 +3,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Check, ChevronLeft, ChevronRight, Copy, Download, ExternalLink, Plus, Trash2, X } from 'lucide-react';
+import { Loader2, Check, ChevronLeft, ChevronRight, Plus, Trash2, X } from 'lucide-react';
 import { IDP_PRESETS, type IdpPreset } from './IdpPresets';
-import { useSaveSSOProvider, useTestSSOConfig, useGenerateSSOMetadata, useSaveSSORoleMappings, useSSORoleMappings, type SSOProvider, type AppRole } from '@/hooks/useSSO';
+import { useSaveSSOProvider, useSaveSSORoleMappings, useSSORoleMappings, type SSOProvider, type AppRole } from '@/hooks/useSSO';
 import { useSSOConsistency } from '@/hooks/useSSOConsistency';
 import { SSOConsistencyPanel } from './SSOConsistencyPanel';
+import { SSOStepConexao } from './SSOStepConexao';
+import { SSOStepValidacao } from './SSOStepValidacao';
 import type { AutoFix } from '@/lib/sso/consistency';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface Props {
   open: boolean;
@@ -42,12 +42,8 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
   });
   const [domainInput, setDomainInput] = useState('');
   const [roleMappings, setRoleMappings] = useState<Array<{ idp_group: string; app_role: AppRole }>>([]);
-  const [metadata, setMetadata] = useState<any>(null);
-  const [testResult, setTestResult] = useState<any>(null);
 
   const save = useSaveSSOProvider();
-  const test = useTestSSOConfig();
-  const genMeta = useGenerateSSOMetadata();
   const saveMappings = useSaveSSORoleMappings();
   const { data: existingMappings } = useSSORoleMappings(editing?.id);
 
@@ -67,8 +63,6 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
         setPreset(null);
         setStep(0);
         setRoleMappings([]);
-        setMetadata(null);
-        setTestResult(null);
       }
     }
   }, [open, editing]);
@@ -97,31 +91,6 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
       setForm(p => ({ ...p, allowed_domains: [...(p.allowed_domains ?? []), d] }));
       setDomainInput('');
     }
-  };
-
-  const handleTest = async () => {
-    setTestResult(null);
-    const r = await test.mutateAsync({
-      tipo: form.tipo,
-      discovery_url: form.discovery_url,
-      metadata_xml: form.metadata_xml,
-      sso_url: form.sso_url,
-      x509_cert: form.x509_cert,
-    });
-    setTestResult(r);
-    if (r.valid && r.discovered) {
-      setForm(p => ({ ...p, ...r.discovered }));
-    }
-  };
-
-  const handleGenerateMetadata = async () => {
-    const r = await genMeta.mutateAsync({ tipo: form.tipo!, nome: form.nome });
-    setMetadata(r);
-  };
-
-  const copy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copiado`);
   };
 
   const handleSave = async () => {
@@ -213,99 +182,7 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
 
         {/* Step 1: Conexão */}
         {step === 1 && (
-          <div className="space-y-4">
-            <div>
-              <Label>Nome do provedor *</Label>
-              <Input value={form.nome ?? ''} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: Azure AD - Empresa XYZ" />
-            </div>
-
-            {preset?.instrucoes && (
-              <Alert>
-                <AlertDescription>
-                  <p className="font-medium mb-2">Como obter as credenciais no {preset.nome}:</p>
-                  <ol className="list-decimal list-inside space-y-1 text-sm">
-                    {preset.instrucoes.map((s, i) => <li key={i}>{s}</li>)}
-                  </ol>
-                  {preset.docs_url && (
-                    <a href={preset.docs_url} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-primary text-sm mt-2 hover:underline">
-                      Documentação <ExternalLink className="h-3 w-3" />
-                    </a>
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {form.tipo === 'oidc' ? (
-              <>
-                <div>
-                  <Label>Discovery URL (.well-known/openid-configuration) *</Label>
-                  <Input
-                    value={form.discovery_url ?? ''}
-                    onChange={e => setForm(p => ({ ...p, discovery_url: e.target.value }))}
-                    placeholder={preset?.discovery_url_template ?? 'https://...'}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Client ID *</Label>
-                    <Input value={form.client_id ?? ''} onChange={e => setForm(p => ({ ...p, client_id: e.target.value }))} />
-                  </div>
-                  <div>
-                    <Label>Nome do secret (Client Secret) *</Label>
-                    <Input
-                      value={form.client_secret_ref ?? ''}
-                      onChange={e => setForm(p => ({ ...p, client_secret_ref: e.target.value }))}
-                      placeholder="SSO_AZURE_SECRET"
-                    />
-                  </div>
-                </div>
-                <Alert>
-                  <AlertDescription className="text-xs">
-                    Adicione o Client Secret como segredo no Lovable Cloud com o nome informado acima.
-                    O valor nunca é armazenado em texto puro.
-                  </AlertDescription>
-                </Alert>
-              </>
-            ) : (
-              <>
-                <div>
-                  <Label>Metadata XML do IdP</Label>
-                  <Textarea
-                    rows={6}
-                    value={form.metadata_xml ?? ''}
-                    onChange={e => setForm(p => ({ ...p, metadata_xml: e.target.value }))}
-                    placeholder="Cole o conteúdo do metadata.xml do seu IdP"
-                    className="font-mono text-xs"
-                  />
-                </div>
-                <div className="text-center text-sm text-muted-foreground">— ou configure manualmente —</div>
-                <div>
-                  <Label>SSO URL (SingleSignOnService Location)</Label>
-                  <Input value={form.sso_url ?? ''} onChange={e => setForm(p => ({ ...p, sso_url: e.target.value }))} />
-                </div>
-                <div>
-                  <Label>Certificado X.509</Label>
-                  <Textarea
-                    rows={4}
-                    value={form.x509_cert ?? ''}
-                    onChange={e => setForm(p => ({ ...p, x509_cert: e.target.value }))}
-                    className="font-mono text-xs"
-                  />
-                </div>
-              </>
-            )}
-            <div>
-              <Label>URL de logout (SLO) <span className="text-xs text-muted-foreground font-normal">— opcional</span></Label>
-              <Input
-                value={form.slo_url ?? ''}
-                onChange={e => setForm(p => ({ ...p, slo_url: e.target.value }))}
-                placeholder={form.tipo === 'oidc' ? 'https://login.idp.com/oauth2/v2.0/logout' : 'https://idp.com/saml/slo'}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Para OIDC, deixe em branco para usar o <code>end_session_endpoint</code> do discovery. Sem URL de logout, o "Sair" encerra apenas a sessão local.
-              </p>
-            </div>
-          </div>
+          <SSOStepConexao form={form} setForm={setForm} preset={preset} />
         )}
 
         {/* Step 2: Mapeamento */}
@@ -421,106 +298,12 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
 
         {/* Step 3: Validação */}
         {step === 3 && (
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <Button onClick={handleTest} disabled={test.isPending}>
-                {test.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Testar configuração
-              </Button>
-              <Button variant="outline" onClick={handleGenerateMetadata} disabled={genMeta.isPending}>
-                Gerar metadata SP
-              </Button>
-            </div>
-
-            {testResult && (
-              <Alert variant={testResult.valid ? 'success' : 'error'}>
-                <AlertDescription className="flex items-center gap-2">
-                  {testResult.valid ? <Check className="h-4 w-4 text-success" /> : <X className="h-4 w-4" />}
-                  {testResult.message}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {metadata && (
-              <Card>
-                <CardContent className="p-4 space-y-3">
-                  {metadata.callback_url && (
-                    <div>
-                      <Label className="text-xs">Callback / Redirect URI (cole no IdP)</Label>
-                      <div className="flex gap-2 mt-1">
-                        <Input readOnly value={metadata.callback_url} className="font-mono text-xs" />
-                        <Button size="icon" variant="outline" onClick={() => copy(metadata.callback_url, 'Callback URL')}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  {metadata.acs_url && (
-                    <div>
-                      <Label className="text-xs">ACS URL (Assertion Consumer Service)</Label>
-                      <div className="flex gap-2 mt-1">
-                        <Input readOnly value={metadata.acs_url} className="font-mono text-xs" />
-                        <Button size="icon" variant="outline" onClick={() => copy(metadata.acs_url, 'ACS URL')}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  {metadata.entity_id && (
-                    <div>
-                      <Label className="text-xs">Entity ID</Label>
-                      <div className="flex gap-2 mt-1">
-                        <Input readOnly value={metadata.entity_id} className="font-mono text-xs" />
-                        <Button size="icon" variant="outline" onClick={() => copy(metadata.entity_id, 'Entity ID')}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  {metadata.metadata_xml && (
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <Label className="text-xs">SP Metadata XML</Label>
-                        <Button size="sm" variant="outline" onClick={() => {
-                          const blob = new Blob([metadata.metadata_xml], { type: 'application/xml' });
-                          const a = document.createElement('a');
-                          a.href = URL.createObjectURL(blob);
-                          a.download = `sp-metadata-${form.nome ?? 'sso'}.xml`;
-                          a.click();
-                        }}>
-                          <Download className="h-3 w-3 mr-1" />Baixar
-                        </Button>
-                      </div>
-                      <Textarea readOnly value={metadata.metadata_xml} rows={6} className="font-mono text-xs" />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            <Alert>
-              <AlertDescription className="text-sm">
-                <strong>Próximo passo:</strong> após salvar, abra um chamado no suporte Lovable Cloud
-                anexando a metadata SP gerada para finalizar a ativação SAML server-side.
-              </AlertDescription>
-            </Alert>
-
-            <div className="flex items-center justify-between pt-2 border-t">
-              <div>
-                <Label>Ativar provedor agora</Label>
-                <p className="text-xs text-muted-foreground">Permite que usuários comecem a fazer login</p>
-              </div>
-              <Switch checked={!!form.ativo} onCheckedChange={v => setForm(p => ({ ...p, ativo: v }))} />
-            </div>
-
-            <SSOConsistencyPanel
-              issues={consistency.issues}
-              errors={consistency.errors}
-              warnings={consistency.warnings}
-              infos={consistency.infos}
-              onAutofix={applyAutofix}
-            />
-          </div>
+          <SSOStepValidacao
+            form={form}
+            setForm={setForm}
+            consistency={consistency}
+            applyAutofix={applyAutofix}
+          />
         )}
 
         {/* Footer */}

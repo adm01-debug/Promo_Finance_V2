@@ -1,7 +1,7 @@
 // Hook: listagem de NF-e recebidas via puxador SEFAZ (Fase 3).
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEmpresaScope } from '@/contexts/EmpresaScopeContext';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 
 export type ManifestacaoStatus =
   | 'pendente'

@@ -46,6 +46,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { DuplicateButton } from '@/components/common/DuplicateButton';
 import { toast } from 'sonner';
 
+interface ContaPagarView {
+  id: string; status: string | null; tipo_cobranca: string | null; data_vencimento: string; descricao: string;
+  fornecedor_nome: string | null; categoria: string | null; numero_documento: string | null; valor: number;
+  recorrente: boolean | null; centro_custo_nome?: string | null; centros_custo?: { nome?: string | null } | null;
+  aprovado_por: string | null; aprovado_em?: string | null;
+}
+
+interface SolicitacaoAprovacaoHistorico {
+  id: string; status: string; solicitado_em: string | null; solicitado_por: string | null; aprovado_em?: string | null;
+  aprovado_por?: string | null; motivo_rejeicao?: string | null; observacoes?: string | null;
+}
+
+interface ProfileMapItem {
+  id: string; full_name: string | null; email: string | null;
+}
+
 const statusConfig: Record<
   StatusPagamento,
   { label: string; color: string; icon: typeof CheckCircle2 }
@@ -86,11 +102,11 @@ const tipoCobrancaIcons: Record<TipoCobranca, typeof CreditCard> = {
 };
 
 interface ContasPagarTableRowProps {
-  conta: any;
+  conta: ContaPagarView;
   index: number;
   isSelected: boolean;
   onToggleSelect: () => void;
-  onEdit: (data?: any) => void;
+  onEdit: (data?: ContaPagarView) => void;
   onDelete: () => void;
   onRegistrarPagamento: () => void;
   onSolicitarAprovacao: () => void;
@@ -98,10 +114,10 @@ interface ContasPagarTableRowProps {
   temSolicitacaoPendente: boolean;
   foiRejeitado: boolean;
   aguardandoSolicitacao: boolean;
-  historico: any[];
-  profilesMap: Map<string, any>;
+  historico: SolicitacaoAprovacaoHistorico[];
+  profilesMap: Map<string, ProfileMapItem>;
   valorMinimoAprovacao: number;
-  getRowAnimation: (index: number) => any;
+  getRowAnimation: (index: number) => Record<string, unknown>;
   isVirtual?: boolean;
 }
 

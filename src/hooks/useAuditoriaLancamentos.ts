@@ -55,13 +55,13 @@ export function useAuditoriaLancamentos(params: UseAuditoriaLancamentosParams) {
       const rows = (data || []) as unknown as AuditoriaLancamentoRow[];
 
       // Enriquecer com numero_lancamento/historico/data
-      const enriched = rows.map((r: any) => {
+      const enriched = rows.map((r) => {
         const novos = (r.dados_novos || {}) as Record<string, unknown>;
         const antigos = (r.dados_antigos || {}) as Record<string, unknown>;
         const src = Object.keys(novos).length ? novos : antigos;
         
         // Resolve o nome do usuário a partir da join
-        const userProfile = r.usuario as { full_name: string | null; email: string | null } | null;
+        const userProfile = r.usuario as unknown as { full_name: string | null; email: string | null } | null;
         const usuarioNome = userProfile ? (userProfile.full_name || userProfile.email || 'Sistema') : 'Sistema';
 
         return {

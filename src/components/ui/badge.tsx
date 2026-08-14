@@ -1,29 +1,10 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { type VariantProps } from "class-variance-authority";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const badgeVariants = cva(
-  "inline-flex items-center rounded-lg border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 active:scale-95",
-
-  {
-    variants: {
-      variant: {
-        default: "border-transparent bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-black",
-        secondary: "border-transparent bg-secondary/50 backdrop-blur-sm text-secondary-foreground shadow-sm font-bold",
-        destructive: "border-transparent bg-destructive/10 text-destructive shadow-none font-black ring-1 ring-destructive/20",
-        outline: "border-border/50 text-foreground bg-background/50 font-bold",
-        success: "border-transparent bg-success/10 text-success font-black ring-1 ring-success/20",
-        warning: "border-transparent bg-warning/10 text-warning font-black ring-1 ring-warning/20",
-        info: "border-transparent bg-info/10 text-info font-black ring-1 ring-info/20",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
-);
+import { badgeVariants } from "./badge.variants";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {
   removable?: boolean;
@@ -224,7 +205,6 @@ function NewBadge({ className }: NewBadgeProps) {
 
 export { 
   Badge, 
-  badgeVariants,
   NotificationBadge,
   StatusBadge,
   CountBadge,

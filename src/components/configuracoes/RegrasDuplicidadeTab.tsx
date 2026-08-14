@@ -79,8 +79,8 @@ export function RegrasDuplicidadeTab() {
       queryClient.invalidateQueries({ queryKey: ['configuracoes-duplicidade'] });
       toast.success("Regras de duplicidade atualizadas e versionadas com sucesso!");
     },
-    onError: (error: any) => {
-      toast.error("Erro ao salvar regras: " + error.message);
+    onError: (error: unknown) => {
+      toast.error("Erro ao salvar regras: " + (error instanceof Error ? error.message : String(error)));
     }
   });
 

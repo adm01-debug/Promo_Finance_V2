@@ -15,8 +15,49 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
+interface TypographySpec {
+  name: string;
+  size: string;
+  px: string;
+  weight: string;
+  family: string;
+  lh: string;
+  usage: string;
+}
+
+interface ColorTokenSpec {
+  name: string;
+  value: string;
+  status: string;
+  hex: string;
+}
+
+interface SpacingSpec {
+  name: string;
+  value: string;
+  px: string;
+  token: string;
+}
+
+interface AuditResultsState {
+  typography: TypographySpec[];
+  colors: ColorTokenSpec[];
+  spacing: SpacingSpec[];
+  violations: number;
+  score: number;
+  scanning: boolean;
+  fontFamilies?: string[];
+}
+
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+  color: 'primary' | 'warning';
+}
+
 export const DesignSystemAudit = () => {
-  const [auditResults, setAuditResults] = useState<any>({
+  const [auditResults, setAuditResults] = useState<AuditResultsState>({
     typography: [],
     colors: [],
     spacing: [],
@@ -155,7 +196,7 @@ export const DesignSystemAudit = () => {
                   <div className="md:col-span-2">Size / Line-Height</div>
                   <div className="md:col-span-2">Weight / Family</div>
                 </div>
-                {auditResults.typography.map((item: any, idx: number) => (
+                {auditResults.typography.map((item, idx: number) => (
                   <div key={idx} className="grid grid-cols-1 md:grid-cols-12 items-center p-8 border-b border-white/5 last:border-0 group hover:bg-card/[0.02] transition-colors">
                     <div className="md:col-span-3">
                       <p className="text-xs font-black text-foreground mb-1">{item.name}</p>
@@ -184,7 +225,7 @@ export const DesignSystemAudit = () => {
 
           <TabsContent value="colors" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {auditResults.colors.map((color: any, idx: number) => (
+              {auditResults.colors.map((color, idx: number) => (
                 <Card key={idx} className="bg-card/5 border-border rounded-3xl overflow-hidden premium-card">
                   <div className="h-32 w-full border-b border-border" style={{ backgroundColor: `hsl(${color.value})` }} />
                   <CardContent className="p-6 space-y-4">
@@ -215,7 +256,7 @@ export const DesignSystemAudit = () => {
           <TabsContent value="spacing" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
              <Card className="bg-card/5 border-border rounded-3xl premium-card">
                 <CardContent className="p-8 space-y-8">
-                  {auditResults.spacing.map((s: any, idx: number) => (
+                  {auditResults.spacing.map((s, idx: number) => (
                     <div key={idx} className="flex items-center gap-8 group">
                       <div className="w-24 text-[10px] font-black uppercase tracking-widest text-foreground/20 group-hover:text-primary transition-colors">
                         {s.name}
@@ -268,7 +309,7 @@ export const DesignSystemAudit = () => {
   );
 };
 
-const StatCard = ({ label, value, icon: Icon, color }: any) => (
+const StatCard = ({ label, value, icon: Icon, color }: StatCardProps) => (
   <Card className="bg-card/5 border-border rounded-3xl premium-card">
     <CardContent className="p-6 flex items-center justify-between">
       <div>

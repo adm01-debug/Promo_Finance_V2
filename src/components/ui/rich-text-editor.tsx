@@ -1,6 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Bold, Italic, Underline, Strikethrough, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Link, Image, Code, Quote, Undo, Redo, Type, Heading1, Heading2, Heading3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './dialog';
+import { Input } from './input';
+import { Button } from './button';
 
 interface RichTextEditorProps {
   value: string; onChange: (value: string) => void; placeholder?: string;
@@ -25,6 +28,7 @@ export function RichTextEditor({ value, onChange, placeholder = 'Digite aqui...'
   const editorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [selectionState, setSelectionState] = useState({ bold: false, italic: false, underline: false, strikethrough: false, orderedList: false, unorderedList: false });
+  const [urlPrompt, setUrlPrompt] = useState<{ kind: 'link' | 'image'; value: string } | null>(null);
 
   useEffect(() => { if (editorRef.current && editorRef.current.innerHTML !== value) editorRef.current.innerHTML = value; }, [value]);
   const handleInput = useCallback(() => { if (editorRef.current) onChange(editorRef.current.innerHTML); }, [onChange]);
@@ -45,8 +49,13 @@ export function RichTextEditor({ value, onChange, placeholder = 'Digite aqui...'
       updateSelectionState();
     }
   }, [updateSelectionState]);
-  const insertLink = useCallback(() => { const url = prompt('Digite a URL:'); if (url) document.execCommand('createLink', false, url); }, []);
-  const insertImage = useCallback(() => { const url = prompt('Digite a URL da imagem:'); if (url) document.execCommand('insertImage', false, url); }, []);
+  const insertLink = useCallback(() => { setUrlPrompt({ kind: 'link', value: '' }); }, []);
+  const insertImage = useCallback(() => { setUrlPrompt({ kind: 'image', value: '' }); }, []);
+  const applyUrlPrompt = useCallback(() => {
+    if (!urlPrompt || !urlPrompt.value) return;
+    document.execCommand(urlPrompt.kind === 'link' ? 'createLink' : 'insertImage', false, urlPrompt.value);
+    setUrlPrompt(null);
+  }, [urlPrompt]);
   const formatBlock = useCallback((tag: string) => { document.execCommand('formatBlock', false, tag); }, []);
 
   return (
@@ -82,6 +91,27 @@ export function RichTextEditor({ value, onChange, placeholder = 'Digite aqui...'
       <div ref={editorRef} contentEditable={!readOnly} onInput={handleInput} onFocus={handleFocus} onBlur={handleBlur} onKeyDown={handleKeyDown} onMouseUp={updateSelectionState} onKeyUp={updateSelectionState} data-placeholder={placeholder}
         className={cn('p-4 outline-none bg-background', 'prose prose-sm dark:prose-invert max-w-none', 'overflow-y-auto', readOnly && 'cursor-default', !value && 'empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground')}
         style={{ minHeight, maxHeight }} suppressContentEditableWarning />
+      <Dialog open={!!urlPrompt} onOpenChange={(o) => !o && setUrlPrompt(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{urlPrompt?.kind === 'link' ? 'Inserir link' : 'Inserir imagem'}</DialogTitle>
+            <DialogDescription>
+              {urlPrompt?.kind === 'image' ? 'Digite a URL da imagem:' : 'Digite a URL:'}
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            autoFocus
+            placeholder="https://..."
+            value={urlPrompt?.value ?? ''}
+            onChange={(e) => setUrlPrompt((p) => (p ? { ...p, value: e.target.value } : p))}
+            onKeyDown={(e) => { if (e.key === 'Enter') applyUrlPrompt(); }}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setUrlPrompt(null)}>Cancelar</Button>
+            <Button onClick={applyUrlPrompt} disabled={!urlPrompt?.value}>Aplicar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

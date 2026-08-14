@@ -9,7 +9,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Beaker, Download, FileText, Info } from 'lucide-react';
-import { MixEditor, POSICOES } from '@/components/tributario/monofasico/MixEditor';
+import { MixEditor } from '@/components/tributario/monofasico/MixEditor';
+import { POSICOES } from '@/components/tributario/monofasico/posicoes';
 import { ResumoCards } from '@/components/tributario/monofasico/ResumoCards';
 import { DetalhamentoTable } from '@/components/tributario/monofasico/DetalhamentoTable';
 import { exportMonofasicoCSV, exportMonofasicoPDF } from '@/components/tributario/monofasico/exporters';

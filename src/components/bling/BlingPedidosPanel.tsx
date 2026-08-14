@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ShoppingCart, RefreshCw, CheckCircle2, XCircle, Loader2, FileText, Warehouse, DollarSign, RotateCcw, Receipt, ArrowUpDown, Trash2, MoreHorizontal } from 'lucide-react';
 import { useBlingPedidos, useBlingPedidoMutations } from '@/hooks/useBling';
 import { PaginationControls } from './BlingShared';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface BlingPedido {
   id: number;
@@ -20,6 +21,7 @@ interface BlingPedido {
 
 export function BlingPedidosPanel() {
   const [pagina, setPagina] = useState(1);
+  const [confirmExcluir, setConfirmExcluir] = useState<number | null>(null);
   const { data, refetch, isFetching } = useBlingPedidos({ pagina });
   const { alterarSituacao, gerarNFe, gerarNFCe, lancarEstoque, estornarEstoque, lancarContas, estornarContas, excluirPedidos } = useBlingPedidoMutations();
   const pedidos = data?.data || [];
@@ -105,7 +107,7 @@ export function BlingPedidosPanel() {
                               <DropdownMenuItem onClick={() => alterarSituacao.mutate({ id: String(p.id), idSituacao: 12 })} className="text-destructive">
                                 <XCircle className="h-4 w-4 mr-2" /> Cancelar
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => { if (confirm('Excluir pedido?')) excluirPedidos.mutate([String(p.id)]); }} className="text-destructive">
+                              <DropdownMenuItem onClick={() => setConfirmExcluir(p.id)} className="text-destructive">
                                 <Trash2 className="h-4 w-4 mr-2" /> Excluir
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -121,6 +123,17 @@ export function BlingPedidosPanel() {
           </>
         )}
       </CardContent>
+      <ConfirmDialog
+        open={!!confirmExcluir}
+        onOpenChange={(o) => !o && setConfirmExcluir(null)}
+        title="Excluir pedido"
+        description="Excluir pedido?"
+        confirmText="Excluir"
+        variant="danger"
+        onConfirm={() => {
+          if (confirmExcluir !== null) excluirPedidos.mutate([String(confirmExcluir)]);
+        }}
+      />
     </Card>
   );
 }

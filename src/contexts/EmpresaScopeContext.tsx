@@ -11,17 +11,14 @@
  * de modo que hooks ainda não migrados continuam funcionando.
  */
 import {
-  createContext,
-  useContext,
   useEffect,
   useMemo,
   useState,
   useCallback,
   type ReactNode,
 } from 'react';
-import { useUserEmpresas, type UserEmpresaLink } from '@/hooks/useUserEmpresas';
-
-export type ScopeMode = 'consolidated' | 'focused';
+import { useUserEmpresas } from '@/hooks/useUserEmpresas';
+import { EmpresaScopeContext, type ScopeMode, type EmpresaScopeContextValue } from './useEmpresaScope';
 
 const LEGACY_KEY = 'pf:current-empresa-id';
 const SCOPE_KEY = 'pf:empresa-scope-v1';
@@ -31,32 +28,6 @@ interface PersistedScope {
   selectedIds: string[];
   focusedId: string | null;
 }
-
-interface EmpresaScopeContextValue {
-  /** modo atual de visão */
-  mode: ScopeMode;
-  /** IDs de empresas atualmente em escopo (1+ no consolidated, exatamente 1 no focused) */
-  ids: string[];
-  /** true quando mode === 'consolidated' E mais de 1 empresa selecionada */
-  isConsolidated: boolean;
-  /** Empresa focada (modo focused) ou primeira selecionada (modo consolidated) */
-  currentEmpresaId: string | null;
-  /** Vínculos completos do usuário (todas empresas disponíveis) */
-  availableEmpresas: UserEmpresaLink[];
-  /** Vínculos atualmente em escopo */
-  scopedEmpresas: UserEmpresaLink[];
-  /** true enquanto os vínculos estão carregando */
-  isLoading: boolean;
-
-  // Ações
-  setMode: (mode: ScopeMode) => void;
-  toggleEmpresa: (empresaId: string) => void;
-  setSelectedIds: (ids: string[]) => void;
-  selectAll: () => void;
-  focusEmpresa: (empresaId: string) => void;
-}
-
-const EmpresaScopeContext = createContext<EmpresaScopeContextValue | null>(null);
 
 function loadPersisted(): PersistedScope | null {
   try {
@@ -90,7 +61,6 @@ function syncLegacyKey(currentId: string | null) {
     /* ignore */
   }
 }
-
 export function EmpresaScopeProvider({ children }: { children: ReactNode }) {
   const { data: vinculos = [], isLoading } = useUserEmpresas();
 
@@ -197,12 +167,4 @@ export function EmpresaScopeProvider({ children }: { children: ReactNode }) {
   };
 
   return <EmpresaScopeContext.Provider value={value}>{children}</EmpresaScopeContext.Provider>;
-}
-
-export function useEmpresaScope(): EmpresaScopeContextValue {
-  const ctx = useContext(EmpresaScopeContext);
-  if (!ctx) {
-    throw new Error('useEmpresaScope deve ser usado dentro de <EmpresaScopeProvider>');
-  }
-  return ctx;
 }

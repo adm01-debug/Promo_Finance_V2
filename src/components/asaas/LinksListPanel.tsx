@@ -18,9 +18,18 @@ interface Props {
   empresaId?: string;
 }
 
+interface LinkPagamentoAsaas {
+  id: string;
+  name: string;
+  value: number;
+  chargeType: string;
+  active: boolean;
+  url: string;
+}
+
 export function LinksListPanel({ empresaId }: Props) {
   const { excluirLinkPagamento } = useAsaas(empresaId);
-  const [links, setLinks] = useState<any[]>([]);
+  const [links, setLinks] = useState<LinkPagamentoAsaas[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -32,8 +41,8 @@ export function LinksListPanel({ empresaId }: Props) {
       });
       if (error) throw error;
       setLinks(data?.data || []);
-    } catch (e: any) {
-      toast.error('Erro ao buscar links: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro ao buscar links: ' + (e instanceof Error ? e.message : 'Erro desconhecido'));
     } finally {
       setLoading(false);
     }
@@ -89,7 +98,7 @@ export function LinksListPanel({ empresaId }: Props) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {links.map((link: any) => (
+                  {links.map((link) => (
                     <TableRow key={link.id}>
                       <TableCell className="font-medium text-sm">{link.name || '-'}</TableCell>
                       <TableCell className="font-medium">{formatCurrency(link.value || 0)}</TableCell>

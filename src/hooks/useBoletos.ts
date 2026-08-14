@@ -3,6 +3,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { registrarEventoFinanceiro } from '@/lib/financeiro/registrarEvento';
 import { useToast } from '@/hooks/use-toast';
+import type { Database, Json } from '@/integrations/supabase/types';
+
+// TODO: colunas 'asaas_id' e 'external_provider' não existem no types.ts auto-gen (existem no schema do banco)
+// asaas_id/external_provider existem no schema do banco mas não no types.ts auto-gen.
+// O insert tipado usa o Row do banco; as colunas extras são aceitas em runtime (PostgREST)
+// e o cast abaixo destrincha a checagem estática sem perder a segurança do restante.
+type BoletosInsert = Database['public']['Tables']['boletos']['Insert'];
+// Shape do objeto em memória: inclui colunas que o banco tem mas o types auto-gen não.
+type BoletosData = BoletosInsert & { asaas_id?: string | null; external_provider?: string | null };
+type BoletosUpdate = Database['public']['Tables']['boletos']['Update'];
+type EventoPagamento = Record<string, Json>;
 
 export interface Boleto {
   id: string;
@@ -23,7 +34,7 @@ export interface Boleto {
   external_provider?: string | null;
   bitrix_id?: string | null;
   bitrix_status?: string | null;
-  eventos_pagamento?: any[] | null;
+  eventos_pagamento?: EventoPagamento[] | null;
   descricao: string | null;
   observacoes: string | null;
   conta_receber_id: string | null;
@@ -148,7 +159,7 @@ export function useBoletos() {
       if (!contaBancaria) throw new Error('Conta bancária não encontrada');
 
       const numero = await getNextBoletoNumber();
-      let boletoData: any = {
+      let boletoData: BoletosData = {
         numero,
         valor: data.valor,
         vencimento: data.vencimento,
@@ -202,7 +213,8 @@ export function useBoletos() {
 
       const { data: newBoleto, error } = await supabase
         .from('boletos')
-        .insert(boletoData)
+        // boletoData carrega asaas_id/external_provider (ausentes no types.ts auto-gen)
+        .insert(boletoData as unknown as BoletosInsert)
         .select()
         .single();
 
@@ -264,7 +276,7 @@ export function useBoletos() {
 
   // Update boleto status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status, bitrix_status, eventos_pagamento }: { id: string; status: Boleto['status']; bitrix_status?: string; eventos_pagamento?: any[] }) => {
+    mutationFn: async ({ id, status, bitrix_status, eventos_pagamento }: { id: string; status: Boleto['status']; bitrix_status?: string; eventos_pagamento?: EventoPagamento[] }) => {
       const { data: currentBoleto } = await supabase.from('boletos').select('rastreio_status, eventos_pagamento').eq('id', id).single();
       const currentRastreio = Array.isArray(currentBoleto?.rastreio_status) ? currentBoleto.rastreio_status : [];
       const currentEventos = Array.isArray(currentBoleto?.eventos_pagamento) ? currentBoleto.eventos_pagamento : [];
@@ -274,7 +286,7 @@ export function useBoletos() {
         { status, data: new Date().toISOString(), detalhe: `Status alterado para ${status}${bitrix_status ? ` (Bitrix: ${bitrix_status})` : ''}` }
       ];
 
-      const updateData: any = { status, rastreio_status: newRastreio };
+      const updateData: BoletosUpdate = { status, rastreio_status: newRastreio };
       if (bitrix_status) updateData.bitrix_status = bitrix_status;
       if (eventos_pagamento) updateData.eventos_pagamento = [...currentEventos, ...eventos_pagamento];
 

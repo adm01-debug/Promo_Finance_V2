@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingDown, Award } from 'lucide-react';
 import type { ResultadoCalculadora } from '@/lib/tributario/calculadora';
-import { formatBRL, formatPct } from './NumberField';
+import { formatBRL, formatPct } from './number-field.formatters';
 import { cn } from '@/lib/utils';
 
 export function ComparativoRegimes({ resultado }: { resultado: ResultadoCalculadora }) {

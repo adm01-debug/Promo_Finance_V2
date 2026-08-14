@@ -18,18 +18,31 @@ interface Props {
   empresaId?: string;
 }
 
+interface ExtratoItem {
+  id: string;
+  date: string;
+  type: string;
+  description: string;
+  value: number;
+  balance: number;
+}
+
+interface ExtratoAsaas {
+  data: ExtratoItem[];
+}
+
 export function ExtratoAsaasPanel({ empresaId }: Props) {
   const { consultarExtrato, suggestions, aceitarSugestao, gerarSugestoes } = useAsaas(empresaId);
   const [startDate, setStartDate] = useState(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
   const [finishDate, setFinishDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [extrato, setExtrato] = useState<any>(null);
+  const [extrato, setExtrato] = useState<ExtratoAsaas | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleConsultar = async () => {
     setLoading(true);
     try {
       const result = await consultarExtrato.mutateAsync({ startDate, finishDate });
-      setExtrato(result);
+      setExtrato(result as ExtratoAsaas);
     } catch {
       // handled by hook
     } finally {
@@ -75,7 +88,7 @@ export function ExtratoAsaasPanel({ empresaId }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {extrato.data.map((item: any, idx: number) => {
+                {extrato.data.map((item, idx) => {
                   const transactionSuggestions = (suggestions || []).filter(s => s.transaction_id === item.id);
                   
                   return (

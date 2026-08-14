@@ -28,8 +28,8 @@ import { ConciliacaoSplitDialog } from '@/components/conciliacao/ConciliacaoSpli
 import { RelatorioImportacaoDialog } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
-import { ConciliacaoToolbar, CONCILIACAO_COLUMNS, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
-import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu';
+import { CONCILIACAO_COLUMNS, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/conciliacao-toolbar.constants';
+import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu.utils';
 import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
 import { useSavedFilterAlertsConciliacao } from '@/hooks/useSavedFilterAlerts';
 import type { ConciliacaoFilterState } from '@/components/conciliacao/ConciliacaoFilters';
@@ -42,32 +42,9 @@ import { useConciliacaoPage } from '@/hooks/useConciliacaoPage';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher';
 import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
+import { containerVariants, itemVariants } from './conciliacao-variants';
+import { ConciliacaoToolbarHost } from './ConciliacaoToolbarHost';
 
-const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } } as const;
-const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } } as const;
-
-function ConciliacaoToolbarHost({
-  searchTerm, setSearchTerm, filters, setFilters, sort, setSort, visibleCols, setVisibleCols,
-  activePresetId, onLoadPreset, onClearPreset,
-}: {
-  searchTerm: string; setSearchTerm: (v: string) => void;
-  filters: ConciliacaoFilterState; setFilters: (f: ConciliacaoFilterState) => void;
-  sort: ConciliacaoSort; setSort: (s: ConciliacaoSort) => void;
-  visibleCols: string[]; setVisibleCols: (c: string[]) => void;
-  activePresetId: string | null;
-  onLoadPreset: (p: { id: string; payload: SavedFilterPayload<ConciliacaoFilterState> }) => void;
-  onClearPreset: () => void;
-}) {
-  return (
-    <ConciliacaoToolbar
-      searchTerm={searchTerm} onSearchChange={setSearchTerm}
-      filters={filters} onFiltersChange={setFilters}
-      sort={sort} onSortChange={setSort}
-      visibleCols={visibleCols} onVisibleColsChange={setVisibleCols}
-      activePresetId={activePresetId} onLoadPreset={onLoadPreset} onClearPreset={onClearPreset}
-    />
-  );
-}
 
 export default function Conciliacao() {
   const {

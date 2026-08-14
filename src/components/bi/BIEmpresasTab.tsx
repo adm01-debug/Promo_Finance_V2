@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/formatters";
-import { PositionBadge, getRankFromScore, RankBadge, RankLegend } from "@/components/ui/rank-badge";
+import { PositionBadge, RankBadge, RankLegend } from "@/components/ui/rank-badge";
+import { getRankFromScore } from "@/components/ui/rank-badge.utils";
 
 interface EmpresaComparativo {
   id: string;

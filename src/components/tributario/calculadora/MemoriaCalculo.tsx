@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { ResultadoRegime } from '@/lib/tributario/calculadora';
-import { formatBRL, formatPct } from './NumberField';
+import { formatBRL, formatPct } from './number-field.formatters';
 
 export function MemoriaCalculo({ resultado }: { resultado: ResultadoRegime }) {
   return (

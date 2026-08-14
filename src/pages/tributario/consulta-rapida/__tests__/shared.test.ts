@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { pct, UFS } from '@/pages/tributario/consulta-rapida/shared';
+import { UFS } from '@/pages/tributario/consulta-rapida/shared';
+import { pct } from '@/pages/tributario/consulta-rapida/format';
 
 describe('pct', () => {
   it('trata nulos e NaN como travessão', () => {
