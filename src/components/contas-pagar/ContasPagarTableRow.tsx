@@ -129,7 +129,8 @@ export const ContasPagarTableRow = memo(
     const status = statusConfig[conta.status as StatusPagamento];
     const StatusIcon = status?.icon || Clock;
     const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca as TipoCobranca] || Banknote;
-    const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
+    // data_vencimento e date-only: passar a string direto para o helper (parse local)
+    const overdueDays = calculateOverdueDays(conta.data_vencimento);
 
     const Content = (
       <>

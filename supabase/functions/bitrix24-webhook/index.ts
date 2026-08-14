@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import {
   Bitrix24WebhookSchema,
   corsHeaders,
@@ -17,9 +17,7 @@ function segredosIguais(a: string | null | undefined, b: string | null | undefin
 }
 
 /** Resolve o segredo do webhook Bitrix24: integration_secrets -> env (fail-closed). */
-async function resolverSegredoBitrix24(
-  supabase: ReturnType<typeof createClient>
-): Promise<string | null> {
+async function resolverSegredoBitrix24(supabase: SupabaseClient<any>): Promise<string | null> {
   try {
     const { data } = await supabase
       .from('integration_secrets')
