@@ -1,5 +1,12 @@
 import { OBRIGACOES } from '@/lib/tributario/obrigacoes';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { brl } from './obrigacoes-helpers';
 
 export function CatalogoObrigacoesTable() {

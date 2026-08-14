@@ -2,7 +2,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Info } from 'lucide-react';
 import { OBRIGACOES } from '@/lib/tributario/obrigacoes';
 import { brl, num } from './obrigacoes-helpers';
@@ -28,15 +34,22 @@ interface Props {
 }
 
 export function SimuladorMultaCard({
-  multaObrigacao, setMultaObrigacao, multaPrazo, setMultaPrazo,
-  multaEntrega, setMultaEntrega, setMultaBase, multa,
+  multaObrigacao,
+  setMultaObrigacao,
+  multaPrazo,
+  setMultaPrazo,
+  multaEntrega,
+  setMultaEntrega,
+  setMultaBase,
+  multa,
 }: Props) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Simulador de multa por entrega em atraso</CardTitle>
         <CardDescription>
-          Multa por mês-calendário ou fração, com piso e teto por obrigação (MP 2.158-35/2001, art. 57).
+          Multa por mês-calendário ou fração, com piso e teto por obrigação (MP 2.158-35/2001, art.
+          57).
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
@@ -106,7 +119,9 @@ export function SimuladorMultaCard({
               </div>
               <div className="flex justify-between border-t border-border pt-3">
                 <dt className="font-medium text-foreground">Multa devida</dt>
-                <dd className="font-semibold tabular-nums text-foreground">{brl(multa.valorDevido)}</dd>
+                <dd className="font-semibold tabular-nums text-foreground">
+                  {brl(multa.valorDevido)}
+                </dd>
               </div>
               {(multa.aplicouPiso || multa.aplicouTeto) && (
                 <Alert>
