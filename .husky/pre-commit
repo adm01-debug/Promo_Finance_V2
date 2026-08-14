@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Valida apenas os arquivos staged (eslint --fix + prettier via lint-staged).
+# Os gates pesados (type-check, suite completa, build) rodam no CI.
+#
+# Chama o lint-staged local diretamente via node (sem `npx`) para não depender
+# de `bash`, que pode não estar no PATH do Git em alguns ambientes Windows.
+node node_modules/lint-staged/bin/lint-staged.js

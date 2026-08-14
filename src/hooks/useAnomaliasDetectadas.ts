@@ -1,13 +1,8 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useLogAudit } from "./useAuditLog";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useLogAudit } from './useAuditLog';
 
 const SEVERIDADE_ORDEM: Record<string, number> = {
   critica: 0,
@@ -22,15 +17,15 @@ export interface Anomalia {
   entidade_tipo: string;
   entidade_id: string | null;
   tipo_anomalia:
-    | "movimentacao_outlier"
-    | "pagamento_duplicado"
-    | "conta_pagar_alta"
-    | "conciliacao_atrasada"
-    | "mudanca_regime_brusca";
-  severidade: "baixa" | "media" | "alta" | "critica";
+    | 'movimentacao_outlier'
+    | 'pagamento_duplicado'
+    | 'conta_pagar_alta'
+    | 'conciliacao_atrasada'
+    | 'mudanca_regime_brusca';
+  severidade: 'baixa' | 'media' | 'alta' | 'critica';
   descricao: string;
   dados: unknown;
-  status: "nova" | "investigando" | "falso_positivo" | "confirmada";
+  status: 'nova' | 'investigando' | 'falso_positivo' | 'confirmada';
   detectada_em: string;
   resolvida_em: string | null;
   resolvida_por: string | null;
@@ -38,18 +33,18 @@ export interface Anomalia {
   bitrix_task_id: string | null;
 }
 
-export function useAnomaliasDetectadas(filtroStatus?: Anomalia["status"]) {
+export function useAnomaliasDetectadas(filtroStatus?: Anomalia['status']) {
   const qc = useQueryClient();
 
   const list = useQuery({
-    queryKey: ["anomalias-detectadas", filtroStatus ?? "all"],
+    queryKey: ['anomalias-detectadas', filtroStatus ?? 'all'],
     queryFn: async () => {
       let q = supabase
-        .from("anomalias_detectadas")
-        .select("*")
-        .order("detectada_em", { ascending: false })
+        .from('anomalias_detectadas')
+        .select('*')
+        .order('detectada_em', { ascending: false })
         .limit(200);
-      if (filtroStatus) q = q.eq("status", filtroStatus);
+      if (filtroStatus) q = q.eq('status', filtroStatus);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as Anomalia[];
@@ -58,43 +53,37 @@ export function useAnomaliasDetectadas(filtroStatus?: Anomalia["status"]) {
   });
 
   const atualizarStatus = useMutation({
-    mutationFn: async (input: {
-      id: string;
-      status: Anomalia["status"];
-      observacoes?: string;
-    }) => {
-      const update: { status: Anomalia["status"]; observacoes: string | null; resolvida_em?: string } = {
+    mutationFn: async (input: { id: string; status: Anomalia['status']; observacoes?: string }) => {
+      const update: Record<string, unknown> = {
         status: input.status,
         observacoes: input.observacoes ?? null,
       };
-      if (input.status === "falso_positivo" || input.status === "confirmada") {
+      if (input.status === 'falso_positivo' || input.status === 'confirmada') {
         update.resolvida_em = new Date().toISOString();
       }
       const { error } = await supabase
-        .from("anomalias_detectadas")
+        .from('anomalias_detectadas')
         .update(update)
-        .eq("id", input.id);
+        .eq('id', input.id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Status atualizado");
-      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+      toast.success('Status atualizado');
+      qc.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 
   const detectar = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke(
-        "detectar-anomalias-financeiras"
-      );
+      const { data, error } = await supabase.functions.invoke('detectar-anomalias-financeiras');
       if (error) throw error;
       return data;
     },
     onSuccess: (d: unknown) => {
       const r = d as { inseridas?: number };
       toast.success(`Detecção concluída: ${r?.inseridas ?? 0} novas anomalias`);
-      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+      qc.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
@@ -104,13 +93,13 @@ export function useAnomaliasDetectadas(filtroStatus?: Anomalia["status"]) {
 
 export function usePendingAnomaliasQueue() {
   return useQuery({
-    queryKey: ["anomalias-detectadas", "pending-queue"],
+    queryKey: ['anomalias-detectadas', 'pending-queue'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("anomalias_detectadas")
-        .select("*")
-        .in("status", ["nova", "investigando"])
-        .order("detectada_em", { ascending: true })
+        .from('anomalias_detectadas')
+        .select('*')
+        .in('status', ['nova', 'investigando'])
+        .order('detectada_em', { ascending: true })
         .limit(500);
       if (error) throw error;
       const list = (data ?? []) as Anomalia[];
@@ -136,16 +125,16 @@ export function usePendingAnomaliasQueue() {
  */
 export function usePendingAnomaliasQueueInfinite(pageSize = 100) {
   const query = useInfiniteQuery({
-    queryKey: ["anomalias-detectadas", "pending-queue-infinite", pageSize],
+    queryKey: ['anomalias-detectadas', 'pending-queue-infinite', pageSize],
     queryFn: async ({ pageParam }: { pageParam: string | null }) => {
       let q = supabase
-        .from("anomalias_detectadas")
-        .select("*")
-        .in("status", ["nova", "investigando"])
-        .order("detectada_em", { ascending: true })
-        .order("id", { ascending: true })
+        .from('anomalias_detectadas')
+        .select('*')
+        .in('status', ['nova', 'investigando'])
+        .order('detectada_em', { ascending: true })
+        .order('id', { ascending: true })
         .limit(pageSize);
-      if (pageParam) q = q.gt("detectada_em", pageParam);
+      if (pageParam) q = q.gt('detectada_em', pageParam);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as Anomalia[];
@@ -180,10 +169,10 @@ export function usePendingAnomaliasQueueInfinite(pageSize = 100) {
 }
 
 export class AnomaliaJaRevisadaError extends Error {
-  code = "ANOMALIA_JA_REVISADA" as const;
-  constructor(message = "Anomalia já foi revisada por outro usuário") {
+  code = 'ANOMALIA_JA_REVISADA' as const;
+  constructor(message = 'Anomalia já foi revisada por outro usuário') {
     super(message);
-    this.name = "AnomaliaJaRevisadaError";
+    this.name = 'AnomaliaJaRevisadaError';
   }
 }
 
@@ -194,27 +183,27 @@ export function useRevisarAnomalia() {
   return useMutation({
     mutationFn: async (input: {
       id: string;
-      status: "confirmada" | "falso_positivo";
+      status: 'confirmada' | 'falso_positivo';
       observacoes: string;
     }) => {
       const obs = input.observacoes.trim();
       if (obs.length < 10) {
-        throw new Error("Comentário deve ter ao menos 10 caracteres");
+        throw new Error('Comentário deve ter ao menos 10 caracteres');
       }
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id ?? null;
 
       const { data, error } = await supabase
-        .from("anomalias_detectadas")
+        .from('anomalias_detectadas')
         .update({
           status: input.status,
           observacoes: obs,
           resolvida_em: new Date().toISOString(),
           resolvida_por: uid,
         })
-        .eq("id", input.id)
-        .in("status", ["nova", "investigando"])
-        .select("id")
+        .eq('id', input.id)
+        .in('status', ['nova', 'investigando'])
+        .select('id')
         .maybeSingle();
 
       if (error) throw error;
@@ -224,8 +213,8 @@ export function useRevisarAnomalia() {
 
       await audit
         .mutateAsync({
-          action: input.status === "confirmada" ? "APPROVE" : "REJECT",
-          tableName: "anomalias_detectadas",
+          action: input.status === 'confirmada' ? 'APPROVE' : 'REJECT',
+          tableName: 'anomalias_detectadas',
           recordId: input.id,
           details: obs,
         })
@@ -234,7 +223,7 @@ export function useRevisarAnomalia() {
       return data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+      qc.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
     },
     onError: (e: Error) => {
       // Conflito de concorrência é tratado pelo componente — não mostrar toast genérico
@@ -252,31 +241,31 @@ export function useReabrirAnomalia() {
     mutationFn: async (input: { id: string; motivo: string }) => {
       const motivo = input.motivo.trim();
       if (motivo.length < 10) {
-        throw new Error("Motivo deve ter ao menos 10 caracteres");
+        throw new Error('Motivo deve ter ao menos 10 caracteres');
       }
 
       const { data, error } = await supabase
-        .from("anomalias_detectadas")
+        .from('anomalias_detectadas')
         .update({
-          status: "investigando",
+          status: 'investigando',
           observacoes: motivo,
           resolvida_em: null,
           resolvida_por: null,
         })
-        .eq("id", input.id)
-        .in("status", ["confirmada", "falso_positivo"])
-        .select("id")
+        .eq('id', input.id)
+        .in('status', ['confirmada', 'falso_positivo'])
+        .select('id')
         .maybeSingle();
 
       if (error) throw error;
       if (!data) {
-        throw new Error("Anomalia não está em estado reabrível");
+        throw new Error('Anomalia não está em estado reabrível');
       }
 
       await audit
         .mutateAsync({
-          action: "UPDATE",
-          tableName: "anomalias_detectadas",
+          action: 'UPDATE',
+          tableName: 'anomalias_detectadas',
           recordId: input.id,
           details: `REOPEN: ${motivo}`,
         })
@@ -285,8 +274,8 @@ export function useReabrirAnomalia() {
       return data;
     },
     onSuccess: () => {
-      toast.success("Anomalia reaberta para investigação");
-      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+      toast.success('Anomalia reaberta para investigação');
+      qc.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -307,36 +296,36 @@ export function useReabrirAnomaliasLote() {
     mutationFn: async (input) => {
       const motivo = input.motivo.trim();
       if (motivo.length < 10) {
-        throw new Error("Motivo deve ter ao menos 10 caracteres");
+        throw new Error('Motivo deve ter ao menos 10 caracteres');
       }
       const ids = Array.from(new Set(input.ids.filter(Boolean)));
       if (ids.length === 0) {
-        throw new Error("Selecione ao menos uma anomalia para reabrir");
+        throw new Error('Selecione ao menos uma anomalia para reabrir');
       }
       if (ids.length > 100) {
-        throw new Error("Máximo de 100 anomalias por lote");
+        throw new Error('Máximo de 100 anomalias por lote');
       }
 
       const { data, error } = await supabase
-        .from("anomalias_detectadas")
+        .from('anomalias_detectadas')
         .update({
-          status: "investigando",
+          status: 'investigando',
           observacoes: motivo,
           resolvida_em: null,
           resolvida_por: null,
         })
-        .in("id", ids)
-        .in("status", ["confirmada", "falso_positivo"])
-        .select("id");
+        .in('id', ids)
+        .in('status', ['confirmada', 'falso_positivo'])
+        .select('id');
 
       if (error) throw error;
       const reabertas = (data ?? []) as { id: string }[];
 
       await audit
         .mutateAsync({
-          action: "UPDATE",
-          tableName: "anomalias_detectadas",
-          recordId: reabertas.map((r) => r.id).join(","),
+          action: 'UPDATE',
+          tableName: 'anomalias_detectadas',
+          recordId: reabertas.map((r) => r.id).join(','),
           details: `REOPEN_BATCH (${reabertas.length}/${ids.length}): ${motivo}`,
         })
         .catch(() => undefined);
@@ -350,15 +339,15 @@ export function useReabrirAnomaliasLote() {
     },
     onSuccess: (res) => {
       if (res.reabertas === 0) {
-        toast.error("Nenhuma anomalia foi reaberta (já podem ter sido alteradas)");
+        toast.error('Nenhuma anomalia foi reaberta (já podem ter sido alteradas)');
       } else if (res.ignoradas > 0) {
         toast.success(
-          `${res.reabertas} anomalia(s) reaberta(s) — ${res.ignoradas} ignorada(s) por já não estarem em estado reabrível`,
+          `${res.reabertas} anomalia(s) reaberta(s) — ${res.ignoradas} ignorada(s) por já não estarem em estado reabrível`
         );
       } else {
         toast.success(`${res.reabertas} anomalia(s) reaberta(s) para investigação`);
       }
-      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+      qc.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
     },
     onError: (e: Error) => toast.error(e.message),
   });

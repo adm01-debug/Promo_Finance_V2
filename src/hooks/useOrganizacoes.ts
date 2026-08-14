@@ -94,10 +94,16 @@ export function useMembrosOrganizacao(organizacaoId: string | null) {
       const { data: perfis } = await supabase
         .from('profiles')
         .select('id, full_name, email')
-        .in('id', membros.map((m) => m.usuario_id));
+        .in(
+          'id',
+          membros.map((m) => m.usuario_id)
+        );
 
       const indice = new Map(
-        (perfis ?? []).map((p) => [p.id as string, p as { full_name: string | null; email: string | null }]),
+        (perfis ?? []).map((p) => [
+          p.id as string,
+          p as { full_name: string | null; email: string | null },
+        ])
       );
 
       return membros.map((membro) => ({
@@ -200,7 +206,7 @@ export function useCriarConvite(organizacaoId: string | null) {
       try {
         const { data: envio } = await supabase.functions.invoke<{ enviado?: boolean }>(
           'enviar-convite-organizacao',
-          { body: { convite_id: convite.id, origin: window.location.origin } },
+          { body: { convite_id: convite.id, origin: window.location.origin } }
         );
         emailEnviado = envio?.enviado === true;
       } catch {
@@ -256,7 +262,7 @@ export function useAtualizarMembro(organizacaoId: string | null) {
 
       const { error } = await supabase
         .from('organizacao_membros')
-        .update(patch as never)
+        .update(patch)
         .eq('id', input.membro.id);
       if (error) throw error;
     },

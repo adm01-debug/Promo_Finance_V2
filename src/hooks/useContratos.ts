@@ -24,18 +24,32 @@ export function useCreateContrato() {
   const { user } = useAuth();
   return useMutation({
     mutationFn: async (input: {
-      descricao: string; tipo: string; data_inicio: string; data_fim?: string;
-      valor_mensal?: number; valor_total?: number; cliente_id?: string; fornecedor_id?: string;
-      empresa_id?: string; renovacao_automatica?: boolean; dias_aviso_renovacao?: number;
-      numero_contrato?: string; observacoes?: string;
+      descricao: string;
+      tipo: string;
+      data_inicio: string;
+      data_fim?: string;
+      valor_mensal?: number;
+      valor_total?: number;
+      cliente_id?: string;
+      fornecedor_id?: string;
+      empresa_id?: string;
+      renovacao_automatica?: boolean;
+      dias_aviso_renovacao?: number;
+      numero_contrato?: string;
+      observacoes?: string;
     }) => {
-      const { data, error } = await supabase.from('contratos')
+      const { data, error } = await supabase
+        .from('contratos')
         .insert({ ...input, created_by: user?.id || '', status: 'ativo' })
-        .select().single();
+        .select()
+        .single();
       if (error) throw error;
       return data;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['contratos'] }); toast.success('Contrato criado!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['contratos'] });
+      toast.success('Contrato criado!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
@@ -44,10 +58,13 @@ export function useUpdateContrato() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...data }: { id: string; [key: string]: unknown }) => {
-      const { error } = await supabase.from('contratos').update(data as never).eq('id', id);
+      const { error } = await supabase.from('contratos').update(data).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['contratos'] }); toast.success('Contrato atualizado!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['contratos'] });
+      toast.success('Contrato atualizado!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
@@ -56,10 +73,16 @@ export function useDeleteContrato() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('contratos').update({ status: 'cancelado' }).eq('id', id);
+      const { error } = await supabase
+        .from('contratos')
+        .update({ status: 'cancelado' })
+        .eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['contratos'] }); toast.success('Contrato cancelado!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['contratos'] });
+      toast.success('Contrato cancelado!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
