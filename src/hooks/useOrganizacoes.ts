@@ -256,9 +256,11 @@ export function useAtualizarMembro(organizacaoId: string | null) {
         throw new Error('A organização precisa manter ao menos um gestor ativo.');
       }
 
-      const patch: Record<string, unknown> = {};
-      if (input.papel) patch.papel_na_org = input.papel;
-      if (typeof input.ativo === 'boolean') patch.ativo = input.ativo;
+      // TODO(2026-08-14): patch tipado com colunas canônicas de organizacao_membros (types.ts)
+      const patch = {
+        ...(input.papel ? { papel_na_org: input.papel } : {}),
+        ...(typeof input.ativo === 'boolean' ? { ativo: input.ativo } : {}),
+      };
 
       const { error } = await supabase
         .from('organizacao_membros')

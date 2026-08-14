@@ -6,7 +6,10 @@ export function useRegimesEspeciaisEmpresa(empresaId?: string) {
   return useQuery({
     queryKey: ['regimes-especiais-empresa', empresaId],
     queryFn: async () => {
-      let query = supabase.from('regimes_especiais_empresa').select('*').order('created_at', { ascending: false });
+      let query = supabase
+        .from('regimes_especiais_empresa')
+        .select('*')
+        .order('created_at', { ascending: false });
       if (empresaId) query = query.eq('empresa_id', empresaId);
       const { data, error } = await query;
       if (error) throw error;
@@ -19,8 +22,23 @@ export function useRegimesEspeciaisEmpresa(empresaId?: string) {
 export function useUpdateRegimeEspecial() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: string; ativo?: boolean; reducao_aliquota?: number }) => {
-      const { error } = await supabase.from('regimes_especiais_empresa').update(data).eq('id', id);
+    mutationFn: async ({
+      id,
+      ...data
+    }: {
+      id: string;
+      ativo?: boolean;
+      reducao_aliquota?: number;
+    }) => {
+      const { error } = await supabase
+        .from('regimes_especiais_empresa')
+        // TODO(2026-08-14): reducao_aliquota→reducao_cbs/reducao_ibs (renomeada no schema canônico)
+        .update({
+          ativo: data.ativo,
+          reducao_cbs: data.reducao_aliquota,
+          reducao_ibs: data.reducao_aliquota,
+        })
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {

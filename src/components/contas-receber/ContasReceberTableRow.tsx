@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TableCell } from '@/components/ui/table';
@@ -43,6 +44,17 @@ export function ContasReceberTableRow({
   showDiasAtraso = true,
   animate = false,
 }: ContasReceberTableRowProps) {
+  // Gap #15: datas date-only (YYYY-MM-DD) sao parseadas como UTC por `new Date()`
+  // nas celulas (VencimentoCell/DiasAtrasoCell), causando off-by-one de fuso (familia R1).
+  // Normaliza para datetime local (YYYY-MM-DDT00:00:00) -> parse de meia-noite local.
+  const contaNormalizada = useMemo(() => {
+    const dv = conta.data_vencimento;
+    if (typeof dv === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dv)) {
+      return { ...conta, data_vencimento: `${dv}T00:00:00` };
+    }
+    return conta;
+  }, [conta]);
+
   const RowComponent = animate ? motion.tr : 'tr';
   const animationProps = animate
     ? {
@@ -58,7 +70,7 @@ export function ContasReceberTableRow({
       {...animationProps}
       className={cn(
         'group transition-all duration-500 border-white/5 relative overflow-hidden',
-        isSelected ? 'bg-primary/10 shadow-inner' : 'hover:bg-card/[0.04]',
+        isSelected ? 'bg-primary/10 shadow-inner' : 'hover:bg-card/[0.04]'
       )}
     >
       <TableCell className="p-6 text-center">
@@ -68,12 +80,12 @@ export function ContasReceberTableRow({
           aria-label={`Selecionar ${conta.descricao}`}
         />
       </TableCell>
-      <ClienteCell conta={conta} />
-      <DescricaoCell conta={conta} />
-      <ValorCell conta={conta} />
-      <VencimentoCell conta={conta} />
-      {showDiasAtraso && <DiasAtrasoCell conta={conta} />}
-      <StatusCell conta={conta} />
+      <ClienteCell conta={contaNormalizada} />
+      <DescricaoCell conta={contaNormalizada} />
+      <ValorCell conta={contaNormalizada} />
+      <VencimentoCell conta={contaNormalizada} />
+      {showDiasAtraso && <DiasAtrasoCell conta={contaNormalizada} />}
+      <StatusCell conta={contaNormalizada} />
       <TableCell className="p-6">
         <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 leading-tight">
           {conta.contas_bancarias?.banco || '-'}
@@ -86,9 +98,9 @@ export function ContasReceberTableRow({
           </p>
         </TableCell>
       )}
-      <ScoreCell conta={conta} />
+      <ScoreCell conta={contaNormalizada} />
       <AcoesCell
-        conta={conta}
+        conta={contaNormalizada}
         onEdit={onEdit}
         onDelete={onDelete}
         onRegistrarRecebimento={onRegistrarRecebimento}

@@ -54,16 +54,15 @@ export function useAnomaliasDetectadas(filtroStatus?: Anomalia['status']) {
 
   const atualizarStatus = useMutation({
     mutationFn: async (input: { id: string; status: Anomalia['status']; observacoes?: string }) => {
-      const update: Record<string, unknown> = {
-        status: input.status,
-        observacoes: input.observacoes ?? null,
-      };
-      if (input.status === 'falso_positivo' || input.status === 'confirmada') {
-        update.resolvida_em = new Date().toISOString();
-      }
       const { error } = await supabase
         .from('anomalias_detectadas')
-        .update(update)
+        .update({
+          status: input.status,
+          observacoes: input.observacoes ?? null,
+          ...(input.status === 'falso_positivo' || input.status === 'confirmada'
+            ? { resolvida_em: new Date().toISOString() }
+            : {}),
+        })
         .eq('id', input.id);
       if (error) throw error;
     },

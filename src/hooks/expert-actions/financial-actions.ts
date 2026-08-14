@@ -1,14 +1,16 @@
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency , todayISOLocal} from '@/lib/formatters';
+import { formatCurrency, todayISOLocal } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ExpertAction, ActionResult, TipoCobranca, EtapaCobranca } from './types';
 
 export async function criarAlerta(
-  action: ExpertAction, 
+  action: ExpertAction,
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { error } = await supabase.from('alertas').insert({
     tipo: 'expert',
@@ -22,7 +24,10 @@ export async function criarAlerta(
   queryClient.invalidateQueries({ queryKey: ['alertas'] });
   queryClient.invalidateQueries({ queryKey: ['alertas-nao-lidos-count'] });
   toast.success('Alerta criado com sucesso!');
-  return { success: true, message: `Alerta "${action.titulo}" criado com prioridade ${action.prioridade}` };
+  return {
+    success: true,
+    message: `Alerta "${action.titulo}" criado com prioridade ${action.prioridade}`,
+  };
 }
 
 export async function listarAprovacoes(): Promise<ActionResult> {
@@ -37,19 +42,23 @@ export async function listarAprovacoes(): Promise<ActionResult> {
     return { success: true, message: 'Não há aprovações pendentes no momento.' };
   }
 
-  const lista = data.map((s, i) => {
-    const cp = s.contas_pagar;
-    return `${i + 1}. **${cp?.fornecedor_nome}** - ${formatCurrency(cp?.valor || 0)} (ID: ${s.id.slice(0, 8)})`;
-  }).join('\n');
+  const lista = data
+    .map((s, i) => {
+      const cp = s.contas_pagar;
+      return `${i + 1}. **${cp?.fornecedor_nome}** - ${formatCurrency(cp?.valor || 0)} (ID: ${s.id.slice(0, 8)})`;
+    })
+    .join('\n');
 
   return { success: true, message: `**${data.length} aprovações pendentes:**\n\n${lista}`, data };
 }
 
 export async function aprovarPagamento(
-  id: string, 
+  id: string,
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: solicitacao, error: findError } = await supabase
     .from('solicitacoes_aprovacao')
@@ -71,7 +80,8 @@ export async function aprovarPagamento(
 
   await supabase
     .from('contas_pagar')
-    .update({ aprovado_por: user?.id, aprovado_em: new Date().toISOString() })
+    // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts canônico)
+    .update({ aprovado_por: user?.id })
     .eq('id', solicitacao.conta_pagar_id);
 
   queryClient.invalidateQueries({ queryKey: ['solicitacoes-aprovacao'] });
@@ -79,15 +89,25 @@ export async function aprovarPagamento(
   queryClient.invalidateQueries({ queryKey: ['aprovacoes-pendentes-count'] });
   toast.success('Pagamento aprovado com sucesso!');
 
-  return { success: true, message: `Pagamento para "${solicitacao.contas_pagar?.fornecedor_nome}" aprovado com sucesso!` };
+  return {
+    success: true,
+    message: `Pagamento para "${solicitacao.contas_pagar?.fornecedor_nome}" aprovado com sucesso!`,
+  };
 }
 
 export async function criarContaPagar(
   action: ExpertAction,
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: empresa } = await supabase.from('empresas').select('id').eq('ativo', true).limit(1).maybeSingle();
+  const {
+    data: { user: _user },
+  } = await supabase.auth.getUser();
+  const { data: empresa } = await supabase
+    .from('empresas')
+    .select('id')
+    .eq('ativo', true)
+    .limit(1)
+    .maybeSingle();
 
   if (!empresa) return { success: false, message: 'Nenhuma empresa ativa encontrada.' };
 
@@ -96,25 +116,34 @@ export async function criarContaPagar(
     descricao: action.descricao || 'Lançamento via EXPERT',
     valor: action.valor || 0,
     data_vencimento: action.data_vencimento || todayISOLocal(),
-    data_emissao: todayISOLocal(),
+    // TODO(2026-08-14): data_emissao/created_by removidos — não existem em contas_pagar (types.ts canônico)
     tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,
-    created_by: user?.id || '',
   });
 
   if (error) throw error;
   queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
   toast.success('Conta a pagar criada!');
-  return { success: true, message: `✅ Conta a pagar criada: ${action.descricao} - ${formatCurrency(action.valor || 0)} para ${action.fornecedor_nome}` };
+  return {
+    success: true,
+    message: `✅ Conta a pagar criada: ${action.descricao} - ${formatCurrency(action.valor || 0)} para ${action.fornecedor_nome}`,
+  };
 }
 
 export async function criarContaReceber(
   action: ExpertAction,
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: empresa } = await supabase.from('empresas').select('id').eq('ativo', true).limit(1).maybeSingle();
+  const {
+    data: { user: _user },
+  } = await supabase.auth.getUser();
+  const { data: empresa } = await supabase
+    .from('empresas')
+    .select('id')
+    .eq('ativo', true)
+    .limit(1)
+    .maybeSingle();
 
   if (!empresa) return { success: false, message: 'Nenhuma empresa ativa encontrada.' };
 
@@ -127,13 +156,16 @@ export async function criarContaReceber(
     tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,
-    created_by: user?.id || '',
+    // TODO(2026-08-14): created_by removido — coluna não existe em contas_receber (types.ts canônico)
   });
 
   if (error) throw error;
   queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
   toast.success('Conta a receber criada!');
-  return { success: true, message: `✅ Conta a receber criada: ${action.descricao} - ${formatCurrency(action.valor || 0)} de ${action.cliente_nome}` };
+  return {
+    success: true,
+    message: `✅ Conta a receber criada: ${action.descricao} - ${formatCurrency(action.valor || 0)} de ${action.cliente_nome}`,
+  };
 }
 
 export async function agendarCobranca(contaId: string): Promise<ActionResult> {
@@ -150,21 +182,29 @@ export async function agendarCobranca(contaId: string): Promise<ActionResult> {
   const indiceAtual = etapas.indexOf(etapaAtual);
   const proximaEtapa = etapas[Math.min(indiceAtual + 1, etapas.length - 1)];
 
-  const { error } = await supabase.from('contas_receber').update({ etapa_cobranca: proximaEtapa }).eq('id', contaId);
+  const { error } = await supabase
+    .from('contas_receber')
+    .update({ etapa_cobranca: proximaEtapa })
+    .eq('id', contaId);
   if (error) throw error;
 
   await supabase.from('historico_cobranca').insert({
     conta_receber_id: contaId,
-    etapa_anterior: etapaAtual,
-    etapa_nova: proximaEtapa,
+    // TODO(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);
+    // etapa_anterior preservada em metadata (Json)
+    etapa: proximaEtapa,
+    metadata: { etapa_anterior: etapaAtual },
   });
 
   toast.success(`Cobrança avançada para ${proximaEtapa}!`);
-  return { success: true, message: `📞 Cobrança agendada! Cliente: ${conta.clientes?.razao_social || conta.cliente_nome}\nEtapa: ${etapaAtual} → ${proximaEtapa}\nValor: ${formatCurrency(Number(conta.valor))}` };
+  return {
+    success: true,
+    message: `📞 Cobrança agendada! Cliente: ${conta.clientes?.razao_social || conta.cliente_nome}\nEtapa: ${etapaAtual} → ${proximaEtapa}\nValor: ${formatCurrency(Number(conta.valor))}`,
+  };
 }
 
 export async function atualizarScoreCliente(
-  clienteId: string, 
+  clienteId: string,
   novoScore: number,
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
@@ -179,12 +219,18 @@ export async function atualizarScoreCliente(
   }
 
   const scoreAnterior = cliente.score || 0;
-  const { error } = await supabase.from('clientes').update({ score: novoScore }).eq('id', clienteId);
+  const { error } = await supabase
+    .from('clientes')
+    .update({ score: novoScore })
+    .eq('id', clienteId);
   if (error) throw error;
 
   queryClient.invalidateQueries({ queryKey: ['clientes'] });
   toast.success('Score do cliente atualizado!');
-  return { success: true, message: `📊 Score do cliente "${cliente.razao_social}" atualizado: ${scoreAnterior} → ${novoScore}` };
+  return {
+    success: true,
+    message: `📊 Score do cliente "${cliente.razao_social}" atualizado: ${scoreAnterior} → ${novoScore}`,
+  };
 }
 
 export async function gerarBoleto(contaId: string): Promise<ActionResult> {
@@ -199,5 +245,8 @@ export async function gerarBoleto(contaId: string): Promise<ActionResult> {
   const codigoBarras = `23793.38128 60000.000003 00000.000406 ${Math.random().toString().slice(2, 6)} ${Math.floor(Date.now() / 1000)}`;
   toast.success('Boleto gerado com sucesso!');
 
-  return { success: true, message: `🎫 **BOLETO GERADO**\n\nCliente: ${conta.clientes?.razao_social || conta.cliente_nome}\nValor: ${formatCurrency(Number(conta.valor))}\nVencimento: ${conta.data_vencimento}\n\nCódigo de Barras:\n\`${codigoBarras}\`` };
+  return {
+    success: true,
+    message: `🎫 **BOLETO GERADO**\n\nCliente: ${conta.clientes?.razao_social || conta.cliente_nome}\nValor: ${formatCurrency(Number(conta.valor))}\nVencimento: ${conta.data_vencimento}\n\nCódigo de Barras:\n\`${codigoBarras}\``,
+  };
 }

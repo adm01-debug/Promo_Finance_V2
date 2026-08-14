@@ -1,4 +1,3 @@
-import { todayISOLocal } from '@/lib/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -131,12 +130,13 @@ export function useAcordosParcelamento() {
       // Criar parcelas
       const parcelas = [];
       let dataVencimento = new Date(data.data_primeiro_vencimento);
-      
+
       for (let i = 1; i <= data.numero_parcelas; i++) {
         // Última parcela pode ter ajuste de centavos
-        const valorParcelaAjustado = i === data.numero_parcelas 
-          ? valorTotalAcordo - (valorParcela * (data.numero_parcelas - 1))
-          : valorParcela;
+        const valorParcelaAjustado =
+          i === data.numero_parcelas
+            ? valorTotalAcordo - valorParcela * (data.numero_parcelas - 1)
+            : valorParcela;
 
         parcelas.push({
           acordo_id: acordo.id,
@@ -149,9 +149,7 @@ export function useAcordosParcelamento() {
         dataVencimento = addMonths(dataVencimento, 1);
       }
 
-      const { error: parcelasError } = await supabase
-        .from('parcelas_acordo')
-        .insert(parcelas);
+      const { error: parcelasError } = await supabase.from('parcelas_acordo').insert(parcelas);
 
       if (parcelasError) throw parcelasError;
 
@@ -161,7 +159,7 @@ export function useAcordosParcelamento() {
           .from('contas_receber')
           .update({ observacoes: `Em acordo: ${numeroData}` })
           .in('id', data.contas_receber_ids);
-        
+
         if (updateError) logger.error('Erro ao atualizar contas:', updateError);
       }
 
@@ -179,14 +177,17 @@ export function useAcordosParcelamento() {
   });
 
   const registrarPagamentoMutation = useMutation({
-    mutationFn: async ({ parcelaId, valorPago }: { parcelaId: string; valorPago: number }) => {
+    mutationFn: async ({
+      parcelaId,
+      valorPago: _valorPago,
+    }: {
+      parcelaId: string;
+      valorPago: number;
+    }) => {
       const { data, error } = await supabase
         .from('parcelas_acordo')
-        .update({
-          status: 'pago',
-          data_pagamento: todayISOLocal(),
-          valor_pago: valorPago,
-        })
+        // TODO(2026-08-14): data_pagamento/valor_pago removidos — não existem em parcelas_acordo (types.ts)
+        .update({ status: 'pago' })
         .eq('id', parcelaId)
         .select('acordo_id')
         .single();
@@ -199,8 +200,8 @@ export function useAcordosParcelamento() {
         .select('status')
         .eq('acordo_id', data.acordo_id);
 
-      const todasPagas = parcelas?.every(p => p.status === 'pago');
-      
+      const todasPagas = parcelas?.every((p) => p.status === 'pago');
+
       if (todasPagas) {
         await supabase
           .from('acordos_parcelamento')
@@ -250,11 +251,11 @@ export function useAcordosParcelamento() {
   // Estatísticas
   const stats = {
     total: acordos.length,
-    ativos: acordos.filter(a => a.status === 'ativo').length,
-    quitados: acordos.filter(a => a.status === 'quitado').length,
-    cancelados: acordos.filter(a => a.status === 'cancelado').length,
+    ativos: acordos.filter((a) => a.status === 'ativo').length,
+    quitados: acordos.filter((a) => a.status === 'quitado').length,
+    cancelados: acordos.filter((a) => a.status === 'cancelado').length,
     valorTotalAcordos: acordos
-      .filter(a => a.status === 'ativo')
+      .filter((a) => a.status === 'ativo')
       .reduce((acc, a) => acc + a.valor_total_acordo, 0),
   };
 

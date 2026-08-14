@@ -21,7 +21,7 @@ export function useFilterPresets(entityType: string, empresaId?: string) {
     queryKey: ['filter-presets', entityType, empresaId],
     queryFn: async () => {
       if (!user) return [];
-      
+
       let query = supabase
         .from('user_filter_presets')
         .select('*')
@@ -41,19 +41,29 @@ export function useFilterPresets(entityType: string, empresaId?: string) {
   });
 
   const savePreset = useMutation({
-    mutationFn: async ({ name, filters, isDefault }: { name: string; filters: any; isDefault?: boolean }) => {
+    mutationFn: async ({
+      name,
+      filters,
+      isDefault,
+    }: {
+      name: string;
+      filters: any;
+      isDefault?: boolean;
+    }) => {
       if (!user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
         .from('user_filter_presets')
-        .insert([{
-          user_id: user.id,
-          entity_type: entityType,
-          name,
-          filters,
-          empresa_id: empresaId === 'todas' ? null : empresaId,
-          is_default: !!isDefault
-        }])
+        .insert([
+          {
+            user_id: user.id,
+            entity_type: entityType,
+            name,
+            filters,
+            // TODO(2026-08-14): empresa_id removido — coluna não existe em user_filter_presets (types.ts)
+            is_default: !!isDefault,
+          },
+        ])
         .select()
         .single();
 
@@ -66,27 +76,24 @@ export function useFilterPresets(entityType: string, empresaId?: string) {
     },
     onError: (error) => {
       toast.error('Erro ao salvar preset: ' + error.message);
-    }
+    },
   });
 
   const deletePreset = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('user_filter_presets')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('user_filter_presets').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['filter-presets', entityType] });
       toast.success('Preset removido.');
-    }
+    },
   });
 
   return {
     presets,
     isLoading,
     savePreset,
-    deletePreset
+    deletePreset,
   };
 }

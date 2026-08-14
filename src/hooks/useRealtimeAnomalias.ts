@@ -1,24 +1,21 @@
-import { useEffect, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  ANOMALIA_DRAWER_EVENT,
-  dispatchOpenAnomaliaDrawer,
-} from "@/lib/anomalia-routes";
+import { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
+import { ANOMALIA_DRAWER_EVENT, dispatchOpenAnomaliaDrawer } from '@/lib/anomalia-routes';
 import {
   useAnomaliaPreferences,
   shouldNotify,
   type ToastAcaoKey,
-} from "@/hooks/useAnomaliaPreferences";
+} from '@/hooks/useAnomaliaPreferences';
 
 const TIPO_LABEL: Record<string, string> = {
-  movimentacao_outlier: "Movimentação atípica",
-  pagamento_duplicado: "Pagamento duplicado",
-  conta_pagar_alta: "Conta a pagar alta",
-  conciliacao_atrasada: "Conciliação atrasada",
-  mudanca_regime_brusca: "Variação brusca de regime",
+  movimentacao_outlier: 'Movimentação atípica',
+  pagamento_duplicado: 'Pagamento duplicado',
+  conta_pagar_alta: 'Conta a pagar alta',
+  conciliacao_atrasada: 'Conciliação atrasada',
+  mudanca_regime_brusca: 'Variação brusca de regime',
 };
 
 interface AcaoToast {
@@ -44,8 +41,8 @@ export function useRealtimeAnomalias() {
     const channel = supabase
       .channel(`anomalias-realtime-${Math.random().toString(36).slice(2, 8)}`)
       .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "anomalias_detectadas" },
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'anomalias_detectadas' },
         async (payload) => {
           if (!payload.new) return;
           const a = payload.new as {
@@ -59,12 +56,12 @@ export function useRealtimeAnomalias() {
           if (!a?.id || seenIds.current.has(a.id)) return;
           seenIds.current.add(a.id);
 
-          queryClient.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+          queryClient.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
           queryClient.invalidateQueries({
-            queryKey: ["anomalias-detectadas", "pending-queue"],
+            queryKey: ['anomalias-detectadas', 'pending-queue'],
           });
           queryClient.invalidateQueries({
-            queryKey: ["anomalias-criticas-count"],
+            queryKey: ['anomalias-criticas-count'],
           });
 
           const prefs = prefsRef.current;
@@ -74,27 +71,27 @@ export function useRealtimeAnomalias() {
           let centroCustoNome: string | null = null;
           if (a.centro_custo_id) {
             const { data: cc } = await supabase
-              .from("centros_custo")
-              .select("nome, codigo")
-              .eq("id", a.centro_custo_id)
+              .from('centros_custo')
+              .select('nome, codigo')
+              .eq('id', a.centro_custo_id)
               .maybeSingle();
             if (cc) centroCustoNome = `${cc.codigo} — ${cc.nome}`;
           }
 
-          const isCritical = a.severidade === "critica";
-          const tipoLabel = TIPO_LABEL[a.tipo_anomalia ?? ""] ?? "Nova anomalia";
-          const titulo = `${isCritical ? "🚨 Crítica" : "⚠️ " + (a.severidade ?? "Anomalia")} — ${tipoLabel}`;
+          const isCritical = a.severidade === 'critica';
+          const tipoLabel = TIPO_LABEL[a.tipo_anomalia ?? ''] ?? 'Nova anomalia';
+          const titulo = `${isCritical ? '🚨 Crítica' : '⚠️ ' + (a.severidade ?? 'Anomalia')} — ${tipoLabel}`;
           const fn = isCritical ? toast.error : toast.warning;
           const descricaoToast = centroCustoNome
-            ? `${a.descricao ?? ""}${a.descricao ? " · " : ""}Centro de custo: ${centroCustoNome}`
+            ? `${a.descricao ?? ''}${a.descricao ? ' · ' : ''}Centro de custo: ${centroCustoNome}`
             : a.descricao;
 
           // Monta as ações habilitadas pelo usuário (na ordem desejada)
           const acoesOrdem: ToastAcaoKey[] = [
-            "drill_down",
-            "abrir_pagina",
-            "copiar_id",
-            "marcar_lida",
+            'drill_down',
+            'abrir_pagina',
+            'copiar_id',
+            'marcar_lida',
           ];
           const acoesAtivas = prefs?.toast_acoes ?? {
             drill_down: true,
@@ -106,44 +103,41 @@ export function useRealtimeAnomalias() {
             .filter((k) => acoesAtivas[k])
             .map((k) => {
               switch (k) {
-                case "drill_down":
+                case 'drill_down':
                   return {
-                    label: "Ver detalhes",
+                    label: 'Ver detalhes',
                     onClick: () => dispatchOpenAnomaliaDrawer(a.id),
                   };
-                case "abrir_pagina":
+                case 'abrir_pagina':
                   return {
-                    label: "Abrir página",
-                    onClick: () =>
-                      window.location.assign(
-                        `/admin/insights-ia/anomalia/${a.id}`,
-                      ),
+                    label: 'Abrir página',
+                    onClick: () => window.location.assign(`/admin/insights-ia/anomalia/${a.id}`),
                   };
-                case "copiar_id":
+                case 'copiar_id':
                   return {
-                    label: "Copiar ID",
+                    label: 'Copiar ID',
                     onClick: async () => {
                       try {
                         await navigator.clipboard.writeText(a.id);
-                        toast.success("ID copiado");
+                        toast.success('ID copiado');
                       } catch {
-                        toast.error("Não foi possível copiar");
+                        toast.error('Não foi possível copiar');
                       }
                     },
                   };
-                case "marcar_lida":
+                case 'marcar_lida':
                   return {
-                    label: "Marcar lida",
+                    label: 'Marcar lida',
                     onClick: async () => {
                       const { error } = await supabase
-                        .from("anomalias_detectadas")
-                        .update({ status: "investigando" })
-                        .eq("id", a.id)
-                        .eq("status", "nova");
-                      if (error) toast.error("Falha ao marcar como lida");
-                      else toast.success("Marcada como lida");
+                        .from('anomalias_detectadas')
+                        .update({ status: 'investigando' })
+                        .eq('id', a.id)
+                        .eq('status', 'nova');
+                      if (error) toast.error('Falha ao marcar como lida');
+                      else toast.success('Marcada como lida');
                       queryClient.invalidateQueries({
-                        queryKey: ["anomalias-detectadas"],
+                        queryKey: ['anomalias-detectadas'],
                       });
                     },
                   };
@@ -176,15 +170,15 @@ export function useRealtimeAnomalias() {
           // Persiste evento no histórico de toasts (best-effort, não bloqueia UI)
           const acoesDisponiveis = acoesOrdem.filter((k) => acoesAtivas[k]);
           supabase
-            .from("anomalia_toast_eventos")
+            .from('anomalia_toast_eventos')
             .insert({
               user_id: user.id,
               anomalia_id: a.id,
-              severidade: a.severidade ?? "baixa",
+              severidade: a.severidade ?? 'baixa',
               tipo_anomalia: a.tipo_anomalia ?? null,
               titulo,
               descricao: descricaoToast ?? null,
-              centro_custo_id: a.centro_custo_id ?? null,
+              // TODO(2026-08-14): centro_custo_id removido — não existe em anomalia_toast_eventos (types.ts)
               centro_custo_nome: centroCustoNome,
               acoes_disponiveis: acoesDisponiveis,
               duracao_segundos: duracaoSeg,
@@ -192,10 +186,10 @@ export function useRealtimeAnomalias() {
             .then(({ error }) => {
               if (error) {
                 // Silencioso: não polui a UI por falha de logging
-                console.warn("[anomalia-toast-eventos] insert falhou", error);
+                console.warn('[anomalia-toast-eventos] insert falhou', error);
               }
             });
-        },
+        }
       )
       .subscribe();
 

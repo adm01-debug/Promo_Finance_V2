@@ -98,7 +98,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
       const valorCOFINS = parseFloat(total?.querySelector('vCOFINS')?.textContent || '0');
 
       const itensXML = doc.querySelectorAll('det');
-      const itens: NFeItem[] = Array.from(itensXML).map(item => ({
+      const itens: NFeItem[] = Array.from(itensXML).map((item) => ({
         codigo: item.querySelector('prod cProd')?.textContent || '',
         descricao: item.querySelector('prod xProd')?.textContent || '',
         ncm: item.querySelector('prod NCM')?.textContent || '',
@@ -146,15 +146,15 @@ export function useImportacaoXMLNFe(empresaId: string) {
     setProgresso(0);
     const fileArray = Array.from(files);
     setArquivos(fileArray);
-    
+
     const nfes: NFeParsed[] = [];
-    
+
     for (let i = 0; i < fileArray.length; i++) {
       const file = fileArray[i];
       try {
         const content = await file.text();
         const nfe = parseXML(content);
-        
+
         if (nfe) {
           nfes.push(nfe);
         } else {
@@ -199,14 +199,14 @@ export function useImportacaoXMLNFe(empresaId: string) {
           mensagemErro: 'Arquivo inválido',
         });
       }
-      
+
       setProgresso(((i + 1) / fileArray.length) * 100);
     }
-    
+
     setNfesParsed(nfes);
     setIsProcessando(false);
-    
-    const sucessos = nfes.filter(n => n.status === 'pendente').length;
+
+    const sucessos = nfes.filter((n) => n.status === 'pendente').length;
     toast.success(`${sucessos} de ${nfes.length} XMLs processados com sucesso`);
   };
 
@@ -217,8 +217,8 @@ export function useImportacaoXMLNFe(empresaId: string) {
       if (!userData.user) throw new Error('Usuário não autenticado');
 
       const ano = new Date().getFullYear();
-      const aliquotas = ALIQUOTAS_TRANSICAO.find(a => a.ano === ano) || ALIQUOTAS_TRANSICAO[0];
-      
+      const aliquotas = ALIQUOTAS_TRANSICAO.find((a) => a.ano === ano) || ALIQUOTAS_TRANSICAO[0];
+
       let sucesso = 0;
       let erros = 0;
       let totalCBS = 0;
@@ -238,21 +238,23 @@ export function useImportacaoXMLNFe(empresaId: string) {
 
           const { data: nfInserted, error: nfError } = await supabase
             .from('notas_fiscais')
-            .insert([{
-              empresa_id: empresaId,
-              numero: nfe.numero,
-              serie: nfe.serie || '1',
-              cliente_nome: nfe.nomeEmitente,
-              cliente_cnpj: nfe.cnpjEmitente,
-              data_emissao: nfe.dataEmissao.toISOString().split('T')[0],
-              valor_total: nfe.valorTotal,
-              valor_produtos: nfe.valorProdutos,
-              valor_icms: nfe.valorICMS,
-              chave_acesso: nfe.chaveAcesso,
-              natureza_operacao: nfe.naturezaOperacao || 'Compra para comercialização',
-              status: 'autorizada',
-              created_by: userData.user.id,
-            }])
+            .insert([
+              {
+                empresa_id: empresaId,
+                numero: nfe.numero,
+                serie: nfe.serie || '1',
+                cliente_nome: nfe.nomeEmitente,
+                cliente_cnpj: nfe.cnpjEmitente,
+                data_emissao: nfe.dataEmissao.toISOString().split('T')[0],
+                valor_total: nfe.valorTotal,
+                valor_produtos: nfe.valorProdutos,
+                valor_icms: nfe.valorICMS,
+                chave_acesso: nfe.chaveAcesso,
+                natureza_operacao: nfe.naturezaOperacao || 'Compra para comercialização',
+                status: 'autorizada',
+                created_by: userData.user.id,
+              },
+            ])
             .select()
             .single();
 
@@ -264,21 +266,14 @@ export function useImportacaoXMLNFe(empresaId: string) {
             await supabase.from('creditos_tributarios').insert({
               empresa_id: empresaId,
               tipo_tributo: 'CBS',
-              tipo_credito: 'normal',
-              valor_base: nfe.valorProdutos,
+              // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios (types.ts canônico):
+              // tipo_credito, valor_base, aliquota, documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
               valor_credito: cbsCalculado,
               saldo_disponivel: cbsCalculado,
-              aliquota: aliquotas.cbs,
               data_origem: nfe.dataEmissao.toISOString(),
               competencia_origem: competencia,
               nota_fiscal_id: nfInserted.id,
-              documento_tipo: 'NFE',
-              documento_numero: nfe.numero,
-              documento_chave: nfe.chaveAcesso,
-              fornecedor_cnpj: nfe.cnpjEmitente,
-              fornecedor_nome: nfe.nomeEmitente,
               status: 'disponivel',
-              created_by: userData.user.id,
             });
             totalCBS += cbsCalculado;
           }
@@ -287,21 +282,14 @@ export function useImportacaoXMLNFe(empresaId: string) {
             await supabase.from('creditos_tributarios').insert({
               empresa_id: empresaId,
               tipo_tributo: 'IBS',
-              tipo_credito: 'normal',
-              valor_base: nfe.valorProdutos,
+              // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios (types.ts canônico):
+              // tipo_credito, valor_base, aliquota, documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
               valor_credito: ibsCalculado,
               saldo_disponivel: ibsCalculado,
-              aliquota: aliquotas.ibs,
               data_origem: nfe.dataEmissao.toISOString(),
               competencia_origem: competencia,
               nota_fiscal_id: nfInserted.id,
-              documento_tipo: 'NFE',
-              documento_numero: nfe.numero,
-              documento_chave: nfe.chaveAcesso,
-              fornecedor_cnpj: nfe.cnpjEmitente,
-              fornecedor_nome: nfe.nomeEmitente,
               status: 'disponivel',
-              created_by: userData.user.id,
             });
             totalIBS += ibsCalculado;
           }
@@ -337,7 +325,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
     },
     onError: (error: Error) => {
       toast.error('Erro na importação: ' + error.message);
-    }
+    },
   });
 
   const limparArquivos = () => {
@@ -347,7 +335,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
   };
 
   const removerNFe = (chaveAcesso: string) => {
-    setNfesParsed(prev => prev.filter(n => n.chaveAcesso !== chaveAcesso));
+    setNfesParsed((prev) => prev.filter((n) => n.chaveAcesso !== chaveAcesso));
   };
 
   return {

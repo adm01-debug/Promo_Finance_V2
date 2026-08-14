@@ -1,7 +1,12 @@
 import { useState, useMemo } from 'react';
 import { SplitSquareHorizontal, Plus, Trash2, Search, Calendar } from 'lucide-react';
 import {
-  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,7 +42,11 @@ interface ConciliacaoSplitDialogProps {
 }
 
 export function ConciliacaoSplitDialog({
-  open, onOpenChange, transacao, lancamentos, onSuccess,
+  open,
+  onOpenChange,
+  transacao,
+  lancamentos,
+  onSuccess,
 }: ConciliacaoSplitDialogProps) {
   const [splits, setSplits] = useState<SplitItem[]>([]);
   const [search, setSearch] = useState('');
@@ -47,10 +56,10 @@ export function ConciliacaoSplitDialog({
 
   const lancamentosFiltrados = useMemo(() => {
     if (!transacao) return [];
-    const usedIds = new Set(splits.map(s => s.lancamentoId));
+    const usedIds = new Set(splits.map((s) => s.lancamentoId));
     return lancamentos
-      .filter(l => l.tipo === tipoFiltro && !usedIds.has(l.id))
-      .filter(l => {
+      .filter((l) => l.tipo === tipoFiltro && !usedIds.has(l.id))
+      .filter((l) => {
         if (!search) return true;
         const s = search.toLowerCase();
         return l.descricao.toLowerCase().includes(s) || l.entidade.toLowerCase().includes(s);
@@ -63,19 +72,22 @@ export function ConciliacaoSplitDialog({
 
   const addSplit = (lancamento: LancamentoSistema) => {
     const valorSugerido = Math.min(lancamento.valor, valorRestante);
-    setSplits(prev => [...prev, {
-      lancamentoId: lancamento.id,
-      lancamento,
-      valorParcial: Math.max(0, valorSugerido),
-    }]);
+    setSplits((prev) => [
+      ...prev,
+      {
+        lancamentoId: lancamento.id,
+        lancamento,
+        valorParcial: Math.max(0, valorSugerido),
+      },
+    ]);
   };
 
   const removeSplit = (index: number) => {
-    setSplits(prev => prev.filter((_, i) => i !== index));
+    setSplits((prev) => prev.filter((_, i) => i !== index));
   };
 
   const updateValor = (index: number, valor: number) => {
-    setSplits(prev => prev.map((s, i) => i === index ? { ...s, valorParcial: valor } : s));
+    setSplits((prev) => prev.map((s, i) => (i === index ? { ...s, valorParcial: valor } : s)));
   };
 
   const handleConfirmar = async () => {
@@ -88,8 +100,10 @@ export function ConciliacaoSplitDialog({
     setIsLoading(true);
     try {
       // Insert partial reconciliation records
-      const { data: { user } } = await supabase.auth.getUser();
-      const records = splits.map(s => ({
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const records = splits.map((s) => ({
         transacao_bancaria_id: transacao.id,
         conta_pagar_id: s.lancamento.tipo === 'pagar' ? s.lancamentoId : null,
         conta_receber_id: s.lancamento.tipo === 'receber' ? s.lancamentoId : null,
@@ -97,9 +111,7 @@ export function ConciliacaoSplitDialog({
         created_by: user?.id,
       }));
 
-      const { error: insertError } = await supabase
-        .from('conciliacoes_parciais')
-        .insert(records);
+      const { error: insertError } = await supabase.from('conciliacoes_parciais').insert(records);
 
       if (insertError) throw insertError;
 
@@ -108,9 +120,8 @@ export function ConciliacaoSplitDialog({
         .from('transacoes_bancarias')
         .update({
           conciliada: true,
-          conciliacao_parcial: true,
-          valor_conciliado: totalSplit,
-          conciliada_em: new Date().toISOString(),
+          // TODO: colunas 'conciliacao_parcial' e 'valor_conciliado' não existem em transacoes_bancarias no types.ts (removidas)
+          data_confirmacao: new Date().toISOString(),
         })
         .eq('id', transacao.id);
 
@@ -153,7 +164,12 @@ export function ConciliacaoSplitDialog({
                     <Calendar className="h-3 w-3" /> {formatDate(transacao.data)}
                   </p>
                 </div>
-                <p className={cn("text-lg font-bold", transacao.tipo === 'credito' ? "text-success" : "text-destructive")}>
+                <p
+                  className={cn(
+                    'text-lg font-bold',
+                    transacao.tipo === 'credito' ? 'text-success' : 'text-destructive'
+                  )}
+                >
                   {formatCurrency(transacao.valor)}
                 </p>
               </div>
@@ -164,13 +180,18 @@ export function ConciliacaoSplitDialog({
               <div className="space-y-2">
                 <p className="text-sm font-medium">Lançamentos vinculados:</p>
                 {splits.map((split, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg border bg-primary/5">
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 p-3 rounded-lg border bg-primary/5"
+                  >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{split.lancamento.descricao}</p>
                       <div className="flex items-center gap-2">
                         <p className="text-xs text-muted-foreground">{split.lancamento.entidade}</p>
                         {split.lancamento.centro_custo_nome && (
-                          <Badge variant="secondary" className="text-[10px] h-4 px-1">{split.lancamento.centro_custo_nome}</Badge>
+                          <Badge variant="secondary" className="text-[10px] h-4 px-1">
+                            {split.lancamento.centro_custo_nome}
+                          </Badge>
                         )}
                       </div>
                     </div>
@@ -189,7 +210,12 @@ export function ConciliacaoSplitDialog({
                 ))}
                 <div className="flex justify-between items-center p-2 text-sm">
                   <span className="text-muted-foreground">Total alocado:</span>
-                  <span className={cn("font-bold", Math.abs(valorRestante) < 0.01 ? "text-success" : "text-warning")}>
+                  <span
+                    className={cn(
+                      'font-bold',
+                      Math.abs(valorRestante) < 0.01 ? 'text-success' : 'text-warning'
+                    )}
+                  >
                     {formatCurrency(totalSplit)} / {formatCurrency(transacao.valor)}
                   </span>
                 </div>
@@ -214,7 +240,7 @@ export function ConciliacaoSplitDialog({
 
             <ScrollArea className="h-[200px] rounded-md border">
               <div className="p-2 space-y-1">
-                {lancamentosFiltrados.map(l => (
+                {lancamentosFiltrados.map((l) => (
                   <button
                     key={l.id}
                     onClick={() => addSplit(l)}
@@ -222,7 +248,9 @@ export function ConciliacaoSplitDialog({
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate">{l.descricao}</p>
-                      <p className="text-xs text-muted-foreground">{l.entidade} · {formatDate(l.dataVencimento)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {l.entidade} · {formatDate(l.dataVencimento)}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold">{formatCurrency(l.valor)}</span>
@@ -231,7 +259,9 @@ export function ConciliacaoSplitDialog({
                   </button>
                 ))}
                 {lancamentosFiltrados.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8 text-sm">Nenhum lançamento disponível</p>
+                  <p className="text-center text-muted-foreground py-8 text-sm">
+                    Nenhum lançamento disponível
+                  </p>
                 )}
               </div>
             </ScrollArea>
@@ -239,7 +269,9 @@ export function ConciliacaoSplitDialog({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
           <Button
             onClick={handleConfirmar}
             disabled={splits.length === 0 || Math.abs(valorRestante) > 0.01 || isLoading}

@@ -1,9 +1,21 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
-  DollarSign, FileText, Clock, CheckCircle2,
-  AlertTriangle, MessageCircle, Shield, Users, Scale,
-  Banknote, QrCode, CreditCard, Wallet, X, Building2,
+  DollarSign,
+  FileText,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  MessageCircle,
+  Shield,
+  Users,
+  Scale,
+  Banknote,
+  QrCode,
+  CreditCard,
+  Wallet,
+  X,
+  Building2,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +34,6 @@ import { cn } from '@/lib/utils';
 import type { ContaReceberWithRelations } from './ContasReceberTableRow';
 import type { StatusPagamento } from '@/types/financial';
 
-
 interface ContaReceberDetailDrawerProps {
   conta: ContaReceberWithRelations | null;
   open: boolean;
@@ -32,11 +43,30 @@ interface ContaReceberDetailDrawerProps {
   onEnviarCobranca: (conta: ContaReceberWithRelations) => void;
 }
 
-const statusConfig: Record<StatusPagamento, { label: string; color: string; icon: typeof CheckCircle2 }> = {
-  pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
-  pendente: { label: 'Pendente', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
-  vencido: { label: 'Vencido', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: AlertTriangle },
-  parcial: { label: 'Parcial', color: 'bg-secondary/10 text-secondary border-secondary/20', icon: CheckCircle2 },
+const statusConfig: Record<
+  StatusPagamento,
+  { label: string; color: string; icon: typeof CheckCircle2 }
+> = {
+  pago: {
+    label: 'Pago',
+    color: 'bg-success/10 text-success border-success/20',
+    icon: CheckCircle2,
+  },
+  pendente: {
+    label: 'Pendente',
+    color: 'bg-warning/10 text-warning border-warning/20',
+    icon: Clock,
+  },
+  vencido: {
+    label: 'Vencido',
+    color: 'bg-destructive/10 text-destructive border-destructive/20',
+    icon: AlertTriangle,
+  },
+  parcial: {
+    label: 'Parcial',
+    color: 'bg-secondary/10 text-secondary border-secondary/20',
+    icon: CheckCircle2,
+  },
   cancelado: { label: 'Cancelado', color: 'bg-muted text-muted-foreground border-muted', icon: X },
 };
 
@@ -57,7 +87,12 @@ const tipoCobrancaIcons: Record<string, typeof Banknote> = {
 };
 
 export function ContaReceberDetailDrawer({
-  conta, open, onOpenChange, onEdit, onRegistrarRecebimento, onEnviarCobranca,
+  conta,
+  open,
+  onOpenChange,
+  onEdit,
+  onRegistrarRecebimento,
+  onEnviarCobranca,
 }: ContaReceberDetailDrawerProps) {
   const [activeTab, setActiveTab] = useState('detalhes');
 
@@ -144,7 +179,7 @@ export function ContaReceberDetailDrawer({
 
   const status = statusConfig[conta.status as StatusPagamento];
   const StatusIcon = status?.icon || Clock;
-  const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
+  const overdueDays = calculateOverdueDays(conta.data_vencimento);
   const saldo = conta.valor - (conta.valor_recebido || 0);
   const percentualRecebido = conta.valor_recebido ? (conta.valor_recebido / conta.valor) * 100 : 0;
   const etapa = conta.etapa_cobranca ? etapaConfig[conta.etapa_cobranca] : null;
@@ -156,16 +191,14 @@ export function ContaReceberDetailDrawer({
         <SheetHeader className="p-6 pb-4 border-b">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-lg font-display truncate">
-                {conta.descricao}
-              </SheetTitle>
+              <SheetTitle className="text-lg font-display truncate">{conta.descricao}</SheetTitle>
               <div className="flex items-center gap-2 mt-2 flex-wrap">
-                <Badge variant="outline" className={cn("gap-1", status?.color)}>
+                <Badge variant="outline" className={cn('gap-1', status?.color)}>
                   <StatusIcon className="h-3 w-3" />
                   {status?.label || conta.status}
                 </Badge>
                 {etapa && (
-                  <Badge variant="outline" className={cn("gap-1", etapa.color)}>
+                  <Badge variant="outline" className={cn('gap-1', etapa.color)}>
                     <etapa.icon className="h-3 w-3" />
                     {etapa.label}
                   </Badge>
@@ -182,13 +215,17 @@ export function ContaReceberDetailDrawer({
           <div className="mt-4 p-3 rounded-lg bg-muted/50">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Valor Total</span>
-              <span className="text-xl font-bold font-display tabular-nums">{formatCurrency(conta.valor)}</span>
+              <span className="text-xl font-bold font-display tabular-nums">
+                {formatCurrency(conta.valor)}
+              </span>
             </div>
             {(conta.valor_recebido || 0) > 0 && (
               <>
                 <Progress value={percentualRecebido} className="h-2 mt-2" />
                 <div className="flex justify-between text-xs mt-1">
-                  <span className="text-success">Recebido: {formatCurrency(conta.valor_recebido || 0)}</span>
+                  <span className="text-success">
+                    Recebido: {formatCurrency(conta.valor_recebido || 0)}
+                  </span>
                   <span className="text-muted-foreground">Saldo: {formatCurrency(saldo)}</span>
                 </div>
               </>
@@ -199,34 +236,76 @@ export function ContaReceberDetailDrawer({
           <div className="flex gap-2 mt-3">
             {conta.status !== 'pago' && conta.status !== 'cancelado' && (
               <>
-                <Button size="sm" className="flex-1 gap-1.5" onClick={() => { onOpenChange(false); onRegistrarRecebimento(conta); }}>
+                <Button
+                  size="sm"
+                  className="flex-1 gap-1.5"
+                  onClick={() => {
+                    onOpenChange(false);
+                    onRegistrarRecebimento(conta);
+                  }}
+                >
                   <DollarSign className="h-3.5 w-3.5" /> Receber
                 </Button>
-                <Button size="sm" variant="outline" className="flex-1 gap-1.5" onClick={() => onEnviarCobranca(conta)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 gap-1.5"
+                  onClick={() => onEnviarCobranca(conta)}
+                >
                   <MessageCircle className="h-3.5 w-3.5" /> Cobrar
                 </Button>
               </>
             )}
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { onOpenChange(false); onEdit(conta); }}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              onClick={() => {
+                onOpenChange(false);
+                onEdit(conta);
+              }}
+            >
               <FileText className="h-3.5 w-3.5" /> Editar
             </Button>
           </div>
         </SheetHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="flex-1 flex flex-col overflow-hidden"
+        >
           <TabsList className="mx-6 mt-3 grid grid-cols-5">
-            <TabsTrigger value="detalhes" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
-            <TabsTrigger value="timeline" className="text-[10px] sm:text-xs">Timeline</TabsTrigger>
-            <TabsTrigger value="boletos" className="text-[10px] sm:text-xs">Boletos</TabsTrigger>
-            <TabsTrigger value="cobrancas" className="text-[10px] sm:text-xs">Mensagens</TabsTrigger>
+            <TabsTrigger value="detalhes" className="text-[10px] sm:text-xs">
+              Detalhes
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="text-[10px] sm:text-xs">
+              Timeline
+            </TabsTrigger>
+            <TabsTrigger value="boletos" className="text-[10px] sm:text-xs">
+              Boletos
+            </TabsTrigger>
+            <TabsTrigger value="cobrancas" className="text-[10px] sm:text-xs">
+              Mensagens
+            </TabsTrigger>
             <TabsTrigger value="anexos" className="text-[10px] sm:text-xs">
-              Anexos {anexos.length > 0 && <span className="ml-0.5 sm:ml-1 text-[9px] bg-primary/10 text-primary rounded-full px-1.5">{anexos.length}</span>}
+              Anexos{' '}
+              {anexos.length > 0 && (
+                <span className="ml-0.5 sm:ml-1 text-[9px] bg-primary/10 text-primary rounded-full px-1.5">
+                  {anexos.length}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
 
           <ScrollArea className="flex-1 px-6 py-4">
             <TabsContent value="detalhes" className="mt-0">
-              <DrawerDetailsTab conta={conta} overdueDays={overdueDays} boletos={boletos} acordos={acordos} />
+              <DrawerDetailsTab
+                conta={conta}
+                overdueDays={overdueDays}
+                boletos={boletos}
+                acordos={acordos}
+              />
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-0 space-y-4">
@@ -238,14 +317,18 @@ export function ContaReceberDetailDrawer({
                   dados_novos: (a.dados_novos as Record<string, unknown> | null) ?? null,
                 }))}
                 events={
-                  conta.metadata && typeof conta.metadata === 'object' && !Array.isArray(conta.metadata)
-                    ? ((conta.metadata as Record<string, unknown>).events as Array<{
-                        id: string;
-                        type: string;
-                        message: string;
-                        timestamp: string;
-                        metadata?: unknown;
-                      }> | undefined) ?? []
+                  conta.metadata &&
+                  typeof conta.metadata === 'object' &&
+                  !Array.isArray(conta.metadata)
+                    ? (((conta.metadata as Record<string, unknown>).events as
+                        | Array<{
+                            id: string;
+                            type: string;
+                            message: string;
+                            timestamp: string;
+                            metadata?: unknown;
+                          }>
+                        | undefined) ?? [])
                     : []
                 }
               />
@@ -264,16 +347,35 @@ export function ContaReceberDetailDrawer({
                       <Card key={b.id} className="p-4 border-white/5 bg-card/[0.02]">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <p className="text-sm font-black tabular-nums tracking-tight">#{b.numero}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase font-black">{formatDate(b.vencimento)}</p>
+                            <p className="text-sm font-black tabular-nums tracking-tight">
+                              #{b.numero}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground uppercase font-black">
+                              {formatDate(b.vencimento)}
+                            </p>
                           </div>
-                          <Badge variant="outline" className={cn("text-[10px] font-black uppercase", b.status === 'pago' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning')}>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              'text-[10px] font-black uppercase',
+                              b.status === 'pago'
+                                ? 'bg-success/10 text-success'
+                                : 'bg-warning/10 text-warning'
+                            )}
+                          >
                             {b.status}
                           </Badge>
                         </div>
                         <div className="flex justify-between items-end">
-                          <p className="text-lg font-black tracking-tighter tabular-nums">{formatCurrency(b.valor)}</p>
-                          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5" onClick={() => window.open(b.link_pdf || '#', '_blank')}>
+                          <p className="text-lg font-black tracking-tighter tabular-nums">
+                            {formatCurrency(b.valor)}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-xs gap-1.5"
+                            onClick={() => window.open(b.link_pdf || '#', '_blank')}
+                          >
                             <FileText className="h-3.5 w-3.5" /> PDF
                           </Button>
                         </div>
@@ -283,7 +385,9 @@ export function ContaReceberDetailDrawer({
                 ) : (
                   <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-white/5 bg-black/10">
                     <Banknote className="h-8 w-8 text-foreground/5 mx-auto mb-3" />
-                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/30">Nenhum boleto gerado</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/30">
+                      Nenhum boleto gerado
+                    </p>
                   </div>
                 )}
               </div>
@@ -302,7 +406,6 @@ export function ContaReceberDetailDrawer({
             </TabsContent>
           </ScrollArea>
         </Tabs>
-
       </SheetContent>
     </Sheet>
   );

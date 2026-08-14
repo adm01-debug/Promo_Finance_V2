@@ -24,8 +24,18 @@ function truncate(s: string, max = MAX_VALUE_LEN): string {
 
 function tryParseDate(s: string): Date | null {
   if (!/^\d{4}-\d{2}-\d{2}(T|$)/.test(s)) return null;
-  const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? null : d;
+  if (s[10] === 'T') {
+    // Strings completas (com hora): mantém o parse ISO padrão (UTC).
+    const d = new Date(s);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  // Date-only 'YYYY-MM-DD': `new Date(s)` interpreta como UTC midnight e o
+  // Intl.DateTimeFormat formata em hora local (BRT = UTC-3) → recua 1 dia.
+  // Parse local para manter o dia informado.
+  const [y, m, d] = s.slice(0, 10).split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const valid = date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+  return valid ? date : null;
 }
 
 export function formatFilterValue(v: unknown): string {

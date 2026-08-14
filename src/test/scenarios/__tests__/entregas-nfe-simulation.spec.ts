@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { buildMatrix } from "../generator";
-import { runScenario } from "../runner";
-import { summarize } from "../report";
-import type { FaultKind } from "../types";
+import { describe, it, expect } from 'vitest';
+import { buildMatrix } from '../generator';
+import { runScenario } from '../runner';
+import { summarize } from '../report';
+import type { FaultKind } from '../types';
 
 /**
  * Suíte focada: falhas e gaps de processamento de ENTREGAS + NF-e.
@@ -13,38 +13,38 @@ import type { FaultKind } from "../types";
  */
 
 const ENTREGA_FAULTS: FaultKind[] = [
-  "none",
-  "flaky",
-  "reorder",
-  "duplicate",
-  "partial_write",
-  "timeout",
-  "entrega_driver_offline",
-  "entrega_gps_lost",
-  "entrega_pod_missing",
-  "entrega_status_regressivo",
+  'none',
+  'flaky',
+  'reorder',
+  'duplicate',
+  'partial_write',
+  'timeout',
+  'entrega_driver_offline',
+  'entrega_gps_lost',
+  'entrega_pod_missing',
+  'entrega_status_regressivo',
 ];
 
 const NFE_FAULTS: FaultKind[] = [
-  "none",
-  "flaky",
-  "reorder",
-  "duplicate",
-  "partial_write",
-  "nfe_gzip_corrupt",
-  "nfe_nsu_gap",
-  "nfe_soap_timeout",
+  'none',
+  'flaky',
+  'reorder',
+  'duplicate',
+  'partial_write',
+  'nfe_gzip_corrupt',
+  'nfe_nsu_gap',
+  'nfe_soap_timeout',
 ];
 
 const COUNT_ENTREGAS = Number(process.env.ENTREGAS_COUNT ?? 300);
 const COUNT_NFE = Number(process.env.NFE_COUNT ?? 200);
 
-describe("Simulação: falhas e gaps ENTREGAS + NF-e", () => {
+describe('Simulação: falhas e gaps ENTREGAS + NF-e', () => {
   it(`${COUNT_ENTREGAS} cenários de ENTREGAS (Lalamove) sem violações de invariantes`, () => {
     const specs = buildMatrix({
       count: COUNT_ENTREGAS,
       seed: 20260723,
-      domains: ["entregas"],
+      domains: ['entregas'],
       faults: ENTREGA_FAULTS,
       size: 25,
     });
@@ -52,12 +52,11 @@ describe("Simulação: falhas e gaps ENTREGAS + NF-e", () => {
     const summary = summarize(results);
 
     if (summary.failed > 0) {
-      // eslint-disable-next-line no-console
       console.error(
-        "Cenários ENTREGAS com violação:",
+        'Cenários ENTREGAS com violação:',
         JSON.stringify(summary.failedSeeds.slice(0, 10), null, 2),
-        "top invariantes:",
-        summary.topViolations,
+        'top invariantes:',
+        summary.topViolations
       );
     }
 
@@ -72,7 +71,7 @@ describe("Simulação: falhas e gaps ENTREGAS + NF-e", () => {
     const specs = buildMatrix({
       count: COUNT_NFE,
       seed: 20260724,
-      domains: ["nfe"],
+      domains: ['nfe'],
       faults: NFE_FAULTS,
       size: 25,
     });
@@ -80,12 +79,11 @@ describe("Simulação: falhas e gaps ENTREGAS + NF-e", () => {
     const summary = summarize(results);
 
     if (summary.failed > 0) {
-      // eslint-disable-next-line no-console
       console.error(
-        "Cenários NF-e com violação:",
+        'Cenários NF-e com violação:',
         JSON.stringify(summary.failedSeeds.slice(0, 10), null, 2),
-        "top invariantes:",
-        summary.topViolations,
+        'top invariantes:',
+        summary.topViolations
       );
     }
 

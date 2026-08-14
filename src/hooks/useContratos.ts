@@ -1,8 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useAuth } from '@/hooks/useAuth';
-
 export function useContratos(empresaId?: string) {
   return useQuery({
     queryKey: ['contratos', empresaId],
@@ -21,7 +19,6 @@ export function useContratos(empresaId?: string) {
 
 export function useCreateContrato() {
   const qc = useQueryClient();
-  const { user } = useAuth();
   return useMutation({
     mutationFn: async (input: {
       descricao: string;
@@ -40,7 +37,20 @@ export function useCreateContrato() {
     }) => {
       const { data, error } = await supabase
         .from('contratos')
-        .insert({ ...input, created_by: user?.id || '', status: 'ativo' })
+        // TODO(2026-08-14): campos de input fora do schema canônico não são enviados:
+        // cliente_id, fornecedor_id, dias_aviso_renovacao, observacoes, created_by
+        .insert({
+          descricao: input.descricao,
+          tipo: input.tipo,
+          data_inicio: input.data_inicio,
+          data_fim: input.data_fim,
+          valor_mensal: input.valor_mensal,
+          valor_total: input.valor_total,
+          empresa_id: input.empresa_id,
+          renovacao_automatica: input.renovacao_automatica,
+          numero_contrato: input.numero_contrato,
+          status: 'ativo',
+        })
         .select()
         .single();
       if (error) throw error;
@@ -57,7 +67,23 @@ export function useCreateContrato() {
 export function useUpdateContrato() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: string; [key: string]: unknown }) => {
+    mutationFn: async ({
+      id,
+      ...data
+    }: {
+      id: string;
+      descricao?: string;
+      tipo?: string;
+      data_inicio?: string;
+      data_fim?: string;
+      valor_mensal?: number;
+      valor_total?: number;
+      empresa_id?: string;
+      renovacao_automatica?: boolean;
+      numero_contrato?: string;
+      status?: string;
+    }) => {
+      // TODO(2026-08-14): assinatura estreitada para as colunas canônicas de contratos (types.ts)
       const { error } = await supabase.from('contratos').update(data).eq('id', id);
       if (error) throw error;
     },

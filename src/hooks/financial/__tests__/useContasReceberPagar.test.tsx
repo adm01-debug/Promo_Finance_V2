@@ -182,10 +182,9 @@ describe('useContasReceberPaginated', () => {
     nextResponses.push({ count: 42, data: null, error: null }); // count
     nextResponses.push({ data: [{ id: 'a' }, { id: 'b' }], error: null }); // data
 
-    const { result } = renderHook(
-      () => useContasReceberPaginated({ page: 3, pageSize: 10 }),
-      { wrapper: wrapper() },
-    );
+    const { result } = renderHook(() => useContasReceberPaginated({ page: 3, pageSize: 10 }), {
+      wrapper: wrapper(),
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     const [countCall, dataCall] = calls.filter((c) => c.table === 'contas_receber');
@@ -214,7 +213,7 @@ describe('useContasReceberPaginated', () => {
           empresaId: 'emp-1',
           contaBancariaId: 'cb-1',
         }),
-      { wrapper: wrapper() },
+      { wrapper: wrapper() }
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -226,7 +225,7 @@ describe('useContasReceberPaginated', () => {
         ['centro_custo_id', 'cc-1'],
         ['empresa_id', 'emp-1'],
         ['conta_bancaria_id', 'cb-1'],
-      ]),
+      ])
     );
   });
 
@@ -244,7 +243,7 @@ describe('useContasReceberPaginated', () => {
           empresaId: 'all',
           contaBancariaId: 'all',
         }),
-      { wrapper: wrapper() },
+      { wrapper: wrapper() }
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -260,13 +259,14 @@ describe('useContasPagarPaginated', () => {
     nextResponses.push({ count: 101, data: null, error: null });
     nextResponses.push({ data: [{ id: 'x' }], error: null });
 
-    const { result } = renderHook(
-      () => useContasPagarPaginated({ page: 2, pageSize: 50 }),
-      { wrapper: wrapper() },
-    );
+    const { result } = renderHook(() => useContasPagarPaginated({ page: 2, pageSize: 50 }), {
+      wrapper: wrapper(),
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    const dataCall = calls.filter((c) => c.table === 'contas_pagar')[1];
+    // A query de dados usa a view tipada vw_contas_pagar_painel (consistente com useContasPagar);
+    // apenas a query de count usa a tabela base contas_pagar.
+    const dataCall = calls.filter((c) => c.table === 'vw_contas_pagar_painel')[0];
     expect(dataCall.range).toEqual([50, 99]);
     expect(result.current.data?.totalPages).toBe(3); // ceil(101/50)
   });
@@ -277,11 +277,13 @@ describe('useContasPagarPaginated', () => {
 
     const { result } = renderHook(
       () => useContasPagarPaginated({ page: 1, pageSize: 10, search: 'acme' }),
-      { wrapper: wrapper() },
+      { wrapper: wrapper() }
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    const dataCall = calls.filter((c) => c.table === 'contas_pagar')[1];
+    // A query de dados usa a view tipada vw_contas_pagar_painel (consistente com useContasPagar);
+    // apenas a query de count usa a tabela base contas_pagar.
+    const dataCall = calls.filter((c) => c.table === 'vw_contas_pagar_painel')[0];
     expect(dataCall.or).toContain('fornecedor_nome.ilike.%acme%');
   });
 
@@ -289,10 +291,9 @@ describe('useContasPagarPaginated', () => {
     nextResponses.push({ count: null, data: null, error: new Error('count-fail') });
     nextResponses.push({ data: [], error: null });
 
-    const { result } = renderHook(
-      () => useContasPagarPaginated({ page: 1, pageSize: 10 }),
-      { wrapper: wrapper() },
-    );
+    const { result } = renderHook(() => useContasPagarPaginated({ page: 1, pageSize: 10 }), {
+      wrapper: wrapper(),
+    });
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect((result.current.error as Error).message).toBe('count-fail');
   });

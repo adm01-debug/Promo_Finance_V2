@@ -20,7 +20,7 @@ export function useMetasFinanceiras(ano?: number, mes?: number) {
     queryKey: ['metas-financeiras', ano, mes],
     queryFn: async () => {
       let query = supabase
-        .from('metas_financeiras' as never)
+        .from('metas_financeiras')
         .select('*')
         .eq('ativo', true)
         .order('ano', { ascending: false })
@@ -47,7 +47,8 @@ export function useCreateMeta() {
     }) => {
       const { data, error } = await supabase
         .from('metas_financeiras')
-        .insert({ ...input, created_by: user?.id || '' })
+        // TODO(2026-08-14): created_by→user_id (nome canônico em metas_financeiras)
+        .insert({ ...input, user_id: user?.id ?? null })
         .select()
         .single();
       if (error) throw error;

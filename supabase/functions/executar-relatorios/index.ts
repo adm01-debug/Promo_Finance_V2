@@ -1,12 +1,23 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { ExecutarRelatoriosSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import {
+  ExecutarRelatoriosSchema,
+  corsHeaders,
+  validatePayload,
+  createErrorResponse,
+} from '../_shared/validation.ts';
+import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // [auth-guard] Chamadores legitimos: usuario logado (JWT validado via getUser
+  // no header Authorization) ou automacao interna (service role / x-cron-secret).
+  // Fail-closed: sem prova de origem -> 401.
+  const guard = await exigirInternaOuUsuario(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -14,14 +25,13 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const rawBody = await req.json().catch(() => ({}));
-    const validation = validatePayload(ExecutarRelatoriosSchema, rawBody, "executar-relatorios");
+    const validation = validatePayload(ExecutarRelatoriosSchema, rawBody, 'executar-relatorios');
     if (!validation.success) {
       // For this specific function, we might want to continue if it's a scheduled call with empty body
       // but let's be strict for manual calls.
       return createErrorResponse(validation.error, 400, validation.details);
     }
     const relatorioId = validation.data.relatorio_id || null;
-
 
     if (relatorioId) {
       console.log(`[executar-relatorios] Execução manual do relatório: ${relatorioId}`);
@@ -48,25 +58,27 @@ serve(async (req) => {
       throw fetchError;
     }
 
-    console.log(`[executar-relatorios] Encontrados ${relatoriosParaExecutar?.length || 0} relatórios para executar`);
+    console.log(
+      `[executar-relatorios] Encontrados ${relatoriosParaExecutar?.length || 0} relatórios para executar`
+    );
 
     const resultados = [];
 
     for (const relatorio of relatoriosParaExecutar || []) {
-      console.log(`[executar-relatorios] Executando: ${relatorio.nome} (${relatorio.tipo_relatorio})`);
+      console.log(
+        `[executar-relatorios] Executando: ${relatorio.nome} (${relatorio.tipo_relatorio})`
+      );
 
       try {
         // Gerar os dados do relatório
         const dadosRelatorio = await gerarDadosRelatorio(supabase, relatorio);
 
         // Salvar no histórico
-        const { error: historicoError } = await supabase
-          .from('historico_relatorios')
-          .insert({
-            relatorio_agendado_id: relatorio.id,
-            status: 'gerado',
-            dados_relatorio: dadosRelatorio,
-          });
+        const { error: historicoError } = await supabase.from('historico_relatorios').insert({
+          relatorio_agendado_id: relatorio.id,
+          status: 'gerado',
+          dados_relatorio: dadosRelatorio,
+        });
 
         if (historicoError) {
           console.error(`[executar-relatorios] Erro ao salvar histórico:`, historicoError);
@@ -101,19 +113,16 @@ serve(async (req) => {
         });
 
         console.log(`[executar-relatorios] Relatório ${relatorio.nome} executado com sucesso`);
-
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
         console.error(`[executar-relatorios] Erro ao executar ${relatorio.nome}:`, err);
 
         // Salvar erro no histórico
-        await supabase
-          .from('historico_relatorios')
-          .insert({
-            relatorio_agendado_id: relatorio.id,
-            status: 'erro',
-            erro_mensagem: errorMessage,
-          });
+        await supabase.from('historico_relatorios').insert({
+          relatorio_agendado_id: relatorio.id,
+          status: 'erro',
+          erro_mensagem: errorMessage,
+        });
 
         resultados.push({
           id: relatorio.id,
@@ -124,7 +133,9 @@ serve(async (req) => {
       }
     }
 
-    console.log(`[executar-relatorios] Execução finalizada. ${resultados.length} relatórios processados.`);
+    console.log(
+      `[executar-relatorios] Execução finalizada. ${resultados.length} relatórios processados.`
+    );
 
     return new Response(
       JSON.stringify({
@@ -134,14 +145,13 @@ serve(async (req) => {
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
     console.error('[executar-relatorios] Erro geral:', err);
-    return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ success: false, error: errorMessage }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
 
@@ -191,10 +201,13 @@ async function gerarFluxoCaixa(supabase: any, empresaId: string | null) {
 
   const [receberRes, pagarRes] = await Promise.all([queryReceber, queryPagar]);
 
-  const totalReceber = receberRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor), 0) || 0;
-  const totalRecebido = receberRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_recebido || 0), 0) || 0;
+  const totalReceber =
+    receberRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor), 0) || 0;
+  const totalRecebido =
+    receberRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_recebido || 0), 0) || 0;
   const totalPagar = pagarRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor), 0) || 0;
-  const totalPago = pagarRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_pago || 0), 0) || 0;
+  const totalPago =
+    pagarRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_pago || 0), 0) || 0;
 
   return {
     periodo: { inicio: inicioMes, fim: fimMes },
@@ -216,10 +229,16 @@ async function gerarFluxoCaixa(supabase: any, empresaId: string | null) {
   };
 }
 
-async function gerarContasPagar(supabase: any, empresaId: string | null, centroCustoId: string | null) {
+async function gerarContasPagar(
+  supabase: any,
+  empresaId: string | null,
+  centroCustoId: string | null
+) {
   let query = supabase
     .from('contas_pagar')
-    .select('id, descricao, fornecedor_nome, valor, valor_pago, status, data_vencimento, data_pagamento')
+    .select(
+      'id, descricao, fornecedor_nome, valor, valor_pago, status, data_vencimento, data_pagamento'
+    )
     .order('data_vencimento', { ascending: true })
     .limit(100);
 
@@ -247,10 +266,16 @@ async function gerarContasPagar(supabase: any, empresaId: string | null, centroC
   };
 }
 
-async function gerarContasReceber(supabase: any, empresaId: string | null, centroCustoId: string | null) {
+async function gerarContasReceber(
+  supabase: any,
+  empresaId: string | null,
+  centroCustoId: string | null
+) {
   let query = supabase
     .from('contas_receber')
-    .select('id, descricao, cliente_nome, valor, valor_recebido, status, data_vencimento, data_recebimento')
+    .select(
+      'id, descricao, cliente_nome, valor, valor_recebido, status, data_vencimento, data_recebimento'
+    )
     .order('data_vencimento', { ascending: true })
     .limit(100);
 
@@ -263,7 +288,8 @@ async function gerarContasReceber(supabase: any, empresaId: string | null, centr
   const resumo = {
     total: data?.length || 0,
     valor_total: data?.reduce((acc: number, c: any) => acc + Number(c.valor), 0) || 0,
-    valor_recebido: data?.reduce((acc: number, c: any) => acc + Number(c.valor_recebido || 0), 0) || 0,
+    valor_recebido:
+      data?.reduce((acc: number, c: any) => acc + Number(c.valor_recebido || 0), 0) || 0,
     por_status: {} as Record<string, number>,
   };
 
@@ -304,8 +330,10 @@ async function gerarDRE(supabase: any, empresaId: string | null) {
 
   const [receberRes, pagarRes] = await Promise.all([queryReceber, queryPagar]);
 
-  const receitaBruta = receberRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_recebido || 0), 0) || 0;
-  const despesasOperacionais = pagarRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_pago || 0), 0) || 0;
+  const receitaBruta =
+    receberRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_recebido || 0), 0) || 0;
+  const despesasOperacionais =
+    pagarRes.data?.reduce((acc: number, c: any) => acc + Number(c.valor_pago || 0), 0) || 0;
   const lucroOperacional = receitaBruta - despesasOperacionais;
 
   return {
@@ -324,9 +352,7 @@ async function gerarDRE(supabase: any, empresaId: string | null) {
 }
 
 async function gerarBalanco(supabase: any, empresaId: string | null) {
-  let queryContas = supabase
-    .from('contas_bancarias')
-    .select('saldo_atual, saldo_disponivel');
+  let queryContas = supabase.from('contas_bancarias').select('saldo_atual, saldo_disponivel');
 
   let queryReceber = supabase
     .from('contas_receber')
@@ -344,11 +370,24 @@ async function gerarBalanco(supabase: any, empresaId: string | null) {
     queryPagar = queryPagar.eq('empresa_id', empresaId);
   }
 
-  const [contasRes, receberRes, pagarRes] = await Promise.all([queryContas, queryReceber, queryPagar]);
+  const [contasRes, receberRes, pagarRes] = await Promise.all([
+    queryContas,
+    queryReceber,
+    queryPagar,
+  ]);
 
-  const disponibilidades = contasRes.data?.reduce((acc: number, c: any) => acc + Number(c.saldo_atual), 0) || 0;
-  const contasAReceber = receberRes.data?.reduce((acc: number, c: any) => acc + (Number(c.valor) - Number(c.valor_recebido || 0)), 0) || 0;
-  const contasAPagar = pagarRes.data?.reduce((acc: number, c: any) => acc + (Number(c.valor) - Number(c.valor_pago || 0)), 0) || 0;
+  const disponibilidades =
+    contasRes.data?.reduce((acc: number, c: any) => acc + Number(c.saldo_atual), 0) || 0;
+  const contasAReceber =
+    receberRes.data?.reduce(
+      (acc: number, c: any) => acc + (Number(c.valor) - Number(c.valor_recebido || 0)),
+      0
+    ) || 0;
+  const contasAPagar =
+    pagarRes.data?.reduce(
+      (acc: number, c: any) => acc + (Number(c.valor) - Number(c.valor_pago || 0)),
+      0
+    ) || 0;
 
   const ativoCirculante = disponibilidades + contasAReceber;
   const passivoCirculante = contasAPagar;
@@ -391,16 +430,18 @@ async function gerarInadimplencia(supabase: any, empresaId: string | null) {
   const { data: vencidos, error } = await query;
   if (error) throw error;
 
-  let queryTotal = supabase
-    .from('contas_receber')
-    .select('valor');
+  let queryTotal = supabase.from('contas_receber').select('valor');
 
   if (empresaId) queryTotal = queryTotal.eq('empresa_id', empresaId);
 
   const { data: todas } = await queryTotal;
 
   const valorTotal = todas?.reduce((acc: number, c: any) => acc + Number(c.valor), 0) || 0;
-  const valorVencido = vencidos?.reduce((acc: number, c: any) => acc + (Number(c.valor) - Number(c.valor_recebido || 0)), 0) || 0;
+  const valorVencido =
+    vencidos?.reduce(
+      (acc: number, c: any) => acc + (Number(c.valor) - Number(c.valor_recebido || 0)),
+      0
+    ) || 0;
   const taxaInadimplencia = valorTotal > 0 ? (valorVencido / valorTotal) * 100 : 0;
 
   // Agrupar por cliente
@@ -459,7 +500,9 @@ function calcularProximoEnvio(
     case 'mensal':
       proximo.setMonth(proximo.getMonth() + 1);
       if (diaMes !== null) {
-        proximo.setDate(Math.min(diaMes, new Date(proximo.getFullYear(), proximo.getMonth() + 1, 0).getDate()));
+        proximo.setDate(
+          Math.min(diaMes, new Date(proximo.getFullYear(), proximo.getMonth() + 1, 0).getDate())
+        );
       }
       break;
   }
