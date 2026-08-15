@@ -58,7 +58,9 @@ serve(async (req) => {
 
     let body: z.infer<typeof AnomaliaRunInputSchema> = {};
     if (req.method === "POST") {
-      const json = await req.json();
+      // Invokes sem body (ex.: botão "Detectar" sem payload) lançariam
+      // SyntaxError no req.json() — parse defensivo.
+      const json = await req.json().catch(() => ({}));
       const validation = await validateContract(AnomaliaRunInputSchema, json);
       if (!validation.success) return validation.response;
       body = validation.data;

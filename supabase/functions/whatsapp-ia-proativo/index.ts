@@ -176,6 +176,18 @@ serve(async (req) => {
       });
     }
 
+    if (action === 'test') {
+      const { telefone, mensagem } = data || {};
+      if (!telefone || !mensagem) {
+        return new Response(JSON.stringify({ success: false, error: 'telefone e mensagem são obrigatórios' }), { status: 400 });
+      }
+      const numeroFormatado = formatarTelefone(telefone);
+      const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
+      return new Response(JSON.stringify({ success: true, whatsapp_link: whatsappLink, test: true }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     if (action === 'enviar-mensagem') {
       const { telefone, mensagem, cliente_id, tipo } = data;
       
@@ -186,14 +198,18 @@ serve(async (req) => {
       const mensagemEncoded = encodeURIComponent(mensagem);
       const whatsappLink = `https://wa.me/${numeroFormatado}?text=${mensagemEncoded}`;
 
-      // Registrar no histórico
-      await supabase.from('historico_cobranca_whatsapp').insert({
-        conta_receber_id: data.conta_receber_id || null,
-        cliente_id,
-        telefone: numeroFormatado,
-        mensagem,
-        status: 'gerado'
-      });
+      // Registrar no histórico — conta_receber_id é NOT NULL na tabela
+      // (migration 20251224131124); sem ele, pular o registro (o link
+      // ainda é gerado) em vez de falhar com PGRST204/23502.
+      if (data.conta_receber_id) {
+        await supabase.from('historico_cobranca_whatsapp').insert({
+          conta_receber_id: data.conta_receber_id,
+          cliente_id,
+          telefone: numeroFormatado,
+          mensagem,
+          status: 'gerado'
+        });
+      }
 
       return new Response(JSON.stringify({
         success: true,

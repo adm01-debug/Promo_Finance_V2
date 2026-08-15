@@ -25,8 +25,10 @@ export function WhatsAppConfigPanel() {
       const { error } = await supabase.functions.invoke('whatsapp-ia-proativo', {
         body: {
           action: 'test',
-          telefone: testNumber,
-          mensagem: '✅ Teste de integração WhatsApp Business - Promo Finance'
+          data: {
+            telefone: testNumber,
+            mensagem: '✅ Teste de integração WhatsApp Business - Promo Finance'
+          }
         }
       });
       if (error) throw error;

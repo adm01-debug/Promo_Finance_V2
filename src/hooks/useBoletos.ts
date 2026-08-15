@@ -217,6 +217,7 @@ export function useBoletos() {
                 data_vencimento: data.vencimento,
                 tipo: 'boleto',
                 descricao: data.descricao,
+                conta_receber_id: data.conta_receber_id || null, // S10: a fn usa em externalReference + insert asaas_payments
               },
             },
           }
@@ -224,10 +225,8 @@ export function useBoletos() {
 
         if (asaasError) throw asaasError;
 
-        // VAL-GAP-04: o asaas-proxy NÃO lança erro em 400/422 (erro de negócio ASAAS:
-        // cliente inválido, cobrança duplicada, etc.) — retorna o payload normalmente.
-        // Sem esta validação, asaasResult.id ficaria undefined e o boleto seria criado
-        // sem vínculo ASAAS silenciosamente.
+        // VAL-GAP-04: proxy não lança em 400/422 (negócio ASAAS) — sem esta
+        // validação o boleto nasceria sem vínculo ASAAS silenciosamente.
         const asaasId = asaasResult?.id;
         if (typeof asaasId !== 'string' || asaasId.trim() === '') {
           const mensagemAsaas =
