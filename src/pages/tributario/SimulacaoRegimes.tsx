@@ -1,59 +1,33 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw, History as HistoryIcon, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { RefreshCw, AlertTriangle } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
-import { formatCurrency } from '@/lib/formatters';
-import type { RegimeTributario } from '@/lib/tributario';
 import { baixarRelatorioPdf } from '@/lib/tributario/relatorio-pdf';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 import { toast } from 'sonner';
 import { SimulacaoHeaderActions } from '@/components/tributario/simulacao/SimulacaoHeaderActions';
 import { ParametrosForm } from '@/components/tributario/simulacao/ParametrosForm';
 import { AjustesParametrosAlert } from '@/components/tributario/simulacao/AjustesParametrosAlert';
 import { diagnosticarParametros } from '@/lib/tributario/diagnostico-parametros';
 import { ConfirmarSalvamentoAjustesDialog } from '@/components/tributario/simulacao/ConfirmarSalvamentoAjustesDialog';
-import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
 import {
   filtrarHistorico,
   montarLinhasAuditoriaCsv,
   ordenarHistorico,
   paginarHistorico,
-  ORDENACOES_HISTORICO,
 } from '@/lib/tributario/historico-simulacao';
-import type { LinhaAuditoriaCsv, OrdenacaoHistorico } from '@/lib/tributario/historico-simulacao';
+import type { OrdenacaoHistorico } from '@/lib/tributario/historico-simulacao';
+import { exportToCSV } from '@/lib/export-utils';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { exportToCSV, type ExportColumn } from '@/lib/export-utils';
-
-/** Colunas da trilha de auditoria exportável (ordem fixa para diffs estáveis). */
-const COLUNAS_AUDITORIA: ExportColumn<LinhaAuditoriaCsv>[] = [
-  { key: 'data', header: 'Data da simulação' },
-  { key: 'regimeSalvo', header: 'Regime recomendado (salvo)' },
-  { key: 'regimeRecalculado', header: 'Regime recalculado (motor atual)' },
-  { key: 'situacao', header: 'Situação' },
-  { key: 'versaoMotor', header: 'Versão do motor' },
-  { key: 'faturamento12m', header: 'Faturamento 12m' },
-  { key: 'folha12m', header: 'Folha 12m' },
-  { key: 'economiaAnual', header: 'Economia anual estimada' },
-  { key: 'qtdAjustes', header: 'Qtd. ajustes' },
-  { key: 'ajustesCriticos', header: 'Ajustes críticos' },
-  { key: 'ajustes', header: 'Detalhe dos ajustes' },
-];
-
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+  RegimeRecomendadoCard,
+  AlertasSimulacaoCard,
+  ComparativoCargaCard,
+  CenariosTabs,
+  HistoricoSimulacoesCard,
+} from './SimulacaoRegimes.parts';
+import { COLUNAS_AUDITORIA } from './SimulacaoRegimes.helpers';
 
 export default function SimulacaoRegimes() {
   const navigate = useNavigate();
@@ -188,8 +162,6 @@ export default function SimulacaoRegimes() {
 
 
 
-
-
   const popularDoHistorico = () => {
     if (faturamentoMensal.length === 0) {
       toast.error('Sem histórico de faturamento para esta empresa.');
@@ -262,10 +234,7 @@ export default function SimulacaoRegimes() {
     }
   };
 
-  const corPorRegime = (r: RegimeTributario) =>
-    r === 'simples_nacional' ? 'hsl(160 84% 39%)' : r === 'lucro_presumido' ? 'hsl(258 90% 66%)' : 'hsl(217 91% 60%)';
-
-  const dadosGrafico = useMemo(() => 
+  const dadosGrafico = useMemo(() =>
     resultado.cenarios
       .filter((c) => c.elegivel)
       .map((c) => ({ name: c.nome, valor: c.totalTributos, regime: c.regime })),
@@ -356,293 +325,30 @@ export default function SimulacaoRegimes() {
         />
 
         <div className="lg:col-span-2 space-y-4">
-          <Card className="border-success/30 bg-gradient-to-br from-success/5 to-primary/5">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-success/10">
-                  <Award className="h-8 w-8 text-success" aria-hidden="true" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Regime Recomendado</p>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-2xl md:text-3xl font-bold text-success">{resultado.recomendado.nome}</h2>
-                    {isRecomendacaoIA && (
-                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 animate-pulse">
-                        <Sparkles className="h-3 w-3 mr-1" /> IA
-                      </Badge>
-                    )}
-                    {resultado.fromCache && (
-                      <Badge variant="outline" className="text-muted-foreground border-muted-foreground/20">
-                        Cached
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{resultado.justificativaIA || resultado.justificativa}</p>
-                  {resultado.economiaAnualVsAtual !== undefined && resultado.economiaAnualVsAtual > 0 && (
-                    <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 text-success">
-                      <TrendingDown className="h-4 w-4" aria-hidden="true" />
-                      <span className="font-semibold">
-                        Economia: {formatCurrency(resultado.economiaAnualVsAtual)}/ano
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <RegimeRecomendadoCard resultado={resultado} isRecomendacaoIA={isRecomendacaoIA} />
 
           {resultado.alertas.length > 0 && (
-            <Alert variant="default">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Atenção</AlertTitle>
-              <AlertDescription>
-                <ul className="list-disc pl-4 space-y-1 mt-2">
-                  {resultado.alertas.map((a, i) => (
-                    <li key={i}>{a}</li>
-                  ))}
-                </ul>
-              </AlertDescription>
-            </Alert>
+            <AlertasSimulacaoCard alertas={resultado.alertas} />
           )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Comparativo de Carga Tributária</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                className="h-[220px]"
-                role="img"
-                aria-label="Gráfico de barras comparando carga tributária dos regimes elegíveis"
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={dadosGrafico} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`} />
-                    <YAxis type="category" dataKey="name" width={130} />
-                    <Tooltip formatter={(v: number) => formatCurrency(v)} />
-                    <Bar dataKey="valor" radius={[0, 4, 4, 0]}>
-                      {dadosGrafico.map((d, i) => (
-                        <Cell key={i} fill={corPorRegime(d.regime as RegimeTributario)} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          <ComparativoCargaCard dadosGrafico={dadosGrafico} />
 
-          <Tabs defaultValue={resultado.recomendado.regime}>
-            <TabsList className="grid w-full grid-cols-3">
-              {resultado.cenarios.map((c) => (
-                <TabsTrigger key={c.regime} value={c.regime} disabled={!c.elegivel}>
-                  {c.nome}
-                  {c.regime === resultado.recomendado.regime && (
-                    <Sparkles className="h-3 w-3 ml-1 text-success" aria-hidden="true" />
-                  )}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {resultado.cenarios.map((c) => (
-              <TabsContent key={c.regime} value={c.regime}>
-                <CenarioDetalhes cenario={c} />
-              </TabsContent>
-            ))}
-          </Tabs>
+          <CenariosTabs resultado={resultado} />
 
           {historicoSimulacoes.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Simulações Anteriores</CardTitle>
-                <p className="text-xs text-muted-foreground">Motor tributário v{versaoMotor}</p>
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  {resumoAuditoria.saudavel ? (
-                    <Badge variant="outline" className="text-success border-success/40">
-                      {resumoAuditoria.total} snapshot{resumoAuditoria.total > 1 ? 's' : ''} sem pendências
-                    </Badge>
-                  ) : (
-                    <>
-                      {resumoAuditoria.divergentes > 0 && (
-                        <Badge variant="outline" className="text-warning border-warning/40">
-                          {resumoAuditoria.divergentes} divergente{resumoAuditoria.divergentes > 1 ? 's' : ''}
-                        </Badge>
-                      )}
-                      {resumoAuditoria.motorDesatualizado > 0 && (
-                        <Badge variant="outline" className="text-muted-foreground">
-                          {resumoAuditoria.motorDesatualizado} com motor antigo
-                        </Badge>
-                      )}
-                      {resumoAuditoria.comAjustes > 0 && (
-                        <Badge
-                          variant="outline"
-                          className={
-                            resumoAuditoria.comAjustesCriticos > 0
-                              ? 'text-destructive border-destructive/40'
-                              : 'text-warning border-warning/40'
-                          }
-                        >
-                          {resumoAuditoria.comAjustes} com ajustes
-                          {resumoAuditoria.comAjustesCriticos > 0
-                            ? ` (${resumoAuditoria.comAjustesCriticos} crítico${resumoAuditoria.comAjustesCriticos > 1 ? 's' : ''})`
-                            : ''}
-                        </Badge>
-                      )}
-                    </>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-center gap-4 pt-2">
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      id="filtro-pendencias-historico"
-                      checked={somentePendencias}
-                      onCheckedChange={setSomentePendencias}
-                    />
-                    <Label htmlFor="filtro-pendencias-historico" className="text-xs font-normal">
-                      Somente snapshots com pendências
-                    </Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="ordenacao-historico" className="text-xs font-normal">
-                      Ordenar por
-                    </Label>
-                    <Select
-                      value={ordenacao}
-                      onValueChange={(v) => setOrdenacao(v as OrdenacaoHistorico)}
-                    >
-                      <SelectTrigger id="ordenacao-historico" className="h-8 w-[190px] text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ORDENACOES_HISTORICO.map((o) => (
-                          <SelectItem key={o.valor} value={o.valor} className="text-xs">
-                            {o.rotulo}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-
-                <div className="pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={historicoVisivel.length === 0}
-                    onClick={handleExportarAuditoria}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Exportar trilha de auditoria (CSV)
-                  </Button>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-2">
-                {historicoVisivel.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    Nenhum snapshot com pendências — histórico íntegro.
-                  </p>
-                )}
-                {pagina.itens.map((h) => (
-                  <div key={h.id} className="flex items-center justify-between gap-2 p-2 rounded border text-sm">
-                    <div className="min-w-0">
-                      <p className="font-medium truncate">{h.regime_recomendado}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(h.data_simulacao).toLocaleString('pt-BR')}
-                        {h.versao_motor ? ` · v${h.versao_motor}` : ' · versão não registrada'}
-                      </p>
-                      {h.divergente && h.regimeRecalculado && (
-                        <p className="text-xs text-warning">
-                          Recálculo atual indica {h.regimeRecalculado}
-                        </p>
-                      )}
-                      {h.ajustesAplicados.length > 0 && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          Ajustes: {h.ajustesAplicados.map((a) => `${a.rotulo} ${a.informado}→${a.aplicado}`).join(' · ')}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {h.ajustesAplicados.length > 0 && (
-                        <Badge
-                          variant="outline"
-                          className={
-                            h.ajustesAplicados.some((a) => a.severidade === 'critico')
-                              ? 'text-destructive border-destructive/40'
-                              : 'text-warning border-warning/40'
-                          }
-                          title={h.ajustesAplicados.map((a) => `${a.rotulo}: ${a.motivo}`).join('\n')}
-                        >
-                          {h.ajustesAplicados.length} ajuste{h.ajustesAplicados.length > 1 ? 's' : ''}
-                        </Badge>
-                      )}
-                      {h.divergente && (
-                        <Badge variant="outline" className="text-warning border-warning/40">
-                          Divergente
-                        </Badge>
-                      )}
-                      {!h.divergente && h.motorDesatualizado && (
-                        <Badge variant="outline" className="text-muted-foreground">
-                          Motor antigo
-                        </Badge>
-                      )}
-
-                      {h.economia_anual_estimada !== null && h.economia_anual_estimada !== undefined && (
-                        <Badge variant="outline" className="text-success">
-                          {formatCurrency(Number(h.economia_anual_estimada))}/ano
-                        </Badge>
-                      )}
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => restaurarSimulacao(h)}
-                        aria-label={`Restaurar simulação de ${new Date(h.data_simulacao).toLocaleString('pt-BR')}`}
-                      >
-                        <HistoryIcon className="h-4 w-4 mr-1" aria-hidden="true" />
-                        Restaurar
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-
-                {pagina.total > 0 && (
-                  <nav
-                    className="flex items-center justify-between pt-2"
-                    aria-label="Paginação do histórico de simulações"
-                  >
-                    <p className="text-xs text-muted-foreground" aria-live="polite">
-                      Exibindo {pagina.inicio}–{pagina.fim} de {pagina.total} snapshot
-                      {pagina.total > 1 ? 's' : ''} · página {pagina.pagina}/{pagina.totalPaginas}
-                    </p>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={pagina.pagina <= 1}
-                        onClick={() => setPaginaHistorico(pagina.pagina - 1)}
-                        aria-label="Página anterior do histórico"
-                      >
-                        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={pagina.pagina >= pagina.totalPaginas}
-                        onClick={() => setPaginaHistorico(pagina.pagina + 1)}
-                        aria-label="Próxima página do histórico"
-                      >
-                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                      </Button>
-                    </div>
-                  </nav>
-                )}
-              </CardContent>
-
-            </Card>
+            <HistoricoSimulacoesCard
+              historicoVisivel={historicoVisivel}
+              pagina={pagina}
+              resumoAuditoria={resumoAuditoria}
+              versaoMotor={versaoMotor}
+              somentePendencias={somentePendencias}
+              onSomentePendenciasChange={setSomentePendencias}
+              ordenacao={ordenacao}
+              onOrdenacaoChange={setOrdenacao}
+              onExportarAuditoria={handleExportarAuditoria}
+              onRestaurar={restaurarSimulacao}
+              onPaginaChange={setPaginaHistorico}
+            />
           )}
 
         </div>

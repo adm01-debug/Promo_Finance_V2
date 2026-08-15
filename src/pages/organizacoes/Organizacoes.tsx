@@ -20,15 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Building2, Copy, Mail, Plus, ShieldCheck, UserMinus } from 'lucide-react';
+import { Building2, Plus, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -43,11 +35,9 @@ import {
 import {
   ROTULO_ORG_PAPEL,
   resumirMembros,
-  statusConvite,
   type OrgPapel,
 } from '@/lib/organizacoes/convites';
-
-const PAPEIS_CONVIDAVEIS: OrgPapel[] = ['ADMIN', 'MEMBRO', 'LEITOR'];
+import { ConvitesCard, MembrosCard } from './Organizacoes.parts';
 
 function mensagemErro(erro: unknown): string {
   return erro instanceof Error ? erro.message : 'Ocorreu um erro inesperado.';
@@ -224,241 +214,65 @@ export default function Organizacoes() {
 
           {orgSelecionada && (
             <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5 text-primary" />
-                    Convites
-                  </CardTitle>
-                  <CardDescription>
-                    Convites expiram em 7 dias e só podem ser aceitos pelo e-mail convidado.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <form
-                    className="grid gap-4 md:grid-cols-[2fr_1fr_auto] md:items-end"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      criarConvite.mutate(novoConvite, {
-                        onSuccess: (convite) => {
-                          toast.success(
-                            convite.emailEnviado
-                              ? `Convite enviado por e-mail para ${convite.email_convidado}.`
-                              : 'Convite gerado. Copie o link e envie ao convidado.',
-                          );
-                          setNovoConvite({ email: '', papel: 'MEMBRO' });
-                        },
+              <ConvitesCard
+                convites={convites.data}
+                convitesLoading={convites.isLoading}
+                novoConvite={novoConvite}
+                onNovoConviteChange={(patch) => setNovoConvite((s) => ({ ...s, ...patch }))}
+                convitePending={criarConvite.isPending}
+                onSubmitConvite={() =>
+                  criarConvite.mutate(novoConvite, {
+                    onSuccess: (convite) => {
+                      toast.success(
+                        convite.emailEnviado
+                          ? `Convite enviado por e-mail para ${convite.email_convidado}.`
+                          : 'Convite gerado. Copie o link e envie ao convidado.',
+                      );
+                      setNovoConvite({ email: '', papel: 'MEMBRO' });
+                    },
+                    onError: (erro) => toast.error(mensagemErro(erro)),
+                  })
+                }
+                onRevogar={(id) =>
+                  revogarConvite.mutate(id, {
+                    onSuccess: () => toast.success('Convite revogado.'),
+                    onError: (erro) => toast.error(mensagemErro(erro)),
+                  })
+                }
+                onCopiarLink={copiarLink}
+              />
 
-                        onError: (erro) => toast.error(mensagemErro(erro)),
-                      });
-                    }}
-                  >
-                    <div className="space-y-2">
-                      <Label htmlFor="convite-email">E-mail</Label>
-                      <Input
-                        id="convite-email"
-                        type="email"
-                        value={novoConvite.email}
-                        onChange={(e) => setNovoConvite((s) => ({ ...s, email: e.target.value }))}
-                        placeholder="pessoa@empresa.com.br"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="convite-papel">Papel</Label>
-                      <Select
-                        value={novoConvite.papel}
-                        onValueChange={(valor) =>
-                          setNovoConvite((s) => ({ ...s, papel: valor as OrgPapel }))
-                        }
-                      >
-                        <SelectTrigger id="convite-papel">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PAPEIS_CONVIDAVEIS.map((papel) => (
-                            <SelectItem key={papel} value={papel}>
-                              {ROTULO_ORG_PAPEL[papel]}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button type="submit" disabled={criarConvite.isPending}>
-                      {criarConvite.isPending ? 'Gerando...' : 'Convidar'}
-                    </Button>
-                  </form>
-
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>E-mail</TableHead>
-                        <TableHead>Papel</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(convites.data ?? []).map((convite) => {
-                        const status = statusConvite(convite);
-                        return (
-                          <TableRow key={convite.id}>
-                            <TableCell className="font-medium">{convite.email_convidado}</TableCell>
-                            <TableCell>{ROTULO_ORG_PAPEL[convite.papel_proposto]}</TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  status === 'PENDENTE'
-                                    ? 'default'
-                                    : status === 'UTILIZADO'
-                                      ? 'secondary'
-                                      : 'destructive'
-                                }
-                              >
-                                {status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right space-x-2">
-                              {status === 'PENDENTE' && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => void copiarLink(convite.token)}
-                                >
-                                  <Copy className="mr-1 h-3 w-3" /> Link
-                                </Button>
-                              )}
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() =>
-                                  revogarConvite.mutate(convite.id, {
-                                    onSuccess: () => toast.success('Convite revogado.'),
-                                    onError: (erro) => toast.error(mensagemErro(erro)),
-                                  })
-                                }
-                              >
-                                Revogar
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                      {!convites.isLoading && (convites.data ?? []).length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={4} className="text-center text-muted-foreground">
-                            Nenhum convite emitido.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Membros</CardTitle>
-                  <CardDescription>
-                    A organização precisa manter ao menos um gestor ativo.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Pessoa</TableHead>
-                        <TableHead>Papel</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(membros.data ?? []).map((membro) => (
-                        <TableRow key={membro.id}>
-                          <TableCell>
-                            <div className="font-medium">{membro.nome ?? 'Usuário'}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {membro.email ?? membro.usuario_id}
-                            </div>
-                          </TableCell>
-                          <TableCell className="w-48">
-                            <Select
-                              value={membro.papel_na_org}
-                              disabled={!ehResponsavel || membro.papel_na_org === 'RESPONSAVEL'}
-                              onValueChange={(valor) =>
-                                atualizarMembro.mutate(
-                                  {
-                                    membro,
-                                    membros: membros.data ?? [],
-                                    papel: valor as OrgPapel,
-                                  },
-                                  {
-                                    onSuccess: () => toast.success('Papel atualizado.'),
-                                    onError: (erro) => toast.error(mensagemErro(erro)),
-                                  },
-                                )
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {(['RESPONSAVEL', ...PAPEIS_CONVIDAVEIS] as OrgPapel[]).map(
-                                  (papel) => (
-                                    <SelectItem
-                                      key={papel}
-                                      value={papel}
-                                      disabled={papel === 'RESPONSAVEL'}
-                                    >
-                                      {ROTULO_ORG_PAPEL[papel]}
-                                    </SelectItem>
-                                  ),
-                                )}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={membro.ativo ? 'default' : 'secondary'}>
-                              {membro.ativo ? 'Ativo' : 'Inativo'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              disabled={!ehResponsavel || membro.papel_na_org === 'RESPONSAVEL'}
-                              onClick={() =>
-                                atualizarMembro.mutate(
-                                  {
-                                    membro,
-                                    membros: membros.data ?? [],
-                                    ativo: !membro.ativo,
-                                  },
-                                  {
-                                    onSuccess: () => toast.success('Vínculo atualizado.'),
-                                    onError: (erro) => toast.error(mensagemErro(erro)),
-                                  },
-                                )
-                              }
-                            >
-                              <UserMinus className="mr-1 h-3 w-3" />
-                              {membro.ativo ? 'Desativar' : 'Reativar'}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {!membros.isLoading && (membros.data ?? []).length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={4} className="text-center text-muted-foreground">
-                            Nenhum membro vinculado.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+              <MembrosCard
+                membros={membros.data}
+                membrosLoading={membros.isLoading}
+                ehResponsavel={ehResponsavel}
+                onAtualizarPapel={(membro, papel) =>
+                  atualizarMembro.mutate(
+                    {
+                      membro,
+                      membros: membros.data ?? [],
+                      papel,
+                    },
+                    {
+                      onSuccess: () => toast.success('Papel atualizado.'),
+                      onError: (erro) => toast.error(mensagemErro(erro)),
+                    },
+                  )
+                }
+                onToggleAtivo={(membro) =>
+                  atualizarMembro.mutate(
+                    {
+                      membro,
+                      membros: membros.data ?? [],
+                      ativo: !membro.ativo,
+                    },
+                    {
+                      onSuccess: () => toast.success('Vínculo atualizado.'),
+                      onError: (erro) => toast.error(mensagemErro(erro)),
+                    },
+                  )
+                }
+              />
             </>
           )}
         </div>

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -14,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -23,104 +21,23 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   RefreshCcw,
   ShieldCheck,
-  UserCircle,
-  Phone,
-  Image as ImageIcon,
-  UserPlus,
-  RefreshCw,
 } from 'lucide-react';
 import { subDays } from 'date-fns';
-import { formatDate } from '@/lib/formatters';
 import {
   useSsoProfileSyncEvents,
-  type SsoProfileSyncEvent,
 } from '@/hooks/useSsoProfileSyncEvents';
-import { SSO_SYNC_FIELD_LABEL, type SsoSyncFieldKey } from '@/hooks/useLastSsoProfileSync';
-import { useSSOJitEvents, type JitAuditEvent } from '@/hooks/useSSOJitEvents';
-
-type EventKind = 'jit' | 'profile_sync';
-type EventKindFilter = 'all' | EventKind;
-
-interface UnifiedEvent {
-  id: string;
-  kind: EventKind;
-  created_at: string;
-  user_email: string | null;
-  provider_nome: string | null;
-  provider_tipo: string | null;
-  /** Para profile_sync: campos alterados. Para jit: vazio. */
-  fields_changed: SsoSyncFieldKey[];
-  /** Para jit: role atribuída. Para profile_sync: null. */
-  role: string | null;
-  /** Para jit: grupo que casou. Para profile_sync: null. */
-  matched_group: string | null;
-}
-
-const FIELD_OPTIONS: { value: SsoSyncFieldKey | 'all'; label: string }[] = [
-  { value: 'all', label: 'Todos os campos' },
-  { value: 'full_name', label: 'Nome completo' },
-  { value: 'avatar_url', label: 'Foto de perfil' },
-  { value: 'telefone', label: 'Telefone' },
-];
-
-const KIND_OPTIONS: { value: EventKindFilter; label: string }[] = [
-  { value: 'all', label: 'Todos os eventos' },
-  { value: 'jit', label: 'JIT (provisionamento)' },
-  { value: 'profile_sync', label: 'Sincronização de perfil' },
-];
-
-const PRESETS = [
-  { label: '7 dias', dias: 7 },
-  { label: '30 dias', dias: 30 },
-  { label: '90 dias', dias: 90 },
-];
-
-const FIELD_ICON: Record<SsoSyncFieldKey, JSX.Element> = {
-  full_name: <UserCircle className="h-3 w-3" />,
-  avatar_url: <ImageIcon className="h-3 w-3" />,
-  telefone: <Phone className="h-3 w-3" />,
-};
-
-const KIND_META: Record<EventKind, { label: string; icon: JSX.Element; className: string }> = {
-  jit: {
-    label: 'JIT',
-    icon: <UserPlus className="h-3 w-3" />,
-    className: 'bg-primary/10 text-primary border-primary/20',
-  },
-  profile_sync: {
-    label: 'Profile Sync',
-    icon: <RefreshCw className="h-3 w-3" />,
-    className: 'bg-secondary text-secondary-foreground border-border',
-  },
-};
-
-function mapProfileSync(e: SsoProfileSyncEvent): UnifiedEvent {
-  return {
-    id: `ps-${e.id}`,
-    kind: 'profile_sync',
-    created_at: e.created_at,
-    user_email: e.user_email,
-    provider_nome: e.provider_nome,
-    provider_tipo: e.provider_tipo,
-    fields_changed: e.fields_changed,
-    role: null,
-    matched_group: null,
-  };
-}
-
-function mapJit(e: JitAuditEvent): UnifiedEvent {
-  return {
-    id: `jit-${e.id}`,
-    kind: 'jit',
-    created_at: e.created_at,
-    user_email: e.user_email,
-    provider_nome: e.new_data?.provider_nome ?? null,
-    provider_tipo: e.new_data?.provider_tipo ?? null,
-    fields_changed: [],
-    role: e.new_data?.role ?? null,
-    matched_group: e.new_data?.matched_group ?? null,
-  };
-}
+import { type SsoSyncFieldKey } from '@/hooks/useLastSsoProfileSync';
+import { useSSOJitEvents } from '@/hooks/useSSOJitEvents';
+import {
+  FIELD_OPTIONS,
+  KIND_OPTIONS,
+  PRESETS,
+  mapJit,
+  mapProfileSync,
+  type EventKindFilter,
+  type UnifiedEvent,
+} from './AuditSsoProfileSync.helpers';
+import { StatsCards, UnifiedRow } from './AuditSsoProfileSync.parts';
 
 export default function AuditSsoProfileSync() {
   const [fromIso, setFromIso] = useState<string>(subDays(new Date(), 30).toISOString());
@@ -239,51 +156,7 @@ export default function AuditSsoProfileSync() {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground font-medium">Total</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{stats.total}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-                <UserPlus className="h-3 w-3" />
-                JIT
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{stats.jit}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-                <RefreshCw className="h-3 w-3" />
-                Profile Sync
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{stats.profile_sync}</p>
-            </CardContent>
-          </Card>
-          {(['full_name', 'avatar_url', 'telefone'] as SsoSyncFieldKey[]).map((f) => (
-            <Card key={f}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-                  {FIELD_ICON[f]}
-                  {SSO_SYNC_FIELD_LABEL[f]}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{stats.byField[f]}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <StatsCards stats={stats} />
 
         {/* Filtros */}
         <Card>
@@ -427,64 +300,5 @@ export default function AuditSsoProfileSync() {
         </Card>
       </div>
     </MainLayout>
-  );
-}
-
-function UnifiedRow({ event }: { event: UnifiedEvent }) {
-  const meta = KIND_META[event.kind];
-  return (
-    <TableRow>
-      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-        {formatDate(event.created_at)}
-      </TableCell>
-      <TableCell>
-        <Badge variant="outline" className={`text-[11px] gap-1 ${meta.className}`}>
-          {meta.icon}
-          {meta.label}
-        </Badge>
-      </TableCell>
-      <TableCell className="text-sm">{event.user_email ?? '—'}</TableCell>
-      <TableCell className="text-sm">
-        <div className="flex items-center gap-2">
-          <span>{event.provider_nome ?? '—'}</span>
-          {event.provider_tipo && (
-            <Badge variant="outline" className="text-[10px] uppercase">
-              {event.provider_tipo}
-            </Badge>
-          )}
-        </div>
-      </TableCell>
-      <TableCell>
-        {event.kind === 'profile_sync' ? (
-          <div className="flex flex-wrap gap-1">
-            {event.fields_changed.length === 0 && (
-              <span className="text-xs text-muted-foreground">(sem alterações)</span>
-            )}
-            {event.fields_changed.map((f) => (
-              <Badge key={f} variant="secondary" className="text-[11px] gap-1">
-                {FIELD_ICON[f]}
-                {SSO_SYNC_FIELD_LABEL[f]}
-              </Badge>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-1 items-center text-xs">
-            {event.role && (
-              <Badge variant="secondary" className="text-[11px]">
-                role: {event.role}
-              </Badge>
-            )}
-            {event.matched_group && (
-              <Badge variant="outline" className="text-[11px]">
-                grupo: {event.matched_group}
-              </Badge>
-            )}
-            {!event.role && !event.matched_group && (
-              <span className="text-muted-foreground">—</span>
-            )}
-          </div>
-        )}
-      </TableCell>
-    </TableRow>
   );
 }
