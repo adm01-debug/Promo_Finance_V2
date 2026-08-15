@@ -27,15 +27,16 @@ export function useConciliacaoAudit(empresaId?: string) {
 
 
       if (pendentesDaEmpresa.length > 0) {
-        await supabase.from('alertas').insert({
+        // alertas (migration 20260518180000) não tem status/metadata — enviar
+        // esses campos causaria PGRST204 silencioso (o erro era ignorado).
+        const { error: alertaError } = await supabase.from('alertas').insert({
           empresa_id: empresaId,
           tipo: 'pendencia_conciliacao',
           prioridade: 'media',
           titulo: 'Pendências de Conciliação Antigas',
           mensagem: `Existem ${pendentesDaEmpresa.length} transações bancárias pendentes de conciliação há mais de 3 dias.`,
-          status: 'pendente',
-          metadata: { count: pendentesDaEmpresa.length }
-        } as never);
+        });
+        if (alertaError) console.error('[useConciliacaoAudit] Falha ao criar alerta:', alertaError.message);
       }
 
       // 2. Buscar divergências de saldo registradas
