@@ -14,7 +14,7 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  v_url := 'https://lszcmoymovkpckehlagr.supabase.co/functions/v1/notify-performance-alert';
+  v_url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/notify-performance-alert';
   v_anon := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzemNtb3ltb3ZrcGNrZWhsYWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODE2MTAsImV4cCI6MjA5NDI1NzYxMH0.ksTr8881Ic6U5doXsrEETVL9fGsaddNPf-m1lAt1pw0';
 
   v_payload := jsonb_build_object(
