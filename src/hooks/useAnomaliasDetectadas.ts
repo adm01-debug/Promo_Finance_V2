@@ -58,7 +58,9 @@ export function useAnomaliasDetectadas(filtroStatus?: Anomalia['status']) {
         .from('anomalias_detectadas')
         .update({
           status: input.status,
-          observacoes: input.observacoes ?? null,
+          // Só envia observacoes se o usuário realmente forneceu — undefined
+          // sobrescreveria com null e apagaria observações existentes (perda P1).
+          ...(input.observacoes !== undefined ? { observacoes: input.observacoes } : {}),
           ...(input.status === 'falso_positivo' || input.status === 'confirmada'
             ? { resolvida_em: new Date().toISOString() }
             : {}),

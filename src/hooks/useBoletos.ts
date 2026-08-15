@@ -396,7 +396,7 @@ export function useBoletos() {
       const { data: result, error: invokeError } = await supabase.functions.invoke(
         'bitrix24-sync',
         {
-          body: { action: 'sync_boleto', boleto },
+          body: { action: 'sync_boleto', params: { boleto } },
         }
       );
 
