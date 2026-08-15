@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useQuery } from '@tanstack/react-query';
 import { STALE_TIMES } from '@/lib/queryClient';
 import { supabase } from '@/integrations/supabase/client';

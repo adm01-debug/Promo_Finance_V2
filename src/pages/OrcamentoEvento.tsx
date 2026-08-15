@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Target, BarChart3, PieChart as PieChartIcon, Loader2, Filter, ArrowUpDown } from 'lucide-react';

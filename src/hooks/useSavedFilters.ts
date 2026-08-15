@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,12 +48,12 @@ async function logSavedFilterAudit(params: {
 }) {
   try {
     await supabase.rpc("log_audit", {
-      _action: params.action,
-      _table_name: "saved_filters",
-      _record_id: params.filterId,
-      _old_data: params.oldData ? JSON.stringify(params.oldData) : null,
-      _new_data: params.newData ? JSON.stringify(params.newData) : null,
-      _details: params.details,
+      p_action: params.action,
+      p_table_name: "saved_filters",
+      p_record_id: params.filterId,
+      p_old_data: params.oldData ? JSON.stringify(params.oldData) : null,
+      p_new_data: params.newData ? JSON.stringify(params.newData) : null,
+      p_details: params.details,
     });
   } catch (err) {
     logger.warn("[saved-filters] audit log falhou", err);

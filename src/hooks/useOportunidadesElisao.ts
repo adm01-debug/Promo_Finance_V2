@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: Oportunidades de Elisão Fiscal
 
 import { useMemo } from 'react';

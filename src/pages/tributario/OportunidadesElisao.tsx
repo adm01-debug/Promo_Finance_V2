@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // PÁGINA: Oportunidades de Elisão Fiscal (orquestrador modular)
 
 import { useState } from 'react';

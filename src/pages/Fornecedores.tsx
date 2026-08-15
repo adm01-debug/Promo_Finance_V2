@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';

@@ -1,7 +1,7 @@
-// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
+import type { Database } from '@/integrations/supabase/types';
 import { STALE_TIMES } from '@/lib/queryClient';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
@@ -112,18 +112,21 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
 export function useCreateContaPagar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: Record<string, unknown>) => {
+    mutationFn: async (
+      data: Partial<Database['public']['Tables']['contas_pagar']['Insert']>,
+    ) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) throw new Error('Não autenticado');
 
+      // created_by nao existe no schema tipado (drift conhecido); cast de fronteira preserva o payload runtime.
       const { error } = await supabase.from('contas_pagar').insert([
         {
           ...data,
           created_by: session.user.id,
           status: data.status || 'pendente',
-        },
+        } as unknown as Database['public']['Tables']['contas_pagar']['Insert'],
       ]);
       if (error) throw error;
     },
@@ -141,7 +144,10 @@ export function useCreateContaPagar() {
 export function useUpdateContaPagar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: string } & Record<string, unknown>) => {
+    mutationFn: async ({
+      id,
+      ...data
+    }: { id: string } & Partial<Database['public']['Tables']['contas_pagar']['Update']>) => {
       const { error } = await supabase.from('contas_pagar').update(data).eq('id', id);
       if (error) throw error;
     },
