@@ -224,7 +224,7 @@ export const ExecutarRelatoriosSchema = z.object({
 }).strict();
 
 export const WhatsappIaProativoSchema = z.object({
-  action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia']),
+  action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia', 'test']),
   data: z.record(z.any()).optional(),
 }).strict();
 
