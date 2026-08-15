@@ -9,10 +9,7 @@ import {
   INITIAL_FILTERS,
 } from '@/components/conciliacao/ConciliacaoFilters';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
-import {
-  encontrarTodosMatches,
-  calcularEstatisticasMatch,
-} from '@/lib/transaction-matcher';
+import { encontrarTodosMatches, calcularEstatisticasMatch } from '@/lib/transaction-matcher';
 import { type ImportReport } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { toast } from 'sonner';
 import {
@@ -165,8 +162,10 @@ export function useConciliacaoPage() {
 
       if (selectedBanco) {
         try {
-          // TODO(2026-08-14): tabela extratos_bancarios_importados NÃO existe no schema canônico (types.ts);
-          // registro de importação removido (insert falharia com PGRST205 em runtime).
+          // TODO(2026-08-14): insert em extratos_bancarios_importados removido — colunas usadas
+          // (nome_arquivo/hash_arquivo/total_transacoes/metadados) não existem no schema canônico;
+          // a tabela existe no types.ts com outro schema (arquivo_origem/hash_transacao/importado_em),
+          // então o insert original falharia com PGRST205 em runtime.
 
           const result = await salvarExtratoBanco.mutateAsync({
             extrato,
@@ -228,7 +227,14 @@ export function useConciliacaoPage() {
       setShowReportDialog(true);
       setIsProcessingImport(false);
     },
-    [selectedBanco, lancamentosSistema, salvarExtratoBanco, confirmarConciliacao, contasBancarias, handleConciliarManual]
+    [
+      selectedBanco,
+      lancamentosSistema,
+      salvarExtratoBanco,
+      confirmarConciliacao,
+      contasBancarias,
+      handleConciliarManual,
+    ]
   );
 
   const handleConfirmarMatch = useCallback(
