@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import {
   Bitrix24WebhookSchema,
   corsHeaders,
@@ -6,7 +6,7 @@ import {
   createErrorResponse,
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
-import { authenticateWebhook } from '../_shared/webhook-auth.ts';
+import { authenticateWebhook, resolveSecret } from '../_shared/webhook-auth.ts';
 
 /** Comparação de segredos em tempo constante-ish (mesmo estilo do auth-guard). */
 function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
@@ -14,22 +14,6 @@ function segredosIguais(a: string | null | undefined, b: string | null | undefin
   let diff = 0;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
-}
-
-/** Resolve o segredo do webhook Bitrix24: integration_secrets -> env (fail-closed). */
-async function resolverSegredoBitrix24(supabase: SupabaseClient<any>): Promise<string | null> {
-  try {
-    const { data } = await supabase
-      .from('integration_secrets')
-      .select('valor')
-      .eq('chave', 'bitrix24_webhook_secret')
-      .maybeSingle();
-    const valor = (data as { valor?: string } | null)?.valor?.trim();
-    if (valor) return valor;
-  } catch {
-    // Tabela indisponivel nao pode virar bypass — cai para o env abaixo.
-  }
-  return Deno.env.get('BITRIX24_WEBHOOK_SECRET')?.trim() || null;
 }
 
 Deno.serve(async (req) => {
@@ -55,7 +39,7 @@ Deno.serve(async (req) => {
     if (auth.ok) {
       // Autenticado por header (HMAC ou token compartilhado).
     } else if (auth.reason === 'missing_credential') {
-      const segredo = await resolverSegredoBitrix24(supabase);
+      const segredo = await resolveSecret(supabase, 'bitrix24');
       if (!segredo) return createErrorResponse('Webhook nao configurado', 503);
       const bruto = JSON.parse(rawBody) as { auth?: { application_token?: string } };
       if (
@@ -69,7 +53,7 @@ Deno.serve(async (req) => {
     }
 
     const rawPayload = JSON.parse(rawBody);
-    console.log('[bitrix24-webhook] Event received:', JSON.stringify(rawPayload));
+    console.log('[bitrix24-webhook] Event received:', { evento: rawPayload?.event, ts: rawPayload?.ts });
 
     // Rate limit: 120 req/min por IP (defesa em profundidade apos autenticacao)
     const ip = (req.headers.get('x-forwarded-for') || '0.0.0.0').split(',')[0].trim();
@@ -102,7 +86,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Erro bitrix24 webhook:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('Erro bitrix24 webhook:', errMsg.slice(0, 100));
     return createErrorResponse(error.message, 500);
   }
 });

@@ -43,7 +43,7 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  v_url := 'https://lszcmoymovkpckehlagr.supabase.co/functions/v1/notify-performance-alert';
+  v_url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/notify-performance-alert';
   v_secret := public.internal_job_secret();
 
   -- Falha fechada: sem segredo configurado não disparamos a chamada. Preferimos
@@ -88,7 +88,7 @@ $function$;
 -- ---------------------------------------------------------------------------
 DO $$
 DECLARE
-  v_base text := 'https://lszcmoymovkpckehlagr.supabase.co/functions/v1/';
+  v_base text := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/';
 BEGIN
   IF to_regnamespace('cron') IS NULL THEN
     RAISE NOTICE 'pg_cron ausente; nada a reescrever';

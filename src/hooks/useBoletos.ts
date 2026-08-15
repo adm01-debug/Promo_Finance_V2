@@ -60,18 +60,30 @@ export interface NovoBoletoData {
 }
 
 function generateLinhaDigitavel(valor: number, _vencimento: string): string {
-  const valorStr = Math.round(valor * 100).toString().padStart(10, '0');
-  const random1 = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
-  const random2 = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
-  const random3 = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
-  
+  const valorStr = Math.round(valor * 100)
+    .toString()
+    .padStart(10, '0');
+  const random1 = Math.floor(Math.random() * 100000)
+    .toString()
+    .padStart(5, '0');
+  const random2 = Math.floor(Math.random() * 100000000)
+    .toString()
+    .padStart(8, '0');
+  const random3 = Math.floor(Math.random() * 100000000)
+    .toString()
+    .padStart(8, '0');
+
   return `00190.${random1} ${random2}.123456 ${random3}.789012 1 9999${valorStr}`;
 }
 
 function generateCodigoBarras(valor: number): string {
-  const valorStr = Math.round(valor * 100).toString().padStart(10, '0');
-  const random = Math.floor(Math.random() * 10000000000000000).toString().padStart(16, '0');
-  
+  const valorStr = Math.round(valor * 100)
+    .toString()
+    .padStart(10, '0');
+  const random = Math.floor(Math.random() * 10000000000000000)
+    .toString()
+    .padStart(16, '0');
+
   return `00191999900000${valorStr}${random}`;
 }
 
@@ -88,7 +100,7 @@ async function getNextBoletoNumber(): Promise<string> {
     const lastNumber = parseInt(data[0].numero, 10);
     return (lastNumber + 1).toString().padStart(5, '0');
   }
-  
+
   return '00001';
 }
 
@@ -98,7 +110,12 @@ export function useBoletos() {
   const [isCreating, setIsCreating] = useState(false);
 
   // Fetch boletos
-  const { data: boletos, isLoading, error, refetch } = useQuery({
+  const {
+    data: boletos,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['boletos'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -121,8 +138,7 @@ export function useBoletos() {
         .eq('ativo', true);
 
       if (error) throw error;
-      
-      
+
       return data;
     },
   });
@@ -137,8 +153,7 @@ export function useBoletos() {
         .eq('ativo', true);
 
       if (error) throw error;
-      
-      
+
       return data;
     },
   });
@@ -147,13 +162,15 @@ export function useBoletos() {
   const createBoletoMutation = useMutation({
     mutationFn: async (data: NovoBoletoData) => {
       setIsCreating(true);
-      
-      const { data: { user } } = await supabase.auth.getUser();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
       // Get empresa and conta bancária info
-      const empresa = empresas?.find(e => e.id === data.empresa_id);
-      const contaBancaria = contasBancarias?.find(c => c.id === data.conta_bancaria_id);
+      const empresa = empresas?.find((e) => e.id === data.empresa_id);
+      const contaBancaria = contasBancarias?.find((c) => c.id === data.conta_bancaria_id);
 
       if (!empresa) throw new Error('Empresa não encontrada');
       if (!contaBancaria) throw new Error('Conta bancária não encontrada');
@@ -177,36 +194,60 @@ export function useBoletos() {
         conta_bancaria_id: data.conta_bancaria_id,
         empresa_id: data.empresa_id,
         created_by: user.id,
-        rastreio_status: [{ status: 'gerado', data: new Date().toISOString(), detalhe: 'Boleto gerado pelo sistema' }]
+        rastreio_status: [
+          {
+            status: 'gerado',
+            data: new Date().toISOString(),
+            detalhe: 'Boleto gerado pelo sistema',
+          },
+        ],
       };
 
       // Se o provedor for ASAAS, integrar via Edge Function
       if (data.provider === 'asaas') {
-        const { data: asaasResult, error: asaasError } = await supabase.functions.invoke('asaas-proxy', {
-          body: {
-            action: 'criar_cobranca',
-            data: {
-              empresa_id: data.empresa_id,
-              asaas_customer_id: data.sacado_cpf_cnpj, // Simplificação: assume que já existe ou deve ser criado
-              valor: data.valor,
-              data_vencimento: data.vencimento,
-              tipo: 'boleto',
-              descricao: data.descricao
-            }
+        const { data: asaasResult, error: asaasError } = await supabase.functions.invoke(
+          'asaas-proxy',
+          {
+            body: {
+              action: 'criar_cobranca',
+              data: {
+                empresa_id: data.empresa_id,
+                asaas_customer_id: data.sacado_cpf_cnpj, // Simplificação: assume que já existe ou deve ser criado
+                valor: data.valor,
+                data_vencimento: data.vencimento,
+                tipo: 'boleto',
+                descricao: data.descricao,
+              },
+            },
           }
-        });
+        );
 
         if (asaasError) throw asaasError;
 
+        // VAL-GAP-04: o asaas-proxy NÃO lança erro em 400/422 (erro de negócio ASAAS:
+        // cliente inválido, cobrança duplicada, etc.) — retorna o payload normalmente.
+        // Sem esta validação, asaasResult.id ficaria undefined e o boleto seria criado
+        // sem vínculo ASAAS silenciosamente.
+        const asaasId = asaasResult?.id;
+        if (typeof asaasId !== 'string' || asaasId.trim() === '') {
+          const mensagemAsaas =
+            typeof asaasResult?.error === 'string' && asaasResult.error.trim()
+              ? asaasResult.error
+              : 'ASAAS não retornou identificador';
+          throw new Error(mensagemAsaas);
+        }
+
         boletoData = {
           ...boletoData,
-          asaas_id: asaasResult.id,
+          asaas_id: asaasId,
           external_provider: 'asaas',
-          linha_digitavel: asaasResult.identificationField || generateLinhaDigitavel(data.valor, data.vencimento),
-          codigo_barras: asaasResult.barCode || generateCodigoBarras(data.valor)
-
+          linha_digitavel:
+            asaasResult.identificationField || generateLinhaDigitavel(data.valor, data.vencimento),
+          codigo_barras: asaasResult.barCode || generateCodigoBarras(data.valor),
         };
       } else {
+        // Fluxo 'system' (sem ASAAS): explicitar provider para nao herdar o DEFAULT 'asaas' do banco
+        boletoData.external_provider = 'system';
         boletoData.linha_digitavel = generateLinhaDigitavel(data.valor, data.vencimento);
         boletoData.codigo_barras = generateCodigoBarras(data.valor);
       }
@@ -255,7 +296,6 @@ export function useBoletos() {
         }
       }
 
-
       queryClient.invalidateQueries({ queryKey: ['boletos'] });
       toast({
         title: 'Boleto gerado',
@@ -276,24 +316,44 @@ export function useBoletos() {
 
   // Update boleto status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status, bitrix_status, eventos_pagamento }: { id: string; status: Boleto['status']; bitrix_status?: string; eventos_pagamento?: EventoPagamento[] }) => {
-      const { data: currentBoleto } = await supabase.from('boletos').select('rastreio_status, eventos_pagamento').eq('id', id).single();
-      const currentRastreio = Array.isArray(currentBoleto?.rastreio_status) ? currentBoleto.rastreio_status : [];
-      const currentEventos = Array.isArray(currentBoleto?.eventos_pagamento) ? currentBoleto.eventos_pagamento : [];
-      
+    mutationFn: async ({
+      id,
+      status,
+      bitrix_status,
+      eventos_pagamento,
+    }: {
+      id: string;
+      status: Boleto['status'];
+      bitrix_status?: string;
+      eventos_pagamento?: EventoPagamento[];
+    }) => {
+      const { data: currentBoleto } = await supabase
+        .from('boletos')
+        .select('rastreio_status, eventos_pagamento')
+        .eq('id', id)
+        .single();
+      const currentRastreio = Array.isArray(currentBoleto?.rastreio_status)
+        ? currentBoleto.rastreio_status
+        : [];
+      const currentEventos = Array.isArray(currentBoleto?.eventos_pagamento)
+        ? currentBoleto.eventos_pagamento
+        : [];
+
       const newRastreio = [
         ...currentRastreio,
-        { status, data: new Date().toISOString(), detalhe: `Status alterado para ${status}${bitrix_status ? ` (Bitrix: ${bitrix_status})` : ''}` }
+        {
+          status,
+          data: new Date().toISOString(),
+          detalhe: `Status alterado para ${status}${bitrix_status ? ` (Bitrix: ${bitrix_status})` : ''}`,
+        },
       ];
 
       const updateData: BoletosUpdate = { status, rastreio_status: newRastreio };
       if (bitrix_status) updateData.bitrix_status = bitrix_status;
-      if (eventos_pagamento) updateData.eventos_pagamento = [...currentEventos, ...eventos_pagamento];
+      if (eventos_pagamento)
+        updateData.eventos_pagamento = [...currentEventos, ...eventos_pagamento];
 
-      const { error } = await supabase
-        .from('boletos')
-        .update(updateData)
-        .eq('id', id);
+      const { error } = await supabase.from('boletos').update(updateData).eq('id', id);
 
       if (error) throw error;
 
@@ -302,7 +362,7 @@ export function useBoletos() {
         boleto_id: id,
         tipo_evento: `status_${status}`,
         descricao: `Status do boleto atualizado para ${status}`,
-        metadados: { bitrix_status, progress: newRastreio.length }
+        metadados: { bitrix_status, progress: newRastreio.length },
       });
     },
     onSuccess: () => {
@@ -329,13 +389,16 @@ export function useBoletos() {
         .select('*')
         .eq('id', id)
         .single();
-      
+
       if (fetchError) throw fetchError;
 
       // Invoke Bitrix24 sync edge function
-      const { data: result, error: invokeError } = await supabase.functions.invoke('bitrix24-sync', {
-        body: { action: 'sync_boleto', boleto }
-      });
+      const { data: result, error: invokeError } = await supabase.functions.invoke(
+        'bitrix24-sync',
+        {
+          body: { action: 'sync_boleto', boleto },
+        }
+      );
 
       if (invokeError) throw invokeError;
       return result;
@@ -346,16 +409,13 @@ export function useBoletos() {
         title: 'Sincronizado com Bitrix24',
         description: `Boleto vinculado ao Bitrix24 (ID: ${data.bitrix_id})`,
       });
-    }
+    },
   });
 
   // Cancel boleto mutation
   const cancelBoletoMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('boletos')
-        .update({ status: 'cancelado' })
-        .eq('id', id);
+      const { error } = await supabase.from('boletos').update({ status: 'cancelado' }).eq('id', id);
 
       if (error) throw error;
     },
@@ -378,13 +438,19 @@ export function useBoletos() {
   // Calculate stats
   const stats = {
     totalGerado: boletos?.reduce((acc, b) => acc + Number(b.valor), 0) || 0,
-    totalPago: boletos?.filter(b => b.status === 'pago').reduce((acc, b) => acc + Number(b.valor), 0) || 0,
-    totalVencido: boletos?.filter(b => b.status === 'vencido').reduce((acc, b) => acc + Number(b.valor), 0) || 0,
-    totalPendente: boletos?.filter(b => ['gerado', 'enviado'].includes(b.status)).reduce((acc, b) => acc + Number(b.valor), 0) || 0,
-    countGerado: boletos?.filter(b => b.status === 'gerado').length || 0,
-    countEnviado: boletos?.filter(b => b.status === 'enviado').length || 0,
-    countPago: boletos?.filter(b => b.status === 'pago').length || 0,
-    countVencido: boletos?.filter(b => b.status === 'vencido').length || 0,
+    totalPago:
+      boletos?.filter((b) => b.status === 'pago').reduce((acc, b) => acc + Number(b.valor), 0) || 0,
+    totalVencido:
+      boletos?.filter((b) => b.status === 'vencido').reduce((acc, b) => acc + Number(b.valor), 0) ||
+      0,
+    totalPendente:
+      boletos
+        ?.filter((b) => ['gerado', 'enviado'].includes(b.status))
+        .reduce((acc, b) => acc + Number(b.valor), 0) || 0,
+    countGerado: boletos?.filter((b) => b.status === 'gerado').length || 0,
+    countEnviado: boletos?.filter((b) => b.status === 'enviado').length || 0,
+    countPago: boletos?.filter((b) => b.status === 'pago').length || 0,
+    countVencido: boletos?.filter((b) => b.status === 'vencido').length || 0,
   };
 
   return {

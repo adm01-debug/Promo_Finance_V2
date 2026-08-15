@@ -29,9 +29,9 @@ import { statusConfig } from '@/components/asaas/tabs/constants';
 import { formatCurrency } from '@/lib/currency';
 import type { AsaasPayment } from '@/hooks/useAsaas';
 
-export type DetailStatEntry = { status?: string };
+type DetailStatEntry = { status?: string };
 
-export type AuditTrailLog = {
+type AuditTrailLog = {
   id: string;
   payment_id?: string;
   action: string;
@@ -41,7 +41,7 @@ export type AuditTrailLog = {
   new_status?: string | null;
 };
 
-export interface AsaasStats {
+interface AsaasStats {
   total: number;
   pendentes: number;
   recebidos: number;
@@ -50,7 +50,7 @@ export interface AsaasStats {
   valorRecebido: number;
 }
 
-export interface SaldoAsaas {
+interface SaldoAsaas {
   balance: number;
   totalPending: number;
 }

@@ -6,6 +6,7 @@ import {
   createErrorResponse,
 } from '../_shared/validation.ts';
 import { authenticateWebhook } from '../_shared/webhook-auth.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -29,7 +30,18 @@ Deno.serve(async (req) => {
     if (!auth.ok) return auth.response;
 
     const rawPayload = JSON.parse(rawBody);
-    console.log('[whatsapp-webhook] Event received:', JSON.stringify(rawPayload));
+    console.log('[whatsapp-webhook] Event received:', { evento: rawPayload?.event, messageId: rawPayload?.messageId, status: rawPayload?.status });
+
+    // Rate limit: 120 req/min por IP (defesa em profundidade apos autenticacao)
+    const ip = (req.headers.get('x-forwarded-for') || '0.0.0.0').split(',')[0].trim();
+    const rl = await checkRateLimit(supabase, {
+      endpoint: 'whatsapp-webhook',
+      ip,
+      limit: 120,
+      windowSeconds: 60,
+      userAgent: req.headers.get('user-agent'),
+    });
+    if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
     const validation = validatePayload(WhatsappWebhookSchema, rawPayload, 'whatsapp-webhook');
     if (!validation.success) {
@@ -75,7 +87,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Erro whatsapp webhook:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('Erro whatsapp webhook:', errMsg.slice(0, 100));
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
