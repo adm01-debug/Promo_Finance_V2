@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -17,41 +16,17 @@ import { useDeliveryReports, extractRegion, type DeliveryReportFilters } from '@
 import { exportToCSV } from '@/lib/export-utils';
 import { DeliveryDrilldownDialog, type DrilldownOrder } from '@/components/relatorios/DeliveryDrilldownDialog';
 import { DeliveryHeatmap } from '@/components/relatorios/DeliveryHeatmap';
-
-const STATUS_OPTIONS = ['ALL', 'PENDING', 'MATCHED', 'ON_GOING', 'PICKED_UP', 'COMPLETED', 'CANCELLED', 'REJECTED', 'EXPIRED'] as const;
-const CHART_COLORS = ['hsl(var(--primary))', 'hsl(var(--success))', 'hsl(var(--warning))', 'hsl(var(--destructive))', 'hsl(var(--accent))', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1'];
-const TAB_VALUES = ['custo', 'performance', 'geografia'] as const;
-type TabValue = typeof TAB_VALUES[number];
-
-const brl = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const nfmt = (n: number, digits = 0) => n.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits });
-
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-function getDefaultFilters(): DeliveryReportFilters {
-  const today = new Date();
-  const past = new Date(); past.setDate(past.getDate() - 30);
-  return {
-    from: past.toISOString().slice(0, 10),
-    to: today.toISOString().slice(0, 10),
-    status: 'ALL',
-    customer: '',
-    region: '',
-  };
-}
-
-function parseFilters(sp: URLSearchParams): DeliveryReportFilters {
-  const def = getDefaultFilters();
-  const from = sp.get('from');
-  const to = sp.get('to');
-  const status = sp.get('status');
-  return {
-    from: from && ISO_DATE.test(from) ? from : def.from,
-    to: to && ISO_DATE.test(to) ? to : def.to,
-    status: status && (STATUS_OPTIONS as readonly string[]).includes(status) ? status : def.status,
-    customer: sp.get('customer') ?? '',
-    region: sp.get('region') ?? '',
-  };
-}
+import { KpiCard, ChartCard, TableSimple } from './RelatoriosEntregas.parts';
+import {
+  STATUS_OPTIONS,
+  CHART_COLORS,
+  TAB_VALUES,
+  brl,
+  nfmt,
+  getDefaultFilters,
+  parseFilters,
+  type TabValue,
+} from './RelatoriosEntregas.helpers';
 
 export default function RelatoriosEntregas() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -373,78 +348,6 @@ export default function RelatoriosEntregas() {
         subtitle={drill?.subtitle}
         orders={drill?.orders ?? []}
       />
-    </div>
-  );
-}
-
-// ---------- Sub-componentes ----------
-
-interface KpiCardProps { label: string; value: string; loading: boolean; icon?: React.ReactNode; onClick?: () => void }
-function KpiCard({ label, value, loading, icon, onClick }: KpiCardProps) {
-  const interactive = !!onClick && !loading;
-  return (
-    <Card
-      onClick={interactive ? onClick : undefined}
-      className={interactive ? 'cursor-pointer transition-colors hover:border-primary/40 hover:bg-muted/30' : ''}
-      role={interactive ? 'button' : undefined}
-      tabIndex={interactive ? 0 : undefined}
-      onKeyDown={interactive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } } : undefined}
-    >
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between text-muted-foreground">
-          <span className="text-xs">{label}</span>
-          {icon}
-        </div>
-        <div className="mt-1 text-2xl font-bold">
-          {loading ? <Skeleton className="h-8 w-24" /> : value}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-interface ChartCardProps { title: string; loading: boolean; children: React.ReactNode }
-function ChartCard({ title, loading, children }: ChartCardProps) {
-  return (
-    <Card>
-      <CardHeader className="pb-2"><CardTitle className="text-base">{title}</CardTitle></CardHeader>
-      <CardContent>
-        {loading ? <Skeleton className="h-[280px] w-full" /> : children}
-      </CardContent>
-    </Card>
-  );
-}
-
-interface Column<T> { key: keyof T | string; label: string; align?: 'left' | 'right'; render?: (row: T) => React.ReactNode }
-interface TableSimpleProps<T> { rows: T[]; columns: Column<T>[]; onRowClick?: (row: T) => void }
-function TableSimple<T extends Record<string, unknown>>({ rows, columns, onRowClick }: TableSimpleProps<T>) {
-  if (!rows.length) return <p className="py-4 text-center text-sm text-muted-foreground">Sem dados no período</p>;
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b text-left text-muted-foreground">
-            {columns.map((c) => (
-              <th key={String(c.key)} className={`py-2 pr-4 font-medium ${c.align === 'right' ? 'text-right' : ''}`}>{c.label}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r, i) => (
-            <tr
-              key={i}
-              onClick={onRowClick ? () => onRowClick(r) : undefined}
-              className={`border-b last:border-0 hover:bg-muted/40 ${onRowClick ? 'cursor-pointer' : ''}`}
-            >
-              {columns.map((c) => (
-                <td key={String(c.key)} className={`py-2 pr-4 ${c.align === 'right' ? 'text-right' : ''}`}>
-                  {c.render ? c.render(r) : String(r[c.key as keyof T] ?? '')}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }

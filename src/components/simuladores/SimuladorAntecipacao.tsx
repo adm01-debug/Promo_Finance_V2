@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { TrendingUp, Calculator, Calendar, DollarSign, Percent, Building2, ArrowRight, CheckCircle2, Star, Sparkles } from 'lucide-react';
+import { TrendingUp, Calculator, Calendar, DollarSign, Percent, Building2, ArrowRight, CheckCircle2, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,47 +11,11 @@ import { formatCurrency } from '@/lib/formatters';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, differenceInDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-
-interface RecebiveisDisponiveis {
-  id: string;
-  cliente_nome: string;
-  valor: number;
-  data_vencimento: string;
-  diasParaVencimento: number;
-}
-
-interface InstituicaoFinanceira {
-  id: string;
-  nome: string;
-  logo: string;
-  taxaMensal: number;
-  prazoAprovacao: string;
-  limiteMin: number;
-  limiteMax: number;
-  rating: number;
-  destaque?: boolean;
-}
-
-interface SimulacaoResultado {
-  instituicao: InstituicaoFinanceira;
-  valorBruto: number;
-  taxaTotal: number;
-  valorLiquido: number;
-  economia: number;
-  diasMedio: number;
-  taxaEfetiva: number;
-}
-
-const INSTITUICOES: InstituicaoFinanceira[] = [
-  { id: '1', nome: 'Banco Digital', logo: '🏦', taxaMensal: 1.89, prazoAprovacao: '2h', limiteMin: 1000, limiteMax: 500000, rating: 4.8, destaque: true },
-  { id: '2', nome: 'FinTech Capital', logo: '💳', taxaMensal: 2.15, prazoAprovacao: '4h', limiteMin: 500, limiteMax: 200000, rating: 4.6 },
-  { id: '3', nome: 'Crédito Express', logo: '⚡', taxaMensal: 2.49, prazoAprovacao: '1h', limiteMin: 100, limiteMax: 100000, rating: 4.4 },
-  { id: '4', nome: 'Factoring Prime', logo: '🏢', taxaMensal: 1.75, prazoAprovacao: '24h', limiteMin: 10000, limiteMax: 2000000, rating: 4.9 },
-  { id: '5', nome: 'Antecipa Já', logo: '🚀', taxaMensal: 2.99, prazoAprovacao: '30min', limiteMin: 50, limiteMax: 50000, rating: 4.2 },
-];
+import { INSTITUICOES, type RecebiveisDisponiveis, type SimulacaoResultado } from './simulador-antecipacao.config';
+import { calcularSimulacaoAntecipacao } from './simulador-antecipacao.utils';
+import { RecebivelItem, MelhorOpcaoCard } from './SimuladorAntecipacaoParts';
 
 export function SimuladorAntecipacao() {
   const [taxaPersonalizada, setTaxaPersonalizada] = useState(2.5);
@@ -94,40 +58,11 @@ export function SimuladorAntecipacao() {
     );
   };
 
-  const calcularSimulacao = useCallback((taxa: number): Omit<SimulacaoResultado, 'instituicao'> | null => {
-    const selecionados = recebiveis.filter(r => recebivelSelecionados.includes(r.id));
-    if (selecionados.length === 0) return null;
-
-    const valorBruto = selecionados.reduce((sum, r) => sum + r.valor, 0);
-    const hoje = new Date(dataAntecipacao);
-    
-    let taxaTotal = 0;
-    let diasPonderados = 0;
-
-    selecionados.forEach(r => {
-      const diasAntecipados = differenceInDays(new Date(r.data_vencimento), hoje);
-      const taxaProRata = (taxa / 100) * (diasAntecipados / 30);
-      taxaTotal += r.valor * taxaProRata;
-      diasPonderados += diasAntecipados * r.valor;
-    });
-
-    const diasMedio = valorBruto > 0 ? diasPonderados / valorBruto : 0;
-    const valorLiquido = valorBruto - taxaTotal;
-    const taxaEfetiva = valorBruto > 0 ? (taxaTotal / valorBruto) * 100 : 0;
-    
-    const taxaEmprestimo = 4;
-    const custoEmprestimo = valorBruto * (taxaEmprestimo / 100) * (diasMedio / 30);
-    const economia = custoEmprestimo - taxaTotal;
-
-    return {
-      valorBruto,
-      taxaTotal,
-      valorLiquido,
-      economia: Math.max(0, economia),
-      diasMedio: Math.round(diasMedio),
-      taxaEfetiva
-    };
-  }, [recebiveis, recebivelSelecionados, dataAntecipacao]);
+  const calcularSimulacao = useCallback(
+    (taxa: number): Omit<SimulacaoResultado, 'instituicao'> | null =>
+      calcularSimulacaoAntecipacao({ taxa, recebiveis, recebivelSelecionados, dataAntecipacao }),
+    [recebiveis, recebivelSelecionados, dataAntecipacao]
+  );
 
   const simulacoesInstituicoes = useMemo((): SimulacaoResultado[] => {
     const selecionados = recebiveis.filter(r => recebivelSelecionados.includes(r.id));
@@ -224,51 +159,14 @@ export function SimuladorAntecipacao() {
               </div>
             ) : (
               <div className="max-h-[300px] overflow-y-auto space-y-2 p-2 custom-scrollbar">
-                {recebiveis.map(rec => {
-                  const selecionado = recebivelSelecionados.includes(rec.id);
-                  return (
-                    <motion.div
-                      key={rec.id}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      className={cn(
-                        "p-5 rounded-2xl cursor-pointer transition-all border group",
-                        selecionado 
-                          ? "bg-primary/10 border-primary shadow-[0_0_20px_rgba(var(--primary),0.1)]" 
-                          : "bg-card/5 border-white/5 hover:bg-card/10 hover:border-white/10"
-                      )}
-                      onClick={() => toggleRecebivel(rec.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={cn(
-                            "h-10 w-10 rounded-xl flex items-center justify-center transition-colors",
-                            selecionado ? "bg-primary text-primary-foreground" : "bg-card/10 text-muted-foreground/60"
-                          )}>
-                            <Building2 className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="font-black text-sm tracking-tight">{rec.cliente_nome}</p>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 flex items-center gap-2">
-                              <Calendar className="h-3 w-3" />
-                              {format(new Date(rec.data_vencimento), "dd MMM yyyy", { locale: ptBR })} 
-                              <span className="w-1 h-1 rounded-full bg-card/20" />
-                              Horizonte: {rec.diasParaVencimento}d
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className={cn(
-                            "font-black text-lg tracking-tighter",
-                            selecionado ? "text-primary" : "text-foreground"
-                          )}>
-                            {formatCurrency(rec.valor)}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                {recebiveis.map(rec => (
+                  <RecebivelItem
+                    key={rec.id}
+                    rec={rec}
+                    selecionado={recebivelSelecionados.includes(rec.id)}
+                    onClick={() => toggleRecebivel(rec.id)}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -294,38 +192,7 @@ export function SimuladorAntecipacao() {
 
                   <TabsContent value="instituicoes" className="mt-0 outline-none space-y-6">
                     {melhorOpcao && (
-                      <motion.div
-                        layoutId="best-option"
-                        className="p-8 rounded-[2rem] bg-gradient-to-br from-success/20 via-primary/10 to-transparent border border-success/30 shadow-[0_20px_40px_-15px_rgba(34,197,94,0.2)] relative overflow-hidden group"
-                      >
-                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                          <Sparkles className="h-24 w-24 text-success" />
-                        </div>
-                        <div className="relative z-10 space-y-6">
-                          <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
-                              <CheckCircle2 className="h-5 w-5 text-success" />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-success">Optimal Liquidity Vector Detected</span>
-                            <Badge variant="outline" className="bg-success/10 border-success/20 text-success text-[10px] font-black uppercase px-3 py-1">{melhorOpcao.instituicao.nome}</Badge>
-                          </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div className="space-y-1">
-                              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Immediate Net Value</p>
-                              <p className="text-4xl font-black tracking-tighter text-success shadow-success/20">{formatCurrency(melhorOpcao.valorLiquido)}</p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Baseline Fee (Monthly)</p>
-                              <p className="text-4xl font-black tracking-tighter">{melhorOpcao.instituicao.taxaMensal}%</p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Execution Window</p>
-                              <p className="text-4xl font-black tracking-tighter text-primary">⚡ {melhorOpcao.instituicao.prazoAprovacao}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
+                      <MelhorOpcaoCard melhorOpcao={melhorOpcao} />
                     )}
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

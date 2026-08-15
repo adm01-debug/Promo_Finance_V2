@@ -4,11 +4,9 @@
  * Foco em invariantes de integridade: nenhuma transação pode ficar
  * "conciliada" no estado local se a persistência não confirmou, e vice-versa.
  */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { ExtratoOFX } from '@/lib/ofx-parser';
+import { makeExtrato, makeMatchAltaConfianca, wrapper } from './use-conciliacao-test-utils';
 
 // ---------- Hoisted mocks (compartilhados entre módulo e testes) ----------
 
@@ -148,11 +146,6 @@ import { useConciliacaoPage } from '../useConciliacaoPage';
 
 // ---------- Helpers ----------
 
-function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
-  return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
-}
-
 function resetMocks() {
   mocks.supabase.inserts = {};
   mocks.supabase.updates = {};
@@ -177,22 +170,6 @@ function resetMocks() {
   // localStorage mock do setup global
   (window.localStorage.getItem as any).mockReset?.();
   (window.localStorage.setItem as any).mockReset?.();
-}
-
-function makeExtrato(overrides: Partial<ExtratoOFX> = {}): ExtratoOFX {
-  return {
-    formato: 'OFX',
-    nomeArquivo: 'extrato.ofx',
-    dataImportacao: new Date('2025-01-20'),
-    conta: {
-      banco: '001', agencia: '1234', conta: '56789', tipoConta: 'CC', moeda: 'BRL',
-      saldoInicial: 0, saldoFinal: 100,
-    },
-    transacoes: [
-      { id: 'tx-1', data: new Date('2025-01-15'), valor: 100, descricao: 'PAGAMENTO ABC', tipo: 'credito' },
-    ],
-    ...overrides,
-  };
 }
 
 beforeEach(() => {
@@ -278,13 +255,7 @@ describe('useConciliacaoPage — importação de extrato', () => {
       data: { configuracoes_conciliacao: { tolerancia_centavos: 0.05, aceite_automatico: true } },
       error: null,
     };
-    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(new Map([
-      ['tx-1', [{
-        lancamentoId: 'lanc-1', lancamentoTipo: 'receber',
-        lancamento: { id: 'lanc-1', valor: 100 },
-        confianca: 'alta', score: 0.95, motivos: [],
-      }]],
-    ]) as any);
+    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(makeMatchAltaConfianca('receber'));
 
     const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
     act(() => { result.current.setSelectedBanco('bank-1'); });
@@ -303,13 +274,7 @@ describe('useConciliacaoPage — importação de extrato', () => {
       data: { configuracoes_conciliacao: { tolerancia_centavos: 0.05, aceite_automatico: false } },
       error: null,
     };
-    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(new Map([
-      ['tx-1', [{
-        lancamentoId: 'lanc-1', lancamentoTipo: 'receber',
-        lancamento: { id: 'lanc-1', valor: 100 },
-        confianca: 'alta', score: 0.95, motivos: [],
-      }]],
-    ]) as any);
+    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(makeMatchAltaConfianca('receber'));
 
     const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
     act(() => { result.current.setSelectedBanco('bank-1'); });
@@ -329,13 +294,7 @@ describe('useConciliacaoPage — importação de extrato', () => {
       data: { configuracoes_conciliacao: { tolerancia_centavos: 0.05, aceite_automatico: true } },
       error: null,
     };
-    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(new Map([
-      ['tx-1', [{
-        lancamentoId: 'lanc-1', lancamentoTipo: 'receber',
-        lancamento: { id: 'lanc-1', valor: 100 },
-        confianca: 'alta', score: 0.95, motivos: [],
-      }]],
-    ]) as any);
+    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(makeMatchAltaConfianca('receber'));
     vi.mocked(mocks.mutations.confirmarConciliacao.mutateAsync).mockRejectedValue(new Error('DB down'));
 
     const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
@@ -375,13 +334,7 @@ describe('useConciliacaoPage — importação de extrato', () => {
     };
     // Retorna 1 duplicata para forçar autoConciliadas + duplicates > total
     vi.mocked(mocks.mutations.salvarExtratoBanco.mutateAsync).mockResolvedValue({ saved: 0, duplicates: 1 });
-    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(new Map([
-      ['tx-1', [{
-        lancamentoId: 'lanc-1', lancamentoTipo: 'pagar',
-        lancamento: { id: 'lanc-1', valor: 100 },
-        confianca: 'alta', score: 0.95, motivos: [],
-      }]],
-    ]) as any);
+    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(makeMatchAltaConfianca('pagar'));
 
     const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
     act(() => { result.current.setSelectedBanco('bank-1'); });

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
+import {
   Settings,
   Bell,
   Mail,
   Clock,
-  ChevronRight,
   CheckCircle2,
   CreditCard,
   Shield,
@@ -37,84 +36,17 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-
-
-
-
-
-
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
-import { EtapaReguaCobranca } from '@/types/financial';
 import { ReguaCobrancaTab } from '@/components/configuracoes/ReguaCobrancaTab';
 import { SistemaTab } from '@/components/configuracoes/SistemaTab';
 import { TemplatesTab } from '@/components/configuracoes/TemplatesTab';
 import { RegrasDuplicidadeTab } from '@/components/configuracoes/RegrasDuplicidadeTab';
 import { NotificacoesPreferencias } from '@/components/configuracoes/NotificacoesPreferencias';
 import { ShieldAlert } from 'lucide-react';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05 }
-  }
-};
-
-interface EtapaConfig {
-  id: string;
-  etapa: EtapaReguaCobranca;
-  nome: string;
-  diasAposVencimento: number;
-  canais: ('email' | 'sms' | 'whatsapp' | 'telefone')[];
-  templateId: string;
-  ativo: boolean;
-  cor: string;
-}
-
-interface Template {
-  id: string;
-  nome: string;
-  tipo: 'email' | 'sms' | 'whatsapp';
-  assunto?: string;
-  conteudo: string;
-  variaveis: string[];
-}
-
-const etapasIniciais: EtapaConfig[] = [
-  { id: '1', etapa: 'preventiva', nome: 'Lembrete Preventivo', diasAposVencimento: -3, canais: ['email', 'whatsapp'], templateId: '1', ativo: true, cor: 'bg-secondary' },
-  { id: '2', etapa: 'lembrete', nome: 'Lembrete de Vencimento', diasAposVencimento: 0, canais: ['email', 'sms', 'whatsapp'], templateId: '2', ativo: true, cor: 'bg-warning' },
-  { id: '3', etapa: 'cobranca', nome: '1ª Cobrança', diasAposVencimento: 5, canais: ['email', 'whatsapp', 'telefone'], templateId: '3', ativo: true, cor: 'bg-streak' },
-  { id: '4', etapa: 'cobranca', nome: '2ª Cobrança', diasAposVencimento: 15, canais: ['email', 'whatsapp', 'telefone'], templateId: '4', ativo: true, cor: 'bg-destructive' },
-  { id: '5', etapa: 'negociacao', nome: 'Negociação', diasAposVencimento: 30, canais: ['telefone', 'whatsapp'], templateId: '5', ativo: true, cor: 'bg-accent' },
-  { id: '6', etapa: 'juridico', nome: 'Aviso Jurídico', diasAposVencimento: 60, canais: ['email'], templateId: '6', ativo: false, cor: 'bg-muted-foreground' },
-];
-
-const templatesIniciais: Template[] = [
-  { 
-    id: '1', 
-    nome: 'Lembrete Preventivo', 
-    tipo: 'email', 
-    assunto: 'Lembrete: Fatura vencendo em breve',
-    conteudo: 'Olá {{cliente}},\n\nGostaríamos de lembrar que sua fatura no valor de {{valor}} vence em {{data_vencimento}}.\n\nPara sua comodidade, segue o link para pagamento: {{link_pagamento}}\n\nAtenciosamente,\n{{empresa}}',
-    variaveis: ['cliente', 'valor', 'data_vencimento', 'link_pagamento', 'empresa']
-  },
-  { 
-    id: '2', 
-    nome: 'Vencimento Hoje', 
-    tipo: 'whatsapp', 
-    conteudo: 'Olá {{cliente}}! 👋\n\nSua fatura de {{valor}} vence *hoje*.\n\n💳 Pague agora: {{link_pagamento}}\n\nQualquer dúvida, estamos à disposição!',
-    variaveis: ['cliente', 'valor', 'link_pagamento']
-  },
-  { 
-    id: '3', 
-    nome: '1ª Cobrança', 
-    tipo: 'email', 
-    assunto: 'Fatura em atraso - Regularize sua situação',
-    conteudo: 'Prezado(a) {{cliente}},\n\nIdentificamos que sua fatura no valor de {{valor}}, vencida em {{data_vencimento}}, encontra-se em aberto.\n\nPara evitar encargos adicionais, solicitamos a regularização o mais breve possível.\n\nLink para pagamento: {{link_pagamento}}\n\nEm caso de dúvidas, entre em contato conosco.\n\nAtenciosamente,\n{{empresa}}',
-    variaveis: ['cliente', 'valor', 'data_vencimento', 'link_pagamento', 'empresa']
-  },
-];
+import { AtalhosRapidos } from './Configuracoes.parts';
+import { containerVariants } from './Configuracoes.constants';
+import { etapasIniciais, templatesIniciais, type EtapaConfig, type Template } from './Configuracoes.constants';
 
 export default function Configuracoes() {
   const [etapas, setEtapas] = useState<EtapaConfig[]>(etapasIniciais);
@@ -138,7 +70,7 @@ export default function Configuracoes() {
   });
 
   const toggleEtapa = (id: string) => {
-    setEtapas(prev => prev.map(e => 
+    setEtapas(prev => prev.map(e =>
       e.id === id ? { ...e, ativo: !e.ativo } : e
     ));
     toast({
@@ -165,92 +97,7 @@ export default function Configuracoes() {
       </div>
 
       {/* Atalhos rápidos */}
-      <div className="grid gap-3 md:grid-cols-3">
-        <Card className="border-dashed">
-          <CardContent className="p-4 flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <Database className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-sm">Minhas preferências</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Gerencie presets de filtros e colunas que sincronizam entre dispositivos.
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" asChild>
-              <a href="/configuracoes/preferencias" className="gap-1">
-                Abrir painel
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="border-dashed">
-          <CardContent className="p-4 flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <Bell className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-sm">Sino dos filtros</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Canais (in-app/push) por preset e estado de tempo real por módulo.
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" asChild>
-              <a href="/configuracoes/notificacoes/sino" className="gap-1">
-                Abrir painel
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="border-dashed">
-          <CardContent className="p-4 flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <Database className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-sm">Diagnóstico de filtros</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Status de hidratação por tela (Supabase + dispositivo).
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" asChild>
-              <a href="/configuracoes/filtros-salvos" className="gap-1">
-                Abrir painel
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="border-dashed">
-          <CardContent className="p-4 flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <Bell className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-sm">Histórico de notificações</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Veja, filtre por canal e marque como lidas as notificações recebidas.
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" asChild>
-              <a href="/configuracoes/notificacoes/historico" className="gap-1">
-                Abrir painel
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <AtalhosRapidos />
 
       <Tabs defaultValue="regua" className="space-y-6">
         <TabsList className="grid w-full grid-cols-12 lg:w-[1500px]">
@@ -352,9 +199,9 @@ export default function Configuracoes() {
                   </div>
                 </div>
               </div>
-              
+
               <Separator className="bg-card/5" />
-              
+
               <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 flex items-start gap-4">
                 <Brain className="h-10 w-10 text-primary shrink-0" />
                 <div className="space-y-1">
@@ -432,7 +279,7 @@ export default function Configuracoes() {
 
         {/* Agendamentos / Cron Jobs */}
         <TabsContent value="agendamentos">
-          <motion.div 
+          <motion.div
             className="space-y-6"
             variants={containerVariants}
             initial="hidden"
@@ -445,7 +292,7 @@ export default function Configuracoes() {
 
         {/* Integrações */}
         <TabsContent value="integracoes">
-          <motion.div 
+          <motion.div
             className="space-y-6"
             variants={containerVariants}
             initial="hidden"

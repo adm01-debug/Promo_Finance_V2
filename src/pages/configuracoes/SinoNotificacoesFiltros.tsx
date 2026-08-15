@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Bell,
-  BellOff,
   Loader2,
   Radio,
   ChevronLeft,
@@ -18,69 +17,18 @@ import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { useAuth } from "@/hooks/useAuth";
 import {
   useSavedFilterSubscriptions,
-  type SavedFilterSubscription,
 } from "@/hooks/useSavedFilterSubscriptions";
 import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { findCatalogEntry } from "./savedFiltersCatalog";
-import { describeFrequencia } from "@/hooks/savedFilterDispatchSchedule";
 import { cn } from "@/lib/utils";
-
-/**
- * Entity types que possuem dispatcher de tempo real registrado em
- * `useSavedFilterAlerts*`. Mantém em sincronia com os hooks instanciados
- * em src/pages/* (Conciliacao + AnomaliasDetectadasPanel).
- */
-const REALTIME_ENABLED_ENTITY_TYPES = new Set([
-  "anomalias_detectadas",
-  "conciliacao_transacoes",
-]);
-
-interface SavedFilterRowMin {
-  id: string;
-  name: string;
-  entity_type: string;
-  is_default: boolean;
-  is_shared: boolean;
-  updated_at: string;
-}
-
-/** Rótulos amigáveis para entity_types que não vivem no catálogo. */
-const ENTITY_TYPE_LABELS: Record<string, { label: string; area: string; route?: string }> = {
-  anomalias_detectadas: {
-    label: "Anomalias detectadas",
-    area: "IA / Insights",
-    route: "/admin/insights-ia",
-  },
-  conciliacao_transacoes: {
-    label: "Conciliação bancária",
-    area: "Financeiro",
-    route: "/conciliacao",
-  },
-};
-
-function getEntityMeta(entityType: string) {
-  const fromCatalog = findCatalogEntry(entityType);
-  if (fromCatalog) {
-    return {
-      label: fromCatalog.label,
-      area: fromCatalog.area,
-      route: fromCatalog.route,
-    };
-  }
-  return (
-    ENTITY_TYPE_LABELS[entityType] ?? {
-      label: entityType,
-      area: "Outros",
-      route: undefined,
-    }
-  );
-}
+import { SubscriptionRow } from "./SinoNotificacoesFiltros.parts";
+import {
+  REALTIME_ENABLED_ENTITY_TYPES,
+  getEntityMeta,
+  type SavedFilterRowMin,
+} from "./SinoNotificacoesFiltros.helpers";
 
 export default function SinoNotificacoesFiltros() {
   const { user } = useAuth();
@@ -357,131 +305,6 @@ export default function SinoNotificacoesFiltros() {
             );
           })}
         </motion.div>
-      )}
-    </div>
-  );
-}
-
-interface SubscriptionRowProps {
-  filter: SavedFilterRowMin;
-  subscription: SavedFilterSubscription | null;
-  realtimeOn: boolean;
-  pushReady: boolean;
-  pushSupported: boolean;
-  isBusy: boolean;
-  onToggleInapp: (checked: boolean) => void;
-  onTogglePush: (checked: boolean) => Promise<void> | void;
-  onUnsubscribe: (id: string) => void;
-}
-
-function SubscriptionRow({
-  filter,
-  subscription,
-  realtimeOn,
-  pushReady,
-  pushSupported,
-  isBusy,
-  onToggleInapp,
-  onTogglePush,
-  onUnsubscribe,
-}: SubscriptionRowProps) {
-  const active = !!subscription;
-  return (
-    <div
-      className={cn(
-        "rounded-lg border p-3 transition-colors",
-        active ? "border-primary/30 bg-primary/[0.02]" : "border-border/60",
-      )}
-    >
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            {active ? (
-              <Bell className="h-3.5 w-3.5 text-primary shrink-0" />
-            ) : (
-              <BellOff className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            )}
-            <p className="text-sm font-medium truncate">{filter.name}</p>
-            {filter.is_default && (
-              <Badge variant="secondary" className="h-4 px-1.5 text-[9px]">
-                Padrão
-              </Badge>
-            )}
-            {filter.is_shared && (
-              <Badge variant="outline" className="h-4 px-1.5 text-[9px]">
-                Compartilhado
-              </Badge>
-            )}
-          </div>
-          {active && (
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              {describeFrequencia(subscription!.frequencia)}
-              {subscription!.frequencia !== "imediata" &&
-                ` · ${subscription!.horario_preferido.slice(0, 5)}`}
-              {subscription!.notify_email && " · e-mail"}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Label
-              htmlFor={`inapp-${filter.id}`}
-              className="text-[11px] font-normal text-muted-foreground cursor-pointer"
-            >
-              No app
-            </Label>
-            <Switch
-              id={`inapp-${filter.id}`}
-              checked={subscription?.notify_inapp ?? false}
-              onCheckedChange={onToggleInapp}
-              disabled={isBusy}
-            />
-          </div>
-          <Separator orientation="vertical" className="h-5" />
-          <div className="flex items-center gap-2">
-            <Label
-              htmlFor={`push-${filter.id}`}
-              className={cn(
-                "text-[11px] font-normal cursor-pointer",
-                pushSupported ? "text-muted-foreground" : "text-muted-foreground/40",
-              )}
-            >
-              Push
-            </Label>
-            <Switch
-              id={`push-${filter.id}`}
-              checked={subscription?.notify_push ?? false}
-              onCheckedChange={(c) => void onTogglePush(c)}
-              disabled={isBusy || !pushSupported}
-            />
-          </div>
-          {active && (
-            <>
-              <Separator orientation="vertical" className="h-5" />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-[11px] text-destructive hover:text-destructive"
-                onClick={() => onUnsubscribe(subscription!.id)}
-                disabled={isBusy}
-              >
-                Remover
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-      {active && subscription!.notify_push && !pushReady && (
-        <p className="text-[10px] text-warning mt-2">
-          ⚠️ Push habilitado nesta assinatura, mas o navegador não autorizou
-          notificações. Use o botão "Ativar push" no topo.
-        </p>
-      )}
-      {active && !realtimeOn && (
-        <p className="text-[10px] text-muted-foreground/70 mt-2 italic">
-          Preferência salva. Tempo real será aplicado quando este módulo
-          ganhar suporte.
-        </p>
       )}
     </div>
   );
