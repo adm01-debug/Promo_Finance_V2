@@ -290,11 +290,11 @@ export const AprovacoesPendentes = () => {
                     {comentarios?.length ? comentarios.map((coment) => (
                       <div key={coment.id} className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold uppercase">{coment.usuario?.full_name || coment.usuario?.email}</span>
+                          <span className="text-[10px] font-bold uppercase">{coment.user_id ? 'Usuário ' + coment.user_id.slice(0, 8) : '—'}</span>
                           <span className="text-[10px] text-muted-foreground">{formatDateTime(coment.created_at)}</span>
                         </div>
                         <p className="text-xs bg-background p-2 rounded border border-border/30">
-                          {coment.texto}
+                          {coment.comentario}
                         </p>
                       </div>
                     )) : (

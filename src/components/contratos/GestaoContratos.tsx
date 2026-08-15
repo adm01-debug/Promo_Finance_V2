@@ -7,7 +7,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -27,8 +26,8 @@ export function GestaoContratos() {
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState({
     descricao: '', tipo: 'servico', data_inicio: '', data_fim: '',
-    valor_mensal: '', valor_total: '', numero_contrato: '', observacoes: '',
-    renovacao_automatica: false, dias_aviso_renovacao: '30',
+    valor_mensal: '', valor_total: '', numero_contrato: '',
+    renovacao_automatica: false,
   });
 
   const handleCreate = () => {
@@ -40,13 +39,11 @@ export function GestaoContratos() {
       valor_mensal: form.valor_mensal ? Number(form.valor_mensal) : undefined,
       valor_total: form.valor_total ? Number(form.valor_total) : undefined,
       numero_contrato: form.numero_contrato || undefined,
-      observacoes: form.observacoes || undefined,
       renovacao_automatica: form.renovacao_automatica,
-      dias_aviso_renovacao: Number(form.dias_aviso_renovacao),
     }, {
       onSuccess: () => {
         setFormOpen(false);
-        setForm({ descricao: '', tipo: 'servico', data_inicio: '', data_fim: '', valor_mensal: '', valor_total: '', numero_contrato: '', observacoes: '', renovacao_automatica: false, dias_aviso_renovacao: '30' });
+        setForm({ descricao: '', tipo: 'servico', data_inicio: '', data_fim: '', valor_mensal: '', valor_total: '', numero_contrato: '', renovacao_automatica: false });
       },
     });
   };
@@ -99,10 +96,6 @@ export function GestaoContratos() {
                   <Label>Renovação Automática</Label>
                   <Switch checked={form.renovacao_automatica} onCheckedChange={(v) => setForm(f => ({ ...f, renovacao_automatica: v }))} />
                 </div>
-                {form.renovacao_automatica && (
-                  <div><Label>Dias Aviso Renovação</Label><Input type="number" value={form.dias_aviso_renovacao} onChange={(e) => setForm(f => ({ ...f, dias_aviso_renovacao: e.target.value }))} /></div>
-                )}
-                <div><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm(f => ({ ...f, observacoes: e.target.value }))} /></div>
                 <Button onClick={handleCreate} disabled={createContrato.isPending || !form.descricao || !form.data_inicio} className="w-full">
                   {createContrato.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}Criar Contrato
                 </Button>

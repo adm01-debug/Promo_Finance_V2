@@ -57,13 +57,9 @@ export interface FluxoNivel {
 export interface ComentarioAprovacao {
   id: string;
   solicitacao_id: string;
-  usuario_id: string;
-  texto: string;
+  user_id: string;
+  comentario: string;
   created_at: string;
-  usuario?: {
-    full_name: string | null;
-    email: string;
-  };
 }
 
 export const useConfiguracaoAprovacao = () => {
@@ -163,12 +159,7 @@ export const useComentariosAprovacao = (solicitacaoId: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('aprovacao_comentarios')
-        .select(
-          `
-          *,
-          usuario:profiles(full_name, email)
-        `
-        )
+        .select('*')
         .eq('solicitacao_id', solicitacaoId)
         .order('created_at', { ascending: true });
 
