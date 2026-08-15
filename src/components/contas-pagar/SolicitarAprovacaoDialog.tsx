@@ -73,7 +73,7 @@ export function SolicitarAprovacaoDialog({
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Vencimento</p>
-                  <p className="font-medium">{formatDate(new Date(conta.data_vencimento))}</p>
+                  <p className="font-medium">{formatDate(conta.data_vencimento)}</p>
                 </div>
               </div>
               

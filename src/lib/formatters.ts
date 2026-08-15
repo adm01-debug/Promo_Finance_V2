@@ -266,8 +266,21 @@ export const formatDateForInput = (date: Date | string | null): string => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+/**
+ * Serializa um Date como YYYY-MM-DD na TIMEZONE LOCAL (getters locais).
+ * Imune a fusos: em BRT 21h-24h, new Date() tem data civil UTC do dia
+ * seguinte — este helper evita gravar o dia errado. Usar SEMPRE para
+ * gerar datas de hoje/períodos (substitui toISOString().split('T')[0]).
+ */
+export const toISOLocal = (date: Date): string => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 /** Returns today as YYYY-MM-DD in local timezone (avoids UTC offset bugs in BRT). */
-export const todayISOLocal = (): string => formatDateForInput(new Date());
+export const todayISOLocal = (): string => toISOLocal(new Date());
 
 export const isToday = (date: Date | string): boolean => {
   const d = toLocalDate(date);

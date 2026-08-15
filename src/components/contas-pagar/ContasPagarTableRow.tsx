@@ -259,7 +259,7 @@ export const ContasPagarTableRow = memo(
             </div>
             <div>
               <p className="text-sm font-black tabular-nums tracking-tight">
-                {formatDate(new Date(conta.data_vencimento))}
+                {formatDate(conta.data_vencimento)}
               </p>
               {overdueDays > 0 && conta.status !== 'pago' ? (
                 <p className="text-[10px] font-black text-destructive uppercase tracking-widest mt-0.5">
@@ -267,7 +267,7 @@ export const ContasPagarTableRow = memo(
                 </p>
               ) : overdueDays < 0 && conta.status !== 'pago' ? (
                 <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mt-0.5">
-                  {getRelativeTime(new Date(conta.data_vencimento))}
+                  {getRelativeTime(conta.data_vencimento)}
                 </p>
               ) : null}
             </div>

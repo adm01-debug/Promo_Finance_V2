@@ -1,4 +1,4 @@
-import { todayISOLocal } from '@/lib/formatters';
+import {todayISOLocal, toISOLocal } from '@/lib/formatters';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -170,7 +170,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
 
   const handleBoletoDetected = (dados: DadosBoleto) => {
     if (dados.valor > 0) form.setValue('valor', dados.valor);
-    if (dados.dataVencimento) form.setValue('data_vencimento', dados.dataVencimento.toISOString().split('T')[0]);
+    if (dados.dataVencimento) form.setValue('data_vencimento', toISOLocal(dados.dataVencimento));
     if (dados.codigoBarras) form.setValue('codigo_barras', dados.codigoBarras);
     form.setValue('tipo_cobranca', 'boleto');
     if (!form.getValues('descricao') && dados.banco) form.setValue('descricao', `Boleto ${dados.banco}`);

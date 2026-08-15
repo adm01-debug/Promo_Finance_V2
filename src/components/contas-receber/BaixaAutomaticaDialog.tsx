@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
 import type { Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
-import { formatCurrency, formatDate } from '@/lib/formatters';
+import {formatCurrency, formatDate, toISOLocal } from '@/lib/formatters';
 
 interface BaixaAutomaticaDialogProps {
   open: boolean;
@@ -136,7 +136,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           .from('contas_receber')
           .update({
             status: 'pago',
-            data_recebimento: m.transacao.data.toISOString().split('T')[0],
+            data_recebimento: toISOLocal(m.transacao.data),
             valor_recebido: m.valor
           })
           .eq('id', m.contaId);
@@ -148,7 +148,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           // Registra transação bancária confirmada para conciliação
           await supabase.from('transacoes_bancarias').insert({
             conta_bancaria_id: m.transacao.conta_bancaria_id || '',
-            data: m.transacao.data.toISOString().split('T')[0],
+            data: toISOLocal(m.transacao.data),
             descricao: `BAIXA AUT LOTE: ${m.cliente} - ${m.transacao.descricao}`,
             valor: m.valor,
             tipo: 'receita',

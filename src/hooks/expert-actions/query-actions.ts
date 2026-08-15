@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency , todayISOLocal} from '@/lib/formatters';
+import {formatCurrency , todayISOLocal, toISOLocal } from '@/lib/formatters';
 import type { ActionResult } from './types';
 
 export async function consultarSaldos(): Promise<ActionResult> {
@@ -94,13 +94,13 @@ export async function analisarFluxo(periodo: string): Promise<ActionResult> {
 
   const { data: contasPagar } = await supabase
     .from('contas_pagar').select('data_vencimento, valor').eq('status', 'pendente')
-    .gte('data_vencimento', hoje.toISOString().split('T')[0])
-    .lte('data_vencimento', fim.toISOString().split('T')[0]);
+    .gte('data_vencimento', toISOLocal(hoje))
+    .lte('data_vencimento', toISOLocal(fim));
 
   const { data: contasReceber } = await supabase
     .from('contas_receber').select('data_vencimento, valor').in('status', ['pendente'])
-    .gte('data_vencimento', hoje.toISOString().split('T')[0])
-    .lte('data_vencimento', fim.toISOString().split('T')[0]);
+    .gte('data_vencimento', toISOLocal(hoje))
+    .lte('data_vencimento', toISOLocal(fim));
 
   const { data: saldos } = await supabase.from('contas_bancarias').select('saldo_atual').eq('ativo', true);
 
@@ -155,7 +155,7 @@ export async function consultarVencimentos(periodo: string): Promise<ActionResul
   const hoje = todayISOLocal();
   const fim = new Date();
   fim.setDate(fim.getDate() + dias);
-  const fimStr = fim.toISOString().split('T')[0];
+  const fimStr = toISOLocal(fim);
 
   const { data: pagar } = await supabase
     .from('contas_pagar').select('fornecedor_nome, descricao, valor, data_vencimento')

@@ -7,6 +7,7 @@ import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
 import type { TablesInsert, Tables, TablesUpdate, Json } from '@/integrations/supabase/types';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
+import { toISOLocal } from '@/lib/formatters';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
@@ -179,7 +180,7 @@ export function useConciliacao() {
     mutationFn: async ({ extrato, contaBancariaId }: { extrato: ExtratoOFX; contaBancariaId: string }) => {
       const rows: TablesInsert<'extrato_bancario'>[] = extrato.transacoes.map((t, i) => ({
         conta_bancaria_id: contaBancariaId,
-        data: t.data.toISOString().split('T')[0],
+        data: toISOLocal(t.data),
         descricao: t.descricao,
         valor: t.valor,
         tipo: t.tipo === 'credito' ? 'credito' : 'debito',
@@ -190,7 +191,7 @@ export function useConciliacao() {
         importado_de: extrato.formato,
         importado_em: new Date().toISOString(),
         linha_arquivo: i + 1,
-        hash_transacao: `${contaBancariaId}_${t.data.toISOString().split('T')[0]}_${t.valor}_${t.descricao.slice(0, 30)}`,
+        hash_transacao: `${contaBancariaId}_${toISOLocal(t.data)}_${t.valor}_${t.descricao.slice(0, 30)}`,
         saldo: extrato.conta.saldoFinal || null,
       }));
 

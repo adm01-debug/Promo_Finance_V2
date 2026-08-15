@@ -4,6 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { toISOLocal } from '@/lib/formatters';
 
 export interface ApuracaoTributaria {
   id: string;
@@ -115,7 +116,7 @@ export function useApuracoesTributarias(empresaId?: string) {
   // Criar apuração
   const criarApuracao = useMutation({
     mutationFn: async (input: CreateApuracaoInput) => {
-      const competencia = new Date(input.ano, input.mes - 1, 1).toISOString().split('T')[0];
+      const competencia = toISOLocal(new Date(input.ano, input.mes - 1, 1));
 
       const { data, error } = await supabase
         .from('apuracoes_tributarias')
@@ -184,8 +185,8 @@ export function useApuracoesTributarias(empresaId?: string) {
       mes: number;
     }) => {
       // Buscar operações do período
-      const inicioMes = new Date(ano, mes - 1, 1).toISOString().split('T')[0];
-      const fimMes = new Date(ano, mes, 0).toISOString().split('T')[0];
+      const inicioMes = toISOLocal(new Date(ano, mes - 1, 1));
+      const fimMes = toISOLocal(new Date(ano, mes, 0));
 
       const { data: operacoes, error: opError } = await supabase
         .from('operacoes_tributaveis')

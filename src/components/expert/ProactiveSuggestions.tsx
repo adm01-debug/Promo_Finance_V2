@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency } from '@/lib/formatters';
+import {formatCurrency, toISOLocal } from '@/lib/formatters';
 import { logger } from '@/lib/logger';
 
 interface ProactiveSuggestion {
@@ -62,13 +62,13 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
         .from('contas_pagar')
         .select('valor, data_vencimento')
         .eq('status', 'pendente')
-        .lte('data_vencimento', em30Dias.toISOString().split('T')[0]);
+        .lte('data_vencimento', toISOLocal(em30Dias));
 
       const { data: contasReceber } = await supabase
         .from('contas_receber')
         .select('valor, data_vencimento, status')
         .in('status', ['pendente', 'vencido'])
-        .lte('data_vencimento', em30Dias.toISOString().split('T')[0]);
+        .lte('data_vencimento', toISOLocal(em30Dias));
 
       const saldoAtual = saldos?.reduce((sum, c) => sum + Number(c.saldo_atual), 0) || 0;
       const totalPagar = contasPagar?.reduce((sum, c) => sum + Number(c.valor), 0) || 0;

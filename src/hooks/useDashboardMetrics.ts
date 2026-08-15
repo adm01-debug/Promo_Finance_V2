@@ -5,6 +5,7 @@ import { useDivergenciasConciliacao } from '@/hooks/useDivergenciasConciliacao';
 import { useBoletos } from '@/hooks/useBoletos';
 import { useCobrancaKPIs } from '@/hooks/useCobrancas';
 import { useAuth } from '@/hooks/useAuth';
+import { toISOLocal } from '@/lib/formatters';
 
 
 export interface DashboardFilters {
@@ -228,7 +229,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
     for (let i = 0; i < dias; i++) {
       const data = new Date(hoje);
       data.setDate(data.getDate() + i);
-      const dataStr = data.toISOString().split('T')[0];
+      const dataStr = toISOLocal(data);
 
       const receitasDia = contasReceberFiltradas
         .filter(c => c.data_vencimento === dataStr && c.status !== 'pago' && c.status !== 'cancelado')

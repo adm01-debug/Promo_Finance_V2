@@ -20,11 +20,14 @@ vi.mock('framer-motion', () => ({
 // Mock formatters
 vi.mock('@/lib/formatters', () => ({
   formatCurrency: (v: number) => `R$ ${v.toFixed(2)}`,
-  formatDate: (d: Date) => d.toLocaleDateString('pt-BR'),
-  calculateOverdueDays: (d: Date) => {
+  formatDate: (d: Date | string) => {
+    const dt = typeof d === 'string' ? new Date(`${d.slice(0, 10)}T00:00:00`) : d;
+    return dt.toLocaleDateString('pt-BR');
+  },
+  calculateOverdueDays: (d: Date | string) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const venc = new Date(d);
+    const venc = typeof d === 'string' ? new Date(`${d.slice(0, 10)}T00:00:00`) : new Date(d);
     venc.setHours(0, 0, 0, 0);
     return Math.ceil((today.getTime() - venc.getTime()) / (1000 * 60 * 60 * 24));
   },
