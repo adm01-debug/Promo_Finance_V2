@@ -86,7 +86,7 @@ async function hmacSha256(secret: string, payload: string): Promise<ArrayBuffer>
  * Recupera o segredo do provedor. `integration_secrets` tem precedência para
  * permitir rotação sem redeploy; o env serve de bootstrap.
  */
-async function resolveSecret(
+export async function resolveSecret(
   supabase: SupabaseClient,
   provider: string,
 ): Promise<string | null> {

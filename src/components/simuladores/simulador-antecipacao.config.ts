@@ -6,7 +6,7 @@ export interface RecebiveisDisponiveis {
   diasParaVencimento: number;
 }
 
-export interface InstituicaoFinanceira {
+interface InstituicaoFinanceira {
   id: string;
   nome: string;
   logo: string;

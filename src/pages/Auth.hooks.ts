@@ -25,7 +25,7 @@ const containerVariants = {
   }
 };
 
-export { emailSchema, passwordSchema, containerVariants };
+export { containerVariants };
 
 export function useAuthPage() {
   const navigate = useNavigate();
