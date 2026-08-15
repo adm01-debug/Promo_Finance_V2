@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -13,22 +12,26 @@ import { StatsCards } from "./bloqueios-duplicidade/StatsCards";
 import { FiltersBar } from "./bloqueios-duplicidade/FiltersBar";
 import { BloqueiosTable } from "./bloqueios-duplicidade/BloqueiosTable";
 import { DetailsDialog } from "./bloqueios-duplicidade/DetailsDialog";
-import { containerVariants, itemVariants, emptyFilters, type BloqueiosFilters } from "./bloqueios-duplicidade/types";
+import { containerVariants, itemVariants, emptyFilters, type BloqueiosFilters, type BloqueioRow } from "./bloqueios-duplicidade/types";
 
 export default function BloqueiosDuplicidade() {
   const [filters, setFilters] = useState<BloqueiosFilters>(emptyFilters);
-  const [selectedBlock, setSelectedBlock] = useState<Record<string, unknown> | null>(null);
+  const [selectedBlock, setSelectedBlock] = useState<BloqueioRow | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const { bloqueiosQuery, empresasQuery } = useBloqueiosData(filters);
   const { data: bloqueios, isLoading, refetch } = bloqueiosQuery;
   const { data: empresas } = empresasQuery;
 
+  // Cast de fronteira: o Row real de bloqueios_duplicidade nao tem o shape local BloqueioRow
+  // (tabela/motivo_bloqueio/campos_conflitantes existem so no DDL antigo, nao no type gerado).
+  const bloqueiosRows = (bloqueios ?? []) as unknown as BloqueioRow[];
+
   const totalValue = bloqueios?.reduce((acc, b) => acc + (Number(b.valor_bloqueado) || 0), 0) || 0;
   const totalCount = bloqueios?.length || 0;
   const mostTargeted =
     bloqueios?.reduce((acc: Record<string, number>, b) => {
-      const name = b.dados_tentativa?.fornecedor_nome || "N/D";
+      const name = (b.dados_tentativa as { fornecedor_nome?: string } | null)?.fornecedor_nome || "N/D";
       acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {}) || {};
@@ -57,7 +60,7 @@ export default function BloqueiosDuplicidade() {
               <Button
                 variant="outline"
                 className="rounded-xl font-bold h-10 px-6 gap-2 border-border hover:border-primary/50 bg-card/[0.02]"
-                onClick={() => exportCSV(bloqueios)}
+                onClick={() => exportCSV(bloqueiosRows)}
                 disabled={!bloqueios?.length}
               >
                 <Download className="h-4 w-4" /> CSV
@@ -65,7 +68,7 @@ export default function BloqueiosDuplicidade() {
               <Button
                 variant="outline"
                 className="rounded-xl font-bold h-10 px-6 gap-2 border-border hover:border-primary/50 bg-card/[0.02]"
-                onClick={() => exportPDF(bloqueios, totalCount, totalValue)}
+                onClick={() => exportPDF(bloqueiosRows, totalCount, totalValue)}
                 disabled={!bloqueios?.length}
               >
                 <FileDown className="h-4 w-4" /> PDF
@@ -92,7 +95,7 @@ export default function BloqueiosDuplicidade() {
           />
 
           <BloqueiosTable
-            bloqueios={bloqueios}
+            bloqueios={bloqueiosRows}
             isLoading={isLoading}
             onOpenDetails={(b) => {
               setSelectedBlock(b);

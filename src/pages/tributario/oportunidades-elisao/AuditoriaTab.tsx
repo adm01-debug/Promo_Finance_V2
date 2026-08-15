@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,21 +10,35 @@ import { formatCurrency } from '@/lib/formatters';
 import { baixarRelatorioAuditoriaCreditos } from '@/lib/tributario/relatorio-pdf';
 import type { Database } from '@/integrations/supabase/types';
 
+type CreditoAuditoriaRow = Database['public']['Tables']['elisao_creditos_auditoria']['Row'];
+
+// O caller embute nota:notas_fiscais_ocr(*) e regra:elisao_regras_creditos(*) no select,
+// mas o Row gerado so expoe nota_id/regra_id. Cast de fronteira preserva o shape real.
+interface CreditoAuditoriaComRelacoes extends CreditoAuditoriaRow {
+  nota?: {
+    arquivo_nome?: string | null;
+    arquivo_url?: string | null;
+    dados_extraidos?: unknown;
+  } | null;
+  regra?: { descricao?: string | null } | null;
+}
+
 interface AuditoriaTabProps {
-  creditosAuditoria: Database['public']['Tables']['elisao_creditos_auditoria']['Row'][];
+  creditosAuditoria: CreditoAuditoriaRow[];
   empresaRazaoSocial: string;
   decidirCredito: { mutate: (args: { id: string; status: string }) => void };
 }
 
 export function AuditoriaTab({ creditosAuditoria, empresaRazaoSocial, decidirCredito }: AuditoriaTabProps) {
+  const creditos = creditosAuditoria as CreditoAuditoriaComRelacoes[];
   return (
     <TabsContent value="auditoria" className="space-y-4 mt-4">
-      {creditosAuditoria.length === 0 ? (
+      {creditos.length === 0 ? (
         <div className="text-center py-10 text-muted-foreground border rounded-lg border-dashed">
           Nenhum crédito pendente de auditoria para esta empresa.
         </div>
       ) : (
-        creditosAuditoria.map((c) => (
+        creditos.map((c) => (
           <Card key={c.id}>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">

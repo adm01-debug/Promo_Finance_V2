@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -71,7 +70,7 @@ export function useHistoricoConciliacaoIA() {
         .limit(100);
 
       if (error) throw error;
-      return data as HistoricoConciliacaoIA[];
+      return data as unknown as HistoricoConciliacaoIA[];
     },
   });
 
@@ -85,7 +84,7 @@ export function useHistoricoConciliacaoIA() {
         .limit(100);
 
       if (error) throw error;
-      return data as FeedbackConciliacaoIA[];
+      return data as unknown as FeedbackConciliacaoIA[];
     },
   });
 

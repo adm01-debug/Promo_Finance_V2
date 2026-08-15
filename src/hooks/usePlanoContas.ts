@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -47,7 +46,7 @@ export function useUpsertPlanoConta() {
 
       const { data, error } = isUpdate
         ? await supabase.from('plano_contas').update(payload).eq('id', input.id!).select().maybeSingle()
-        : await supabase.from('plano_contas').insert(payload as never).select().maybeSingle();
+        : await supabase.from('plano_contas').insert(payload).select().maybeSingle();
       if (error) throw error;
 
       // Registra na trilha de auditoria — não bloqueia a operação principal.
@@ -56,12 +55,12 @@ export function useUpsertPlanoConta() {
         if (recordId) {
           const empresaTag = input.empresa_id ? `empresa:${input.empresa_id} ` : '';
           await supabase.rpc('log_audit', {
-            _action: isUpdate ? 'UPDATE' : 'INSERT',
-            _table_name: 'plano_contas',
-            _record_id: recordId,
-            _old_data: oldData ? JSON.stringify(oldData) : null,
-            _new_data: data ? JSON.stringify(data) : null,
-            _details: `${empresaTag}conta ${payload.codigo} — ${payload.descricao}`,
+            p_action: isUpdate ? 'UPDATE' : 'INSERT',
+            p_table_name: 'plano_contas',
+            p_record_id: recordId,
+            p_old_data: oldData ? JSON.stringify(oldData) : null,
+            p_new_data: data ? JSON.stringify(data) : null,
+            p_details: `${empresaTag}conta ${payload.codigo} — ${payload.descricao}`,
           });
         }
       } catch (auditErr) {

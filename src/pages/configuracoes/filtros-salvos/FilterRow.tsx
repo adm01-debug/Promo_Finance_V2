@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Database, HardDrive, Loader2, RefreshCw } from 'lucide-react';

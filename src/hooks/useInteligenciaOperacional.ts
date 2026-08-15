@@ -1,6 +1,6 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 
 export interface PlanoAcao {
@@ -53,8 +53,12 @@ export function useCreatePlanoAcao() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Usuário não autenticado');
       
-      const insertData = { ...plano, user_id: userData.user.id };
-      
+      const insertData = {
+        ...plano,
+        user_id: userData.user.id,
+        tags: plano.tags ?? undefined,
+      } as Database['public']['Tables']['planos_acao']['Insert'];
+
       const { data, error } = await supabase
         .from('planos_acao')
         .insert([insertData])

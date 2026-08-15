@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { TabsContent } from '@/components/ui/tabs';
@@ -21,7 +20,7 @@ export function AlertasTab({ alertas }: { alertas: Database['public']['Tables'][
               <Badge variant="outline" className="text-[10px] uppercase">{a.severidade}</Badge>
             </AlertTitle>
             <AlertDescription className="mt-2">
-              <p className="text-sm">{a.mensagem}</p>
+              <p className="text-sm">{a.descricao}</p>
               <div className="mt-2 text-[10px] opacity-70">
                 Detectado em {new Date(a.created_at).toLocaleString()}
               </div>
