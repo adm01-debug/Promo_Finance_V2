@@ -34,14 +34,14 @@ export default function Alertas() {
   const [activeTab, setActiveTab] = useState('todos');
 
   const alertasNaoLidos = alertas.filter(a => !a.lido);
-  const alertasPorTipo: Record<string, Alerta[]> = {
+  const alertasPorTipo = useMemo<Record<string, Alerta[]>>(() => ({
     todos: alertas,
     vencimento: alertas.filter(a => a.tipo === 'vencimento'),
     inadimplencia: alertas.filter(a => a.tipo === 'inadimplencia'),
     fluxo_caixa: alertas.filter(a => a.tipo === 'fluxo_caixa'),
-  };
+  }), [alertas]);
 
-  const currentTabAlertas = useMemo(() => alertasPorTipo[activeTab] || [], [activeTab, alertas]);
+  const currentTabAlertas = useMemo(() => alertasPorTipo[activeTab] || [], [activeTab, alertasPorTipo]);
 
   const { selectedCount, isProcessing, progress, isSelected, isAllSelected, selectAll, toggleSelect, clearSelection, executeBulkAction } = useBulkActions({
     items: currentTabAlertas, getItemId: (a) => a.id,

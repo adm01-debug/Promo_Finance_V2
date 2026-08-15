@@ -65,8 +65,8 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (initialTab && initialTab !== activeTab) {
-      setActiveTab(initialTab);
+    if (initialTab) {
+      setActiveTab(prev => (prev === initialTab ? prev : initialTab));
     }
   }, [initialTab]);
 

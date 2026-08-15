@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Fingerprint, Plus, Trash2, Loader2, Smartphone, Monitor, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,12 +26,7 @@ export function WebAuthnManager() {
   const [deviceName, setDeviceName] = useState('');
   const [registering, setRegistering] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    loadCredentials();
-  }, [user]);
-
-  const loadCredentials = async () => {
+  const loadCredentials = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
@@ -48,7 +43,12 @@ export function WebAuthnManager() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    loadCredentials();
+  }, [user, loadCredentials]);
 
   const handleRegister = async () => {
     if (!deviceName.trim()) {

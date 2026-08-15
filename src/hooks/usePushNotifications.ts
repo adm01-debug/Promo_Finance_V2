@@ -35,6 +35,18 @@ export function usePushNotifications() {
     }
   }, []);
 
+  const checkSubscription = useCallback(async () => {
+    if (!('serviceWorker' in navigator)) return;
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      setIsSubscribed(!!subscription);
+    } catch (error: unknown) {
+      logger.error('Error checking push subscription:', error);
+    }
+  }, []);
+
   useEffect(() => {
     const checkSupport = async () => {
       const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -50,19 +62,7 @@ export function usePushNotifications() {
     };
 
     checkSupport();
-  }, [user, fetchVapidKey]);
-
-  const checkSubscription = useCallback(async () => {
-    if (!('serviceWorker' in navigator)) return;
-
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
-    } catch (error: unknown) {
-      logger.error('Error checking push subscription:', error);
-    }
-  }, []);
+  }, [user, fetchVapidKey, checkSubscription]);
 
   const registerServiceWorker = useCallback(async () => {
     if (!('serviceWorker' in navigator)) {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertTriangle,
@@ -52,17 +52,21 @@ export function AlertasPreditivosPanel({
 }: AlertasPreditivosPanelProps) {
   const { isAnalyzing, alertas, lastAnalysis, analisarFluxoCaixa } = useAlertasPreditivos();
 
+  // Referencia com os dados mais recentes para a auto-analise one-shot:
+  // os arrays de props podem ser recriados a cada render do pai (deps instaveis),
+  // entao o efeito le via ref para nao disparar analises repetidas.
+  const dadosAnaliseRef = useRef({ receitasPrevistas, despesasPrevistas, historicoInadimplencia });
+  dadosAnaliseRef.current = { receitasPrevistas, despesasPrevistas, historicoInadimplencia };
+
   // Auto-analisar na montagem e quando dados mudam significativamente
   useEffect(() => {
     if (!lastAnalysis && saldoAtual > 0) {
       analisarFluxoCaixa({
         saldoAtual,
-        receitasPrevistas,
-        despesasPrevistas,
-        historicoInadimplencia,
+        ...dadosAnaliseRef.current,
       });
     }
-  }, [saldoAtual, lastAnalysis]);
+  }, [saldoAtual, lastAnalysis, analisarFluxoCaixa]);
 
   const handleReanalisar = () => {
     analisarFluxoCaixa({

@@ -20,17 +20,22 @@ export function AnimatedCounter({
   formatter = (v) => v.toLocaleString('pt-BR'),
 }: AnimatedCounterProps) {
   const [displayValue, setDisplayValue] = React.useState(0);
+  // Ref espelha o valor exibido para a animacao iniciar do valor atual sem
+  // depender de displayValue (que mudaria a cada frame e reiniciaria o efeito).
+  const displayValueRef = React.useRef(0);
   
   React.useEffect(() => {
     const startTime = Date.now();
-    const startValue = displayValue;
+    const startValue = displayValueRef.current;
     const diff = value - startValue;
     
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplayValue(Math.round(startValue + diff * eased));
+      const nextValue = Math.round(startValue + diff * eased);
+      displayValueRef.current = nextValue;
+      setDisplayValue(nextValue);
       
       if (progress < 1) requestAnimationFrame(animate);
     };

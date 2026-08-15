@@ -58,7 +58,7 @@ export function SpedEcdPreviewDialog({
   const data = validar.data;
   const erros = data?.validacoes.erros ?? [];
   const avisos = data?.validacoes.avisos ?? [];
-  const checklist = data?.checklist ?? [];
+  const checklist = useMemo(() => data?.checklist ?? [], [data?.checklist]);
 
   const resumoChecklist = useMemo(() => {
     const total = checklist.length;

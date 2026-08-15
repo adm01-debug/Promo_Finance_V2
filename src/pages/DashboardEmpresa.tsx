@@ -43,7 +43,7 @@ export default function DashboardEmpresa() {
   const contasPagarEmpresa = useMemo(() => contasPagar.filter((c) => c.empresa_id === empresaId), [contasPagar, empresaId]);
   const contasReceberEmpresa = useMemo(() => contasReceber.filter((c) => c.empresa_id === empresaId), [contasReceber, empresaId]);
 
-  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const hoje = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
   const saldoTotal = contasBancariasEmpresa.reduce((sum, c) => sum + c.saldo_atual, 0);
   const saldoDisponivel = contasBancariasEmpresa.reduce((sum, c) => sum + c.saldo_disponivel, 0);
   const totalReceber = contasReceberEmpresa.filter((c) => c.status !== 'pago' && c.status !== 'cancelado').reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);

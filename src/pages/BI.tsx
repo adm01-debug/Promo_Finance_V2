@@ -41,10 +41,10 @@ export default function BI() {
   const [filters, setFilters] = useState({ centroCustoId: 'todos', contaBancariaId: 'todos' });
   const [drillDownItem, setDrillDownItem] = useState<string | null>(null);
 
-  // Sincroniza com a empresa ativa do sistema
+  // Sincroniza com a empresa ativa do sistema (so quando a selecao ainda e o default 'todas')
   useEffect(() => {
-    if (currentEmpresaId && empresaId !== currentEmpresaId && empresaId === 'todas') {
-      setEmpresaId(currentEmpresaId);
+    if (currentEmpresaId) {
+      setEmpresaId(prev => (prev === 'todas' && prev !== currentEmpresaId ? currentEmpresaId : prev));
     }
   }, [currentEmpresaId]);
 

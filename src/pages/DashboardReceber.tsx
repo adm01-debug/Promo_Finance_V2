@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Filter, Calendar, Users, Building2, Clock, Eye, PieChart as PieChartIcon } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -50,14 +50,21 @@ export default function DashboardReceber() {
   const { currentEmpresaId } = useAuth();
   const { empresaId, vendedorId, ramoAtividade, statusFilter, clienteId, periodo, dataInicioIso, dataFimIso } = filtersController.values;
 
-  // Sincroniza com empresa ativa do sistema
+  // Sincroniza com empresa ativa do sistema.
+  // Ref pattern: `filtersController` é recriado a cada render (objeto literal do
+  // useManagedFilters) — adicioná-lo como dep re-executaria o efeito em todo render
+  // e sobrescreveria a seleção manual de "todas". O efeito deve reagir APENAS a
+  // currentEmpresaId; o ref garante leitura do controller mais recente sem stale closure.
+  const filtersRef = useRef(filtersController);
+  filtersRef.current = filtersController;
   useEffect(() => {
-    if (currentEmpresaId && filtersController.values.empresaId !== currentEmpresaId && filtersController.values.empresaId === 'todas') {
-      filtersController.setField('empresaId', currentEmpresaId);
+    const { values, setField } = filtersRef.current;
+    if (currentEmpresaId && values.empresaId !== currentEmpresaId && values.empresaId === 'todas') {
+      setField('empresaId', currentEmpresaId);
     }
   }, [currentEmpresaId]);
-  const dataInicio = dataInicioIso ? new Date(dataInicioIso) : undefined;
-  const dataFim = dataFimIso ? new Date(dataFimIso) : undefined;
+  const dataInicio = useMemo(() => (dataInicioIso ? new Date(dataInicioIso) : undefined), [dataInicioIso]);
+  const dataFim = useMemo(() => (dataFimIso ? new Date(dataFimIso) : undefined), [dataFimIso]);
   const setEmpresaId = (v: string) => filtersController.setField('empresaId', v);
   const setVendedorId = (v: string) => filtersController.setField('vendedorId', v);
   const setRamoAtividade = (v: string) => filtersController.setField('ramoAtividade', v);

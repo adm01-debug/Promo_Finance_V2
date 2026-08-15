@@ -52,8 +52,8 @@ export function LancamentosTab({ empresaId, ano }: Props) {
     localStorageKey: 'app-lancamentos-filters',
   });
   const { busca, preset, dataInicio: dataInicioStr, dataFim: dataFimStr } = filtersController.values;
-  const dataInicio = dataInicioStr ? new Date(`${dataInicioStr}T00:00:00`) : undefined;
-  const dataFim = dataFimStr ? new Date(`${dataFimStr}T23:59:59`) : undefined;
+  const dataInicio = useMemo(() => (dataInicioStr ? new Date(`${dataInicioStr}T00:00:00`) : undefined), [dataInicioStr]);
+  const dataFim = useMemo(() => (dataFimStr ? new Date(`${dataFimStr}T23:59:59`) : undefined), [dataFimStr]);
   const setBusca = (v: string) => filtersController.setField('busca', v);
   const setDataInicio = (d: Date | undefined) => filtersController.setField('dataInicio', d ? format(d, 'yyyy-MM-dd') : null);
   const setDataFim = (d: Date | undefined) => filtersController.setField('dataFim', d ? format(d, 'yyyy-MM-dd') : null);

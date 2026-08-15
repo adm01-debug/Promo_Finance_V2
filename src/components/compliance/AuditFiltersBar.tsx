@@ -63,7 +63,7 @@ export function AuditFiltersBar({
 }: Props) {
   const [busca, setBusca] = useState(value.busca);
 
-  const escoposSelecionados = value.escopos ?? [];
+  const escoposSelecionados = useMemo(() => value.escopos ?? [], [value.escopos]);
 
   // Estado expandido/recolhido — persistido no localStorage por trilha quando
   // `storageKey` é fornecido. Sem chave, o painel é sempre visível (legado).

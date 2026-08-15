@@ -126,7 +126,7 @@ export function useConciliacaoIA() {
     } finally {
       setIsAnalyzing(false);
     }
-  }, []);
+  }, [feedback]);
 
   const clearMatches = useCallback(() => {
     setMatchesIA(new Map());

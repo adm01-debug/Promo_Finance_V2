@@ -57,7 +57,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
         }
         setInputValue(applyMask(value, selectedCountry.mask));
       }
-    }, [value]);
+    }, [value, selectedCountry.mask]);
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {

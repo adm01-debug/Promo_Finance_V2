@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, Plus, Search, MoreVertical, Edit, CheckCircle2,
@@ -49,7 +49,7 @@ export default function Empresas() {
     e.cnpj.includes(searchTerm)
   ), [empresas, searchTerm]);
 
-  const getEmpresaStats = (empresaId: string) => {
+  const getEmpresaStats = useCallback((empresaId: string) => {
     const contas = contasBancarias.filter(c => c.empresa_id === empresaId);
     const receber = contasReceber.filter(c => c.empresa_id === empresaId);
     const pagar = contasPagar.filter(c => c.empresa_id === empresaId);
@@ -61,7 +61,7 @@ export default function Empresas() {
       titulosReceber: receber.length,
       titulosPagar: pagar.length,
     };
-  };
+  }, [contasBancarias, contasReceber, contasPagar]);
 
   const consolidado = useMemo(() => ({
     saldoTotal: empresas.reduce((acc, e) => acc + getEmpresaStats(e.id).saldoTotal, 0),
@@ -70,7 +70,7 @@ export default function Empresas() {
     empresasAtivas: empresas.filter(e => e.ativo).length,
     titulosPendentesReceber: contasReceber.filter(c => c.status === 'pendente').length,
     titulosPendentesPagar: contasPagar.filter(c => c.status === 'pendente').length,
-  }), [empresas, contasBancarias, contasReceber, contasPagar]);
+  }), [empresas, getEmpresaStats, contasReceber, contasPagar]);
 
   const saldoLiquido = consolidado.saldoTotal + consolidado.totalReceber - consolidado.totalPagar;
 

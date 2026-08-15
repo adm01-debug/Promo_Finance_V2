@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase, verifySupabaseHealth } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 
@@ -19,11 +19,11 @@ export const useStartupDiagnostic = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const updateStatus = (id: string, status: DiagnosticResult['status'], message?: string) => {
+  const updateStatus = useCallback((id: string, status: DiagnosticResult['status'], message?: string) => {
     setResults(prev => prev.map(r => r.id === id ? { ...r, status, message } : r));
-  };
+  }, []);
 
-  const runDiagnostics = async () => {
+  const runDiagnostics = useCallback(async () => {
     setIsComplete(false);
     setHasError(false);
 
@@ -147,11 +147,11 @@ export const useStartupDiagnostic = () => {
     }
 
     setIsComplete(true);
-  };
+  }, [updateStatus]);
 
   useEffect(() => {
     runDiagnostics();
-  }, []);
+  }, [runDiagnostics]);
 
   return { results, isComplete, hasError, retry: runDiagnostics };
 };

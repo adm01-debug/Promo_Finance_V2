@@ -65,8 +65,11 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   }, [contasBancarias, empresaFilter, currentEmpresaId]);
 
   // Cálculos de KPIs
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
+  const hoje = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
 
   const saldoTotal = contasBancariasFiltradas.reduce((sum, c) => sum + c.saldo_atual, 0);
   
@@ -116,7 +119,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   });
 
   // Status das contas para gráfico de pizza
-  const COLORS = ['hsl(150, 70%, 42%)', 'hsl(42, 95%, 48%)', 'hsl(0, 78%, 55%)', 'hsl(215, 90%, 52%)', 'hsl(275, 75%, 48%)'];
+  const COLORS = useMemo(() => ['hsl(150, 70%, 42%)', 'hsl(42, 95%, 48%)', 'hsl(0, 78%, 55%)', 'hsl(215, 90%, 52%)', 'hsl(275, 75%, 48%)'], []);
   
   const statusContasPagar = useMemo(() => {
     const counts = { pago: 0, pendente: 0, vencido: 0, parcial: 0 };
@@ -131,7 +134,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
       { name: 'Vencidas', value: counts.vencido, fill: COLORS[2] },
       { name: 'Parciais', value: counts.parcial, fill: COLORS[3] },
     ].filter(s => s.value > 0);
-  }, [contasPagarFiltradas]);
+  }, [contasPagarFiltradas, COLORS]);
 
   // Dados por centro de custo
   const dadosPorCentroCusto = useMemo(() => {

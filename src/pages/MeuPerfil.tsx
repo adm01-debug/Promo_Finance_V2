@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Save, Loader2, Shield, Key } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -23,18 +23,18 @@ export default function MeuPerfil() {
   const [newPassword, setNewPassword] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
 
+  const loadProfile = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+    if (data) setFullName(data.full_name || '');
+  }, [user]);
+
   useEffect(() => {
     if (user) {
       setEmail(user.email || '');
       loadProfile();
     }
-  }, [user]);
-
-  const loadProfile = async () => {
-    if (!user) return;
-    const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
-    if (data) setFullName(data.full_name || '');
-  };
+  }, [user, loadProfile]);
 
   const handleSave = async () => {
     if (!user) return;

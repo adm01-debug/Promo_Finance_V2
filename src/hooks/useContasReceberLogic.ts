@@ -88,7 +88,7 @@ export function useContasReceberLogic() {
   const { data: contasBancarias = [] } = useContasBancarias();
 
 
-  const contas = paginatedResult?.data || [];
+  const contas = useMemo(() => paginatedResult?.data || [], [paginatedResult]);
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 

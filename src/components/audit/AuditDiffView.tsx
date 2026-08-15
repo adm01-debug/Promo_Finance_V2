@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, Check, Copy, FileCode } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
@@ -66,16 +66,19 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
 
   const hasFilters = query.trim().length > 0 || activeFields.size > 0;
 
-  const filterFields = (fields: DiffField[]): DiffField[] =>
-    fields.filter((f) => {
-      if (activeFields.size > 0 && !activeFields.has(f.key)) return false;
-      if (!matchesQuery(f, query.trim())) return false;
-      return true;
-    });
+  const filterFields = useCallback(
+    (fields: DiffField[]): DiffField[] =>
+      fields.filter((f) => {
+        if (activeFields.size > 0 && !activeFields.has(f.key)) return false;
+        if (!matchesQuery(f, query.trim())) return false;
+        return true;
+      }),
+    [query, activeFields],
+  );
 
-  const filteredChanged = useMemo(() => filterFields(diff.changed), [diff.changed, query, activeFields]);
-  const filteredAdded = useMemo(() => filterFields(diff.added), [diff.added, query, activeFields]);
-  const filteredRemoved = useMemo(() => filterFields(diff.removed), [diff.removed, query, activeFields]);
+  const filteredChanged = useMemo(() => filterFields(diff.changed), [diff.changed, filterFields]);
+  const filteredAdded = useMemo(() => filterFields(diff.added), [diff.added, filterFields]);
+  const filteredRemoved = useMemo(() => filterFields(diff.removed), [diff.removed, filterFields]);
 
   const insertEntries = useMemo(() => {
     if (!isInsert || !newData) return [] as Array<[string, unknown]>;

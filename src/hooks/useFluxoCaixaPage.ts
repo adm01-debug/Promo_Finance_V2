@@ -65,7 +65,7 @@ export function useFluxoCaixaPage() {
   }, [projecoes, alertasDismissed]);
 
   // Dados do cenário ativo
-  const dadosCenarioAtivo = projecoes[cenarioAtivo] || [];
+  const dadosCenarioAtivo = useMemo(() => projecoes[cenarioAtivo] || [], [projecoes, cenarioAtivo]);
   const metricaAtiva = metricasCenarios[cenarioAtivo];
 
   // Calcular totais do cenário ativo

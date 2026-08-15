@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -14,21 +14,28 @@ interface ShortcutConfig {
 export const useKeyboardShortcuts = () => {
   const navigate = useNavigate();
 
-  const shortcuts: ShortcutConfig[] = [
+  // Ref espelha o navigate atual: o listener global de keydown é registrado
+  // UMA vez (deps estáveis) e as actions sempre usam o navigate mais recente.
+  const navigateRef = useRef(navigate);
+  useEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate]);
+
+  const shortcuts = useMemo<ShortcutConfig[]>(() => [
     // Navigation shortcuts (Alt + key)
-    { key: 'd', alt: true, action: () => navigate('/'), description: 'Ir para Dashboard' },
-    { key: 'r', alt: true, action: () => navigate('/contas-receber'), description: 'Contas a Receber' },
-    { key: 'p', alt: true, action: () => navigate('/contas-pagar'), description: 'Contas a Pagar' },
-    { key: 'f', alt: true, action: () => navigate('/fluxo-caixa'), description: 'Fluxo de Caixa' },
-    { key: 'c', alt: true, action: () => navigate('/conciliacao'), description: 'Conciliação' },
-    { key: 'e', alt: true, action: () => navigate('/expert'), description: 'Expert (IA)' },
-    { key: 'b', alt: true, action: () => navigate('/bi'), description: 'BI Gestão' },
-    { key: 'a', alt: true, action: () => navigate('/alertas'), description: 'Alertas' },
-    { key: 'l', alt: true, action: () => navigate('/relatorios'), description: 'Relatórios' },
-    { key: 'o', alt: true, action: () => navigate('/aprovacoes'), description: 'Aprovações' },
-    { key: 'i', alt: true, action: () => navigate('/clientes'), description: 'Clientes' },
-    { key: 'u', alt: true, action: () => navigate('/fornecedores'), description: 'Fornecedores' },
-    { key: 'n', alt: true, action: () => navigate('/notas-fiscais'), description: 'Notas Fiscais' },
+    { key: 'd', alt: true, action: () => navigateRef.current('/'), description: 'Ir para Dashboard' },
+    { key: 'r', alt: true, action: () => navigateRef.current('/contas-receber'), description: 'Contas a Receber' },
+    { key: 'p', alt: true, action: () => navigateRef.current('/contas-pagar'), description: 'Contas a Pagar' },
+    { key: 'f', alt: true, action: () => navigateRef.current('/fluxo-caixa'), description: 'Fluxo de Caixa' },
+    { key: 'c', alt: true, action: () => navigateRef.current('/conciliacao'), description: 'Conciliação' },
+    { key: 'e', alt: true, action: () => navigateRef.current('/expert'), description: 'Expert (IA)' },
+    { key: 'b', alt: true, action: () => navigateRef.current('/bi'), description: 'BI Gestão' },
+    { key: 'a', alt: true, action: () => navigateRef.current('/alertas'), description: 'Alertas' },
+    { key: 'l', alt: true, action: () => navigateRef.current('/relatorios'), description: 'Relatórios' },
+    { key: 'o', alt: true, action: () => navigateRef.current('/aprovacoes'), description: 'Aprovações' },
+    { key: 'i', alt: true, action: () => navigateRef.current('/clientes'), description: 'Clientes' },
+    { key: 'u', alt: true, action: () => navigateRef.current('/fornecedores'), description: 'Fornecedores' },
+    { key: 'n', alt: true, action: () => navigateRef.current('/notas-fiscais'), description: 'Notas Fiscais' },
     
     // Quick actions (Ctrl + Shift + key)
     { key: 'n', ctrl: true, shift: true, action: () => {
@@ -72,7 +79,7 @@ export const useKeyboardShortcuts = () => {
       const closeButton = document.querySelector('[data-state="open"] button[data-radix-collection-item]') as HTMLButtonElement;
       if (closeButton) closeButton.click();
     }, description: 'Fechar modal/dropdown' },
-  ];
+  ], []);
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     // Ignore if user is typing in an input
@@ -98,7 +105,7 @@ export const useKeyboardShortcuts = () => {
         break;
       }
     }
-  }, [navigate, shortcuts]);
+  }, [shortcuts]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

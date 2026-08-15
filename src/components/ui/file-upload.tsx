@@ -46,7 +46,7 @@ export function FileUpload({
 
   const generateId = () => Math.random().toString(36).substring(2, 9);
 
-  const validateFile = (file: File): string | null => {
+  const validateFile = useCallback((file: File): string | null => {
     if (maxSize && file.size > maxSize) return `${file.name} excede o tamanho máximo de ${formatFileSize(maxSize)}`;
     if (accept) {
       const acceptedTypes = accept.split(',').map((t) => t.trim());
@@ -58,7 +58,7 @@ export function FileUpload({
       if (!isAccepted) return `${file.name} não é um tipo de arquivo aceito`;
     }
     return null;
-  };
+  }, [maxSize, accept]);
 
   const handleFiles = useCallback(
     async (newFiles: FileList | File[]) => {
