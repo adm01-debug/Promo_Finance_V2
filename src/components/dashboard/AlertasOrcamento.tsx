@@ -54,7 +54,7 @@ export const AlertasOrcamento = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {criticalBudgets.slice(0, 3).map((budget: any) => {
+          {criticalBudgets.slice(0, 3).map((budget) => {
             const isOver = budget.percent_used > 100;
             return (
               <div key={budget.id} className="space-y-2">

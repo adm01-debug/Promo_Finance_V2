@@ -291,16 +291,3 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
     </Dialog>
   );
 }
-
-// Hook for triggering quick create from anywhere
-export function useQuickCreate() {
-  const [open, setOpen] = useState(false);
-  
-  return {
-    open,
-    setOpen,
-    QuickCreateTrigger: ({ children }: { children: React.ReactNode }) => (
-      <button onClick={() => setOpen(true)}>{children}</button>
-    ),
-  };
-}

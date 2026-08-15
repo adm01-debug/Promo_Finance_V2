@@ -2,10 +2,10 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
-import { AuthProvider } from '@/hooks/useAuth';
+import { AuthProvider } from '@/hooks/AuthProvider';
 import { KeyboardShortcutsProvider } from '@/components/layout/KeyboardShortcutsProvider';
 import { DataPrefetcher } from '@/components/providers/DataPrefetcher';
 import { NavigationTracker } from '@/components/providers/NavigationTracker';
@@ -334,4 +334,4 @@ function App() {
 }
 
 
-export default App;
+export default App;

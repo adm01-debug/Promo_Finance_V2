@@ -16,6 +16,67 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
+interface ContaReceberFormValues {
+  cliente_id?: string;
+  cliente_nome?: string;
+  descricao?: string;
+  valor?: number;
+  data_vencimento?: string;
+  data_emissao?: string;
+  empresa_id?: string;
+  centro_custo_id?: string;
+  categoria_id?: string;
+  conta_bancaria_id?: string;
+  vendedor_id?: string;
+  tipo_cobranca?: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+  numero_documento?: string;
+  codigo_barras?: string;
+  chave_pix?: string;
+  link_boleto?: string;
+  observacoes?: string;
+  recorrente?: boolean;
+  frequencia_recorrencia?: string;
+  parcelado?: boolean;
+  numero_parcelas?: number;
+}
+
+interface ClienteOption {
+  id: string;
+  razao_social: string;
+  nome_fantasia?: string | null;
+  cnpj_cpf?: string | null;
+  score?: number | null;
+}
+
+interface EmpresaOption {
+  id: string;
+  razao_social: string;
+  nome_fantasia: string | null;
+}
+
+interface CentroCustoOption {
+  id: string;
+  codigo: string | null;
+  nome: string | null;
+}
+
+interface ContaBancariaOption {
+  id: string;
+  banco: string | null;
+  agencia: string | null;
+  conta: string | null;
+}
+
+interface VendedorOption {
+  id: string;
+  nome: string;
+}
+
+interface CategoriaOption {
+  id: string;
+  nome: string;
+}
+
 const tipoCobrancaOptions = [
   { value: 'boleto', label: 'Boleto', icon: Banknote },
   { value: 'pix', label: 'PIX', icon: QrCode },
@@ -32,17 +93,17 @@ const frequenciaOptions = [
 ];
 
 interface Props {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<ContaReceberFormValues>;
   isEditing: boolean;
-  clientes: Array<Record<string, any>>;
-  empresas: Array<Record<string, any>>;
-  centrosCusto: Array<Record<string, any>>;
-  contasBancarias: Array<Record<string, any>>;
-  vendedores: Array<Record<string, any>>;
+  clientes: ClienteOption[];
+  empresas: EmpresaOption[];
+  centrosCusto: CentroCustoOption[];
+  contasBancarias: ContaBancariaOption[];
+  vendedores: VendedorOption[];
   showClienteSelect: boolean;
   setShowClienteSelect: (v: boolean) => void;
   onClienteSelect: (id: string) => void;
-  categorias?: Array<Record<string, any>>;
+  categorias?: CategoriaOption[];
 }
 
 export function ContaReceberFormFields({
@@ -54,7 +115,7 @@ export function ContaReceberFormFields({
   const filteredClientes = useMemo(() => {
     if (!clienteSearch) return clientes;
     const lower = clienteSearch.toLowerCase();
-    return clientes.filter((c: Record<string, any>) =>
+    return clientes.filter((c) =>
       c.razao_social.toLowerCase().includes(lower) ||
       (c.nome_fantasia && c.nome_fantasia.toLowerCase().includes(lower)) ||
       (c.cnpj_cpf && (c.cnpj_cpf as string).includes(clienteSearch))
@@ -89,7 +150,7 @@ export function ContaReceberFormFields({
               <Select onValueChange={onClienteSelect} value={form.watch('cliente_id')}>
                 <SelectTrigger><SelectValue placeholder="Selecione um cliente" /></SelectTrigger>
                 <SelectContent>
-                  {filteredClientes.map((c: Record<string, any>) => (
+                  {filteredClientes.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       <div className="flex items-center gap-2">
                         <span>{c.razao_social}</span>
@@ -124,7 +185,7 @@ export function ContaReceberFormFields({
             <FieldLabel label="Empresa" required tooltip="Empresa que receberá este valor" />
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl><SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger></FormControl>
-              <SelectContent>{empresas.map((e: Record<string, any>) => <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>)}</SelectContent>
+              <SelectContent>{empresas.map((e) => <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>)}</SelectContent>
             </Select><FormMessage />
           </FormItem>
         )} />
@@ -133,7 +194,7 @@ export function ContaReceberFormFields({
             <FieldLabel label="Centro de Custo" tooltip="Classificação para controle de receitas por área" />
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl><SelectTrigger><SelectValue placeholder="Selecione (opcional)" /></SelectTrigger></FormControl>
-              <SelectContent>{centrosCusto.map((cc: Record<string, any>) => <SelectItem key={cc.id} value={cc.id}>{cc.codigo} - {cc.nome}</SelectItem>)}</SelectContent>
+              <SelectContent>{centrosCusto.map((cc) => <SelectItem key={cc.id} value={cc.id}>{cc.codigo} - {cc.nome}</SelectItem>)}</SelectContent>
             </Select><FormMessage />
           </FormItem>
         )} />
@@ -161,7 +222,7 @@ export function ContaReceberFormFields({
           <Select onValueChange={field.onChange} value={field.value}>
             <FormControl><SelectTrigger><SelectValue placeholder="Selecione a categoria" /></SelectTrigger></FormControl>
             <SelectContent>
-              {categorias.map((c: Record<string, any>) => (
+              {categorias.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
               ))}
             </SelectContent>
@@ -177,7 +238,7 @@ export function ContaReceberFormFields({
             <FieldLabel label="Vendedor" tooltip="Vendedor responsável por esta conta" />
             <Select onValueChange={field.onChange} value={field.value || ''}>
               <FormControl><SelectTrigger><SelectValue placeholder="Selecione um vendedor" /></SelectTrigger></FormControl>
-              <SelectContent>{vendedores.map((v: Record<string, any>) => <SelectItem key={v.id} value={v.id}>{v.nome}</SelectItem>)}</SelectContent>
+              <SelectContent>{vendedores.map((v) => <SelectItem key={v.id} value={v.id}>{v.nome}</SelectItem>)}</SelectContent>
             </Select><FormMessage />
           </FormItem>
         )} />
@@ -269,7 +330,7 @@ export function ContaReceberFormFields({
                 <FormField control={form.control} name="numero_parcelas" render={({ field }) => (
                   <Input type="number" min={2} max={120} value={field.value} onChange={e => field.onChange(parseInt(e.target.value) || 2)} placeholder="Nº parcelas" />
                 )} />
-                {valorTotal > 0 && <p className="text-xs text-muted-foreground">{numParcelas}x de <span className="font-semibold text-foreground">R$ {valorParcela.toFixed(2)}</span></p>}
+                {(valorTotal ?? 0) > 0 && <p className="text-xs text-muted-foreground">{numParcelas}x de <span className="font-semibold text-foreground">R$ {valorParcela.toFixed(2)}</span></p>}
               </motion.div>
             )}
           </div>
@@ -282,7 +343,7 @@ export function ContaReceberFormFields({
           <FormItem><FormLabel>Conta Bancária</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl><SelectTrigger><SelectValue placeholder="Selecione (opcional)" /></SelectTrigger></FormControl>
-              <SelectContent>{contasBancarias.map((cb: Record<string, any>) => <SelectItem key={cb.id} value={cb.id}>{cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}</SelectItem>)}</SelectContent>
+              <SelectContent>{contasBancarias.map((cb) => <SelectItem key={cb.id} value={cb.id}>{cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}</SelectItem>)}</SelectContent>
             </Select><FormMessage />
           </FormItem>
         )} />

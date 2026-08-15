@@ -16,7 +16,7 @@ import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitr
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
 import { ReabrirAnomaliasLoteDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliasLoteDialog";
-import { mergeLockedColumns } from "@/components/shared/ColumnVisibilityMenu";
+import { mergeLockedColumns } from "@/components/shared/ColumnVisibilityMenu.utils";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
 import { useSavedFilters } from "@/hooks/useSavedFilters";
 import { useAnomaliasPanelDerivations } from "./useAnomaliasPanelDerivations";

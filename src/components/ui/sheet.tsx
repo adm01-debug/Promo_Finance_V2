@@ -275,5 +275,4 @@ export {
   SheetTrigger,
   SheetSection,
   ResizableSheetContent,
-  useResizableSheet,
 };

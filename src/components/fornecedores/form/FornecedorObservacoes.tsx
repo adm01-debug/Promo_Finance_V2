@@ -1,4 +1,4 @@
-import { UseFormReturn } from 'react-hook-form';
+import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import {
   FormControl,
@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 
 interface FornecedorObservacoesProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FieldValues>;
 }
 
 export function FornecedorObservacoes({ form }: FornecedorObservacoesProps) {

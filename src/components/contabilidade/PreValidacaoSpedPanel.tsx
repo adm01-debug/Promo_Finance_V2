@@ -2,7 +2,7 @@
 import { 
   AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2, 
   Activity, ArrowRightLeft, PieChart, ShieldAlert,
-  Search, ShieldCheck, Target, Layers
+  Search, ShieldCheck, Target, Layers, type LucideIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -20,7 +20,7 @@ interface Props {
 
 const SEV_META: Record<
   SeveridadeAlerta,
-  { icon: any; label: string; tone: string; iconClass: string; bg: string }
+  { icon: LucideIcon; label: string; tone: string; iconClass: string; bg: string }
 > = {
   error: {
     icon: AlertCircle,
@@ -204,7 +204,7 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   );
 }
 
-function ResumoBox({ label, value, highlight, icon: Icon }: { label: string; value: string; highlight?: boolean; icon?: any }) {
+function ResumoBox({ label, value, highlight, icon: Icon }: { label: string; value: string; highlight?: boolean; icon?: LucideIcon }) {
   return (
     <div
       className={cn(

@@ -12,10 +12,24 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+interface WebhookLog {
+  id: string;
+  created_at: string;
+  status?: string | null;
+  processado?: boolean | null;
+  evento?: string | null;
+  event_type?: string | null;
+  erro_mensagem?: string | null;
+  origem?: string | null;
+  provider?: string | null;
+  erro_detalhe?: string | null;
+  payload?: unknown;
+}
+
 export function WebhookConfigPanel() {
   const [webhookUrl] = useState(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-financeiro?id=project_alpha`);
   const [copied, setCopied] = useState(false);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<WebhookLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
 
@@ -43,7 +57,7 @@ export function WebhookConfigPanel() {
     const channel = supabase
       .channel(`webhook-logs-realtime-${Math.random().toString(36).slice(2, 8)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'webhooks_log' }, (payload) => {
-        setLogs(prev => [payload.new, ...prev].slice(0, 10));
+        setLogs(prev => [payload.new as WebhookLog, ...prev].slice(0, 10));
       })
       .subscribe();
 

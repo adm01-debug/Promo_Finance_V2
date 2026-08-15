@@ -47,7 +47,7 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
     },
     refetchInterval: (query) => {
       const data = query.state.data;
-      return Array.isArray(data) && data.some((log: any) => log.status === 'processando') ? 3000 : false;
+      return Array.isArray(data) && data.some((log) => log.status === 'processando') ? 3000 : false;
     }
   });
 
@@ -125,7 +125,7 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
                       mode="range"
                       defaultMonth={dateRange.from}
                       selected={{ from: dateRange.from, to: dateRange.to }}
-                      onSelect={(range: any) => range?.from && range?.to && setDateRange({ from: range.from, to: range.to })}
+                      onSelect={(range) => range?.from && range?.to && setDateRange({ from: range.from, to: range.to })}
                       locale={ptBR as unknown as import('react-day-picker').Locale}
                     />
                   </PopoverContent>

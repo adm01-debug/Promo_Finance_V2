@@ -8,23 +8,23 @@ import {
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 
-interface DuplicateButtonProps {
-  data: any;
-  onDuplicate: (duplicatedData: any) => void;
+interface DuplicateButtonProps<T> {
+  data: T;
+  onDuplicate: (duplicatedData: T) => void;
   label?: string;
   className?: string;
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
 }
 
-export function DuplicateButton({ 
+export function DuplicateButton<T extends object>({ 
   data, 
   onDuplicate, 
   label, 
   className,
   variant = "ghost",
   size = "icon"
-}: DuplicateButtonProps) {
+}: DuplicateButtonProps<T>) {
   
   const handleDuplicate = () => {
     // Deep clone and remove metadata

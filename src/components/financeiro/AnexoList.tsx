@@ -73,17 +73,17 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
       qc.invalidateQueries({ queryKey: ['anexos', entidadeTipo, entidadeId] });
       toast.success('Arquivo anexado com sucesso');
     },
-    onError: (e: any) => {
+    onError: (e) => {
       toast.error('Falha no upload: ' + e.message);
     }
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (anexo: any) => {
+    mutationFn: async (anexo: { id: string; storage_path?: string | null }) => {
       // 1. Remove from Storage
       const { error: storageError } = await supabase.storage
         .from('financeiro')
-        .remove([anexo.storage_path]);
+        .remove([anexo.storage_path ?? '']);
       
       if (storageError) console.error('Error removing from storage:', storageError);
 

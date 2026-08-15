@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { supabaseDyn } from "@/lib/supabase-dynamic";
 import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
 import { AuditDetailDialog } from "./AuditDetailDialog";

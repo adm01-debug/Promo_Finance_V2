@@ -25,7 +25,7 @@ export interface SolicitacaoAprovacao {
   created_at: string;
   nivel_atual: number;
   total_niveis: number;
-  assinaturas: any[];
+  assinaturas: unknown[];
   conta_pagar?: {
     id: string;
     descricao: string;

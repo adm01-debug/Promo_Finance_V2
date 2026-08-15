@@ -19,11 +19,23 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Building2, Receipt, Calendar, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
+interface BIDrillDownItem {
+  id: string;
+  cliente_nome?: string | null;
+  fornecedor_nome?: string | null;
+  descricao?: string | null;
+  data_vencimento?: string | null;
+  data_pagamento?: string | null;
+  created_at?: string | null;
+  status?: string | null;
+  valor?: number | null;
+}
+
 interface BIDrillDownProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  data: any[];
+  data: BIDrillDownItem[];
   type: 'receber' | 'pagar' | 'bancario';
 }
 
@@ -110,6 +122,6 @@ export function BIDrillDown({ isOpen, onClose, title, data, type }: BIDrillDownP
   );
 }
 
-function cn(...inputs: any[]) {
+function cn(...inputs: Array<string | false | null | undefined>) {
   return inputs.filter(Boolean).join(' ');
 }

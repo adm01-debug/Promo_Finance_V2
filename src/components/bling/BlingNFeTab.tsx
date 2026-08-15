@@ -8,9 +8,22 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { FileText, RefreshCw, Loader2, Eye, Download, Send, Warehouse, DollarSign, RotateCcw, XCircle, MoreHorizontal } from 'lucide-react';
 import { useBlingNFe, useBlingNFeMutations } from '@/hooks/useBling';
 import { PaginationControls } from './BlingShared';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+
+interface BlingNFe {
+  id: number;
+  numero?: string;
+  dataEmissao?: string;
+  contato?: { nome?: string };
+  valorNota?: number;
+  situacao?: number;
+  linkDanfe?: string;
+  xml?: string;
+}
 
 export function BlingNFeTab() {
   const [pagina, setPagina] = useState(1);
+  const [confirmCancelar, setConfirmCancelar] = useState<number | null>(null);
   const { data, refetch, isFetching } = useBlingNFe({ pagina });
   const { enviarSefaz, cancelarNFe, lancarEstoqueNFe, lancarContasNFe, estornarEstoqueNFe, estornarContasNFe } = useBlingNFeMutations();
   const notas = data?.data || [];
@@ -47,7 +60,7 @@ export function BlingNFeTab() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {notas.map((n: any) => (
+                  {notas.map((n: BlingNFe) => (
                     <TableRow key={n.id}>
                       <TableCell className="font-mono">{n.numero || '-'}</TableCell>
                       <TableCell>{n.dataEmissao ? new Date(n.dataEmissao).toLocaleDateString('pt-BR') : '-'}</TableCell>
@@ -55,7 +68,7 @@ export function BlingNFeTab() {
                       <TableCell className="text-right font-semibold">R$ {Number(n.valorNota || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
                       <TableCell>
                         <Badge variant={n.situacao === 6 ? 'default' : n.situacao === 7 ? 'destructive' : 'outline'}>
-                          {situacaoNFe[n.situacao] || `#${n.situacao}`}
+                          {situacaoNFe[n.situacao ?? 0] || `#${n.situacao}`}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -93,9 +106,7 @@ export function BlingNFeTab() {
                               <RotateCcw className="h-4 w-4 mr-2" /> Estornar Contas
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive" onClick={() => {
-                              if (confirm('Cancelar esta NF-e?')) cancelarNFe.mutate([String(n.id)]);
-                            }}><XCircle className="h-4 w-4 mr-2" /> Cancelar NF-e</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive" onClick={() => setConfirmCancelar(n.id)}><XCircle className="h-4 w-4 mr-2" /> Cancelar NF-e</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -108,6 +119,17 @@ export function BlingNFeTab() {
           </>
         )}
       </CardContent>
+      <ConfirmDialog
+        open={!!confirmCancelar}
+        onOpenChange={(o) => !o && setConfirmCancelar(null)}
+        title="Cancelar NF-e"
+        description="Cancelar esta NF-e?"
+        confirmText="Cancelar"
+        variant="danger"
+        onConfirm={() => {
+          if (confirmCancelar !== null) cancelarNFe.mutate([String(confirmCancelar)]);
+        }}
+      />
     </Card>
   );
 }

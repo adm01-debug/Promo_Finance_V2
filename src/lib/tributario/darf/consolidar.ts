@@ -9,7 +9,6 @@ import {
 } from './vencimento';
 import type {
   DarfConsolidado,
-  DebitoApurado,
   ParametrosConsolidacao,
   QuotaDarf,
   ResultadoConsolidacao,

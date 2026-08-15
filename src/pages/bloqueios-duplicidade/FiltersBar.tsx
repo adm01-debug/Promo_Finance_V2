@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Building2, Calendar, FileText, RefreshCcw } from "lucide-react";
-import { itemVariants, emptyFilters, type BloqueiosFilters } from "./types";
+import { itemVariants, type BloqueiosFilters } from "./types";
 
 interface FiltersBarProps {
   filters: BloqueiosFilters;
@@ -96,5 +96,3 @@ export function FiltersBar({ filters, setFilters, onReset, onRefetch, empresas }
     </motion.div>
   );
 }
-
-export { emptyFilters };

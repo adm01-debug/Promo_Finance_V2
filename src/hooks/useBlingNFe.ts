@@ -112,14 +112,37 @@ async function callBlingProxy(action: string, params: Record<string, unknown> = 
   return data;
 }
 
-function mapNFeItem(item: any): BlingNFe {
+interface BlingNFeRawItem {
+  id: number;
+  numero?: string | number;
+  serie?: string | number;
+  situacao?: { id?: number } | number;
+  dataEmissao: string;
+  data?: string;
+  valorNota?: number;
+  totalNota?: number;
+  chaveAcesso?: string;
+  contato?: { id: number; nome: string; numeroDocumento?: string };
+  naturezaOperacao?: { descricao?: string } | string;
+  xml?: string;
+  linkDanfe?: string;
+  link_danfe?: string;
+  linkPDF?: string;
+  link_pdf?: string;
+  linkPdf?: string;
+  tipo?: number;
+}
+
+function mapNFeItem(item: BlingNFeRawItem): BlingNFe {
+  const situacaoId = typeof item.situacao === 'object' && item.situacao !== null ? item.situacao.id : undefined;
+  const situacao = situacaoId ?? (typeof item.situacao === 'number' ? item.situacao : 0);
   return {
     id: item.id,
     numero: String(item.numero || '').padStart(9, '0'),
     serie: String(item.serie || '1'),
-    situacao: item.situacao?.id ?? item.situacao ?? 0,
-    situacaoDescricao: SITUACAO_MAP[item.situacao?.id ?? item.situacao] || 'Desconhecida',
-    dataEmissao: item.dataEmissao || item.data,
+    situacao,
+    situacaoDescricao: SITUACAO_MAP[situacao] || 'Desconhecida',
+    dataEmissao: item.dataEmissao || item.data || '',
     valorTotal: item.valorNota ?? item.totalNota ?? 0,
     chaveAcesso: item.chaveAcesso,
     contato: item.contato ? {
@@ -127,7 +150,11 @@ function mapNFeItem(item: any): BlingNFe {
       nome: item.contato.nome,
       cnpj: item.contato.numeroDocumento,
     } : undefined,
-    naturezaOperacao: item.naturezaOperacao?.descricao || item.naturezaOperacao,
+    naturezaOperacao: typeof item.naturezaOperacao === 'object' && item.naturezaOperacao
+      ? item.naturezaOperacao.descricao
+      : typeof item.naturezaOperacao === 'string'
+        ? item.naturezaOperacao
+        : undefined,
     xml: item.xml,
     linkDanfe: item.linkDanfe || item.link_danfe,
     linkPDF: item.linkPDF || item.link_pdf || item.linkPdf,

@@ -20,10 +20,19 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
+interface PreviewExtratoItem {
+  id: string;
+  data: string;
+  descricao: string;
+  valor: number;
+  tipo: string;
+  match?: { entidade_nome?: string | null } | null;
+}
+
 export function RegrasConciliacaoPanel() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [search, setSearch] = useState('');
-  const [previewExtrato, setPreviewExtrato] = useState<any[]>([]);
+  const [previewExtrato, setPreviewExtrato] = useState<PreviewExtratoItem[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const { currentEmpresaId } = useAuth();
   const queryClient = useQueryClient();

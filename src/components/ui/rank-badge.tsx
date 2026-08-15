@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Trophy, Medal, Award, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getRankFromPosition, getRankFromScore } from './rank-badge.utils';
 
 export type RankType = 'gold' | 'silver' | 'bronze' | 'none';
 export type RankSize = 'sm' | 'md' | 'lg';
@@ -119,22 +120,6 @@ export function RankBadge({
   }
 
   return content;
-}
-
-// Utility function to determine rank based on score/percentage
-export function getRankFromScore(score: number, thresholds = { gold: 90, silver: 70, bronze: 50 }): RankType {
-  if (score >= thresholds.gold) return 'gold';
-  if (score >= thresholds.silver) return 'silver';
-  if (score >= thresholds.bronze) return 'bronze';
-  return 'none';
-}
-
-// Utility function to determine rank based on position
-export function getRankFromPosition(position: number): RankType {
-  if (position === 1) return 'gold';
-  if (position === 2) return 'silver';
-  if (position === 3) return 'bronze';
-  return 'none';
 }
 
 // Rank Badge with position number

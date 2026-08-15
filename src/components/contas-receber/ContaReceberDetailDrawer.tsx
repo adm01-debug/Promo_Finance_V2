@@ -326,7 +326,7 @@ export function ContaReceberDetailDrawer({
                             type: string;
                             message: string;
                             timestamp: string;
-                            metadata?: unknown;
+                            metadata?: { transacao_banco?: { descricao?: string; valor?: number } } | null;
                           }>
                         | undefined) ?? [])
                     : []
@@ -343,7 +343,7 @@ export function ContaReceberDetailDrawer({
                 </div>
                 {boletos.length > 0 ? (
                   <div className="space-y-3">
-                    {boletos.map((b: any) => (
+                    {boletos.map((b) => (
                       <Card key={b.id} className="p-4 border-white/5 bg-card/[0.02]">
                         <div className="flex justify-between items-start mb-2">
                           <div>
@@ -374,7 +374,7 @@ export function ContaReceberDetailDrawer({
                             variant="ghost"
                             size="sm"
                             className="h-8 text-xs gap-1.5"
-                            onClick={() => window.open(b.link_pdf || '#', '_blank')}
+                            onClick={() => window.open(b.url_pdf || '#', '_blank')}
                           >
                             <FileText className="h-3.5 w-3.5" /> PDF
                           </Button>

@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { formatCurrencyCompact, formatDateShort } from '@/lib/formatters';
 import { addDays, format, startOfDay } from 'date-fns';
+import type { ContasPagarPainelRow, ContasReceberPainelRow } from '@/hooks/financial/views.types';
 
 interface ProjectedCashFlowChartProps {
-  pagar: any[];
-  receber: any[];
+  pagar: ContasPagarPainelRow[];
+  receber: ContasReceberPainelRow[];
   saldoAtual: number;
 }
 
@@ -23,11 +24,11 @@ export function ProjectedCashFlowChart({ pagar, receber, saldoAtual }: Projected
       const dateStr = format(date, 'yyyy-MM-dd');
       
       const dayPagar = pagar
-        .filter(p => p.data_vencimento === dateStr && ['pendente', 'vencido'].includes(p.status))
+        .filter(p => p.data_vencimento === dateStr && ['pendente', 'vencido'].includes(p.status ?? ''))
         .reduce((sum, p) => sum + (p.valor || 0), 0);
       
       const dayReceber = receber
-        .filter(r => r.data_vencimento === dateStr && ['pendente', 'vencido'].includes(r.status))
+        .filter(r => r.data_vencimento === dateStr && ['pendente', 'vencido'].includes(r.status ?? ''))
         .reduce((sum, r) => sum + (r.valor || 0), 0);
       
       cumulativeSaldo += (dayReceber - dayPagar);

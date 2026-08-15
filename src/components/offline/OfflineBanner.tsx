@@ -6,7 +6,7 @@ import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { sounds } from '@/lib/sound-feedback';
-import { triggerHaptic } from '@/components/ui/micro-interactions';
+import { triggerHaptic } from '@/components/ui/micro-interactions.helpers';
 
 interface OfflineBannerProps {
   className?: string;

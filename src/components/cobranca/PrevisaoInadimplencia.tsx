@@ -40,6 +40,14 @@ interface HistoricoContaData {
   status: string;
 }
 
+interface ClienteMapCliente {
+  score: number | null;
+  limite_credito: number | null;
+  ramo_atividade: string | null;
+  razao_social: string | null;
+  nome_fantasia: string | null;
+}
+
 function calcularProbabilidadeAtraso(cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]): number {
   let score = 0;
   const scoreCliente = cliente.score || 100;
@@ -148,16 +156,22 @@ function useAnaliseInadimplencia() {
         };
       }
 
-      const clientesMap = new Map<string, any>();
+      const clientesMap = new Map<string, {
+        cliente: ClienteMapCliente;
+        contas: ContaData[];
+      }>();
       contasPendentes.forEach(conta => {
         const clienteId = conta.cliente_id || conta.cliente_nome;
         if (!clientesMap.has(clienteId)) {
           clientesMap.set(clienteId, {
-            cliente: conta.clientes || { razao_social: conta.cliente_nome },
+            cliente: conta.clientes || { score: null, limite_credito: null, ramo_atividade: null, razao_social: conta.cliente_nome, nome_fantasia: null },
             contas: [],
           });
         }
-        clientesMap.get(clienteId).contas.push(conta);
+        const entry = clientesMap.get(clienteId);
+        if (entry) {
+          entry.contas.push(conta);
+        }
       });
 
       const clientesAnalise: ClienteRisco[] = [];

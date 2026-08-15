@@ -29,7 +29,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useCustomFieldDefinitions, useSaveCustomFieldDefinition, useDeleteCustomFieldDefinition, type EntityType, type FieldType } from '@/hooks/useCustomFields';
+import { useCustomFieldDefinitions, useSaveCustomFieldDefinition, useDeleteCustomFieldDefinition, type CustomFieldDefinition, type EntityType, type FieldType } from '@/hooks/useCustomFields';
 import { useAuth } from '@/hooks/useAuth';
 
 const ENTITY_TYPES: { value: EntityType; label: string }[] = [
@@ -97,7 +97,7 @@ export default function CustomFieldsAdmin() {
     });
   };
 
-  const handleEdit = (def: any) => {
+  const handleEdit = (def: CustomFieldDefinition) => {
     setEditingId(def.id);
     setFormData({
       entity_type: def.entity_type,

@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { format } from 'date-fns';
 import { CalendarIcon, Loader2, Repeat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,52 +28,17 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { usePagamentosRecorrentes, FrequenciaPagamento } from '@/hooks/usePagamentosRecorrentes';
+import { usePagamentosRecorrentes } from '@/hooks/usePagamentosRecorrentes';
+import { formSchema, frequenciaOptions, tipoCobrancaOptions, type FormValues, type TipoCobranca } from './pagamento-recorrente-model';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useAllCentrosCusto } from '@/hooks/useCentrosCusto';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 
-const formSchema = z.object({
-  descricao: z.string().min(3, 'Descrição deve ter pelo menos 3 caracteres'),
-  fornecedor_nome: z.string().min(2, 'Fornecedor é obrigatório'),
-  valor: z.number().min(0.01, 'Valor deve ser maior que zero'),
-  dia_vencimento: z.number().min(1).max(31, 'Dia deve estar entre 1 e 31'),
-  frequencia: z.enum(['semanal', 'quinzenal', 'mensal', 'bimestral', 'trimestral', 'semestral', 'anual']),
-  data_inicio: z.date(),
-  data_fim: z.date().optional().nullable(),
-  empresa_id: z.string().uuid('Selecione uma empresa'),
-  centro_custo_id: z.string().optional().nullable(),
-  tipo_cobranca: z.string().default('transferencia'),
-  observacoes: z.string().optional().nullable(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 interface PagamentoRecorrenteFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
-
-const frequenciaOptions: { value: FrequenciaPagamento; label: string }[] = [
-  { value: 'semanal', label: 'Semanal' },
-  { value: 'quinzenal', label: 'Quinzenal' },
-  { value: 'mensal', label: 'Mensal' },
-  { value: 'bimestral', label: 'Bimestral' },
-  { value: 'trimestral', label: 'Trimestral' },
-  { value: 'semestral', label: 'Semestral' },
-  { value: 'anual', label: 'Anual' },
-];
-
-type TipoCobranca = 'boleto' | 'pix' | 'transferencia' | 'cartao' | 'dinheiro';
-
-const tipoCobrancaOptions: { value: TipoCobranca; label: string }[] = [
-  { value: 'boleto', label: 'Boleto' },
-  { value: 'pix', label: 'PIX' },
-  { value: 'transferencia', label: 'Transferência' },
-  { value: 'cartao', label: 'Cartão' },
-  { value: 'dinheiro', label: 'Dinheiro' },
-];
 
 export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorrenteFormProps) {
   const { createPagamentoRecorrente, isCreating } = usePagamentosRecorrentes();
@@ -121,7 +85,6 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
       },
     });
   };
-
 
   return (
     <Form {...form}>

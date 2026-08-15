@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -7,7 +8,7 @@ export interface FilterPreset {
   id: string;
   name: string;
   entity_type: string;
-  filters: any;
+  filters: unknown;
   empresa_id?: string;
   is_default: boolean;
   created_at: string;
@@ -47,7 +48,7 @@ export function useFilterPresets(entityType: string, empresaId?: string) {
       isDefault,
     }: {
       name: string;
-      filters: any;
+      filters: unknown;
       isDefault?: boolean;
     }) => {
       if (!user) throw new Error('User not authenticated');
@@ -59,7 +60,7 @@ export function useFilterPresets(entityType: string, empresaId?: string) {
             user_id: user.id,
             entity_type: entityType,
             name,
-            filters,
+            filters: filters as Json,
             // TODO(2026-08-14): empresa_id removido — coluna não existe em user_filter_presets (types.ts)
             is_default: !!isDefault,
           },

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao } from '@/lib/ofx-parser';
+import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao, TransacaoOFX } from '@/lib/ofx-parser';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
@@ -22,8 +22,10 @@ interface BaixaAutomaticaDialogProps {
 
 type Step = 'upload' | 'processing' | 'preview' | 'success' | 'error';
 
+type TransacaoBancaria = TransacaoOFX & { conta_bancaria_id?: string };
+
 interface MatchResult {
-  transacao: any;
+  transacao: TransacaoBancaria;
   contaId: string;
   cliente: string;
   vencimento: string;
@@ -37,7 +39,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
   const [progress, setProgress] = useState(0);
   const [resultado, setResultado] = useState<ResultadoImportacao | null>(null);
   const [matches, setMatches] = useState<MatchResult[]>([]);
-  const [unmatched, setUnmatched] = useState<any[]>([]);
+  const [unmatched, setUnmatched] = useState<TransacaoBancaria[]>([]);
   const [processing, setProcessing] = useState(false);
   const [summary, setSuccessSummary] = useState({ processados: 0, valor: 0 });
   
@@ -68,7 +70,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
     if (!contas) return { matched: [], unmatched: [] };
 
     const matched: MatchResult[] = [];
-    const notMatched: any[] = [];
+    const notMatched: TransacaoBancaria[] = [];
     
     for (const t of extrato.transacoes) {
       if (t.tipo !== 'credito') continue;
@@ -117,8 +119,8 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
         setResultado(result);
         setStep('error');
       }
-    } catch (error: any) {
-      setResultado({ sucesso: false, erro: error.message, avisos: [] });
+    } catch (error: unknown) {
+      setResultado({ sucesso: false, erro: error instanceof Error ? error.message : String(error), avisos: [] });
       setStep('error');
     }
   };
@@ -195,8 +197,8 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
       setSuccessSummary({ processados: successCount, valor: totalValue });
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       setStep('success');
-    } catch (err: any) {
-      toast.error('Erro ao processar baixa: ' + err.message);
+    } catch (err: unknown) {
+      toast.error('Erro ao processar baixa: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setProcessing(false);
     }

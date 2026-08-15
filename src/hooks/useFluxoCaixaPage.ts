@@ -10,7 +10,7 @@ import {
   useFluxoCaixaProjetado, 
   calcularProjecoesReais 
 } from '@/hooks/useFluxoCaixa';
-import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
+import { useQuickDateFilter } from '@/components/ui/quick-date-filters.hooks';
 
 const periodoDias: Record<string, number> = {
   '7d': 7,

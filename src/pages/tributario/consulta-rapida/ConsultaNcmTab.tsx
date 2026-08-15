@@ -12,7 +12,8 @@ import {
 import { useConsultaNCM } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
 import { OfflineBadge } from './OfflineBadge';
-import { ResultBlock, UFS, pct } from './shared';
+import { ResultBlock, UFS } from './shared';
+import { pct } from './format';
 
 /**
  * Consulta por NCM. Com código preenchido devolve o detalhe (IPI, CEST,

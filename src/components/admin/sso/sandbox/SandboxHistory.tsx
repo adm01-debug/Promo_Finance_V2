@@ -15,6 +15,7 @@ import { OUTCOME_META, type SandboxOutcome } from './outcome';
 import { SandboxRunDetailSheet } from './SandboxRunDetailSheet';
 import { SandboxCompareDialog } from './SandboxCompareDialog';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Props {
   onReplay: (run: SandboxRun) => void;
@@ -36,6 +37,7 @@ export function SandboxHistory({ onReplay }: Props) {
   const [selected, setSelected] = useState<string[]>([]);
   const [detailRun, setDetailRun] = useState<SandboxRun | null>(null);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const { data: runs = [], isLoading } = useSSOSandboxRuns({
     providerId: providerId || undefined,
@@ -65,7 +67,6 @@ export function SandboxHistory({ onReplay }: Props) {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Excluir esta simulação do histórico?')) return;
     try {
       await deleteMut.mutateAsync(id);
       setSelected(prev => prev.filter(x => x !== id));
@@ -185,7 +186,7 @@ export function SandboxHistory({ onReplay }: Props) {
                         <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleReplay(run)} title="Reproduzir">
                           <Repeat className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handleDelete(run.id)} title="Excluir">
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => setDeleteTargetId(run.id)} title="Excluir">
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
@@ -207,6 +208,21 @@ export function SandboxHistory({ onReplay }: Props) {
         runs={selectedRuns}
         open={compareOpen}
         onOpenChange={setCompareOpen}
+      />
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        onOpenChange={(o) => !o && setDeleteTargetId(null)}
+        title="Excluir simulação"
+        description="Excluir esta simulação do histórico?"
+        confirmText="Excluir"
+        variant="danger"
+        onConfirm={() => {
+          if (deleteTargetId) {
+            const id = deleteTargetId;
+            setDeleteTargetId(null);
+            void handleDelete(id);
+          }
+        }}
       />
     </div>
   );

@@ -32,8 +32,8 @@ export function FluxoInterEmpresas() {
   const analise = useMemo(() => {
     // Saldo por empresa
     const saldoEmpresa = empresas.map(emp => {
-      const contasEmp = contas.filter((c: any) => c.empresa_id === emp.id);
-      const saldo = contasEmp.reduce((s: number, c: any) => s + (c.saldo_atual || 0), 0);
+      const contasEmp = contas.filter((c) => c.empresa_id === emp.id);
+      const saldo = contasEmp.reduce((s: number, c) => s + (c.saldo_atual || 0), 0);
       return {
         id: emp.id,
         nome: emp.nome_fantasia || emp.razao_social,
@@ -154,7 +154,7 @@ export function FluxoInterEmpresas() {
             </div>
           ) : (
             <div className="space-y-2">
-              {transferencias.slice(0, 10).map((t: any) => {
+              {transferencias.slice(0, 10).map((t) => {
                 const origem = empresas.find(e => e.id === t.empresa_id);
                 return (
                   <div key={t.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/50">

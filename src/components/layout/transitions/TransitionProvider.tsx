@@ -1,13 +1,6 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import type { TransitionConfig } from './types';
-
-interface TransitionContextValue {
-  defaults: TransitionConfig;
-}
-
-const TransitionContext = createContext<TransitionContextValue>({
-  defaults: { effect: 'blur-rise', duration: 350 },
-});
+import { TransitionContext, type TransitionContextValue } from './TransitionContext';
 
 export interface TransitionProviderProps {
   children: ReactNode;
@@ -20,8 +13,4 @@ export function TransitionProvider({ children, defaults }: TransitionProviderPro
     [defaults],
   );
   return <TransitionContext.Provider value={value}>{children}</TransitionContext.Provider>;
-}
-
-export function useTransitionDefaults(): TransitionConfig {
-  return useContext(TransitionContext).defaults;
 }

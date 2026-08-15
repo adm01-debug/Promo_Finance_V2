@@ -7,7 +7,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEmpresaScope } from '@/contexts/EmpresaScopeContext';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import { toast } from 'sonner';
 import { paraSnapshot, type PontoHistorico } from '@/lib/tributario/obrigacoes';
 

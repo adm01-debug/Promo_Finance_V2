@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { 
   CheckCircle2, AlertTriangle, RefreshCw, Plug, Search,
   Filter, Activity, Zap, ShieldCheck, ExternalLink,
-  History, ShieldAlert, Cpu
+  History, ShieldAlert, Cpu, type LucideIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,7 +33,7 @@ const statusBadge = (s: StatusConsistencia) => {
   }
 };
 
-function StatCard({ label, value, description, tone = 'default', icon: Icon, trend }: { label: string; value: number | string; description: string; tone?: 'default' | 'success' | 'destructive' | 'warning'; icon?: any; trend?: string }) {
+function StatCard({ label, value, description, tone = 'default', icon: Icon, trend }: { label: string; value: number | string; description: string; tone?: 'default' | 'success' | 'destructive' | 'warning'; icon?: LucideIcon; trend?: string }) {
   const toneClass = 
     tone === 'success' ? 'text-success bg-success/5 border-success/20 shadow-lg shadow-success/10' :
     tone === 'destructive' ? 'text-destructive bg-destructive/5 border-destructive/20 shadow-lg shadow-destructive/10' :

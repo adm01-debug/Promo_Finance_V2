@@ -17,6 +17,43 @@ import {
 } from '@/hooks/useBling';
 import { PaginationControls, LoadingSkeleton } from './BlingShared';
 
+interface BlingContaFinanceira {
+  id: string;
+  situacao: number;
+  vencimento?: string;
+  contato?: { nome?: string } | null;
+  historico?: string;
+  numeroDocumento?: string;
+  valor?: number;
+}
+
+interface BlingFormaPagamento {
+  id: string;
+  descricao?: string;
+  tipoPagamento?: string;
+  situacao?: string | number;
+}
+
+interface BlingPortador {
+  id: string;
+  descricao?: string;
+  tipo?: string;
+}
+
+interface BlingCategoriaFinanceira {
+  id: string;
+  descricao?: string;
+  tipo?: number;
+}
+
+interface BlingBordero {
+  id: string;
+  data?: string;
+  portador?: { descricao?: string } | null;
+  valorTotal?: number;
+  situacao?: string;
+}
+
 export function BlingFinanceiroPanel() {
   const [tipo, setTipo] = useState<'receber' | 'pagar'>('receber');
   const [subTab, setSubTab] = useState<'contas' | 'formas' | 'portadores' | 'categorias' | 'borderos'>('contas');
@@ -94,7 +131,7 @@ export function BlingFinanceiroPanel() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {contas.map((c: any) => {
+                      {contas.map((c: BlingContaFinanceira) => {
                         const sitLabel = c.situacao === 1 ? 'Em aberto' : c.situacao === 2 ? (tipo === 'receber' ? 'Recebido' : 'Pago') : c.situacao === 3 ? 'Parcial' : c.situacao === 4 ? 'Vencido' : c.situacao === 5 ? 'Cancelado' : c.situacao === 6 ? 'Inadimplente' : `#${c.situacao}`;
                         const sitVariant: 'outline' | 'default' | 'destructive' | 'secondary' = c.situacao === 1 ? 'outline' : c.situacao === 2 ? 'default' : c.situacao === 4 || c.situacao === 6 ? 'destructive' : 'secondary';
                         return (
@@ -150,7 +187,7 @@ export function BlingFinanceiroPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Descrição</TableHead><TableHead>Tipo</TableHead><TableHead>Situação</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {formas.map((f: any) => (
+                    {formas.map((f: BlingFormaPagamento) => (
                       <TableRow key={f.id}>
                         <TableCell className="font-mono text-xs">{f.id}</TableCell>
                         <TableCell className="font-medium">{f.descricao}</TableCell>
@@ -177,7 +214,7 @@ export function BlingFinanceiroPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Descrição</TableHead><TableHead>Tipo</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {portadores.map((p: any) => (
+                    {portadores.map((p: BlingPortador) => (
                       <TableRow key={p.id}>
                         <TableCell className="font-mono text-xs">{p.id}</TableCell>
                         <TableCell className="font-medium">{p.descricao}</TableCell>
@@ -203,7 +240,7 @@ export function BlingFinanceiroPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Descrição</TableHead><TableHead>Tipo</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {categorias.map((c: any) => (
+                    {categorias.map((c: BlingCategoriaFinanceira) => (
                       <TableRow key={c.id}>
                         <TableCell className="font-mono text-xs">{c.id}</TableCell>
                         <TableCell className="font-medium">{c.descricao}</TableCell>
@@ -229,7 +266,7 @@ export function BlingFinanceiroPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Data</TableHead><TableHead>Portador</TableHead><TableHead className="text-right">Valor Total</TableHead><TableHead>Situação</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {borderos.map((b: any) => (
+                    {borderos.map((b: BlingBordero) => (
                       <TableRow key={b.id}>
                         <TableCell className="font-mono text-xs">{b.id}</TableCell>
                         <TableCell>{b.data ? new Date(b.data).toLocaleDateString('pt-BR') : '-'}</TableCell>

@@ -13,7 +13,7 @@ interface HistoricoCobranca {
   tipo_evento: string;
   descricao: string;
   created_at: string;
-  metadados: any;
+  metadados: Record<string, unknown> | null;
 }
 
 interface BoletoHistoricoProps {
@@ -31,7 +31,7 @@ export function BoletoHistorico({ boletoId }: BoletoHistoricoProps) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as HistoricoCobranca[];
+      return data as unknown as HistoricoCobranca[];
     },
     enabled: !!boletoId,
   });

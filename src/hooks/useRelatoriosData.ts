@@ -1,6 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
 
 export interface ComparativoPeriodo {
@@ -157,7 +158,8 @@ export function useDespesasPorCategoria(empresaId?: string) {
 
       // Aggregate by category
       const categorias: Record<string, number> = {};
-      (data || []).forEach((c: any) => {
+      type LinhaContaPagar = { centros_custo?: { nome?: string | null } | null; valor_pago?: number | null };
+      ((data || []) as LinhaContaPagar[]).forEach((c) => {
         const centroCusto = c.centros_custo;
         const nome = centroCusto?.nome || 'Outros';
         categorias[nome] = (categorias[nome] || 0) + (c.valor_pago || 0);
@@ -322,7 +324,7 @@ export interface ResumoSemanal {
   semana_inicio: string;
   semana_fim: string;
   resumo_md: string;
-  kpis: any;
+  kpis: Json | null;
   enviado_em: string | null;
   created_at: string;
 }

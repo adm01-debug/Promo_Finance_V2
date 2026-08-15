@@ -18,7 +18,7 @@ import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/
 import { useAuth } from '@/hooks/useAuth';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
 import { useBulkActions } from '@/hooks/useBulkActions';
-import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
+import { useQuickDateFilter } from '@/components/ui/quick-date-filters.hooks';
 import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';

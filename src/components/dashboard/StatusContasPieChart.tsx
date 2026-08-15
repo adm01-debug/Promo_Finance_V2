@@ -14,7 +14,13 @@ interface StatusContasPieChartProps {
   statusContasPagar: StatusData[];
 }
 
-function CustomTooltip({ active, payload }: any) {
+interface StatusTooltipEntry {
+  name: string;
+  value: number;
+  payload: { total: number; fill: string };
+}
+
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: StatusTooltipEntry[] }) {
   if (!active || !payload?.[0]) return null;
   const data = payload[0];
   const total = data.payload?.total || 0;
@@ -37,7 +43,7 @@ function CustomTooltip({ active, payload }: any) {
   );
 }
 
-function CenterLabel({ viewBox, total }: any) {
+function CenterLabel({ viewBox, total }: { viewBox?: { cx: number; cy: number }; total: number }) {
   if (!viewBox) return null;
   const { cx, cy } = viewBox;
   return (

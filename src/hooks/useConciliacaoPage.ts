@@ -301,12 +301,12 @@ export function useConciliacaoPage() {
                 classificacao: valorDiff > 0 ? 'Juros' : 'Desconto',
                 regra: `Aceite automático dentro da tolerância de R$ ${config.tolerancia_centavos}`,
               });
-            } catch (err: any) {
+            } catch (err: unknown) {
               console.error('Erro na conciliação automática:', err);
 
               // Alertar falha de conciliação automática
               toast.error(`Falha na Conciliação Automática`, {
-                description: `A transação "${transacao.descricao}" não pôde ser conciliada automaticamente. Erro: ${err.message || 'Erro no servidor'}`,
+                description: `A transação "${transacao.descricao}" não pôde ser conciliada automaticamente. Erro: ${(err instanceof Error ? err.message : '') || 'Erro no servidor'}`,
                 action: {
                   label: 'Resolver Manualmente',
                   onClick: () => handleConciliarManual(transacao.id),
@@ -330,9 +330,9 @@ export function useConciliacaoPage() {
                       lancamento_id: melhorMatch.lancamentoId,
                       lancamento_tipo: melhorMatch.lancamentoTipo,
                     },
-                    error: String(err?.message ?? err),
+                    error: String(err instanceof Error ? err.message : err),
                   },
-                  error_message: `Falha na conciliação automática: ${err.message}`,
+                  error_message: `Falha na conciliação automática: ${err instanceof Error ? err.message : String(err)}`,
                 });
               }
             }

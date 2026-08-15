@@ -1,4 +1,4 @@
-import { UseFormReturn } from 'react-hook-form';
+import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { User, Building2, Mail, Phone, MapPin, FileText, CreditCard } from 'lucide-react';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { maskCnpjCpf, maskPhone } from '@/lib/masks';
 
 interface Props {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FieldValues>;
 }
 
 export function ClienteFormFields({ form }: Props) {

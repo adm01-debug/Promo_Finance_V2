@@ -67,7 +67,7 @@ interface WizardNavigationProps {
 // Context
 const WizardContext = createContext<WizardContextValue | null>(null);
 
-export function useWizard() {
+function useWizard() {
   const context = useContext(WizardContext);
   if (!context) {
     throw new Error('useWizard must be used within Wizard');
@@ -117,7 +117,7 @@ export function Wizard({
     }
   }, [steps.length, canNavigateTo, onStepChange, data]);
 
-  const validateCurrentStep = async (): Promise<boolean> => {
+  const validateCurrentStep = useCallback(async (): Promise<boolean> => {
     const step = steps[currentStep];
     if (!step.validate) return true;
 
@@ -130,7 +130,7 @@ export function Wizard({
     } finally {
       setIsValidating(false);
     }
-  };
+  }, [steps, currentStep]);
 
   const nextStep = useCallback(async () => {
     const isValid = await validateCurrentStep();
@@ -145,7 +145,7 @@ export function Wizard({
       setCurrentStep(prev => prev + 1);
       onStepChange?.(currentStep + 1, data);
     }
-  }, [currentStep, isLastStep, allowSkip, onComplete, onStepChange, data]);
+  }, [currentStep, isLastStep, allowSkip, onComplete, onStepChange, data, validateCurrentStep]);
 
   const prevStep = useCallback(() => {
     if (!isFirstStep) {

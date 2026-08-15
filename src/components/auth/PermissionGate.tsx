@@ -65,17 +65,3 @@ export function PermissionGate({
 
   return null;
 }
-
-// HOC version for wrapping components
-export function withPermission<P extends object>(
-  WrappedComponent: React.ComponentType<P>,
-  permission: string
-) {
-  return function PermissionWrapper(props: P) {
-    return (
-      <PermissionGate permission={permission} showFallback>
-        <WrappedComponent {...props} />
-      </PermissionGate>
-    );
-  };
-}

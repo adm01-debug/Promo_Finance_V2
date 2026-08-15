@@ -8,6 +8,22 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+interface WebhookLogRow {
+  id: string;
+  created_at: string;
+  event_type?: string | null;
+  processado?: boolean;
+  erro_mensagem?: string | null;
+  asaas_payment_id?: string | null;
+  provider?: string | null;
+  erro_detalhe?: string | null;
+  payload?: unknown;
+  correlation_id?: string | null;
+  asaas_event_id?: string | null;
+  duration_ms?: number | null;
+  ip_origem?: string | null;
+}
+
 export function WebhooksLogPanel() {
   const { data: webhooks, isLoading } = useWebhooksLog();
   const { data: recentes } = useWebhooksRecentes();
@@ -65,7 +81,7 @@ export function WebhooksLogPanel() {
   );
 }
 
-function WebhookRow({ wh }: { wh: any }) {
+function WebhookRow({ wh }: { wh: WebhookLogRow }) {
   const [expanded, setExpanded] = useState(false);
 
   return (

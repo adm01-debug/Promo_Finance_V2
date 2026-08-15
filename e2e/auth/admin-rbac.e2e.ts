@@ -122,7 +122,7 @@ test.describe('Login › validação do formulário', () => {
 test.describe('Login/Logout › fluxo real com admin', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test.beforeEach(({}, testInfo) => {
+  test.beforeEach((_fixtures, testInfo) => {
     if (!process.env.E2E_USER_EMAIL || !process.env.E2E_USER_PASSWORD) {
       testInfo.skip(true, 'E2E_USER_EMAIL/PASSWORD não definidos');
     }
@@ -159,7 +159,7 @@ test.describe('Login/Logout › fluxo real com admin', () => {
 test.describe('RBAC › usuário autenticado sem perfil admin', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test.beforeEach(({}, testInfo) => {
+  test.beforeEach((_fixtures, testInfo) => {
     if (!process.env.E2E_NONADMIN_EMAIL || !process.env.E2E_NONADMIN_PASSWORD) {
       testInfo.skip(true, 'E2E_NONADMIN_EMAIL/PASSWORD não definidos');
     }

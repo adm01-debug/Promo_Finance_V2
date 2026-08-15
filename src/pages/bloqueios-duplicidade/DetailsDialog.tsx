@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertTriangle, Copy, Lock, RefreshCcw, ShieldAlert, Zap } from "lucide-react";
 import { toast } from "sonner";
+import type { BloqueioRow } from "./types";
 
 interface DetailsDialogProps {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  selectedBlock: any;
+  selectedBlock: BloqueioRow | null;
 }
 
 export function DetailsDialog({ open, onOpenChange, selectedBlock }: DetailsDialogProps) {

@@ -5,9 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TabsContent } from '@/components/ui/tabs';
 import { formatCurrency } from '@/lib/formatters';
 import { STATUS_LABEL } from './constants';
+import type { Database } from '@/integrations/supabase/types';
 
 interface HistoricoTabProps {
-  oportunidadesSalvas: any[];
+  oportunidadesSalvas: Database['public']['Tables']['oportunidades_elisao']['Row'][];
   atualizarStatus: { mutate: (args: { id: string; status: string }) => void };
 }
 
@@ -21,7 +22,7 @@ export function HistoricoTab({ oportunidadesSalvas, atualizarStatus }: Historico
           </AlertDescription>
         </Alert>
       ) : (
-        oportunidadesSalvas.map((o: any) => (
+        oportunidadesSalvas.map((o) => (
           <Card key={o.id}>
             <CardHeader>
               <div className="flex items-start justify-between">

@@ -25,14 +25,14 @@ export function TesourariaCentralizada() {
   const isLoading = le || lc;
 
   const contasFiltradas = useMemo(() => {
-    let lista = contas.map((c: any) => {
+    let lista = contas.map((c) => {
       const emp = empresas.find(e => e.id === c.empresa_id);
       const pagarPendente = pagar
-        .filter((p: any) => p.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(p.status))
-        .reduce((s: number, p: any) => s + (p.valor || 0), 0);
+        .filter((p) => p.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(p.status))
+        .reduce((s: number, p) => s + (p.valor || 0), 0);
       const receberPendente = receber
-        .filter((r: any) => r.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(r.status))
-        .reduce((s: number, r: any) => s + (r.valor || 0), 0);
+        .filter((r) => r.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(r.status))
+        .reduce((s: number, r) => s + (r.valor || 0), 0);
 
       return {
         ...c,

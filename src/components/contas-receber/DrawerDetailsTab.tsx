@@ -9,12 +9,13 @@ import { formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { ContaReceberWithRelations } from './ContasReceberTableRow';
+import type { Tables } from '@/integrations/supabase/types';
 
 interface Props {
   conta: ContaReceberWithRelations;
   overdueDays: number;
-  boletos: any[];
-  acordos: any[];
+  boletos: Tables<'boletos'>[];
+  acordos: Tables<'acordos_parcelamento'>[];
 }
 
 export function DrawerDetailsTab({ conta, overdueDays }: Props) {

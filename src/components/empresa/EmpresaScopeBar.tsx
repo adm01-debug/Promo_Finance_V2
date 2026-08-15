@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { useEmpresaScope } from '@/contexts/EmpresaScopeContext';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import { EmpresaBadge } from '@/components/empresa/EmpresaBadge';
 
 export function EmpresaScopeBar() {

@@ -10,11 +10,11 @@ import { formatCurrency } from '@/lib/formatters';
 
 const STORAGE_KEY = 'pf:current-bank-account-id';
 
-export function getCurrentBankAccountId(): string | null {
+function getCurrentBankAccountId(): string | null {
   return localStorage.getItem(STORAGE_KEY);
 }
 
-export function setCurrentBankAccountId(id: string | null) {
+function setCurrentBankAccountId(id: string | null) {
   if (id) {
     localStorage.setItem(STORAGE_KEY, id);
   } else {

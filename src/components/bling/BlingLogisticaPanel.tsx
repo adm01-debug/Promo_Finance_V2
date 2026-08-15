@@ -10,6 +10,40 @@ import { Truck, Package, MapPin, Box, Search, Loader2, Printer, MoreHorizontal }
 import { useBlingLogisticas, useBlingRemessas, useBlingObjetos, useBlingLogisticaMutations, useBlingServicosLogistica } from '@/hooks/useBling';
 import { LoadingSkeleton } from './BlingShared';
 
+interface BlingLogistica {
+  id: string;
+  descricao?: string | null;
+  nome?: string | null;
+  situacao?: string;
+  servicos?: unknown[];
+}
+
+interface BlingServicoLogistica {
+  id: string;
+  nome?: string | null;
+  descricao?: string | null;
+  transportadora?: string | null;
+  logistica?: { descricao?: string } | null;
+  tipo?: string | null;
+}
+
+interface BlingRemessa {
+  id: string;
+  dataCriacao?: string;
+  logistica?: { descricao?: string } | null;
+  situacao?: string;
+  codigoRastreamento?: string | null;
+}
+
+interface BlingObjeto {
+  id?: string;
+  codigo?: string | null;
+  remessa?: { id?: string } | null;
+  situacao?: string | null;
+  status?: string | null;
+  ultimaAtualizacao?: string;
+}
+
 export function BlingLogisticaPanel() {
   const [subTab, setSubTab] = useState<'integracoes' | 'remessas' | 'objetos' | 'servicos'>('integracoes');
   const { data: logisticasData, refetch: refetchLogisticas, isFetching: fetchingLogisticas } = useBlingLogisticas();
@@ -55,7 +89,7 @@ export function BlingLogisticaPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Transportadora</TableHead><TableHead>Situação</TableHead><TableHead>Serviços</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {logisticas.map((l: any) => (
+                    {logisticas.map((l: BlingLogistica) => (
                       <TableRow key={l.id}>
                         <TableCell className="font-mono text-xs">{l.id}</TableCell>
                         <TableCell className="font-medium">{l.descricao || l.nome || '-'}</TableCell>
@@ -82,7 +116,7 @@ export function BlingLogisticaPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nome</TableHead><TableHead>Transportadora</TableHead><TableHead>Tipo</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {servicos.map((s: any) => (
+                    {servicos.map((s: BlingServicoLogistica) => (
                       <TableRow key={s.id}>
                         <TableCell className="font-mono text-xs">{s.id}</TableCell>
                         <TableCell className="font-medium">{s.nome || s.descricao || '-'}</TableCell>
@@ -112,7 +146,7 @@ export function BlingLogisticaPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Data</TableHead><TableHead>Transportadora</TableHead><TableHead>Status</TableHead><TableHead>Rastreio</TableHead><TableHead className="w-10">Ações</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {remessas.map((r: any) => (
+                    {remessas.map((r: BlingRemessa) => (
                       <TableRow key={r.id}>
                         <TableCell className="font-mono text-xs">{r.id}</TableCell>
                         <TableCell>{r.dataCriacao ? new Date(r.dataCriacao).toLocaleDateString('pt-BR') : '-'}</TableCell>
@@ -159,7 +193,7 @@ export function BlingLogisticaPanel() {
                 <Table>
                   <TableHeader><TableRow><TableHead>Código</TableHead><TableHead>Remessa</TableHead><TableHead>Status</TableHead><TableHead>Última Atualização</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {objetos.map((o: any) => (
+                    {objetos.map((o: BlingObjeto) => (
                       <TableRow key={o.id || o.codigo}>
                         <TableCell className="font-mono">{o.codigo || o.id}</TableCell>
                         <TableCell>{o.remessa?.id || '-'}</TableCell>

@@ -5,8 +5,9 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { formatCurrency } from "@/lib/formatters";
+import type { BloqueioRow } from "./types";
 
-export function exportCSV(bloqueios: any[] | undefined) {
+export function exportCSV(bloqueios: BloqueioRow[] | undefined) {
   if (!bloqueios || bloqueios.length === 0) return;
   const headers = ["Data", "Usuário", "Tabela", "Motivo", "Valor Bloqueado", "Documento", "Tipo Match", "Campos Conflitantes"];
   const rows = bloqueios.map((b) => [
@@ -25,7 +26,7 @@ export function exportCSV(bloqueios: any[] | undefined) {
   toast.success("Relatório de auditoria exportado com sucesso!");
 }
 
-export function exportPDF(bloqueios: any[] | undefined, totalCount: number, totalValue: number) {
+export function exportPDF(bloqueios: BloqueioRow[] | undefined, totalCount: number, totalValue: number) {
   if (!bloqueios || bloqueios.length === 0) return;
   const doc = new jsPDF();
   doc.setFontSize(20);

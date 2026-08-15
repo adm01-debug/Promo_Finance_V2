@@ -15,6 +15,17 @@ interface Props {
   empresaId?: string;
 }
 
+interface TransferenciaPixItem {
+  id: string;
+  created_at: string;
+  chave_pix?: string | null;
+  tipo_chave?: string | null;
+  valor: number;
+  status: string;
+  asaas_id: string;
+  transaction_receipt_url?: string | null;
+}
+
 export function TransferenciaPixHistoryPanel({ empresaId }: Props) {
   const { transfers, loadingTransfers, sincronizarTransferencia } = useAsaas(empresaId);
   const [searchTerm, setSearchTerm] = useState('');
@@ -105,7 +116,7 @@ export function TransferenciaPixHistoryPanel({ empresaId }: Props) {
                 <TableRow><TableCell colSpan={5} className="text-center py-8">Carregando...</TableCell></TableRow>
               ) : filteredTransfers.length === 0 ? (
                 <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Nenhuma transferência encontrada</TableCell></TableRow>
-              ) : filteredTransfers.map((item: any) => (
+              ) : (filteredTransfers as unknown as TransferenciaPixItem[]).map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="text-xs">
                     {format(parseISO(item.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}

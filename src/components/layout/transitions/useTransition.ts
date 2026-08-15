@@ -3,7 +3,7 @@ import { useReducedMotion } from 'framer-motion';
 import { useMemo } from 'react';
 import { REDUCED_MOTION_PRESET, resolvePreset } from './presets';
 import { resolveRouteEffect } from './routeTransitions';
-import { useTransitionDefaults } from './TransitionProvider';
+import { useTransitionDefaults } from './TransitionContext';
 import type { ResolvedPreset, TransitionConfig } from './types';
 
 /**

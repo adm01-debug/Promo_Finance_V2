@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import type { SVGProps } from 'react';
 import { 
   Link2, Zap, Phone, Globe, Package, CreditCard, 
   RefreshCw, CheckCircle2, ShieldCheck,
@@ -189,7 +190,7 @@ export default function Integracoes() {
   );
 }
 
-function Plus(props: any) {
+function Plus(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

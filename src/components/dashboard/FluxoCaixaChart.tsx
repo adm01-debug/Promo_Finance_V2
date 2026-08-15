@@ -18,12 +18,18 @@ interface FluxoCaixaChartProps {
   setPeriodoFluxo: (value: string) => void;
 }
 
-function CustomTooltip({ active, payload, label }: any) {
+interface FluxoTooltipEntry {
+  name: string;
+  value: number;
+  color: string;
+}
+
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: FluxoTooltipEntry[]; label?: string }) {
   if (!active || !payload) return null;
   return (
     <div className="bg-card border border-border rounded-lg p-3 shadow-lg text-xs space-y-2 min-w-[180px]">
       <p className="font-bold text-foreground border-b border-border pb-1.5">{label}</p>
-      {payload.map((entry: any, i: number) => (
+      {payload.map((entry, i) => (
         <div key={i} className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full" style={{ background: entry.color }} />

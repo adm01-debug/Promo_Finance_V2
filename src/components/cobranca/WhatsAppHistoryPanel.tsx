@@ -3,6 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWhatsAppCobrancaHistory } from '@/hooks/useWhatsAppCobrancaHistory';
+
+interface HistoricoCobrancaWhatsappItem {
+  id: string;
+  status: string;
+  telefone?: string | null;
+  mensagem?: string | null;
+  created_at?: string | null;
+  ia_sentimento?: string | null;
+  ia_resumo?: string | null;
+  ia_proxima_acao?: string | null;
+}
 import { formatDate } from '@/lib/formatters';
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
@@ -52,7 +63,7 @@ export function WhatsAppHistoryPanel() {
           </div>
         ) : (
           <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
-            {historico.map((item: any) => {
+            {(historico as unknown as HistoricoCobrancaWhatsappItem[]).map((item) => {
               const config = statusConfig[item.status] || statusConfig.pendente;
               const StatusIcon = config.icon;
               const sentimentClass = sentimentColors[item.ia_sentimento?.toLowerCase() || 'neutro'];

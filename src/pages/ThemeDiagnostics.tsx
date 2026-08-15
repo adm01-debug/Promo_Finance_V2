@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useTheme } from '@/components/theme/ThemeProvider';
+import { useTheme } from '@/components/theme/ThemeContext';
 import { Copy, Moon, Sun, Monitor, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 

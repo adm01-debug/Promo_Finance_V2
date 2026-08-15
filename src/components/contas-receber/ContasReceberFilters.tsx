@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/select';
 import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
 import { StandardFilterSection } from '../shared/StandardFilterSection';
+import type { ContaBancaria } from '@/hooks/financial/types';
 
 interface CentroCusto {
   id: string;
@@ -35,7 +36,7 @@ interface ContasReceberFiltersProps {
   onFormaChange?: (value: string) => void;
   contaBancariaFilter?: string;
   onContaBancariaChange?: (value: string) => void;
-  contasBancarias?: any[];
+  contasBancarias?: ContaBancaria[];
   advancedFilters: AdvancedFilters;
   onAdvancedFiltersChange: (filters: AdvancedFilters) => void;
 }

@@ -1,5 +1,5 @@
 import { Building2, User, FileText } from 'lucide-react';
-import { UseFormReturn } from 'react-hook-form';
+import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import {
   FormControl,
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { maskCnpjCpf } from '@/lib/masks';
 
 interface FornecedorDadosBasicosProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FieldValues>;
 }
 
 export function FornecedorDadosBasicos({ form }: FornecedorDadosBasicosProps) {

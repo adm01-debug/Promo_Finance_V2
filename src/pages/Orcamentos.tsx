@@ -41,7 +41,7 @@ import {
   Tooltip as RechartsTooltip, 
   ResponsiveContainer, 
 } from 'recharts';
-import { useBudgetsWithSpent, useCreateBudget, useUpdateBudget, useDeleteBudget } from '@/hooks/useBudget';
+import { useBudgetsWithSpent, useCreateBudget, useUpdateBudget, useDeleteBudget, type Budget } from '@/hooks/useBudget';
 import { useCategorias } from '@/hooks/useCategorias';
 import { formatCurrency } from '@/lib/formatters';
 import { format } from 'date-fns';
@@ -57,11 +57,17 @@ const budgetSchema = z.object({
 
 type BudgetFormData = z.infer<typeof budgetSchema>;
 
+type BudgetWithSpent = Budget & {
+  actual_spent: number;
+  remaining: number;
+  percent_used: number;
+};
+
 const Orcamentos = () => {
   const currentPeriod = format(new Date(), 'yyyy-MM');
   const [selectedPeriod, setSelectedPeriod] = useState(currentPeriod);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingBudget, setEditingBudget] = useState<any>(null);
+  const [editingBudget, setEditingBudget] = useState<BudgetWithSpent | null>(null);
 
   const companyId = getCurrentEmpresaId();
   const { data: budgets = [], isLoading } = useBudgetsWithSpent(selectedPeriod, companyId || undefined);
@@ -101,7 +107,7 @@ const Orcamentos = () => {
     },
   });
 
-  const handleEdit = (budget: any) => {
+  const handleEdit = (budget: BudgetWithSpent) => {
     setEditingBudget(budget);
     form.setValues({
       category: budget.category,
@@ -238,7 +244,7 @@ const Orcamentos = () => {
                         Nenhum orçamento definido para este período.
                       </div>
                     ) : (
-                      budgets.map((budget: any) => {
+                      budgets.map((budget) => {
                         const statusColor = budget.percent_used > 100 ? 'bg-red-500' : budget.percent_used > 85 ? 'bg-yellow-500' : 'bg-green-500';
                         const textColor = budget.percent_used > 100 ? 'text-red-500' : budget.percent_used > 85 ? 'text-yellow-500' : 'text-green-500';
 

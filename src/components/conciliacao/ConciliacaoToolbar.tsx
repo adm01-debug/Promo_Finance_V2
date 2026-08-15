@@ -16,24 +16,9 @@ import {
   type ConciliacaoFilterState,
 } from "./ConciliacaoFilters";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
-import {
-  ColumnVisibilityMenu,
-  type ColumnDef,
-} from "@/components/shared/ColumnVisibilityMenu";
+import { ColumnVisibilityMenu } from "@/components/shared/ColumnVisibilityMenu";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
-
-export interface ConciliacaoSort {
-  key: "data" | "valor" | "descricao" | "tipo";
-  dir: "asc" | "desc";
-}
-
-export const CONCILIACAO_COLUMNS: ColumnDef[] = [
-  { key: "data", label: "Data" },
-  { key: "descricao", label: "Descrição", locked: true },
-  { key: "valor", label: "Valor", locked: true },
-  { key: "tipo", label: "Tipo (ícone)" },
-  { key: "acoes", label: "Ações", locked: true },
-];
+import { CONCILIACAO_COLUMNS, type ConciliacaoSort } from "./conciliacao-toolbar.constants";
 
 const SORT_OPTIONS: { key: ConciliacaoSort["key"]; label: string }[] = [
   { key: "data", label: "Data" },
@@ -41,12 +26,6 @@ const SORT_OPTIONS: { key: ConciliacaoSort["key"]; label: string }[] = [
   { key: "descricao", label: "Descrição" },
   { key: "tipo", label: "Tipo" },
 ];
-
-export const CONCILIACAO_DEFAULT_VISIBLE = CONCILIACAO_COLUMNS.map((c) => c.key);
-export const CONCILIACAO_DEFAULT_SORT: ConciliacaoSort = {
-  key: "data",
-  dir: "desc",
-};
 
 interface ConciliacaoToolbarProps {
   searchTerm: string;

@@ -9,7 +9,6 @@ import {
   Calculator,
   Zap,
   FileSearch,
-  RefreshCcw,
   ClipboardList,
   FileDown,
   ChevronRight,
@@ -31,17 +30,12 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
+import { NovaSimulacaoElisaoDialog } from './NovaSimulacaoElisaoDialog';
+import { SimuladorTab } from './SimuladorTab';
+
+type SimulacaoElisao = { id: string; ano_base: number; updated_at: string; nome: string; };
+type AuditoriaLogElisao = { id: string; nota_fiscal_id: string; created_at: string; ncm?: string; elisao_regras_creditos?: { tipo_credito?: string } | null; metodologia_applied?: string; valor_credito_calculado: number; status_validacao?: string; };
+type TarefaElisao = { id: string; status?: string; tipo_oportunidade?: string; prazo: string; titulo?: string; descricao?: string; checklist?: Array<{ done?: boolean }>; valor_envolvido?: number; };
 
 interface ElisaoTabProps {
   empresaId: string;
@@ -50,13 +44,6 @@ interface ElisaoTabProps {
 export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
   const [activeTab, setActiveTab] = useState('simulador');
   const [isSimModalOpen, setIsSimModalOpen] = useState(false);
-  const [premissas, setPremissas] = useState({
-    aliquota_cbs: 0.088,
-    aliquota_ibs: 0.177,
-    crescimento: 5,
-    folha_prolabore: 28
-  });
-
   // Queries
   const { data: simulacoes = [] } = useQuery({
     queryKey: ['elisao_simulacoes', empresaId],
@@ -67,7 +54,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+      return data as SimulacaoElisao[];
     },
     enabled: !!empresaId
   });
@@ -81,7 +68,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
         .eq('empresa_id', empresaId)
         .order('prazo', { ascending: true });
       if (error) throw error;
-      return data;
+      return data as TarefaElisao[];
     },
     enabled: !!empresaId
   });
@@ -95,7 +82,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+      return data as AuditoriaLogElisao[];
     },
     enabled: !!empresaId
   });
@@ -181,53 +168,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
         </TabsList>
 
         {/* Tab content: Simulador */}
-        <TabsContent value="simulador" className="space-y-4 pt-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-lg font-semibold">Cenários Tributários (2025+)</h3>
-              <p className="text-sm text-muted-foreground">Compare regimes tradicionais com a transição da Reforma Tributária (CBS/IBS).</p>
-            </div>
-            <Button onClick={() => setIsSimModalOpen(true)} className="gap-2">
-              <Plus className="h-4 w-4" /> Novo Cenário
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {simulacoes.length === 0 ? (
-              <Card className="col-span-full py-12 flex flex-col items-center justify-center text-center">
-                <Calculator className="h-12 w-12 text-muted-foreground/20 mb-4" />
-                <CardTitle className="text-muted-foreground">Nenhuma simulação ativa</CardTitle>
-                <CardDescription>Crie um cenário para projetar a carga tributária de 2025.</CardDescription>
-                <Button variant="outline" className="mt-4" onClick={() => setIsSimModalOpen(true)}>Começar Simulação</Button>
-              </Card>
-            ) : (
-              simulacoes.map((sim: any) => (
-                <Card key={sim.id} className="hover:border-primary/50 transition-colors cursor-pointer">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Ano Base {sim.ano_base}</Badge>
-                      <span className="text-[10px] text-muted-foreground">Atualizado em {new Date(sim.updated_at).toLocaleDateString()}</span>
-                    </div>
-                    <CardTitle className="text-base mt-2">{sim.nome}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-xs">
-                        <span>Melhor Opção:</span>
-                        <span className="font-bold text-emerald-600">Simples Nacional</span>
-                      </div>
-                      <div className="flex justify-between text-xs">
-                        <span>Economia Anual:</span>
-                        <span className="font-bold">R$ 42.150,00</span>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm" className="w-full text-xs">Ver Detalhes do Cenário</Button>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </TabsContent>
+        <SimuladorTab simulacoes={simulacoes} onNovaSimulacao={() => setIsSimModalOpen(true)} />
 
         {/* Tab content: Créditos */}
         <TabsContent value="creditos" className="pt-4 space-y-4">
@@ -268,7 +209,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        auditoriaLogs.map((log: any) => (
+                        auditoriaLogs.map((log: AuditoriaLogElisao) => (
                           <TableRow key={log.id} className="group">
                             <TableCell>
                               <div className="flex flex-col">
@@ -353,7 +294,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                 <p className="text-xs text-muted-foreground/60 max-w-xs mx-auto mt-1">Gere acionáveis a partir das oportunidades identificadas na auditoria.</p>
               </div>
             ) : (
-              tarefas.map((task: any) => (
+              tarefas.map((task: TarefaElisao) => (
                 <Card key={task.id} className="relative overflow-hidden group">
                   <div className={`absolute left-0 top-0 bottom-0 w-1 ${task.status === 'done' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                   <CardHeader className="pb-2">
@@ -371,9 +312,9 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                     <div className="space-y-2">
                       <div className="flex justify-between text-[10px] font-medium">
                         <span>Checklist de Recuperação</span>
-                        <span>{Array.isArray(task.checklist) ? task.checklist.filter((i: any) => i.done).length : 0}/{Array.isArray(task.checklist) ? task.checklist.length : 0}</span>
+                        <span>{Array.isArray(task.checklist) ? task.checklist.filter((i) => i.done).length : 0}/{Array.isArray(task.checklist) ? task.checklist.length : 0}</span>
                       </div>
-                      <Progress value={Array.isArray(task.checklist) ? (task.checklist.filter((i: any) => i.done).length / task.checklist.length) * 100 : 0} className="h-1" />
+                      <Progress value={Array.isArray(task.checklist) ? (task.checklist.filter((i) => i.done).length / task.checklist.length) * 100 : 0} className="h-1" />
                     </div>
                     <div className="flex justify-between items-center pt-2">
                       <div className="text-[11px] font-bold text-emerald-600">R$ {task.valor_envolvido?.toLocaleString('pt-BR')}</div>
@@ -410,54 +351,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
       </Tabs>
 
       {/* Modal Nova Simulação */}
-      <Dialog open={isSimModalOpen} onOpenChange={setIsSimModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Novo Cenário de Elisão Fiscal</DialogTitle>
-            <DialogDescription>
-              Projete o impacto tributário para 2025 cruzando faturamento e despesas.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="nome">Nome do Cenário</Label>
-              <Input id="nome" placeholder="Ex: Planejamento 2025 v1" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Alíquota CBS (%)</Label>
-                <Input type="number" value={premissas.aliquota_cbs * 100} onChange={(e) => setPremissas({...premissas, aliquota_cbs: Number(e.target.value)/100})} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Alíquota IBS (%)</Label>
-                <Input type="number" value={premissas.aliquota_ibs * 100} onChange={(e) => setPremissas({...premissas, aliquota_ibs: Number(e.target.value)/100})} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Crescimento Projetado (%)</Label>
-                <Input type="number" value={premissas.crescimento} onChange={(e) => setPremissas({...premissas, crescimento: Number(e.target.value)})} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Peso Folha/Prolabore (%)</Label>
-                <Input type="number" value={premissas.folha_prolabore} onChange={(e) => setPremissas({...premissas, folha_prolabore: Number(e.target.value)})} />
-              </div>
-            </div>
-            <div className="pt-2">
-              <Button variant="outline" className="w-full gap-2 text-xs border-dashed" onClick={() => toast.info("Importando dados do diário e centros de custo...")}>
-                <RefreshCcw className="h-4 w-4" /> Sincronizar com Contabilidade (Automático)
-              </Button>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsSimModalOpen(false)}>Cancelar</Button>
-            <Button onClick={() => {
-              toast.success("Simulação iniciada! O motor está processando os dados históricos.");
-              setIsSimModalOpen(false);
-            }}>Criar Cenário</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <NovaSimulacaoElisaoDialog open={isSimModalOpen} onOpenChange={setIsSimModalOpen} />
     </div>
   );
 }

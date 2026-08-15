@@ -48,17 +48,19 @@ export interface AsaasPayment {
 
 import { invokeEdge, EdgeFunctionError, handleEdgeError } from '@/lib/edge-function-error';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- retorno heterogêneo do proxy Asaas
-async function invokeAsaas(action: string, data: Record<string, unknown>): Promise<any> {
-  const result = await invokeEdge<any>('asaas-proxy', { action, data });
-  if (result && Array.isArray(result.errors)) {
-    throw new EdgeFunctionError({
-      functionName: 'asaas-proxy',
-      status: 400,
-      code: 'ASAAS_VALIDATION',
-      message: result.errors.map((e: { description: string }) => e.description).join(', '),
-      body: { details: result.errors },
-    });
+async function invokeAsaas<T = unknown>(action: string, data: Record<string, unknown>): Promise<T> {
+  const result = await invokeEdge<T>('asaas-proxy', { action, data });
+  if (result && typeof result === 'object') {
+    const errors = (result as { errors?: Array<{ description: string }> }).errors;
+    if (Array.isArray(errors)) {
+      throw new EdgeFunctionError({
+        functionName: 'asaas-proxy',
+        status: 400,
+        code: 'ASAAS_VALIDATION',
+        message: errors.map((e) => e.description).join(', '),
+        body: { details: errors },
+      });
+    }
   }
   return result;
 }
@@ -169,7 +171,7 @@ export function useAsaas(empresaId?: string) {
   });
 
   const buscarPixQrCode = useMutation({
-    mutationFn: (asaasId: string) => invokeAsaas('pix_qrcode', { asaas_id: asaasId }),
+    mutationFn: (asaasId: string) => invokeAsaas<{ encodedImage?: string; payload?: string }>('pix_qrcode', { asaas_id: asaasId }),
     onError: (e) => handleEdgeError(e, 'Erro ao buscar QR Code'),
   });
 
@@ -192,7 +194,7 @@ export function useAsaas(empresaId?: string) {
   });
 
   const consultarSaldo = useMutation({
-    mutationFn: () => invokeAsaas('consultar_saldo', {}),
+    mutationFn: () => invokeAsaas<{ balance: number; totalPending: number }>('consultar_saldo', {}),
   });
 
   const transferirPix = useMutation({
@@ -233,7 +235,7 @@ export function useAsaas(empresaId?: string) {
   });
 
   const criarLinkPagamento = useMutation({
-    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('criar_link_pagamento', payload),
+    mutationFn: (payload: Record<string, unknown>) => invokeAsaas<{ url?: string }>('criar_link_pagamento', payload),
     onSuccess: () => {
       toast.success('Link de pagamento criado!');
     },

@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { ExtratoOFX } from '@/lib/ofx-parser';
+import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import {
   Building2, Calendar, Hash, TrendingUp, TrendingDown, FileCheck,
   AlertTriangle, Zap, Settings2, CheckCircle
@@ -219,7 +219,7 @@ export function ExtratoPreviewStep({ extrato, avisos, selectedTransacoes, onTogg
   );
 }
 
-function TransacaoPreviewItem({ transacao, selected, onToggle }: { transacao: any; selected: boolean; onToggle: () => void }) {
+function TransacaoPreviewItem({ transacao, selected, onToggle }: { transacao: TransacaoOFX & { match?: { entidade_nome?: string | null } | null }; selected: boolean; onToggle: () => void }) {
   const isCredito = transacao.tipo === 'credito';
   return (
     <div className={cn("flex items-center gap-3 p-4 cursor-pointer transition-all hover:bg-primary/[0.03]", selected ? "bg-primary/[0.01]" : "opacity-60")} onClick={onToggle}>

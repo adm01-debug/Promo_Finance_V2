@@ -59,7 +59,7 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
       setAgencia('');
       setConta('');
       setSaldo('0');
-    } catch (err: any) {
+    } catch (err) {
       toast.error('Erro ao adicionar conta: ' + err.message);
     } finally {
       setLoading(false);

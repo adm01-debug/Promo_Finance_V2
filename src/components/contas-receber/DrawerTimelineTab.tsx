@@ -1,4 +1,4 @@
-import { History, MessageCircle, FileText, CheckCircle2, Zap, ArrowRightLeft } from 'lucide-react';
+import { History, MessageCircle, FileText, CheckCircle2, Zap, ArrowRightLeft, type LucideIcon } from 'lucide-react';
 import { formatDateTime, formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
@@ -8,7 +8,7 @@ const operacaoLabels: Record<string, string> = {
   DELETE: 'Exclusão',
 };
 
-const eventConfig: Record<string, { icon: any, color: string, label: string }> = {
+const eventConfig: Record<string, { icon: LucideIcon, color: string, label: string }> = {
   criacao: { icon: FileText, color: 'text-blue-400', label: 'Criação' },
   status_change: { icon: ArrowRightLeft, color: 'text-warning', label: 'Mudança de Status' },
   baixa_automatica: { icon: Zap, color: 'text-primary', label: 'Baixa Automática' },
@@ -28,13 +28,16 @@ interface EventItem {
   type: string;
   message: string;
   timestamp: string;
-  metadata?: any;
+  metadata?: { transacao_banco?: { descricao?: string; valor?: number } } | null;
 }
 
 export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory: AuditItem[], events?: EventItem[] }) {
-  const allItems = [
-    ...auditHistory.map(a => ({ ...a, type: 'audit', sortDate: new Date(a.created_at) })),
-    ...events.map(e => ({ ...e, type: 'event', sortDate: new Date(e.timestamp) })),
+  type TimelineItem =
+    | (AuditItem & { type: 'audit'; sortDate: Date })
+    | (EventItem & { type: 'event'; sortDate: Date });
+  const allItems: TimelineItem[] = [
+    ...auditHistory.map(a => ({ ...a, type: 'audit' as const, sortDate: new Date(a.created_at) })),
+    ...events.map(e => ({ ...e, type: 'event' as const, sortDate: new Date(e.timestamp) })),
   ].sort((a, b) => b.sortDate.getTime() - a.sortDate.getTime());
 
   if (allItems.length === 0) {
@@ -50,7 +53,7 @@ export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory:
     <div className="relative pt-2">
       <div className="absolute left-[27px] top-0 bottom-0 w-px bg-card/10" />
       <div className="space-y-6">
-        {allItems.map((item: any) => {
+        {allItems.map((item) => {
           if (item.type === 'audit') {
             return (
               <div key={item.id} className="relative pl-14 pb-1">

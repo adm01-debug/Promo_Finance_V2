@@ -1,6 +1,13 @@
 
-export type TipoCobranca = any;
-export type EtapaCobranca = any;
+import type { Database } from '@/integrations/supabase/types';
+
+export type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
+export type EtapaCobranca =
+  | 'preventiva'
+  | 'lembrete'
+  | 'cobranca'
+  | 'negociacao'
+  | 'juridico';
 
 export type ExpertActionType = 
   | 'criar_alerta'

@@ -8,8 +8,9 @@ import { Banknote, CheckCircle2, Scale, SearchX, Upload, XCircle } from 'lucide-
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '@/lib/formatters';
 import { RISCO_BADGE } from './constants';
+import type { RelatorioElisao, OportunidadeDetectada } from '@/lib/tributario/elisao';
 
-export function AnaliseTab({ relatorio }: { relatorio: any }) {
+export function AnaliseTab({ relatorio }: { relatorio: RelatorioElisao }) {
   const navigate = useNavigate();
   return (
     <TabsContent value="analise" className="space-y-4 mt-4">
@@ -34,7 +35,7 @@ export function AnaliseTab({ relatorio }: { relatorio: any }) {
           </CardContent>
         </Card>
       )}
-      {relatorio.oportunidades.map((o: any) => (
+      {relatorio.oportunidades.map((o: OportunidadeDetectada) => (
         <Card
           key={o.estrategia}
           className={o.aplicavel ? 'border-primary/30' : 'opacity-60'}

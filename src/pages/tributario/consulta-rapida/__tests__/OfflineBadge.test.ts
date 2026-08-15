@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extrairOffline, formatarGravadoEm } from '../OfflineBadge';
+import { extrairOffline, formatarGravadoEm } from '../offlineMeta';
 
 describe('extrairOffline', () => {
   it('devolve null para payloads sem metadado', () => {

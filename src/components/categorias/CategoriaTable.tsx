@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, MoreHorizontal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useDeleteCategoria } from '@/hooks/useCategorias';
+import { useDeleteCategoria, type Categoria } from '@/hooks/useCategorias';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
 import * as Icons from 'lucide-react';
 
 interface CategoriaTableProps {
-  categorias: any[];
+  categorias: Categoria[];
   isLoading: boolean;
-  onEdit: (categoria: any) => void;
+  onEdit: (categoria: Categoria) => void;
 }
 
 export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTableProps) {

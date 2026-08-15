@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { User, Mail, Phone, MapPin, MoreHorizontal, Eye, Edit, Trash2 } from 'lucide-react';
-import { RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
+import { RankBadge } from '@/components/ui/rank-badge';
+import { getRankFromScore } from '@/components/ui/rank-badge.utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell } from '@/components/ui/table';

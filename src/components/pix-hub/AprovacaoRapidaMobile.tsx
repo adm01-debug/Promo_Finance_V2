@@ -46,7 +46,7 @@ export function AprovacaoRapidaMobile() {
     });
   };
 
-  const handleDragEnd = useCallback((sol: SolicitacaoAprovacao, _: any, info: PanInfo) => {
+  const handleDragEnd = useCallback((sol: SolicitacaoAprovacao, _: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (info.offset.x > SWIPE_THRESHOLD) {
       handleAprovar(sol);
     } else if (info.offset.x < -SWIPE_THRESHOLD) {
@@ -55,7 +55,7 @@ export function AprovacaoRapidaMobile() {
     setSwipeDirection(prev => ({ ...prev, [sol.id]: 0 }));
   }, [handleAprovar]);
 
-  const handleDrag = useCallback((solId: string, _: any, info: PanInfo) => {
+  const handleDrag = useCallback((solId: string, _: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setSwipeDirection(prev => ({ ...prev, [solId]: info.offset.x }));
   }, []);
 

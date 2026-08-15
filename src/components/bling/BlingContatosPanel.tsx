@@ -12,6 +12,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Users, Search, Plus, Edit, ArrowUpDown, Trash2, Loader2, MoreHorizontal } from 'lucide-react';
 import { useBlingContatos, useBlingContatoMutations } from '@/hooks/useBling';
 import { PaginationControls } from './BlingShared';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+
+interface BlingContato {
+  id: number;
+  nome?: string;
+  fantasia?: string;
+  tipo?: string;
+  numeroDocumento?: string;
+  email?: string;
+  telefone?: string;
+  celular?: string;
+  situacao?: string;
+}
 
 export function BlingContatosPanel() {
   const [pesquisa, setPesquisa] = useState('');
@@ -24,6 +37,7 @@ export function BlingContatosPanel() {
   const contatos = data?.data || [];
 
   const [formData, setFormData] = useState({ nome: '', fantasia: '', tipoPessoa: 'J', numeroDocumento: '', email: '', telefone: '' });
+  const [confirmExcluir, setConfirmExcluir] = useState<number | null>(null);
 
   const resetForm = () => setFormData({ nome: '', fantasia: '', tipoPessoa: 'J', numeroDocumento: '', email: '', telefone: '' });
 
@@ -40,7 +54,7 @@ export function BlingContatosPanel() {
     }
   };
 
-  const handleEdit = (c: any) => {
+  const handleEdit = (c: BlingContato) => {
     setFormData({
       nome: c.nome || '', fantasia: c.fantasia || '', tipoPessoa: c.tipo || 'J',
       numeroDocumento: c.numeroDocumento || '', email: c.email || '', telefone: c.telefone || c.celular || ''
@@ -98,7 +112,7 @@ export function BlingContatosPanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {contatos.map((c: any) => (
+                  {contatos.map((c: BlingContato) => (
                     <TableRow key={c.id}>
                       <TableCell className="font-mono text-xs">{c.id}</TableCell>
                       <TableCell className="font-medium">{c.nome || c.fantasia}</TableCell>
@@ -122,9 +136,7 @@ export function BlingContatosPanel() {
                               <ArrowUpDown className="h-4 w-4 mr-2" /> {c.situacao === 'A' ? 'Inativar' : 'Ativar'}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive" onClick={() => {
-                              if (confirm(`Excluir contato #${c.id}?`)) excluirContatos.mutate([String(c.id)]);
-                            }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive" onClick={() => setConfirmExcluir(c.id)}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -175,6 +187,17 @@ export function BlingContatosPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ConfirmDialog
+        open={!!confirmExcluir}
+        onOpenChange={(o) => !o && setConfirmExcluir(null)}
+        title="Excluir contato"
+        description={confirmExcluir !== null ? `Excluir contato #${confirmExcluir}?` : ''}
+        confirmText="Excluir"
+        variant="danger"
+        onConfirm={() => {
+          if (confirmExcluir !== null) excluirContatos.mutate([String(confirmExcluir)]);
+        }}
+      />
     </Card>
   );
 }

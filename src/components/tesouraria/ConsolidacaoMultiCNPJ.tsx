@@ -25,16 +25,16 @@ export function ConsolidacaoMultiCNPJ() {
 
   const consolidado = useMemo(() => {
     const porEmpresa = empresas.map((emp, idx) => {
-      const contasEmp = contas.filter((c: Record<string, any>) => c.empresa_id === emp.id);
-      const saldo = contasEmp.reduce((s: number, c: any) => s + (c.saldo_atual || 0), 0);
+      const contasEmp = contas.filter((c) => c.empresa_id === emp.id);
+      const saldo = contasEmp.reduce((s: number, c) => s + (c.saldo_atual || 0), 0);
       const totalPagar = pagar
-        .filter((p: Record<string, any>) => p.empresa_id === emp.id && ['pendente', 'vencido'].includes(p.status))
-        .reduce((s: number, p: any) => s + (p.valor || 0), 0);
+        .filter((p) => p.empresa_id === emp.id && ['pendente', 'vencido'].includes(p.status))
+        .reduce((s: number, p) => s + (p.valor || 0), 0);
       const totalReceber = receber
-        .filter((r: Record<string, any>) => r.empresa_id === emp.id && ['pendente', 'vencido'].includes(r.status))
-        .reduce((s: number, r: any) => s + (r.valor || 0), 0);
-      const vencidos = pagar.filter((p: Record<string, any>) => p.empresa_id === emp.id && p.status === 'vencido').length
-        + receber.filter((r: Record<string, any>) => r.empresa_id === emp.id && r.status === 'vencido').length;
+        .filter((r) => r.empresa_id === emp.id && ['pendente', 'vencido'].includes(r.status))
+        .reduce((s: number, r) => s + (r.valor || 0), 0);
+      const vencidos = pagar.filter((p) => p.empresa_id === emp.id && p.status === 'vencido').length
+        + receber.filter((r) => r.empresa_id === emp.id && r.status === 'vencido').length;
 
       return {
         id: emp.id,

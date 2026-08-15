@@ -1,23 +1,9 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
-import {
-  Bookmark,
-  Save,
-  ChevronDown,
-  Cloud,
-  RotateCcw,
-  Loader2,
-} from "lucide-react";
+import { RotateCcw } from "lucide-react";
+
+
 import {
   useSavedFilters,
   type AppRole,
@@ -27,7 +13,7 @@ import {
 import { useSavedFilterSubscriptions } from "@/hooks/useSavedFilterSubscriptions";
 import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
 import { useAuth } from "@/hooks/useAuth";
-import { PresetListItem } from "./saved-filters-bar/PresetListItem";
+import { PresetsDropdownMenu } from "./saved-filters-bar/PresetsDropdownMenu";
 import { SavePresetDialog } from "./saved-filters-bar/SavePresetDialog";
 import { ShareFilterDialog } from "./saved-filters-bar/ShareFilterDialog";
 import { RestoreConfirmDialog } from "./saved-filters-bar/RestoreConfirmDialog";
@@ -285,131 +271,37 @@ export function SavedFiltersBar<T>({
   return (
     <>
       <div className="flex items-center gap-1.5 flex-wrap">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              aria-busy={presetsLoading || !!loadingPresetId}
-            >
-              {presetsLoading || loadingPresetId ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Bookmark className="h-3.5 w-3.5" />
-              )}
-              {activePreset ? activePreset.name : "Presets"}
-              {isModified && (
-                <Badge variant="secondary" className="text-[10px] h-4 px-1">
-                  modificado
-                </Badge>
-              )}
-              <ChevronDown className="h-3 w-3 opacity-60" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-80">
-            <DropdownMenuLabel className="text-xs flex items-center gap-1.5">
-              Filtros salvos
-              {presetsLoading && (
-                <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-              )}
-            </DropdownMenuLabel>
-            {presetsLoading ? (
-              <div className="px-2 py-3 text-xs text-muted-foreground flex items-center justify-center gap-2">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Carregando presets…
-              </div>
-            ) : filters.length === 0 ? (
-              <div className="px-2 py-3 text-xs text-muted-foreground text-center">
-                Nenhum preset salvo ainda
-              </div>
-            ) : (
-              filters.map((f) => {
-                const isLoadingThis = loadingPresetId === f.id;
-                const rowDisabled =
-                  pendingRemoveId === f.id ||
-                  isLoadingThis ||
-                  (!!loadingPresetId && loadingPresetId !== f.id);
-                return (
-                  <PresetListItem
-                    key={f.id}
-                    filter={f}
-                    isOwner={isOwner(f)}
-                    isLoading={isLoadingThis}
-                    isRemoving={pendingRemoveId === f.id || remove.isPending}
-                    isSettingDefault={pendingDefaultId === f.id || setDefault.isPending}
-                    isDuplicating={pendingDuplicateId === f.id || duplicate.isPending}
-                    rowDisabled={rowDisabled}
-                    entityType={entityType}
-                    subsApi={subsApi}
-                    pushReady={pushReady}
-                    onEnablePush={enablePush}
-                    onLoad={handleLoadPreset}
-                    onDuplicate={handleDuplicate}
-                    onOpenShare={openShareDialog}
-                    onSetDefault={handleSetDefault}
-                    onRemove={handleRemove}
-                  />
-                );
-              })
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                setDialogOpen(true);
-              }}
-              disabled={save.isPending}
-            >
-              <Save className="h-3.5 w-3.5 mr-2" /> Salvar como novo…
-            </DropdownMenuItem>
-            {activePreset && isModified && isOwner(activePreset) && (
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  e.preventDefault();
-                  handleOverwrite();
-                }}
-                disabled={save.isPending}
-              >
-                {save.isPending ? (
-                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
-                ) : (
-                  <Save className="h-3.5 w-3.5 mr-2" />
-                )}
-                Sobrescrever &quot;{activePreset.name}&quot;
-              </DropdownMenuItem>
-            )}
-            {activePreset && (
-              <DropdownMenuItem onClick={onClear} disabled={anyMutationPending}>
-                Limpar seleção
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                requestRestoreDefault();
-              }}
-              disabled={!canRestore || anyMutationPending}
-            >
-              <RotateCcw className="h-3.5 w-3.5 mr-2" />
-              {defaultFilter
-                ? `Restaurar padrão (${defaultFilter.name})`
-                : "Restaurar estado inicial"}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <div
-              className="px-2 py-1.5 text-[11px] text-muted-foreground flex items-start gap-1.5"
-              role="note"
-            >
-              <Cloud className="h-3 w-3 mt-0.5 shrink-0 text-primary" />
-              <span>
-                Sincronizado com sua conta — disponível em qualquer navegador
-                após login.
-              </span>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
+        <PresetsDropdownMenu
+          entityType={entityType}
+          filters={filters}
+          activePreset={activePreset}
+          isModified={isModified}
+          presetsLoading={presetsLoading}
+          loadingPresetId={loadingPresetId}
+          pendingRemoveId={pendingRemoveId}
+          pendingDefaultId={pendingDefaultId}
+          pendingDuplicateId={pendingDuplicateId}
+          removePending={remove.isPending}
+          setDefaultPending={setDefault.isPending}
+          duplicatePending={duplicate.isPending}
+          savePending={save.isPending}
+          anyMutationPending={anyMutationPending}
+          canRestore={canRestore}
+          defaultFilter={defaultFilter}
+          subsApi={subsApi}
+          pushReady={pushReady}
+          isOwner={isOwner}
+          onLoad={handleLoadPreset}
+          onRemove={handleRemove}
+          onSetDefault={handleSetDefault}
+          onDuplicate={handleDuplicate}
+          onOpenShare={openShareDialog}
+          onOverwrite={handleOverwrite}
+          onClear={onClear}
+          onRestoreDefault={requestRestoreDefault}
+          onSaveNew={() => setDialogOpen(true)}
+          onEnablePush={enablePush}
+        />
         <Button
           ref={restoreButtonRef}
           variant="ghost"

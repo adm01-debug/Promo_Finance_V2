@@ -16,8 +16,8 @@ export function MatrizCNPJBanco() {
   const { bancos, matrizData, totaisBanco, totaisEmpresa, totalGeral } = useMemo(() => {
     // Unique banks
     const bancosSet = new Map<string, string>();
-    contas.forEach((c: any) => {
-      if (!bancosSet.has(c.banco)) bancosSet.set(c.banco, c.codigo_banco);
+    contas.forEach((c) => {
+      if (c.banco && !bancosSet.has(c.banco)) bancosSet.set(c.banco, c.codigo_banco ?? '');
     });
     const bancos = Array.from(bancosSet.entries()).map(([nome, codigo]) => ({ nome, codigo }));
 
@@ -31,8 +31,8 @@ export function MatrizCNPJBanco() {
       });
     });
 
-    contas.forEach((c: any) => {
-      if (matrizData[c.empresa_id]?.[c.banco]) {
+    contas.forEach((c) => {
+      if (c.empresa_id && c.banco && matrizData[c.empresa_id]?.[c.banco]) {
         matrizData[c.empresa_id][c.banco].saldo += c.saldo_atual || 0;
         matrizData[c.empresa_id][c.banco].contas += 1;
       }

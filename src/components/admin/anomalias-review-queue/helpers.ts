@@ -29,3 +29,12 @@ export function tempoDecorrido(iso: string): string {
 export function truncarDescricao(descricao: string, limite = 80): string {
   return descricao.length > limite ? `${descricao.slice(0, limite)}…` : descricao;
 }
+
+/** Mensagem de validação do comentário (mínimo de caracteres por ação). */
+export function mensagemErro(comentarioTrim: string, min: number, label: string): string | null {
+  if (comentarioTrim.length >= min) return null;
+  if (comentarioTrim.length === 0)
+    return `Informe um comentário para ${label} (mínimo ${min} caracteres).`;
+  const faltam = min - comentarioTrim.length;
+  return `Faltam ${faltam} caractere${faltam === 1 ? "" : "s"} para ${label} (mínimo ${min}).`;
+}

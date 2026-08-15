@@ -62,8 +62,8 @@ export function WebAuthnManager() {
       setRegisterOpen(false);
       setDeviceName('');
       loadCredentials();
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao registrar passkey');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? (err.message || 'Erro ao registrar passkey') : 'Erro ao registrar passkey');
     } finally {
       setRegistering(false);
     }

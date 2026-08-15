@@ -8,13 +8,26 @@ import {
 } from './dropdown-menu';
 import { exportToCSV, exportToPDF, ExportColumn } from '@/lib/export-utils';
 
+interface ExportMenuEmpresa {
+  nome_fantasia?: string | null;
+  razao_social?: string | null;
+  cnpj?: string | null;
+}
+
+interface ExportMenuKpis {
+  totalReceber?: number;
+  totalVencido?: number;
+  totalRecebidoMes?: number;
+  taxaInadimplencia?: number;
+}
+
 interface ExportMenuProps<T extends object> {
   data: T[];
   columns: ExportColumn<T>[];
   filename: string;
   title: string;
-  empresa?: any;
-  kpis?: any;
+  empresa?: ExportMenuEmpresa;
+  kpis?: ExportMenuKpis;
 }
 
 export function ExportMenu<T extends object>({ 
@@ -43,7 +56,10 @@ export function ExportMenu<T extends object>({
         </DropdownMenuItem>
         <DropdownMenuItem 
           className="gap-2 cursor-pointer"
-          onClick={() => exportToPDF(data, columns, title, { empresa, kpis })}
+          onClick={() => exportToPDF(data, columns, title, {
+            empresa: empresa as { nome_fantasia?: string; razao_social?: string; cnpj?: string } | undefined,
+            kpis,
+          })}
         >
           <FileText className="h-4 w-4" />
           Exportar PDF

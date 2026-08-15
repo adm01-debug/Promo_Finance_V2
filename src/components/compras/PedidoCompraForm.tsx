@@ -121,8 +121,8 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
       toast.success('Pedido de compra criado com sucesso!');
       onOpenChange(false);
       form.reset();
-    } catch (error: any) {
-      toast.error('Erro ao criar pedido: ' + error.message);
+    } catch (error: unknown) {
+      toast.error('Erro ao criar pedido: ' + (error instanceof Error ? error.message : String(error)));
     }
   }
 

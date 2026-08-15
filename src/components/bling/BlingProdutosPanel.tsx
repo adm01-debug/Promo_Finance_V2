@@ -12,6 +12,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Package, Search, Plus, Layers, Trash2, Loader2, MoreHorizontal } from 'lucide-react';
 import { useBlingProdutos, useBlingProdutoMutations, useBlingVariacoes } from '@/hooks/useBling';
 import { PaginationControls, LoadingSkeleton } from './BlingShared';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+
+interface BlingProduto {
+  id: number;
+  codigo?: string;
+  nome?: string;
+  preco?: number;
+  tipo?: string;
+  formato?: string;
+  situacao?: string;
+}
+
+interface BlingVariacao {
+  id: number;
+  nome?: string;
+  codigo?: string;
+  preco?: number;
+}
 
 export function BlingProdutosPanel() {
   const [nome, setNome] = useState('');
@@ -25,6 +43,7 @@ export function BlingProdutosPanel() {
   const variacoes = variacoesData?.data || [];
 
   const [prodForm, setProdForm] = useState({ nome: '', codigo: '', preco: '', tipo: 'P', formato: 'S', situacao: 'A' });
+  const [confirmExcluir, setConfirmExcluir] = useState<number | null>(null);
 
   return (
     <div className="space-y-4">
@@ -66,7 +85,7 @@ export function BlingProdutosPanel() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {produtos.map((p: any) => (
+                    {produtos.map((p: BlingProduto) => (
                       <TableRow key={p.id}>
                         <TableCell className="font-mono text-xs">{p.codigo || '-'}</TableCell>
                         <TableCell className="font-medium">{p.nome}</TableCell>
@@ -90,9 +109,7 @@ export function BlingProdutosPanel() {
                                 </DropdownMenuItem>
                               )}
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-destructive" onClick={() => {
-                                if (confirm(`Excluir produto #${p.id}?`)) excluirProdutos.mutate([String(p.id)]);
-                              }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
+                              <DropdownMenuItem className="text-destructive" onClick={() => setConfirmExcluir(p.id)}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -169,7 +186,7 @@ export function BlingProdutosPanel() {
               <Table>
                 <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nome</TableHead><TableHead>Código</TableHead><TableHead className="text-right">Preço</TableHead></TableRow></TableHeader>
                 <TableBody>
-                  {variacoes.map((v: any) => (
+                  {variacoes.map((v: BlingVariacao) => (
                     <TableRow key={v.id}>
                       <TableCell className="font-mono text-xs">{v.id}</TableCell>
                       <TableCell>{v.nome}</TableCell>
@@ -183,6 +200,17 @@ export function BlingProdutosPanel() {
           )}
         </DialogContent>
       </Dialog>
+      <ConfirmDialog
+        open={!!confirmExcluir}
+        onOpenChange={(o) => !o && setConfirmExcluir(null)}
+        title="Excluir produto"
+        description={confirmExcluir !== null ? `Excluir produto #${confirmExcluir}?` : ''}
+        confirmText="Excluir"
+        variant="danger"
+        onConfirm={() => {
+          if (confirmExcluir !== null) excluirProdutos.mutate([String(confirmExcluir)]);
+        }}
+      />
     </div>
   );
 }

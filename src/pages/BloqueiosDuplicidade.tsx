@@ -17,7 +17,7 @@ import { containerVariants, itemVariants, emptyFilters, type BloqueiosFilters } 
 
 export default function BloqueiosDuplicidade() {
   const [filters, setFilters] = useState<BloqueiosFilters>(emptyFilters);
-  const [selectedBlock, setSelectedBlock] = useState<any>(null);
+  const [selectedBlock, setSelectedBlock] = useState<Record<string, unknown> | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const { bloqueiosQuery, empresasQuery } = useBloqueiosData(filters);

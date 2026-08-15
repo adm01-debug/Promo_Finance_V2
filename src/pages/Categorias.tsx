@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CategoriaForm } from '@/components/categorias/CategoriaForm';
 import { CategoriaTable } from '@/components/categorias/CategoriaTable';
-import { useCategorias } from '@/hooks/useCategorias';
+import { useCategorias, type Categoria } from '@/hooks/useCategorias';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { StandardFilterSection } from '@/components/shared/StandardFilterSection';
 import { StandardTableCard } from '@/components/shared/StandardTableCard';
@@ -14,7 +14,7 @@ export default function Categorias() {
   const [activeTab, setActiveTab] = useState<'despesa' | 'receita'>('despesa');
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingCategoria, setEditingCategoria] = useState<any>(null);
+  const [editingCategoria, setEditingCategoria] = useState<Categoria | null>(null);
 
   const { categoriasDespesa, categoriasReceita, isLoading } = useCategorias();
 
@@ -24,7 +24,7 @@ export default function Categorias() {
     c.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEdit = (categoria: any) => {
+  const handleEdit = (categoria: Categoria) => {
     setEditingCategoria(categoria);
     setIsFormOpen(true);
   };

@@ -29,9 +29,18 @@ const statusLabels: Record<string, { label: string; variant: 'default' | 'second
   EXPIRED: { label: 'Expirada', variant: 'destructive' },
 };
 
+interface AssinaturaAsaas {
+  id: string;
+  customer: string;
+  value: number;
+  cycle: string;
+  nextDueDate: string;
+  status: string;
+}
+
 export function AssinaturasListPanel({ empresaId }: Props) {
   const { cancelarAssinatura, customers } = useAsaas(empresaId);
-  const [subscriptions, setSubscriptions] = useState<any[]>([]);
+  const [subscriptions, setSubscriptions] = useState<AssinaturaAsaas[]>([]);
   const [loading, setLoading] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
 
@@ -46,8 +55,8 @@ export function AssinaturasListPanel({ empresaId }: Props) {
       });
       if (error) throw error;
       setSubscriptions(data?.data || []);
-    } catch (e: any) {
-      toast.error('Erro ao buscar assinaturas: ' + e.message);
+    } catch (e: unknown) {
+      toast.error('Erro ao buscar assinaturas: ' + (e instanceof Error ? e.message : 'Erro desconhecido'));
     } finally {
       setLoading(false);
     }
@@ -99,7 +108,7 @@ export function AssinaturasListPanel({ empresaId }: Props) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {subscriptions.map((sub: any) => {
+                  {subscriptions.map((sub) => {
                     const status = statusLabels[sub.status] || { label: sub.status, variant: 'outline' as const };
                     return (
                       <TableRow key={sub.id}>

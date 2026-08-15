@@ -13,7 +13,8 @@ import { useBulkActions } from '@/hooks/useBulkActions';
 import { useAlertas, useMarcarAlertaComoLido, useMarcarTodosAlertasComoLidos, type PrioridadeAlerta, type Alerta } from '@/hooks/useAlertas';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { AlertaKPICard, AlertaRow, AlertaEmptyState, prioridadeConfig, tipoConfig } from '@/components/alertas/AlertaComponents';
+import { AlertaKPICard, AlertaRow, AlertaEmptyState } from '@/components/alertas/AlertaComponents';
+import { prioridadeConfig, tipoConfig } from '@/components/alertas/alerta-components.config';
 
 const containerVariants = {
   hidden: { opacity: 0 },
