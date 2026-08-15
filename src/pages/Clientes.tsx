@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
 import { ClientesTableBody } from '@/pages/clientes/ClientesTableBody';
@@ -74,13 +74,18 @@ export default function Clientes() {
     setFilterField('search', searchTerm);
   }, [searchTerm, setFilterField]);
 
+  // Ref espelho do termo: o efeito pull só reage à hidratação/filtro, nunca ao
+  // input do usuário. Sem isso, limpar a busca ressuscitaria o termo antigo
+  // (setField é assíncrono — filterValues.search ainda tem o valor velho quando
+  // o efeito roda com searchTerm='').
+  const searchTermRef = useRef(searchTerm);
+  searchTermRef.current = searchTerm;
+
   useEffect(() => {
-    if (filtersController.isHydrated && filterValues.search && !searchTerm) {
+    if (filtersController.isHydrated && filterValues.search && !searchTermRef.current) {
       setSearchTerm(filterValues.search as string);
     }
-  // Deps completas: re-execuções são no-ops garantidos pelos guards
-  // `!searchTerm` (busca digitada) e `filterValues.search` (busca limpa) — sem risco de loop.
-  }, [filtersController.isHydrated, filterValues.search, searchTerm]);
+  }, [filtersController.isHydrated, filterValues.search]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);

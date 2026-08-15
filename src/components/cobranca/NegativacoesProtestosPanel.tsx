@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useNegativacoes, useCreateNegativacao, useUpdateNegativacao } from '@/hooks/useNegativacoes';
 import { useProtestos, useCreateProtesto, useUpdateProtesto } from '@/hooks/useProtestos';
-import { formatCurrency, formatDate } from '@/lib/formatters';
+import {formatCurrency, formatDate, todayISOLocal } from '@/lib/formatters';
 
 const statusColorNeg: Record<string, string> = {
   pendente: 'bg-warning/10 text-warning',
@@ -111,12 +111,12 @@ export function NegativacoesProtestosPanel() {
                   {neg.protocolo && <Badge variant="outline" className="text-xs">{neg.protocolo}</Badge>}
                   <span className="text-xs text-muted-foreground">{formatDate(neg.created_at)}</span>
                   {neg.status === 'pendente' && (
-                    <Button size="sm" variant="outline" onClick={() => updateNeg.mutate({ id: neg.id, status: 'incluido', data_inclusao: new Date().toISOString().split('T')[0] })}>
+                    <Button size="sm" variant="outline" onClick={() => updateNeg.mutate({ id: neg.id, status: 'incluido', data_inclusao: todayISOLocal() })}>
                       Confirmar Inclusão
                     </Button>
                   )}
                   {neg.status === 'incluido' && (
-                    <Button size="sm" variant="outline" onClick={() => updateNeg.mutate({ id: neg.id, status: 'excluido', data_exclusao: new Date().toISOString().split('T')[0] })}>
+                    <Button size="sm" variant="outline" onClick={() => updateNeg.mutate({ id: neg.id, status: 'excluido', data_exclusao: todayISOLocal() })}>
                       Excluir
                     </Button>
                   )}
@@ -170,7 +170,7 @@ export function NegativacoesProtestosPanel() {
                   {prot.custas != null && prot.custas > 0 && <Badge variant="outline" className="text-xs">Custas: {formatCurrency(prot.custas)}</Badge>}
                   <span className="text-xs text-muted-foreground">{formatDate(prot.created_at)}</span>
                   {prot.status === 'pendente' && (
-                    <Button size="sm" variant="outline" onClick={() => updateProt.mutate({ id: prot.id, status: 'protocolado', data_protocolo: new Date().toISOString().split('T')[0] })}>
+                    <Button size="sm" variant="outline" onClick={() => updateProt.mutate({ id: prot.id, status: 'protocolado', data_protocolo: todayISOLocal() })}>
                       Protocolar
                     </Button>
                   )}

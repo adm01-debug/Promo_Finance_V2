@@ -12,6 +12,7 @@ import { EmpresaKpiCards } from '@/components/dashboard-empresa/EmpresaKpis';
 import { EmpresaChartsSection } from '@/components/dashboard-empresa/EmpresaCharts';
 import { EmpresaDrillDownSection } from '@/components/dashboard-empresa/EmpresaDrillDown';
 import { useAuth } from '@/hooks/useAuth';
+import { toISOLocal } from '@/lib/formatters';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } } as const;
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } } } as const;
@@ -67,7 +68,7 @@ export default function DashboardEmpresa() {
   const fluxoCaixaProjetado = useMemo(() => {
     const dias = parseInt(periodoAnalise); const result = []; let saldoAcumulado = saldoTotal;
     for (let i = 0; i < dias; i++) {
-      const data = new Date(hoje); data.setDate(data.getDate() + i); const dataStr = data.toISOString().split('T')[0];
+      const data = new Date(hoje); data.setDate(data.getDate() + i); const dataStr = toISOLocal(data);
       const receitasDia = contasReceberEmpresa.filter((c) => c.data_vencimento === dataStr && c.status !== 'pago' && c.status !== 'cancelado').reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
       const despesasDia = contasPagarEmpresa.filter((c) => c.data_vencimento === dataStr && c.status !== 'pago' && c.status !== 'cancelado').reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
       saldoAcumulado = saldoAcumulado + receitasDia - despesasDia;

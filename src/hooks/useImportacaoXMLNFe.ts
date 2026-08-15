@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
+import { toISOLocal } from '@/lib/formatters';
 
 export interface NFeParsed {
   chaveAcesso: string;
@@ -245,7 +246,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
                 serie: nfe.serie || '1',
                 cliente_nome: nfe.nomeEmitente,
                 cliente_cnpj: nfe.cnpjEmitente,
-                data_emissao: nfe.dataEmissao.toISOString().split('T')[0],
+                data_emissao: toISOLocal(nfe.dataEmissao),
                 valor_total: nfe.valorTotal,
                 valor_produtos: nfe.valorProdutos,
                 valor_icms: nfe.valorICMS,

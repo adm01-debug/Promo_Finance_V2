@@ -1,4 +1,4 @@
-import { todayISOLocal } from '@/lib/formatters';
+import {todayISOLocal, toISOLocal } from '@/lib/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, parseISO, subDays } from 'date-fns';
@@ -98,7 +98,7 @@ export function useCobrancaKPIs() {
     queryKey: ['cobranca-kpis', currentEmpresaId],
     queryFn: async (): Promise<CobrancaKPIs> => {
       const hoje = todayISOLocal();
-      const trintaDiasAtras = subDays(new Date(), 30).toISOString().split('T')[0];
+      const trintaDiasAtras = toISOLocal(subDays(new Date(), 30));
 
       // Buscar contas vencidas (não pagas)
       let vencidasQuery = supabase

@@ -20,13 +20,18 @@ export const calculateCollectionStage = (
   status: string
 ): CollectionStage | null => {
   if (status === 'pago' || status === 'cancelado') return null;
+  // Guard defensivo: dados do banco podem trazer null/vazio (defensive coding)
+  if (!dueDate || typeof dueDate !== 'string') return null;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   // dueDate e date-only ('YYYY-MM-DD'): parsear como LOCAL para evitar
   // off-by-one em fusos negativos (UTC midnight -> dia anterior em BRT)
-  const [y, m, d] = dueDate.slice(0, 10).split('-').map(Number);
+  const partes = dueDate.slice(0, 10).split('-').map(Number);
+  if (partes.length !== 3 || partes.some((n) => Number.isNaN(n))) return null;
+  const [y, m, d] = partes;
   const due = new Date(y, m - 1, d);
+  if (Number.isNaN(due.getTime())) return null;
 
   // Calculate difference in days
   const diffTime = today.getTime() - due.getTime();

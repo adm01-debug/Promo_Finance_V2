@@ -1,4 +1,4 @@
-import { todayISOLocal } from '@/lib/formatters';
+import {todayISOLocal, toISOLocal } from '@/lib/formatters';
 import { useState, useMemo } from 'react';
 import {
   FileText,
@@ -74,7 +74,7 @@ export default function Relatorios() {
   const [periodoInicio, setPeriodoInicio] = useState(() => {
     const d = new Date();
     d.setMonth(d.getMonth() - 6);
-    return d.toISOString().split('T')[0];
+    return toISOLocal(d);
   });
   const [periodoFim, setPeriodoFim] = useState(() => todayISOLocal());
   const [empresaSelecionada, setEmpresaSelecionada] = useState('all');

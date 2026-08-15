@@ -5,6 +5,7 @@ import { TransacaoOFX } from '@/lib/ofx-parser';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 import { logger } from '@/lib/logger';
 import { useHistoricoConciliacaoIA } from './useHistoricoConciliacaoIA';
+import { toISOLocal } from '@/lib/formatters';
 
 export interface MatchSugestaoIA {
   transacaoId: string;
@@ -42,7 +43,7 @@ export function useConciliacaoIA() {
       // Prepare data for edge function
       const transacoesData = transacoes.map(t => ({
         id: t.id,
-        data: t.data.toISOString().split('T')[0],
+        data: toISOLocal(t.data),
         descricao: t.descricao,
         valor: t.valor,
         tipo: t.tipo
@@ -54,7 +55,7 @@ export function useConciliacaoIA() {
         entidade: l.entidade,
         descricao: l.descricao,
         valor: l.valor,
-        dataVencimento: l.dataVencimento.toISOString().split('T')[0],
+        dataVencimento: toISOLocal(l.dataVencimento),
         documento: l.numeroDocumento
       }));
 
