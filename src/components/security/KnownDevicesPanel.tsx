@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,19 +42,19 @@ export function KnownDevicesPanel() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadDevices();
-    }
-  }, [user]);
-
-  const loadDevices = async () => {
+  const loadDevices = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     const data = await getKnownDevices(user.id);
     setDevices((data || []) as unknown as Device[]);
     setLoading(false);
-  };
+  }, [user, getKnownDevices]);
+
+  useEffect(() => {
+    if (user) {
+      loadDevices();
+    }
+  }, [user, loadDevices]);
 
   const handleRemove = async (deviceId: string) => {
     const success = await removeDevice(deviceId);

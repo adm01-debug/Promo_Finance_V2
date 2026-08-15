@@ -79,8 +79,8 @@ export default function AdminBloatMonitor() {
     staleTime: 60_000,
   });
 
-  const rows = bloatQ.data ?? [];
-  const hist = histQ.data ?? [];
+  const rows = useMemo(() => bloatQ.data ?? [], [bloatQ.data]);
+  const hist = useMemo(() => histQ.data ?? [], [histQ.data]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

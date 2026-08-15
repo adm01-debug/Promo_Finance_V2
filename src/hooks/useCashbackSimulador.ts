@@ -1,7 +1,7 @@
 // HOOK: SIMULADOR DE CASHBACK
 // Para bens essenciais (LC 214/2025)
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 
 export type CategoriaCashback = 
@@ -85,7 +85,7 @@ export function useCashbackSimulador() {
   }, [rendaFamiliar, inscritoCadUnico]);
 
   // Calcular cashback por categoria
-  const calcularCashbackCategoria = (categoria: CategoriaCashback, valor: number): ResultadoCashback => {
+  const calcularCashbackCategoria = useCallback((categoria: CategoriaCashback, valor: number): ResultadoCashback => {
     const config = CASHBACK_CONFIG[categoria];
     
     const cbsPago = valor * (aliquotas.cbs / 100);
@@ -108,7 +108,7 @@ export function useCashbackSimulador() {
       totalCashback,
       percentualDevolucao: totalTributos > 0 ? (totalCashback / totalTributos) * 100 : 0,
     };
-  };
+  }, [aliquotas, elegivel]);
 
   // Resumo mensal
   const resumoMensal = useMemo((): ResumoMensalCashback => {
@@ -138,7 +138,7 @@ export function useCashbackSimulador() {
       percentualMedioDevolvido,
       porCategoria,
     };
-  }, [itensConsumo, aliquotas, elegivel]);
+  }, [itensConsumo, calcularCashbackCategoria]);
 
   // Projeção anual
   const projecaoAnual = useMemo(() => ({

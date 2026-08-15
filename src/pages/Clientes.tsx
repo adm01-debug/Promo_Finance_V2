@@ -78,7 +78,9 @@ export default function Clientes() {
     if (filtersController.isHydrated && filterValues.search && !searchTerm) {
       setSearchTerm(filterValues.search as string);
     }
-  }, [filtersController.isHydrated]);
+  // Deps completas: re-execuções são no-ops garantidos pelos guards
+  // `!searchTerm` (busca digitada) e `filterValues.search` (busca limpa) — sem risco de loop.
+  }, [filtersController.isHydrated, filterValues.search, searchTerm]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -94,7 +96,7 @@ export default function Clientes() {
   });
 
   const { data: allClientes = [] } = useClientes();
-  const clientes = paginatedResult?.data || [];
+  const clientes = useMemo(() => paginatedResult?.data || [], [paginatedResult]);
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 

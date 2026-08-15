@@ -83,7 +83,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
     }
   };
 
-  const processFile = async (file: File) => {
+  const processFile = useCallback(async (file: File) => {
     setStep('processing'); setProgress(0);
     try {
       const ext = file.name.toLowerCase().split('.').pop();
@@ -128,9 +128,9 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
       setResultado({ sucesso: false, erro: `Erro ao ler arquivo: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, avisos: [] });
       setStep('error');
     }
-  };
+  }, [contaBancariaId]);
 
-  const handleFileSelect = useCallback((files: FileList | null) => { if (!files || files.length === 0) return; processFile(files[0]); }, []);
+  const handleFileSelect = useCallback((files: FileList | null) => { if (!files || files.length === 0) return; processFile(files[0]); }, [processFile]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault(); e.stopPropagation();

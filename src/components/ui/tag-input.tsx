@@ -51,7 +51,7 @@ export function TagInput({
       s.label.toLowerCase().includes(inputValue.toLowerCase())
   );
 
-  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+  const getRandomColor = useCallback(() => colors[Math.floor(Math.random() * colors.length)], [colors]);
 
   const addTag = useCallback(
     (tag: Tag | string) => {

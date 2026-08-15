@@ -50,7 +50,7 @@ export function useSharedFiltersAdmin(auth: AuthLike) {
     },
   });
 
-  const rows = rowsQuery.data ?? [];
+  const rows = useMemo(() => rowsQuery.data ?? [], [rowsQuery.data]);
 
   const ownerIds = useMemo(
     () => Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean))),

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { TrendingUp, Calculator, Calendar, DollarSign, Percent, Building2, ArrowRight, CheckCircle2, Star, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -94,7 +94,7 @@ export function SimuladorAntecipacao() {
     );
   };
 
-  const calcularSimulacao = (taxa: number): Omit<SimulacaoResultado, 'instituicao'> | null => {
+  const calcularSimulacao = useCallback((taxa: number): Omit<SimulacaoResultado, 'instituicao'> | null => {
     const selecionados = recebiveis.filter(r => recebivelSelecionados.includes(r.id));
     if (selecionados.length === 0) return null;
 
@@ -127,7 +127,7 @@ export function SimuladorAntecipacao() {
       diasMedio: Math.round(diasMedio),
       taxaEfetiva
     };
-  };
+  }, [recebiveis, recebivelSelecionados, dataAntecipacao]);
 
   const simulacoesInstituicoes = useMemo((): SimulacaoResultado[] => {
     const selecionados = recebiveis.filter(r => recebivelSelecionados.includes(r.id));
@@ -144,11 +144,11 @@ export function SimuladorAntecipacao() {
       })
       .filter((s): s is SimulacaoResultado => s !== null)
       .sort((a, b) => b.valorLiquido - a.valorLiquido);
-  }, [recebiveis, recebivelSelecionados, dataAntecipacao]);
+  }, [recebiveis, recebivelSelecionados, calcularSimulacao]);
 
   const simulacaoPersonalizada = useMemo(() => {
     return calcularSimulacao(taxaPersonalizada);
-  }, [recebiveis, recebivelSelecionados, taxaPersonalizada, dataAntecipacao]);
+  }, [taxaPersonalizada, calcularSimulacao]);
 
   const melhorOpcao = simulacoesInstituicoes[0];
 

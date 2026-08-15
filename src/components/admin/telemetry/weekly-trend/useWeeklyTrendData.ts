@@ -19,7 +19,7 @@ export function useWeeklyTrendData(severityFilter: SeverityFilter) {
     staleTime: 5 * 60_000,
   });
 
-  const data = query.data ?? [];
+  const data = useMemo(() => query.data ?? [], [query.data]);
 
   const weekKeys = useMemo(() => {
     const set = new Set<string>();

@@ -162,6 +162,17 @@ export function useConciliacaoPage() {
     return [...lancamentosPagar, ...lancamentosReceber];
   }, [contasPagar, contasReceber]);
 
+  const handleConciliarManual = useCallback(
+    (transacaoId: string) => {
+      const transacao = transacoes.find((t) => t.id === transacaoId);
+      if (transacao) {
+        setSelectedTransacaoManual(transacao);
+        setShowManualDialog(true);
+      }
+    },
+    [transacoes]
+  );
+
   const handleImportSuccess = useCallback(
     async (extrato: ExtratoOFX) => {
       setIsProcessingImport(true);
@@ -372,7 +383,7 @@ export function useConciliacaoPage() {
       setShowReportDialog(true);
       setIsProcessingImport(false);
     },
-    [selectedBanco, lancamentosSistema, salvarExtratoBanco, confirmarConciliacao, contasBancarias]
+    [selectedBanco, lancamentosSistema, salvarExtratoBanco, confirmarConciliacao, contasBancarias, handleConciliarManual]
   );
 
   const handleConfirmarMatch = useCallback(
@@ -400,17 +411,6 @@ export function useConciliacaoPage() {
     setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
     toast.info('Sugestão rejeitada — feedback registrado');
   }, []);
-
-  const handleConciliarManual = useCallback(
-    (transacaoId: string) => {
-      const transacao = transacoes.find((t) => t.id === transacaoId);
-      if (transacao) {
-        setSelectedTransacaoManual(transacao);
-        setShowManualDialog(true);
-      }
-    },
-    [transacoes]
-  );
 
   const handleConciliarSplit = useCallback(
     (transacaoId: string) => {

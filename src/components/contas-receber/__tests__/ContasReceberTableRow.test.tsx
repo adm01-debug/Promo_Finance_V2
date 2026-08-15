@@ -4,6 +4,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ContasReceberTableRow, ContaReceberWithRelations } from '../ContasReceberTableRow';
 import { Table, TableBody } from '@/components/ui/table';
 
+const toLocalYMD = (d: Date): string => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
+
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: { tr: ({ children, ...props }: any) => <tr {...props}>{children}</tr> },
@@ -30,7 +38,7 @@ const baseConta: ContaReceberWithRelations = {
   descricao: 'Serviço de consultoria',
   valor: 5000,
   valor_recebido: 0,
-  data_vencimento: new Date(Date.now() - 10 * 86400000).toISOString().split('T')[0],
+  data_vencimento: toLocalYMD(new Date(Date.now() - 10 * 86400000)),
   data_emissao: '2025-01-01',
   status: 'pendente',
   empresa_id: 'emp-1',
@@ -105,19 +113,19 @@ describe('ContasReceberTableRow', () => {
     it('exibe dias em atraso para conta vencida', () => {
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 15);
-      renderRow({ data_vencimento: pastDate.toISOString().split('T')[0], status: 'vencido' });
+      renderRow({ data_vencimento: toLocalYMD(pastDate), status: 'vencido' });
       expect(screen.getByText('15')).toBeInTheDocument();
     });
 
     it('exibe "Hoje" quando vence hoje', () => {
-      renderRow({ data_vencimento: new Date().toISOString().split('T')[0], status: 'pendente' });
+      renderRow({ data_vencimento: toLocalYMD(new Date()), status: 'pendente' });
       expect(screen.getByText('Hoje')).toBeInTheDocument();
     });
 
     it('exibe dias restantes com "d" para futuro', () => {
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 5);
-      renderRow({ data_vencimento: futureDate.toISOString().split('T')[0], status: 'pendente' });
+      renderRow({ data_vencimento: toLocalYMD(futureDate), status: 'pendente' });
       expect(screen.getByText('5d')).toBeInTheDocument();
     });
 
@@ -134,7 +142,7 @@ describe('ContasReceberTableRow', () => {
     it('aplica cor destructive para >30 dias atraso', () => {
       const oldDate = new Date();
       oldDate.setDate(oldDate.getDate() - 45);
-      const { container } = renderRow({ data_vencimento: oldDate.toISOString().split('T')[0], status: 'vencido' });
+      const { container } = renderRow({ data_vencimento: toLocalYMD(oldDate), status: 'vencido' });
       const dias = container.querySelector('.text-destructive.font-semibold');
       expect(dias).toBeInTheDocument();
     });
@@ -142,7 +150,7 @@ describe('ContasReceberTableRow', () => {
     it('aplica cor warning para 1-30 dias atraso', () => {
       const date = new Date();
       date.setDate(date.getDate() - 10);
-      const { container } = renderRow({ data_vencimento: date.toISOString().split('T')[0], status: 'vencido' });
+      const { container } = renderRow({ data_vencimento: toLocalYMD(date), status: 'vencido' });
       const dias = container.querySelector('.text-warning.font-semibold');
       expect(dias).toBeInTheDocument();
     });
@@ -150,7 +158,7 @@ describe('ContasReceberTableRow', () => {
     it('aplica cor success para futuro', () => {
       const date = new Date();
       date.setDate(date.getDate() + 10);
-      const { container } = renderRow({ data_vencimento: date.toISOString().split('T')[0], status: 'pendente' });
+      const { container } = renderRow({ data_vencimento: toLocalYMD(date), status: 'pendente' });
       const dias = container.querySelector('.text-success.font-semibold');
       expect(dias).toBeInTheDocument();
     });

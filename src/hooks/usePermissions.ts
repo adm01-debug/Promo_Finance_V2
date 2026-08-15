@@ -11,7 +11,7 @@ interface Permission {
 }
 
 export function usePermissions() {
-  const { user, role, roleAtual, currentEmpresaId, isAdmin } = useAuth();
+  const { user, role, roleAtual, isAdmin } = useAuth();
   const effectiveRole = roleAtual ?? role;
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
@@ -71,7 +71,7 @@ export function usePermissions() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, effectiveRole, currentEmpresaId, isAdmin]);
+  }, [user, effectiveRole, isAdmin]);
 
   useEffect(() => {
     fetchPermissions();

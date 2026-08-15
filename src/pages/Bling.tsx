@@ -19,16 +19,16 @@ import { BlingWebhooksPanel } from '@/components/bling/BlingWebhooksPanel';
 
 export default function Bling() {
   const [searchParams] = useSearchParams();
-  const { getAuthUrl, exchangeCode } = useBlingOAuth();
+  const { getAuthUrl, exchangeCode: { mutate: exchangeBlingCode } } = useBlingOAuth();
   const { data: status, isLoading: statusLoading, refetch: refetchStatus } = useBlingStatus();
 
   useEffect(() => {
     const code = searchParams.get('code');
     if (code) {
-      exchangeCode.mutate(code);
+      exchangeBlingCode(code);
       window.history.replaceState({}, '', '/bling');
     }
-  }, [searchParams]);
+  }, [searchParams, exchangeBlingCode]);
 
   const isConnected = status?.connected;
 

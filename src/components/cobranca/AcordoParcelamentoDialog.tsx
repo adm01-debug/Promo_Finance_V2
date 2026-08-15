@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -74,7 +74,7 @@ export function AcordoParcelamentoDialog({
     },
   });
 
-  useMemo(() => {
+  useEffect(() => {
     if (open) {
       form.reset({
         cliente_nome: clienteNome,
@@ -87,7 +87,7 @@ export function AcordoParcelamentoDialog({
       });
       setNumeroParcelas(3);
     }
-  }, [open, clienteNome, valorTotal]);
+  }, [open, clienteNome, valorTotal, form]);
 
   const valorOriginal = form.watch('valor_original');
   const descontoPercentual = form.watch('desconto_percentual');

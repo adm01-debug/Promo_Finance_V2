@@ -61,7 +61,7 @@ interface ObrigacaoStatus {
 }
 
 export function ObrigacoesAcessorias() {
-  const hoje = new Date();
+  const hoje = useMemo(() => new Date(), []);
   const [anoSelecionado, setAnoSelecionado] = useState(hoje.getFullYear());
   const [mesSelecionado, setMesSelecionado] = useState(hoje.getMonth() + 1);
   const [filtroEsfera, setFiltroEsfera] = useState<'todas' | 'federal' | 'estadual' | 'municipal'>('todas');
@@ -103,7 +103,7 @@ export function ObrigacoesAcessorias() {
         };
       })
       .sort((a, b) => a.vencimento.getTime() - b.vencimento.getTime());
-  }, [anoSelecionado, mesSelecionado, filtroEsfera]);
+  }, [anoSelecionado, mesSelecionado, filtroEsfera, hoje]);
 
   // Estatísticas
   const stats = useMemo(() => {

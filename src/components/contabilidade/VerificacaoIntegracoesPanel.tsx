@@ -74,7 +74,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
   const [origemFiltro, setOrigemFiltro] = useState<string>('todas');
   const [statusFiltro, setStatusFiltro] = useState<'todos' | StatusConsistencia>('todos');
 
-  const lancs = data?.lancamentos ?? [];
+  const lancs = useMemo(() => data?.lancamentos ?? [], [data]);
   const resumos = data?.resumos ?? [];
 
   const origens = useMemo(() => Array.from(new Set(lancs.map(l => l.origem))).sort(), [lancs]);

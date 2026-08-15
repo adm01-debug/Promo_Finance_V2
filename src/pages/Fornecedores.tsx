@@ -92,7 +92,7 @@ export default function Fornecedores() {
   // Get all data for KPIs
   const { data: allFornecedores = [] } = useFornecedores();
 
-  const fornecedores = paginatedResult?.data || [];
+  const fornecedores = useMemo(() => paginatedResult?.data || [], [paginatedResult]);
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 

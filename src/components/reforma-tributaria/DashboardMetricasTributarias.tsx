@@ -32,9 +32,9 @@ export function DashboardMetricasTributarias() {
   const { operacoes: operacoesData } = useOperacoesTributaveis(empresaId || undefined);
   const { criticos: criticosData } = useAlertasTributarios(empresaId || undefined);
 
-  const apuracoes = apuracoesData ?? [];
-  const creditos = creditosData ?? [];
-  const operacoes = operacoesData ?? [];
+  const apuracoes = useMemo(() => apuracoesData ?? [], [apuracoesData]);
+  const creditos = useMemo(() => creditosData ?? [], [creditosData]);
+  const operacoes = useMemo(() => operacoesData ?? [], [operacoesData]);
   const criticos = criticosData ?? 0;
 
   const periodoInicio = format(subMonths(new Date(), periodoMeses), 'yyyy-MM');
@@ -60,7 +60,7 @@ export function DashboardMetricasTributarias() {
       cargaEfetiva, taxaAproveitamentoCreditos, creditosDisponiveis, variacaoTributos,
       percentualMigracao: totalTributosNovos + totalTributosResiduais > 0 ? (totalTributosNovos / (totalTributosNovos + totalTributosResiduais)) * 100 : 0,
     };
-  }, [apuracoesPeriodo, creditos, operacoes, apuracoes, periodoInicio]);
+  }, [apuracoesPeriodo, creditos, operacoes, apuracoes, periodoInicio, periodoMeses]);
 
   const dadosEvolucao = apuracoesPeriodo.map(a => ({
     competencia: a.competencia,

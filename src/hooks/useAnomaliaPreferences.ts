@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -131,7 +131,7 @@ export function shouldNotify(
 export function useAnomaliaPreferences() {
   const { user } = useAuth();
   const qc = useQueryClient();
-  const queryKey = ["anomalia-preferences", user?.id] as const;
+  const queryKey = useMemo(() => ["anomalia-preferences", user?.id] as const, [user?.id]);
 
   const query = useQuery({
     queryKey,
@@ -190,7 +190,7 @@ export function useAnomaliaPreferences() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, qc]);
+  }, [user?.id, qc, queryKey]);
 
   const update = useMutation({
     mutationFn: async (
