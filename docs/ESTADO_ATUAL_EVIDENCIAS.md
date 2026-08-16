@@ -49,8 +49,51 @@ qualquer relkind (tabela, view, matview, partição). Não é inferência textua
 | `sso_user_groups` | 1 | `supabase/functions/sso-callback/index.ts` |
 | `tax_audit_trail` | 1 | `supabase/functions/decidir-regime/index.ts` |
 
-> **`integration_secrets` é o caso mais grave da lista:** é consumida pelos módulos compartilhados
-> `_shared/auth-guard.ts` e `_shared/webhook-auth.ts` — o caminho de autenticação de webhooks.
+> **⚠️ Correção (revisão 2) — `integration_secrets`.** A revisão 1 marcava esta linha como "o caso mais
+> grave da lista", por ser consumida pelos guards de autenticação de webhooks. **Estava errado.**
+> Ambos os módulos leem a tabela com fallback por variável de ambiente e falham fechados (503) quando
+> não há segredo nenhum — `_shared/auth-guard.ts:172-178` e `_shared/webhook-auth.ts:95-140`.
+> A ausência da tabela custa a rotação de segredo sem redeploy, não a autenticação. Ver `ESTADO_ATUAL.md §3 R2`.
+
+## 1-B. Modo de falha por ponto de chamada (revisão 2)
+
+Os 33 consumidores ativos somam **121 pontos de chamada**. Cada um foi classificado pelo tratamento de
+erro no bloco imediatamente seguinte (janela de 16 linhas), e a amostra de cada balde foi lida à mão.
+
+| Modo | Pontos | Padrão detectado |
+|---|---:|---|
+| `QUEBRA_throw` | 32 | `if (error) throw error` |
+| `degrada_log` | 31 | `if (error) { logger.error(…); return }` |
+| `degrada_trycatch` | 13 | chamada dentro de `try { … } catch` |
+| **`erro descartado`** | **45** | `const { data } = await …` — retorno de erro nunca inspecionado |
+
+### Amostra lida linha a linha
+
+| Local | Padrão | Consequência real |
+|---|---|---|
+| `functions/contabilizar-evento/index.ts:58` | erro descartado | Checagem de idempotência sempre passa → **risco de lançamento contábil duplicado** |
+| `functions/decidir-regime/index.ts:218,272` | erro descartado | `tax_audit_trail` não grava; função responde 200 → **trilha de auditoria some em silêncio** |
+| `functions/aceitar-convite/index.ts:58` | tratado | `if (erroConvite) return json({error:'Falha ao validar convite'}, 500)` — degrada com erro claro ✅ |
+| `_shared/observability.ts:55` | try/catch | *"Nunca lançar — observabilidade não pode derrubar a função"* ✅ |
+| `_shared/webhook-auth.ts:97` | try/catch + env + fail-closed | *"Tabela indisponível não pode virar bypass"* ✅ |
+| `hooks/useSecurityAlerts.ts:66` | degrada com log | Lista de alertas vazia, sem aviso ao usuário |
+| `pages/tributario/GlossarioTributario.tsx:19` | `throw error` | Página de glossário em estado de erro |
+| `hooks/useWebPushSubscription.ts:75` | `throw` + catch → toast | Ativar notificações falha com mensagem visível |
+
+**Leitura executiva:** o balde `QUEBRA_throw` é o menos perigoso — falha visível vira chamado. O balde
+`erro descartado` é o que produz decisão errada sem sintoma.
+
+## 1-C. Views `vw_*` usadas pelo código (revisão 2)
+
+Dimensão não verificada na revisão 1. 14 views `vw_*` são referenciadas em `src/` e
+`supabase/functions/`; **3 não existem no banco**.
+
+| View | Situação |
+|---|---|
+| `vw_auditoria_tributaria_recente` | **AUSENTE** |
+| `vw_edge_health` | **AUSENTE** |
+| `vw_transferencias_painel` | **AUSENTE** |
+| `vw_contas_pagar_painel` · `vw_contas_receber_painel` · `vw_dre_mensal` · `vw_dso_aging` · `vw_fluxo_caixa` · `vw_fluxo_caixa_diario` · `vw_gastos_centro_custo` · `vw_metricas_cobranca` · `vw_saldos_contas` · `vw_tributario_dashboard` · `vw_webhooks_recentes` | ✅ existem (11) |
 
 ### 1.2 Tipadas em `types.ts`, sem consumidor direto localizado (13)
 
@@ -366,7 +409,7 @@ registrado.
 
 | Escopo | Arquivos | Linhas |
 |---|---:|---:|
-| `src/components/` | 839 | 130.717 |
+| `src/components/` (72 diretórios) | 839 | 130.717 |
 | `src/lib/` | 377 | 46.877 |
 | `src/hooks/` | 267 | 38.887 |
 | `src/pages/` | 207 | 36.717 |
@@ -438,7 +481,56 @@ select * from supabase_migrations.schema_migrations;
 
 ---
 
-## 14. Garantia de não-alteração
+## 14. Recontagem de cobertura (revisão 2)
+
+Verificação de que a auditoria não deixou áreas inteiras de fora — feita comparando os diretórios reais
+com os citados nos dois documentos, não por auto-relato.
+
+```bash
+ls -d src/components/*/ | xargs -n1 basename | while read d; do
+  grep -qi -- "$d" ESTADO_ATUAL.md docs/ESTADO_ATUAL_EVIDENCIAS.md || echo "$d"
+done
+```
+
+**Resultado na revisão 1:** 22 de 72 diretórios nunca citados.
+
+| Situação | Diretórios |
+|---|---|
+| Feature já classificada por rota, só o diretório não era citado (12) | `centros-custo` `dashboard-empresa` `dashboard-receber` `demonstrativos` `fluxo-caixa` `insights-ia` `integracoes` `usuarios` `simuladores` `design-system-debug` `__tests__` `common` |
+| **Lacuna real — sem classificação alguma (10)** | `layout` `navigation` `command-palette` `quick-create` `analytics` `offline` `pwa` `theme` `accessibility` `settings` |
+
+As 10 viraram `ESTADO_ATUAL.md §5.12`. Todas foram verificadas como ligadas (consumidores fora do
+próprio diretório, de 1 a 91).
+
+### Correções de contagem detectadas nesta recontagem
+
+| Métrica | Revisão 1 | Real | Causa do erro |
+|---|---:|---:|---|
+| Páginas | 86 | **174** | `ls src/pages \| wc -l` conta arquivos **e** diretórios do 1º nível; ignora os 110 `.tsx` em 12 subdiretórios |
+| Hooks | 214 | **242** | `ls src/hooks/*.ts` ignora subdiretórios (267 no total, 242 excluindo testes) |
+| Views usadas × vivas | não medido | **3 ausentes de 14** | dimensão não verificada |
+
+### Métricas reconferidas e confirmadas sem alteração
+
+| Métrica | Valor | Comando |
+|---|---:|---|
+| Rotas | 129 (+ `*`) | `grep -oP 'path="[^"]*"' src/App.tsx \| sort -u \| wc -l` → 130 |
+| Edge Functions | 102 | `ls -d supabase/functions/*/ \| grep -v _shared \| wc -l` |
+| Migrations | 523 | `ls supabase/migrations/*.sql \| wc -l` |
+| Casos de teste unitário | 2.252 | `grep -rhoP '^\s*(it\|test)\(' src --include='*.test.ts*' \| wc -l` |
+| Linhas em `src/` | 278.451 | `find src -name '*.ts*' -exec cat {} + \| wc -l` |
+| Tabelas fantasma | 46 | `to_regclass` em **todos os 7 schemas** |
+| RPCs fantasma | 15 | `pg_proc` em **todos os schemas** |
+
+### Schemas do banco (prova de que checar `public` bastava)
+
+`public` (261 relações) · `auth` (23) · `realtime` (10) · `storage` (8) · `vault` (2) · `cron` (2) ·
+`supabase_migrations` (1). Não existe schema de aplicação alternativo onde as tabelas ausentes
+pudessem estar.
+
+---
+
+## 15. Garantia de não-alteração
 
 Nenhum DDL, DML, migration ou deploy foi executado contra o banco. Todas as consultas usaram
 `read_only: true`. As únicas escritas desta auditoria foram os dois arquivos Markdown

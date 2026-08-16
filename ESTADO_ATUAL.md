@@ -4,6 +4,10 @@
 > está implementado e funcionando.
 > **Data:** 2026-08-16 · **Branch:** `claude/system-status-roadmap-f36r0o` · **Commit base:** `4aa2f10`
 > **Método:** medição direta (repositório + catálogo do banco em runtime). Nenhuma afirmação herdada de documento.
+> **Revisão 2 (2026-08-16):** este documento passou por uma rodada de validação adversarial contra si
+> mesmo. **Um achado estava exagerado a ponto de inverter o diagnóstico**, dois números estavam errados
+> e uma dimensão inteira faltava. Tudo corrigido em [§10](#10-correções-aplicadas-durante-esta-própria-auditoria),
+> com o texto original preservado. Se você leu a revisão 1, comece por lá.
 
 ---
 
@@ -26,10 +30,11 @@ suporta a maior parte dele**. O problema não é o código: é o **fio partido e
 | | |
 |---|---|
 | **Código escrito** | 278.451 linhas em `src/` (1.739 arquivos) + 32.910 em Edge Functions + 38.280 em migrations |
-| **Superfície funcional** | 129 rotas · 86 páginas · 214 hooks · 102 Edge Functions · 523 migrations |
+| **Superfície funcional** | 129 rotas · 174 arquivos de página · 242 hooks · 102 Edge Functions · 523 migrations |
 | **Banco vivo** | 242 tabelas · 18 views · 1 matview · 141 funções · 455 policies · 80 triggers |
-| **🔴 Tabelas que o código usa e que NÃO existem no banco** | **46** (33 delas com consumidor ativo em código) |
+| **🔴 Tabelas que o código usa e que NÃO existem no banco** | **46** (33 com consumidor ativo, em **121 pontos de chamada**) |
 | **🔴 RPCs que o código chama e que NÃO existem no banco** | **15** |
+| **🔴 Views `vw_*` que o código usa e que NÃO existem no banco** | **3** de 14 |
 | **🔴 Jobs agendados (cron) ativos** | **0** — de 16 declarados nas migrations |
 | **🔴 Buckets de storage necessários e ausentes** | **4 de 5** |
 | **🔴 Extensão `pg_net` (necessária p/ cron chamar Edge Function)** | **não instalada** |
@@ -50,17 +55,22 @@ do runtime, que é o que o dono precisa para decidir.
 
 ## 2. Contagem honesta
 
-Universo classificado: **118 funcionalidades de negócio** (derivadas de 129 rotas + automações de
-backend + integrações; rotas de debug/utilitárias e sub-rotas paramétricas foram consolidadas).
+Universo classificado: **128 funcionalidades** (derivadas de 129 rotas + automações de backend +
+integrações + UX transversal; rotas de debug e sub-rotas paramétricas foram consolidadas).
 
 | Classificação | Qtd | % | Significado |
 |---|---:|---:|---|
 | ✅ **IMPLEMENTADO_TOTAL** | **0** | **0,0%** | Nenhuma feature tem evidência de uso real em produção neste ambiente |
-| 🟨 **IMPLEMENTADO_PARCIAL** | **71** | **60,2%** | Fio completo em código, mas falta uso real, ou falta camada (tabela/cron/bucket) |
-| 🟦 **SUGERIDO_OU_INICIADO** | **43** | **36,4%** | Tela existe mas a persistência não; ou é simulação; ou nunca foi ligado |
-| ⬛ **MORTO_OU_ABANDONADO** | **4** | **3,4%** | Código sem nenhum caminho de execução que o alcance |
+| 🟨 **IMPLEMENTADO_PARCIAL** | **80** | **62,5%** | Fio completo em código, mas falta uso real, ou falta camada (tabela/cron/bucket) |
+| 🟦 **SUGERIDO_OU_INICIADO** | **44** | **34,4%** | Tela existe mas a persistência não; ou é simulação; ou nunca foi ligado |
+| ⬛ **MORTO_OU_ABANDONADO** | **4** | **3,1%** | Código sem nenhum caminho de execução que o alcance |
 
-**Sub-recorte — apenas maturidade de código (ignorando runtime):** 71 funcionalidades (60,2%) têm
+> **Revisão 2:** o universo era **118** na revisão 1. Subiu para 128 porque a recontagem de cobertura
+> revelou uma dimensão inteira não classificada — UX transversal, PWA e offline ([§5.12](#512-ux-transversal-pwa-e-offline)),
+> que acrescentou 9 🟨 e 1 🟦. Nenhuma reclassificação foi feita para melhorar o número: os
+> percentuais mudaram só por aumento do denominador.
+
+**Sub-recorte — apenas maturidade de código (ignorando runtime):** 80 funcionalidades (62,5%) têm
 UI + lógica + persistência declarada e coerente. É um número bom. O problema está inteiramente na
 camada de **provisionamento do ambiente**.
 
@@ -90,15 +100,53 @@ ou a criação de um ambiente novo produziria um banco diferente do atual — em
 **não existem em nenhuma forma** no banco (verificado via `to_regclass` em consulta direta ao catálogo —
 não por inferência). **33 delas têm consumidor ativo** em hooks, páginas ou Edge Functions.
 
-Isso significa que essas telas **falham em runtime** (`PGRST205 / relation does not exist`), ou —
-pior — falham silenciosamente onde há guarda de erro.
-
 Lista completa e mapeamento tabela → consumidor: [`docs/ESTADO_ATUAL_EVIDENCIAS.md §1`](docs/ESTADO_ATUAL_EVIDENCIAS.md).
 
-**Caso mais grave:** `integration_secrets` é consumida por
-`supabase/functions/_shared/auth-guard.ts` e `_shared/webhook-auth.ts` — módulos compartilhados de
-**autenticação de webhooks**. Se o guard depende de uma tabela inexistente, todo webhook que passa por
-ele está com o caminho de validação quebrado.
+#### O modo de falha não é uniforme — e é isso que decide a prioridade
+
+Os 33 consumidores ativos somam **121 pontos de chamada**. Foram classificados um a um pelo tratamento
+de erro (detalhe em [`§2 do anexo`](docs/ESTADO_ATUAL_EVIDENCIAS.md)):
+
+| Modo | Pontos | O que o usuário vê | Gravidade |
+|---|---:|---|---|
+| **Quebra explícita** (`if (error) throw error`) | 32 | Tela de erro / toast de falha | Alta, mas **visível** |
+| **Degrada com log** (`if (error) { log; return }`) | 31 | Lista vazia, sem aviso | Média |
+| **Degrada em try/catch** | 13 | Nada — segue o fluxo | Baixa (é o comportamento desejado) |
+| **Erro descartado** (`const { data } = await …`) | 45 | **Nada. E o resultado pode estar errado.** | **A pior** |
+
+O balde perigoso é o último, não o primeiro. Uma tela que quebra é um chamado aberto no mesmo dia.
+Um erro descartado vira decisão errada em silêncio. Dois exemplos verificados linha a linha:
+
+- **`supabase/functions/contabilizar-evento/index.ts:58`** — a checagem de idempotência lê
+  `eventos_contabilizacao_log` descartando o erro. Com a tabela ausente, `existente` é sempre `null`,
+  o guard de duplicidade **sempre passa**, e o mesmo evento pode ser contabilizado repetidamente.
+  Não é uma tela quebrada: é risco de **lançamento contábil duplicado**.
+- **`supabase/functions/decidir-regime/index.ts:218` e `:272`** — `await sb.from('tax_audit_trail').insert(…)`
+  sem capturar retorno. A trilha de auditoria da decisão de regime tributário **não grava, e ninguém
+  fica sabendo**. A função responde 200 normalmente.
+
+#### ⚠️ Correção — `integration_secrets` NÃO é falha de segurança
+
+> **A revisão 1 deste documento afirmava:** *"Caso mais grave: `integration_secrets` é consumida por
+> `_shared/auth-guard.ts` e `_shared/webhook-auth.ts` […]. Se o guard depende de uma tabela inexistente,
+> todo webhook que passa por ele está com o caminho de validação quebrado."*
+>
+> **Isso estava errado, e errado na direção perigosa.** Agir sobre essa frase levaria a mexer em código
+> de autenticação que está correto. A leitura do código desmente a afirmação:
+>
+> - `_shared/auth-guard.ts:172-178` — o **fallback por variável de ambiente vem ANTES** da leitura do
+>   banco, com comentário explícito: *"permite operar mesmo se a tabela estiver indisponível"*.
+> - `_shared/webhook-auth.ts:95-110` — a leitura do banco está dentro de `try/catch` cujo comentário é
+>   *"Tabela indisponível não pode virar bypass — cai para o env abaixo"*, seguido de fallback por env.
+> - `_shared/webhook-auth.ts:126-140` — sem nenhum segredo, retorna **503 e rejeita a requisição**
+>   (`fail-closed`), registrando no log.
+>
+> **Efeito real da ausência:** perde-se a rotação de segredo sem redeploy. Os webhooks continuam
+> autenticando por variável de ambiente e, sem segredo algum, **recusam tráfego** em vez de aceitá-lo.
+> É exatamente o comportamento defensivo correto — este código está entre os melhores do repositório.
+>
+> O erro foi meu: classifiquei por `grep` do nome da tabela, sem ler o tratamento de erro. Foi essa
+> lição que originou a tabela de modos de falha acima.
 
 ### 🔴 R3 — Zero automação agendada rodando (CRÍTICO)
 
@@ -152,6 +200,24 @@ Concentram-se em **telemetria de erros de frontend** e **gestão de cron pela UI
 ferramentas que o operador usaria para *descobrir* os problemas R1–R3. A instrumentação de
 diagnóstico está cega.
 
+Reverificado na revisão 2: as 15 foram consultadas contra `pg_proc` em **todos os schemas**, não só
+`public`. Todas ausentes. Nenhum falso positivo sobrou.
+
+### 🟠 R9 — 3 das 14 views `vw_*` usadas pelo código não existem (ALTO)
+
+Dimensão que a revisão 1 **não checou** — só tabelas e funções foram comparadas. Fechada agora:
+
+| View ausente | Consumidor |
+|---|---|
+| `vw_edge_health` | painel `/admin/edge-health` (junto com a tabela `edge_function_logs`, também ausente) |
+| `vw_auditoria_tributaria_recente` | módulo de auditoria tributária |
+| `vw_transferencias_painel` | painel de transferências entre contas |
+
+As outras 11 (`vw_contas_pagar_painel`, `vw_contas_receber_painel`, `vw_dre_mensal`, `vw_dso_aging`,
+`vw_fluxo_caixa`, `vw_fluxo_caixa_diario`, `vw_gastos_centro_custo`, `vw_metricas_cobranca`,
+`vw_saldos_contas`, `vw_tributario_dashboard`, `vw_webhooks_recentes`) **existem** — o núcleo
+financeiro está coberto.
+
 ### 🟡 R7 — Toolchain não verificável nesta auditoria (MÉDIO)
 
 `node_modules` ausente no ambiente da auditoria. **Não executei build, lint, type-check nem testes.**
@@ -185,7 +251,15 @@ Vale registrar com a mesma honestidade:
   lógica; as Edge Functions `simular-simples/presumido/real` são wrappers finos (19–28 linhas) com
   validação Zod — separação correta, não stub.
 - **Recepção SEFAZ é implementação genuína**, com SOAP real e tratamento de certificado.
-- **Nenhum teste desligado.** Zero `.skip`/`.only` em 2.252 casos.
+- **Nenhum teste unitário desligado.** Zero `.skip`/`.only` em 2.252 casos.
+  > **⚠️ Correção (revisão 2).** A revisão 1 dizia apenas *"Nenhum teste desligado"*, o que induzia ao
+  > erro. Vale para os 2.252 testes unitários. **Não valia para os 26 specs E2E**: desde
+  > `694e400` (2026-08-14 18:59), `e2e/auth/admin-rbac.e2e.ts` tinha
+  > `test.beforeEach((_fixtures, testInfo) => …)`, e o Playwright **aborta na coleta** com esse padrão.
+  > Como a falha é na coleta, os 3 shards morriam inteiros — **a suíte E2E estava efetivamente
+  > desligada há 2 dias**, e nenhum dos 26 specs rodava.
+  > Meu grep procurava `.skip`/`.only` e não pegava erro de sintaxe. Corrigido em `50c28ef`
+  > (restaura a forma `({}, testInfo)`, que era a original antes do sweep de lint).
 - **Client Supabase falha cedo e explicitamente** quando falta configuração
   (`src/integrations/supabase/client.ts:19-34`) — em vez de apontar silenciosamente para o projeto errado.
   É exatamente a decisão certa.
@@ -416,6 +490,31 @@ O maior módulo do sistema: **41 rotas** sob `/tributario/*` + `/reforma-tributa
 
 ---
 
+### 5.12 UX transversal, PWA e offline
+
+> **Dimensão acrescentada na revisão 2.** A recontagem de cobertura mostrou que **22 dos 72
+> diretórios de `src/components/` nunca foram citados** na revisão 1. A maioria correspondia a
+> features já classificadas por rota (`/fluxo-caixa`, `/demonstrativos`, `/usuarios`…), mas **estas 10
+> eram lacuna real**: nenhuma tinha classificação. Todas foram verificadas como **efetivamente
+> ligadas** (têm consumidores fora do próprio diretório).
+
+| Funcionalidade | Evidência | Consumidores externos | Cls |
+|---|---|---:|---|
+| Layout / shell da aplicação | `src/components/layout/` (24 arq., 2.214 linhas) | 91 | 🟨 |
+| Navegação, `BackButton`, atalhos | `src/components/navigation/` (396 linhas) | 2 | 🟨 |
+| Command palette (Ctrl+K) | `src/components/command-palette/` (366 linhas) | 1 | 🟨 |
+| Quick create | `src/components/quick-create/` (308 linhas) | 1 | 🟨 |
+| Componentes de analytics | `src/components/analytics/` (5 arq., 871 linhas) | 3 | 🟨 |
+| Modo offline | `src/components/offline/` + `src/lib/offline/` (IndexedDB, `indexedDB.open`) | 1 | 🟨 |
+| PWA / install prompt | `src/components/pwa/` (68 linhas) | 1 | 🟨 |
+| Tema claro/escuro | `src/components/theme/` (76 linhas) | 3 | 🟨 |
+| Acessibilidade | `src/components/accessibility/` (18 linhas) | 3 | 🟨 |
+| **Web Push** | `src/components/settings/PushNotificationsBanner.tsx` + `useWebPushSubscription.ts:75` | 1 | 🟦 |
+
+Web Push é o único 🟦 do grupo: depende de `push_subscriptions`, **ausente no banco**. O hook faz
+`if (error) throw error` dentro de try/catch e exibe toast de erro — falha visível ao usuário ao
+tentar ativar notificações.
+
 ## 6. Fase E — Runtime: o que foi VERIFICADO e o que não foi
 
 | Verificação | Status | Resultado |
@@ -551,15 +650,58 @@ Registrado em voz alta, porque erro descoberto e corrigido custa barato:
    vazio. `count(*)` real revelou volumes pequenos porém não-nulos (10–31 linhas nas tabelas de negócio).
    **Todos os números de linha neste documento vêm de `count(*)`, não de estimativa.**
 
+### Revisão 2 — validação adversarial do próprio documento
+
+A revisão 1 foi submetida a uma rodada explícita de tentativa de refutação. Resultado: **1 achado
+invertido, 2 números errados, 1 dimensão faltando, 1 lacuna de cobertura**. Todos corrigidos acima.
+
+4. **🔴 `integration_secrets` — achado invertido (o erro mais grave desta auditoria).** Eu havia
+   classificado como "caso mais grave: autenticação de webhooks quebrada". **É o contrário**: os dois
+   módulos têm fallback por variável de ambiente e falham fechados (503). O código está correto e é
+   defensivo. Corrigido em [§3 R2](#-r2--46-tabelas-que-o-código-usa-não-existem-no-banco-crítico),
+   com o texto original preservado.
+   **Causa-raiz do erro:** classifiquei por `grep` do nome da tabela, sem ler o tratamento de erro.
+   Exatamente a armadilha que o próprio método manda evitar — inferência plausível tratada como evidência.
+
+5. **Modo de falha dos 46 fantasmas era genérico demais.** Eu dizia que as telas "falham em runtime,
+   ou pior, falham silenciosamente" — verdadeiro, mas inútil para priorizar. Os 121 pontos de chamada
+   foram classificados um a um. O balde que importa (**45 pontos com erro descartado**) contém dois
+   riscos de correção de dados que a revisão 1 não tinha visto: lançamento contábil duplicado
+   (`contabilizar-evento:58`) e trilha de auditoria tributária que não grava (`decidir-regime:218,272`).
+
+6. **Contagem de páginas errada: 86 → 174.** Eu havia rodado `ls src/pages | wc -l`, que conta
+   entradas do primeiro nível (arquivos **e** diretórios). O real é 179 arquivos `.tsx` sob `src/pages/`
+   — 69 no topo, 110 em 12 subdiretórios — menos 5 de teste = **174**.
+
+7. **Contagem de hooks errada: 214 → 242.** Mesmo erro de método: `ls src/hooks/*.ts` ignora
+   subdiretórios. São 267 arquivos no total, **242** excluindo testes.
+
+8. **Views nunca foram checadas (dimensão faltando).** A revisão 1 comparou tabelas e funções, não
+   views. Fechado: **3 das 14 views `vw_*` usadas pelo código não existem** ([§3 R9](#-r9--3-das-14-views-vw_-usadas-pelo-código-não-existem-alto)).
+
+9. **Lacuna de cobertura declarada: 22 de 72 diretórios de `src/components/` não eram citados.**
+   A maioria correspondia a features já classificadas por rota, mas 10 eram lacuna real — viraram a
+   nova dimensão [§5.12](#512-ux-transversal-pwa-e-offline). Universo: 118 → 128.
+
+10. **"Nenhum teste desligado" era enganoso.** Correto para os 2.252 unitários; falso para os 26 E2E,
+    que estavam quebrados na coleta desde 2026-08-14. Corrigido em [§4](#4-o-que-está-bom-não-distorcendo-o-quadro)
+    e no código (`50c28ef`).
+
+**Achados que sobreviveram à refutação, sem alteração:** R1 (ambiente não reconstruível), R3 (0 crons +
+`pg_net` ausente), R4 (emissão de NF-e é simulação — confirmado que **não existe** nenhuma Edge Function
+de emissão/autorização; só recepção, manifestação e certificado), R5 (4 de 5 buckets ausentes),
+R6 (15 RPCs, reverificadas em todos os schemas), R7 e R8. As 46 tabelas foram reconsultadas em
+**todos os 7 schemas** do banco, não só `public` — todas seguem ausentes.
+
 ---
 
 ## 11. Critério de pronto — autoavaliação honesta
 
 | Critério | Status |
 |---|---|
-| 100% dos arquivos de código inventariados por recontagem | ❌ **Não.** Inventário por diretório e por objeto; não por arquivo individual. Declarado em §7.1 |
-| Toda funcionalidade com uma das 4 classificações + evidência | ✅ 118 funcionalidades classificadas com `arquivo:linha` ou objeto de banco |
-| Todo achado grave verificado independentemente | ✅ R1–R6 reverificados por consulta direta ao catálogo; 3 falsos positivos derrubados (§10) |
+| 100% dos arquivos de código inventariados por recontagem | 🟨 **Parcial.** Recontagem executada na revisão 2 contra os 72 diretórios de `src/components/`: 22 não eram citados, 10 viraram dimensão nova (§5.12). Ainda **não** é inventário arquivo a arquivo — declarado em §7.1 |
+| Toda funcionalidade com uma das 4 classificações + evidência | ✅ 128 funcionalidades classificadas com `arquivo:linha` ou objeto de banco |
+| Todo achado grave verificado independentemente | ✅ R1–R9 reverificados por consulta direta ao catálogo em **todos os schemas**; 3 falsos positivos derrubados e **1 achado invertido corrigido** (§10) |
 | Runtime marcado `VERIFICADO` ou `NAO_VERIFICADO`, sem meio-termo | ✅ §6 |
 | Documento executivo legível em 10 minutos | ✅ §1–§4 |
 | Lacunas declaradas no próprio documento | ✅ §6 e §7 |
@@ -567,6 +709,12 @@ Registrado em voz alta, porque erro descoberto e corrigido custa barato:
 
 **Esta auditoria não está 100% pronta pelo critério mais rigoroso** — falta a recontagem arquivo a
 arquivo. Está pronta o suficiente para decidir, e os limites estão declarados. É preferível assim.
+
+**Nota sobre a revisão 2.** A rodada de validação encontrou um achado invertido, dois números errados
+e uma dimensão faltando. Isso não é sinal de que a revisão 1 fosse inútil — é sinal de que **um
+documento deste tipo só é confiável depois de alguém tentar derrubá-lo**. Se você for agir sobre
+qualquer conclusão daqui, o passo `A` da §8 (confirmar qual é o projeto Supabase de produção) continua
+sendo o que mais pode invalidar o resto, e nenhuma validação de código o substitui.
 
 ---
 
