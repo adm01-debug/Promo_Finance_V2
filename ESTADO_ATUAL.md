@@ -1,0 +1,576 @@
+# ESTADO ATUAL DO SISTEMA — Promo Finance v2
+
+> **Auditoria de estado** — levantamento do que o sistema **deveria** fazer versus o que **de fato**
+> está implementado e funcionando.
+> **Data:** 2026-08-16 · **Branch:** `claude/system-status-roadmap-f36r0o` · **Commit base:** `4aa2f10`
+> **Método:** medição direta (repositório + catálogo do banco em runtime). Nenhuma afirmação herdada de documento.
+
+---
+
+## ⚠️ Leia isto primeiro
+
+Este documento **contradiz** vários documentos existentes em `docs/` e `.lovable/`. Isso é intencional:
+todos foram tratados como **hipótese a testar**, não como fonte. Onde a documentação anterior estava
+errada, a divergência está registrada na seção [§9](#9-documentação-existente--realidade).
+
+**Toda linha de classificação cita evidência verificável** (`arquivo:linha`, nome de objeto de banco,
+ou consulta ao catálogo). Onde não houve evidência, a linha foi rebaixada — nunca promovida.
+
+---
+
+## 1. Veredito em uma tela
+
+O sistema tem **muito código de qualidade e arquitetura madura**, mas **o ambiente que roda hoje não
+suporta a maior parte dele**. O problema não é o código: é o **fio partido entre repositório e banco**.
+
+| | |
+|---|---|
+| **Código escrito** | 278.451 linhas em `src/` (1.739 arquivos) + 32.910 em Edge Functions + 38.280 em migrations |
+| **Superfície funcional** | 129 rotas · 86 páginas · 214 hooks · 102 Edge Functions · 523 migrations |
+| **Banco vivo** | 242 tabelas · 18 views · 1 matview · 141 funções · 455 policies · 80 triggers |
+| **🔴 Tabelas que o código usa e que NÃO existem no banco** | **46** (33 delas com consumidor ativo em código) |
+| **🔴 RPCs que o código chama e que NÃO existem no banco** | **15** |
+| **🔴 Jobs agendados (cron) ativos** | **0** — de 16 declarados nas migrations |
+| **🔴 Buckets de storage necessários e ausentes** | **4 de 5** |
+| **🔴 Extensão `pg_net` (necessária p/ cron chamar Edge Function)** | **não instalada** |
+| **Uso real** | 3 usuários · último login **2026-07-30** (17 dias atrás) · tabelas de negócio com 0–31 linhas |
+
+### O que isso significa na prática
+
+O repositório descreve um ERP financeiro/tributário completo. O ambiente acessível é, na prática, um
+**ambiente de demonstração parcialmente construído**: o esquema core existe e funciona, mas ~46 tabelas
+de features avançadas nunca foram criadas nele, e **nenhuma automação agendada está ligada**.
+
+Aplicando a regra `pronto = em produção com uso real`, **nada neste sistema qualifica como ✅ pleno**
+no ambiente auditado — não por falta de código, mas por falta de uso. Por isso o eixo de classificação
+abaixo separa **maturidade de código** de **prontidão de runtime**, e a contagem principal usa o critério
+do runtime, que é o que o dono precisa para decidir.
+
+---
+
+## 2. Contagem honesta
+
+Universo classificado: **118 funcionalidades de negócio** (derivadas de 129 rotas + automações de
+backend + integrações; rotas de debug/utilitárias e sub-rotas paramétricas foram consolidadas).
+
+| Classificação | Qtd | % | Significado |
+|---|---:|---:|---|
+| ✅ **IMPLEMENTADO_TOTAL** | **0** | **0,0%** | Nenhuma feature tem evidência de uso real em produção neste ambiente |
+| 🟨 **IMPLEMENTADO_PARCIAL** | **71** | **60,2%** | Fio completo em código, mas falta uso real, ou falta camada (tabela/cron/bucket) |
+| 🟦 **SUGERIDO_OU_INICIADO** | **43** | **36,4%** | Tela existe mas a persistência não; ou é simulação; ou nunca foi ligado |
+| ⬛ **MORTO_OU_ABANDONADO** | **4** | **3,4%** | Código sem nenhum caminho de execução que o alcance |
+
+**Sub-recorte — apenas maturidade de código (ignorando runtime):** 71 funcionalidades (60,2%) têm
+UI + lógica + persistência declarada e coerente. É um número bom. O problema está inteiramente na
+camada de **provisionamento do ambiente**.
+
+> **Por que zero ✅:** o critério exige *uso real*. Com 3 usuários (um deles `teste@lovable.com`),
+> último acesso há 17 dias e tabelas de negócio com dezenas de linhas de seed, não há evidência de
+> uso produtivo de nenhum módulo. Isso é um fato sobre o **ambiente**, não um julgamento sobre o código.
+
+---
+
+## 3. Riscos estruturais, por gravidade
+
+### 🔴 R1 — O ambiente não nasce do repositório (CRÍTICO)
+
+`supabase_migrations.schema_migrations` registra **9 migrations**, todas com prefixo `financeiro_00X_`
+e timestamps de `2026-05-21`. O repositório tem **523 migrations** com nomenclatura completamente
+diferente. Nenhuma das 523 está registrada como aplicada.
+
+Consequência: **não existe caminho reprodutível do repositório para o ambiente**. Um `supabase db reset`
+ou a criação de um ambiente novo produziria um banco diferente do atual — em ambas as direções.
+
+**Evidência:** `mcp supabase_db_migrations` → 9 registros · `ls supabase/migrations | wc -l` → 523
+· `supabase/config.toml:1` declara `project_id = "bwwbeyolnnzppeuhgkcd"`.
+
+### 🔴 R2 — 46 tabelas que o código usa não existem no banco (CRÍTICO)
+
+`src/integrations/supabase/types.ts` (21.357 linhas, 279 tabelas tipadas) declara 46 tabelas que
+**não existem em nenhuma forma** no banco (verificado via `to_regclass` em consulta direta ao catálogo —
+não por inferência). **33 delas têm consumidor ativo** em hooks, páginas ou Edge Functions.
+
+Isso significa que essas telas **falham em runtime** (`PGRST205 / relation does not exist`), ou —
+pior — falham silenciosamente onde há guarda de erro.
+
+Lista completa e mapeamento tabela → consumidor: [`docs/ESTADO_ATUAL_EVIDENCIAS.md §1`](docs/ESTADO_ATUAL_EVIDENCIAS.md).
+
+**Caso mais grave:** `integration_secrets` é consumida por
+`supabase/functions/_shared/auth-guard.ts` e `_shared/webhook-auth.ts` — módulos compartilhados de
+**autenticação de webhooks**. Se o guard depende de uma tabela inexistente, todo webhook que passa por
+ele está com o caminho de validação quebrado.
+
+### 🔴 R3 — Zero automação agendada rodando (CRÍTICO)
+
+`select count(*) from cron.job` → **0**. As migrations declaram **16 jobs** (`capture-slow-queries`,
+`digest-silenciamentos-erro`, `integrity-invariants-hourly`, `maintain-monthly-partitions`,
+`sefaz-observability-hourly`, `refresh-benchmark-setorial-weekly`, entre outros).
+
+Agravante: **`pg_net` não está instalada** (`pg_extension` lista apenas `pg_cron`, `pg_stat_statements`,
+`pg_trgm`, `pgcrypto`, `plpgsql`, `supabase_vault`, `uuid-ossp`). Seis migrations usam `net.http_post`
+para invocar Edge Functions a partir do cron — esse caminho **não funcionaria nem se os jobs fossem
+reagendados**.
+
+Este é exatamente o padrão de falha que **não gera chamado**: nada quebra visivelmente, os dados
+simplesmente nunca chegam. Explica diretamente por que `acoes_recomendadas`, `resumos_executivos_semanais`,
+`anomalias_detectadas` e `fila_cobrancas` estão todas em **0 linhas**.
+
+### 🔴 R4 — Módulo NFe/SEFAZ de emissão é um simulador (CRÍTICO se exposto como real)
+
+`src/lib/sefaz-simulator/handlers.ts` é a implementação real por trás de emissão, cancelamento,
+inutilização e contingência de NF-e. Ela **sorteia resultados**:
+
+- `handlers.ts:29` — `if (Math.random() < 0.05)` gera rejeição aleatória
+- `NovaNFeForm.tsx:72` — `numero: Math.floor(1000 + Math.random() * 9000)` gera o número da nota
+- `ContingenciaNFe.tsx:101` — `const success = Math.random() > 0.1` decide se a transmissão "deu certo"
+
+`docs/FUNCIONALIDADES_SISTEMA.md` classifica "Emissão NFe" como **✅ Produção**. Não é.
+
+**Ressalva importante e favorável:** o caminho de **recepção** de NF-e é real —
+`supabase/functions/sefaz-dfe-puxar/index.ts` (519 linhas) faz SOAP autêntico contra a SEFAZ
+(`index.ts:175-181`, com `SOAPAction` e certificado de `empresas_certificados`). O simulador afeta
+**emissão**, não recepção.
+
+### 🟠 R5 — Storage: 4 dos 5 buckets necessários não existem (ALTO)
+
+Vivo: apenas `comprovantes-financeiro`. Ausentes: `relatorios-tributarios`, `nfe-certificados`,
+`notas-fiscais-upload`, `uploads`.
+
+Consequência direta: geração de PDF tributário, upload de certificado digital A1 e upload de XML/NF
+não têm onde gravar. Como `empresas_certificados` está em **0 linhas**, o módulo SEFAZ real (R4) também
+não tem certificado para operar — ou seja, a única parte genuína do NFe está inerte por falta de insumo.
+
+### 🟠 R6 — 15 RPCs chamadas pelo frontend não existem no banco (ALTO)
+
+`claim_frontend_error_alerts`, `get_frontend_error_groups`, `get_frontend_error_occurrences`,
+`silenciar_alerta_erro_frontend`, `get_silenciamentos_expirando`, `claim_silenciamentos_digest`,
+`toggle_cron_job`, `delete_cron_job`, `resolve_integrity_alert`, `duplicate_saved_filter`,
+`detectar_duplicidades_financeiras`, `gerar_alertas_vencimento`, `gerar_contas_recorrentes`,
+`fn_balancete`, `fn_indices_contabeis`.
+
+Concentram-se em **telemetria de erros de frontend** e **gestão de cron pela UI** — precisamente as
+ferramentas que o operador usaria para *descobrir* os problemas R1–R3. A instrumentação de
+diagnóstico está cega.
+
+### 🟡 R7 — Toolchain não verificável nesta auditoria (MÉDIO)
+
+`node_modules` ausente no ambiente da auditoria. **Não executei build, lint, type-check nem testes.**
+Toda análise de código é **estática**.
+
+Contagem estática: 202 arquivos de teste em `src/`, **2.252 casos** `it()/test()`, 574 `describe()`,
+**0 ocorrências de `.skip`/`.only`** (bom sinal — nenhuma suíte silenciosamente desligada), 26 specs E2E.
+`supabase/tests/` está **vazio** (0 arquivos `.ts`), embora `.github/workflows/deno-tests.yml` exista.
+
+Não afirmo que os testes passam. Afirmo que existem, que nenhum está desligado, e que o número real
+(2.252) é **maior** que o "1.012" alegado em `.lovable/memory/quality/auditoria-testes-p15.md`.
+
+### 🟡 R8 — Gates de CI condicionados a secrets que podem não existir (MÉDIO)
+
+`.github/workflows/ci.yml` tem 6 passos guardados por `if: ${{ env.DATABASE_URL != '' }}` ou
+equivalente (linhas 50, 65, 84, 102, 120, 127). Se esses secrets não estiverem configurados, os passos
+**passam sem executar** — um gate que aparenta verde sem ter verificado nada.
+
+Não consegui verificar a conclusão real dos checks (sem acesso a histórico de execução do Actions).
+Marcado `NAO_VERIFICADO`.
+
+---
+
+## 4. O que está bom (não distorcendo o quadro)
+
+Vale registrar com a mesma honestidade:
+
+- **Higiene de schema no banco vivo é excelente.** 455 policies RLS para 242 tabelas; das tabelas
+  vivas, apenas 5 estão sem RLS e 3 delas são scratch (`_dbg`, `_t`, `_v4`).
+- **Motores tributários são reais e bem estruturados.** `_shared/tributario-logic.ts` concentra a
+  lógica; as Edge Functions `simular-simples/presumido/real` são wrappers finos (19–28 linhas) com
+  validação Zod — separação correta, não stub.
+- **Recepção SEFAZ é implementação genuína**, com SOAP real e tratamento de certificado.
+- **Nenhum teste desligado.** Zero `.skip`/`.only` em 2.252 casos.
+- **Client Supabase falha cedo e explicitamente** quando falta configuração
+  (`src/integrations/supabase/client.ts:19-34`) — em vez de apontar silenciosamente para o projeto errado.
+  É exatamente a decisão certa.
+- **Histórico recente de commits mostra rigor.** Os últimos ~10 commits são correções de bugs reais
+  encontrados por auditoria (`6dcc95d fix: perda silenciosa de dados`, `00ea11e fix: divergencias edge
+  functions x frontend`). O time está caçando esta classe de problema ativamente.
+- **Os 47 `TODO(2026-08-14)`** em `src/` não são dívida esquecida: são marcações honestas de colunas
+  removidas de INSERTs por não existirem no schema canônico. Documentam a divergência em vez de escondê-la.
+
+---
+
+## 5. Classificação por dimensão
+
+Legenda: ✅ total · 🟨 parcial · 🟦 sugerido/iniciado · ⬛ morto
+`AUSENTE` = objeto verificado como inexistente no banco vivo.
+
+### 5.1 Financeiro core
+
+| Funcionalidade | Rota / evidência | Persistência | Cls | O que falta |
+|---|---|---|---|---|
+| Contas a pagar | `/contas-pagar` · `pages/ContasPagar.tsx` | `contas_pagar` (20 linhas) | 🟨 | Uso real; volume é seed |
+| Contas a receber | `/contas-receber` | `contas_receber` (20) | 🟨 | Uso real |
+| Bloqueios de duplicidade | `/contas-pagar/bloqueios` | `bloqueios_duplicidade` (6) | 🟨 | RPC `detectar_duplicidades_financeiras` **AUSENTE** |
+| Boletos | `/boletos` | `boletos` (6) | 🟨 | Uso real |
+| Pix Hub | `/pix-hub` | `pix_templates` (0) | 🟦 | Tabela vazia; nenhum template criado |
+| Tesouraria | `/tesouraria` | `contas_bancarias` (0) | 🟦 | Sem conta bancária cadastrada |
+| Movimentações | `/movimentacoes` | `movimentacoes` (30) | 🟨 | Uso real |
+| Transferências | `/contas-bancarias` | `transferencias` (0) | 🟦 | Tabela vazia |
+| Categorias | `/categorias` | `categorias` (0) | 🟦 | Tabela vazia |
+| Plano de contas | `/contabilidade` | `plano_contas` (0) | 🟦 | Tabela vazia |
+| Centros de custo | `/centro-custos` | `centros_custo` (0) | 🟦 | Tabela vazia |
+| Pagamentos recorrentes | `/pagamentos-recorrentes` | `pagamentos_recorrentes` | 🟦 | RPC `gerar_contas_recorrentes` **AUSENTE** |
+| Orçamentos | `/orcamentos` · `pages/Orcamentos.tsx:44` | `budgets` (0) | 🟨 | Implementado (contradiz doc — ver §9); tabela vazia |
+| Metas financeiras | `/metas` | `metas_financeiras` (0) | 🟦 | Tabela vazia |
+| Compras / pedidos | `/compras` | `pedidos_compra` (0) | 🟦 | Tabela vazia; TODO de colunas inexistentes |
+| Contratos | `/contratos` | `contratos` (0) | 🟦 | Tabela vazia |
+| Anexos financeiros | — | `anexos_financeiros` (0) | 🟦 | Bucket `uploads` **AUSENTE** |
+| Fornecedores | `/fornecedores` | `fornecedores` (5) | 🟨 | Uso real |
+| Clientes | `/clientes` | `clientes` (12) | 🟨 | Uso real |
+| Empresas | `/empresas` | `empresas` (1) | 🟨 | Uso real |
+| Vendedores | `/vendedores` | `vendedores` (0) | 🟦 | Tabela vazia |
+| Orçamento de evento | `/orcamento-evento` | — | 🟨 | Uso real |
+| Simulador antecipação | `/simulador-antecipacao` | cálculo local | 🟨 | Uso real |
+
+### 5.2 Cobranças e inadimplência
+
+| Funcionalidade | Rota / evidência | Persistência | Cls | O que falta |
+|---|---|---|---|---|
+| Régua de cobrança (config) | `/cobrancas` | `regua_cobranca` (0) | 🟦 | Nenhuma régua configurada |
+| Régua — execução | `functions/executar-regua-cobranca` | `execucoes_regua_cobranca` **AUSENTE** | 🟦 | Tabela inexistente + sem cron + sem invoker |
+| Fila de cobranças | `functions/processar-fila-cobrancas` | `fila_cobrancas` (0) | 🟦 | Cron ausente |
+| Execuções de cobrança | — | `execucoes_cobranca` (10) | 🟨 | Uso real |
+| Acordos de parcelamento | `/cobrancas` | `acordos_parcelamento` (0) | 🟦 | Tabela vazia |
+| Protestos / negativações | `/cobrancas` | `protestos`(0)/`negativacoes`(0) | 🟦 | Tabelas vazias |
+| WhatsApp IA | `functions/whatsapp-ai-analyzer` | `whatsapp_conversas` (0) | 🟦 | Zero tráfego |
+| Scoring de clientes | `/clientes/scoring` | `clientes.score` | 🟨 | Uso real |
+| Portal do cliente | `/portal-cliente`, `/clientes/portal-tokens` | `portal_cliente_tokens` (0) | 🟦 | Nenhum token emitido |
+
+### 5.3 Conciliação bancária
+
+| Funcionalidade | Rota / evidência | Persistência | Cls | O que falta |
+|---|---|---|---|---|
+| Conciliação (tela) | `/conciliacao` | `conciliacoes` (10) | 🟨 | Uso real |
+| Divergências | — | `divergencias_conciliacao` (10) | 🟨 | Uso real |
+| Import OFX/CSV | `lib/ofx-parser` | `transacoes_bancarias` (16) | 🟨 | Uso real |
+| Extratos importados | — | view `extratos_bancarios_importados` | 🟨 | É **view**, não tabela — colunas do INSERT divergem (TODO em hooks) |
+| Regras automáticas | — | `regras_conciliacao` (0) | 🟦 | Nenhuma regra cadastrada |
+| Conciliação IA | `functions/conciliacao-ia` | `historico_conciliacao_ia` (0) | 🟦 | Zero execuções |
+| Conciliação retroativa | — | `logs_conciliacao_retroativa` (0) | 🟦 | Zero execuções |
+| Open Finance | `functions/open-finance` | `open_finance_consents` (0) | 🟦 | `index.ts:148` retorna lista **simulada** de bancos; base default é sandbox |
+
+### 5.4 Tributário e Reforma 2026
+
+O maior módulo do sistema: **41 rotas** sob `/tributario/*` + `/reforma-tributaria`.
+
+| Funcionalidade | Rota | Persistência | Cls | O que falta |
+|---|---|---|---|---|
+| Motores Simples/Presumido/Real | `functions/simular-*` + `_shared/tributario-logic.ts` | cálculo puro | 🟨 | Lógica real e testada; falta uso |
+| Calculadora tributária | `/tributario/calculadora` | cálculo local | 🟨 | Uso real |
+| Cálculo IVA / transição | `functions/calculo-iva` | cronograma hardcoded 2026-2033 | 🟨 | Sem invoker no repo |
+| Decidir regime | `functions/decidir-regime` | `regime_decision_cache` **AUSENTE**, `tax_audit_trail` **AUSENTE** | 🟦 | Cache e trilha não existem |
+| Apurações tributárias | `/tributario` | `apuracoes_tributarias` (3) | 🟨 | Uso real |
+| IRPJ/CSLL | `/tributario/irpj-csll` | `apuracoes_irpj_csll` (0) | 🟦 | Tabela vazia |
+| PIS/COFINS, IPI/ISS, ICMS-ST, Monofásico | 4 rotas | `operacoes_tributaveis` (0) | 🟦 | Tabelas vazias |
+| Retenções de fonte | `/tributario/retencoes` | `retencoes_fonte` (0) | 🟦 | Tabela vazia |
+| Créditos tributários | — | `creditos_tributarios` (0) | 🟦 | Tabela vazia |
+| PER/DCOMP | `/tributario/per-dcomp` | `per_dcomp` (0) | 🟦 | Tabela vazia |
+| DARFs | `/tributario/darf` | `darfs` (0) | 🟦 | Tabela vazia |
+| Split payment | `/tributario/split-payment` | `split_payment_transacoes` (0) | 🟦 | Tabela vazia |
+| Incentivos fiscais | `/tributario/incentivos` | `incentivos_fiscais` · `beneficios_fiscais` **AUSENTE** | 🟦 | Tabela de benefícios não existe |
+| Oportunidades de elisão | `/tributario/oportunidades-elisao` | `estrategias_elisao` **AUSENTE**, `elisao_simulacoes_regime` **AUSENTE** | 🟦 | 2 tabelas centrais ausentes (`ElisaoFiscalTab.tsx`) |
+| Projeção da reforma | `/tributario/projecao-reforma` | `projecoes_reforma` **AUSENTE** | 🟦 | Tabela ausente |
+| Simulação de regimes | `/tributario/simulacao-regimes` | `regimes_simulados` (0) · `simulacoes` **AUSENTE** | 🟦 | Tabela ausente |
+| Glossário tributário | `/tributario/glossario` | `glossario_tributario` **AUSENTE** | 🟦 | `GlossarioTributario.tsx:19` consulta tabela inexistente |
+| Obrigações acessórias | `/tributario/obrigacoes` | `obrigacoes_acessorias` **AUSENTE** | 🟦 | Tabela ausente |
+| Catálogos fiscais | `/tributario/catalogos-fiscais` | `catalogos_fiscais_cargas` **AUSENTE** | 🟨 | Dados de referência vivos (NCM, CNAE, alíquotas, ISS) mas tabela de cargas ausente |
+| Auditoria tributária | `/tributario/auditoria` | `auditoria_tributaria` **AUSENTE** | 🟦 | Tabela ausente |
+| Overlay de rejeições | `/tributario/auditoria-overlay` | `overlay_rejeicoes_auditoria` **AUSENTE** | 🟦 | Tabela ausente (hook + edge) |
+| Fechamento mensal | `/tributario/fechamento-mensal` | `fechamentos_tributarios` | 🟦 | Sem cron; sem invoker |
+| Conformidade fiscal | `/tributario/comparativo-conformidade` | `conformidade_snapshots` (12) | 🟨 | Uso real; cron de snapshot ausente |
+| Digest de conformidade | `/tributario/preferencias-digest`, `/observabilidade-digest` | `digest_envios_log` · `integration_secrets` **AUSENTE** | 🟦 | Auth do digest depende de tabela ausente |
+| SPED ECD/ECF | `/tributario/sped` | `sped_contabil_arquivos` | 🟨 | Wizard implementado; bucket ausente |
+| Exportação SPED Contribuições | `functions/exportar-sped-contribuicoes` | — | 🟨 | Sem uso registrado |
+| Relatórios contábeis | `/tributario/relatorios-contabeis` | RPCs `fn_balancete`, `fn_indices_contabeis` **AUSENTES** | 🟦 | 2 RPCs inexistentes |
+| PDF tributário | `functions/gerar-pdf-tributario` | bucket `relatorios-tributarios` **AUSENTE** | 🟦 | Sem onde gravar |
+| Certificados digitais | `/tributario/certificados-digitais` | `empresas_certificados` (0) · bucket `nfe-certificados` **AUSENTE** | 🟦 | Bucket ausente + zero certificados |
+| Onboarding tributário | `/tributario/onboarding` | `cnpja_cache` **AUSENTE** | 🟨 | Cache CNPJá ausente (degrada, não quebra) |
+| Benchmark setorial | `/benchmarking` | `benchmarks_setoriais` **AUSENTE** | 🟦 | Tabela ausente + cron ausente |
+| Folha/encargos, histórico financeiro, PF vinculada, recomendação, cashback, comparativo, importação XML, dashboard | 8 rotas | `faturamento_mensal`(0), `folha_pagamento`(0) | 🟦 | Tabelas vazias |
+| Alertas tributários | `functions/gerar-alertas-tributarios` | `alertas_tributarios` (0) | 🟦 | Depende de `benchmarks_setoriais` e `edge_function_logs` — ambas **AUSENTES** |
+
+### 5.5 NFe e SEFAZ
+
+| Funcionalidade | Evidência | Cls | O que falta |
+|---|---|---|---|
+| Emissão NF-e | `lib/sefaz-simulator/handlers.ts:29` · `NovaNFeForm.tsx:72` | 🟦 | **É simulação** — `Math.random()` gera número e resultado |
+| Cancelamento NF-e | `CancelamentoNFe.tsx:96` → `processarSefaz` | 🟦 | Mesma simulação |
+| Inutilização NF-e | `InutilizacaoNFe.tsx:112` | 🟦 | Mesma simulação |
+| Contingência | `ContingenciaNFe.tsx:101` | 🟦 | `Math.random() > 0.1` decide sucesso |
+| **Recepção DF-e (SEFAZ real)** | `functions/sefaz-dfe-puxar/index.ts:175-181` | 🟨 | **SOAP genuíno**; falta certificado (`empresas_certificados` = 0) e cron |
+| Manifestação NF-e | `functions/sefaz-manifestar` · RPC `nfe_apply_manifestacao` (viva) | 🟨 | RPC existe no banco; sem invoker no repo |
+| Vínculo NF-e → conta a pagar | RPCs `nfe_link_conta_pagar`, `nfe_suggest_contas_pagar` (vivas) | 🟨 | Backend real; `nfe_recebidas` tem 31 linhas |
+| NF-e recebidas | `/tributario/nfe-recebidas` | 🟨 | Uso real (31 linhas) |
+| Observabilidade SEFAZ | `/tributario/sefaz-observabilidade` · `sefaz_dfe_cursor` (2) | 🟨 | Cron `sefaz-observability-hourly` **não agendado** |
+| OCR de NF | `functions/processar-nf-ocr` · `notas_fiscais_ocr` (3) | 🟨 | Uso real mínimo |
+| Comprovante OCR | `/comprovante-ocr` | 🟨 | Uso real |
+
+### 5.6 Integrações
+
+| Integração | Evidência | Tráfego real | Cls | O que falta |
+|---|---|---|---|---|
+| **Asaas** (boletos/pagamentos) | `functions/asaas-proxy` (879 linhas), `asaas-webhook` | `asaas_payments` 0, `asaas_config` 0 | 🟦 | Nunca configurada; `asaas_credit_risk_analysis` **AUSENTE** |
+| **Bling ERP** | `functions/bling-proxy` (563 l.), `bling-webhook` | — | 🟦 | `bling_tokens`, `bling_sync_logs`, `bling_webhook_events` **TODAS AUSENTES** (`hooks/bling/useSyncLogs.ts:9,24`) |
+| **Bitrix24 CRM** | `functions/bitrix24-sync` (754 l.), `bitrix24-webhook` | `bitrix_sync_logs` 0, `bitrix24_tokens` 0 | 🟦 | `bitrix_oauth_tokens` **AUSENTE**; zero sincronização |
+| **CNPJá** | `functions/cnpja-lookup` | — | 🟨 | `cnpja_cache` **AUSENTE** (degrada p/ chamada direta) |
+| **SEFAZ (recepção)** | `functions/sefaz-dfe-puxar` | `sefaz_dfe_cursor` 2 | 🟨 | Sem certificado, sem cron |
+| **Open Finance** | `functions/open-finance:148` | `open_finance_consents` 0 | 🟦 | Lista de bancos é **simulada**; base = sandbox |
+| **WhatsApp (Evolution)** | `functions/whatsapp-webhook`, `whatsapp-ai-analyzer` | `whatsapp_conversas` 0 | 🟦 | Zero tráfego; webhook sem invoker |
+| **n8n** | `functions/n8n-dispatch`, `n8n-callback` | `n8n_dispatch_logs` 0, `n8n_workflow_configs` 0 | 🟦 | Nenhum workflow configurado |
+| **SSO / SAML** | `functions/sso-callback` (925 l.), `sso-initiate`, `sso-logout` | `sso_providers` 4 | 🟨 | `sso_role_mappings`, `sso_user_groups`, `sso_sandbox_runs` **AUSENTES** (`hooks/useSSO.ts:100`) |
+| **SCIM** | `functions/scim-server` (819 l.) | `scim_tokens` 0 | 🟦 | `scim_operations_log` **AUSENTE**; nenhum token |
+| **Mapbox** | `functions/get-mapbox-token` (17 l.) | — | 🟨 | Proxy de token apenas |
+| **Web Push (VAPID)** | `functions/get-vapid-key`, `send-push-notification` | — | 🟦 | `push_subscriptions` **AUSENTE** (`useWebPushSubscription.ts:75`) |
+| **Resend (e-mail)** | `functions/enviar-alerta-email` | — | 🟦 | Sem invoker algum no repo |
+| **Lalamove / logística** | `/logistica` · `drivers`, `lalamove_orders`, `tracking_events` vivas | 0 linhas | ⬛ | Tabelas vivas **não declaradas em nenhuma migration do repo** — herança de outro projeto |
+
+### 5.7 IA e assistentes
+
+| Funcionalidade | Rota / evidência | Persistência | Cls |
+|---|---|---|---|
+| Expert Agent | `/expert` · `functions/expert-agent` | `expert_conversations` 0, `expert_messages` 0 | 🟦 |
+| Copilot global | `functions/copilot-global` | — | 🟦 (sem invoker) |
+| Copilot tributário | `functions/copilot-tributario` | — | 🟦 (sem invoker) |
+| Análise preditiva | `functions/analise-preditiva`, `executar-analise-preditiva` | `historico_analises_preditivas` 0 | 🟦 |
+| Alertas preditivos | — | `alertas_preditivos` (6) | 🟨 |
+| Detector de anomalias | `functions/detectar-anomalias-financeiras` (374 l.) | `anomalias_detectadas` 0 | 🟦 (cron ausente) |
+| Health score operacional | `functions/calcular-health-score-operacional` | `health_scores_operacionais` (4) | 🟨 |
+| Centro de ações IA | `/inteligencia` · `functions/gerar-acoes-recomendadas` | `acoes_recomendadas` 0 | 🟦 |
+| Resumo executivo semanal | `functions/gerar-resumo-executivo-semanal` | `resumos_executivos_semanais` 0 | 🟦 (cron ausente) |
+| Resumo financeiro diário | `functions/gerar-resumo-financeiro-diario` | — | 🟦 |
+| Insights de relatório | `functions/insights-relatorio` | — | 🟦 |
+| Análise de fluxo IA | `functions/analise-fluxo-ia` | — | 🟦 |
+| Categorização de despesa | `functions/categorizar-despesa` | — | 🟦 |
+| Recomendação de metas IA | — | `recomendacoes_metas_ia` 0 | 🟦 |
+| Auditoria de IA | `/admin/auditoria-ia` | — | 🟨 |
+
+### 5.8 Aprovações, compliance e LGPD
+
+| Funcionalidade | Rota | Persistência | Cls |
+|---|---|---|---|
+| Fluxo de aprovações | `/aprovacoes` | `solicitacoes_aprovacao` 0, `configuracoes_aprovacao` 0 | 🟦 |
+| Comentários de aprovação | — | `aprovacao_comentarios` 0 · TODO de colunas divergentes | 🟦 |
+| Centro de privacidade LGPD | `/configuracoes/privacidade` | `solicitacoes_lgpd` 0 | 🟦 |
+| Compliance admin | `/admin/compliance` | `verificacoes_conformidade` 0 | 🟦 |
+| Pacote de evidências | `functions/gerar-pacote-evidencias` | `evidencias_pacotes` 0 | 🟦 |
+| Retenção de dados | — | `retencao_politicas` **AUSENTE** | 🟦 |
+| Assinatura digital | `/assinatura-digital` | — | 🟨 |
+| Audit logs | `/audit-logs` | `audit_logs` (423, particionada) | 🟨 |
+
+### 5.9 Observabilidade e administração
+
+| Funcionalidade | Rota | Evidência | Cls |
+|---|---|---|---|
+| Telemetria de queries | `/admin/telemetria` | `query_telemetry` 3.309, `slow_query_alerts` 2.457 | 🟨 |
+| Alertas de performance | — | `performance_alerts` 807 | 🟨 |
+| Monitor de bloat | `/admin/bloat-monitor` | `bloat_snapshots` 2.340 | 🟨 |
+| Edge health | `/admin/edge-health` | `edge_function_logs` **AUSENTE** (`AdminEdgeHealth.tsx:76`) | 🟦 |
+| System health / SLO | `/admin/system-health` | `slo_metrics_diarias` **AUSENTE** | 🟦 |
+| SRE Command Center | `/admin/sre` | RPCs `toggle_cron_job`, `delete_cron_job` **AUSENTES** | 🟦 |
+| Telemetria de erros de frontend | — | `frontend_error_alert_state` **AUSENTE** + 5 RPCs **AUSENTES** | 🟦 |
+| Integrity alerts | — | `integrity_alerts` 0 · RPC `resolve_integrity_alert` **AUSENTE** | 🟦 |
+| Webhook DLQ / replay | `functions/webhook-replay`, `webhook-retry-worker` | `webhook_dlq` (4) | 🟨 |
+| API keys | `/admin/api` | `api_keys` 0 · edge `api-keys-manage` **NÃO EXISTE** | 🟦 |
+| Campos customizados | `/admin/campos-customizados` | `custom_field_definitions` 0 | 🟦 |
+| Filtros salvos / compartilhados | `/configuracoes/filtros-salvos`, `/admin/filtros-compartilhados` | `saved_filters` 0 · `saved_filter_subscriptions` **AUSENTE** | 🟦 |
+| Histórico de notificações | `/configuracoes/notificacoes/historico` | `notification_history` **AUSENTE** (`HistoricoNotificacoes.tsx:86`) | 🟦 |
+| Sino de notificações | `/configuracoes/notificacoes/sino` | `alertas` (10) | 🟨 |
+| Status page | `/status` · `functions/health` | — | 🟨 |
+| Relatórios agendados | `/relatorios` | `relatorios_agendados` + `historico_relatorios` **AUSENTES** (`useRelatoriosAgendados.ts:53,67`) | 🟦 |
+| Organizações / convites | `/organizacoes`, `/convite/:token` | `organizacao_membros` + `convites` **AUSENTES** (`useOrganizacoes.ts:84,124`) | 🟦 |
+| Convite de contador | `/contador/:token` | `convites_contador` **AUSENTE** | 🟦 |
+| Alertas de segurança | `/seguranca` | `security_alerts` **AUSENTE** (`useSecurityAlerts.ts:66`) | 🟦 |
+| Contabilização automática | `/contabilidade` | `regras_contabilizacao_automatica` + `eventos_contabilizacao_log` **AUSENTES** | 🟦 |
+
+### 5.10 Segurança e autenticação
+
+| Funcionalidade | Evidência | Cls |
+|---|---|---|
+| Login / signup / reset | `/auth`, `/reset-password` · `auth.users` (3) | 🟨 |
+| RBAC 4 papéis | `has_role`, `has_any_role`, `get_user_roles` (vivas) · `user_roles` (3) | 🟨 |
+| RLS | 455 policies em 242 tabelas | 🟨 |
+| Lockout de login | `check_login_lockout_v2`, `record_failed_login_v2` (vivas) · `account_lockouts` **AUSENTE** | 🟨 |
+| Restrição IP/Geo | `is_ip_allowed_for_login`, `is_country_blocked` (vivas) · `allowed_ips` 0 | 🟦 |
+| Dispositivos conhecidos | `is_known_device` (viva) · `dispositivos_conhecidos` 0 | 🟦 |
+| WebAuthn / passkeys | `webauthn_credentials` 0 · edges `webauthn-register`/`verify` **NÃO EXISTEM** | 🟦 |
+| MFA | `mfa_sessions` 0 | 🟦 |
+| Sessões ativas | `user_sessions` (4) | 🟨 |
+| Auditoria de acessos suspeitos | `acessos_suspeitos` **AUSENTE** · RPC `get_acessos_suspeitos` **AUSENTE** | 🟦 |
+
+### 5.11 Código morto ou abandonado (⬛)
+
+| Item | Evidência de ausência de chamador |
+|---|---|
+| Módulo logística/entregas | `/logistica` + tabelas `drivers`, `driver_*`, `lalamove_*`, `tracking_events`, `active_tracking` vivas no banco e **sem nenhuma migration no repo que as declare**. Domínio alheio ao produto (entregas), herdado do projeto de origem. |
+| `functions/evaluate-delivery-alerts` (403 linhas) | Sem `invoke()`, sem menção em `src/`, sem cron. Pertence ao domínio de entregas. |
+| Tabelas scratch `_dbg`, `_t`, `_v4` | Vivas no banco, sem RLS, sem declaração no repo, sem consumidor. |
+| 17 Edge Functions sem chamador algum | `calcular-slo-metrics-diario`, `calculo-iva`, `ci-security-gate-log`, `compare-schemas`, `enviar-alerta-email`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-regua-cobranca`, `gerar-alertas-dispatcher`, `n8n-callback`, `n8n-dispatch`, `relatorio-diario-anomalias`, `sefaz-dfe-dispatcher`, `sefaz-dfe-puxar`, `sync-profile-to-bitrix`, `webhook-replay`, `whatsapp-webhook` — verificado: zero `invoke()`, zero menção em `src/`, zero menção em migrations. *Ressalva:* webhooks são chamados externamente e não teriam invoker; classifico como 🟦 e não ⬛ os que são webhook por natureza. Os cron-only (`executar-regua-cobranca`, `sefaz-dfe-*`) estão inertes porque o cron não existe. |
+
+---
+
+## 6. Fase E — Runtime: o que foi VERIFICADO e o que não foi
+
+| Verificação | Status | Resultado |
+|---|---|---|
+| Objetos declarados × vivos (tabelas) | ✅ VERIFICADO | 46 ausentes; 35 vivas não declaradas |
+| Objetos declarados × vivos (funções/RPC) | ✅ VERIFICADO | 15 RPCs chamadas e ausentes |
+| Tabelas que deveriam ter dado e estão vazias | ✅ VERIFICADO | Maioria das tabelas de feature em 0 linhas |
+| Jobs agendados | ✅ VERIFICADO | `cron.job` = 0 de 16 declarados |
+| Extensões do banco | ✅ VERIFICADO | `pg_net` ausente → cron→edge inviável |
+| Storage buckets | ✅ VERIFICADO | 1 de 5 existe |
+| Migrations aplicadas × versionadas | ✅ VERIFICADO | 9 aplicadas × 523 versionadas — sem correspondência |
+| Usuários e último acesso | ✅ VERIFICADO | 3 usuários; último login 2026-07-30 |
+| **Histórico de execução dos jobs** | ⛔ NAO_VERIFICADO | `cron.job_run_details` não consultado — sem jobs, sem histórico |
+| **Logs das Edge Functions** | ⛔ NAO_VERIFICADO | Sem acesso à Management API deste projeto |
+| **Quais Edge Functions estão de fato implantadas** | ⛔ NAO_VERIFICADO | `functions_list` requer token de Management API |
+| **Conclusão real dos checks de CI** | ⛔ NAO_VERIFICADO | Sem acesso ao histórico do GitHub Actions |
+| **Build / lint / type-check / testes** | ⛔ NAO_VERIFICADO | `node_modules` ausente — análise 100% estática |
+| **Secrets configurados no vault** | ⛔ NAO_VERIFICADO | Não inspecionados (decisão deliberada) |
+
+### Ressalva de escopo do banco — importante
+
+O banco auditado foi acessado via o MCP **`SUPABASE - PROMO FINANCE V2`**. Confirmei que é um ambiente
+**do dono** (`auth.users` contém `ti@promobrindes.com.br` e `adm01@promobrindes.com.br`) e que o schema
+é do domínio correto (financeiro/tributário brasileiro).
+
+**Não consegui confirmar programaticamente que o `project_ref` deste banco é `bwwbeyolnnzppeuhgkcd`**,
+o valor declarado em `supabase/config.toml:1`. Se existir **outro** projeto Supabase servindo a produção
+real, toda a seção de runtime (§3 R1–R3, R5, R6 e §6) precisa ser reexecutada contra ele — e os achados
+podem mudar substancialmente.
+
+**Este é o item nº 1 a confirmar antes de agir sobre qualquer conclusão deste documento.**
+
+---
+
+## 7. O que esta auditoria NÃO cobriu
+
+Declarado explicitamente, não escondido:
+
+1. **Leitura linha a linha do código.** 278.451 linhas em `src/` excedem em muito o que é auditável
+   com fidelidade nesta sessão. A auditoria operou em **altitude de módulo/funcionalidade**, com
+   mergulhos dirigidos onde a evidência de runtime apontou problema. Não afirmo ter lido 100% dos arquivos.
+2. **Corretude da lógica de negócio tributária.** Não validei se o cálculo do Simples Nacional, do
+   Lucro Presumido/Real ou do cronograma da reforma está **fiscalmente correto**. Verifiquei que o
+   código existe, é estruturado e tem testes — não que os números batem com a legislação.
+3. **Qualidade real dos 2.252 testes.** Não executei nenhum. Não verifiquei se algum é *teste-espelho*
+   (que reimplementa a lógica em vez de importar o alvo) nem se há asserção vacuamente verdadeira.
+   Verifiquei apenas que nenhum está desligado por `.skip`/`.only`.
+4. **Segurança das 455 policies RLS.** Contei-as; não auditei se alguma é permissiva demais.
+5. **Acessibilidade, performance de front, bundle size.**
+6. **As 523 migrations individualmente.** Foram inventariadas por objeto declarado (tabela/função/view),
+   não lidas uma a uma.
+7. **Conteúdo de secrets e vault.**
+
+---
+
+## 8. Próximos passos, por valor
+
+### 🟢 Barato e seguro — posso fazer sozinho, sem tocar produção
+
+| # | Ação | Valor |
+|---|---|---|
+| 1 | Gerar o **diff SQL completo** repo → banco: script que lista, para cada uma das 46 tabelas e 15 RPCs ausentes, a migration exata que a declara | Transforma o achado em plano de correção executável |
+| 2 | **Corrigir os documentos errados** em `docs/` e `.lovable/memory/` (§9), com bloco de errata preservando o original | Para o próximo agente/dev não herdar premissa falsa |
+| 3 | Mapear as **16 declarações de cron** → arquivo, schedule e comando, em uma tabela única | Base para reagendar de uma vez |
+| 4 | Auditar os 2.252 testes procurando **teste-espelho** e asserção vacuamente verdadeira (estático) | Descobre se a rede de segurança protege de fato |
+| 5 | Marcar explicitamente o módulo NFe de emissão como **simulação** na própria UI | Elimina o risco de alguém confiar num número de nota sorteado |
+
+### 🟠 Exige decisão sua — toca provisionamento/produção
+
+| # | Ação | Por que é sua decisão |
+|---|---|---|
+| A | **Confirmar qual é o projeto Supabase de produção** (`project_ref`) | Pré-requisito de tudo. Se for outro, esta auditoria precisa rodar de novo lá |
+| B | Aplicar as migrations faltantes para criar as **46 tabelas** e **15 RPCs** | DDL em ambiente real — jamais faço sem sua ordem explícita |
+| C | Criar os **4 buckets** de storage ausentes | Idem |
+| D | Instalar **`pg_net`** e reagendar os **16 cron jobs** | Liga automações que passarão a enviar e-mail/webhook de verdade |
+| E | Decidir o destino do **módulo de logística** (`drivers`, `lalamove_*`, `/logistica`) | É domínio alheio herdado. Remover é limpeza; manter é dívida |
+| F | Decidir se a **emissão de NF-e** vira integração real ou é removida da UI | Feature de risco fiscal alto rodando em simulação |
+| G | Verificar se os **secrets do CI** existem, senão os gates passam sem testar | Gate verde que não verificou nada é pior que gate vermelho |
+
+### Sequência recomendada
+
+`A` → `1` → `B`+`C`+`D` (juntos, num único ciclo de provisionamento) → revalidar com esta auditoria →
+`2` → depois `E`, `F`, `G`.
+
+Fazer `B` sem `A` é o erro mais caro possível: aplicaria DDL no ambiente errado.
+
+---
+
+## 9. Documentação existente × realidade
+
+Todo documento foi testado. Resultado: **a documentação canônica do projeto está sistematicamente
+desatualizada** — o padrão previsto, e confirmado aqui com evidência.
+
+| Documento | Afirma | Realidade medida |
+|---|---|---|
+| `docs/FUNCIONALIDADES_SISTEMA.md:12` | 54 páginas (rotas) | **129 rotas** em `src/App.tsx` |
+| `docs/FUNCIONALIDADES_SISTEMA.md:13` | 51 Edge Functions | **102** em `supabase/functions/` |
+| `docs/FUNCIONALIDADES_SISTEMA.md:15` | 130+ tabelas | **242** vivas / **279** tipadas |
+| `docs/FUNCIONALIDADES_SISTEMA.md:17` | 102 migrações SQL | **523** |
+| `docs/FUNCIONALIDADES_SISTEMA.md:18` | 1.012 testes (100%) | **2.252** casos `it()/test()` — não executados |
+| `docs/FUNCIONALIDADES_SISTEMA.md` §7 | edges `orquestrador-elisao`, `importar-xml-nfe`, `exportar-sped`, `previsao-tributaria-ia` | **Nenhuma das 4 existe** no repositório |
+| `docs/FUNCIONALIDADES_SISTEMA.md` §8 | "Emissão NFe · ✅ Produção" | **É `lib/sefaz-simulator/`** — `Math.random()` |
+| `docs/FUNCIONALIDADES_SISTEMA.md` §2 | tabela `account_lockouts` | **Não existe** no banco vivo |
+| `docs/FUNCIONALIDADES_SISTEMA.md` §3/§5/§7 | `transferencias_bancarias`, `conciliacao_itens`, `dre_tributaria` | **Nenhuma declarada** em migration alguma |
+| `docs/FUNCIONALIDADES_SEM_UI.md` | `useBudget` é hook órfão, sugere criar `/orcamentos` no lote P16 | **Já implementado** — `src/pages/Orcamentos.tsx:44` consome o hook; rota `/orcamentos` ativa. Documento defasado ao contrário |
+| `docs/FUNCIONALIDADES_SEM_UI.md` | cobertura de UI 94,6% | Número não reproduzível: parte de 54 páginas/51 edges, denominadores errados |
+| `.lovable/roadmap-final.md:3` | "16/16 lotes · Sistema 10/10 ✅" | 46 tabelas necessárias ausentes; 0 crons; 4 buckets ausentes |
+| `.lovable/roadmap-final.md` | tabelas `tributario_faturamento_mensal`, `tributario_folha_mensal` | Vivas são `faturamento_mensal` e `folha_pagamento` — **nomes citados não existem** |
+| `.lovable/roadmap-final.md` | bucket `relatorios-tributarios` criado | **Não existe** no storage |
+| `.lovable/memory/index.md` | `edge_function_logs`, `cnpja_cache`, `saved_filter_subscriptions`, `retencao_politicas`, `acoes_recomendadas` como entregues | 4 das 5 **não existem** no banco; a 5ª está vazia |
+| `docs/EDGE_FUNCTIONS_CATALOG.md` | catálogo de edges | Não reconciliado com as 102 atuais |
+
+**Não editei nenhum desses arquivos.** Divergência encontrada virou linha de relatório, conforme o
+protocolo. A correção deles é o item 🟢 2 da §8, e depende do seu aval.
+
+---
+
+## 10. Correções aplicadas durante esta própria auditoria
+
+Registrado em voz alta, porque erro descoberto e corrigido custa barato:
+
+1. **Falso positivo evitado — `extratos_bancarios_importados`.** A comparação inicial por regex sobre
+   as migrations classificou esta tabela como ausente. A verificação direta no catálogo mostrou que
+   ela **existe, como VIEW** (`relkind = 'v'`). Foi removida da lista de ausentes. Foi por isso que
+   toda a lista de 46 foi reverificada uma a uma via `to_regclass`, e não aceita da extração textual.
+
+2. **Falso positivo evitado — `pg_try_advisory_lock`.** Apareceu na lista de RPCs inexistentes por não
+   estar no schema `public`. É função nativa do PostgreSQL (`pg_catalog`). Removida — a lista final é
+   de **15**, não 16.
+
+3. **Contagem de linhas de tabela corrigida.** A primeira medição usou `est_rows` de `pg_class`
+   (`reltuples`), que retornava `0` ou `-1` para tabelas nunca analisadas — sugerindo um banco totalmente
+   vazio. `count(*)` real revelou volumes pequenos porém não-nulos (10–31 linhas nas tabelas de negócio).
+   **Todos os números de linha neste documento vêm de `count(*)`, não de estimativa.**
+
+---
+
+## 11. Critério de pronto — autoavaliação honesta
+
+| Critério | Status |
+|---|---|
+| 100% dos arquivos de código inventariados por recontagem | ❌ **Não.** Inventário por diretório e por objeto; não por arquivo individual. Declarado em §7.1 |
+| Toda funcionalidade com uma das 4 classificações + evidência | ✅ 118 funcionalidades classificadas com `arquivo:linha` ou objeto de banco |
+| Todo achado grave verificado independentemente | ✅ R1–R6 reverificados por consulta direta ao catálogo; 3 falsos positivos derrubados (§10) |
+| Runtime marcado `VERIFICADO` ou `NAO_VERIFICADO`, sem meio-termo | ✅ §6 |
+| Documento executivo legível em 10 minutos | ✅ §1–§4 |
+| Lacunas declaradas no próprio documento | ✅ §6 e §7 |
+| Nada alterado em produção | ✅ **Zero DDL, zero DML.** Todas as consultas com `read_only: true` |
+
+**Esta auditoria não está 100% pronta pelo critério mais rigoroso** — falta a recontagem arquivo a
+arquivo. Está pronta o suficiente para decidir, e os limites estão declarados. É preferível assim.
+
+---
+
+## Anexo
+
+Listas brutas de evidência (46 tabelas ausentes com consumidores, 15 RPCs, 16 crons, diff completo
+repo × banco): [`docs/ESTADO_ATUAL_EVIDENCIAS.md`](docs/ESTADO_ATUAL_EVIDENCIAS.md).
