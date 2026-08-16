@@ -230,14 +230,56 @@ Contagem estática: 202 arquivos de teste em `src/`, **2.252 casos** `it()/test(
 Não afirmo que os testes passam. Afirmo que existem, que nenhum está desligado, e que o número real
 (2.252) é **maior** que o "1.012" alegado em `.lovable/memory/quality/auditoria-testes-p15.md`.
 
-### 🟡 R8 — Gates de CI condicionados a secrets que podem não existir (MÉDIO)
+### 🔴 R8 — O CI nunca ficou verde: 30 de 30 execuções em `main` falharam (CRÍTICO)
 
-`.github/workflows/ci.yml` tem 6 passos guardados por `if: ${{ env.DATABASE_URL != '' }}` ou
-equivalente (linhas 50, 65, 84, 102, 120, 127). Se esses secrets não estiverem configurados, os passos
-**passam sem executar** — um gate que aparenta verde sem ter verificado nada.
+> **Revisão 2 — achado reclassificado de 🟡 MÉDIO para 🔴 CRÍTICO.** A revisão 1 dizia apenas que
+> alguns passos eram condicionados a secrets e marcava a conclusão real como `NAO_VERIFICADO`. O
+> histórico do Actions foi consultado e o quadro é bem pior do que "gate que aparenta verde".
 
-Não consegui verificar a conclusão real dos checks (sem acesso a histórico de execução do Actions).
-Marcado `NAO_VERIFICADO`.
+Consulta ao histórico do workflow `ci.yml` no branch `main`:
+
+| | |
+|---|---|
+| Execuções analisadas | **30** (as mais recentes disponíveis) |
+| Janela | 2026-07-28 → 2026-08-15 (19 dias) |
+| Conclusão `success` | **0** |
+| Conclusão `failure` | **30** |
+| Merges para `main` nessa janela | **19 pull requests** |
+
+**Não existe uma única execução verde na janela observável.** E 19 PRs foram integrados a `main`
+mesmo assim — inclusive todos os `fix:` de auditoria dos últimos dias (`#10` a `#19`). O gate existe,
+roda, falha, e **não bloqueia merge**.
+
+Isso reenquadra tudo o que este documento diz sobre qualidade: a rede de segurança do projeto está
+desligada há pelo menos 19 dias, e ninguém foi avisado — mesmo padrão de falha silenciosa do R3.
+
+**Duas causas confirmadas nesta auditoria** (pode haver mais):
+
+1. **`zod-coverage`** — `scripts/security/zod-coverage.baseline` contém `0`, mas 10 Edge Functions
+   consomem `req.json()` sem `validatePayload`. O gate falha em toda execução.
+2. **Suíte E2E não conseguia nem coletar** — desde `694e400` (2026-08-14), `e2e/auth/admin-rbac.e2e.ts`
+   usava `test.beforeEach((_fixtures, …))`, padrão que o Playwright rejeita na coleta, matando os 3
+   shards inteiros. Corrigido nesta branch (`50c28ef`).
+
+**E uma terceira causa, identificada mas não corrigida:** com a coleta destravada, os testes rodam e
+**37 falham** por erro de boot da aplicação. `src/integrations/supabase/client.ts:19-34` exige
+**três** variáveis (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`)
+e lança erro explícito se qualquer uma faltar. O job `e2e` do `ci.yml` (linhas 199-207) injeta
+**apenas as duas primeiras** — `VITE_SUPABASE_PROJECT_ID` não é passada. A aplicação não sobe, e todo
+teste que depende de UI falha.
+
+Correção necessária no `ci.yml`, dentro do `env:` do passo de E2E:
+
+```yaml
+VITE_SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+```
+
+**Depende de um secret do repositório que não consigo ver nem criar** — por isso está aqui como
+recomendação, não como commit. Ver [§8, item `G`](#-exige-decisão-sua--toca-provisionamentoprodução).
+
+**Ainda em pé da revisão 1:** 6 passos do job `quality-gate` são guardados por
+`if: ${{ env.DATABASE_URL != '' }}` ou equivalente (linhas 50, 65, 84, 102, 120, 127). Sem os secrets,
+**passam sem executar**. Não é a causa do vermelho atual, mas é cobertura que não existe.
 
 ---
 
@@ -266,6 +308,10 @@ Vale registrar com a mesma honestidade:
 - **Histórico recente de commits mostra rigor.** Os últimos ~10 commits são correções de bugs reais
   encontrados por auditoria (`6dcc95d fix: perda silenciosa de dados`, `00ea11e fix: divergencias edge
   functions x frontend`). O time está caçando esta classe de problema ativamente.
+  > **⚠️ Ressalva (revisão 2).** O esforço é real, mas **os 19 PRs dessa janela foram integrados a
+  > `main` com o CI vermelho** — nenhuma das 30 execuções passou ([§3 R8](#-r8--o-ci-nunca-ficou-verde-30-de-30-execuções-em-main-falharam-crítico)).
+  > Ou seja: as correções foram feitas sem verificação automatizada confirmando que não quebraram
+  > outra coisa. Isso não anula o mérito — reposiciona o risco.
 - **Os 47 `TODO(2026-08-14)`** em `src/` não são dívida esquecida: são marcações honestas de colunas
   removidas de INSERTs por não existirem no schema canônico. Documentam a divergência em vez de escondê-la.
 
@@ -530,7 +576,8 @@ tentar ativar notificações.
 | **Histórico de execução dos jobs** | ⛔ NAO_VERIFICADO | `cron.job_run_details` não consultado — sem jobs, sem histórico |
 | **Logs das Edge Functions** | ⛔ NAO_VERIFICADO | Sem acesso à Management API deste projeto |
 | **Quais Edge Functions estão de fato implantadas** | ⛔ NAO_VERIFICADO | `functions_list` requer token de Management API |
-| **Conclusão real dos checks de CI** | ⛔ NAO_VERIFICADO | Sem acesso ao histórico do GitHub Actions |
+| **Conclusão real dos checks de CI** | ✅ VERIFICADO (rev. 2) | **30 de 30 execuções em `main` falharam** (2026-07-28 → 2026-08-15). Zero verdes |
+| **Suíte E2E executa?** | ✅ VERIFICADO (rev. 2) | Não coletava desde 2026-08-14; destravada em `50c28ef`, agora **37 falham** por erro de boot (falta `VITE_SUPABASE_PROJECT_ID` no job) |
 | **Build / lint / type-check / testes** | ⛔ NAO_VERIFICADO | `node_modules` ausente — análise 100% estática |
 | **Secrets configurados no vault** | ⛔ NAO_VERIFICADO | Não inspecionados (decisão deliberada) |
 
@@ -592,7 +639,7 @@ Declarado explicitamente, não escondido:
 | D | Instalar **`pg_net`** e reagendar os **16 cron jobs** | Liga automações que passarão a enviar e-mail/webhook de verdade |
 | E | Decidir o destino do **módulo de logística** (`drivers`, `lalamove_*`, `/logistica`) | É domínio alheio herdado. Remover é limpeza; manter é dívida |
 | F | Decidir se a **emissão de NF-e** vira integração real ou é removida da UI | Feature de risco fiscal alto rodando em simulação |
-| G | Verificar se os **secrets do CI** existem, senão os gates passam sem testar | Gate verde que não verificou nada é pior que gate vermelho |
+| G | **Destravar o CI** — criar/confirmar o secret `SUPABASE_PROJECT_ID` e adicionar `VITE_SUPABASE_PROJECT_ID` ao job `e2e`; decidir o que fazer com o gate `zod-coverage` (10 funções sem Zod × baseline 0) | **Subiu para prioridade alta na revisão 2.** 30 de 30 execuções vermelhas e 19 merges por cima. Só você pode criar secrets |
 
 ### Sequência recomendada
 
@@ -686,6 +733,13 @@ invertido, 2 números errados, 1 dimensão faltando, 1 lacuna de cobertura**. To
 10. **"Nenhum teste desligado" era enganoso.** Correto para os 2.252 unitários; falso para os 26 E2E,
     que estavam quebrados na coleta desde 2026-08-14. Corrigido em [§4](#4-o-que-está-bom-não-distorcendo-o-quadro)
     e no código (`50c28ef`).
+
+11. **R8 subestimado: reclassificado de 🟡 MÉDIO para 🔴 CRÍTICO.** A revisão 1 marcou a conclusão dos
+    checks como `NAO_VERIFICADO` e tratou o risco como "gate que aparenta verde". O histórico do
+    Actions foi consultado: **30 de 30 execuções em `main` falharam**, em 19 dias, com **19 PRs
+    integrados por cima**. Não é gate frouxo — é gate desligado. Três causas confirmadas, uma delas
+    corrigida nesta branch. Detalhe em [§3 R8](#-r8--o-ci-nunca-ficou-verde-30-de-30-execuções-em-main-falharam-crítico).
+    Consequência secundária: a frase de elogio em §4 sobre o rigor dos commits recentes ganhou ressalva.
 
 **Achados que sobreviveram à refutação, sem alteração:** R1 (ambiente não reconstruível), R3 (0 crons +
 `pg_net` ausente), R4 (emissão de NF-e é simulação — confirmado que **não existe** nenhuma Edge Function

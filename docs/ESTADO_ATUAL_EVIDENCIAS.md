@@ -401,7 +401,48 @@ Se os secrets não existirem, esses passos são **pulados silenciosamente** e o 
 mudanças apenas em `src/` **não disparam** esse gate — comportamento provavelmente intencional, mas
 registrado.
 
-**`NAO_VERIFICADO`:** a conclusão real dos checks. Sem acesso ao histórico do GitHub Actions.
+### 11-B. Conclusão real dos checks (revisão 2 — antes `NAO_VERIFICADO`)
+
+Histórico do workflow `ci.yml` no branch `main`, 30 execuções mais recentes:
+
+| Execução | Data | Conclusão | Commit |
+|---:|---|---|---|
+| 532 | 2026-08-15 14:48 | **failure** | Merge PR #19 |
+| 530 | 2026-08-15 14:35 | **failure** | Merge PR #18 |
+| 528 | 2026-08-15 14:25 | **failure** | Merge PR #17 |
+| 526 | 2026-08-15 11:56 | **failure** | Merge PR #16 |
+| 524 | 2026-08-15 10:35 | **failure** | Merge PR #15 |
+| 522 | 2026-08-15 01:44 | **failure** | Merge PR #14 |
+| 520 | 2026-08-15 01:12 | **failure** | Merge PR #13 |
+| 518 | 2026-08-15 00:39 | **failure** | Merge PR #12 |
+| 516 | 2026-08-15 00:13 | **failure** | Merge PR #11 |
+| 514 | 2026-08-14 21:20 | **failure** | Merge PR #10 |
+| 511 | 2026-08-14 19:42 | **failure** | commit direto |
+| 510 | 2026-08-11 20:21 | **failure** | `security: remove migrate-helper edge function` |
+| 509–492 | 2026-07-28 → 2026-07-30 | **failure** (18×) | série de gates #25–#35 |
+
+**Contagem: `{'failure': 30}`. Zero `success`.** Janela de 19 dias, 19 pull requests integrados.
+
+### Causas confirmadas do vermelho
+
+| # | Causa | Status |
+|---|---|---|
+| 1 | `zod-coverage`: 10 Edge Functions sem `validatePayload` × baseline `0` | Aberto — exige escrever schemas Zod |
+| 2 | E2E não coletava: `test.beforeEach((_fixtures, …))` rejeitado pelo Playwright | **Corrigido** em `50c28ef` |
+| 3 | 37 testes E2E falham no boot da app: `client.ts:19-34` exige 3 variáveis, o job `e2e` do `ci.yml:199-207` injeta 2 — falta `VITE_SUPABASE_PROJECT_ID` | Aberto — exige secret do repositório |
+
+Diff necessário para a causa 3 (não aplicado — depende de secret que a auditoria não pode criar):
+
+```yaml
+# .github/workflows/ci.yml, no env: do passo "E2E Tests"
+  VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
++ VITE_SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+```
+
+Evidência da causa 3, do log do shard 1/3 (run 31951455544): `37 failed, 15 skipped`, com falhas
+concentradas em asserções de UI básica (`#login-email` não visível, redirect de `/admin/*` não ocorre)
+— sintoma de aplicação que não monta, não de regressão funcional.
 
 ---
 
