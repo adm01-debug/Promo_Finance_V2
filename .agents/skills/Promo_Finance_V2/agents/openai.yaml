@@ -1,0 +1,6 @@
+interface:
+  display_name: "Promo Finance V2"
+  short_description: "Repo-specific patterns and workflows for Promo_Finance_V2"
+  default_prompt: "Use the Promo_Finance_V2 repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
