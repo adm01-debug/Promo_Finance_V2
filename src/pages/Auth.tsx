@@ -48,7 +48,21 @@ export default function Auth() {
   // Forgot Password View
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/30">
+      <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+        {/* Fundo MeshGradient azul (mesmo efeito do login) */}
+        <div className="absolute inset-0 -z-10" aria-hidden="true">
+          <Grainient
+            timeSpeed={0.12}
+            grainAmount={0.06}
+            grainAnimated
+            color1="#0F1F4B"
+            color2="#2563EB"
+            color3="#020617"
+            contrast={1.15}
+            saturation={0.85}
+            className="h-full w-full"
+          />
+        </div>
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -78,14 +92,14 @@ export default function Auth() {
       {/* Fundo MeshGradient azul (efeito hero-22, tema Promo Finance) */}
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <Grainient
-          timeSpeed={0.2}
-          grainAmount={0.08}
+          timeSpeed={0.12}
+          grainAmount={0.06}
           grainAnimated
-          color1="#1E3A8A"
-          color2="#3B82F6"
-          color3="#0F172A"
-          contrast={1.2}
-          saturation={0.9}
+          color1="#0F1F4B"
+          color2="#2563EB"
+          color3="#020617"
+          contrast={1.15}
+          saturation={0.85}
           className="h-full w-full"
         />
       </div>
