@@ -91,3 +91,9 @@
 | 85 | `whatsapp-ai-analyzer` | `supabase/functions/whatsapp-ai-analyzer/index.ts` |
 | 86 | `whatsapp-ia-proativo` | `supabase/functions/whatsapp-ia-proativo/index.ts` |
 | 87 | `whatsapp-webhook` | `supabase/functions/whatsapp-webhook/index.ts` |
+
+## Requisitos operacionais específicos
+
+- `executar-regua-cobranca`: exige o secret `REGUA_CRON_SECRET` e o cabeçalho
+  `x-cron-secret` em todas as chamadas POST. Aceita `{ "dry_run": true }` para
+  validar regras e títulos sem enviar mensagens nem persistir execuções.
