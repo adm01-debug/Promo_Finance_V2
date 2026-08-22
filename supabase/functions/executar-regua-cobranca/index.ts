@@ -1,5 +1,8 @@
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { dataAlvoUtc, normalizarCanais, normalizarDiasGatilho, type CanalRegua } from './domain.ts'
+import { z } from '../_shared/zod.ts'
+
+const BodySchema = z.object({ dry_run: z.boolean().default(false) })
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,8 +23,9 @@ Deno.serve(async (req) => {
   if (req.headers.get('x-cron-secret') !== cronSecret) return resposta({ error: 'Não autorizado' }, 401)
 
   try {
-    const body = await req.json().catch(() => ({})) as { dry_run?: boolean }
-    const dryRun = body.dry_run === true
+    const parsed = BodySchema.safeParse(await req.json().catch(() => ({})))
+    if (!parsed.success) return resposta({ error: 'Payload inválido' }, 400)
+    const dryRun = parsed.data.dry_run
     const supabase = createClient(supabaseUrl, serviceRoleKey)
     const { data: regras, error: regrasError } = await supabase
       .from('regua_cobranca')

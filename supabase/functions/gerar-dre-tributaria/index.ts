@@ -4,11 +4,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { z } from '../_shared/zod.ts';
 
-interface ReqBody {
-  empresa_id?: string;
-  periodo?: string;
-}
+const ReqBodySchema = z.object({
+  empresa_id: z.string().uuid(),
+  periodo: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+});
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return respostaPreflight();
@@ -20,18 +21,16 @@ Deno.serve(async (req) => {
   if (!guard.ok) return guard.resposta;
 
   try {
-    const body: ReqBody = await req.json().catch(() => ({}));
-    const empresaId = body?.empresa_id;
-    const periodo = body?.periodo;
-    if (!empresaId) return jsonComCors({ error: 'empresa_id é obrigatório' }, 400);
-    if (!periodo || !/^\d{4}-\d{2}$/.test(periodo))
-      return jsonComCors({ error: 'periodo deve ser YYYY-MM' }, 400);
+    const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) return jsonComCors({ error: 'empresa_id e periodo YYYY-MM são obrigatórios' }, 400);
+    const { empresa_id: empresaId, periodo } = parsed.data;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     let receitaBruta = 0;
     let totalTributosPagos = 0;
+    let regime = 'simples';
 
     if (supabaseUrl && serviceKey) {
       const supa = createClient(supabaseUrl, serviceKey);
@@ -55,9 +54,7 @@ Deno.serve(async (req) => {
         .select('regime_tributario')
         .eq('id', empresaId)
         .maybeSingle();
-      var regime = (emp as any)?.regime_tributario || 'simples';
-    } else {
-      var regime = 'simples';
+      if (typeof emp?.regime_tributario === 'string') regime = emp.regime_tributario;
     }
 
     // Receita fallback se vazia

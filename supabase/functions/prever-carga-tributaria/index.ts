@@ -5,6 +5,12 @@
 //     cenario_agressivo_total, acoes_recomendadas[], resumo_executivo }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { z } from '../_shared/zod.ts';
+
+const ReqBodySchema = z.object({
+  empresa_id: z.string().uuid(),
+  meses_historico: z.number().int().min(3).max(24).default(12),
+});
 
 interface PrevisaoMes {
   mes_offset: number;
@@ -39,13 +45,9 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
 
   try {
-    const body = await req.json().catch(() => ({}));
-    const empresaId: string | undefined = body?.empresa_id;
-    const mesesHistorico = Math.max(3, Math.min(24, Number(body?.meses_historico ?? 12)));
-
-    if (!empresaId || typeof empresaId !== 'string') {
-      return jsonComCors({ error: 'empresa_id é obrigatório' }, 400);
-    }
+    const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) return jsonComCors({ error: 'empresa_id ou meses_historico inválido' }, 400);
+    const { empresa_id: empresaId, meses_historico: mesesHistorico } = parsed.data;
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');

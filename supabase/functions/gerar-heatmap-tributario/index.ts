@@ -4,11 +4,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { z } from '../_shared/zod.ts';
 
-interface ReqBody {
-  empresa_id?: string;
-  ano?: number;
-}
+const ReqBodySchema = z.object({
+  empresa_id: z.string().uuid(),
+  ano: z.number().int().min(2000).max(2100).default(() => new Date().getFullYear()),
+});
 interface CelulaHeatmap {
   mes: number;
   tributo: string;
@@ -48,10 +49,9 @@ Deno.serve(async (req) => {
   if (!guard.ok) return guard.resposta;
 
   try {
-    const body: ReqBody = await req.json().catch(() => ({}));
-    const empresaId = body?.empresa_id;
-    const ano = Number(body?.ano ?? new Date().getFullYear());
-    if (!empresaId) return jsonComCors({ error: 'empresa_id é obrigatório' }, 400);
+    const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) return jsonComCors({ error: 'empresa_id ou ano inválido' }, 400);
+    const { empresa_id: empresaId, ano } = parsed.data;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');

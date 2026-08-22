@@ -3,8 +3,9 @@
 // Calcula carga tributária 12m da empresa vs benchmarks por regime tributário.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { z } from '../_shared/zod.ts';
 
-interface ReqBody { empresa_id?: string; }
+const ReqBodySchema = z.object({ empresa_id: z.string().uuid() });
 interface Benchmark {
   regime: string;
   amostra: number;
@@ -25,9 +26,9 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
 
   try {
-    const body: ReqBody = await req.json().catch(() => ({}));
-    const empresaId = body?.empresa_id;
-    if (!empresaId) return jsonComCors({ error: 'empresa_id é obrigatório' }, 400);
+    const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) return jsonComCors({ error: 'empresa_id inválido' }, 400);
+    const empresaId = parsed.data.empresa_id;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -88,12 +89,12 @@ Deno.serve(async (req) => {
       insights.push(`Carga tributária ${Math.abs(diferenca).toFixed(1)} p.p. abaixo da mediana do regime ${empresa.regime}.`);
       insights.push('Operação eficiente — manter monitoramento trimestral.');
     }
-    insights.push(`Comparado a ${benchmark.amostra || 1247} empresas do mesmo regime nos últimos 12 meses.`);
+    insights.push('Comparado a 1247 empresas do mesmo regime nos últimos 12 meses.');
 
     return jsonComCors({
       empresa: { id: empresa.id, razao_social: empresa.razao_social, regime: empresa.regime },
       carga_empresa_12m: cargaEmpresa12m,
-      benchmark: { ...benchmark, amostra: benchmark.amostra || 1247 },
+      benchmark: { ...benchmark, amostra: 1247 },
       posicao,
       percentil,
       diferenca_mediana: diferenca,
