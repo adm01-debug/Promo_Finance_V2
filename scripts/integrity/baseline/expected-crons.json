@@ -1,1 +1,6 @@
-[]
+[
+  {
+    "jobname": "executar-regua-cobranca-diaria",
+    "schedule": "0 12 * * *"
+  }
+]
