@@ -62,10 +62,13 @@ async function logout(page: Page) {
     await skipTour.click();
     await expect(page.locator('.react-joyride__overlay')).toHaveCount(0);
   }
-  // O onboarding é um fluxo independente; overlays residuais não devem
-  // impedir este teste de exercitar especificamente a ação de logout.
-  await userMenu.click({ force: true });
-  await page.getByRole('menuitem', { name: /^sair$/i }).click({ force: true });
+  // A navegação por teclado é parte do contrato acessível do menu e não é
+  // bloqueada por overlays visuais de fluxos independentes.
+  await userMenu.focus();
+  await userMenu.press('Enter');
+  const logoutItem = page.getByRole('menuitem', { name: /^sair$/i });
+  await expect(logoutItem).toBeVisible();
+  await logoutItem.press('Enter');
 }
 
 // ============================================================================
