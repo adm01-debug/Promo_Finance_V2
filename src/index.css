@@ -2,6 +2,14 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* Título "Bem-vindo de volta" com reveal por blur (efeito hero-22) */
+.hero22-title-blur {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.25em;
+}
+
 @layer base {
   @keyframes pulse-subtle {
     0%, 100% { opacity: 1; transform: scale(1); }

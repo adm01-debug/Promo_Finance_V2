@@ -6,6 +6,8 @@ import { LogIn, UserPlus, Shield } from 'lucide-react';
 import {
   AuthMobileHeader
 } from '@/components/auth/AuthBackground';
+import { Grainient } from '@/components/effects/Grainient';
+import { BlurText } from '@/components/effects/BlurText';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { AccountLockoutBanner } from '@/components/auth/AccountLockoutBanner';
 import { RegisterForm } from '@/components/auth/RegisterForm';
@@ -73,13 +75,28 @@ export default function Auth() {
   // Main Auth View
   return (
     <div className="min-h-screen relative overflow-hidden flex">
-      <div className="hidden lg:flex w-1/2 bg-muted/30 items-center justify-center border-r border-border">
+      {/* Fundo MeshGradient azul (efeito hero-22, tema Promo Finance) */}
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
+        <Grainient
+          timeSpeed={0.2}
+          grainAmount={0.08}
+          grainAnimated
+          color1="#1E3A8A"
+          color2="#3B82F6"
+          color3="#0F172A"
+          contrast={1.2}
+          saturation={0.9}
+          className="h-full w-full"
+        />
+      </div>
+
+      <div className="hidden lg:flex w-1/2 items-center justify-center border-r border-white/10">
         <div className="max-w-md text-center space-y-4">
-          <div className="h-16 w-16 bg-primary rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-primary/20">
+          <div className="h-16 w-16 bg-primary rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-primary/40">
             <Shield className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Promo Finance</h2>
-          <p className="text-muted-foreground text-lg font-medium leading-relaxed">
+          <h2 className="text-3xl font-bold tracking-tight text-white drop-shadow-sm">Promo Finance</h2>
+          <p className="text-white/70 text-lg font-medium leading-relaxed">
             Sua plataforma de inteligência financeira premium.
           </p>
         </div>
@@ -87,7 +104,7 @@ export default function Auth() {
 
 
       <div className="w-full lg:w-1/2 relative">
-        <div className="absolute inset-0 bg-background pointer-events-none" />
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm pointer-events-none" />
 
         <div className="relative z-10 min-h-screen flex items-center justify-center p-4 lg:p-8">
           <motion.div
@@ -103,10 +120,16 @@ export default function Auth() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="border border-border bg-card shadow-xl shadow-foreground/5 rounded-2xl overflow-hidden">
+              <Card className="border border-border bg-card/95 backdrop-blur-md shadow-2xl shadow-foreground/10 rounded-2xl overflow-hidden">
                 <CardHeader className="text-center p-8 pb-2">
                   <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-                    Bem-vindo de volta
+                    <BlurText
+                      text="Bem-vindo de volta"
+                      animateBy="words"
+                      delay={120}
+                      stepDuration={0.4}
+                      className="hero22-title-blur"
+                    />
                   </CardTitle>
                   <CardDescription className="text-sm font-medium text-muted-foreground">
                     Acesse sua conta para continuar
