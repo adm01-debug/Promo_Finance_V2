@@ -48,12 +48,6 @@ export const handler = async (req: Request) => {
   }
 
   try {
-    const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY')
-    if (!ASAAS_API_KEY) {
-      throw new Error('ASAAS_API_KEY não configurada')
-
-    }
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -93,6 +87,13 @@ export const handler = async (req: Request) => {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
+    }
+
+    // Só revela indisponibilidade da integração depois de autenticar e autorizar
+    // o usuário, evitando exposição de configuração interna a chamadas anônimas.
+    const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY')
+    if (!ASAAS_API_KEY) {
+      throw new Error('Integração ASAAS indisponível')
     }
 
     const rawBody = await req.json()

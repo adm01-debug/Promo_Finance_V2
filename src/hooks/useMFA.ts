@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 
 interface MFAFactor {
   id: string;
-  factor_type: 'totp';
+  factor_type: string;
   status: 'verified' | 'unverified';
   friendly_name?: string;
   created_at: string;

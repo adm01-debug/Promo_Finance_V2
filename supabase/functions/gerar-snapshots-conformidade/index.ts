@@ -13,7 +13,7 @@
  */
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeaders } from "../_shared/cors.ts";
-import { z } from 'npm:zod@3.23.8';
+import { z } from '../_shared/zod.ts';
 
 import { gerarCalendario, competenciasAoRedor } from '../_shared/obrigacoes/calendario.ts';
 import { calcularConformidade, type RegistroEntrega } from '../_shared/obrigacoes/conformidade.ts';
