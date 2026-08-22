@@ -57,3 +57,14 @@ Workers/editores NUNCA mexem em git/branches — só o orquestrador.
 2. **Verdade acima de validação.** Não sabe → diga. Falhou → diga. Nunca "sucesso" fabricado.
 3. **Zero churn / diff mínimo.** Não refatore nem reescreva arquivo inteiro para mudar 3 linhas.
 4. **Execução end-to-end.** Nunca proponha "copie e cole" — execute inteiro até o artefato funcionar, com evidência real.
+
+---
+
+## Base44 dev environment
+
+- **Stack:** Vite 5 + React 18 + TypeScript SPA. Backend é um projeto Supabase remoto (Edge Functions + Postgres); não há processo de backend neste repo.
+- **Como rodar:** `docker compose -f docker-compose.base44.yml up -d` — serviço `web` (node:22) bind-mounta o source, instala deps em volume nomeado e roda `npm run dev` (Vite em :8080, mapeado para host :3000). Live reload via SWC.
+- **Secrets obrigatórios para funcionalidade:** `VITE_SUPABASE_URL`, `VITE_SUPABASE_PROJECT_ID`, `VITE_SUPABASE_PUBLISHABLE_KEY` (Supabase Dashboard → Project Settings → API). Sem eles o app renderiza a tela de login mas não conecta ao backend. Entregues via `/run/base44/app.env` (platform-managed); placeholders em `.env.base44-defaults` permitem boot sem credenciais.
+- **Quirk de boot:** `src/main.tsx` faz health-check (`/auth/v1/health`) antes de montar o React. Falha de rede (sem status) é tratada como transitória e o app monta; status >=400 mostra tela de erro de configuração.
+- **`vite.config.ts`** tem `server.allowedHosts: true` para aceitar o hostname externo do preview (necessário — não remover).
+- **Verificar:** `curl -sf -H "Host: external-preview.example.com" http://localhost:3000/` deve retornar 200 com o HTML do app.
