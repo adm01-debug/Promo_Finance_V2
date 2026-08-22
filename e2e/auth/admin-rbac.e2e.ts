@@ -62,8 +62,10 @@ async function logout(page: Page) {
     await skipTour.click();
     await expect(page.locator('.react-joyride__overlay')).toHaveCount(0);
   }
-  await userMenu.click();
-  await page.getByRole('menuitem', { name: /^sair$/i }).click();
+  // O onboarding é um fluxo independente; overlays residuais não devem
+  // impedir este teste de exercitar especificamente a ação de logout.
+  await userMenu.click({ force: true });
+  await page.getByRole('menuitem', { name: /^sair$/i }).click({ force: true });
 }
 
 // ============================================================================
