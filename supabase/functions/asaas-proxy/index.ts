@@ -6,6 +6,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { validatePayload, createErrorResponse, AsaasProxySchema, corsHeaders } from '../_shared/validation.ts'
 import { withRetry, createCircuitBreaker } from '../_shared/resilience.ts'
+import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts'
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3'
 const asaasCB = createCircuitBreaker('asaas')
@@ -787,30 +788,70 @@ export const handler = async (req: Request) => {
 
       case 'analisar_risco_cliente': {
         if (!data?.cliente_id) return err('cliente_id é obrigatório')
-        
-        const { data: cliente } = await supabase.from('clientes').select('*').eq('id', data.cliente_id).single();
-        const { data: pagamentos } = await supabase.from('asaas_payments').select('*').eq('asaas_customer_id', cliente?.asaas_id).limit(20);
-        
-        // Simulação de análise via IA (Copilot Global)
-        const prompt = `Analise o histórico de pagamentos deste cliente e sugira um score de risco (0-1000).
-        Cliente: ${cliente?.razao_social}. Pagamentos: ${JSON.stringify(pagamentos)}.`
-        
-        const { data: iaResult } = await supabase.functions.invoke('copilot-global', {
+
+        const { data: cliente, error: clienteError } = await supabase
+          .from('clientes')
+          .select('id,empresa_id,razao_social')
+          .eq('id', data.cliente_id)
+          .single()
+        if (clienteError || !cliente) return err('Cliente não encontrado', 404)
+        if (!cliente.empresa_id) return err('Cliente sem empresa vinculada', 422)
+
+        if (roleData.role !== 'admin') {
+          const { data: vinculo, error: vinculoError } = await supabase
+            .from('user_empresas')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('empresa_id', cliente.empresa_id)
+            .eq('ativo', true)
+            .limit(1)
+            .maybeSingle()
+          if (vinculoError) return err('Falha ao validar acesso à empresa', 500)
+          if (!vinculo) return err('Sem acesso ao cliente informado', 403)
+        }
+
+        const { data: asaasCustomer, error: customerError } = await supabase
+          .from('asaas_customers')
+          .select('id')
+          .eq('cliente_id', cliente.id)
+          .eq('empresa_id', cliente.empresa_id)
+          .limit(1)
+          .maybeSingle()
+        if (customerError) return err('Falha ao consultar vínculo Asaas do cliente', 500)
+        if (!asaasCustomer) return err('Cliente ainda não vinculado ao Asaas', 422)
+
+        const { data: pagamentos, error: pagamentosError } = await supabase
+          .from('asaas_payments')
+          .select('status,valor,valor_liquido,data_vencimento,data_pagamento')
+          .eq('asaas_customer_id', asaasCustomer.id)
+          .eq('empresa_id', cliente.empresa_id)
+          .order('created_at', { ascending: false })
+          .limit(20)
+        if (pagamentosError) return err('Falha ao consultar histórico de pagamentos', 500)
+
+        const prompt = `Analise o histórico de pagamentos e responda somente JSON válido no formato
+        {"score": 0, "recomendacao": "texto"}. O score deve ser inteiro entre 0 e 1000.
+        Cliente: ${cliente.razao_social}. Pagamentos: ${JSON.stringify(pagamentos)}.`
+
+        const { data: iaResult, error: iaError } = await supabase.functions.invoke('copilot-global', {
           body: { prompt, context: 'analise_risco_credito' }
         })
+        if (iaError) return err('Serviço de análise de risco indisponível', 502)
 
-        const score = parseInt(iaResult?.text?.match(/\d+/)?.[0] || '500');
-        const faixa = score > 800 ? 'BAIXO' : score > 400 ? 'MEDIO' : 'ALTO';
+        const analise = extrairAnaliseRisco(iaResult?.text)
+        if (!analise) return err('Resposta inválida do serviço de análise de risco', 502)
+        const faixa = faixaDoScore(analise.score)
 
-        await supabase.from('asaas_credit_risk_analysis').insert({
+        const { error: insertError } = await supabase.from('asaas_credit_risk_analysis').insert({
           cliente_id: data.cliente_id,
-          score_risco: score,
+          score_risco: analise.score,
           faixa_risco: faixa,
-          recomendacao: iaResult?.text || 'Sem recomendação disponível.',
+          recomendacao: analise.recomendacao,
           metadata: { analysis_at: new Date().toISOString() }
-        });
+        })
+        if (insertError) return err('Falha ao persistir análise de risco', 500)
 
-        result = { score, faixa, recommendation: iaResult?.text };
+        result = { score: analise.score, faixa, recommendation: analise.recomendacao }
         break
       }
 
