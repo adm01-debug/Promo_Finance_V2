@@ -52,6 +52,9 @@ async function logout(page: Page) {
   // explicitamente o menu estável do header para não disputar essa renderização.
   const userMenu = page.getByTestId('user-menu');
   await expect(userMenu).toBeVisible({ timeout: 15_000 });
+  // O toast de login ocupa o canto do header e intercepta o clique enquanto
+  // está visível. O teste deve exercitar um clique real, sem force.
+  await expect(page.locator('[data-sonner-toast]')).toHaveCount(0, { timeout: 15_000 });
   await userMenu.click();
   await page.getByRole('menuitem', { name: /^sair$/i }).click();
 }
