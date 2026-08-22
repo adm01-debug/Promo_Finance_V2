@@ -148,11 +148,12 @@ Deno.serve(async (req) => {
     const { empresaId, anoReferencia, mesReferencia, parametrosOverride, regimeAtual, persist = true } = parsed.data as Record<string, any>;
 
     // Autorização multi-tenant: a leitura passa pelo RLS do próprio usuário.
-    const { data: empresaPermitida } = await sbUser
+    const { data: empresaPermitida, error: empresaError } = await sbUser
       .from('empresas')
       .select('id')
       .eq('id', empresaId)
       .maybeSingle();
+    if (empresaError) throw new Error(`Falha ao validar acesso a empresa: ${empresaError.message}`);
     if (!empresaPermitida) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -164,10 +165,14 @@ Deno.serve(async (req) => {
     const mes = mesReferencia ?? hoje.getMonth() + 1;
 
     // Buscar dados reais da empresa para a simulação
-    const [{ data: faturamento }, { data: folha }] = await Promise.all([
+    const [faturamentoResult, folhaResult] = await Promise.all([
       sb.from('faturamento_mensal').select('*').eq('empresa_id', empresaId).order('ano', { ascending: false }).order('mes', { ascending: false }).limit(24),
       sb.from('folha_pagamento').select('*').eq('empresa_id', empresaId).order('ano', { ascending: false }).order('mes', { ascending: false }).limit(24),
     ]);
+    if (faturamentoResult.error) throw new Error(`Falha ao carregar faturamento: ${faturamentoResult.error.message}`);
+    if (folhaResult.error) throw new Error(`Falha ao carregar folha de pagamento: ${folhaResult.error.message}`);
+    const faturamento = faturamentoResult.data;
+    const folha = folhaResult.data;
 
     const faturamentoMensal: FaturamentoMes[] = (faturamento || []).map((f) => ({
       ano: f.ano, mes: f.mes, receita_bruta: Number(f.receita_bruta) || 0,
@@ -203,9 +208,9 @@ Deno.serve(async (req) => {
 
 
     // CACHE LOOKUP
-    const cacheable = !parametrosOverride || Object.keys(parametrosOverride).length === 0;
+    const cacheable = persist && (!parametrosOverride || Object.keys(parametrosOverride).length === 0);
     if (cacheable) {
-      const { data: cached } = await sb
+      const { data: cached, error: cacheReadError } = await sb
         .from('regime_decision_cache')
         .select('decisao, expires_at')
         .eq('empresa_id', empresaId)
@@ -213,15 +218,17 @@ Deno.serve(async (req) => {
         .eq('mes', mes)
         .gt('expires_at', new Date().toISOString())
         .maybeSingle();
+      if (cacheReadError) throw new Error(`Falha ao consultar cache tributario: ${cacheReadError.message}`);
       if (cached?.decisao) {
         // Log cache hit in audit trail
-        await sb.from('tax_audit_trail').insert({
+        const { error: auditError } = await sb.from('tax_audit_trail').insert({
           user_id: userId,
           empresa_id: empresaId,
           ano, mes,
           action: 'cache_hit',
           parameters: params
         });
+        if (auditError) throw new Error(`Falha ao registrar auditoria tributaria: ${auditError.message}`);
 
         return new Response(JSON.stringify({ ...(cached.decisao as object), params, fromCache: true }), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -268,25 +275,35 @@ Deno.serve(async (req) => {
 
     const finalResponse = { ...resultado, justificativaIA, params };
 
-    // Log simulation in audit trail
-    await sb.from('tax_audit_trail').insert({
-      user_id: userId,
-      empresa_id: empresaId,
-      ano, mes,
-      action: 'simulated',
-      parameters: params,
-      prompt: justificativaIA ? 'AI justification prompt' : null,
-      response: justificativaIA,
-      is_ai_justified: !!justificativaIA
-    });
+    if (persist) {
+      // A operacao so e confirmada depois que sua trilha obrigatoria foi gravada.
+      const { error: auditError } = await sb.from('tax_audit_trail').insert({
+        user_id: userId,
+        empresa_id: empresaId,
+        ano, mes,
+        action: 'simulated',
+        parameters: params,
+        prompt: justificativaIA ? 'AI justification prompt' : null,
+        response: justificativaIA,
+        is_ai_justified: !!justificativaIA
+      });
+      if (auditError) throw new Error(`Falha ao registrar auditoria tributaria: ${auditError.message}`);
+    }
 
     if (cacheable) {
-      await sb.from('regime_decision_cache').upsert({
+      const { error: cacheWriteError } = await sb.from('regime_decision_cache').upsert({
         empresa_id: empresaId,
         ano, mes,
         decisao: finalResponse,
         expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       });
+      if (cacheWriteError) {
+        logger.warn('regime_cache_write_failed', {
+          error_message: cacheWriteError.message,
+          context: { empresa_id: empresaId, ano, mes },
+        });
+        await logger.flush();
+      }
     }
 
     return new Response(JSON.stringify(finalResponse), {
@@ -294,7 +311,10 @@ Deno.serve(async (req) => {
     });
 
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
+    const message = e instanceof Error ? e.message : String(e);
+    logger.error('decidir_regime_failed', { error_message: message });
+    await logger.flush();
+    return new Response(JSON.stringify({ error: message }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
