@@ -65,13 +65,12 @@ export function EnviarCobrancaDialog({ conta, open, onOpenChange }: EnviarCobran
             </div>
             Enviar Cobrança
           </DialogTitle>
-          <DialogDescription>
-            <div className="mt-3 p-3 rounded-lg bg-muted/50">
+          <DialogDescription>Confira os dados do título antes de enviar a cobrança.</DialogDescription>
+          <div className="mt-3 rounded-lg bg-muted/50 p-3">
               <p className="font-medium text-foreground">{conta.cliente_nome}</p>
               <p className="text-sm">{conta.descricao} • {formatCurrency(conta.valor)}</p>
               <p className="text-xs mt-1">Vencimento: {formatDate(conta.data_vencimento)}</p>
-            </div>
-          </DialogDescription>
+          </div>
         </DialogHeader>
 
         {/* Canal Selection */}
