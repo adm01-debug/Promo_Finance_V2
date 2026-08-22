@@ -48,19 +48,12 @@ async function loginAs(page: Page, email: string, password: string) {
 }
 
 async function logout(page: Page) {
-  // Tenta abrir o menu de usuário (avatar/iniciais no header) e clicar em "Sair"
-  const userMenu = page
-    .getByRole('button', { name: /usuário|user menu|perfil/i })
-    .or(page.locator('[data-testid="user-menu"]'))
-    .first();
-
-  if (await userMenu.isVisible().catch(() => false)) {
-    await userMenu.click();
-  }
-  await page.getByRole('menuitem', { name: /sair|logout/i })
-    .or(page.getByRole('button', { name: /^sair$/i }))
-    .first()
-    .click();
+  // O redirect do login ocorre antes de o layout terminar de montar. Aguarda
+  // explicitamente o menu estável do header para não disputar essa renderização.
+  const userMenu = page.getByTestId('user-menu');
+  await expect(userMenu).toBeVisible({ timeout: 15_000 });
+  await userMenu.click();
+  await page.getByRole('menuitem', { name: /^sair$/i }).click();
 }
 
 // ============================================================================
