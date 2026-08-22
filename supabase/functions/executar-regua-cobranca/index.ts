@@ -59,6 +59,28 @@ Deno.serve(async (req) => {
 
         if (jaExecutado) continue
 
+        const correlationId = crypto.randomUUID()
+        const { data: execucao, error: reservaError } = await supabase
+          .from('execucoes_regua_cobranca')
+          .insert({
+            empresa_id: regra.empresa_id,
+            conta_receber_id: conta.id,
+            etapa: regra.etapa || regra.nome,
+            canal: regra.canal,
+            status: 'processando',
+            metadata: {
+              regra_id: regra.id,
+              correlation_id: correlationId,
+              timestamp: new Date().toISOString(),
+            },
+          })
+          .select('id')
+          .single()
+
+        // A constraint única diária é a autoridade para execuções concorrentes.
+        if (reservaError?.code === '23505') continue
+        if (reservaError) throw reservaError
+
         try {
           // 3. Disparar ação conforme canal
           const canal = regra.canal?.toLowerCase() || 'email'
@@ -85,7 +107,7 @@ Deno.serve(async (req) => {
           }
 
           if (canal === 'email' && conta.clientes?.email) {
-            await supabase.functions.invoke('enviar-alerta-email', {
+            const { error: envioError } = await supabase.functions.invoke('enviar-alerta-email', {
               body: {
                 tipo: 'vencimento',
                 destinatario: conta.clientes.email,
@@ -97,38 +119,33 @@ Deno.serve(async (req) => {
                 }
               }
             })
-            success = true
+            if (envioError) errorMsg = envioError.message
+            else success = true
           } else if (canal === 'whatsapp' && conta.clientes?.telefone) {
-            await supabase.functions.invoke('whatsapp-ia-proativo', {
+            const { error: envioError } = await supabase.functions.invoke('whatsapp-ia-proativo', {
               body: {
                 phone: conta.clientes.telefone,
                 message: template.replace('{{valor}}', conta.valor)
               }
             })
-            success = true
+            if (envioError) errorMsg = envioError.message
+            else success = true
           }
 
           // 4. Logar execução e disparar alerta em caso de falha
-          await supabase.from('execucoes_regua_cobranca').insert({
-            empresa_id: regra.empresa_id,
-            conta_receber_id: conta.id,
-            etapa: regra.etapa || regra.nome,
-            canal: regra.canal,
+          const { error: atualizacaoError } = await supabase.from('execucoes_regua_cobranca').update({
             status: success ? 'sucesso' : 'falha',
             mensagem_erro: errorMsg || (!success ? 'Falha no envio da mensagem' : null),
-            metadata: { 
-              regra_id: regra.id,
-              correlation_id: crypto.randomUUID(),
-              timestamp: new Date().toISOString()
-            }
-          })
+          }).eq('id', execucao.id)
+
+          if (atualizacaoError) throw atualizacaoError
 
           if (!success) {
             console.error(`Falha na régua para conta ${conta.id}: ${errorMsg || 'Erro no envio'}`)
             // O trigger no banco cuidará de criar o alerta na tabela 'alertas'
           }
 
-          results.push({ conta_id: conta.id, regra: regra.nome, success })
+          results.push({ conta_id: conta.id, regra: regra.nome, success, correlation_id: correlationId })
         } catch (e) {
           console.error(`Falha ao executar régua para conta ${conta.id}:`, e)
         }
@@ -140,7 +157,8 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('Erro régua cobrança:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    const mensagemErro = error instanceof Error ? error.message : 'Erro inesperado na régua de cobrança'
+    return new Response(JSON.stringify({ error: mensagemErro }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
