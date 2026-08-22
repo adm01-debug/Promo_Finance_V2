@@ -148,7 +148,9 @@ test.describe('Login/Logout › fluxo real com admin', () => {
     await expect(page).toHaveURL(/\/auth/, { timeout: 10_000 });
 
     // Tentar voltar para uma rota protegida deve redirecionar de novo para /auth
-    await page.goto('/dashboard');
+    // O guard redireciona imediatamente e pode abortar a navegação iniciada
+    // por page.goto no Chromium. Disparar pelo browser evita falso negativo.
+    await page.evaluate(() => window.location.assign('/dashboard'));
     await expect(page).toHaveURL(/\/auth/);
   });
 });
