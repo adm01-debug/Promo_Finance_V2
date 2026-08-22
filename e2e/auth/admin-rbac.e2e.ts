@@ -48,11 +48,6 @@ async function loginAs(page: Page, email: string, password: string) {
 }
 
 async function logout(page: Page) {
-  const skipTour = page.getByRole('button', { name: 'Pular tour' });
-  if (await skipTour.isVisible().catch(() => false)) {
-    await skipTour.click();
-  }
-
   // O redirect do login ocorre antes de o layout terminar de montar. Aguarda
   // explicitamente o menu estável do header para não disputar essa renderização.
   const userMenu = page.getByTestId('user-menu');
@@ -60,6 +55,13 @@ async function logout(page: Page) {
   // O toast de login ocupa o canto do header e intercepta o clique enquanto
   // está visível. O teste deve exercitar um clique real, sem force.
   await expect(page.locator('[data-sonner-toast]')).toHaveCount(0, { timeout: 15_000 });
+  // O tour consulta o progresso de forma assíncrona e pode montar depois do
+  // header. Neste ponto a consulta já assentou; encerra a primeira experiência.
+  const skipTour = page.locator('[data-action="skip"]');
+  if (await skipTour.isVisible().catch(() => false)) {
+    await skipTour.click();
+    await expect(page.locator('.react-joyride__overlay')).toHaveCount(0);
+  }
   await userMenu.click();
   await page.getByRole('menuitem', { name: /^sair$/i }).click();
 }
