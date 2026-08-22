@@ -116,6 +116,9 @@ export default defineConfig(({ mode }) => {
   server: {
     host: '::',
     port: 8080,
+    // Allow the preview's external hostname/origin (served through a proxy
+    // hostname that changes whenever the env is recreated).
+    allowedHosts: true,
   },
   };
 });

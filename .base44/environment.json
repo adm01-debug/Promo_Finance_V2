@@ -1,0 +1,22 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "VITE_SUPABASE_URL",
+      "description": "Remote Supabase project URL (Supabase Dashboard → Project Settings → API). Needed for the app to connect to its backend.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "VITE_SUPABASE_PROJECT_ID",
+      "description": "Supabase project ID (Supabase Dashboard → Project Settings → API). Needed alongside the URL/key.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "VITE_SUPABASE_PUBLISHABLE_KEY",
+      "description": "Supabase publishable (anon) key (Supabase Dashboard → Project Settings → API). Used by the frontend client.",
+      "requiredAtBoot": false
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+# Base44 dev environment for Promo_Finance_V2
+# Vite + React SPA backed by a remote Supabase project.
+# The app runs from the cloned source with live reload; edits appear without rebuilds.
+services:
+  web:
+    image: node:22
+    working_dir: /app
+    # Bind-mount the cloned source so edits are reflected live.
+    volumes:
+      - .:/app
+      # Keep installed deps in a named volume so they survive container restarts
+      # without polluting the host bind-mount.
+      - web_node_modules:/app/node_modules
+    # Install deps only when missing, then start the Vite dev server.
+    # The vite config binds host '::' on port 8080; we map it to host port 3000.
+    command: sh -c "if [ ! -d node_modules/@vitejs ]; then npm install --no-audit --no-fund; fi && npm run dev"
+    ports:
+      - "3000:8080"
+    environment:
+      # Passed in so Vite can derive the allowed dev origin at runtime.
+      - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX}
+      - NODE_OPTIONS=--max-old-space-size=4096
+    env_file:
+      # Repo-level placeholders — app boots without credentials.
+      - ./.env.base44-defaults
+      # Platform-managed secrets — LAST, always wins over placeholders.
+      - /run/base44/app.env
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  web_node_modules:
