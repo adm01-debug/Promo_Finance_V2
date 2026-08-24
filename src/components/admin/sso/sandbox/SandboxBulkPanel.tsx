@@ -172,7 +172,7 @@ export function SandboxBulkPanel({ onOpenInSimulator }: Props) {
     if (results.length === 0) return;
     const csv = exportBulkResultsCsv(results);
     // Evita uma classe dinâmica inválida gerada pelo extrator do Tailwind 4.
-    const ts = new Date().toISOString().replaceAll('-', '').replaceAll(':', '').replace('T', '').slice(0, 13);
+    const ts = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 13);
     downloadCsv(`lote-sandbox-${ts}.csv`, csv);
   };
 

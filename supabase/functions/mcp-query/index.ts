@@ -1,103 +1,95 @@
 /**
- * mcp-query — Proxy SQL com service_role para o MCP Worker (PROMO FINANCE V2)
- * Autenticação: header x-mcp-secret (valor no secret MCP_SECRET)
- * Bloqueia DROP/TRUNCATE/ALTER SYSTEM. Roda via RPC exec_sql (SECURITY DEFINER).
+ * mcp-query — Proxy SQL para o MCP Worker (PROMO FINANCE V2)
+ *
+ * Conexão direta ao Postgres via postgres.js usando SUPABASE_DB_URL,
+ * em vez de PostgREST + RPC exec_sql. Motivo: evita depender de uma
+ * função SECURITY DEFINER genérica no banco e devolve o resultado
+ * tabular já tipado, com erros de SQL legíveis.
+ *
+ * Autenticação: header x-mcp-secret (valor no secret MCP_SECRET).
+ * Bloqueia DROP/TRUNCATE/ALTER SYSTEM/RESET ALL.
  */
 
-const SECRET = Deno.env.get("MCP_SECRET");
+import postgres from 'https://esm.sh/postgres@3.4.5?target=denonext';
+
+const SECRET = Deno.env.get('MCP_SECRET');
+const DB_URL = Deno.env.get('SUPABASE_DB_URL');
 
 const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "x-mcp-secret, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'x-mcp-secret, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 const DESTRUCTIVE = /\b(DROP|TRUNCATE|ALTER\s+SYSTEM|RESET\s+ALL)\b/i;
 const IS_SELECT = /^\s*(SELECT|WITH)\b/i;
 
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+  });
+}
+
+/** Conexão única reaproveitada entre invocações no mesmo isolate. */
+let sql: ReturnType<typeof postgres> | null = null;
+function getSql(url: string) {
+  if (!sql) {
+    sql = postgres(url, {
+      max: 2,
+      idle_timeout: 20,
+      connect_timeout: 10,
+      prepare: false,
+    });
+  }
+  return sql;
+}
+
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
 
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "method_not_allowed" }), {
-      status: 405,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
-  }
+  if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
-  if (!SECRET) {
-    return new Response(JSON.stringify({ error: "server_misconfigured" }), {
-      status: 500,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
-  }
+  if (!SECRET || !DB_URL) return json({ error: 'server_misconfigured' }, 500);
 
-  if (req.headers.get("x-mcp-secret") !== SECRET) {
-    return new Response(JSON.stringify({ error: "unauthorized" }), {
-      status: 401,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
+  if (req.headers.get('x-mcp-secret') !== SECRET) {
+    return json({ error: 'unauthorized' }, 401);
   }
 
   let body: { sql?: string; limit?: number };
   try {
     body = await req.json();
   } catch {
-    return new Response(JSON.stringify({ error: "invalid json" }), {
-      status: 400,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
+    return json({ error: 'invalid json' }, 400);
   }
 
-  const { sql = "", limit = 100 } = body;
-  if (!sql.trim()) {
-    return new Response(JSON.stringify({ error: "empty sql" }), {
-      status: 400,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
-  }
+  const query = (body.sql ?? '').trim();
+  if (!query) return json({ error: 'empty sql' }, 400);
 
-  if (DESTRUCTIVE.test(sql)) {
-    return new Response(
-      JSON.stringify({ error: "Query destrutiva bloqueada (DROP/TRUNCATE/ALTER SYSTEM)" }),
-      { status: 400, headers: { ...CORS, "Content-Type": "application/json" } }
+  if (DESTRUCTIVE.test(query)) {
+    return json(
+      { error: 'Query destrutiva bloqueada (DROP/TRUNCATE/ALTER SYSTEM)' },
+      400,
     );
   }
 
-  const url = Deno.env.get("SUPABASE_URL");
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !key) {
-    return new Response(JSON.stringify({ error: "server_misconfigured" }), {
-      status: 500,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
+  const limite = Number.isFinite(body.limit) ? Math.trunc(body.limit as number) : 100;
+  const limiteSeguro = Math.min(Math.max(limite, 1), 10_000);
+
+  const finalSql =
+    IS_SELECT.test(query) && !/\blimit\b/i.test(query)
+      ? `${query.replace(/;\s*$/, '')} LIMIT ${limiteSeguro}`
+      : query;
+
+  try {
+    const client = getSql(DB_URL);
+    // `unsafe` é necessário porque o SQL vem inteiro do worker MCP;
+    // a proteção é o segredo compartilhado + o filtro de comandos destrutivos.
+    const rows = await client.unsafe(finalSql);
+    const lista = Array.isArray(rows) ? Array.from(rows) : [rows];
+    return json({ rows: lista, count: lista.length });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    return json({ error: { message } }, 400);
   }
-
-  const finalSql = IS_SELECT.test(sql) && !/\blimit\b/i.test(sql)
-    ? `${sql} LIMIT ${limit}`
-    : sql;
-
-  const res = await fetch(`${url}/rest/v1/rpc/exec_sql`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${key}`,
-      "apikey": key,
-    },
-    body: JSON.stringify({ query: finalSql }),
-  });
-
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    return new Response(JSON.stringify({ error: data ?? { http: res.status } }), {
-      status: res.status,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
-  }
-
-  const rows = Array.isArray(data) ? data : [data];
-  return new Response(JSON.stringify({ rows, count: rows.length }), {
-    headers: { ...CORS, "Content-Type": "application/json" },
-  });
 });
