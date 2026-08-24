@@ -62,9 +62,6 @@ fi
 # asaas-webhook — sem HMAC → 401
 check "asaas_webhook.no_hmac_401" 401 "$(hit POST /asaas-webhook '' '' '{}')"
 
-# evaluate-delivery-alerts — anon → 200
-check "evaluate_alerts.anon_200" 200 "$(hit POST /evaluate-delivery-alerts '' '' '{}')"
-
 # get-mapbox-token — authenticated → 200 (senão UNVERIFIED)
 if [ -n "$TEST_ADMIN_JWT" ]; then
   code="$(hit GET /get-mapbox-token Authorization "Bearer $TEST_ADMIN_JWT")"

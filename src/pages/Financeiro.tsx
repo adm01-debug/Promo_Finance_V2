@@ -15,7 +15,6 @@ import {
   ShieldAlert,
   Target,
   ShoppingCart,
-  Truck,
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -48,7 +47,6 @@ const quickLinks = [
   { label: 'Auditoria Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', tone: 'text-destructive' },
   { label: 'Metas Financeiras', icon: Target, href: '/metas', tone: 'text-success' },
   { label: 'Gestão de Compras', icon: ShoppingCart, href: '/compras', tone: 'text-primary' },
-  { label: 'Gestão Logística', icon: Truck, href: '/logistica', tone: 'text-warning' },
 ];
 
 export default function Financeiro() {

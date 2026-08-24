@@ -238,7 +238,7 @@ const nfeXmlPathLayout: InvariantFn = (state) => {
   return null;
 };
 
-// ─────────────────── Entregas (Lalamove) ───────────────────
+// ─────────────────── Cenários legados de entregas ───────────────────
 
 const entregaIdempotenciaOrderId: InvariantFn = (state) => {
   const seen = new Set<string>();

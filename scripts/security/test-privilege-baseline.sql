@@ -169,11 +169,6 @@ BEGIN
     ('bitrix_oauth_tokens',  'authenticated', ARRAY[]::text[]),
     ('integration_secrets',  'authenticated', ARRAY[]::text[]);
 
-  -- Cofre de sessões da integração Lalamove (cookies/tokens da UAPI):
-  -- leitura apenas para admins autenticados; escrita só via service_role.
-  INSERT INTO _cofres VALUES
-    ('lalamove_uapi_sessions', 'authenticated', ARRAY['SELECT']);
-
   -- (c) administrados pela UI (RLS exige papel admin / empresa acessível)
   INSERT INTO _cofres VALUES
     ('bitrix24_tokens',        'authenticated', ARRAY['SELECT','INSERT','UPDATE','DELETE']),
@@ -874,6 +869,5 @@ BEGIN
 END $$;
 
 ROLLBACK;
-
 
 

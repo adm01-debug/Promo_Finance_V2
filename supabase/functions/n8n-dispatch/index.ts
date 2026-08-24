@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
       risk_score: risk,
       entity_id: body.entity_id ?? null,
       dispatched_at: new Date().toISOString(),
-      source: "lovable-lalamove-hub",
+      source: "promo-finance-hub",
       data: body.payload,
     };
 
