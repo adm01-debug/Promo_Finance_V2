@@ -16,6 +16,7 @@
  */
 
 import postgres from 'https://esm.sh/postgres@3.4.5?target=denonext';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const SECRET = Deno.env.get('MCP_SECRET');
 const DB_URL = Deno.env.get('SUPABASE_DB_URL');
@@ -31,6 +32,18 @@ const CORS = {
 const DESTRUCTIVE = /\b(DROP|TRUNCATE|ALTER\s+SYSTEM|RESET\s+ALL)\b/i;
 const IS_SELECT = /^\s*(SELECT|WITH)\b/i;
 const ADMIN_PATH = /^(storage|auth)\/v1\/[^?#]*$/;
+
+const RequestSchema = z.object({
+  sql: z.string().optional(),
+  sql_b64: z.string().optional(),
+  limit: z.number().int().optional(),
+  allow_all_rows: z.boolean().optional(),
+  admin: z.object({
+    path: z.string(),
+    method: z.string().optional(),
+    body: z.unknown().optional(),
+  }).optional(),
+}).strict();
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -112,18 +125,18 @@ Deno.serve(async (req) => {
     return json({ error: 'unauthorized' }, 401);
   }
 
-  let body: {
-    sql?: string;
-    sql_b64?: string;
-    limit?: number;
-    allow_all_rows?: boolean;
-    admin?: Record<string, unknown>;
-  };
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
     return json({ error: 'invalid json' }, 400);
   }
+
+  const parsed = RequestSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return json({ error: 'invalid payload', details: parsed.error.format() }, 400);
+  }
+  const body = parsed.data;
 
   if (body.admin) return handleAdmin(body.admin);
 
