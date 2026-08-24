@@ -4,7 +4,7 @@
 //  - update_driver_approval → atualiza driver_approval_queue (status, decision_notes, reviewed_at)
 //  - create_alert           → insere em alerts (type, severity, title, message, metadata)
 //  - log                    → registra em audit_logs (action, table_name, new_data)
-// Autenticação opcional via header x-n8n-secret (env N8N_CALLBACK_SECRET).
+// Autenticação obrigatória via header x-n8n-secret (env N8N_CALLBACK_SECRET).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
 
   try {
     const expected = Deno.env.get("N8N_CALLBACK_SECRET");
-    if (expected && req.headers.get("x-n8n-secret") !== expected) {
+    if (!expected || req.headers.get("x-n8n-secret") !== expected) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

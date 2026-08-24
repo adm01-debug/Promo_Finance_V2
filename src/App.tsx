@@ -315,7 +315,7 @@ function App() {
           <TooltipProvider>
             <AuthProvider>
               <StartupDiagnostic>
-                <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <BrowserRouter>
                   <TransitionProvider>
                     <AppRoutes />
                   </TransitionProvider>
