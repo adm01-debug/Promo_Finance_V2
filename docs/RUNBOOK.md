@@ -161,18 +161,16 @@ Complementa §7. Após schema aplicado e secrets criados no destino, usar os scr
    - Log JSONL em `/tmp/deploy-log-*.jsonl`
    - Suporta `--dry-run` e `--only fn1,fn2`
 
-2. **Cron Jobs (14)** — `scripts/migrate-cron-jobs.sh` + `migrate-cron-jobs.sql`
+2. **Cron Jobs (13)** — `scripts/migrate-cron-jobs.sh` + `migrate-cron-jobs.sql`
    - Env: `DEST_DB_URL`, `PROJECT_REF`, `ANON_KEY`
    - Idempotente (unschedule condicional antes de recriar)
-   - Substitui placeholders só nas linhas do job HTTP `evaluate-delivery-alerts-every-min`
-   - Valida ao final que `cron.job` contém as 14 entradas
+   - Valida ao final que `cron.job` contém as 13 entradas
 
 Ordem obrigatória: **§7 (schema)** → **§6 (secrets)** → **§8 functions** → **§8 crons**.
 
 Validação pós-corte:
 - `supabase functions list --project-ref $REF` → 87 funções
-- `SELECT jobname, active FROM cron.job` → 14 linhas, todas `active = true`
-- Após 60s: `cron.job_run_details` mostra execução do `evaluate-delivery-alerts-every-min`
+- `SELECT jobname, active FROM cron.job` → 13 linhas, todas `active = true`
 - Smoke test HTTP em uma function pública (ex.: `cnpja-lookup`) retorna 200
 
 ---

@@ -35,7 +35,6 @@ const BI = lazy(() => import('./pages/BI'));
 const NotasFiscais = lazy(() => import('./pages/NotasFiscais'));
 const FluxoCaixa = lazy(() => import('./pages/FluxoCaixa'));
 const Relatorios = lazy(() => import('./pages/Relatorios'));
-const RelatoriosEntregas = lazy(() => import('./pages/RelatoriosEntregas'));
 const Expert = lazy(() => import('./pages/Expert'));
 const Conciliacao = lazy(() => import('./pages/Conciliacao'));
 const Cobrancas = lazy(() => import('./pages/Cobrancas'));
@@ -122,7 +121,6 @@ const InteligenciaOperacionalPage = lazy(() => import('./pages/InteligenciaOpera
 const MetasFinanceirasPage = lazy(() => import('./pages/MetasFinanceiras'));
 const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
-const Logistica = lazy(() => import('./pages/Logistica'));
 const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
 const ThemeDiagnostics = lazy(() => import('./pages/ThemeDiagnostics'));
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
@@ -189,7 +187,6 @@ function AppRoutes() {
             <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
             <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
             <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
-            <Route path="/relatorios/entregas" element={<ProtectedRoute><RelatoriosEntregas /></ProtectedRoute>} />
             <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
             <Route path="/conciliacao" element={<ProtectedRoute><Conciliacao /></ProtectedRoute>} />
             <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
@@ -267,7 +264,6 @@ function AppRoutes() {
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
             <Route path="/admin/api" element={<ProtectedRoute requiredRoles={['admin']}><ApiManagement /></ProtectedRoute>} />
             <Route path="/admin/campos-customizados" element={<ProtectedRoute requiredRoles={['admin']}><CustomFieldsAdmin /></ProtectedRoute>} />
-            <Route path="/logistica" element={<ProtectedRoute><Logistica /></ProtectedRoute>} />
             <Route path="/tributario/split-payment" element={<ProtectedRoute><SplitPaymentPage /></ProtectedRoute>} />
             <Route path="/tributario/conciliacao" element={<ProtectedRoute><ConciliacaoTributariaPage /></ProtectedRoute>} />
             <Route path="/tributario/incentivos" element={<ProtectedRoute><IncentivosFiscaisPage /></ProtectedRoute>} />
@@ -334,4 +330,4 @@ function App() {
 }
 
 
-export default App;
+export default App;

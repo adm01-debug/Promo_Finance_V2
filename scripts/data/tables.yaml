@@ -71,14 +71,11 @@ groups:
       - fornecedores
       - vendedores
       - contas_bancarias
-      - drivers
 
   - name: transacional_recente
     where: "created_at > now() - interval '90 days'"
     tables:
       - contas_pagar
       - contas_receber
-      - lalamove_orders
-      - lalamove_stops
       - transacoes_bancarias
       - conciliacoes

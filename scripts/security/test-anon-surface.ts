@@ -59,13 +59,11 @@ const ANON_KEY = mustEnv("SUPABASE_ANON_KEY");
 const TABLES: TableProbe[] = [
   { table: "profiles", read: "empty" },
   { table: "user_roles", read: "empty" },
-  { table: "drivers", read: "empty" },
   { table: "clientes", read: "empty" },
   { table: "empresas", read: "empty" },
   { table: "fornecedores", read: "empty" },
   { table: "contas_pagar", read: "empty" },
   { table: "contas_receber", read: "empty" },
-  { table: "lalamove_orders", read: "empty" },
   { table: "audit_logs", read: "empty" },
   // Telemetria: escrita anônima é intencional (GRANT INSERT em colunas
   // específicas — ver Gap #22). A leitura continua restrita pela RLS.
@@ -84,7 +82,6 @@ const TABLES: TableProbe[] = [
   { table: "portal_cliente_tokens", read: "denied" },
   { table: "empresas_certificados", read: "denied" },
   { table: "frontend_error_alert_state", read: "denied" },
-  { table: "lalamove_uapi_sessions", read: "denied" },
 ];
 
 /** RPCs administrativas: nenhuma pode ser executada por anon. */

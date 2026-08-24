@@ -31,7 +31,6 @@
 | 25 | `enviar-alerta-email` | `supabase/functions/enviar-alerta-email/index.ts` |
 | 26 | `enviar-bitrix24-tributario` | `supabase/functions/enviar-bitrix24-tributario/index.ts` |
 | 27 | `enviar-relatorios-tributarios-agendados` | `supabase/functions/enviar-relatorios-tributarios-agendados/index.ts` |
-| 28 | `evaluate-delivery-alerts` | `supabase/functions/evaluate-delivery-alerts/index.ts` |
 | 29 | `executar-analise-preditiva` | `supabase/functions/executar-analise-preditiva/index.ts` |
 | 30 | `executar-fechamento-tributario` | `supabase/functions/executar-fechamento-tributario/index.ts` |
 | 31 | `executar-regua-cobranca` | `supabase/functions/executar-regua-cobranca/index.ts` |

@@ -10,7 +10,8 @@ import { makeWebhookStream, type WebhookEvent } from "./fixtures/webhooks";
 import { makeBoletos, makeReguaEtapas } from "./fixtures/cobranca";
 import { makeAnomalias, makeAcoes } from "./fixtures/anomalias";
 import { makeNfeStream, type NfeDfeEvento } from "./fixtures/nfe";
-import { makeEntregasStream, type EntregaEvento } from "./fixtures/entregas";
+type EntregaEvento = { eventId: string; orderId: string; tipo: "ORDER_CREATED" | "DRIVER_ASSIGNED" | "PICKED_UP" | "IN_PROGRESS" | "DELIVERED" | "CANCELED" | "FAILED" | "GPS_PING"; ts: number; driverId?: string; hasPodPhoto?: boolean; cancelReason?: string };
+const makeEntregasStream = (_rng: ReturnType<typeof createRng>, _size: number): EntregaEvento[] => [];
 import { checkAll } from "./invariants";
 import type { ScenarioResult, ScenarioSpec, ScenarioState } from "./types";
 
@@ -261,7 +262,7 @@ function runNfe(spec: ScenarioSpec, state: ScenarioState): number {
   return mutations;
 }
 
-// ─────────────────── Entregas (Lalamove) ───────────────────
+// Cenário legado de entregas, removido da matriz executável.
 
 const STATUS_RANK: Record<string, number> = {
   pending: 0,
@@ -425,9 +426,6 @@ export function runScenario(spec: ScenarioSpec): ScenarioResult {
       break;
     case "nfe":
       mutations = runNfe(spec, state);
-      break;
-    case "entregas":
-      mutations = runEntregas(spec, state);
       break;
   }
 

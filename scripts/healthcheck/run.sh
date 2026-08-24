@@ -11,7 +11,7 @@
 #   STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY
 # Env opcional:
 #   TEST_ADMIN_JWT, PROD_PROJECT_REF (guard-rail),
-#   ASAAS_WEBHOOK_TOKEN, LALAMOVE_WEBHOOK_SECRET, etc.
+#   ASAAS_WEBHOOK_TOKEN, etc.
 #
 # Flags:
 #   --json-only   Emite apenas JSONL em stdout (sem cabeçalho humano)
