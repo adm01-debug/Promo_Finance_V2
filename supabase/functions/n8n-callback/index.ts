@@ -1,7 +1,6 @@
 // n8n-callback — recebe callbacks do n8n para materializar ações no banco.
 // Ações suportadas:
 //  - create_task            → insere em bitrix24_activities (subject, activity_type='task')
-//  - update_driver_approval → atualiza driver_approval_queue (status, decision_notes, reviewed_at)
 //  - create_alert           → insere em alerts (type, severity, title, message, metadata)
 //  - log                    → registra em audit_logs (action, table_name, new_data)
 // Autenticação obrigatória via header x-n8n-secret (env N8N_CALLBACK_SECRET).
@@ -14,13 +13,12 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-type Action = "create_task" | "update_driver_approval" | "create_alert" | "log";
+type Action = "create_task" | "create_alert" | "log";
 interface CallbackBody {
   action: Action;
   payload: Record<string, unknown>;
 }
 
-const ALLOWED_APPROVAL_STATUS = new Set(["pending", "approved", "rejected", "escalated"]);
 const ALLOWED_ALERT_SEVERITY = new Set(["info", "warning", "critical", "low", "medium", "high"]);
 
 Deno.serve(async (req) => {
@@ -44,7 +42,7 @@ Deno.serve(async (req) => {
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
     const Schema = z.object({
-      action: z.enum(['create_task', 'update_driver_approval', 'create_alert', 'log']),
+      action: z.enum(['create_task', 'create_alert', 'log']),
       payload: z.record(z.any()),
     }).passthrough();
     const parsed = validatePayload(Schema, raw ?? {}, 'n8n-callback');
@@ -71,29 +69,6 @@ Deno.serve(async (req) => {
             order_id: (p.order_id as string) ?? null,
             deal_id: typeof p.deal_id === "number" ? (p.deal_id as number) : null,
           })
-          .select()
-          .single();
-        if (error) throw error;
-        result = data;
-        break;
-      }
-      case "update_driver_approval": {
-        const id = p.id as string | undefined;
-        const status = p.status as string | undefined;
-        if (!id || !status) throw new Error("id e status são obrigatórios");
-        if (!ALLOWED_APPROVAL_STATUS.has(status)) throw new Error(`status inválido: ${status}`);
-        const update: Record<string, unknown> = {
-          status,
-          reviewed_at: new Date().toISOString(),
-        };
-        if (typeof p.notes === "string") update.notes = p.notes;
-        if (typeof p.decision_notes === "string") update.decision_notes = p.decision_notes;
-        else if (typeof p.reason === "string") update.decision_notes = p.reason;
-        if (typeof p.reviewed_by === "string") update.reviewed_by = p.reviewed_by;
-        const { data, error } = await supabase
-          .from("driver_approval_queue")
-          .update(update)
-          .eq("id", id)
           .select()
           .single();
         if (error) throw error;
