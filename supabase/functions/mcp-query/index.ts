@@ -1,7 +1,7 @@
 /**
  * mcp-query — Gateway do MCP Worker (PROMO FINANCE V2)
  *
- * Dois modos, ambos autenticados pelo header x-mcp-secret (secret MCP_SECRET):
+ * Três modos, todos autenticados pelo header x-mcp-secret (secret MCP_SECRET):
  *
  *  1) SQL  — conexão direta ao Postgres via postgres.js usando SUPABASE_DB_URL.
  *     Aceita `sql` (texto) ou `sql_b64` (base64). O worker manda em base64
@@ -10,7 +10,11 @@
  *     Bloqueia DROP/TRUNCATE/ALTER SYSTEM/RESET ALL e também DELETE/UPDATE
  *     sem WHERE (libera com allow_all_rows:true).
  *
- *  2) admin — proxy para storage/v1 e auth/v1 usando a SERVICE_ROLE_KEY.
+ *  2) TRANSACTION — recebe `stmts_b64` (base64 de JSON array de SQL strings)
+ *     e executa via sql.begin() para garantir atomicidade real.
+ *     Fix: postgres.js com max>1 bloqueia BEGIN;COMMIT; manual (UNSAFE_TRANSACTION).
+ *
+ *  3) admin — proxy para storage/v1 e auth/v1 usando a SERVICE_ROLE_KEY.
  *     O worker MCP só tem a anon key; sem esse proxy as tools de storage e de
  *     admin de auth respondem 403/vazio silenciosamente.
  */
@@ -36,6 +40,7 @@ const ADMIN_PATH = /^(storage|auth)\/v1\/[^?#]*$/;
 const RequestSchema = z.object({
   sql: z.string().optional(),
   sql_b64: z.string().optional(),
+  stmts_b64: z.string().optional(),       // base64(JSON.stringify(string[])) para db_transaction
   limit: z.number().int().optional(),
   allow_all_rows: z.boolean().optional(),
   admin: z.object({
@@ -114,6 +119,52 @@ async function handleAdmin(admin: Record<string, unknown>): Promise<Response> {
   return json({ status: res.status, ok: res.ok, data });
 }
 
+async function handleTransaction(stmtsB64: string, allowAllRows: boolean): Promise<Response> {
+  if (!DB_URL) return json({ error: 'server_misconfigured' }, 500);
+
+  let stmts: string[];
+  try {
+    stmts = JSON.parse(decodeB64(stmtsB64));
+    if (!Array.isArray(stmts) || stmts.length === 0) throw new Error('array vazio');
+  } catch (e) {
+    return json({ error: 'stmts_b64 inválido: ' + String(e) }, 400);
+  }
+
+  // Valida todos antes de abrir a transação
+  for (const stmt of stmts) {
+    const s = stmt.trim();
+    if (!s) continue;
+    if (DESTRUCTIVE.test(s)) {
+      return json({ error: 'Query destrutiva bloqueada (DROP/TRUNCATE/ALTER SYSTEM/RESET ALL)', statement: s.slice(0, 80) }, 400);
+    }
+    if (!allowAllRows) {
+      const sw = unscopedWrite(s);
+      if (sw) {
+        return json({ error: 'DELETE/UPDATE sem WHERE bloqueado — reenvie com allow_all_rows:true', statement: sw }, 400);
+      }
+    }
+  }
+
+  try {
+    const client = getSql(DB_URL);
+    const results = await client.begin(async (tx) => {
+      const res: Array<{ rows: unknown[]; count: number }> = [];
+      for (const stmt of stmts) {
+        const s = stmt.trim();
+        if (!s) continue;
+        const rows = await tx.unsafe(s);
+        const lista = Array.isArray(rows) ? Array.from(rows) : [rows];
+        res.push({ rows: lista, count: lista.length });
+      }
+      return res;
+    });
+    return json({ results, committed: true, statements: results.length });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    return json({ error: { message } }, 400);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
 
@@ -139,6 +190,8 @@ Deno.serve(async (req) => {
   const body = parsed.data;
 
   if (body.admin) return handleAdmin(body.admin);
+
+  if (body.stmts_b64) return handleTransaction(body.stmts_b64, !!body.allow_all_rows);
 
   if (!DB_URL) return json({ error: 'server_misconfigured' }, 500);
 
@@ -184,11 +237,7 @@ Deno.serve(async (req) => {
 
   try {
     const client = getSql(DB_URL);
-    // `unsafe` é necessário porque o SQL vem inteiro do worker MCP;
-    // a proteção é o segredo compartilhado + o filtro de comandos destrutivos.
     const rows = await client.unsafe(finalSql);
-    // postgres.js devolve array de arrays quando há vários statements.
-    // Achatar mantém `rows` sempre com o mesmo formato para o client.
     const bruto2 = Array.isArray(rows) ? Array.from(rows) : [rows];
     const multi = bruto2.length > 0 && bruto2.every((r) => Array.isArray(r));
     const lista = multi ? bruto2.flatMap((r) => Array.from(r as unknown[])) : bruto2;
