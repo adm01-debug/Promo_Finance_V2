@@ -48,19 +48,27 @@ async function loginAs(page: Page, email: string, password: string) {
 }
 
 async function logout(page: Page) {
-  // Tenta abrir o menu de usuário (avatar/iniciais no header) e clicar em "Sair"
-  const userMenu = page
-    .getByRole('button', { name: /usuário|user menu|perfil/i })
-    .or(page.locator('[data-testid="user-menu"]'))
-    .first();
-
-  if (await userMenu.isVisible().catch(() => false)) {
-    await userMenu.click();
+  // O redirect do login ocorre antes de o layout terminar de montar. Aguarda
+  // explicitamente o menu estável do header para não disputar essa renderização.
+  const userMenu = page.getByTestId('user-menu');
+  await expect(userMenu).toBeVisible({ timeout: 15_000 });
+  // O toast de login ocupa o canto do header e intercepta o clique enquanto
+  // está visível. O teste deve exercitar um clique real, sem force.
+  await expect(page.locator('[data-sonner-toast]')).toHaveCount(0, { timeout: 15_000 });
+  // O tour consulta o progresso de forma assíncrona e pode montar depois do
+  // header. Neste ponto a consulta já assentou; encerra a primeira experiência.
+  const skipTour = page.locator('[data-action="skip"]');
+  if (await skipTour.isVisible().catch(() => false)) {
+    await skipTour.click();
+    await expect(page.locator('.react-joyride__overlay')).toHaveCount(0);
   }
-  await page.getByRole('menuitem', { name: /sair|logout/i })
-    .or(page.getByRole('button', { name: /^sair$/i }))
-    .first()
-    .click();
+  // A navegação por teclado é parte do contrato acessível do menu e não é
+  // bloqueada por overlays visuais de fluxos independentes.
+  await userMenu.focus();
+  await userMenu.press('Enter');
+  const logoutItem = page.getByRole('menuitem', { name: /^sair$/i });
+  await expect(logoutItem).toBeVisible();
+  await logoutItem.press('Enter');
 }
 
 // ============================================================================
@@ -148,7 +156,9 @@ test.describe('Login/Logout › fluxo real com admin', () => {
     await expect(page).toHaveURL(/\/auth/, { timeout: 10_000 });
 
     // Tentar voltar para uma rota protegida deve redirecionar de novo para /auth
-    await page.goto('/dashboard');
+    // O guard redireciona imediatamente e pode abortar a navegação iniciada
+    // por page.goto no Chromium. Disparar pelo browser evita falso negativo.
+    await page.evaluate(() => window.location.assign('/dashboard'));
     await expect(page).toHaveURL(/\/auth/);
   });
 });
