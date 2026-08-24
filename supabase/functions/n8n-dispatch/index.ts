@@ -7,7 +7,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
+    "authorization, x-client-info, apikey, content-type, x-n8n-secret, x-supabase-client-platform",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -78,6 +78,14 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
   try {
+    const expected = Deno.env.get("N8N_DISPATCH_SECRET");
+    if (!expected || req.headers.get("x-n8n-secret") !== expected) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');

@@ -83,24 +83,34 @@ export default defineConfig(({ mode }) => {
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'query-vendor': ['@tanstack/react-query'],
-          'ui-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-select',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-tooltip',
-          ],
-          'chart-vendor': ['recharts'],
-          'supabase-vendor': ['@supabase/supabase-js'],
-          'date-vendor': ['date-fns'],
-          'animation-vendor': ['framer-motion'],
-          'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
-          'pdf-vendor': ['jspdf', 'jspdf-autotable'],
-          'confetti-vendor': ['canvas-confetti'],
+        // Vite 8/Rolldown aceita apenas a variante em função. A tabela mantém
+        // os mesmos agrupamentos estáveis usados para cache de fornecedores.
+        manualChunks(id) {
+          const chunks: Record<string, string[]> = {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'query-vendor': ['@tanstack/react-query'],
+            'ui-vendor': [
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-select',
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-popover',
+              '@radix-ui/react-tooltip',
+            ],
+            'chart-vendor': ['recharts'],
+            'supabase-vendor': ['@supabase/supabase-js'],
+            'date-vendor': ['date-fns'],
+            'animation-vendor': ['framer-motion'],
+            'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
+            'pdf-vendor': ['jspdf', 'jspdf-autotable'],
+            'confetti-vendor': ['canvas-confetti'],
+          };
+
+          for (const [chunk, packages] of Object.entries(chunks)) {
+            if (packages.some((pkg) => id.includes(`/node_modules/${pkg}/`))) {
+              return chunk;
+            }
+          }
         },
       },
     },

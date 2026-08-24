@@ -73,7 +73,10 @@ export const useStartupDiagnostic = () => {
       updateStatus('tables', 'success', 'Validação completa será feita após login.');
     } else {
       try {
-        const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'active_tracking', 'empresas'] as const;
+        // active_tracking pertencia exclusivamente ao módulo de logística,
+        // descomissionado em produção. Mantê-la aqui bloqueava a aplicação
+        // inteira para sessões persistidas após o login.
+        const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'empresas'] as const;
         type Essential = typeof essentialTables[number];
 
         const missingTables: string[] = [];

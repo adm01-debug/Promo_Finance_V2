@@ -5,7 +5,7 @@
  * Uso típico em colunas de tabelas consolidadas:
  *   <EmpresaBadge empresaId={row.empresa_id} />
  */
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useEmpresaScope } from '@/contexts/useEmpresaScope';
@@ -18,17 +18,15 @@ export interface EmpresaBadgeProps {
   className?: string;
 }
 
-/** Mapeia o token de paleta (chart-N) para classes Tailwind de bg/text/border semânticas. */
-function colorClasses(corHex: string | null | undefined): string {
+/** Mapeia o token de paleta (chart-N) para variáveis CSS do design system. */
+function colorStyle(corHex: string | null | undefined): CSSProperties {
   // Aceita 'chart-1'..'chart-8'; fallback chart-1
   const token = (corHex ?? '').match(/^chart-([1-8])$/)?.[1] ?? '1';
-  // Usa variáveis CSS do design system via arbitrary values com tokens semânticos.
-  // bg leve + texto forte + borda harmônica.
-  return [
-    `bg-[hsl(var(--chart-${token})/0.15)]`,
-    `text-[hsl(var(--chart-${token}))]`,
-    `border border-[hsl(var(--chart-${token})/0.3)]`,
-  ].join(' ');
+  return {
+    backgroundColor: `hsl(var(--chart-${token}) / 0.15)`,
+    color: `hsl(var(--chart-${token}))`,
+    borderColor: `hsl(var(--chart-${token}) / 0.3)`,
+  };
 }
 
 export function EmpresaBadge({ empresaId, showName = false, size = 'sm', className }: EmpresaBadgeProps) {
@@ -62,11 +60,11 @@ export function EmpresaBadge({ empresaId, showName = false, size = 'sm', classNa
   const pill = (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-md font-bold uppercase tracking-wider',
-        colorClasses(e.cor_hex),
+        'inline-flex items-center gap-1.5 rounded-md border font-bold uppercase tracking-wider',
         size === 'sm' ? 'h-5 px-1.5 text-[10px]' : 'h-6 px-2 text-xs',
         className,
       )}
+      style={colorStyle(e.cor_hex)}
     >
       <span aria-hidden>{sigla}</span>
       {showName && (
