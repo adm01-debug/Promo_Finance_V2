@@ -1,6 +1,7 @@
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from './zod.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger, LogLevel } from "./logger.ts";
+import { createValidationErrorResponse } from './contract-response.ts';
 
 /**
  * Default CORS headers used by edge functions.
@@ -52,11 +53,14 @@ export function validatePayload<T>(schema: z.ZodSchema<T>, payload: unknown, fun
   return {
     success: false,
     error: "Invalid payload schema (Contract Violation)",
-    details: result.error.format(),
+    details: result.error,
   };
 }
 
 export function createErrorResponse(message: string, status = 400, details?: unknown) {
+  if (message.includes('Contract Violation')) {
+    return createValidationErrorResponse(details, corsHeaders);
+  }
   return new Response(
     JSON.stringify({
       error: message,
@@ -120,6 +124,7 @@ export const AsaasWebhookSchema = z.object({
   }).optional(),
   id: z.string().optional(),
 }).strict();
+export const AsaasWebhookV2Schema = AsaasWebhookSchema.extend({ id: z.string().trim().min(1) }).strict();
 
 export const BlingWebhookSchema = z.object({
   event: z.string(),
@@ -127,6 +132,7 @@ export const BlingWebhookSchema = z.object({
   data: z.record(z.any()),
   retries: z.number().optional()
 }).strict();
+export const BlingWebhookV2Schema = BlingWebhookSchema.extend({ eventId: z.string().trim().min(1) }).strict();
 
 export const Bitrix24WebhookSchema = z.object({
   event: z.string(),
@@ -142,6 +148,7 @@ export const Bitrix24WebhookSchema = z.object({
     application_token: z.string().optional(),
   }).optional()
 }).strict();
+export const Bitrix24WebhookV2Schema = Bitrix24WebhookSchema.extend({ event_id: z.string().trim().min(1) }).strict();
 
 export const AsaasProxySchema = z.object({
   action: z.string(),
@@ -166,6 +173,7 @@ export const WhatsappWebhookSchema = z.object({
   from: z.string(),
   text: z.string().optional(),
 }).strict();
+export const WhatsappWebhookV2Schema = WhatsappWebhookSchema.extend({ messageId: z.string().trim().min(1) }).strict();
 
 export const CnpjaLookupSchema = z.object({
   cnpj: z.string().min(14),

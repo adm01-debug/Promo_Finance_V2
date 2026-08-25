@@ -14,6 +14,13 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders } from "../_shared/validation.ts";
 import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import { z } from '../_shared/zod.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+
+const BodySchema = z.object({
+  janelaHoras: z.union([z.number(), z.string().trim().min(1)]).optional(),
+  minIntervaloHoras: z.union([z.number(), z.string().trim().min(1)]).optional(),
+}).strict();
 
 interface ItemDigest {
   assinatura: string;
@@ -126,6 +133,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     } catch {
       raw = {};
     }
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders);
+    raw = parsed.data;
 
     const janelaHoras = num(raw.janelaHoras, 168, 1, 720);
     const minIntervaloHoras = num(raw.minIntervaloHoras, 144, 0, 720);

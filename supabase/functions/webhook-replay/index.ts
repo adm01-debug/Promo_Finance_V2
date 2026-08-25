@@ -2,8 +2,14 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { corsHeaders, createErrorResponse } from '../_shared/validation.ts'
 import { createLogger } from '../_shared/logger.ts'
+import { z } from '../_shared/zod.ts'
+import { createValidationErrorResponse } from '../_shared/contract-response.ts'
 
 const logger = createLogger('webhook-replay')
+const ReplayBodySchema = z.object({
+  ids: z.array(z.string().uuid()).optional(), source: z.string().trim().min(1).optional(),
+  status: z.string().trim().min(1).optional(), limit: z.number().int().min(1).max(500).optional(),
+}).strict()
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -32,7 +38,10 @@ Deno.serve(async (req) => {
     })
     if (roleErr || !isAdmin) return createErrorResponse('Somente administradores', 403)
 
-    const body = await req.json().catch(() => ({}))
+    const rawBody = await req.json().catch(() => ({}))
+    const parsed = ReplayBodySchema.safeParse(rawBody)
+    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders)
+    const body = parsed.data
     const ids: string[] = Array.isArray(body.ids) ? body.ids.filter((x: unknown) => typeof x === 'string') : []
     const source: string | undefined = typeof body.source === 'string' ? body.source : undefined
     const status: string | undefined = typeof body.status === 'string' ? body.status : undefined

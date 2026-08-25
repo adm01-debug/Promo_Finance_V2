@@ -1,4 +1,5 @@
-import { validatePayload, createErrorResponse, AsaasWebhookSchema, corsHeaders } from '../_shared/validation.ts'
+import { createErrorResponse, AsaasWebhookSchema, AsaasWebhookV2Schema, corsHeaders } from '../_shared/validation.ts'
+import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts'
 import { createLogger } from '../_shared/logger.ts'
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
 import { processWithIdempotency, RetryableError, serviceClient } from '../_shared/webhook-idempotency.ts'
@@ -27,9 +28,11 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json()
-    const validation = validatePayload(AsaasWebhookSchema, body)
+    const validation = validateVersionedContract(req, body, {
+      v1: AsaasWebhookSchema, v2: AsaasWebhookV2Schema, functionName: 'asaas-webhook',
+    })
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details)
+      return validation.response
     }
     const { event, payment, transfer } = validation.data
 
@@ -142,7 +145,7 @@ Deno.serve(async (req) => {
     if (claim.alreadyProcessed) {
       logger.info('Webhook Asaas já processado (idempotência)', { correlation_id, external_id: externalId })
       return new Response(JSON.stringify({ success: true, duplicated: true }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
       })
     }
 

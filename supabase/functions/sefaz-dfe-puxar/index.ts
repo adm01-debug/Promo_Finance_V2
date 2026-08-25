@@ -18,6 +18,10 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
+import { z } from '../_shared/zod.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+
+const RequestBodySchema = z.object({ empresa_id: z.string().uuid().optional() }).strict();
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -501,6 +505,9 @@ Deno.serve(async (req) => {
   } catch {
     return json(400, { error: "invalid_json" });
   }
+  const parsedPayload = RequestBodySchema.safeParse(payload);
+  if (!parsedPayload.success) return createValidationErrorResponse(parsedPayload.error, corsHeaders);
+  payload = parsedPayload.data;
 
   const admin = makeAdminClient();
   const certs = await fetchCertificados(admin, payload.empresa_id);

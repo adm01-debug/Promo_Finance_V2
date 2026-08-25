@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { BlingWebhookSchema, corsHeaders, validatePayload, createErrorResponse, isWebhookProcessed } from '../_shared/validation.ts';
+import { BlingWebhookSchema, BlingWebhookV2Schema, corsHeaders, createErrorResponse, isWebhookProcessed } from '../_shared/validation.ts';
+import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 
 
@@ -32,9 +33,11 @@ export const handler = async (req: Request) => {
     const body = await req.json();
     console.log("Bling webhook received:", JSON.stringify(body));
 
-    const validation = validatePayload(BlingWebhookSchema, body);
+    const validation = validateVersionedContract(req, body, {
+      v1: BlingWebhookSchema, v2: BlingWebhookV2Schema, functionName: 'bling-webhook',
+    });
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return validation.response;
     }
 
     const payload = validation.data;
@@ -46,7 +49,7 @@ export const handler = async (req: Request) => {
 
     // Idempotency check using shared helper
     if (resourceId) {
-      const isProcessed = await isWebhookProcessed(supabase, 'bling_webhook_events', 'resource_id', resourceId, 'bling');
+      const isProcessed = await isWebhookProcessed(supabase as unknown as Parameters<typeof isWebhookProcessed>[0], 'bling_webhook_events', 'resource_id', resourceId, 'bling');
       if (isProcessed) {
         console.log(`Event already processed: ${eventType} for ${resourceId}`);
         return new Response(JSON.stringify({ ok: true, skipped: true }), {
@@ -150,7 +153,7 @@ export const handler = async (req: Request) => {
 
     return new Response(JSON.stringify({ ok: true, processed }), {
       status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), "Content-Type": "application/json" },
     });
   } catch (error) {
     console.error("Bling webhook error:", error);

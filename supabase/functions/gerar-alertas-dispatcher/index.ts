@@ -9,6 +9,8 @@
 import { corsHeaders } from "../_shared/cors.ts";
 import { createLogger } from '../_shared/logger.ts';
 import { getRequestId, correlationResponseHeaders } from '../_shared/correlation.ts';
+import { z } from '../_shared/zod.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 
 const ALERT_TYPES = ['financeiro', 'tributario', 'preditivo', 'health-score'] as const;
 type AlertType = typeof ALERT_TYPES[number];
@@ -19,6 +21,7 @@ const FUNCTION_MAP: Record<AlertType, string> = {
   'preditivo': 'analise-preditiva',
   'health-score': 'calcular-health-score-operacional',
 };
+const ForwardedBodySchema = z.string().max(1_000_000);
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -45,6 +48,8 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const authHeader = req.headers.get('Authorization') || '';
     const body = req.method === 'GET' ? null : await req.text();
+    const parsedBody = ForwardedBodySchema.safeParse(body ?? '');
+    if (!parsedBody.success) return createValidationErrorResponse(parsedBody.error, headers);
 
     logger.info('dispatching', { tipo, target: targetFunction });
 
