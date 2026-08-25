@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -75,6 +75,8 @@ interface NavItem {
   badge?: number;
   badgeKey?: string;
   highlight?: boolean;
+  // Rótulo de seção exibido como separador visual antes deste item (menu expandido)
+  sectionHeader?: string;
 }
 
 interface NavGroup {
@@ -131,7 +133,7 @@ const navGroups: NavGroup[] = [
     label: 'Fiscal & Documentos',
     icon: FileText,
     items: [
-      { label: 'Quantum-Sentinel: Tributário', icon: Scale, href: '/tributario/dashboard', highlight: true, badgeKey: 'tributario' },
+      { label: 'Quantum-Sentinel: Tributário', icon: Scale, href: '/tributario/dashboard', highlight: true, badgeKey: 'tributario', sectionHeader: 'Tributário' },
       { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria/visao-geral' },
       { label: 'Split Payment', icon: ArrowLeftRight, href: '/tributario/split-payment' },
       { label: 'Conciliação Tributária', icon: RefreshCcw, href: '/tributario/conciliacao' },
@@ -139,7 +141,7 @@ const navGroups: NavGroup[] = [
       { label: 'Compliance & Auditoria', icon: ShieldCheck, href: '/tributario/auditoria' },
       { label: 'Comparativo Regimes', icon: Scale, href: '/tributario/comparativo' },
       { label: 'Cashback Simulador', icon: Wallet, href: '/tributario/cashback' },
-      { label: 'Importação XML', icon: FileSpreadsheet, href: '/tributario/importacao-xml' },
+      { label: 'Importação XML', icon: FileSpreadsheet, href: '/tributario/importacao-xml', sectionHeader: 'Documentos Fiscais' },
       { label: 'Exportação SPED', icon: BookOpen, href: '/tributario/sped' },
       { label: 'Relatórios Contábeis', icon: FileSpreadsheet, href: '/tributario/relatorios-contabeis' },
       { label: 'PER/DCOMP', icon: FileText, href: '/tributario/per-dcomp' },
@@ -149,7 +151,7 @@ const navGroups: NavGroup[] = [
       { label: 'ICMS-ST e DIFAL', icon: Truck, href: '/tributario/icms-st' },
       { label: 'IPI e ISS', icon: Factory, href: '/tributario/ipi-iss' },
       { label: 'PIS/COFINS (créditos)', icon: Receipt, href: '/tributario/pis-cofins' },
-      { label: 'IRPJ/CSLL (Lucro Real)', icon: Landmark, href: '/tributario/irpj-csll' },
+      { label: 'IRPJ/CSLL (Lucro Real)', icon: Landmark, href: '/tributario/irpj-csll', sectionHeader: 'Contabilidade & Compliance' },
       { label: 'DARF Consolidado', icon: Receipt, href: '/tributario/darf' },
       { label: 'Obrigações Acessórias', icon: CalendarCheck, href: '/tributario/obrigacoes' },
       { label: 'Comparativo de Conformidade', icon: BarChart3, href: '/tributario/comparativo-conformidade' },
@@ -157,7 +159,7 @@ const navGroups: NavGroup[] = [
       { label: 'Observabilidade do Resumo', icon: BarChart3, href: '/tributario/observabilidade-digest' },
 
       { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
-      { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
+      { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true, sectionHeader: 'Relatórios & Ferramentas' },
       { label: 'Simulação de Regimes', icon: Calculator, href: '/tributario/simulacao-regimes', highlight: true },
       { label: 'Oportunidades de Elisão', icon: Sparkles, href: '/tributario/oportunidades-elisao', highlight: true },
       { label: 'Projeção 2026-2033', icon: BarChart3, href: '/tributario/projecao-reforma', highlight: true },
@@ -407,7 +409,16 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                   >
                     <div className="pl-3 space-y-0.5 mt-1 transition-all">
                       {group.items.map(item => (
-                        <NavItemComponent key={item.href} item={item} />
+                        <Fragment key={item.href}>
+                          {item.sectionHeader && (
+                            <div className="border-t border-line my-2 px-3 py-2">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-t2">
+                                {item.sectionHeader}
+                              </span>
+                            </div>
+                          )}
+                          <NavItemComponent item={item} />
+                        </Fragment>
                       ))}
                     </div>
                   </motion.div>

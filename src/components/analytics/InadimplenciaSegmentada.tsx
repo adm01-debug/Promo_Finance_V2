@@ -63,7 +63,7 @@ export function InadimplenciaSegmentada() {
       {/* Header com IA Badge */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Análise de Inadimplência Elite</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Análise Segmentada de Inadimplência</h2>
           <p className="text-muted-foreground">Monitoramento segmentado e predições baseadas em IA.</p>
         </div>
         <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/20">

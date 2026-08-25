@@ -89,7 +89,7 @@ export default function Cobrancas() {
           </div>
           <div className="relative z-10">
             <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
-              Quantum-Aging: <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Cobrança Elite</span>
+              Cobrança e <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Inadimplência</span>
             </h1>
             <p className="text-lg font-medium text-muted-foreground/70 mt-2 italic max-w-2xl">Régua de cobrança neuro-automatizada e gestão de inadimplência estratégica 10/10.</p>
           </div>
