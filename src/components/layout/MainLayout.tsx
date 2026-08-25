@@ -109,8 +109,10 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </div>
           )}
           
+          {/* Stagger Vela (Z2/Z1): wrapper separado do motion.div para o
+              fill-mode do CSS não pinar opacity e matar o exit do framer */}
           <PageTransition>
-            {children}
+            <div className="vela-page-enter">{children}</div>
           </PageTransition>
         </div>
       </motion.main>
