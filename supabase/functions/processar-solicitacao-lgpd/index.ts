@@ -38,10 +38,9 @@ serve(async (req) => {
     }
     const userId = userData.user.id;
 
-    const body = (await req.json()) 
+    const body = (await req.json()) as Payload;
     const __contract = validatePayload(z.object({ solicitacao_id: z.string().uuid() }), (typeof body === 'object' ? body : {}) as unknown, 'processar-solicitacao-lgpd');
     if (!__contract.success) return new Response(JSON.stringify({ error: __contract.error, details: __contract.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-as Payload;
     if (!body?.solicitacao_id) {
       return new Response(JSON.stringify({ error: "solicitacao_id required" }), {
         status: 400,

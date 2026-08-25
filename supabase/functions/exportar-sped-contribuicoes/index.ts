@@ -62,10 +62,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json().catch(() 
+    const body = await req.json().catch(() => ({}));
     const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), periodo: z.string().regex(/^\d{4}-\d{2}$/) }), (typeof body === 'object' ? body : {}) as unknown, 'exportar-sped-contribuicoes');
     if (!__contract.success) return new Response(JSON.stringify({ error: __contract.error, details: __contract.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-=> ({}));
     const empresa_id = body.empresa_id as string | undefined;
     const periodo = body.periodo as string | undefined; // YYYY-MM
 
