@@ -22,6 +22,7 @@ playwright/.auth
 design-audit-report.json
 combined_migrations.sql
 combined_part*.sql
+graphify-out/
 
 # Editor directories and files
 .vscode/*
