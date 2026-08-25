@@ -57,13 +57,20 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
-/** Primeiro statement que escreve sem WHERE, ou null. */
+/** Primeiro statement que escreve sem WHERE ou com WHERE tautológico (bypass), ou null. */
+// v1.1.3-fix: bloqueia também WHERE true / WHERE 1=1 / WHERE (true)
+const TAUTOLOGY_WHERE = /\bWHERE\s+(?:true|1\s*=\s*1|'1'\s*=\s*'1'|\(\s*true\s*\))(?:\s*(?:--|;\s*$|$|\bRETURNING\b|\bLIMIT\b|\bORDER\b))/i;
+
 function unscopedWrite(query: string): string | null {
   for (const parte of query.split(';')) {
     const stmt = parte.trim();
     if (!stmt) continue;
-    if (/^(DELETE\s+FROM|UPDATE)\b/i.test(stmt) && !/\bWHERE\b/i.test(stmt)) {
-      return stmt.slice(0, 160);
+    if (/^(DELETE\s+FROM|UPDATE)\b/i.test(stmt)) {
+      const noWhere = !/\bWHERE\b/i.test(stmt);
+      const tautWhere = TAUTOLOGY_WHERE.test(stmt);
+      if (noWhere || tautWhere) {
+        return stmt.slice(0, 160);
+      }
     }
   }
   return null;
