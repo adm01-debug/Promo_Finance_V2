@@ -10,6 +10,15 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders } from "../_shared/validation.ts";
 import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import { z } from '../_shared/zod.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+
+const BodySchema = z.object({
+  windowMinutes: z.union([z.number(), z.string().trim().min(1)]).optional(),
+  threshold: z.union([z.number(), z.string().trim().min(1)]).optional(),
+  cooldownMinutes: z.union([z.number(), z.string().trim().min(1)]).optional(),
+  limit: z.union([z.number(), z.string().trim().min(1)]).optional(),
+}).strict();
 
 interface AlertaErro {
   assinatura: string;
@@ -116,6 +125,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     } catch {
       raw = {};
     }
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders);
+    raw = parsed.data;
 
     const cfg: Config = {
       windowMinutes: num(raw.windowMinutes, 15, 1, 1440),

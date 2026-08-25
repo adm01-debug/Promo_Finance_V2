@@ -58,8 +58,8 @@ Deno.test("conciliacao-proxy: 405 em GET", async () => {
 Deno.test("conciliacao-proxy: 400 se transacaoId não for UUID", async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(req({ action: "desfazer", transacaoId: "abc" }));
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, "Invalid payload schema (Contract Violation)");
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, "VALIDATION_ERROR");
 });
 
 Deno.test("conciliacao-proxy: 400 quando contaPagarId inválido", async () => {
@@ -67,8 +67,8 @@ Deno.test("conciliacao-proxy: 400 quando contaPagarId inválido", async () => {
   const res = await createHandler(deps)(
     req({ action: "confirmar", transacaoId: T, contaPagarId: "bad" }),
   );
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, "Invalid payload schema (Contract Violation)");
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, "VALIDATION_ERROR");
 });
 
 Deno.test("conciliacao-proxy: sucesso confirmar encaminha args completos", async () => {

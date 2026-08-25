@@ -57,7 +57,11 @@ jobs:
             supabase/functions/sso-test-login/pipeline.test.ts \
             supabase/functions/sso-callback/build-profile-sync-delta.test.ts \
             supabase/functions/sso-callback/claims.test.ts \
-            supabase/functions/fuzz_test.ts
+            supabase/functions/fuzz_test.ts \
+            supabase/functions/_shared/contract-response_test.ts \
+            supabase/functions/_shared/versioned-contract_test.ts \
+            supabase/functions/_shared/contract-coverage_test.ts \
+            supabase/functions/webhook-simulator/contract_test.ts
 
 
   integration-tests:

@@ -1,10 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import {
   Bitrix24WebhookSchema,
+  Bitrix24WebhookV2Schema,
   corsHeaders,
-  validatePayload,
   createErrorResponse,
 } from '../_shared/validation.ts';
+import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { authenticateWebhook, resolveSecret } from '../_shared/webhook-auth.ts';
 
@@ -66,9 +67,11 @@ Deno.serve(async (req) => {
     });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-    const validation = validatePayload(Bitrix24WebhookSchema, rawPayload, 'bitrix24-webhook');
+    const validation = validateVersionedContract(req, rawPayload, {
+      v1: Bitrix24WebhookSchema, v2: Bitrix24WebhookV2Schema, functionName: 'bitrix24-webhook',
+    });
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return validation.response;
     }
 
     const payload = validation.data;
@@ -83,11 +86,11 @@ Deno.serve(async (req) => {
     });
 
     return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
     });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
     console.error('Erro bitrix24 webhook:', errMsg.slice(0, 100));
-    return createErrorResponse(error.message, 500);
+    return createErrorResponse(errMsg, 500);
   }
 });

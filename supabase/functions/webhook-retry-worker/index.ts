@@ -4,8 +4,11 @@
 import { corsHeaders, createErrorResponse } from '../_shared/validation.ts'
 import { createLogger } from '../_shared/logger.ts'
 import { serviceClient, markSuccess, markFailure } from '../_shared/webhook-idempotency.ts'
+import { z } from '../_shared/zod.ts'
+import { createValidationErrorResponse } from '../_shared/contract-response.ts'
 
 const logger = createLogger('webhook-retry-worker')
+const RetryBodySchema = z.object({ limit: z.number().int().min(1).max(200).optional() }).strict()
 
 // Mapa source → função de reprocessamento. Cada handler recebe o payload salvo
 // e deve reexecutar a lógica de negócio de forma idempotente.
@@ -36,7 +39,10 @@ Deno.serve(async (req) => {
 
   try {
     const supabase = serviceClient()
-    const body = await req.json().catch(() => ({}))
+    const rawBody = await req.json().catch(() => ({}))
+    const parsed = RetryBodySchema.safeParse(rawBody)
+    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders)
+    const body = parsed.data
     const limit = Math.min(Number(body.limit ?? 25), 200)
 
     const { data, error } = await supabase.rpc('webhook_dequeue_retries', { p_limit: limit })

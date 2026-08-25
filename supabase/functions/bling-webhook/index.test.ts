@@ -34,7 +34,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "Bling Webhook: returns 400 for invalid payload",
+  name: "Bling Webhook: returns 422 for invalid payload",
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
@@ -47,9 +47,10 @@ Deno.test({
       });
 
       const response = await handler(req);
-      assertEquals(response.status, 400);
+      assertEquals(response.status, 422);
       const body = await response.json();
-      assertEquals(body.error, "Invalid payload schema (Contract Violation)");
+      assertEquals(body.code, "VALIDATION_ERROR");
+      assertEquals(Array.isArray(body.fields), true);
     } finally {
       restoreEnv();
     }

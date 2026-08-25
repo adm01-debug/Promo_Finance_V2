@@ -1,10 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import {
   WhatsappWebhookSchema,
+  WhatsappWebhookV2Schema,
   corsHeaders,
-  validatePayload,
   createErrorResponse,
 } from '../_shared/validation.ts';
+import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { authenticateWebhook } from '../_shared/webhook-auth.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 
@@ -43,9 +44,11 @@ Deno.serve(async (req) => {
     });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-    const validation = validatePayload(WhatsappWebhookSchema, rawPayload, 'whatsapp-webhook');
+    const validation = validateVersionedContract(req, rawPayload, {
+      v1: WhatsappWebhookSchema, v2: WhatsappWebhookV2Schema, functionName: 'whatsapp-webhook',
+    });
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return validation.response;
     }
 
     const body = validation.data;
@@ -84,12 +87,12 @@ Deno.serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
     });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
     console.error('Erro whatsapp webhook:', errMsg.slice(0, 100));
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: errMsg }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

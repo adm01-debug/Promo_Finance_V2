@@ -77,15 +77,15 @@ Deno.test("nfe-vinculo-proxy: 400 em JSON inválido", async () => {
 Deno.test("nfe-vinculo-proxy: 400 quando nfeId não é UUID", async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(req({ action: "suggest", nfeId: "abc" }));
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, "Invalid payload schema (Contract Violation)");
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, "VALIDATION_ERROR");
 });
 
 Deno.test("nfe-vinculo-proxy: 400 em link sem contaPagarId válido", async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(req({ action: "link", nfeId: UUID_A, contaPagarId: "nope" }));
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, "Invalid payload schema (Contract Violation)");
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, "VALIDATION_ERROR");
 });
 
 Deno.test("nfe-vinculo-proxy: sucesso em suggest chama RPC correta", async () => {

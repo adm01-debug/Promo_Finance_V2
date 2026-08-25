@@ -1,4 +1,5 @@
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from './zod.ts';
+import { createValidationErrorResponse } from './contract-response.ts';
 
 /**
  * Standard schemas for common entities
@@ -21,18 +22,7 @@ export async function validateContract<T>(schema: z.ZodSchema<T>, payload: unkno
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        response: new Response(
-          JSON.stringify({
-            error: "Contract Violation",
-            details: error.errors.map(e => ({
-              path: e.path.join('.'),
-              message: e.message,
-              code: e.code
-            })),
-            timestamp: new Date().toISOString()
-          }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
-        )
+        response: createValidationErrorResponse(error),
       };
     }
     
