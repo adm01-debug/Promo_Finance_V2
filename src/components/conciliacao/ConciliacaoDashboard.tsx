@@ -2,12 +2,9 @@ import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Target, TrendingUp, Brain, Zap,
-  AlertCircle, Bell
-} from 'lucide-react';
+import { StatCard } from '@/components/motion/StatCard';
+import { Target, TrendingUp, Brain, Zap, AlertCircle, Bell } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
-import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -63,12 +60,14 @@ export function ConciliacaoDashboard() {
 
   const stats = useMemo((): DashboardStats => {
     const total = transacoes?.length || 0;
-    const conciliadas = transacoes?.filter(t => t.conciliada).length || 0;
-    const valorConciliado = transacoes?.filter(t => t.conciliada).reduce((sum, t) => sum + Math.abs(t.valor), 0) || 0;
-    const valorPendente = transacoes?.filter(t => !t.conciliada).reduce((sum, t) => sum + Math.abs(t.valor), 0) || 0;
+    const conciliadas = transacoes?.filter((t) => t.conciliada).length || 0;
+    const valorConciliado =
+      transacoes?.filter((t) => t.conciliada).reduce((sum, t) => sum + Math.abs(t.valor), 0) || 0;
+    const valorPendente =
+      transacoes?.filter((t) => !t.conciliada).reduce((sum, t) => sum + Math.abs(t.valor), 0) || 0;
     const feedbackTotal = feedbacks?.length || 0;
-    const feedbackConfirmados = feedbacks?.filter(f => f.acao === 'aprovado').length || 0;
-    const feedbackRejeitados = feedbacks?.filter(f => f.acao === 'rejeitado').length || 0;
+    const feedbackConfirmados = feedbacks?.filter((f) => f.acao === 'aprovado').length || 0;
+    const feedbackRejeitados = feedbacks?.filter((f) => f.acao === 'rejeitado').length || 0;
     const taxaAcertoIA = feedbackTotal > 0 ? (feedbackConfirmados / feedbackTotal) * 100 : 0;
 
     return {
@@ -85,7 +84,7 @@ export function ConciliacaoDashboard() {
     };
   }, [transacoes, feedbacks]);
 
-  const regrasAtivas = regras?.filter(r => r.ativo).length || 0;
+  const regrasAtivas = regras?.filter((r) => r.ativo).length || 0;
   const totalAplicacoes = regras?.reduce((sum, r) => sum + (r.vezes_aplicada || 0), 0) || 0;
 
   const cards = [
@@ -94,34 +93,44 @@ export function ConciliacaoDashboard() {
       value: `${stats.percentual.toFixed(1)}%`,
       sub: `${stats.conciliadas}/${stats.totalTransacoes} transações`,
       icon: Target,
-      color: 'text-success',
-      bgColor: 'bg-success/10',
+      iconColor: 'var(--ok)',
+      iconBg: 'var(--ok-soft)',
       progress: stats.percentual,
-      trend: stats.percentual >= 80 ? 'up' : undefined,
+      trend: stats.percentual >= 80 ? ('up' as const) : undefined,
     },
     {
       label: 'Valor Conciliado',
       value: formatCurrency(stats.valorConciliado),
       sub: `Pendente: ${formatCurrency(stats.valorPendente)}`,
       icon: TrendingUp,
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
+      iconColor: 'var(--acc)',
+      iconBg: 'var(--acc-soft)',
     },
     {
       label: 'Acerto da IA',
       value: `${stats.taxaAcertoIA.toFixed(0)}%`,
       sub: `${stats.feedbackConfirmados}✓ / ${stats.feedbackRejeitados}✗`,
       icon: Brain,
-      color: stats.taxaAcertoIA >= 80 ? 'text-success' : stats.taxaAcertoIA >= 60 ? 'text-warning' : 'text-destructive',
-      bgColor: 'bg-accent/10',
+      iconColor:
+        stats.taxaAcertoIA >= 80
+          ? 'var(--ok)'
+          : stats.taxaAcertoIA >= 60
+            ? 'var(--warn)'
+            : 'var(--bad)',
+      iconBg:
+        stats.taxaAcertoIA >= 80
+          ? 'var(--ok-soft)'
+          : stats.taxaAcertoIA >= 60
+            ? 'var(--warn-soft)'
+            : 'var(--bad-soft)',
     },
     {
       label: 'Regras Aprendidas',
       value: String(regrasAtivas),
       sub: `${totalAplicacoes} aplicações`,
       icon: Zap,
-      color: 'text-warning',
-      bgColor: 'bg-warning/10',
+      iconColor: 'var(--warn)',
+      iconBg: 'var(--warn-soft)',
     },
   ];
 
@@ -136,11 +145,17 @@ export function ConciliacaoDashboard() {
                   <Bell className="h-5 w-5 text-destructive animate-pulse" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-destructive">Alerta de Divergência Real-time</p>
-                  <p className="text-xs text-muted-foreground">{stats.pendentes} transações pendentes de matching crítico.</p>
+                  <p className="text-sm font-bold text-destructive">
+                    Alerta de Divergência Real-time
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.pendentes} transações pendentes de matching crítico.
+                  </p>
                 </div>
               </div>
-              <Badge variant="destructive" className="animate-bounce">Urgente</Badge>
+              <Badge variant="destructive" className="animate-bounce">
+                Urgente
+              </Badge>
             </CardContent>
           </Card>
         )}
@@ -152,7 +167,9 @@ export function ConciliacaoDashboard() {
               </div>
               <div>
                 <p className="text-sm font-bold text-accent">Auditoria Alpha Ativa</p>
-                <p className="text-xs text-muted-foreground">Monitorando reclassificações e juros/descontos em tempo real.</p>
+                <p className="text-xs text-muted-foreground">
+                  Monitorando reclassificações e juros/descontos em tempo real.
+                </p>
               </div>
             </div>
             <Badge variant="secondary">Ativo</Badge>
@@ -161,28 +178,28 @@ export function ConciliacaoDashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card) => (
-        <Card key={card.label} className="card-base group hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{card.label}</p>
-                <p className={cn("text-2xl font-bold font-display mt-1", card.color)}>
-                  {card.value}
-                </p>
-                {card.progress !== undefined && (
-                  <Progress value={card.progress} className="h-1.5 mt-2 w-full" />
-                )}
-                <p className="text-xs text-muted-foreground mt-1.5">{card.sub}</p>
-              </div>
-              <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110", card.bgColor, card.color)}>
-                <card.icon className="h-5 w-5" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+        {cards.map((card) => (
+          <StatCard
+            key={card.label}
+            label={card.label}
+            value={card.value}
+            sub={card.sub}
+            icon={<card.icon className="h-5 w-5" />}
+            iconColor={card.iconColor}
+            iconBg={card.iconBg}
+            sparkline={
+              card.progress !== undefined ? (
+                <Progress value={card.progress} className="h-1.5 w-full" />
+              ) : undefined
+            }
+            delta={
+              card.trend === 'up'
+                ? { value: `${stats.percentual.toFixed(0)}%`, positive: true }
+                : undefined
+            }
+          />
+        ))}
+      </div>
     </div>
   );
 }

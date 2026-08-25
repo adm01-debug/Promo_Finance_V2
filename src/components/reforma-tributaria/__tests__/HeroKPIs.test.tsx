@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { HeroKPIs } from '../HeroKPIs';
 
 const defaultProps = {
@@ -49,10 +49,10 @@ describe('HeroKPIs', () => {
       expect(screen.getAllByText('IBS').length).toBeGreaterThanOrEqual(1);
     });
 
-    it('exibe percentual de migração', () => {
+    it('exibe percentual de migração', async () => {
       render(<HeroKPIs {...defaultProps} />);
       expect(screen.getByText('Migração')).toBeInTheDocument();
-      expect(screen.getByText('65%')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText('65%')).toBeInTheDocument(), { timeout: 2500 });
     });
   });
 
@@ -63,15 +63,17 @@ describe('HeroKPIs', () => {
       expect(screen.getByText('Em dia')).toBeInTheDocument();
     });
 
-    it('exibe contagem quando há alertas', () => {
+    it('exibe contagem quando há alertas', async () => {
       render(<HeroKPIs {...defaultProps} alertasCriticos={5} />);
-      expect(screen.getByText('5')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText('5')).toBeInTheDocument(), { timeout: 2500 });
       expect(screen.getByText('Críticos')).toBeInTheDocument();
     });
 
-    it('anima o card quando há alertas', () => {
+    it('anima o card quando há alertas', async () => {
       render(<HeroKPIs {...defaultProps} alertasCriticos={3} />);
-      const alertCard = screen.getByText('3').closest('[class*="Card"]');
+      const alertCard = (await waitFor(() => screen.getByText('3'), { timeout: 2500 })).closest(
+        '[class*="Card"]'
+      );
       // Should have animate-pulse class
       const wrapper = alertCard?.closest('[class*="animate-pulse"]') || alertCard;
       expect(wrapper).toBeTruthy();
@@ -119,9 +121,9 @@ describe('HeroKPIs', () => {
       expect(screen.getByText('0.00')).toBeInTheDocument();
     });
 
-    it('migração 100% renderiza corretamente', () => {
+    it('migração 100% renderiza corretamente', async () => {
       render(<HeroKPIs {...defaultProps} percentualMigracao={100} />);
-      expect(screen.getByText('100%')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText('100%')).toBeInTheDocument(), { timeout: 2500 });
     });
 
     it('sem onKPIClick não quebra ao clicar', () => {

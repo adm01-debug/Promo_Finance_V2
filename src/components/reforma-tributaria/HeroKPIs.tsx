@@ -2,11 +2,17 @@
 // Cards de métricas com hierarquia visual forte
 
 import { motion } from 'framer-motion';
-import { 
-  Percent, Receipt, Landmark, DollarSign,
-  AlertTriangle, CheckCircle, Zap
+import {
+  Percent,
+  Receipt,
+  Landmark,
+  DollarSign,
+  AlertTriangle,
+  CheckCircle,
+  Zap,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatCard } from '@/components/motion/StatCard';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { formatCurrency } from '@/lib/formatters';
@@ -66,21 +72,40 @@ const colorClasses = {
 };
 
 export function HeroKPIs({
-  cargaTributaria, cbsSaldo, ibsSaldo, creditosDisponiveis, creditosUtilizados,
-  creditosAcumulados, percentualMigracao, aliquotaCbs, aliquotaIbs, alertasCriticos = 0,
+  cargaTributaria,
+  cbsSaldo,
+  ibsSaldo,
+  creditosDisponiveis,
+  creditosUtilizados,
+  creditosAcumulados,
+  percentualMigracao,
+  aliquotaCbs,
+  aliquotaIbs,
+  alertasCriticos = 0,
   onKPIClick,
 }: Props) {
-  const percentualCreditos = creditosAcumulados > 0 
-    ? (creditosUtilizados / creditosAcumulados) * 100 
-    : 0;
+  const percentualCreditos =
+    creditosAcumulados > 0 ? (creditosUtilizados / creditosAcumulados) * 100 : 0;
 
   return (
     <div className="space-y-3 sm:space-y-4">
       {/* Hero Cards - 2 grandes */}
       <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
         {/* Carga Tributária - Hero */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer", colorClasses.primary.border, colorClasses.primary.bg, colorClasses.primary.glow)} onClick={() => onKPIClick?.('metricas')}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card
+            className={cn(
+              'relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer',
+              colorClasses.primary.border,
+              colorClasses.primary.bg,
+              colorClasses.primary.glow
+            )}
+            onClick={() => onKPIClick?.('metricas')}
+          >
             <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full" />
             <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
@@ -90,7 +115,12 @@ export function HeroKPIs({
             </CardHeader>
             <CardContent className="p-3 sm:p-6 pt-0">
               <div className="flex items-baseline gap-1 sm:gap-2">
-                <span className={cn("text-3xl sm:text-4xl md:text-5xl font-bold", colorClasses.primary.text)}>
+                <span
+                  className={cn(
+                    'text-3xl sm:text-4xl md:text-5xl font-bold',
+                    colorClasses.primary.text
+                  )}
+                >
                   {cargaTributaria.toFixed(2)}
                 </span>
                 <span className="text-lg sm:text-xl md:text-2xl text-muted-foreground">%</span>
@@ -99,10 +129,16 @@ export function HeroKPIs({
                 Alíquota efetiva sobre faturamento
               </p>
               <div className="mt-2 sm:mt-4 flex gap-1.5 sm:gap-2 flex-wrap">
-                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-primary/10 text-primary px-1.5 sm:px-2">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] sm:text-xs bg-primary/10 text-primary px-1.5 sm:px-2"
+                >
                   CBS: {aliquotaCbs}%
                 </Badge>
-                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-success/10 text-success px-1.5 sm:px-2">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] sm:text-xs bg-success/10 text-success px-1.5 sm:px-2"
+                >
                   IBS: {aliquotaIbs}%
                 </Badge>
               </div>
@@ -111,8 +147,20 @@ export function HeroKPIs({
         </motion.div>
 
         {/* Créditos Disponíveis - Hero */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
-          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer", colorClasses.green.border, colorClasses.green.bg, colorClasses.green.glow)} onClick={() => onKPIClick?.('creditos')}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+          <Card
+            className={cn(
+              'relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer',
+              colorClasses.green.border,
+              colorClasses.green.bg,
+              colorClasses.green.glow
+            )}
+            onClick={() => onKPIClick?.('creditos')}
+          >
             <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-success/10 to-transparent rounded-bl-full" />
             <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
@@ -121,7 +169,12 @@ export function HeroKPIs({
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 sm:p-6 pt-0">
-              <div className={cn("text-2xl sm:text-3xl md:text-4xl font-bold truncate", colorClasses.green.text)}>
+              <div
+                className={cn(
+                  'text-2xl sm:text-3xl md:text-4xl font-bold truncate',
+                  colorClasses.green.text
+                )}
+              >
                 {formatCurrency(creditosDisponiveis)}
               </div>
               <div className="mt-2 sm:mt-3">
@@ -141,73 +194,79 @@ export function HeroKPIs({
 
       {/* Cards Secundários */}
       <div className="grid gap-2 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-        {/* CBS a Recolher */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-primary/30 cursor-pointer", colorClasses.blue.border)} onClick={() => onKPIClick?.('apuracao')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
-              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">CBS</CardTitle>
-              <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
-            </CardHeader>
-            <CardContent className="p-2 sm:p-6 pt-0">
-              <div className={cn("text-base sm:text-xl md:text-2xl font-bold truncate", colorClasses.blue.text)}>
-                {formatCurrency(cbsSaldo)}
-              </div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">A recolher</p>
-            </CardContent>
-          </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <StatCard
+            label="CBS"
+            value={formatCurrency(cbsSaldo)}
+            sub="A recolher"
+            icon={<Receipt className="h-5 w-5" />}
+            iconColor="var(--acc)"
+            iconBg="var(--acc-soft)"
+            onClick={() => onKPIClick?.('apuracao')}
+            className="h-full"
+          />
         </motion.div>
 
-        {/* IBS a Recolher */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.25 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-success/30 cursor-pointer", colorClasses.emerald.border)} onClick={() => onKPIClick?.('apuracao')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
-              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">IBS</CardTitle>
-              <Landmark className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
-            </CardHeader>
-            <CardContent className="p-2 sm:p-6 pt-0">
-              <div className={cn("text-base sm:text-xl md:text-2xl font-bold truncate", colorClasses.emerald.text)}>
-                {formatCurrency(ibsSaldo)}
-              </div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">A recolher</p>
-            </CardContent>
-          </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
+        >
+          <StatCard
+            label="IBS"
+            value={formatCurrency(ibsSaldo)}
+            sub="A recolher"
+            icon={<Landmark className="h-5 w-5" />}
+            iconColor="var(--ok)"
+            iconBg="var(--ok-soft)"
+            onClick={() => onKPIClick?.('apuracao')}
+            className="h-full"
+          />
         </motion.div>
 
-        {/* Migração */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-warning/30 cursor-pointer", colorClasses.amber.border)} onClick={() => onKPIClick?.('cronograma')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
-              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Migração</CardTitle>
-              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-warning" />
-            </CardHeader>
-            <CardContent className="p-2 sm:p-6 pt-0">
-              <div className={cn("text-base sm:text-xl md:text-2xl font-bold", colorClasses.amber.text)}>
-                {percentualMigracao.toFixed(0)}%
-              </div>
-              <Progress value={percentualMigracao} className="h-1 sm:h-1.5 mt-1 sm:mt-2" />
-            </CardContent>
-          </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <StatCard
+            label="Migração"
+            value={`${percentualMigracao.toFixed(0)}%`}
+            icon={<Zap className="h-5 w-5" />}
+            iconColor="var(--warn)"
+            iconBg="var(--warn-soft)"
+            onClick={() => onKPIClick?.('cronograma')}
+            sparkline={<Progress value={percentualMigracao} className="h-1.5 w-full" />}
+            className="h-full"
+          />
         </motion.div>
 
-        {/* Alertas */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.35 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md cursor-pointer", alertasCriticos > 0 ? `${colorClasses.red.border} animate-pulse` : colorClasses.green.border)} onClick={() => onKPIClick?.('alertas')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
-              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Alertas</CardTitle>
-              {alertasCriticos > 0 
-                ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
-                : <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
-              }
-            </CardHeader>
-            <CardContent className="p-2 sm:p-6 pt-0">
-              <div className={cn("text-base sm:text-xl md:text-2xl font-bold", alertasCriticos > 0 ? colorClasses.red.text : colorClasses.green.text)}>
-                {alertasCriticos > 0 ? alertasCriticos : '✓'}
-              </div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                {alertasCriticos > 0 ? 'Críticos' : 'Em dia'}
-              </p>
-            </CardContent>
-          </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.35 }}
+        >
+          <StatCard
+            label="Alertas"
+            value={alertasCriticos > 0 ? alertasCriticos : '✓'}
+            sub={alertasCriticos > 0 ? 'Críticos' : 'Em dia'}
+            icon={
+              alertasCriticos > 0 ? (
+                <AlertTriangle className="h-5 w-5" />
+              ) : (
+                <CheckCircle className="h-5 w-5" />
+              )
+            }
+            iconColor={alertasCriticos > 0 ? 'var(--bad)' : 'var(--ok)'}
+            iconBg={alertasCriticos > 0 ? 'var(--bad-soft)' : 'var(--ok-soft)'}
+            valueClassName={alertasCriticos > 0 ? 'text-bad' : 'text-ok'}
+            onClick={() => onKPIClick?.('alertas')}
+            className={cn('h-full', alertasCriticos > 0 && 'animate-pulse border-bad/40')}
+          />
         </motion.div>
       </div>
     </div>

@@ -1,14 +1,6 @@
 import { motion } from 'framer-motion';
-import {
-  DollarSign,
-  CheckCircle2,
-  AlertTriangle,
-  Calendar,
-  ShieldAlert,
-  ArrowUpRight,
-  ArrowDownRight
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { DollarSign, CheckCircle2, AlertTriangle, Calendar, ShieldAlert } from 'lucide-react';
+import { StatCard } from '@/components/motion/StatCard';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
@@ -23,19 +15,6 @@ interface ContasPagarKPIsProps {
   onAprovacaoClick: () => void;
 }
 
-function calcVariation(current: number, previous: number): { text: string; positive: boolean } | null {
-  if (!previous || previous === 0) return null;
-  const pct = ((current - previous) / previous) * 100;
-  return { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`, positive: pct >= 0 };
-}
-
-const kpiConfig = [
-  { key: 'totalPagar', label: 'Total a Pagar', icon: DollarSign, iconBg: 'bg-destructive/10', iconColor: 'text-destructive', isCurrency: true },
-  { key: 'totalPagoMes', label: 'Pago no Mês', icon: CheckCircle2, iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-500', isCurrency: true },
-  { key: 'totalVencido', label: 'Vencido', icon: AlertTriangle, iconBg: 'bg-rose-500/10', iconColor: 'text-rose-500', isCurrency: true, valueColor: 'text-rose-500 animate-pulse-slow' },
-  { key: 'venceHoje', label: 'Vence Hoje', icon: Calendar, iconBg: 'bg-amber-500/10', iconColor: 'text-amber-500', isCurrency: false, suffix: 'Contas' },
-] as const;
-
 export function ContasPagarKPIs({
   totalPagar,
   totalPagoMes,
@@ -46,10 +25,62 @@ export function ContasPagarKPIs({
   valorAprovacoesUrgentes,
   onAprovacaoClick,
 }: ContasPagarKPIsProps) {
-  const values: Record<string, number> = { totalPagar, totalPagoMes, totalVencido, venceHoje };
-  const variationPago = calcVariation(totalPagoMes, totalPagoMesAnterior || (totalPagoMes * 0.95));
-  const variationPagar = calcVariation(totalPagar, (totalPagar * 1.05)); // Fallback simulation for visual gap
-  const variationVencido = calcVariation(totalVencido, (totalVencido * 1.1)); // Fallback simulation
+  // Delta apenas com dado real do mês anterior (sem simulação decorativa)
+  const variationPago =
+    totalPagoMesAnterior && totalPagoMesAnterior > 0
+      ? {
+          value: `${(((totalPagoMes - totalPagoMesAnterior) / totalPagoMesAnterior) * 100).toFixed(1)}%`,
+          positive: totalPagoMes >= totalPagoMesAnterior,
+        }
+      : undefined;
+
+  const cards: Array<{
+    key: string;
+    label: string;
+    icon: React.ReactNode;
+    value: string | number;
+    sub?: string;
+    iconColor: string;
+    iconBg: string;
+    delta?: { value: string; positive: boolean };
+    valueClassName?: string;
+  }> = [
+    {
+      key: 'totalPagar',
+      label: 'Total a Pagar',
+      icon: <DollarSign className="h-5 w-5" />,
+      value: formatCurrency(totalPagar),
+      iconColor: 'var(--bad)',
+      iconBg: 'var(--bad-soft)',
+    },
+    {
+      key: 'totalPagoMes',
+      label: 'Pago no Mês',
+      icon: <CheckCircle2 className="h-5 w-5" />,
+      value: formatCurrency(totalPagoMes),
+      iconColor: 'var(--ok)',
+      iconBg: 'var(--ok-soft)',
+      delta: variationPago,
+    },
+    {
+      key: 'totalVencido',
+      label: 'Vencido',
+      icon: <AlertTriangle className="h-5 w-5" />,
+      value: formatCurrency(totalVencido),
+      iconColor: 'var(--bad)',
+      iconBg: 'var(--bad-soft)',
+      valueClassName: totalVencido > 0 ? 'text-bad' : undefined,
+    },
+    {
+      key: 'venceHoje',
+      label: 'Vence Hoje',
+      icon: <Calendar className="h-5 w-5" />,
+      value: venceHoje,
+      sub: 'contas',
+      iconColor: 'var(--warn)',
+      iconBg: 'var(--warn-soft)',
+    },
+  ];
 
   return (
     <motion.div
@@ -57,112 +88,47 @@ export function ContasPagarKPIs({
       animate={{ opacity: 1 }}
       className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6"
     >
-      {kpiConfig.map((kpi, index) => {
-        const Icon = kpi.icon;
-        const value = values[kpi.key];
-        return (
-          <motion.div
-            key={kpi.key}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
-          >
-            <Card className="border-none bg-background/20 backdrop-blur-2xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] rounded-[1.5rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-500 hover:ring-primary/40">
-              <CardContent className="p-6 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                
-                <div className="relative z-10 flex flex-col justify-between h-full gap-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1 min-w-0">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{kpi.label}</p>
-                      <p className={cn(
-                        "text-2xl sm:text-3xl font-black font-display tracking-tighter tabular-nums truncate",
-                        'valueColor' in kpi && kpi.valueColor
-                      )}>
-                        {kpi.isCurrency ? formatCurrency(value) : value}
-                      </p>
-                    </div>
-                    <div className={cn(
-                      "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110 group-hover:rotate-6 shrink-0",
-                      kpi.iconBg, kpi.iconColor
-                    )}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                  </div>
-                  {kpi.key === 'totalPagoMes' && variationPago && (
-                    <div className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight w-fit transition-all duration-500",
-                      variationPago.positive ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-                    )}>
-                      {variationPago.positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                      {variationPago.text}
-                    </div>
-                  )}
-                  {kpi.key === 'totalPagar' && variationPagar && (
-                    <div className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight w-fit transition-all duration-500",
-                      variationPagar.positive ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success'
-                    )}>
-                      {variationPagar.positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                      {variationPagar.text}
-                    </div>
-                  )}
-                  {kpi.key === 'totalVencido' && variationVencido && (
-                    <div className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight w-fit transition-all duration-500",
-                      variationVencido.positive ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success'
-                    )}>
-                      {variationVencido.positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                      {variationVencido.text}
-                    </div>
-                  )}
-                  {'suffix' in kpi && kpi.suffix && (
-                    <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">{kpi.suffix} Volume</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        );
-      })}
+      {cards.map((kpi, index) => (
+        <motion.div
+          key={kpi.key}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
+        >
+          <StatCard
+            label={kpi.label}
+            value={kpi.value}
+            sub={kpi.sub}
+            icon={kpi.icon}
+            iconColor={kpi.iconColor}
+            iconBg={kpi.iconBg}
+            delta={kpi.delta}
+            valueClassName={kpi.valueClassName}
+            className="h-full"
+          />
+        </motion.div>
+      ))}
 
-      {/* Aprovações Urgentes Premium */}
+      {/* Aprovações Urgentes — clicável (deep-link para centro de aprovações) */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 24 }}
       >
-        <Card 
-          className={cn(
-            "border-none bg-background/20 backdrop-blur-3xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] rounded-[1.5rem] overflow-hidden transition-all duration-500 cursor-pointer group",
-            countAprovacoesUrgentes > 0 ? "ring-2 ring-warning/40 shadow-warning/10" : "ring-1 ring-white/10"
-          )} 
+        <StatCard
+          label="Aprovações Urgentes"
+          value={countAprovacoesUrgentes}
+          sub={
+            countAprovacoesUrgentes > 0
+              ? `Risco: ${formatCurrency(valorAprovacoesUrgentes)}`
+              : 'Estado estável'
+          }
+          icon={<ShieldAlert className="h-5 w-5" />}
+          iconColor="var(--warn)"
+          iconBg="var(--warn-soft)"
           onClick={onAprovacaoClick}
-        >
-          <CardContent className="p-6 relative">
-            <div className="absolute inset-0 bg-warning/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative z-10 flex flex-col justify-between h-full gap-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1 min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-warning/70">Governance Priority</p>
-                  <p className={cn(
-                    "text-3xl font-black font-display tracking-tighter",
-                    countAprovacoesUrgentes > 0 ? "text-warning animate-pulse" : ""
-                  )}>{countAprovacoesUrgentes}</p>
-                </div>
-                <div className={cn(
-                  "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110 group-hover:rotate-12 shrink-0",
-                  countAprovacoesUrgentes > 0 ? "bg-warning/20 text-warning" : "bg-card/5 text-muted-foreground/40"
-                )}>
-                  <ShieldAlert className="h-6 w-6" />
-                </div>
-              </div>
-              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest truncate">
-                {countAprovacoesUrgentes > 0 ? `Risk: ${formatCurrency(valorAprovacoesUrgentes)}` : 'Stable State'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          className={cn('h-full', countAprovacoesUrgentes > 0 && 'border-warn/40')}
+        />
       </motion.div>
     </motion.div>
   );
