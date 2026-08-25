@@ -7,9 +7,9 @@ test.describe('Calculadora Tributária', () => {
     await expect(page.getByRole('heading', { name: /Calculadora Tributária/i })).toBeVisible({ timeout: 15_000 });
 
     // Verifica que os 4 regimes existem no comparativo
-    await expect(page.getByText('Simples Nacional')).toBeVisible();
+    await expect(page.getByText('Simples Nacional', { exact: true })).toBeVisible();
     await expect(page.getByText('Lucro Presumido')).toBeVisible();
-    await expect(page.getByText(/Lucro Real/)).toBeVisible();
+    await expect(page.getByText('Lucro Real', { exact: true })).toBeVisible();
 
     // Alterna para Simples e confere que aparece DAS
     await page.getByRole('tab', { name: /Simples/i }).click();

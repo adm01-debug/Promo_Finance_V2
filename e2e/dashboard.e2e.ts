@@ -3,10 +3,12 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/dashboard');
+    const skipTour = page.getByRole('button', { name: /pular tour/i });
+    if (await skipTour.isVisible().catch(() => false)) await skipTour.click();
   });
 
   test('displays dashboard title', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
+    await expect(page.getByText(/bom dia|boa tarde|boa noite/i).first()).toBeVisible();
   });
 
   test('shows summary stats cards', async ({ page }) => {

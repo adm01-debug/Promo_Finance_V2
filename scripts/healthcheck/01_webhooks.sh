@@ -40,8 +40,9 @@ for i in $(seq 0 $((count-1))); do
     continue
   fi
 
-  # injeta run_id no payload
-  payload=$(jq -c --arg r "$RUN_ID" '. + {healthcheck_run_id: $r}' "$fixture_path")
+  # Schemas de webhook são estritos; metadados do healthcheck não podem ser
+  # injetados no contrato do provedor sem transformar um payload válido em 422.
+  payload=$(jq -c '.' "$fixture_path")
   url="$FUNCTIONS_BASE/$name"
 
   # cabeçalhos de auth

@@ -2,6 +2,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { BlingWebhookSchema, BlingWebhookV2Schema, corsHeaders, createErrorResponse, isWebhookProcessed } from '../_shared/validation.ts';
 import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { authenticateWebhook } from '../_shared/webhook-auth.ts';
 
 
 export const handler = async (req: Request) => {
@@ -30,7 +32,25 @@ export const handler = async (req: Request) => {
     });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-    const body = await req.json();
+    const rawBody = await req.text();
+    const auth = await authenticateWebhook(supabase, {
+      provider: 'bling',
+      req,
+      rawBody,
+      corsHeaders,
+    });
+    if (!auth.ok) return auth.response;
+
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return createValidationErrorResponse([{
+        path: '$',
+        message: 'JSON malformado',
+        code: 'invalid_json',
+      }], corsHeaders);
+    }
     console.log("Bling webhook received:", JSON.stringify(body));
 
     const validation = validateVersionedContract(req, body, {

@@ -1,5 +1,8 @@
 {
-  "evento": "healthcheck.ping",
-  "dados": { "id": "HC_PLACEHOLDER" },
-  "healthcheck_run_id": "__RUN_ID__"
+  "eventId": "HC_PLACEHOLDER",
+  "date": "2026-08-25T12:00:00.000Z",
+  "version": "1",
+  "companyId": 1,
+  "event": "product.updated",
+  "data": { "id": "HC_PLACEHOLDER" }
 }

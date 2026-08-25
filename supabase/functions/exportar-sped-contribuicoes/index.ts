@@ -1,6 +1,6 @@
 // Edge: exportar-sped-contribuicoes — gera TXT EFD-Contribuições preliminar
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 
@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), periodo: z.string().regex(/^\d{4}-\d{2}$/) }), (typeof body === 'object' ? body : {}) as unknown, 'exportar-sped-contribuicoes');
-    if (!__contract.success) return new Response(JSON.stringify({ error: __contract.error, details: __contract.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
     const empresa_id = body.empresa_id as string | undefined;
     const periodo = body.periodo as string | undefined; // YYYY-MM
 

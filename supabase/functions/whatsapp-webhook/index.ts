@@ -7,6 +7,7 @@ import {
 } from '../_shared/validation.ts';
 import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { authenticateWebhook } from '../_shared/webhook-auth.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 
 Deno.serve(async (req) => {
@@ -30,7 +31,14 @@ Deno.serve(async (req) => {
     });
     if (!auth.ok) return auth.response;
 
-    const rawPayload = JSON.parse(rawBody);
+    let rawPayload: Record<string, unknown>;
+    try {
+      rawPayload = JSON.parse(rawBody) as Record<string, unknown>;
+    } catch {
+      return createValidationErrorResponse([{
+        path: '$', message: 'JSON malformado', code: 'invalid_json',
+      }], corsHeaders);
+    }
     console.log('[whatsapp-webhook] Event received:', { evento: rawPayload?.event, messageId: rawPayload?.messageId, status: rawPayload?.status });
 
     // Rate limit: 120 req/min por IP (defesa em profundidade apos autenticacao)

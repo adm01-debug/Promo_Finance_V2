@@ -6,8 +6,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://esm.sh/zod@3.23.8';
 import { create as createJwt, getNumericDate } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -69,10 +68,18 @@ Deno.serve(async (req) => {
     }
     const userId = claims.claims.sub as string;
 
-    const parsed = BodySchema.safeParse(await req.json());
+    let rawBody: unknown;
+    try {
+      rawBody = JSON.parse(await req.text());
+    } catch {
+      return createValidationErrorResponse([{
+        path: '$', message: 'JSON malformado', code: 'invalid_json',
+      }], corsHeaders);
+    }
+    const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
       log.warn('invalid_body', { context: { errors: parsed.error.flatten().fieldErrors } });
-      return json({ error: 'Dados inválidos', details: parsed.error.flatten().fieldErrors }, 400);
+      return createValidationErrorResponse(parsed.error, corsHeaders);
     }
     const { empresa_id, email, nome, origin } = parsed.data;
 

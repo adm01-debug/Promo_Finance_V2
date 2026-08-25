@@ -2,7 +2,7 @@
 // Registra no Bitrix24 (timeline + status do deal) o resultado de cada geração SPED ECF/ECD,
 // informando se foi BLOQUEADA ou GERADA e a quantidade de erros/avisos retornados.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 
@@ -88,8 +88,14 @@ Deno.serve(async (req) => {
     }
 
     const body: ReqBody = await req.json();
-    const __contract = validatePayload(z.object({ empresaId: z.string(), empresaNome: z.string(), tipo: z.string(), anoCalendario: z.union([z.string(),z.number()]), status: z.string() }).passthrough(), (typeof body === 'object' ? body : {}) as unknown, 'log-sped-bitrix24');
-    if (!__contract.success) return new Response(JSON.stringify({ error: __contract.error, details: __contract.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    const __contract = validatePayload(z.object({
+      empresaId: z.string().trim().min(1),
+      empresaNome: z.string().trim().min(1),
+      tipo: z.enum(['ECF', 'ECD']),
+      anoCalendario: z.union([z.string().trim().min(1), z.number()]),
+      status: z.enum(['gerado', 'bloqueado', 'transmitido']),
+    }).passthrough(), (typeof body === 'object' ? body : {}) as unknown, 'log-sped-bitrix24');
+    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
 
     if (!body.empresaId || !body.empresaNome || !body.tipo || !body.anoCalendario || !body.status) {
       return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {

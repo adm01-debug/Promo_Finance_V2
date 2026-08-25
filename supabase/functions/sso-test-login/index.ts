@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   try {
     const raw = await req.json().catch(() => ({}));
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload } = await import('../_shared/validation.ts');
+    const { createErrorResponse, validatePayload } = await import('../_shared/validation.ts');
     const Schema = z.object({
       mock_claims: z.record(z.any()),
       claim_mapping: z.record(z.any()).optional(),
@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
       provider_id: z.string().uuid().optional(),
     }).passthrough();
     const parsed = validatePayload(Schema, raw, 'sso-test-login');
-    if (!parsed.success) return new Response(JSON.stringify({ error: parsed.error, details: parsed.details }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const payload = parsed.data as {
       mock_claims: Record<string, unknown>;
       claim_mapping?: ClaimMapping;

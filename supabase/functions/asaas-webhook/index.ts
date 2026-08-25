@@ -3,6 +3,7 @@ import { contractVersionHeaders, validateVersionedContract } from '../_shared/ve
 import { createLogger } from '../_shared/logger.ts'
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
 import { processWithIdempotency, RetryableError, serviceClient } from '../_shared/webhook-idempotency.ts'
+import { createValidationErrorResponse } from '../_shared/contract-response.ts'
 
 const logger = createLogger('asaas-webhook')
 
@@ -27,7 +28,15 @@ Deno.serve(async (req) => {
       return createErrorResponse('Token inválido', 403)
     }
 
-    const body = await req.json()
+    const rawBody = await req.text()
+    let body: unknown
+    try {
+      body = JSON.parse(rawBody)
+    } catch {
+      return createValidationErrorResponse([{
+        path: '$', message: 'JSON malformado', code: 'invalid_json',
+      }], corsHeaders)
+    }
     const validation = validateVersionedContract(req, body, {
       v1: AsaasWebhookSchema, v2: AsaasWebhookV2Schema, functionName: 'asaas-webhook',
     })
@@ -53,7 +62,7 @@ Deno.serve(async (req) => {
 
     // Idempotência atômica + reprocessamento seguro
     const externalId: string | null =
-      (typeof body.id === 'string' && body.id) ||
+      validation.data.id ||
       (payment?.id ? `payment:${payment.id}:${event}` : null) ||
       (transfer?.id ? `transfer:${transfer.id}:${event}` : null) ||
       null

@@ -8,6 +8,7 @@ import {
 import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { authenticateWebhook, resolveSecret } from '../_shared/webhook-auth.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 
 /** Comparação de segredos em tempo constante-ish (mesmo estilo do auth-guard). */
 function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
@@ -30,6 +31,7 @@ Deno.serve(async (req) => {
     // Bitrix24 envia no corpo quando o webhook de saida e criado com secret key.
     // Fail-closed: sem segredo configurado -> 503, sem credencial valida -> 401.
     const rawBody = await req.text();
+    let rawPayload: Record<string, unknown> | undefined;
 
     const auth = await authenticateWebhook(supabase, {
       provider: 'bitrix24',
@@ -42,7 +44,14 @@ Deno.serve(async (req) => {
     } else if (auth.reason === 'missing_credential') {
       const segredo = await resolveSecret(supabase, 'bitrix24');
       if (!segredo) return createErrorResponse('Webhook nao configurado', 503);
-      const bruto = JSON.parse(rawBody) as { auth?: { application_token?: string } };
+      try {
+        rawPayload = JSON.parse(rawBody) as Record<string, unknown>;
+      } catch {
+        return createValidationErrorResponse([{
+          path: '$', message: 'JSON malformado', code: 'invalid_json',
+        }], corsHeaders);
+      }
+      const bruto = rawPayload as { auth?: { application_token?: string } };
       if (
         !bruto.auth?.application_token ||
         !segredosIguais(bruto.auth.application_token, segredo)
@@ -53,7 +62,15 @@ Deno.serve(async (req) => {
       return auth.response;
     }
 
-    const rawPayload = JSON.parse(rawBody);
+    if (rawPayload === undefined) {
+      try {
+        rawPayload = JSON.parse(rawBody) as Record<string, unknown>;
+      } catch {
+        return createValidationErrorResponse([{
+          path: '$', message: 'JSON malformado', code: 'invalid_json',
+        }], corsHeaders);
+      }
+    }
     console.log('[bitrix24-webhook] Event received:', { evento: rawPayload?.event, ts: rawPayload?.ts });
 
     // Rate limit: 120 req/min por IP (defesa em profundidade apos autenticacao)

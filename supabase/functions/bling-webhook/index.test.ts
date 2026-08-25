@@ -11,6 +11,7 @@ function setupMockEnv() {
   Deno.env.get = (key: string) => {
     if (key === 'SUPABASE_URL') return 'https://test.supabase.co';
     if (key === 'SUPABASE_SERVICE_ROLE_KEY') return 'test-service-key';
+    if (key === 'BLING_WEBHOOK_SECRET') return 'test-webhook-secret';
     return originalEnvGet(key);
   };
 }
@@ -42,11 +43,17 @@ Deno.test({
     try {
       const req = new Request("http://localhost/bling-webhook", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-webhook-token": "test-webhook-secret",
+        },
         body: JSON.stringify({ invalid: "payload" }),
       });
 
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = async () => new Response(JSON.stringify(null), { status: 200 });
       const response = await handler(req);
+      globalThis.fetch = originalFetch;
       assertEquals(response.status, 422);
       const body = await response.json();
       assertEquals(body.code, "VALIDATION_ERROR");
@@ -73,7 +80,10 @@ Deno.test({
     try {
       const req = new Request("http://localhost/bling-webhook", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-webhook-token": "test-webhook-secret",
+        },
         body: JSON.stringify({
           event: "pedido.criado",
           module: "Pedido de Venda",
@@ -90,4 +100,54 @@ Deno.test({
       restoreEnv();
     }
   }
+});
+
+Deno.test({
+  name: "Bling Webhook: rejeita requisição sem autenticação",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
+    setupMockEnv();
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify(null), { status: 200 });
+    try {
+      const response = await handler(new Request("http://localhost/bling-webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "pedido.criado", module: "Pedido de Venda", data: { id: 1 } }),
+      }));
+      assertEquals(response.status, 401);
+    } finally {
+      globalThis.fetch = originalFetch;
+      restoreEnv();
+    }
+  },
+});
+
+Deno.test({
+  name: "Bling Webhook: JSON malformado autenticado retorna envelope 422",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
+    setupMockEnv();
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify(null), { status: 200 });
+    try {
+      const response = await handler(new Request("http://localhost/bling-webhook", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-webhook-token": "test-webhook-secret",
+        },
+        body: "{",
+      }));
+      const body = await response.json();
+      assertEquals(response.status, 422);
+      assertEquals(body.code, "VALIDATION_ERROR");
+      assertEquals(body.fields[0].code, "invalid_json");
+    } finally {
+      globalThis.fetch = originalFetch;
+      restoreEnv();
+    }
+  },
 });
