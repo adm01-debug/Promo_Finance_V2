@@ -54,3 +54,4 @@ graphify-out/
 /playwright-report/
 /playwright/.cache/
 .last-run.json
+supabase/.temp/
