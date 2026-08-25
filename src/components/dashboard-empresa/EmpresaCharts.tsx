@@ -112,7 +112,10 @@ export function EmpresaChartsSection({
               return (
                 <TabsContent key={tipo} value={tipo} className="h-[200px]">
                   {data.length > 0 ? (
-                    <ChartContainer className="h-full">
+                    /* Altura explícita: o TabsContent animado (framer-motion) quebra
+                       a cadeia de h-full e o ResponsiveContainer media height 0,
+                       deixando a pizza sem renderizar. */
+                    <ChartContainer className="h-[200px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
