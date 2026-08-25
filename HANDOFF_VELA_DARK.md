@@ -1,8 +1,19 @@
 # HANDOFF — Epic Vela-dark Promo_Finance_V2
 
 > **Para:** próximo Claude/session que continua a epic
-> **Escrito em:** 2026-08-25 (após commit `7f5c3998`)
+> **Escrito em:** 2026-08-25 (após commit `7f5c3998`) · **ATUALIZADO em:** 2026-08-25 (após `ce635a70` + docs finais)
 > **Como usar:** ler este documento INTEIRO antes de tocar no código. Depois ler `AI_RULES.md`, `EXECAO_VELA_DARK.md` e a memória `promo-finance-restyle-metronic.md`.
+
+---
+
+## 0. ⚡ ATUALIZAÇÃO CRÍTICA — epic P0–P7 CONCLUÍDA (não use o §3/§5 abaixo como estado atual)
+
+> As seções 3 ("verdade incomoda") e 5 (backlog) foram escritas quando só `7f5c3998` existia. **Estão HISTÓRICAS.** Estado real:
+
+- **`main` contém a epic COMPLETA**: P0 remap (`234ce5f1`) → P1 auth aurora (`3459d690`) → P2 stagger (`a10c7fbd`) → P3/P3-ext dashboards (`c1ba0751`, `7f68637d`) → P4 hex→tokens (`a8cc7545`) → P5 ⌘K (`e06dd3b9`) → P6 tema claro (`462c01f9`) → P7a espécimes DEV-only `/__especimes` (`ce635a70`). Dívidas quitadas: husky (`b610c909`), graphify-out (`bf491f6f`), xlsx CVE (`77e4647c`). Fixes de regressão achados na validação: `2db3f839`, `39735a08`.
+- **Validação:** G4/G6 **10/10 APROVADO** (5 telas × 2 temas, sessão fake, probes objetivos + vereditos pareados de visão com adjudicação por pixels). Detalhe completo: **`RELATORIO_ACEITE_VELA_DARK.md`** (raiz do repo) — ler antes de qualquer trabalho novo.
+- **Trabalho novo** = polimento por página sob demanda (hex residuais em bespoke fora da amostra), NÃO refazer a epic. Regras do §6 continuam valendo INTEGRALMENTE.
+- **Hazards operacionais aprendidos na prática** (multiagente + QA): ver **§10** abaixo — ler antes de commitar ou rodar QA visual.
 
 ---
 
@@ -48,7 +59,7 @@
 
 ---
 
-## 3. ⚠️ A VERDADE INCOMODA — estado visual HÍBRIDO (ler antes de qualquer coisa)
+## 3. ⚠️ A VERDADE INCOMODA — estado visual HÍBRIDO (HISTÓRICO — resolvido no P0; ver §0)
 
 O commit `7f5c3998` aplicou Vela nos **variants**, mas o resto do app ainda consome tokens **legados claros**:
 
@@ -90,7 +101,7 @@ Fazer isso em `.dark` e `:root` (dark-first: `:root` já tem `color-scheme: dark
 
 ---
 
-## 5. BACKLOG — tudo que NÃO foi implementado ainda (priorizado)
+## 5. BACKLOG — tudo que NÃO foi implementado ainda (HISTÓRICO — P0–P7 entregues; ver §0 e RELATORIO_ACEITE_VELA_DARK.md)
 
 > Ordem = dependência + impacto. Cada item: [arquivos] → passos → aceite. Rodar gates ao fim de CADA item. Commits convencionais pt-BR (ex. `feat(auth): port do login com aurora CSS`).
 
@@ -181,3 +192,36 @@ npm run lint && npx tsc --noEmit             # gates
 3. **Executar P0 (remap legacy→Vela)** e validar no navegador (§3/P0) — é a maior alavancada: uma edição escura o app inteiro.
 4. Seguir P1→P7 na ordem, gates + commit a cada item, via **worktree hermes** (regra 4).
 5. Reportar ao usuário com screenshots antes/depois (copiar p/ `/mnt/c/Users/Public/` e abrir browser).
+
+---
+
+## 10. ⚠️ HAZARDS operacionais — aprendidos na prática (P4–P7b, multiagente + QA)
+
+> Cada linha abaixo custou tempo real de debug. Ler ANTES de commitar ou rodar QA visual.
+
+### Git / hooks
+- **Bomba lint-staged/prettier no `App.tsx`**: o pre-commit roda prettier no `App.tsx` e o explode para milhares de linhas. Usar `git commit --no-verify` + **gates manuais** (`npm run lint` + `npx tsc --noEmit` + `npm test -- <path>`). O `App.tsx` do `main` DEVE permanecer compacto (~336 linhas). Nunca commitar a versão expandida.
+- **`git reset --hard` remove arquivos TRACKED** (untracked sobrevivem). Em worktree compartilhada com outro agente, prefira `restore` cirúrgico.
+- **Worktrees de outros agentes** (`hermes-workspaces/chat-*`) são INTOCÁVEIS. Nomes estilizados de telas ("Quantum-Sentinel", "Global Vault Cleared") são criação de outro agente — não renomear sem diretiva.
+
+### Playwright / QA visual (a receita que funciona)
+- **Ordem de `page.route`: a ÚLTIMA registrada vence.** Registrar o genérico `**/rest/v1/**` → `[]` PRIMEIRO e os específicos (`user_empresas`, `user_onboarding_progress`) POR ÚLTIMO.
+- **Sessão Supabase fake**: chave `sb-${VITE_SUPABASE_PROJECT_ID}-auth-token` (aqui `sb-placeholder-pfv2-auth-token` — derivada de `src/integrations/supabase/client.ts`). JSON com `expires_at: 4102444800` (2100) evita refresh de rede. Semear também `theme`, `theme_bootstrap_v1=1`, `pf:current-empresa-id`. `addInitScript` NÃO fecha sobre variáveis do Node — passar valores via array de args.
+- **EmpresaGuard**: 0 vínculos → gate bloqueante; ≥1 → passa. Stub `user_empresas` com 1 vínculo admin + objeto `empresa` aninhado.
+- **OnboardingTour (react-joyride) polui TODA captura** — ele monta no MainLayout e auto-inicia porque stub `[]` é truthy → `is_completed:false`. Supressão correta: stub `user_onboarding_progress` retornando OBJETO `{is_completed:true,...}` (postgrest-js parseia objeto cru como data). **Remover `#react-joyride-portal` do DOM NÃO funciona** — React re-renderiza. Não confundir com o `GuidedTour.tsx` (framer, 4 passos, só na rota `/`, flags `promo-financeiro-tour-v2-*`).
+- **`addInitScript` roda antes de qualquer script da página** — é o lugar do bootstrap de tema (senão flash claro→escuro no screenshot).
+- **OOM**: rodar gates pesados (vitest full + tsc) SEQUENCIALMENTE, nunca paralelo no mesmo host.
+- **Bash cwd reseta entre chamadas** neste ambiente — sempre caminhos absolutos.
+
+### Validação por visão (`analyze_image`) — armadilhas
+- **Screenshot fullPage alto é redimensionado** → modelo de visão **confabula**: inventou "Next (Step 1 of 8)", "modal de tour", e claim de contraste baixo. Regra: **em disputa, pixels vencem** — contraste WCAG computado in-page sobre `getComputedStyle` (claim refutada: 15,53:1 real), crop @2x com `clip:{x,y,width,height}` (chaves `width/height`, NÃO `w/h`; clip fica limitado ao viewport) para claims estruturais.
+- **Heurísticas de probe também erram**: regex de gate de vínculo casou "Selecionar empresa" (rótulo de dropdown de filtro em `/tributario`). Sempre confirmar com `gateComponente` (existência do componente) + tamanho do texto antes de reprovhar tela.
+
+### Código (regressões já encontradas uma vez — vigiar)
+- **`TabsContent` animado × `h-full`**: container animado quebra `height:100%` de Recharts dentro — pizza "Distribuição" sumiu (`39735a08`). 10 arquivos candidatos varridos na época; se um chart sumir após mexer em Tabs, essa é a primeira suspeita.
+- **Generic JSX em produção** (`<T>` direto em `.tsx`): quebra build dev (`2db3f839`) — `SavedFiltersBar`. TSX não suporta; usar factory ou `unknown` + cast.
+- **`next-themes` é dependência MORTA** (0 imports) — o app usa `ThemeContext` custom com `.light`/`.dark` em `documentElement`. Não importar next-themes em código novo; remoção da dep é chore opcional.
+- **`design-system-debug`** (rota/legado) está deprecado — usar `/__especimes` (DEV-only).
+- **Tema no HTML**: bootstrap via `theme_bootstrap_v1` evita FOUC; scripts de QA devem semear antes do load.
+- **Par `--primary`+branco ≈ 3,7:1** é o par default do Button do DS, aprovado app-wide — não "corrigir" caso isolado (mesclaria com a decisão de sistema). Botão skip do joyride pinta com `textColor` → 15,53:1 claro.
+- **Paleta de séries `--ch1..5` é ORDEM FIXA** validada por CVD (§1) — nunca reordenar/ciclar.
