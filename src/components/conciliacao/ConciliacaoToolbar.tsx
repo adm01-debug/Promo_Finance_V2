@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useMemo } from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,22 +9,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
-import { Search, ArrowUpDown } from "lucide-react";
-import {
-  ConciliacaoFilters,
-  type ConciliacaoFilterState,
-} from "./ConciliacaoFilters";
-import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
-import { ColumnVisibilityMenu } from "@/components/shared/ColumnVisibilityMenu";
-import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
-import { CONCILIACAO_COLUMNS, type ConciliacaoSort } from "./conciliacao-toolbar.constants";
+} from '@/components/ui/dropdown-menu';
+import { Search, ArrowUpDown } from 'lucide-react';
+import { ConciliacaoFilters, type ConciliacaoFilterState } from './ConciliacaoFilters';
+import { SavedFiltersBar } from '@/components/shared/SavedFiltersBar';
+import { ColumnVisibilityMenu } from '@/components/shared/ColumnVisibilityMenu';
+import type { SavedFilterPayload } from '@/hooks/useSavedFilters';
+import { CONCILIACAO_COLUMNS, type ConciliacaoSort } from './conciliacao-toolbar.constants';
 
-const SORT_OPTIONS: { key: ConciliacaoSort["key"]; label: string }[] = [
-  { key: "data", label: "Data" },
-  { key: "valor", label: "Valor" },
-  { key: "descricao", label: "Descrição" },
-  { key: "tipo", label: "Tipo" },
+const SORT_OPTIONS: { key: ConciliacaoSort['key']; label: string }[] = [
+  { key: 'data', label: 'Data' },
+  { key: 'valor', label: 'Valor' },
+  { key: 'descricao', label: 'Descrição' },
+  { key: 'tipo', label: 'Tipo' },
 ];
 
 interface ConciliacaoToolbarProps {
@@ -59,7 +56,7 @@ export function ConciliacaoToolbar({
 }: ConciliacaoToolbarProps) {
   const currentState: SavedFilterPayload<ConciliacaoFilterState> = useMemo(
     () => ({ v: 1, filters, sort, columns: visibleCols }),
-    [filters, sort, visibleCols],
+    [filters, sort, visibleCols]
   );
 
   return (
@@ -74,7 +71,7 @@ export function ConciliacaoToolbar({
         />
       </div>
 
-      <SavedFiltersBar<ConciliacaoFilterState>
+      <SavedFiltersBar
         entityType="conciliacao_transacoes"
         currentState={currentState}
         activePresetId={activePresetId}
@@ -90,7 +87,7 @@ export function ConciliacaoToolbar({
             <ArrowUpDown className="h-3.5 w-3.5" />
             {SORT_OPTIONS.find((o) => o.key === sort.key)?.label}
             <Badge variant="secondary" className="h-4 px-1 text-[10px]">
-              {sort.dir === "asc" ? "↑" : "↓"}
+              {sort.dir === 'asc' ? '↑' : '↓'}
             </Badge>
           </Button>
         </DropdownMenuTrigger>
@@ -109,11 +106,11 @@ export function ConciliacaoToolbar({
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem
-            checked={sort.dir === "desc"}
+            checked={sort.dir === 'desc'}
             onCheckedChange={() =>
               onSortChange({
                 ...sort,
-                dir: sort.dir === "asc" ? "desc" : "asc",
+                dir: sort.dir === 'asc' ? 'desc' : 'asc',
               })
             }
             onSelect={(e) => e.preventDefault()}
