@@ -134,88 +134,92 @@
   --radius-vela-xl: 20px;
 }
 
-/* ============ Promo Finance Legado (para compatibilidade) ============ */
+/* ============ Promo Finance Legado — remapeado para Vela (P0) ============
+   Os nomes shadcn (--background, --primary…) continuam existindo porque 624
+   arquivos os consomem via hsl(var(--…)); os VALORES agora apontam para os
+   equivalentes Vela-dark (conversão hex→HSL dos 22 tokens). Dark-first:
+   :root e .dark = Vela dark; .light = Vela light. */
 :root,
-.light {
-  --font-body: Inter, system-ui, sans-serif;
-  --font-heading: Outfit, Inter, system-ui, sans-serif;
+.dark {
+  --font-body: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  --font-heading: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
 
-  --background: 210 40% 98%;
-  --foreground: 222.2 47.4% 11.2%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 47.4% 11.2%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 47.4% 11.2%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --success: 142.1 70.6% 45.3%;
-  --success-foreground: 210 40% 98%;
-  --warning: 37.7 92.1% 50.2%;
-  --warning-foreground: 222.2 47.4% 11.2%;
-  --info: 199.9 89.1% 48.4%;
-  --info-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 217.2 91.2% 59.8%;
-  --sidebar-background: 0 0% 100%;
-  --sidebar-foreground: 222.2 47.4% 11.2%;
-  --sidebar-primary: 217.2 91.2% 59.8%;
-  --sidebar-primary-foreground: 210 40% 98%;
-  --sidebar-accent: 210 40% 96.1%;
-  --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-  --sidebar-border: 214.3 31.8% 91.4%;
-  --sidebar-ring: 217.2 91.2% 59.8%;
+  --background: 230 25% 5%;
+  --foreground: 230 33% 96%;
+  --card: 227 27% 6%;
+  --card-foreground: 230 33% 96%;
+  --popover: 227 27% 6%;
+  --popover-foreground: 230 33% 96%;
+  --primary: 252 100% 68%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 229 23% 9%;
+  --secondary-foreground: 230 33% 96%;
+  --muted: 227 21% 13%;
+  --muted-foreground: 223 13% 65%;
+  --accent: 227 21% 13%;
+  --accent-foreground: 230 33% 96%;
+  --destructive: 353 90% 70%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 156 65% 52%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 91% 64%;
+  --warning-foreground: 230 25% 8%;
+  --info: 211 100% 67%;
+  --info-foreground: 0 0% 100%;
+  --border: 225 12% 13%;
+  --input: 228 10% 19%;
+  --ring: 252 100% 68%;
+  --sidebar-background: 227 27% 6%;
+  --sidebar-foreground: 223 13% 65%;
+  --sidebar-primary: 252 100% 68%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 227 21% 13%;
+  --sidebar-accent-foreground: 230 33% 96%;
+  --sidebar-border: 225 12% 13%;
+  --sidebar-ring: 252 100% 68%;
   --radius: 0.75rem;
-  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(251 100% 76%));
 }
 
-.dark {
-  --font-body: Inter, system-ui, sans-serif;
-  --font-heading: Outfit, Inter, system-ui, sans-serif;
+.light {
+  --font-body: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  --font-heading: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
 
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --success: 142.1 70.6% 45.3%;
-  --success-foreground: 210 40% 98%;
-  --warning: 37.7 92.1% 50.2%;
-  --warning-foreground: 222.2 47.4% 11.2%;
-  --info: 199.9 89.1% 48.4%;
-  --info-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
-  --sidebar-background: 222.2 84% 4.9%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-primary: 217.2 91.2% 59.8%;
-  --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-  --sidebar-accent: 217.2 32.6% 17.5%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-border: 217.2 32.6% 17.5%;
-  --sidebar-ring: 224.3 76.3% 48%;
+  --background: 223 27% 95%;
+  --foreground: 225 21% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 225 21% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 225 21% 11%;
+  --primary: 250 99% 65%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 230 30% 96%;
+  --secondary-foreground: 225 21% 11%;
+  --muted: 223 27% 95%;
+  --muted-foreground: 223 12% 40%;
+  --accent: 230 30% 96%;
+  --accent-foreground: 225 21% 11%;
+  --destructive: 351 76% 62%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 159 78% 40%;
+  --success-foreground: 0 0% 100%;
+  --warning: 36 74% 51%;
+  --warning-foreground: 225 21% 11%;
+  --info: 213 86% 59%;
+  --info-foreground: 0 0% 100%;
+  --border: 225 10% 93%;
+  --input: 225 10% 93%;
+  --ring: 250 99% 65%;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 223 12% 40%;
+  --sidebar-primary: 250 99% 65%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 230 30% 96%;
+  --sidebar-accent-foreground: 225 21% 11%;
+  --sidebar-border: 225 10% 93%;
+  --sidebar-ring: 250 99% 65%;
   --radius: 0.75rem;
-  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(251 100% 76%));
 }
 
 /* Título "Bem-vindo de volta" com reveal por blur (efeito hero-22) */
