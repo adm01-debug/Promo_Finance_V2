@@ -9,6 +9,12 @@ import { contractVersionHeaders, validateVersionedContract } from '../_shared/ve
 import { authenticateWebhook } from '../_shared/webhook-auth.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { processWithIdempotency, RetryableError } from '../_shared/webhook-idempotency.ts';
+
+async function sha256(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -62,16 +68,21 @@ Deno.serve(async (req) => {
     const body = validation.data;
     // Payload variation depending on provider (WPPConnect, Meta, etc)
     const { event, messageId, status, from } = body;
-
+    const externalId = messageId ?? await sha256(rawBody);
+    const { claim, failure } = await processWithIdempotency(
+      supabase,
+      { source: 'whatsapp', externalId, eventType: event, payload: body },
+      async () => {
     if (messageId && status) {
       // 1. Atualizar status na fila ou execuções
-      await supabase
+      const { error: updateError } = await supabase
         .from('execucoes_cobranca')
         .update({
           status: status === 'read' ? 'lido' : status === 'delivered' ? 'entregue' : 'enviado',
           metadata: { ...rawPayload, updated_at: new Date().toISOString() },
         })
         .eq('provider_message_id', messageId);
+      if (updateError) throw new RetryableError(`update execucoes_cobranca: ${updateError.message}`);
 
       // 2. Se for resposta (reply), registrar na auditoria/notificações
       if (event === 'message') {
@@ -85,13 +96,26 @@ Deno.serve(async (req) => {
           .maybeSingle();
 
         if (exec) {
-          await supabase.from('asaas_audit_trail').insert({
+          const { error: auditError } = await supabase.from('asaas_audit_trail').insert({
             payment_id: exec.conta_receber_id,
             action: 'WHATSAPP_REPLY',
             details: { message: body.text, from },
           });
+          if (auditError) throw new RetryableError(`insert asaas_audit_trail: ${auditError.message}`);
         }
       }
+    }
+      },
+    );
+    if (claim.alreadyProcessed) {
+      return new Response(JSON.stringify({ success: true, duplicated: true }), {
+        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
+      });
+    }
+    if (failure) {
+      return new Response(JSON.stringify({ success: false, will_retry: failure.willRetry, status: failure.status }), {
+        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
+      });
     }
 
     return new Response(JSON.stringify({ success: true }), {

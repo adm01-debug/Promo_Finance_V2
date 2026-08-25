@@ -53,6 +53,7 @@ jobs:
           deno test \
             --allow-env \
             --allow-net \
+            --allow-read \
             --no-check \
             supabase/functions/sso-test-login/pipeline.test.ts \
             supabase/functions/sso-callback/build-profile-sync-delta.test.ts \

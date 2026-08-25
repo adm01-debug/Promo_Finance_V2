@@ -9,6 +9,7 @@ import { contractVersionHeaders, validateVersionedContract } from '../_shared/ve
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { authenticateWebhook, resolveSecret } from '../_shared/webhook-auth.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { processWithIdempotency } from '../_shared/webhook-idempotency.ts';
 
 /** Comparação de segredos em tempo constante-ish (mesmo estilo do auth-guard). */
 function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
@@ -16,6 +17,11 @@ function segredosIguais(a: string | null | undefined, b: string | null | undefin
   let diff = 0;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
+}
+
+async function sha256(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 Deno.serve(async (req) => {
@@ -93,14 +99,25 @@ Deno.serve(async (req) => {
 
     const payload = validation.data;
 
-    // Log the webhook
-    await supabase.from('webhooks_log').insert({
-      event_type: payload.event,
-      payload: rawPayload,
-      provider: 'bitrix24',
-      processado: true,
-      correlation_id: crypto.randomUUID(),
-    });
+    const payloadSeguro = structuredClone(rawPayload);
+    const authPayload = payloadSeguro.auth;
+    if (authPayload && typeof authPayload === 'object') {
+      delete (authPayload as Record<string, unknown>).application_token;
+    }
+    const externalId = 'event_id' in payload && typeof payload.event_id === 'string'
+      ? payload.event_id
+      : `${payload.event}:${payload.ts ?? await sha256(rawBody)}`;
+    const { claim, failure } = await processWithIdempotency(
+      supabase,
+      { source: 'bitrix24', externalId, eventType: payload.event, payload: payloadSeguro },
+      async () => undefined,
+    );
+    if (claim.alreadyProcessed) {
+      return new Response(JSON.stringify({ success: true, duplicated: true }), {
+        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
+      });
+    }
+    if (failure) throw new Error(`Falha ao registrar webhook Bitrix24: ${failure.status}`);
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },

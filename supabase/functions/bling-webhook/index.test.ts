@@ -70,10 +70,18 @@ Deno.test({
   sanitizeResources: false,
   async fn() {
     setupMockEnv();
-    
+
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
       // Mock any Supabase REST or RPC calls
+      if (String(url).includes("/rpc/webhook_claim")) {
+        return new Response(JSON.stringify([{
+          id: "event-123", status: "processing", attempts: 1, already_processed: false,
+        }]), { status: 200 });
+      }
+      if (String(url).includes("/rpc/webhook_mark_success")) {
+        return new Response(JSON.stringify(null), { status: 200 });
+      }
       return new Response(JSON.stringify({ id: "event-123", ok: true }), { status: 201 });
     };
 

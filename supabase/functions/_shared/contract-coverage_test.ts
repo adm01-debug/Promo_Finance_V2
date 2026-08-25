@@ -75,10 +75,35 @@ Deno.test("bling autentica o corpo bruto antes de validar ou gravar", async () =
   const auth = source.indexOf("authenticateWebhook(");
   const parse = source.indexOf("JSON.parse(rawBody)");
   const validation = source.indexOf("validateVersionedContract(");
-  const insert = source.indexOf('.from("bling_webhook_events")');
+  const claim = source.indexOf("processWithIdempotency(");
 
   assertEquals(auth >= 0, true);
   assertEquals(auth < parse, true);
   assertEquals(parse < validation, true);
-  assertEquals(validation < insert, true);
+  assertEquals(validation < claim, true);
+});
+
+Deno.test("webhooks com efeitos colaterais usam idempotência atômica", async () => {
+  for (
+    const endpoint of ["bling-webhook", "bitrix24-webhook", "whatsapp-webhook"]
+  ) {
+    const source = await Deno.readTextFile(
+      new URL(`../${endpoint}/index.ts`, import.meta.url),
+    );
+    assertEquals(
+      source.includes("processWithIdempotency("),
+      true,
+      `${endpoint} não usa processWithIdempotency`,
+    );
+  }
+});
+
+Deno.test("bitrix24 não persiste application_token", async () => {
+  const source = await Deno.readTextFile(
+    new URL("../bitrix24-webhook/index.ts", import.meta.url),
+  );
+  const sanitization = source.indexOf("delete (authPayload");
+  const persistence = source.indexOf("processWithIdempotency(");
+  assertEquals(sanitization >= 0, true);
+  assertEquals(sanitization < persistence, true);
 });

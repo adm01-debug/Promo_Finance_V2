@@ -119,11 +119,23 @@ verify_jwt_for() {
 OK=0; FAIL=0
 for fn in "${FNS[@]}"; do
   vjwt="$(verify_jwt_for "$fn")"
-  # Default do Lovable-managed: verify_jwt = false
-  if [[ "$vjwt" == "true" ]]; then
+  # Segurança fail-closed: toda função precisa declarar explicitamente a política
+  # de JWT. Sem isso, um deploy em massa poderia tornar pública uma função que o
+  # ambiente remoto atualmente protege na borda.
+  if [[ -z "$vjwt" ]]; then
+    echo "❌ ${fn}: verify_jwt ausente em ${CONFIG_TOML}; deploy recusado." >&2
+    FAIL=$((FAIL + 1))
+    log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_missing"}'
+    continue
+  elif [[ "$vjwt" == "true" ]]; then
     FLAG="--verify-jwt"
-  else
+  elif [[ "$vjwt" == "false" ]]; then
     FLAG="--no-verify-jwt"
+  else
+    echo "❌ ${fn}: verify_jwt inválido em ${CONFIG_TOML}: ${vjwt}" >&2
+    FAIL=$((FAIL + 1))
+    log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_invalid"}'
+    continue
   fi
 
   echo "→ deploy ${fn} (${FLAG})"
