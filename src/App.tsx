@@ -122,6 +122,8 @@ const MetasFinanceirasPage = lazy(() => import('./pages/MetasFinanceiras'));
 const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
 const DesignSystemDebug = lazy(() => import('./pages/design-system-debug'));
+// Galeria de espécimes Vela (gate G2/G3) — bundle só em DEV
+const Especimes = lazy(() => import('./pages/dev/Especimes'));
 const ThemeDiagnostics = lazy(() => import('./pages/ThemeDiagnostics'));
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
 const MonofasicoPage = lazy(() => import('./pages/tributario/Monofasico'));
@@ -175,6 +177,7 @@ function AppRoutes() {
             <Route path="/status" element={<StatusPage />} />
             <Route path="/portal-cliente" element={<PortalCliente />} />
             <Route path="/design-system-debug" element={<DesignSystemDebug />} />
+            {import.meta.env.DEV && <Route path="/__especimes" element={<Especimes />} />}
             <Route path="/theme-diagnostics" element={<ThemeDiagnostics />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
