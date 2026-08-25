@@ -31,7 +31,7 @@ export function TablePagination({
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-6 border-t border-white/5 bg-black/20 backdrop-blur-xl rounded-b-[2.5rem]">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-6 border-t border-border/60 bg-muted/40 dark:border-white/5 dark:bg-black/20 backdrop-blur-xl rounded-b-[2.5rem]">
       {/* Page size selector - hidden on very small screens */}
       <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
         <span>Exibindo</span>
@@ -39,7 +39,7 @@ export function TablePagination({
           value={pageSize.toString()}
           onValueChange={(value) => onPageSizeChange(Number(value))}
         >
-          <SelectTrigger className="h-10 w-[80px] rounded-xl bg-card/5 border-white/10">
+          <SelectTrigger className="h-10 w-[80px] rounded-xl bg-muted/50 border-border dark:bg-card/5 dark:border-white/10">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -55,8 +55,12 @@ export function TablePagination({
 
       {/* Item count - compact on mobile */}
       <div className="text-xs sm:text-sm text-muted-foreground text-center">
-        <span className="sm:hidden">{startItem}-{endItem}/{totalItems}</span>
-        <span className="hidden sm:inline">{startItem}-{endItem} de {totalItems} itens</span>
+        <span className="sm:hidden">
+          {startItem}-{endItem}/{totalItems}
+        </span>
+        <span className="hidden sm:inline">
+          {startItem}-{endItem} de {totalItems} itens
+        </span>
       </div>
 
       {/* Navigation buttons - compact on mobile */}
@@ -65,7 +69,7 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="hidden sm:flex h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="hidden sm:flex h-10 w-10 rounded-xl bg-muted/50 border-border dark:bg-card/5 dark:border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(1)}
           disabled={currentPage <= 1}
         >
@@ -74,14 +78,14 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="h-10 w-10 rounded-xl bg-muted/50 border-border dark:bg-card/5 dark:border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        
-        <div className="flex items-center gap-1 px-4 bg-card/5 h-10 rounded-xl border border-white/10">
+
+        <div className="flex items-center gap-1 px-4 bg-muted/50 dark:bg-card/5 h-10 rounded-xl border border-border dark:border-white/10">
           <span className="text-xs sm:text-sm whitespace-nowrap font-black">
             <span className="text-primary">{currentPage}</span>
             <span className="text-muted-foreground/40 mx-1">/</span>
@@ -92,7 +96,7 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="h-10 w-10 rounded-xl bg-muted/50 border-border dark:bg-card/5 dark:border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
         >
@@ -101,7 +105,7 @@ export function TablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="hidden sm:flex h-10 w-10 rounded-xl bg-card/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
+          className="hidden sm:flex h-10 w-10 rounded-xl bg-muted/50 border-border dark:bg-card/5 dark:border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage >= totalPages}
         >

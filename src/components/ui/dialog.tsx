@@ -1,8 +1,8 @@
-import * as React from "react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import * as React from 'react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -19,8 +19,8 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className,
+      'fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      className
     )}
     {...props}
   />
@@ -37,21 +37,23 @@ const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Base: full screen on mobile, centered modal on larger screens
-        "fixed z-50 grid w-full gap-4 border border-white/10 bg-background/80 backdrop-blur-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] duration-300",
+        // Light: borda/sombra do tema claro Vela; Dark: glass idêntico ao aprovado
+        'fixed z-50 grid w-full gap-4 border border-border/70 bg-background/80 backdrop-blur-2xl shadow-[0_14px_34px_-18px_rgba(20,24,40,0.25)] duration-300',
+        'dark:border-white/10 dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]',
         // Mobile: bottom sheet style with safe area
-        "inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-[2.5rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]",
+        'inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-[2.5rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]',
         // Tablet+: centered modal
-        "sm:inset-auto sm:left-[50%] sm:top-[50%] sm:max-w-2xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-[2.5rem] sm:p-10",
+        'sm:inset-auto sm:left-[50%] sm:top-[50%] sm:max-w-2xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-[2.5rem] sm:p-10',
         // Animations
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        'data-[state=open]:animate-in data-[state=closed]:animate-out',
+        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         // Mobile: slide from bottom
-        "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+        'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
         // Desktop: zoom
-        "sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%]",
-        "sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]",
-        "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
-        className,
+        'sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%]',
+        'sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]',
+        'sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95',
+        className
       )}
       {...props}
     >
@@ -68,14 +70,17 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)} {...props} />
+  <div className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)} {...props} />
 );
-DialogHeader.displayName = "DialogHeader";
+DialogHeader.displayName = 'DialogHeader';
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)} {...props} />
+  <div
+    className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', className)}
+    {...props}
+  />
 );
-DialogFooter.displayName = "DialogFooter";
+DialogFooter.displayName = 'DialogFooter';
 
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -83,7 +88,10 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-2xl font-black leading-tight tracking-tight text-foreground font-heading", className)}
+    className={cn(
+      'text-2xl font-black leading-tight tracking-tight text-foreground font-heading',
+      className
+    )}
     {...props}
   />
 ));
@@ -93,7 +101,11 @@ const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description ref={ref} className={cn("text-[13px] font-medium text-muted-foreground/80 leading-relaxed", className)} {...props} />
+  <DialogPrimitive.Description
+    ref={ref}
+    className={cn('text-[13px] font-medium text-muted-foreground/80 leading-relaxed', className)}
+    {...props}
+  />
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
