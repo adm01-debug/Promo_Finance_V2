@@ -6,7 +6,7 @@ import { LogIn, UserPlus, Shield } from 'lucide-react';
 import {
   AuthMobileHeader
 } from '@/components/auth/AuthBackground';
-import { Grainient } from '@/components/effects/Grainient';
+import { AuroraBackground } from '@/components/effects/AuroraBackground';
 import { BlurText } from '@/components/effects/BlurText';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { AccountLockoutBanner } from '@/components/auth/AccountLockoutBanner';
@@ -49,20 +49,8 @@ export default function Auth() {
   if (showForgotPassword) {
     return (
       <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
-        {/* Fundo MeshGradient azul (mesmo efeito do login) */}
-        <div className="absolute inset-0 -z-10" aria-hidden="true">
-          <Grainient
-            timeSpeed={0.12}
-            grainAmount={0.06}
-            grainAnimated
-            color1="#0F1F4B"
-            color2="#2563EB"
-            color3="#020617"
-            contrast={1.15}
-            saturation={0.85}
-            className="h-full w-full"
-          />
-        </div>
+        {/* Fundo aurora Vela (Z3, CSS puro — mesmo efeito do login) */}
+        <AuroraBackground className="-z-10" />
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -89,20 +77,8 @@ export default function Auth() {
   // Main Auth View
   return (
     <div className="min-h-screen relative overflow-hidden flex">
-      {/* Fundo MeshGradient azul (efeito hero-22, tema Promo Finance) */}
-      <div className="absolute inset-0 -z-10" aria-hidden="true">
-        <Grainient
-          timeSpeed={0.12}
-          grainAmount={0.06}
-          grainAnimated
-          color1="#0F1F4B"
-          color2="#2563EB"
-          color3="#020617"
-          contrast={1.15}
-          saturation={0.85}
-          className="h-full w-full"
-        />
-      </div>
+      {/* Fundo aurora Vela (Z3, CSS puro — port da maquete aprovada) */}
+      <AuroraBackground className="-z-10" />
 
       <div className="hidden lg:flex w-1/2 items-center justify-center border-r border-white/10">
         <div className="max-w-md text-center space-y-4">

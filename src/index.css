@@ -308,6 +308,79 @@
   animation: velaReveal 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 
+/* ============ Aurora (Z3 — auth; CSS puro, sem ogl) ============
+   Port da maquete aprovada (efeito ReactBits Pro): 4 blobs em
+   radial-gradient roxo/índigo, mix-blend-mode:screen sobre preto
+   quase absoluto, animados apenas via transform (anima sem repaint).
+   A vinheta radial (::after) ancora os blobs ao fundo. */
+.vela-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #05060d;
+}
+.vela-aur {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.vela-aur-1 {
+  width: 78%;
+  height: 112%;
+  left: -16%;
+  top: -30%;
+  background: radial-gradient(circle, rgba(96, 62, 190, 0.55) 0%, rgba(96, 62, 190, 0.2) 45%, transparent 70%);
+  animation: velaAur1 21s ease-in-out infinite alternate;
+}
+.vela-aur-2 {
+  width: 86%;
+  height: 122%;
+  right: -22%;
+  bottom: -38%;
+  background: radial-gradient(circle, rgba(70, 48, 155, 0.62) 0%, rgba(70, 48, 155, 0.24) 46%, transparent 71%);
+  animation: velaAur2 26s ease-in-out infinite alternate;
+}
+.vela-aur-3 {
+  width: 54%;
+  height: 72%;
+  right: -10%;
+  top: -20%;
+  background: radial-gradient(circle, rgba(58, 90, 190, 0.26) 0%, transparent 66%);
+  animation: velaAur3 19s ease-in-out infinite alternate;
+}
+.vela-aur-4 {
+  width: 46%;
+  height: 60%;
+  left: 31%;
+  bottom: -14%;
+  background: radial-gradient(circle, rgba(150, 92, 255, 0.17) 0%, transparent 64%);
+  animation: velaAur4 24s ease-in-out infinite alternate;
+}
+@keyframes velaAur1 {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(9%, 7%) scale(1.15); }
+}
+@keyframes velaAur2 {
+  from { transform: translate(0, 0) scale(1.07); }
+  to { transform: translate(-9%, -6%) scale(1); }
+}
+@keyframes velaAur3 {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-13%, 10%) scale(1.22); }
+}
+@keyframes velaAur4 {
+  from { transform: translate(0, 0) scale(0.92); }
+  to { transform: translate(11%, -9%) scale(1.14); }
+}
+.vela-aurora::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 95% at 50% 45%, transparent 52%, rgba(5, 6, 13, 0.58) 100%);
+}
+
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -321,6 +394,7 @@
   .vela-page-enter,
   .vela-page-enter > *,
   .vela-reveal,
+  .vela-aur,
   .animate-pulse-subtle {
     animation: none !important;
   }
