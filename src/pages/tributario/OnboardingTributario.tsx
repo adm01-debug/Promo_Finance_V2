@@ -131,7 +131,7 @@ export default function OnboardingTributario() {
       toast.error('Selecione ou crie uma empresa antes de concluir');
       return;
     }
-    // Confetti final
+    // Confetti final — paleta Vela em hex (canvas-confetti não resolve var())
     confetti({
       particleCount: 120,
       spread: 90,

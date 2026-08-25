@@ -75,8 +75,8 @@ function ConfettiParticles() {
     'hsl(var(--success))',
     'hsl(var(--warning))',
     'hsl(var(--accent))',
-    '#FFD700',
-    '#FF6B6B',
+    'var(--warn)',
+    'var(--bad)',
   ];
   
   return (

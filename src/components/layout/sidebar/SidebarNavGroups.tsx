@@ -113,7 +113,7 @@ const navGroups: NavGroup[] = [
       { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber' },
       { label: 'Movimentações', icon: ArrowLeftRight, href: '/movimentacoes' },
       { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao' },
-      { label: 'Cobrança Elite', icon: Receipt, href: '/cobrancas' },
+      { label: 'Gestão de Cobrança', icon: Receipt, href: '/cobrancas' },
       { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
       { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },

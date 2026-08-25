@@ -102,7 +102,7 @@ export function SimuladorAntecipacao() {
               <TrendingUp className="h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-black tracking-tight">Quantum Anticipation Matrix</CardTitle>
+              <CardTitle className="text-2xl font-black tracking-tight">Simulador de Antecipação de Recebíveis</CardTitle>
               <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Motor de Liquidez Imediata e Simulação Neural</CardDescription>
             </div>
           </div>

@@ -123,7 +123,7 @@ export function BankAccountSwitcher() {
                     <div className="flex items-center gap-3 overflow-hidden">
                       <div 
                         className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: `${account.cor || '#3b82f6'}20`, color: account.cor || '#3b82f6' }}
+                        style={{ backgroundColor: account.cor ? `${account.cor}20` : 'var(--acc-soft)', color: account.cor || 'var(--acc)' }}
                       >
                         <Landmark className="h-4 w-4" />
                       </div>

@@ -41,7 +41,7 @@ const quickLinks = [
   { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber', tone: 'text-success' },
   { label: 'Movimentações', icon: Wallet, href: '/movimentacoes', tone: 'text-primary' },
   { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa', tone: 'text-info' },
-  { label: 'Cobrança Elite', icon: Receipt, href: '/cobrancas', tone: 'text-warning' },
+  { label: 'Gestão de Cobrança', icon: Receipt, href: '/cobrancas', tone: 'text-warning' },
   { label: 'Tesouraria Multi-CNPJ', icon: Wallet, href: '/tesouraria', tone: 'text-info' },
   { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao', tone: 'text-primary' },
   { label: 'Auditoria Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', tone: 'text-destructive' },

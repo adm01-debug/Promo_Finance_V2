@@ -63,7 +63,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
     return (
       <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
         <Sparkles className="h-12 w-12 text-muted-foreground/20 animate-pulse" />
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 italic">Global Vault Cleared</p>
+        <p className="text-sm text-t2">Nenhuma conta a pagar cadastrada</p>
       </div>
     );
   }

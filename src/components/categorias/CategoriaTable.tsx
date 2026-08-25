@@ -58,7 +58,7 @@ export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTable
               <TableCell>
                 <div 
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm"
-                  style={{ backgroundColor: categoria.cor || '#666' }}
+                  style={{ backgroundColor: categoria.cor || 'var(--t2)' }}
                 >
                   <IconComponent className="h-4 w-4" />
                 </div>

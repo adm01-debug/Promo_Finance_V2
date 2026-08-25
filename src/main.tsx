@@ -50,11 +50,11 @@ if (!rootElement) {
     const isConfigError = typeof health.status === "number" && health.status >= 400;
     if (isConfigError) {
       rootElement.innerHTML = `
-        <div style="max-width:640px;margin:80px auto;padding:24px;font-family:system-ui,sans-serif;color:#0f172a">
+        <div style="max-width:640px;margin:80px auto;padding:24px;font-family:system-ui,sans-serif;color:var(--t0,#0f172a)">
           <h1 style="font-size:20px;margin:0 0 12px">Erro de configuração do backend</h1>
           <p style="margin:0 0 8px">Não foi possível conectar ao Supabase (status <b>${health.status}</b>).</p>
           <p style="margin:0 0 8px">Verifique <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> no ambiente de build.</p>
-          <p style="margin:16px 0 0;color:#64748b;font-size:13px">Se você é usuário final, contate o administrador.</p>
+          <p style="margin:16px 0 0;color:var(--t2,#64748b);font-size:13px">Se você é usuário final, contate o administrador.</p>
         </div>`;
       return;
     }

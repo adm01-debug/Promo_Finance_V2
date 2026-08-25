@@ -83,7 +83,7 @@ export function ProjectedCashFlowChart({
                 <stop offset="95%" stopColor="var(--acc)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff10" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--line)" />
             <XAxis
               dataKey="name"
               axisLine={false}
