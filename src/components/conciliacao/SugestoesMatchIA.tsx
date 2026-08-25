@@ -1,9 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import {
-  CheckCircle2, AlertCircle, Brain, RefreshCw
-} from 'lucide-react';
+import { CheckCircle2, AlertCircle, Brain, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -29,7 +27,11 @@ interface SugestoesMatchIAProps {
 }
 
 export function SugestoesMatchIA({
-  transacoes, lancamentos, onConfirmarMatch, onRejeitarMatch, onConciliarManual,
+  transacoes,
+  lancamentos,
+  onConfirmarMatch,
+  onRejeitarMatch,
+  onConciliarManual,
 }: SugestoesMatchIAProps) {
   const [expandedTransacao, setExpandedTransacao] = useState<string | null>(null);
   const [matchesConfirmados, setMatchesConfirmados] = useState<Set<string>>(new Set());
@@ -39,11 +41,21 @@ export function SugestoesMatchIA({
   const [motivoRejeicao, setMotivoRejeicao] = useState('');
   const [rejeicaoPendente, setRejeicaoPendente] = useState<RejeicaoPendente | null>(null);
   const [detalhesDialog, setDetalhesDialog] = useState<{
-    open: boolean; transacao: TransacaoOFX | null; sugestao: MatchSugestaoIA | null;
+    open: boolean;
+    transacao: TransacaoOFX | null;
+    sugestao: MatchSugestaoIA | null;
   }>({ open: false, transacao: null, sugestao: null });
-  
+
   const { isAnalyzing, matchesIA, lastAnalysis, analisarConciliacao } = useConciliacaoIA();
-  const { historico, feedback, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
+  const {
+    historico,
+    feedback,
+    registrarHistorico,
+    registrarFeedback,
+    aprovarEmLote,
+    estatisticasHistorico,
+    isLoadingHistorico,
+  } = useHistoricoConciliacaoIA();
 
   // Mapa: transacao_bancaria_id -> motivo de rejeição mais recente (de feedback_conciliacao_ia)
   const motivosRejeicaoPorTransacao = useMemo(() => {
@@ -59,7 +71,8 @@ export function SugestoesMatchIA({
   }, [feedback]);
 
   // Bloqueia interações enquanto qualquer mutação de persistência está em andamento
-  const mutationPending = registrarHistorico.isPending || registrarFeedback.isPending || aprovarEmLote.isPending;
+  const mutationPending =
+    registrarHistorico.isPending || registrarFeedback.isPending || aprovarEmLote.isPending;
 
   // Conjunto de matches rejeitados persistidos no histórico (transacao_bancaria_id + lancamento_id)
   const rejeicoesPersistidas = useMemo(() => {
@@ -78,35 +91,49 @@ export function SugestoesMatchIA({
     }
   }, [transacoes, lancamentos, lastAnalysis, isAnalyzing, analisarConciliacao]);
 
-  const sugestoesValidasFor = useCallback((transacaoId: string): MatchSugestaoIA[] => {
-    const sugestoes = matchesIA.get(transacaoId) || [];
-    return sugestoes.filter((s) => {
-      const key = `${transacaoId}-${s.lancamentoId}`;
-      return !matchesRejeitados.has(key) && !rejeicoesPersistidas.has(key);
-    });
-  }, [matchesIA, matchesRejeitados, rejeicoesPersistidas]);
+  const sugestoesValidasFor = useCallback(
+    (transacaoId: string): MatchSugestaoIA[] => {
+      const sugestoes = matchesIA.get(transacaoId) || [];
+      return sugestoes.filter((s) => {
+        const key = `${transacaoId}-${s.lancamentoId}`;
+        return !matchesRejeitados.has(key) && !rejeicoesPersistidas.has(key);
+      });
+    },
+    [matchesIA, matchesRejeitados, rejeicoesPersistidas]
+  );
 
   const transacoesComSugestao = useMemo(() => {
-    return transacoes.filter(t => {
+    return transacoes.filter((t) => {
       if (matchesConfirmados.has(t.id)) return false;
       return sugestoesValidasFor(t.id).length > 0;
     });
   }, [transacoes, matchesConfirmados, sugestoesValidasFor]);
 
   const matchesAltaConfianca = useMemo(() => {
-    const matches: Array<{ transacaoId: string; transacaoDescricao: string; sugestao: MatchSugestaoIA }> = [];
-    transacoesComSugestao.forEach(transacao => {
+    const matches: Array<{
+      transacaoId: string;
+      transacaoDescricao: string;
+      sugestao: MatchSugestaoIA;
+    }> = [];
+    transacoesComSugestao.forEach((transacao) => {
       const sugestoes = sugestoesValidasFor(transacao.id);
       if (sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
-        matches.push({ transacaoId: transacao.id, transacaoDescricao: transacao.descricao, sugestao: sugestoes[0] });
+        matches.push({
+          transacaoId: transacao.id,
+          transacaoDescricao: transacao.descricao,
+          sugestao: sugestoes[0],
+        });
       }
     });
     return matches;
   }, [transacoesComSugestao, sugestoesValidasFor]);
 
-
   const estatisticas = useMemo(() => {
-    let total = 0, alta = 0, media = 0, baixa = 0, valorTotal = 0;
+    let total = 0,
+      alta = 0,
+      media = 0,
+      baixa = 0,
+      valorTotal = 0;
     matchesIA.forEach((sugestoes, transacaoId) => {
       if (sugestoes.length > 0 && !matchesConfirmados.has(transacaoId)) {
         total++;
@@ -117,7 +144,14 @@ export function SugestoesMatchIA({
         valorTotal += Math.abs(sugestoes[0].lancamento?.valor || 0);
       }
     });
-    return { comSugestao: total, confiancaAlta: alta, confiancaMedia: media, confiancaBaixa: baixa, semMatch: transacoes.length - matchesIA.size, valorTotalMatches: valorTotal };
+    return {
+      comSugestao: total,
+      confiancaAlta: alta,
+      confiancaMedia: media,
+      confiancaBaixa: baixa,
+      semMatch: transacoes.length - matchesIA.size,
+      valorTotalMatches: valorTotal,
+    };
   }, [matchesIA, matchesConfirmados, transacoes.length]);
 
   const triggerConfetti = useCallback((isFullCompletion = false) => {
@@ -126,32 +160,65 @@ export function SugestoesMatchIA({
     function fire(particleRatio: number, opts: confetti.Options) {
       confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) });
     }
-    const successColors = ['#22c55e', '#10b981'];
-    const primaryColors = ['#3b82f6', '#6366f1'];
-    const warningColors = ['#f59e0b', '#eab308'];
+    // Paleta Vela em hex (canvas-confetti não resolve var())
+    const successColors = ['#33d493', '#2bb881'];
+    const primaryColors = ['#7c5cff', '#9d86ff'];
+    const warningColors = ['#f7b84e', '#ffc66e'];
     if (isFullCompletion) {
       fire(0.25, { spread: 26, startVelocity: 55, colors: successColors });
       fire(0.2, { spread: 60, colors: primaryColors });
       fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: warningColors });
-      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2, colors: ['#ec4899', '#f43f5e'] });
+      fire(0.1, {
+        spread: 120,
+        startVelocity: 25,
+        decay: 0.92,
+        scalar: 1.2,
+        colors: ['#f76d7d', '#e05a68'],
+      });
     } else {
       fire(0.25, { spread: 26, startVelocity: 55, colors: successColors });
-      fire(0.2, { spread: 60, colors: ['#22c55e', '#16a34a'] });
-      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#4ade80', '#86efac'] });
+      fire(0.2, { spread: 60, colors: ['#33d493', '#2bb881'] });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#5ce0ad', '#8aebc9'] });
     }
   }, []);
 
-  const handleConfirmar = async (transacaoId: string, transacaoDescricao: string, sugestao: MatchSugestaoIA) => {
+  const handleConfirmar = async (
+    transacaoId: string,
+    transacaoDescricao: string,
+    sugestao: MatchSugestaoIA
+  ) => {
     const newConfirmed = new Set([...matchesConfirmados, transacaoId]);
     setMatchesConfirmados(newConfirmed);
-    await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'aprovado' });
-    await registrarFeedback.mutateAsync({ transacaoId, transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'aprovado' });
+    await registrarHistorico.mutateAsync({
+      transacaoId,
+      lancamentoId: sugestao.lancamentoId,
+      tipoLancamento: sugestao.lancamentoTipo,
+      score: sugestao.score,
+      confianca: sugestao.confianca,
+      motivos: sugestao.motivos,
+      analiseIA: sugestao.analiseIA,
+      acao: 'aprovado',
+    });
+    await registrarFeedback.mutateAsync({
+      transacaoId,
+      transacaoDescricao,
+      lancamentoEntidade: sugestao.lancamento?.entidade || '',
+      lancamentoDescricao: sugestao.lancamento?.descricao,
+      tipoLancamento: sugestao.lancamentoTipo,
+      scoreOriginal: sugestao.score,
+      acao: 'aprovado',
+    });
     onConfirmarMatch(transacaoId, sugestao.lancamentoId, sugestao.lancamentoTipo);
     const totalWithSuggestions = estatisticas.comSugestao + matchesConfirmados.size;
-    if (newConfirmed.size >= totalWithSuggestions && totalWithSuggestions > 0) triggerConfetti(true);
+    if (newConfirmed.size >= totalWithSuggestions && totalWithSuggestions > 0)
+      triggerConfetti(true);
   };
 
-  const handleRejeitar = (transacaoId: string, transacaoDescricao: string, sugestao: MatchSugestaoIA) => {
+  const handleRejeitar = (
+    transacaoId: string,
+    transacaoDescricao: string,
+    sugestao: MatchSugestaoIA
+  ) => {
     setRejeicaoPendente({ transacaoId, transacaoDescricao, sugestao });
     setMotivoRejeicao('');
   };
@@ -162,14 +229,32 @@ export function SugestoesMatchIA({
     const motivo = motivoRejeicao;
 
     // Atualização otimista: remove a sugestão e fecha o diálogo imediatamente
-    setMatchesRejeitados(prev => new Set([...prev, `${transacaoId}-${sugestao.lancamentoId}`]));
+    setMatchesRejeitados((prev) => new Set([...prev, `${transacaoId}-${sugestao.lancamentoId}`]));
     onRejeitarMatch(transacaoId, sugestao.lancamentoId);
     setRejeicaoPendente(null);
     setMotivoRejeicao('');
 
     try {
-      await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
-      await registrarFeedback.mutateAsync({ transacaoId, transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivo || undefined });
+      await registrarHistorico.mutateAsync({
+        transacaoId,
+        lancamentoId: sugestao.lancamentoId,
+        tipoLancamento: sugestao.lancamentoTipo,
+        score: sugestao.score,
+        confianca: sugestao.confianca,
+        motivos: sugestao.motivos,
+        analiseIA: sugestao.analiseIA,
+        acao: 'rejeitado',
+      });
+      await registrarFeedback.mutateAsync({
+        transacaoId,
+        transacaoDescricao,
+        lancamentoEntidade: sugestao.lancamento?.entidade || '',
+        lancamentoDescricao: sugestao.lancamento?.descricao,
+        tipoLancamento: sugestao.lancamentoTipo,
+        scoreOriginal: sugestao.score,
+        acao: 'rejeitado',
+        motivoRejeicao: motivo || undefined,
+      });
       if (motivo.trim()) {
         toast.success('Feedback registrado com sucesso', {
           description: `Motivo salvo no banco — a IA aprenderá com: "${motivo.trim().slice(0, 80)}${motivo.trim().length > 80 ? '...' : ''}"`,
@@ -181,7 +266,7 @@ export function SugestoesMatchIA({
       }
     } catch {
       // Reverte a remoção otimista em caso de falha
-      setMatchesRejeitados(prev => {
+      setMatchesRejeitados((prev) => {
         const next = new Set(prev);
         next.delete(`${transacaoId}-${sugestao.lancamentoId}`);
         return next;
@@ -192,10 +277,12 @@ export function SugestoesMatchIA({
 
   const handleAprovarTodos = async () => {
     const novosConfirmados = new Set(matchesConfirmados);
-    matchesAltaConfianca.forEach(m => novosConfirmados.add(m.transacaoId));
+    matchesAltaConfianca.forEach((m) => novosConfirmados.add(m.transacaoId));
     setMatchesConfirmados(novosConfirmados);
     await aprovarEmLote.mutateAsync(matchesAltaConfianca);
-    matchesAltaConfianca.forEach(m => onConfirmarMatch(m.transacaoId, m.sugestao.lancamentoId, m.sugestao.lancamentoTipo));
+    matchesAltaConfianca.forEach((m) =>
+      onConfirmarMatch(m.transacaoId, m.sugestao.lancamentoId, m.sugestao.lancamentoTipo)
+    );
     const totalWithSuggestions = estatisticas.comSugestao + matchesConfirmados.size;
     triggerConfetti(novosConfirmados.size >= totalWithSuggestions && totalWithSuggestions > 0);
     setShowAprovarTodosDialog(false);
@@ -234,7 +321,9 @@ export function SugestoesMatchIA({
               </div>
               <div className="text-center">
                 <p className="font-medium">Analisando com Inteligência Artificial...</p>
-                <p className="text-sm text-muted-foreground">Comparando {transacoes.length} transações com {lancamentos.length} lançamentos</p>
+                <p className="text-sm text-muted-foreground">
+                  Comparando {transacoes.length} transações com {lancamentos.length} lançamentos
+                </p>
               </div>
             </div>
           ) : (
@@ -246,7 +335,7 @@ export function SugestoesMatchIA({
                     const melhorMatch = sugestoes[0];
                     const isExpanded = expandedTransacao === transacao.id;
                     if (!melhorMatch) return null;
-                    
+
                     return (
                       <SugestaoMatchCard
                         key={transacao.id}
@@ -271,7 +360,9 @@ export function SugestoesMatchIA({
                   <div className="text-center py-8">
                     <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
                     <p className="font-medium">Todas as sugestões foram processadas!</p>
-                    <p className="text-sm text-muted-foreground">{matchesConfirmados.size} transações conciliadas</p>
+                    <p className="text-sm text-muted-foreground">
+                      {matchesConfirmados.size} transações conciliadas
+                    </p>
                   </div>
                 )}
 
@@ -279,8 +370,14 @@ export function SugestoesMatchIA({
                   <div className="text-center py-8">
                     <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                     <p className="font-medium">Nenhuma correspondência encontrada</p>
-                    <p className="text-sm text-muted-foreground mb-4">A IA não encontrou matches automáticos</p>
-                    <Button variant="outline" size="sm" onClick={() => analisarConciliacao(transacoes, lancamentos)}>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      A IA não encontrou matches automáticos
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => analisarConciliacao(transacoes, lancamentos)}
+                    >
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Tentar novamente
                     </Button>
@@ -304,7 +401,10 @@ export function SugestoesMatchIA({
         motivoRejeicao={motivoRejeicao}
         onMotivoChange={setMotivoRejeicao}
         onConfirmar={confirmarRejeicao}
-        onCancelar={() => { setRejeicaoPendente(null); setMotivoRejeicao(''); }}
+        onCancelar={() => {
+          setRejeicaoPendente(null);
+          setMotivoRejeicao('');
+        }}
         isPending={registrarHistorico.isPending || registrarFeedback.isPending}
       />
 
@@ -318,7 +418,7 @@ export function SugestoesMatchIA({
 
       <DetalhesExpandidosDialog
         open={detalhesDialog.open}
-        onOpenChange={(open) => setDetalhesDialog(prev => ({ ...prev, open }))}
+        onOpenChange={(open) => setDetalhesDialog((prev) => ({ ...prev, open }))}
         transacao={detalhesDialog.transacao}
         sugestao={detalhesDialog.sugestao}
       />

@@ -25,11 +25,12 @@ interface ConfettiOptions {
 
 // Confetti color palette (hex required by canvas-confetti library)
 const CONFETTI_COLORS: Record<string, string[]> = {
-  success: ['#10b981', '#16a34a', '#22c55e', '#4ade80'],
-  primary: ['#3b82f6', '#6366f1', '#8b5cf6'],
-  warning: ['#fbbf24', '#f59e0b', '#d97706'],
-  celebration: ['#ec4899', '#f43f5e', '#a855f7'],
-  mixed: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899'],
+  // Valores da paleta Vela (ok/warn/acc/acc-2/bad/info) — hex porque o canvas-confetti não resolve var()
+  success: ['#33d493', '#2bb881', '#5ce0ad', '#8aebc9'],
+  primary: ['#7c5cff', '#9d86ff', '#b9a3ff'],
+  warning: ['#f7b84e', '#e0a43a', '#c78a2f'],
+  celebration: ['#f76d7d', '#e05a68', '#9d86ff'],
+  mixed: ['#33d493', '#56a8ff', '#7c5cff', '#f7b84e', '#f76d7d'],
 };
 
 export function celebrateSuccess(options: ConfettiOptions = {}) {

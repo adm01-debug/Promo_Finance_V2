@@ -2,14 +2,38 @@ import type { useAsaas } from '@/hooks/useAsaas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Cell,
+} from 'recharts';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  Clock, AlertTriangle, CheckCircle2, LayoutDashboard,
-  History, FileSpreadsheet, PlayCircle,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  LayoutDashboard,
+  History,
+  FileSpreadsheet,
+  PlayCircle,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
@@ -28,9 +52,15 @@ export interface FilaTabProps {
 }
 
 export function FilaTab({
-  syncQueue, loadingQueue, queueStats, simularBackoff,
-  exportarAuditoria, exportarAuditoriaPDF, reprocessarManualPending,
-  onReprocess, onViewHistory,
+  syncQueue,
+  loadingQueue,
+  queueStats,
+  simularBackoff,
+  exportarAuditoria,
+  exportarAuditoriaPDF,
+  reprocessarManualPending,
+  onReprocess,
+  onViewHistory,
 }: FilaTabProps) {
   return (
     <div className="space-y-6">
@@ -80,22 +110,33 @@ export function FilaTab({
           </CardHeader>
           <CardContent className="h-[250px] pb-6">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={[
-                { name: 'Pendente', total: queueStats.pendentes, color: '#f59e0b' },
-                { name: 'Falha', total: queueStats.falhas, color: '#ef4444' },
-                { name: 'Sucesso', total: queueStats.sucesso, color: '#10b981' },
-              ]}>
+              <BarChart
+                data={[
+                  { name: 'Pendente', total: queueStats.pendentes, color: 'var(--warn)' },
+                  { name: 'Falha', total: queueStats.falhas, color: 'var(--bad)' },
+                  { name: 'Sucesso', total: queueStats.sucesso, color: 'var(--ok)' },
+                ]}
+              >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
                 <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
                 <YAxis fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
-                  itemStyle={{ color: '#fff' }}
+                  contentStyle={{
+                    backgroundColor: 'var(--bg-1)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: 'var(--t0)',
+                    fontSize: '12px',
+                  }}
+                  itemStyle={{ color: 'var(--t0)' }}
                   cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                 />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]} barSize={40}>
                   {[0, 1, 2].map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === 0 ? '#f59e0b' : index === 1 ? '#ef4444' : '#10b981'} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={index === 0 ? 'var(--warn)' : index === 1 ? 'var(--bad)' : 'var(--ok)'}
+                    />
                   ))}
                 </Bar>
               </BarChart>
@@ -110,7 +151,12 @@ export function FilaTab({
               <CardDescription>Monitoramento de retentativas automáticas</CardDescription>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => simularBackoff.mutate()} disabled={simularBackoff.isPending}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => simularBackoff.mutate()}
+                disabled={simularBackoff.isPending}
+              >
                 <PlayCircle className="h-4 w-4 mr-2" /> Simular
               </Button>
               <DropdownMenu>
@@ -123,9 +169,7 @@ export function FilaTab({
                   <DropdownMenuItem onClick={() => exportarAuditoria.mutate()}>
                     CSV
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => exportarAuditoriaPDF()}>
-                    PDF
-                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportarAuditoriaPDF()}>PDF</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -143,40 +187,63 @@ export function FilaTab({
               </TableHeader>
               <TableBody>
                 {loadingQueue ? (
-                  <TableRow><TableCell colSpan={5} className="text-center py-4">Carregando...</TableCell></TableRow>
-                ) : syncQueue.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center py-4 text-muted-foreground">Fila vazia</TableCell></TableRow>
-                ) : syncQueue.slice(0, 5).map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-mono text-xs truncate max-w-[80px]">{String(item.payment_id).substring(0, 8)}</TableCell>
-                    <TableCell>{item.attempts}/{item.max_attempts}</TableCell>
-                    <TableCell className="text-xs">{item.next_retry_at ? format(parseISO(item.next_retry_at), 'HH:mm') : '-'}</TableCell>
-                    <TableCell>
-                      <Badge variant={item.status === 'failed' ? 'destructive' : 'secondary'} className="text-[10px]">{item.status}</Badge>
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-4">
+                      Carregando...
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7"
-                        onClick={() => onReprocess({ paymentId: item.payment_id, asaasId: item.id })}
-                        disabled={reprocessarManualPending}
-                      >
-                        <PlayCircle className="h-3.5 w-3.5" />
-                      </Button>
-                      {Array.isArray(item.error_history) && item.error_history.length > 0 && (
+                  </TableRow>
+                ) : syncQueue.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-4 text-muted-foreground">
+                      Fila vazia
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  syncQueue.slice(0, 5).map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-mono text-xs truncate max-w-[80px]">
+                        {String(item.payment_id).substring(0, 8)}
+                      </TableCell>
+                      <TableCell>
+                        {item.attempts}/{item.max_attempts}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {item.next_retry_at ? format(parseISO(item.next_retry_at), 'HH:mm') : '-'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={item.status === 'failed' ? 'destructive' : 'secondary'}
+                          className="text-[10px]"
+                        >
+                          {item.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-7 w-7 text-muted-foreground"
-                          onClick={() => onViewHistory(item.error_history)}
+                          className="h-7 w-7"
+                          onClick={() =>
+                            onReprocess({ paymentId: item.payment_id, asaasId: item.id })
+                          }
+                          disabled={reprocessarManualPending}
                         >
-                          <History className="h-3.5 w-3.5" />
+                          <PlayCircle className="h-3.5 w-3.5" />
                         </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        {Array.isArray(item.error_history) && item.error_history.length > 0 && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 text-muted-foreground"
+                            onClick={() => onViewHistory(item.error_history)}
+                          >
+                            <History className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </CardContent>

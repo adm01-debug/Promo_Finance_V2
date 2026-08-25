@@ -15,7 +15,16 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Cell,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -74,7 +83,9 @@ export function AsaasHeader({
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Asaas Pagamentos</h1>
-        <p className="text-muted-foreground text-sm">Plataforma premium para gestão de recebíveis e liquidação PIX</p>
+        <p className="text-muted-foreground text-sm">
+          Plataforma premium para gestão de recebíveis e liquidação PIX
+        </p>
       </div>
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" onClick={onConsultarSaldo} disabled={loadingSaldo}>
@@ -133,14 +144,22 @@ export function AsaasKpis({ stats, saldo }: { stats: AsaasStats; saldo: SaldoAsa
             <DollarSign className="h-4 w-4 text-primary" />
             <span className="text-sm text-muted-foreground">Saldo Pendente</span>
           </div>
-          <p className="text-2xl font-bold mt-1">{saldo ? formatCurrency(saldo.totalPending || 0) : '-'}</p>
+          <p className="text-2xl font-bold mt-1">
+            {saldo ? formatCurrency(saldo.totalPending || 0) : '-'}
+          </p>
         </CardContent>
       </Card>
     </div>
   );
 }
 
-export function PerformanceChart({ loading, detailStats }: { loading: boolean; detailStats: DetailStatEntry[] }) {
+export function PerformanceChart({
+  loading,
+  detailStats,
+}: {
+  loading: boolean;
+  detailStats: DetailStatEntry[];
+}) {
   return (
     <Card className="lg:col-span-2">
       <CardHeader className="pb-2">
@@ -152,7 +171,9 @@ export function PerformanceChart({ loading, detailStats }: { loading: boolean; d
       </CardHeader>
       <CardContent className="h-[300px] pt-4">
         {loading ? (
-          <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+          <div className="flex items-center justify-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={detailStats || []}>
@@ -172,17 +193,29 @@ export function PerformanceChart({ loading, detailStats }: { loading: boolean; d
               />
               <Tooltip
                 cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', color: '#fff' }}
+                contentStyle={{
+                  backgroundColor: 'var(--bg-1)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: 'var(--t0)',
+                }}
                 formatter={(v: number) => [formatCurrency(v), 'Volume']}
                 labelFormatter={(label) => `Status: ${statusConfig[label]?.label || label}`}
               />
               <Bar dataKey="total_value" radius={[4, 4, 0, 0]} barSize={40}>
                 {(detailStats || []).map((entry: DetailStatEntry, index: number) => (
-                  <Cell key={`cell-${index}`} fill={
-                    entry.status === 'RECEIVED' || entry.status === 'CONFIRMED' ? '#10b981' :
-                      entry.status === 'OVERDUE' ? '#ef4444' :
-                        entry.status === 'PENDING' ? '#f59e0b' : '#6b7280'
-                  } />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      entry.status === 'RECEIVED' || entry.status === 'CONFIRMED'
+                        ? 'var(--ok)'
+                        : entry.status === 'OVERDUE'
+                          ? 'var(--bad)'
+                          : entry.status === 'PENDING'
+                            ? 'var(--warn)'
+                            : 'var(--t2)'
+                    }
+                  />
                 ))}
               </Bar>
             </BarChart>
@@ -193,7 +226,13 @@ export function PerformanceChart({ loading, detailStats }: { loading: boolean; d
   );
 }
 
-export function MetasCard({ stats, onNovaCobranca }: { stats: AsaasStats; onNovaCobranca: () => void }) {
+export function MetasCard({
+  stats,
+  onNovaCobranca,
+}: {
+  stats: AsaasStats;
+  onNovaCobranca: () => void;
+}) {
   return (
     <Card className="lg:col-span-1">
       <CardHeader className="pb-2">
@@ -211,11 +250,16 @@ export function MetasCard({ stats, onNovaCobranca }: { stats: AsaasStats; onNova
               {stats.total > 0 ? ((stats.recebidos / stats.total) * 100).toFixed(1) : 0}%
             </span>
           </div>
-          <Progress value={stats.total > 0 ? (stats.recebidos / stats.total) * 100 : 0} className="h-2 bg-muted" />
+          <Progress
+            value={stats.total > 0 ? (stats.recebidos / stats.total) * 100 : 0}
+            className="h-2 bg-muted"
+          />
         </div>
 
         <div className="space-y-4">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Resumo Rápido</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Resumo Rápido
+          </h4>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 rounded-lg bg-success/5 border border-success/10">
               <p className="text-[10px] text-success font-bold uppercase">Liquidados</p>
@@ -228,7 +272,11 @@ export function MetasCard({ stats, onNovaCobranca }: { stats: AsaasStats; onNova
           </div>
         </div>
 
-        <Button variant="outline" className="w-full text-xs h-8 border-dashed" onClick={onNovaCobranca}>
+        <Button
+          variant="outline"
+          className="w-full text-xs h-8 border-dashed"
+          onClick={onNovaCobranca}
+        >
           <Plus className="h-3 w-3 mr-2" /> Gerar Nova Cobrança
         </Button>
       </CardContent>
@@ -274,7 +322,9 @@ export function AuditTrailDialog({
             </div>
           ))}
           {filtered.length === 0 && (
-            <p className="text-sm text-center text-muted-foreground py-4">Nenhum evento registrado ainda.</p>
+            <p className="text-sm text-center text-muted-foreground py-4">
+              Nenhum evento registrado ainda.
+            </p>
           )}
         </div>
       }
@@ -308,7 +358,9 @@ export function ReprocessDialog({
       title="Reprocessar Sincronização"
       message={
         <div className="space-y-4">
-          <p>Você está forçando a sincronização manual do pagamento <strong>#{asaasId}</strong>.</p>
+          <p>
+            Você está forçando a sincronização manual do pagamento <strong>#{asaasId}</strong>.
+          </p>
           <div className="space-y-2">
             <Label>Motivo do Reprocessamento</Label>
             <Input
@@ -317,7 +369,9 @@ export function ReprocessDialog({
               onChange={(e) => onReasonChange(e.target.value)}
             />
           </div>
-          <p className="text-xs text-muted-foreground">Esta ação e o motivo serão registrados na trilha de auditoria.</p>
+          <p className="text-xs text-muted-foreground">
+            Esta ação e o motivo serão registrados na trilha de auditoria.
+          </p>
         </div>
       }
       confirmText="Confirmar e Sincronizar"
@@ -389,7 +443,9 @@ export function QueueHistoryDialog({
             <div key={i} className="p-3 bg-muted/20 rounded-md border text-xs">
               <div className="flex justify-between font-bold mb-1">
                 <span>Tentativa #{String(log.attempt)}</span>
-                <span className="text-muted-foreground">{format(parseISO(String(log.timestamp)), 'dd/MM HH:mm', { locale: ptBR })}</span>
+                <span className="text-muted-foreground">
+                  {format(parseISO(String(log.timestamp)), 'dd/MM HH:mm', { locale: ptBR })}
+                </span>
               </div>
               <p className="text-destructive font-mono">{String(log.message)}</p>
             </div>

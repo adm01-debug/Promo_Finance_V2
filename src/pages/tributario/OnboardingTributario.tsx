@@ -9,7 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { applyCnpjMask } from '@/lib/masks';
 import { useCnpjaLookup, type CnpjaData } from '@/hooks/useCnpjaLookup';
 import { useAllEmpresas, useCriarEmpresa } from '@/hooks/useEmpresas';
@@ -51,14 +57,16 @@ export default function OnboardingTributario() {
   const [cnpjInput, setCnpjInput] = useState(draft?.cnpjInput ?? '');
   const [cnpjData, setCnpjData] = useState<CnpjaData | null>(null);
   const [cached, setCached] = useState<{ at?: string } | null>(null);
-  const [empresaSelecionadaId, setEmpresaSelecionadaId] = useState<string>(draft?.empresaSelecionadaId ?? '');
+  const [empresaSelecionadaId, setEmpresaSelecionadaId] = useState<string>(
+    draft?.empresaSelecionadaId ?? ''
+  );
 
   const lookup = useCnpjaLookup();
   const { data: empresas = [] } = useAllEmpresas();
   const criarEmpresa = useCriarEmpresa();
 
   const empresaExistente = (empresas || []).find(
-    (e) => (e.cnpj || '').replace(/\D/g, '') === (cnpjData?.cnpj || ''),
+    (e) => (e.cnpj || '').replace(/\D/g, '') === (cnpjData?.cnpj || '')
   );
 
   /** CNAE retornado pelo CNPJá validado contra o catálogo fiscal interno. */
@@ -69,7 +77,7 @@ export default function OnboardingTributario() {
     try {
       localStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ step, cnpjInput, empresaSelecionadaId } satisfies Draft),
+        JSON.stringify({ step, cnpjInput, empresaSelecionadaId } satisfies Draft)
       );
     } catch {
       /* ignore */
@@ -83,7 +91,7 @@ export default function OnboardingTributario() {
     setCached(result?.cached ? { at: result.cachedAt } : null);
     if (data) {
       const existente = (empresas || []).find(
-        (e) => (e.cnpj || '').replace(/\D/g, '') === data.cnpj,
+        (e) => (e.cnpj || '').replace(/\D/g, '') === data.cnpj
       );
       if (existente) setEmpresaSelecionadaId(existente.id);
     }
@@ -118,7 +126,6 @@ export default function OnboardingTributario() {
     }
   };
 
-
   const handleConcluir = () => {
     if (!empresaSelecionadaId) {
       toast.error('Selecione ou crie uma empresa antes de concluir');
@@ -129,9 +136,13 @@ export default function OnboardingTributario() {
       particleCount: 120,
       spread: 90,
       origin: { y: 0.6 },
-      colors: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'],
+      colors: ['#33d493', '#7c5cff', '#9d86ff', '#f7b84e'],
     });
-    try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
+    }
     navigate('/tributario/recomendacao');
   };
 
@@ -202,13 +213,18 @@ export default function OnboardingTributario() {
                   <div className="rounded-md border border-primary/30 bg-primary/5 p-2.5 text-xs flex items-center gap-2">
                     <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                     <span>
-                      Dados em cache{cached.at ? ` desde ${new Date(cached.at).toLocaleString('pt-BR')}` : ''} · sem novo consumo do CNPJá.
+                      Dados em cache
+                      {cached.at ? ` desde ${new Date(cached.at).toLocaleString('pt-BR')}` : ''} ·
+                      sem novo consumo do CNPJá.
                     </span>
                   </div>
                 )}
 
                 {cnpjData && (
-                  <CnpjaPreview data={cnpjData} empresaExistenteRazao={empresaExistente?.razao_social} />
+                  <CnpjaPreview
+                    data={cnpjData}
+                    empresaExistenteRazao={empresaExistente?.razao_social}
+                  />
                 )}
 
                 <div className="flex justify-end pt-2">
@@ -243,10 +259,7 @@ export default function OnboardingTributario() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Empresa existente</Label>
-                  <Select
-                    value={empresaSelecionadaId}
-                    onValueChange={setEmpresaSelecionadaId}
-                  >
+                  <Select value={empresaSelecionadaId} onValueChange={setEmpresaSelecionadaId}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione uma empresa..." />
                     </SelectTrigger>
