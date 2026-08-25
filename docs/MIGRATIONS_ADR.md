@@ -38,7 +38,7 @@
 - **Financeiro core:** `contas_pagar`, `contas_receber`, `boletos`, `extrato_bancario`, `transferencias`, `conciliacoes*`, `acordos_parcelamento`.
 - **Tributário:** `apuracoes_*`, `darfs`, `regimes_*`, `retencoes_fonte`, `prejuizos_fiscais`, `creditos_tributarios`, `sped_*`.
 - **Cobrança & Portal:** `regua_cobranca*`, `templates_cobranca`, `portal_cliente_*`, `whatsapp_conversas`, `historico_cobrancas_*`.
-- **Integrações:** `asaas_*`, `bling_*`, `bitrix24_*`, `lalamove_*`, `n8n_*`.
+- **Integrações:** `asaas_*`, `bling_*`, `bitrix24_*`, `n8n_*`.
 - **Segurança & Auditoria:** `audit_logs_*` (particionado por mês), `frontend_error_logs_*`, `security_audit_logs`, `login_attempts`, `mfa_sessions`, `ip_whitelist`, `geo_blocks`, `sso_providers`, `user_passkeys`.
 - **Anomalia & IA:** `anomalias_detectadas`, `alertas_preditivos`, `health_scores_operacionais`, `historico_analises_preditivas`, `recomendacoes_metas_ia`.
 - **Observabilidade:** `query_telemetry`, `slow_query_alerts`, `pg_stat_statements_baseline`, `bloat_snapshots`, `webhook_dlq`.
@@ -65,3 +65,9 @@
 - Views voltadas ao cliente: `WITH (security_invoker = true)`.
 - Funções sensíveis: `REVOKE EXECUTE ON FUNCTION ... FROM anon` explícito.
 - Sem `DROP TABLE` em produção sem ADR dedicado neste arquivo listando o motivo e o rollback.
+
+## 7. ADR-001 — módulo de logística/Lalamove fora de escopo
+
+A decisão de produto registrada em [ADR-001 — Exclusão do módulo de logística/Lalamove](ADR-001-LALAMOVE-FORA-DE-ESCOPO.md) confirma que 12 tabelas e 2 views vieram de outro projeto e foram criadas por engano.
+
+A ausência desses 14 objetos no banco canônico é intencional: eles não devem ser recuperados nem classificados como drift. Caso reapareçam em algum ambiente, podem ser removidos por migration revisada e limitada aos nomes exatos documentados no ADR. Essa autorização não se estende automaticamente a dependências ou a qualquer outro objeto do banco.
