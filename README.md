@@ -57,5 +57,6 @@ A arquitetura do projeto é baseada em princípios de **resiliência, telemetria
 - **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: como rodar e escrever testes.
 - **[Acessibilidade](docs/ACCESSIBILITY.md)**: padrões WCAG seguidos no frontend.
 - **[ADR-001 — módulo Lalamove fora de escopo](docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md)**: decisão que identifica os 14 objetos de outro projeto que não devem ser recuperados.
+- **[ADR-002 — funções essenciais do Promo Finance](docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md)**: registro das funções legítimas que devem ser preservadas ou recuperadas.
 
 Novos desenvolvedores devem começar pelo `ARCHITECTURE.md` para entender como a comunicação com o Supabase é interceptada para logs e como as permissões de empresa são aplicadas automaticamente em todas as rotas.

@@ -71,3 +71,9 @@
 A decisão de produto registrada em [ADR-001 — Exclusão do módulo de logística/Lalamove](ADR-001-LALAMOVE-FORA-DE-ESCOPO.md) confirma que 12 tabelas e 2 views vieram de outro projeto e foram criadas por engano.
 
 A ausência desses 14 objetos no banco canônico é intencional: eles não devem ser recuperados nem classificados como drift. Caso reapareçam em algum ambiente, podem ser removidos por migration revisada e limitada aos nomes exatos documentados no ADR. Essa autorização não se estende automaticamente a dependências ou a qualquer outro objeto do banco.
+
+## 8. ADR-002 — funções essenciais preservadas
+
+O [ADR-002 — Funções essenciais do Promo Finance V2](ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md) registra 11 funções de integridade, observabilidade, segurança, financeiro, fiscal, multiempresa e Bitrix24 que pertencem ao produto.
+
+Essas funções estão fora da autorização de exclusão do ADR-001. Sua ausência deve ser investigada como possível drift ou implementação pendente, nunca aceita automaticamente como limpeza de legado.
