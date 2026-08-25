@@ -1,0 +1,682 @@
+{
+  "timestamp": "2026-08-25T16:58:58.466Z",
+  "elapsed_s": "18.0",
+  "total": 112,
+  "pass": 112,
+  "fail": 0,
+  "pct": "100.0",
+  "results": [
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "anon: 0 table grants",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "anon: max 2 EXECUTE grants",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "PUBLIC: 0 EXECUTE grants on fns",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "test functions dropped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "exec_sql: anon não tem EXECUTE",
+      "pass": true,
+      "detail": "acl="
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "exec_sql: authenticated não tem EXECUTE",
+      "pass": true,
+      "detail": "acl="
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "pg_stat_statements não em public",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "pg_trgm não em public",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "pg_stat_statements view removida de public",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "is_user_admin: search_path configurado",
+      "pass": true,
+      "detail": "config=search_path=public, pg_catalog"
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "is_user_admin: SECURITY DEFINER ativo",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "anon: statement_timeout configurado",
+      "pass": true,
+      "detail": "{statement_timeout=8s,lock_timeout=3s,idle_in_transaction_session_timeout=10s}"
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "anon: lock_timeout configurado",
+      "pass": true,
+      "detail": "{statement_timeout=8s,lock_timeout=3s,idle_in_transaction_session_timeout=10s}"
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "authenticated: lock_timeout configurado",
+      "pass": true,
+      "detail": "{statement_timeout=8s,lock_timeout=3s,idle_in_transaction_session_timeout=10s}"
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "service_role: statement_timeout configurado",
+      "pass": true,
+      "detail": "{statement_timeout=60s,lock_timeout=10s,idle_in_transaction_session_timeout=30s}"
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "RLS: sem tabelas de negócio sem RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-1 SECURITY",
+      "name": "DEFAULT PRIVILEGES: anon ausente",
+      "pass": true,
+      "detail": "default_acl="
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "tabelas: mínimo 270",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "tabelas: dst vs src (src=279)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "funções: mínimo 170",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "triggers: mínimo 150",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "índices: mínimo 800",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "constraints: mínimo 600",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "aliq_iss_mun_geral_unq existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "plano_contas_empresa_codigo_uidx existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "índices: nenhum inválido",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "PKs: toda tabela tem PK",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "FKs SSO criadas (3/3)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "FK user_roles → auth.users existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "FK user_anomalia → auth.users existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "sso_role_mappings.provider_id é uuid",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "alert_configurations.empresa_id existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "alertas.empresa_id existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "alerts.empresa_id existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "risk_rules.empresa_id existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "solicitacoes_lgpd.empresa_id existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "enum tipo_cobranca existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "aliquotas_iss_municipal: sem duplicatas",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "plano_contas: sem duplicatas",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "user_roles: sem orphans",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "user_anomalia_preferences: sem orphans",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "glossario_tributario.sigla (schema correto)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "retencao_politicas.coluna (schema correto)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "estrategias_elisao.nome (schema correto)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-2 SCHEMA",
+      "name": "catalogos_fiscais_cargas.origem (schema correto)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "policies: mínimo 600",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "contas_pagar: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "contas_receber: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "lancamentos_contabeis: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "notas_fiscais: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "partidas_contabeis: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "fornecedores: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "clientes: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "empresas: tem policies RLS",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "contas_pagar: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "contas_receber: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "lancamentos_contabeis: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "notas_fiscais: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "partidas_contabeis: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "fornecedores: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "clientes: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "empresas: RLS habilitado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "policies: acesso por tenant (empresa_id/acessivel)",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "realtime: performance_alerts publicado",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "bucket nfe-xml existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "bucket nfe-certificados existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "tabelas RLS: todas têm policy SELECT/ALL",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-3 POLICIES",
+      "name": "sso_providers: tem policies",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron jobs: mínimo 19",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron jobs: nenhum com URL de origem",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: maintain-monthly-partitions existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: cleanup-expired-tokens existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: integrity-invariants-hourly existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: daily-log-retention existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: recarregar-seeds-fiscais-diario existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: processar-regua-cobranca-diario existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: gerar-alertas-vencimento-diario existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cron: gerar-contas-recorrentes-diario existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "glossario_tributario: mínimo 25 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "retencao_politicas: mínimo 60 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "estrategias_elisao: mínimo 15 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "faixas_simples_nacional: mínimo 28 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "aliquotas_internas_uf: mínimo 20 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "beneficios_fiscais: mínimo 5 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "ncms: mínimo 40 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "cnaes: mínimo 40 rows",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "catalogos_fiscais_cargas: 1 row",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "catalogos_fiscais_cargas: status sem_alteracao",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "sequences: pelo menos 1 ativa",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "fn: check_integrity_invariants existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "fn: run_integrity_cycle existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "fn: maintain_monthly_partitions existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "fn: gerar_alertas_vencimento existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "fn: gerar_contas_recorrentes existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "fn: processar_regua_cobranca existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "fn: validar_partidas_dobradas existe",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "check_integrity_invariants: SECURITY DEFINER",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "check_integrity_invariants: search_path definido",
+      "pass": true,
+      "detail": "search_path=public, pg_catalog"
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "triggers updated_at: mínimo 50",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "migration 20260825090000 registrada",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-4 OPERATIONAL",
+      "name": "migration 20260825110000 registrada",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "partidas_contabeis → plano_contas: sem FK breaks",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "contas_receber: status válidos",
+      "pass": true,
+      "detail": "invalid_count=0"
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "conciliacoes confirmadas: total_conciliados > 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "contas_pagar: sem empresa_id null ativo",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "edge fn health: destino responde",
+      "pass": true,
+      "detail": "code=401 body={\"code\":\"UNAUTHORIZED_NO_AUTH_HEADER\",\"message\":\"Missing authorization header\"}"
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "edge fn health: origem ainda responde",
+      "pass": true,
+      "detail": "code=200"
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "migrate-helper: ausente no destino",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "executar-regua-cobranca: deployada no destino",
+      "pass": true,
+      "detail": "code=405"
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "funções sem SECDEF acessando pg_stat_statements: risco baixo",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "roles extras inesperados",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "agent": "AGENT-5 REGRESSION",
+      "name": "sem sessões idle in transaction longas",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}
