@@ -2,6 +2,222 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* ============ Vela Design Tokens (Ported from Vela Template) ============ */
+:root {
+  color-scheme: dark;
+
+  /* Superfícies - Backgrounds */
+  --bg-0: #090a0f;
+  --bg-1: #0c0e15;
+  --bg-2: #12141d;
+  --bg-3: #1a1d28;
+  --bg-inset: #0c0e15;
+
+  /* Bordas */
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.13);
+
+  /* Tipografia */
+  --t0: #f3f4f9;
+  --t1: #9aa1b2;
+  --t2: #5f6678;
+
+  /* Acentos */
+  --acc: #7c5cff;
+  --acc-2: #9d86ff;
+  --acc-soft: rgba(124, 92, 255, 0.15);
+
+  /* Status */
+  --ok: #33d493;
+  --warn: #f7b84e;
+  --bad: #f76d7d;
+  --info: #56a8ff;
+  --ok-soft: rgba(51, 212, 147, 0.14);
+  --bad-soft: rgba(247, 109, 125, 0.14);
+  --warn-soft: rgba(247, 184, 78, 0.16);
+  --info-soft: rgba(86, 168, 255, 0.14);
+
+  /* Sombras */
+  --shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.7);
+
+  /* Bordas - Radius */
+  --radius-vela-sm: 9px;
+  --radius-vela-md: 13px;
+  --radius-vela-lg: 18px;
+  --radius-vela-xl: 20px;
+}
+
+:root[data-theme="light"],
+.light {
+  color-scheme: light;
+
+  /* Superfícies - Backgrounds */
+  --bg-0: #eef0f5;
+  --bg-1: #ffffff;
+  --bg-2: #ffffff;
+  --bg-3: #f3f4f9;
+  --bg-inset: #f5f6fb;
+
+  /* Bordas */
+  --line: rgba(17, 20, 32, 0.08);
+  --line-2: rgba(17, 20, 32, 0.14);
+
+  /* Tipografia */
+  --t0: #171a23;
+  --t1: #5a6173;
+  --t2: #9097a8;
+
+  /* Acentos */
+  --acc: #6a4cff;
+  --acc-2: #8b6dff;
+  --acc-soft: rgba(106, 76, 255, 0.11);
+
+  /* Status */
+  --ok: #16b67e;
+  --warn: #df9626;
+  --bad: #e8556a;
+  --info: #3b8ef0;
+  --ok-soft: rgba(22, 182, 126, 0.12);
+  --bad-soft: rgba(232, 85, 106, 0.12);
+  --warn-soft: rgba(223, 150, 38, 0.14);
+  --info-soft: rgba(59, 142, 240, 0.12);
+
+  /* Sombras */
+  --shadow: 0 14px 34px -18px rgba(20, 24, 40, 0.22);
+
+  /* Bordas - Radius */
+  --radius-vela-sm: 9px;
+  --radius-vela-md: 13px;
+  --radius-vela-lg: 18px;
+  --radius-vela-xl: 20px;
+}
+
+.dark {
+  /* Superfícies - Backgrounds */
+  --bg-0: #090a0f;
+  --bg-1: #0c0e15;
+  --bg-2: #12141d;
+  --bg-3: #1a1d28;
+  --bg-inset: #0c0e15;
+
+  /* Bordas */
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.13);
+
+  /* Tipografia */
+  --t0: #f3f4f9;
+  --t1: #9aa1b2;
+  --t2: #5f6678;
+
+  /* Acentos */
+  --acc: #7c5cff;
+  --acc-2: #9d86ff;
+  --acc-soft: rgba(124, 92, 255, 0.15);
+
+  /* Status */
+  --ok: #33d493;
+  --warn: #f7b84e;
+  --bad: #f76d7d;
+  --info: #56a8ff;
+  --ok-soft: rgba(51, 212, 147, 0.14);
+  --bad-soft: rgba(247, 109, 125, 0.14);
+  --warn-soft: rgba(247, 184, 78, 0.16);
+  --info-soft: rgba(86, 168, 255, 0.14);
+
+  /* Sombras */
+  --shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.7);
+
+  /* Bordas - Radius */
+  --radius-vela-sm: 9px;
+  --radius-vela-md: 13px;
+  --radius-vela-lg: 18px;
+  --radius-vela-xl: 20px;
+}
+
+/* ============ Promo Finance Legado (para compatibilidade) ============ */
+:root,
+.light {
+  --font-body: Inter, system-ui, sans-serif;
+  --font-heading: Outfit, Inter, system-ui, sans-serif;
+
+  --background: 210 40% 98%;
+  --foreground: 222.2 47.4% 11.2%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 210 40% 98%;
+  --warning: 37.7 92.1% 50.2%;
+  --warning-foreground: 222.2 47.4% 11.2%;
+  --info: 199.9 89.1% 48.4%;
+  --info-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 217.2 91.2% 59.8%;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 222.2 47.4% 11.2%;
+  --sidebar-primary: 217.2 91.2% 59.8%;
+  --sidebar-primary-foreground: 210 40% 98%;
+  --sidebar-accent: 210 40% 96.1%;
+  --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+  --sidebar-border: 214.3 31.8% 91.4%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --radius: 0.75rem;
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+}
+
+.dark {
+  --font-body: Inter, system-ui, sans-serif;
+  --font-heading: Outfit, Inter, system-ui, sans-serif;
+
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 210 40% 98%;
+  --warning: 37.7 92.1% 50.2%;
+  --warning-foreground: 222.2 47.4% 11.2%;
+  --info: 199.9 89.1% 48.4%;
+  --info-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 48%;
+  --sidebar-background: 222.2 84% 4.9%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-primary: 217.2 91.2% 59.8%;
+  --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+  --sidebar-accent: 217.2 32.6% 17.5%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 217.2 32.6% 17.5%;
+  --sidebar-ring: 224.3 76.3% 48%;
+  --radius: 0.75rem;
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+}
+
 /* Título "Bem-vindo de volta" com reveal por blur (efeito hero-22) */
 .hero22-title-blur {
   display: flex;
@@ -20,88 +236,89 @@
   }
 }
 
-@layer base {
-  :root,
-  .light {
-    --font-body: Inter, system-ui, sans-serif;
-    --font-heading: Outfit, Inter, system-ui, sans-serif;
+/* ============ Vela Keyframes (Motion) ============ */
+@keyframes velaUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
 
-    --background: 210 40% 98%;
-    --foreground: 222.2 47.4% 11.2%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --success: 142.1 70.6% 45.3%;
-    --success-foreground: 210 40% 98%;
-    --warning: 37.7 92.1% 50.2%;
-    --warning-foreground: 222.2 47.4% 11.2%;
-    --info: 199.9 89.1% 48.4%;
-    --info-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 217.2 91.2% 59.8%;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222.2 47.4% 11.2%;
-    --sidebar-primary: 217.2 91.2% 59.8%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 96.1%;
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --radius: 0.75rem;
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+@keyframes velaPop {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes velaFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes velaSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes velaPulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes velaShimmer {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes velaRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes velaDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes velaGrowY {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes velaReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* Page entrance animations */
+.vela-page-enter {
+  animation: velaFade 0.3s ease both;
+}
+.vela-page-enter > * {
+  animation: velaRise 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.vela-page-enter > *:nth-child(1) { animation-delay: 0.03s; }
+.vela-page-enter > *:nth-child(2) { animation-delay: 0.09s; }
+.vela-page-enter > *:nth-child(3) { animation-delay: 0.15s; }
+.vela-page-enter > *:nth-child(4) { animation-delay: 0.21s; }
+.vela-page-enter > *:nth-child(5) { animation-delay: 0.27s; }
+.vela-page-enter > *:nth-child(6) { animation-delay: 0.33s; }
+.vela-page-enter > *:nth-child(n + 7) { animation-delay: 0.38s; }
+
+.vela-reveal {
+  animation: velaReveal 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 
-  .dark {
-    --font-body: Inter, system-ui, sans-serif;
-    --font-heading: Outfit, Inter, system-ui, sans-serif;
-
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --success: 142.1 70.6% 45.3%;
-    --success-foreground: 210 40% 98%;
-    --warning: 37.7 92.1% 50.2%;
-    --warning-foreground: 222.2 47.4% 11.2%;
-    --info: 199.9 89.1% 48.4%;
-    --info-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-    --sidebar-background: 222.2 84% 4.9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217.2 91.2% 59.8%;
-    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 224.3 76.3% 48%;
-    --radius: 0.75rem;
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 66%));
+  .vela-page-enter,
+  .vela-page-enter > *,
+  .vela-reveal,
+  .animate-pulse-subtle {
+    animation: none !important;
   }
 }
 

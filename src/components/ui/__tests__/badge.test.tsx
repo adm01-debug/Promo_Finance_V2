@@ -8,34 +8,34 @@ describe('Badge', () => {
     expect(screen.getByText('Default')).toBeInTheDocument();
   });
 
-  it('renders default variant with bg-primary', () => {
+  it('renders default variant with bg-acc (Vela)', () => {
     render(<Badge>Primary</Badge>);
-    expect(screen.getByText('Primary')).toHaveClass('bg-primary');
+    expect(screen.getByText('Primary')).toHaveClass('bg-acc');
   });
 
   it('renders secondary variant', () => {
     render(<Badge variant="secondary">Secondary</Badge>);
-    expect(screen.getByText('Secondary')).toHaveClass('bg-secondary/50');
+    expect(screen.getByText('Secondary')).toHaveClass('bg-bg-3/50');
   });
 
   it('renders destructive variant', () => {
     render(<Badge variant="destructive">Destructive</Badge>);
-    expect(screen.getByText('Destructive')).toHaveClass('bg-destructive/10');
+    expect(screen.getByText('Destructive')).toHaveClass('bg-bad-soft');
   });
 
   it('renders outline variant', () => {
     render(<Badge variant="outline">Outline</Badge>);
-    expect(screen.getByText('Outline')).toHaveClass('text-foreground');
+    expect(screen.getByText('Outline')).toHaveClass('text-t0');
   });
 
   it('renders success variant', () => {
     render(<Badge variant="success">Success</Badge>);
-    expect(screen.getByText('Success')).toHaveClass('text-success');
+    expect(screen.getByText('Success')).toHaveClass('text-ok');
   });
 
   it('renders warning variant', () => {
     render(<Badge variant="warning">Warning</Badge>);
-    expect(screen.getByText('Warning')).toHaveClass('text-warning');
+    expect(screen.getByText('Warning')).toHaveClass('text-warn');
   });
 
   it('renders removable badge with X button', () => {
@@ -60,9 +60,9 @@ describe('Badge', () => {
     expect(screen.getByText('Custom')).toHaveClass('custom');
   });
 
-  it('has rounded-lg class', () => {
+  it('has rounded-vela-sm class (Vela radius)', () => {
     render(<Badge>Rounded</Badge>);
-    expect(screen.getByText('Rounded')).toHaveClass('rounded-lg');
+    expect(screen.getByText('Rounded')).toHaveClass('rounded-vela-sm');
   });
 
   it('has text-[10px] font-black', () => {

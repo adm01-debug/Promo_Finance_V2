@@ -19,8 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-body)", "Inter", "system-ui", "sans-serif"],
-        heading: ["var(--font-heading)", "Outfit", "system-ui", "sans-serif"],
+        sans: ["var(--font-body)", "Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
+        heading: ["var(--font-heading)", "Outfit", "Plus Jakarta Sans", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -78,11 +79,38 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        /* Vela Design Tokens */
+        "bg-0": "var(--bg-0)",
+        "bg-1": "var(--bg-1)",
+        "bg-2": "var(--bg-2)",
+        "bg-3": "var(--bg-3)",
+        "bg-inset": "var(--bg-inset)",
+        line: "var(--line)",
+        "line-2": "var(--line-2)",
+        t0: "var(--t0)",
+        t1: "var(--t1)",
+        t2: "var(--t2)",
+        acc: "var(--acc)",
+        "acc-2": "var(--acc-2)",
+        "acc-soft": "var(--acc-soft)",
+        ok: "var(--ok)",
+        "ok-soft": "var(--ok-soft)",
+        warn: "var(--warn)",
+        "warn-soft": "var(--warn-soft)",
+        bad: "var(--bad)",
+        "bad-soft": "var(--bad-soft)",
+        info: "var(--info)",
+        "info-soft": "var(--info-soft)",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        /* Vela Design Tokens */
+        "vela-sm": "var(--radius-vela-sm)",
+        "vela-md": "var(--radius-vela-md)",
+        "vela-lg": "var(--radius-vela-lg)",
+        "vela-xl": "var(--radius-vela-xl)",
       },
       keyframes: {
         "accordion-down": {

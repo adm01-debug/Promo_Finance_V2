@@ -8,14 +8,14 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: /click me/i })).toBeInTheDocument();
   });
 
-  it('renders default variant with bg-primary', () => {
+  it('renders default variant with bg-acc (Vela)', () => {
     render(<Button>Default</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-primary');
+    expect(screen.getByRole('button')).toHaveClass('bg-acc');
   });
 
   it('renders destructive variant', () => {
     render(<Button variant="destructive">Delete</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-destructive');
+    expect(screen.getByRole('button')).toHaveClass('bg-bad');
   });
 
   it('renders outline variant with border', () => {
@@ -25,12 +25,12 @@ describe('Button', () => {
 
   it('renders ghost variant', () => {
     render(<Button variant="ghost">Ghost</Button>);
-    expect(screen.getByRole('button')).toHaveClass('hover:bg-primary/5');
+    expect(screen.getByRole('button')).toHaveClass('hover:bg-acc-soft');
   });
 
   it('renders secondary variant', () => {
     render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-secondary/50');
+    expect(screen.getByRole('button')).toHaveClass('bg-bg-3/50', 'backdrop-blur-sm');
   });
 
   it('renders link variant', () => {
