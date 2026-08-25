@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-25T17:39:36.394Z",
-  "elapsed_s": "39.7",
+  "timestamp": "2026-08-25T22:57:13.323Z",
+  "elapsed_s": "54.4",
   "total": 211,
   "pass": 211,
   "fail": 0,
@@ -970,7 +970,7 @@
       "agent": "AGENT-4 FUNCTIONAL",
       "name": "EXPLAIN: query executa em aliquotas_iss by codigo_ibge",
       "pass": true,
-      "detail": "Seq Scan on aliquotas_iss_municipal  (cost=0.00..1.35 rows=1 width=100)"
+      "detail": "Seq Scan on aliquotas_iss_municipal  (cost=0.00..1.35 rows=1 width=91)"
     },
     {
       "agent": "AGENT-4 FUNCTIONAL",
@@ -1024,31 +1024,31 @@
       "agent": "AGENT-4 FUNCTIONAL",
       "name": "migration 20260825090000 registrada",
       "pass": true,
-      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825200000"
+      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825130000,20260825200000,20260825210000,20260825220000,20260825230000"
     },
     {
       "agent": "AGENT-4 FUNCTIONAL",
       "name": "migration 20260825100000 registrada",
       "pass": true,
-      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825200000"
+      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825130000,20260825200000,20260825210000,20260825220000,20260825230000"
     },
     {
       "agent": "AGENT-4 FUNCTIONAL",
       "name": "migration 20260825110000 registrada",
       "pass": true,
-      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825200000"
+      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825130000,20260825200000,20260825210000,20260825220000,20260825230000"
     },
     {
       "agent": "AGENT-4 FUNCTIONAL",
       "name": "migration 20260825120000 registrada",
       "pass": true,
-      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825200000"
+      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825130000,20260825200000,20260825210000,20260825220000,20260825230000"
     },
     {
       "agent": "AGENT-4 FUNCTIONAL",
       "name": "migration 20260825120001 registrada",
       "pass": true,
-      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825200000"
+      "detail": "20260825090000,20260825100000,20260825110000,20260825120000,20260825120001,20260825130000,20260825200000,20260825210000,20260825220000,20260825230000"
     },
     {
       "agent": "AGENT-5 REGRESSION",
@@ -1228,7 +1228,7 @@
       "agent": "AGENT-5 REGRESSION",
       "name": "extensions.pg_stat_statements: tem dados",
       "pass": true,
-      "detail": "rows=4861"
+      "detail": "rows=4901"
     },
     {
       "agent": "AGENT-5 REGRESSION",
@@ -1250,9 +1250,9 @@
     },
     {
       "agent": "AGENT-5 REGRESSION",
-      "name": "conexões: <80% do limite (35% usado)",
+      "name": "conexões: <80% do limite (18% usado)",
       "pass": true,
-      "detail": "21/60"
+      "detail": "11/60"
     },
     {
       "agent": "AGENT-5 REGRESSION",

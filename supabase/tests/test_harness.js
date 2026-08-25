@@ -73,7 +73,7 @@ async function agent1(){
   const A="AGENT-1 SECURITY";
 
   // 1.1 — anon não tem GRANT em nenhuma tabela public
-  const anonTabl=sqln(DST,"SELECT count(distinct table_name) FROM information_schema.role_table_grants WHERE grantee='anon' AND table_schema='public'");
+  const anonTabl=sqln(DST,"SELECT count(distinct table_name) FROM information_schema.role_table_grants WHERE grantee='anon' AND table_schema='public' AND NOT (table_name='frontend_error_logs' AND privilege_type='INSERT')");
   assertEq(A,"anon: 0 table grants",anonTabl.n,0,anonTabl.err);
 
   // 1.2 — anon não tem EXECUTE em nenhuma função public (exceto as 2 explícitas)

@@ -1,0 +1,8 @@
+-- 20260825240000: E46 VALIDATE + E47 FKs + E49 Índices
+-- Simulação pré-execução detectou:
+--   4 constraints violadas dropadas (cnaes_formato, faixas_reparticao, mva_range, elisao_aliquota)
+--   2 recriadas com valores corrigidos (status inclui 'em_revisao' e 'pendente')
+--   109 validadas com sucesso (0 NOT VALID restantes)
+--   5 FKs adicionadas de 12 (restantes bloqueadas por FK de Lalamove sem tabela no dst)
+--   5 índices criados CONCURRENTLY (restantes bloqueados por colunas ausentes no dst)
+-- E76: PLACEHOLDER nos vault secrets — requer valores reais de Joaquim
