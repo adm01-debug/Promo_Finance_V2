@@ -9,6 +9,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { ChartContainer } from "@/components/charts/ChartContainer";
 import { differenceInDays, parseISO } from "date-fns";
 
 interface ReceberChartsProps {
@@ -28,7 +29,9 @@ interface ReceberChartsProps {
 
 export function ReceberChartsSection({ agingData, topClientes, evolucaoMensal, contasVencidasDetalhes }: ReceberChartsProps) {
   return (
-    <Tabs defaultValue="aging" className="space-y-4">
+    // ChartContainer injeta a paleta CVD-safe --ch1..5 (acc/ok/warn/bad/info)
+    <ChartContainer>
+      <Tabs defaultValue="aging" className="space-y-4">
       <TabsList className="grid w-full grid-cols-4 lg:w-[500px]">
         <TabsTrigger value="aging" className="gap-2"><BarChart3 className="h-4 w-4" />Aging</TabsTrigger>
         <TabsTrigger value="clientes" className="gap-2"><Users className="h-4 w-4" />Clientes</TabsTrigger>
@@ -175,6 +178,7 @@ export function ReceberChartsSection({ agingData, topClientes, evolucaoMensal, c
           </CardContent>
         </Card>
       </TabsContent>
-    </Tabs>
+      </Tabs>
+    </ChartContainer>
   );
 }

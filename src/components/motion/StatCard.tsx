@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 export interface StatCardProps {
   label: string;
   value: string | number;
+  sub?: string;
   icon: ReactNode;
   iconColor?: string;
   iconBg?: string;
@@ -17,6 +18,7 @@ export interface StatCardProps {
 export function StatCard({
   label,
   value,
+  sub,
   icon,
   iconColor = "var(--acc)",
   iconBg = "var(--acc-soft)",
@@ -46,6 +48,7 @@ export function StatCard({
       </div>
       <p className="mt-4 truncate text-xs font-medium text-t1">{label}</p>
       <AnimatedNumber value={value} className="mt-1 block truncate text-2xl font-extrabold text-t0" />
+      {sub && <p className="mt-0.5 truncate text-xs text-t2">{sub}</p>}
       {sparkline && <div className="mt-3 h-9">{sparkline}</div>}
     </Card>
   );

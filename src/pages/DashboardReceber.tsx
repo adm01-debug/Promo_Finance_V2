@@ -116,11 +116,11 @@ export default function DashboardReceber() {
     const pendentes = filteredContas.filter(c => ["pendente", "vencido", "parcial"].includes(c.status));
     const calc = (pred: (dias: number) => boolean) => pendentes.filter(c => { const d = differenceInDays(hoje, parseISO(c.data_vencimento)); return pred(d); }).reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
     return [
-      { name: "A Vencer", value: calc(d => d < 0), fill: "hsl(var(--chart-2))" },
-      { name: "1-7 dias", value: calc(d => d > 0 && d <= 7), fill: "hsl(var(--warning))" },
-      { name: "8-15 dias", value: calc(d => d > 7 && d <= 15), fill: "hsl(var(--chart-4))" },
-      { name: "16-30 dias", value: calc(d => d > 15 && d <= 30), fill: "hsl(var(--destructive)/0.7)" },
-      { name: "+30 dias", value: calc(d => d > 30), fill: "hsl(var(--destructive))" },
+      { name: "A Vencer", value: calc(d => d < 0), fill: "var(--ch2)" },
+      { name: "1-7 dias", value: calc(d => d > 0 && d <= 7), fill: "var(--ch3)" },
+      { name: "8-15 dias", value: calc(d => d > 7 && d <= 15), fill: "var(--ch5)" },
+      { name: "16-30 dias", value: calc(d => d > 15 && d <= 30), fill: "color-mix(in srgb, var(--ch4) 70%, transparent)" },
+      { name: "+30 dias", value: calc(d => d > 30), fill: "var(--ch4)" },
     ];
   }, [filteredContas]);
 
@@ -210,7 +210,7 @@ export default function DashboardReceber() {
           </CardContent>
         </Card>
 
-        <ReceberKpisCards kpis={kpis} />
+        <ReceberKpisCards kpis={kpis} evolucao={evolucaoMensal} />
         <ReceberInadimplenciaBar kpis={kpis} />
         <ReceberChartsSection agingData={agingData} topClientes={topClientes} evolucaoMensal={evolucaoMensal} contasVencidasDetalhes={contasVencidasDetalhes} />
       </motion.div>

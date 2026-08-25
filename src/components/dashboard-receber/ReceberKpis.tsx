@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { DollarSign, AlertTriangle, CalendarDays, Clock, Calendar, TrendingUp, CheckCircle } from "lucide-react";
+import { DollarSign, AlertTriangle, CalendarDays, Clock, Calendar, TrendingUp, CheckCircle, type LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/formatters";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserEmpresas } from "@/hooks/useUserEmpresas";
+import { StatCard } from "@/components/motion/StatCard";
+import { Sparkline } from "@/components/charts/Sparkline";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -25,16 +28,44 @@ interface ReceberKpisProps {
     contasVencidas: number;
     contasPendentes: number;
   };
+  /** Série mensal real (6 meses) — alimenta sparklines e delta; nunca fabricada */
+  evolucao?: { mes: string; recebido: number; aReceber: number; vencido: number }[];
 }
 
-export function ReceberKpisCards({ kpis }: ReceberKpisProps) {
-  const cards = [
-    { label: 'Total a Receber', value: formatCurrency(kpis.totalReceber), sub: `${kpis.contasPendentes} contas`, icon: DollarSign, borderColor: 'border-l-primary', iconBg: 'bg-primary/10', iconColor: 'text-primary' },
-    { label: 'Vencido', value: formatCurrency(kpis.vencido), sub: `${kpis.contasVencidas} contas`, icon: AlertTriangle, borderColor: 'border-l-destructive', iconBg: 'bg-destructive/10', iconColor: 'text-destructive', valueColor: 'text-destructive' },
-    { label: 'Vence Hoje', value: formatCurrency(kpis.venceHoje), icon: CalendarDays, borderColor: 'border-l-warning', iconBg: 'bg-warning/10', iconColor: 'text-warning' },
-    { label: 'Próx. 7 dias', value: formatCurrency(kpis.venceSemana), icon: Clock, borderColor: 'border-l-chart-2', iconBg: 'bg-chart-2/10', iconColor: 'text-chart-2' },
-    { label: 'Próx. 30 dias', value: formatCurrency(kpis.venceMes), icon: Calendar, borderColor: 'border-l-chart-3', iconBg: 'bg-chart-3/10', iconColor: 'text-chart-3' },
-    { label: 'Recebido (Mês)', value: formatCurrency(kpis.recebidoMes), icon: TrendingUp, borderColor: 'border-l-success', iconBg: 'bg-success/10', iconColor: 'text-success', valueColor: 'text-success' },
+type KpiCard = {
+  label: string;
+  value: string;
+  sub?: string;
+  icon: LucideIcon;
+  iconColor: string;
+  iconBg: string;
+  delta?: { value: string; positive: boolean };
+  sparkline?: ReactNode;
+};
+
+export function ReceberKpisCards({ kpis, evolucao }: ReceberKpisProps) {
+  const recebidoSeries = evolucao?.map((e) => e.recebido) ?? [];
+  const aReceberSeries = evolucao?.map((e) => e.aReceber) ?? [];
+  const vencidoSeries = evolucao?.map((e) => e.vencido) ?? [];
+
+  // Delta do recebido: último mês vs anterior (apenas com base real > 0)
+  let deltaRecebido: KpiCard["delta"];
+  if (recebidoSeries.length >= 2) {
+    const prev = recebidoSeries[recebidoSeries.length - 2];
+    const last = recebidoSeries[recebidoSeries.length - 1];
+    if (prev > 0) {
+      const pct = ((last - prev) / prev) * 100;
+      deltaRecebido = { value: `${pct >= 0 ? "+" : ""}${pct.toFixed(0)}%`, positive: pct >= 0 };
+    }
+  }
+
+  const cards: KpiCard[] = [
+    { label: 'Total a Receber', value: formatCurrency(kpis.totalReceber), sub: `${kpis.contasPendentes} contas`, icon: DollarSign, iconColor: 'var(--acc)', iconBg: 'var(--acc-soft)', sparkline: aReceberSeries.length > 1 ? <Sparkline data={aReceberSeries} color="var(--acc)" /> : undefined },
+    { label: 'Vencido', value: formatCurrency(kpis.vencido), sub: `${kpis.contasVencidas} contas`, icon: AlertTriangle, iconColor: 'var(--bad)', iconBg: 'var(--bad-soft)', sparkline: vencidoSeries.length > 1 ? <Sparkline data={vencidoSeries} color="var(--bad)" /> : undefined },
+    { label: 'Vence Hoje', value: formatCurrency(kpis.venceHoje), icon: CalendarDays, iconColor: 'var(--warn)', iconBg: 'var(--warn-soft)' },
+    { label: 'Próx. 7 dias', value: formatCurrency(kpis.venceSemana), icon: Clock, iconColor: 'var(--info)', iconBg: 'var(--info-soft)' },
+    { label: 'Próx. 30 dias', value: formatCurrency(kpis.venceMes), icon: Calendar, iconColor: 'var(--acc-2)', iconBg: 'color-mix(in srgb, var(--acc-2) 12%, transparent)' },
+    { label: 'Recebido (Mês)', value: formatCurrency(kpis.recebidoMes), icon: TrendingUp, iconColor: 'var(--ok)', iconBg: 'var(--ok-soft)', delta: deltaRecebido, sparkline: recebidoSeries.length > 1 ? <Sparkline data={recebidoSeries} color="var(--ok)" /> : undefined },
   ];
 
   return (
@@ -43,20 +74,16 @@ export function ReceberKpisCards({ kpis }: ReceberKpisProps) {
         const Icon = card.icon;
         return (
           <motion.div key={card.label} variants={itemVariants}>
-            <Card className={`border-l-4 ${card.borderColor}`}>
-              <CardContent className="pt-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-muted-foreground">{card.label}</p>
-                    <p className={cn("text-xl font-bold", card.valueColor)}>{card.value}</p>
-                    {card.sub && <p className="text-xs text-muted-foreground">{card.sub}</p>}
-                  </div>
-                  <div className={`p-2 rounded-full ${card.iconBg}`}>
-                    <Icon className={`h-5 w-5 ${card.iconColor}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <StatCard
+              label={card.label}
+              value={card.value}
+              sub={card.sub}
+              icon={<Icon className="h-5 w-5" />}
+              iconColor={card.iconColor}
+              iconBg={card.iconBg}
+              delta={card.delta}
+              sparkline={card.sparkline}
+            />
           </motion.div>
         );
       })}
@@ -84,7 +111,7 @@ export function ReceberInadimplenciaBar({ kpis }: ReceberKpisProps) {
               </div>
               <span className={cn(
                 "text-2xl font-black tabular-nums",
-                kpis.taxaInadimplencia > 20 ? "text-destructive" : 
+                kpis.taxaInadimplencia > 20 ? "text-destructive" :
                 kpis.taxaInadimplencia > 10 ? "text-warning" : "text-success"
               )}>
                 {kpis.taxaInadimplencia.toFixed(1)}%
