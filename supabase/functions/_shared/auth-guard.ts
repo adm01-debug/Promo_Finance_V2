@@ -242,3 +242,23 @@ export async function exigirInternaOuUsuario(
 
   return { ok: false, resposta: usuario.resposta };
 }
+
+/**
+ * Variante para endpoints administrativos que aceitam automação interna OU um
+ * usuário autenticado com papel explícito.
+ */
+export async function exigirInternaOuPapel(
+  req: Request,
+  papeis: readonly string[],
+  chaveSegredo = "internal_jobs",
+): Promise<ResultadoGuard<{ origem: "interna" | "usuario"; userId: string | null }>> {
+  const interna = await exigirChamadaInterna(req, chaveSegredo);
+  if (interna.ok) return { ok: true, dados: { origem: "interna", userId: null } };
+
+  const usuario = await exigirPapel(req, papeis);
+  if (usuario.ok) {
+    return { ok: true, dados: { origem: "usuario", userId: usuario.dados.userId } };
+  }
+
+  return { ok: false, resposta: usuario.resposta };
+}

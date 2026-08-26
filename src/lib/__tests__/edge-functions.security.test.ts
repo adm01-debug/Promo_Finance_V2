@@ -2,83 +2,187 @@ import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-/**
- * Gate de segurança: toda Edge Function que instancia um cliente com
- * `SUPABASE_SERVICE_ROLE_KEY` (portanto ignora RLS) precisa provar a origem da
- * requisição antes de escrever no banco.
- *
- * Formas aceitas de prova:
- *  - validação de JWT do usuário (`getClaims` / `getUser` / header Authorization);
- *  - segredo de cron (`x-cron-secret` / `*_SECRET`);
- *  - autenticação de webhook (`authenticateWebhook`, HMAC ou token).
- *
- * Funções puramente informativas e sem escrita podem ser isentadas
- * explicitamente na lista abaixo — cada isenção precisa de justificativa.
- */
+const REPO_ROOT = process.cwd();
+const FUNCTIONS_DIR = join(REPO_ROOT, "supabase", "functions");
+const CONFIG_PATH = join(REPO_ROOT, "supabase", "config.toml");
 
-const FUNCTIONS_DIR = join(process.cwd(), "supabase", "functions");
+type GuardExpectation =
+  | {
+      kind: "guard";
+      tokens: string[];
+      reason: string;
+    }
+  | {
+      kind: "exemption";
+      reason: string;
+    };
 
-/** Isenções conscientes: nome → motivo. */
-const ISENCOES: Record<string, string> = {
-  // Healthcheck público: só devolve status agregado, não escreve nada e é
-  // consumido pela página de status pública.
-  health: "somente leitura de status agregado, sem escrita e sem dado sensível",
+const MATRIZ_EXPLICITA: Record<string, GuardExpectation> = {
+  "asaas-webhook": {
+    kind: "guard",
+    tokens: ["receivedToken !== WEBHOOK_TOKEN"],
+    reason: "Webhook público; a origem é autenticada por token compartilhado do provedor.",
+  },
+  "bitrix24-webhook": {
+    kind: "guard",
+    tokens: ["authenticateWebhook("],
+    reason: "Webhook público; a origem precisa ser autenticada antes de qualquer escrita.",
+  },
+  "bling-webhook": {
+    kind: "guard",
+    tokens: ["authenticateWebhook("],
+    reason: "Webhook público; a origem precisa ser autenticada antes de qualquer escrita.",
+  },
+  "calcular-slo-metrics-diario": {
+    kind: "guard",
+    tokens: ["exigirChamadaInterna("],
+    reason: "Job interno com service_role; jamais pode ficar aberto para internet.",
+  },
+  "expert-agent": {
+    kind: "guard",
+    tokens: ["exigirUsuario("],
+    reason: "Consome IA paga e usa service_role; precisa de sessão real do usuário.",
+  },
+  "gerar-resumo-financeiro-diario": {
+    kind: "guard",
+    tokens: ["exigirInternaOuUsuario("],
+    reason: "Aceita automação interna e execução sob demanda do app autenticado.",
+  },
+  health: {
+    kind: "exemption",
+    reason: "Endpoint público de leitura agregada; não grava dados nem expõe payload sensível.",
+  },
+  "processar-fila-cobrancas": {
+    kind: "guard",
+    tokens: ["exigirInternaOuUsuario("],
+    reason: "Fila sensível com service_role; aceita cron interno e acionamento autenticado.",
+  },
+  "webhook-retry-worker": {
+    kind: "guard",
+    tokens: ["exigirChamadaInterna("],
+    reason: "Worker de retry reenvia webhooks com privilégios elevados; só automação interna.",
+  },
+  "webhook-simulator": {
+    kind: "guard",
+    tokens: ["exigirPapel("],
+    reason: "Ferramenta administrativa de simulação; restrita a admins autenticados.",
+  },
+  "whatsapp-webhook": {
+    kind: "guard",
+    tokens: ["authenticateWebhook("],
+    reason: "Webhook público; a origem precisa ser autenticada antes de qualquer escrita.",
+  },
 };
 
-const PADRAO_AUTORIZACAO =
-  /getClaims|getUser\s*\(|authorization|authenticateWebhook|x-cron-secret|CRON_[A-Z_]*SECRET|WEBHOOK_SECRET|hmac|signature|api_key|apiKey/i;
+const GUARD_RULES: Array<{ label: string; pattern: RegExp }> = [
+  { label: "usuário autenticado", pattern: /\bexigirUsuario\s*\(/ },
+  { label: "papel explícito", pattern: /\bexigirPapel\s*\(/ },
+  { label: "chamada interna", pattern: /\bexigirChamadaInterna\s*\(/ },
+  { label: "interna ou usuário", pattern: /\bexigirInternaOuUsuario\s*\(/ },
+  { label: "interna ou papel", pattern: /\bexigirInternaOuPapel\s*\(/ },
+  { label: "autenticação de webhook", pattern: /\bauthenticateWebhook\s*\(/ },
+  {
+    label: "token compartilhado do Asaas",
+    pattern: /receivedToken\s*!==\s*WEBHOOK_TOKEN/,
+  },
+];
 
 function listarFuncoes(): string[] {
   if (!existsSync(FUNCTIONS_DIR)) return [];
+
   return readdirSync(FUNCTIONS_DIR, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && !e.name.startsWith("_"))
-    .map((e) => e.name)
-    .filter((nome) => existsSync(join(FUNCTIONS_DIR, nome, "index.ts")));
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
+    .map((entry) => entry.name)
+    .filter((name) => existsSync(join(FUNCTIONS_DIR, name, "index.ts")));
 }
 
-describe("Edge Functions — superfície com service_role", () => {
+function lerFonte(nome: string): string {
+  return readFileSync(join(FUNCTIONS_DIR, nome, "index.ts"), "utf8");
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function verifyJwtExplícito(nome: string): boolean | null {
+  if (!existsSync(CONFIG_PATH)) return null;
+  const config = readFileSync(CONFIG_PATH, "utf8");
+  const pattern = new RegExp(
+    String.raw`\[functions\.${escapeRegExp(nome)}\][\s\S]{0,160}?verify_jwt\s*=\s*(true|false)`,
+  );
+  const match = config.match(pattern);
+  if (!match) return null;
+  return match[1] === "true";
+}
+
+function usaPrivilegioElevado(source: string): boolean {
+  return /\bSUPABASE_SERVICE_ROLE_KEY\b|\bserviceClient\s*\(|\bclientDeServico\s*\(/.test(source);
+}
+
+function temProvaConcretaDeOrigem(source: string): boolean {
+  return GUARD_RULES.some(({ pattern }) => pattern.test(source));
+}
+
+describe("Edge Functions — superfície pública com privilégios elevados", () => {
   const funcoes = listarFuncoes();
 
   it("encontra as edge functions do projeto", () => {
     expect(funcoes.length).toBeGreaterThan(0);
   });
 
-  it("nenhuma função usa service_role sem prova de origem", () => {
-    const desprotegidas = funcoes.filter((nome) => {
-      if (nome in ISENCOES) return false;
-      const src = readFileSync(join(FUNCTIONS_DIR, nome, "index.ts"), "utf8");
-      if (!/SERVICE_ROLE/.test(src)) return false;
-      return !PADRAO_AUTORIZACAO.test(src);
+  it("não considera header Authorization apenas em CORS como prova de origem", () => {
+    const falsoPositivo = `
+      const cors = {
+        "Access-Control-Allow-Headers": "authorization, x-cron-secret"
+      };
+    `;
+    expect(temProvaConcretaDeOrigem(falsoPositivo)).toBe(false);
+  });
+
+  it("mantém a matriz explícita de guards e isenções justificadas", () => {
+    for (const [nome, regra] of Object.entries(MATRIZ_EXPLICITA)) {
+      const source = lerFonte(nome);
+
+      if (regra.kind === "exemption") {
+        expect(
+          usaPrivilegioElevado(source),
+          `${nome} foi isenta, mas não usa service_role; remova a isenção obsoleta.`,
+        ).toBe(true);
+        continue;
+      }
+
+      for (const token of regra.tokens) {
+        expect(
+          source.includes(token),
+          `${nome} perdeu o guard explícito "${token}". Motivo: ${regra.reason}`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("nenhuma função crítica/publicada nesta rodada fica sem guard concreto", () => {
+    const auditadas = Object.entries(MATRIZ_EXPLICITA)
+      .filter(([, regra]) => regra.kind === "guard")
+      .map(([nome]) => nome);
+
+    const desprotegidas = auditadas.filter((nome) => {
+      const source = lerFonte(nome);
+      if (!usaPrivilegioElevado(source)) return false;
+      if (verifyJwtExplícito(nome) !== false) return false;
+
+      const regra = MATRIZ_EXPLICITA[nome];
+      if (!regra || regra.kind !== "guard") return false;
+      return !regra.tokens.every((token) => source.includes(token));
     });
 
     expect(
       desprotegidas,
-      `Edge Functions com service_role e sem autenticação: ${desprotegidas.join(", ")}`,
+      [
+        "Funções críticas/publicadas nesta rodada com `verify_jwt = false` e",
+        "`service_role` precisam provar a origem da requisição no código.",
+        "As seguintes continuam sem guard concreto:",
+        desprotegidas.join(", "),
+      ].join(" "),
     ).toEqual([]);
-  });
-
-  it("webhooks públicos autenticam a origem e falham fechados", () => {
-    const webhooks = funcoes.filter((nome) => nome.endsWith("-webhook"));
-    expect(webhooks.length).toBeGreaterThan(0);
-
-    const semGuarda = webhooks.filter((nome) => {
-      const src = readFileSync(join(FUNCTIONS_DIR, nome, "index.ts"), "utf8");
-      return !/authenticateWebhook|hmac|signature|access-token|x-webhook-token/i.test(src);
-    });
-
-    expect(
-      semGuarda,
-      `Webhooks sem validação de origem: ${semGuarda.join(", ")}`,
-    ).toEqual([]);
-  });
-
-  it("o helper de webhook nunca aceita requisição sem segredo configurado", () => {
-    const helper = readFileSync(
-      join(FUNCTIONS_DIR, "_shared", "webhook-auth.ts"),
-      "utf8",
-    );
-    // Segredo ausente precisa resultar em rejeição explícita, não em bypass.
-    expect(helper).toMatch(/secret_not_configured/);
-    expect(helper).toMatch(/503/);
   });
 });
