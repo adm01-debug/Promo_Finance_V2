@@ -2,6 +2,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { ConcurrencyLimiter } from '../_shared/concurrency-limiter.ts'
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { corsHeadersComSegredo, exigirPapel } from '../_shared/auth-guard.ts';
+import { resolveSecret } from '../_shared/webhook-auth.ts';
 
 const _WebhookSimSchema = z.object({
   run_id: z.string().uuid(),
@@ -11,22 +13,20 @@ const _WebhookSimSchema = z.object({
 });
 
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeadersComSegredo })
   }
+
+  const guard = await exigirPapel(req, ['admin'])
+  if (!guard.ok) return guard.resposta;
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const supabase = createClient(supabaseUrl, serviceRoleKey)
 
   try {
-    const _raw = await req.json();
+    const _raw = await req.json().catch(() => null);
     const _v = await validateContract(_WebhookSimSchema, _raw);
     if (!_v.success) return _v.response;
     const body = _v.data
@@ -76,8 +76,26 @@ Deno.serve(async (req) => {
     let failureCount = 0
     const errors: string[] = []
 
-    const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN') || 'simulated-token'
     const functionUrl = `${supabaseUrl}/functions/v1/${target_function}`
+
+    const buildHeaders = async () => {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+
+      if (target_function === 'asaas-webhook') {
+        headers['asaas-access-token'] = Deno.env.get('ASAAS_WEBHOOK_TOKEN') || 'simulated-token'
+        return headers
+      }
+
+      const provider = target_function.replace('-webhook', '')
+      const secret = await resolveSecret(supabase, provider)
+      if (secret) {
+        headers['x-webhook-token'] = secret
+      }
+
+      return headers
+    }
 
     const runScenario = async (i: number) => {
       let scenario;
@@ -121,12 +139,10 @@ Deno.serve(async (req) => {
 
       const start = Date.now()
       try {
+        const headers = await buildHeaders()
         const response = await fetch(functionUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'asaas-access-token': WEBHOOK_TOKEN
-          },
+          headers,
           body: typeof payload === 'string' ? payload : JSON.stringify(payload)
         })
 
@@ -183,13 +199,13 @@ Deno.serve(async (req) => {
     }).eq('id', run_id)
 
     return new Response(JSON.stringify({ success: true, run_id }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
     })
 
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
     })
   }
 })

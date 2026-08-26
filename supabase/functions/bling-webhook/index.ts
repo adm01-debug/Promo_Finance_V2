@@ -239,30 +239,12 @@ async function processContatoEvent(supabase: any, event: string, data: any) {
   if (!contatoId) return;
 
   if (event === "incluir" || event === "alterar") {
-    // Sync contact data to clientes table if matching bitrix/bling reference exists
     const nome = data?.nome || data?.nomeFantasia || "";
-    const cnpjCpf = data?.numeroDocumento || "";
-    const email = data?.email || "";
-    const telefone = data?.celular || data?.fone || "";
 
     if (nome) {
-      // Try to update existing client by CNPJ/CPF match
-      if (cnpjCpf) {
-        const { data: existing } = await supabase
-          .from("clientes")
-          .select("id")
-          .or(`cnpj_cpf.eq.${cnpjCpf},cpf_cnpj.eq.${cnpjCpf}`)
-          .limit(1);
-
-        if (existing && existing.length > 0) {
-          await supabase.from("clientes").update({
-            razao_social: nome,
-            email: email || undefined,
-            telefone: telefone || undefined,
-            updated_at: new Date().toISOString(),
-          }).eq("id", existing[0].id);
-        }
-      }
+      // Não atualizamos `clientes` por CPF/CNPJ aqui: o payload não traz
+      // contexto de empresa e uma busca global pode escrever no tenant errado.
+      // A sincronização multiempresa precisa de vínculo explícito por empresa.
 
       // Always create an alert
       await supabase.from("alertas").insert({

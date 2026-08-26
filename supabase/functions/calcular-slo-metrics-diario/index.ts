@@ -1,11 +1,7 @@
 // Edge: calcular-slo-metrics-diario
 // Agrega métricas das últimas 24h e persiste snapshot em slo_metrics_diarias.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeadersComSegredo, exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -17,8 +13,13 @@ function percentile(arr: number[], p: number): number {
   return Math.round(sorted[idx]);
 }
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+export const handler = async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeadersComSegredo });
+  }
+
+  const guard = await exigirChamadaInterna(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -74,10 +75,17 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ ok: true, data: hoje, total_requisicoes: totalReq, p95, taxa_erro_pct: taxaErro, uptime_pct: uptime }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: { ...corsHeadersComSegredo, "Content-Type": "application/json" } },
     );
   } catch (e) {
     console.error("calcular-slo-metrics-diario:", e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: corsHeaders });
+    return new Response(JSON.stringify({ error: (e as Error).message }), {
+      status: 500,
+      headers: { ...corsHeadersComSegredo, "Content-Type": "application/json" },
+    });
   }
-});
+};
+
+if (import.meta.main) {
+  Deno.serve(handler);
+}

@@ -124,7 +124,7 @@ Arquivos versionados em `scripts/integrity/baseline/`:
 - Todos os scripts com `set -euo pipefail` e `psql -v ON_ERROR_STOP=1`
 - `TEST_ADMIN_JWT` é criado como usuário isolado do staging — nunca reutilizar credencial de produção
 - GitHub Actions redige valores de `secrets.*` no log
-- Os probes HTTP de integridade refletem o runtime atual: `health` exige bearer, `cnpja-lookup` rejeita sem bearer, `asaas-webhook` rejeita sem token com `403`, `bling-webhook` rejeita sem credencial com `401`.
+- Os probes HTTP de integridade refletem o runtime atual: `health` é público e responde `200` sem sessão, `cnpja-lookup` rejeita sem bearer, `asaas-webhook` rejeita sem token com `403`, `bling-webhook` rejeita sem credencial com `401`, e `expert-agent` agora rejeita bearer inválido com `401` antes de validar payload.
 
 ---
 

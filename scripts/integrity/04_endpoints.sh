@@ -56,10 +56,10 @@ check_one_of() {
   emit "$ass" fail "$expected_csv" "$act" "código inesperado"
 }
 
-# health — sem bearer → 401 (verify_jwt na borda)
-check "health.no_bearer_401" 401 "$(hit GET /health)"
+# health — endpoint público de status deve responder sem sessão
+check "health.no_bearer_200" 200 "$(hit GET /health)"
 
-# health — com bearer anon → 200
+# health — com bearer anon continua 200
 check "health.anon_bearer_200" 200 \
   "$(hit GET /health Authorization "$ANON_BEARER")"
 
@@ -67,9 +67,17 @@ check "health.anon_bearer_200" 200 \
 check "cnpja_lookup.no_bearer_401" 401 \
   "$(hit POST /cnpja-lookup '' '' '{"cnpj":"00000000000191"}')"
 
-# expert-agent — payload inválido com bearer inválido atualiza contrato para 422 padronizado
-check "expert_agent.invalid_payload_422" 422 \
+# expert-agent — bearer inválido deve ser bloqueado antes do contrato
+check "expert_agent.invalid_bearer_401" 401 \
   "$(hit POST /expert-agent Authorization 'Bearer invalid' '{}')"
+
+# expert-agent — payload inválido com sessão válida usa envelope 422
+if [ -n "$TEST_ADMIN_JWT" ]; then
+  code="$(hit POST /expert-agent Authorization "Bearer $TEST_ADMIN_JWT" '{}')"
+  check "expert_agent.invalid_payload_422" 422 "$code"
+else
+  emit "expert_agent.invalid_payload_422" unverified 422 "-" "TEST_ADMIN_JWT ausente"
+fi
 
 # expert-agent — com admin JWT → 200 (senão UNVERIFIED)
 if [ -n "$TEST_ADMIN_JWT" ]; then

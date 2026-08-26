@@ -7,7 +7,7 @@ import { createValidationErrorResponse } from '../_shared/contract-response.ts'
 
 const logger = createLogger('asaas-webhook')
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   const startTime = Date.now()
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -170,12 +170,12 @@ Deno.serve(async (req) => {
       // Devolvemos 200 para o Asaas não retransmitir — nosso retry é interno.
       return new Response(
         JSON.stringify({ success: false, will_retry: failure.willRetry, status: failure.status }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        { headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' } },
       )
     }
 
     return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
     })
   } catch (error) {
     logger.error('Erro fatal no webhook Asaas', {
@@ -188,4 +188,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
-})
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}

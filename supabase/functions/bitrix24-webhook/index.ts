@@ -24,7 +24,7 @@ async function sha256(value: string): Promise<string> {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
@@ -127,4 +127,8 @@ Deno.serve(async (req) => {
     console.error('Erro bitrix24 webhook:', errMsg.slice(0, 100));
     return createErrorResponse(errMsg, 500);
   }
-});
+};
+
+if (import.meta.main) {
+  Deno.serve(handler);
+}

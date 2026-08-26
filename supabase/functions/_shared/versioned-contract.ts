@@ -67,7 +67,10 @@ export function validateVersionedContract<V1, V2>(
   if (!result.success) {
     return {
       success: false,
-      response: createValidationErrorResponse(result.error),
+      response: createValidationErrorResponse(
+        result.error,
+        contractVersionHeaders(version as ContractVersion),
+      ),
     };
   }
 
