@@ -23,7 +23,7 @@ Ainda assim, **não é seguro declarar o sistema pronto para produção**. A aud
 6. a execução E2E isolada não é hermética: com variáveis públicas fictícias, 111 de 147 casos falharam principalmente porque o boot depende de Supabase alcançável; isso não prova que 111 recursos estejam quebrados, mas prova que a suíte atual não fornece um gate confiável fora do ambiente canônico;
 7. o pipeline mascara lint de Deno e auditoria de dependências e não aplica o gate estrito que o próprio repositório declara.
 
-O diagnóstico correto é: **quase pronto em amplitude de código, mas ainda não pronto em segurança, verdade de schema, integração real e evidência de operação**. Pelo critério do projeto, “pronto” exigirá código, deploy controlado, tráfego real, telemetria e aceite observável — não apenas arquivos existentes.
+O diagnóstico correto é: **amplo em volume de código, mas ainda não pronto em segurança, verdade de schema, integração real e evidência de operação**. Pelo critério do projeto, “pronto” exigirá código, deploy controlado, tráfego real, telemetria e aceite observável — não apenas arquivos existentes.
 
 ---
 
@@ -55,7 +55,7 @@ O diagnóstico correto é: **quase pronto em amplitude de código, mas ainda nã
 
 O corpus detectado possui 2.733 arquivos e aproximadamente 1.467.579 palavras. A extração combinou AST e leitura semântica, com 14.253 nós e 42.772 arestas brutas; após normalização, o grafo útil ficou com 14.235 nós, 37.341 arestas e 1.484 comunidades. Os principais hubs são `supabase`, `useAuth`, as rotas de `App.tsx`, formatadores e os componentes centrais do design system.
 
-O diagnóstico do grafo encontrou 4.771 arestas com endpoint não resolvido, uma self-loop e 660 colapsos de pares em modo não direcionado. Isso ocorre sobretudo na junção entre referências SQL/AST, imports externos e IDs semânticos. Portanto, o grafo foi usado como mapa e índice de navegação, **não como prova isolada**; todos os achados críticos foram confirmados diretamente no código, na configuração ou no catálogo do destino.
+A exportação do grafo mostrou forte fragmentação em comunidades finas e muitos núcleos isolados, o que é compatível com a mistura de frontend, SQL, testes, documentação e artefatos auxiliares do repositório. Portanto, o grafo foi usado como mapa e índice de navegação, **não como prova isolada**; todos os achados críticos foram confirmados diretamente no código, na configuração ou no catálogo do destino.
 
 ### 2.4 Limitações que bloqueiam uma conclusão absoluta
 
@@ -69,23 +69,23 @@ O diagnóstico do grafo encontrou 4.771 arestas com endpoint não resolvido, uma
 
 ## 3. Inventário do repositório e arquitetura real
 
-| Área | Estado observado |
-|---|---:|
-| Arquivos versionados | 2.761 |
-| Rotas declaradas em `src/App.tsx` | 129 |
-| Links de navegação lateral | 87 |
-| Arquivos `.tsx` em `src/pages` | 177 |
-| Páginas com `default export` mapeadas | 122 |
-| Edge Functions reais, excluindo `_shared` | 102 |
-| Seções de função em `supabase/config.toml` | 39 |
-| Migrations oficiais | 548 |
-| Scripts SQL paralelos em `sql/` | 34 |
-| Itens em `db/functions/` | 7 |
-| Testes/specs em `src` | 201 arquivos |
-| Specs em `e2e/` | 25 arquivos |
-| Spec paralelo em `e2e-tests/` | 1 arquivo |
-| Testes de Edge localizados | 28 arquivos |
-| Workflows GitHub Actions | 5 |
+| Área                                       | Estado observado |
+| ------------------------------------------ | ---------------: |
+| Arquivos versionados                       |            2.761 |
+| Rotas declaradas em `src/App.tsx`          |              129 |
+| Links de navegação lateral                 |               87 |
+| Arquivos `.tsx` em `src/pages`             |              177 |
+| Páginas com `default export` mapeadas      |              122 |
+| Edge Functions reais, excluindo `_shared`  |              102 |
+| Seções de função em `supabase/config.toml` |               39 |
+| Migrations oficiais                        |              548 |
+| Scripts SQL paralelos em `sql/`            |               34 |
+| Itens em `db/functions/`                   |                7 |
+| Testes/specs em `src`                      |     201 arquivos |
+| Specs em `e2e/`                            |      25 arquivos |
+| Spec paralelo em `e2e-tests/`              |        1 arquivo |
+| Testes de Edge localizados                 |      28 arquivos |
+| Workflows GitHub Actions                   |                5 |
 
 ### 3.1 Fluxo arquitetural predominante
 
@@ -121,20 +121,20 @@ O maior risco arquitetural não é falta de arquivos: é a existência de **múl
 
 Todos os comandos abaixo foram executados no commit auditado. Variáveis públicas fictícias foram usadas no build/E2E; nenhum segredo real foi introduzido.
 
-| Verificação | Resultado | Interpretação |
-|---|---|---|
-| `npm run type-check` | **passou** | O escopo real é apenas `src`; testes e E2E estão excluídos, e `strict` está desabilitado. |
-| `npm run lint` | **passou com 17 avisos** | O gate permissivo aceita avisos e ignora Edge/scripts. |
-| `npm run lint:strict` | **falhou** | Os 17 avisos quebram o gate estrito, que não é usado na CI. |
-| `npm run format:check` | **falhou** | 1.470 arquivos reportados com divergência de formatação; não se recomenda formatar tudo num único diff. |
-| build de produção | **passou** | 6.102 módulos; `dist` de aproximadamente 36 MB e chunks JS grandes. |
-| Vitest | **passou** | 201 arquivos, 2.680 testes, cerca de 14 s. |
-| cobertura | **passou no gate atual** | 72,40% statements; 66,36% branches; 63,58% functions; 73,44% lines. |
-| `deno lint supabase/functions/` | **falhou** | 551 problemas; a CI usa `|| true`, portanto não bloqueia. |
-| `deno check` no conjunto do workflow | **passou** | Quatro módulos do workflow validaram. |
-| comando Deno idêntico ao workflow | **falhou** | 67 testes passaram e 2 falharam por permissão de leitura ausente. |
-| Deno com `--allow-read` | **passou** | 69 testes; evidencia erro no comando do workflow, não nos dois testes. |
-| Playwright Chromium isolado | **inconclusivo/falhou** | 147 casos: 10 passaram, 111 falharam e 26 foram pulados; boot reportou `Failed to fetch` sem backend canônico. |
+| Verificação                          | Resultado                              | Interpretação                                                                                                               |
+| ------------------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `npm run type-check`                 | **passou**                             | O escopo real é apenas `src`; testes e E2E estão excluídos, e `strict` está desabilitado.                                   |
+| `npm run lint`                       | **passou com 17 avisos**               | O gate permissivo aceita avisos e ignora Edge/scripts.                                                                      |
+| `npm run lint:strict`                | **falhou**                             | Os 17 avisos quebram o gate estrito, que não é usado na CI.                                                                 |
+| `npm run format:check`               | **falhou**                             | 1.470 arquivos reportados com divergência de formatação; não se recomenda formatar tudo num único diff.                     |
+| build de produção                    | **passou**                             | 6.102 módulos; `dist` de aproximadamente 36 MB e chunks JS grandes.                                                         |
+| Vitest                               | **passou**                             | 201 arquivos, 2.680 testes, cerca de 14 s.                                                                                  |
+| cobertura                            | **passou no gate atual**               | 72,40% statements; 66,36% branches; 63,58% functions; 73,44% lines.                                                         |
+| `deno lint supabase/functions/`      | **falhou**                             | 551 problemas; a CI mascara esse resultado com `                                                                            |     | true`, portanto hoje não bloqueia merge. |
+| `deno check` no conjunto do workflow | **passou**                             | Quatro módulos do workflow validaram.                                                                                       |
+| comando Deno idêntico ao workflow    | **falhou**                             | 67 testes passaram e 2 falharam por permissão de leitura ausente.                                                           |
+| Deno com `--allow-read`              | **passou**                             | 69 testes; evidencia erro no comando do workflow, não nos dois testes.                                                      |
+| Playwright Chromium isolado          | **falhou por dependência de ambiente** | 147 casos: 10 passaram, 111 falharam e 26 foram pulados; o boot reportou `Failed to fetch` sem backend canônico alcançável. |
 
 ### 4.1 Cobertura declarada versus gate real
 
@@ -155,13 +155,13 @@ Todos os comandos abaixo foram executados no commit auditado. Variáveis públic
 
 ### 4.3 Indicadores de dívida no frontend
 
-| Indicador | Quantidade |
-|---|---:|
-| `TODO`, `FIXME` ou `HACK` em `src` | 46 |
-| `@ts-nocheck` | 7 |
-| `eslint-disable` | 36 |
-| TODOs de schema datados de 14/08/2026 | 36 |
-| `Math.random` ou `setTimeout` | 205 ocorrências heurísticas |
+| Indicador                                           |                  Quantidade |
+| --------------------------------------------------- | --------------------------: |
+| `TODO`, `FIXME` ou `HACK` em `src`                  |                          46 |
+| `@ts-nocheck`                                       |                           7 |
+| `eslint-disable`                                    |                          36 |
+| TODOs de schema datados de 14/08/2026               |                          36 |
+| `Math.random` ou `setTimeout`                       | 205 ocorrências heurísticas |
 | awaits Supabase sem tratamento explícito de `error` | 198 ocorrências heurísticas |
 
 As duas últimas métricas são triagem, não condenação automática: timers, dados de demonstração e operações em que o erro é tratado em outra camada devem ser separados dos fluxos financeiros/fiscais reais.
@@ -172,26 +172,26 @@ As duas últimas métricas são triagem, não condenação automática: timers, 
 
 Snapshot somente leitura obtido em 26/08/2026. PostgreSQL `17.6`.
 
-| Classe de objeto | Quantidade observada |
-|---|---:|
-| Schemas | 15 |
-| Tabelas públicas | 271 |
-| Colunas públicas no `information_schema` | 3.795 |
-| Constraints públicas | 775 |
-| Índices públicos | 852 |
-| Índices inválidos | 0 |
-| Tabelas públicas com RLS habilitada | 271/271 |
-| Policies públicas | 529 |
-| Rotinas públicas | 180 |
-| Rotinas `SECURITY DEFINER` | 149 |
-| Triggers não internos | 158 |
-| Views | 17 |
-| Materialized views | 1 |
-| Enums públicos | 25, com 154 labels |
-| Extensões | 8 |
-| Cron jobs ativos | 22 |
-| Entradas no ledger de migrations | 28 |
-| Constraint `NOT VALID` | 1 |
+| Classe de objeto                         | Quantidade observada |
+| ---------------------------------------- | -------------------: |
+| Schemas                                  |                   15 |
+| Tabelas públicas                         |                  271 |
+| Colunas públicas no `information_schema` |                3.795 |
+| Constraints públicas                     |                  775 |
+| Índices públicos                         |                  852 |
+| Índices inválidos                        |                    0 |
+| Tabelas públicas com RLS habilitada      |              271/271 |
+| Policies públicas                        |                  529 |
+| Rotinas públicas                         |                  180 |
+| Rotinas `SECURITY DEFINER`               |                  149 |
+| Triggers não internos                    |                  158 |
+| Views                                    |                   17 |
+| Materialized views                       |                    1 |
+| Enums públicos                           |   25, com 154 labels |
+| Extensões                                |                    8 |
+| Cron jobs ativos                         |                   22 |
+| Entradas no ledger de migrations         |                   28 |
+| Constraint `NOT VALID`                   |                    1 |
 
 ### 5.1 Schemas
 
@@ -199,16 +199,16 @@ Snapshot somente leitura obtido em 26/08/2026. PostgreSQL `17.6`.
 
 ### 5.2 Extensões
 
-| Extensão | Versão |
-|---|---:|
-| `pg_net` | 0.20.0 |
-| `pg_stat_statements` | 1.11 |
-| `pg_trgm` | 1.6 |
-| `pgcrypto` | 1.3 |
-| `uuid-ossp` | 1.1 |
-| `pg_cron` | 1.6.4 |
-| `plpgsql` | 1.0 |
-| `supabase_vault` | 0.3.1 |
+| Extensão             | Versão |
+| -------------------- | -----: |
+| `pg_net`             | 0.20.0 |
+| `pg_stat_statements` |   1.11 |
+| `pg_trgm`            |    1.6 |
+| `pgcrypto`           |    1.3 |
+| `uuid-ossp`          |    1.1 |
+| `pg_cron`            |  1.6.4 |
+| `plpgsql`            |    1.0 |
+| `supabase_vault`     |  0.3.1 |
 
 ### 5.3 Views e materialized view
 
@@ -229,30 +229,30 @@ Foram observadas oito relações publicadas: `public.performance_alerts` e sete 
 
 Os 22 jobs abaixo estão ativos:
 
-| Job | Agenda |
-|---|---|
-| `executar-regua-cobranca-diaria` | `0 12 * * *` |
-| `capture-slow-queries` | `*/15 * * * *` |
-| `cleanup-cron-logs` | `0 4 * * 0` |
-| `cleanup-expired-tokens` | `0 1 * * *` |
-| `cleanup-login-attempts` | `30 1 * * *` |
-| `cleanup-rpc-obs-metrics-daily` | `0 5 * * *` |
-| `daily-log-cleanup` | `0 6 * * *` |
-| `detect-query-regressions-5min` | `*/5 * * * *` |
-| `integrity-invariants-hourly` | `45 * * * *` |
-| `maintain-monthly-partitions` | `0 0 1 * *` |
-| `monitor-table-bloat-daily` | `0 2 * * *` |
-| `pgss-baseline-cleanup` | `0 23 * * 0` |
-| `recarregar-seeds-fiscais-diario` | `0 0 * * *` |
-| `refresh-performance-alerts-weekly` | `0 1 * * 0` |
-| `sefaz-observability-hourly` | `15 * * * *` |
-| `snapshot-table-bloat-daily` | `30 2 * * *` |
-| `gerar-alertas-vencimento-diario` | `0 8 * * *` |
-| `gerar-contas-recorrentes-diario` | `35 3 * * *` |
-| `processar-regua-cobranca-diario` | `0 9 * * *` |
-| `pgss-weekly-baseline` | `0 4 * * 0` |
-| `cron-failure-watch` | `10 * * * *` |
-| `daily-log-retention` | `0 3 * * *` |
+| Job                                 | Agenda         |
+| ----------------------------------- | -------------- |
+| `executar-regua-cobranca-diaria`    | `0 12 * * *`   |
+| `capture-slow-queries`              | `*/15 * * * *` |
+| `cleanup-cron-logs`                 | `0 4 * * 0`    |
+| `cleanup-expired-tokens`            | `0 1 * * *`    |
+| `cleanup-login-attempts`            | `30 1 * * *`   |
+| `cleanup-rpc-obs-metrics-daily`     | `0 5 * * *`    |
+| `daily-log-cleanup`                 | `0 6 * * *`    |
+| `detect-query-regressions-5min`     | `*/5 * * * *`  |
+| `integrity-invariants-hourly`       | `45 * * * *`   |
+| `maintain-monthly-partitions`       | `0 0 1 * *`    |
+| `monitor-table-bloat-daily`         | `0 2 * * *`    |
+| `pgss-baseline-cleanup`             | `0 23 * * 0`   |
+| `recarregar-seeds-fiscais-diario`   | `0 0 * * *`    |
+| `refresh-performance-alerts-weekly` | `0 1 * * 0`    |
+| `sefaz-observability-hourly`        | `15 * * * *`   |
+| `snapshot-table-bloat-daily`        | `30 2 * * *`   |
+| `gerar-alertas-vencimento-diario`   | `0 8 * * *`    |
+| `gerar-contas-recorrentes-diario`   | `35 3 * * *`   |
+| `processar-regua-cobranca-diario`   | `0 9 * * *`    |
+| `pgss-weekly-baseline`              | `0 4 * * 0`    |
+| `cron-failure-watch`                | `10 * * * *`   |
+| `daily-log-retention`               | `0 3 * * *`    |
 
 No último estado disponível, 17 já haviam executado com sucesso e cinco ainda nunca haviam chegado ao horário semanal/mensal. Não havia job atual com última execução falha. `sefaz-observability-hourly` e `cron-failure-watch` tiveram falhas históricas nos 30 dias consultados, mas a execução mais recente estava bem-sucedida. Assim, documentos antigos que afirmam “2 jobs falhando” estão desatualizados.
 
@@ -272,13 +272,13 @@ Antes de qualquer migration corretiva ou destrutiva, é obrigatório restabelece
 
 ### 6.2 Tipos do repositório versus tipos do destino
 
-| Contrato tipado | Repositório | Destino regenerado |
-|---|---:|---:|
-| Tabelas | 279 | 271 |
-| Colunas `Row` de tabelas | 3.537 | 3.577 |
-| Views tipadas | 25 | 18 |
-| Funções expostas no typegen | 97 | 87 |
-| Enums do typegen | 28 | 28 |
+| Contrato tipado             | Repositório | Destino regenerado |
+| --------------------------- | ----------: | -----------------: |
+| Tabelas                     |         279 |                271 |
+| Colunas `Row` de tabelas    |       3.537 |              3.577 |
+| Views tipadas               |          25 |                 18 |
+| Funções expostas no typegen |          97 |                 87 |
+| Enums do typegen            |          28 |                 28 |
 
 Essa comparação é **tipos do commit × typegen do destino**, não origem live × destino live. O catálogo contém 180 rotinas; o typegen expõe apenas o subconjunto PostgREST relevante.
 
@@ -293,6 +293,8 @@ Tabelas presentes apenas no typegen do destino:
 Views presentes apenas nos tipos do repositório:
 
 `drivers_safe_view`, `estrategias_elisao_catalogo` (no destino é tabela), `mv_benchmark_setorial`, `orders_operator_view`, `orders_safe_view`, `vw_auditoria_tributaria_recente`, `vw_transferencias_painel`.
+
+Nomes de RPC presentes apenas nos tipos do repositório: `calcular_potencial_elisao`, `close_stale_integrity_alerts`, `escalate_stale_integrity_alerts`, `gate_34_indices_nao_utilizados`, `get_acessos_suspeitos`, `get_active_uapi_token`, `get_performance_alerts`, `get_retencao_politicas_status`, `purge_old_rows`, `registrar_evento_receber`, `resolve_integrity_alert`, `watch_cron_failures`. Nomes presentes apenas no typegen live: `fe_error_signature` e `has_any_role`. Como o typegen colapsa/filtra o catálogo PostgREST, essa lista exige validação por assinatura antes de concluir que uma rotina inteira está ausente.
 
 O destino possui colunas adicionais em 51 tabelas compartilhadas. Isso confirma que `src/integrations/supabase/types.ts` está defasado e explica parte dos sete `@ts-nocheck` e dos 36 TODOs de schema.
 
@@ -311,18 +313,18 @@ Ao mesmo tempo, a migration local `20260825250000_recreate_6_constraints.sql` n�
 
 ### 6.4 Classificação das diferenças
 
-| Diferença | Classificação | Fundamentação |
-|---|---|---|
-| Remoção das tabelas Lalamove/driver/tracking | Intencional, com resíduos | Há migration explícita de descomissionamento; enums, sequence e corpo de função ainda precisam ser reconciliados. |
-| Hardening de extensões e publicação de `performance_alerts` | Intencional | Coerente entre migration e runtime. |
-| Partições mensais diferentes | Pendente de confirmação | Partições variam com calendário/retenção; não são perda automática. |
-| `estrategias_elisao_catalogo` como view no tipo antigo e tabela no destino | Pendente de confirmação | Mudança de natureza exige contrato e policy explícitos. |
-| Ledger com arquivos inexistentes no commit | Perda de proveniência real | Não se consegue reproduzir nem revisar o que foi aplicado. |
-| Tipos defasados em 51 tabelas | Perda real de contrato | Já força `@ts-nocheck` e payloads parciais. |
-| `check_integrity_invariants` live ainda referenciando logística removida | Perda real | O corpo não acompanha o descomissionamento intencional. |
-| Dois triggers de `updated_at` em `organizacao_membros` | Perda real | Executam a mesma responsabilidade duas vezes. |
-| Views antigas de driver/order | Provavelmente intencional | Coerente com Lalamove, mas a remoção de tipos/docs deve ser autorizada. |
-| `driver_locations_id_seq` sobrevivente | Candidato órfão | Possui privilégios `anon`; dependências devem ser provadas antes de qualquer remoção. |
+| Diferença                                                                  | Classificação              | Fundamentação                                                                                                     |
+| -------------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Remoção das tabelas Lalamove/driver/tracking                               | Intencional, com resíduos  | Há migration explícita de descomissionamento; enums, sequence e corpo de função ainda precisam ser reconciliados. |
+| Hardening de extensões e publicação de `performance_alerts`                | Intencional                | Coerente entre migration e runtime.                                                                               |
+| Partições mensais diferentes                                               | Pendente de confirmação    | Partições variam com calendário/retenção; não são perda automática.                                               |
+| `estrategias_elisao_catalogo` como view no tipo antigo e tabela no destino | Pendente de confirmação    | Mudança de natureza exige contrato e policy explícitos.                                                           |
+| Ledger com arquivos inexistentes no commit                                 | Perda de proveniência real | Não se consegue reproduzir nem revisar o que foi aplicado.                                                        |
+| Tipos defasados em 51 tabelas                                              | Perda real de contrato     | Já força `@ts-nocheck` e payloads parciais.                                                                       |
+| `check_integrity_invariants` live ainda referenciando logística removida   | Perda real                 | O corpo não acompanha o descomissionamento intencional.                                                           |
+| Dois triggers de `updated_at` em `organizacao_membros`                     | Perda real                 | Executam a mesma responsabilidade duas vezes.                                                                     |
+| Views antigas de driver/order                                              | Provavelmente intencional  | Coerente com Lalamove, mas a remoção de tipos/docs deve ser autorizada.                                           |
+| `driver_locations_id_seq` sobrevivente                                     | Sem consumidor confirmado  | Possui privilégios `anon`; dependências devem ser provadas antes de qualquer remoção.                             |
 
 ---
 
@@ -330,14 +332,14 @@ Ao mesmo tempo, a migration local `20260825250000_recreate_6_constraints.sql` n�
 
 ### 7.1 Achados bloqueadores
 
-| Prioridade | Achado | Evidência e impacto |
-|---|---|---|
-| P0 | Segredos versionados em `compare-schemas` | `supabase/functions/compare-schemas/index.ts:17-20` contém URL/chaves de outro projeto; a função está com `verify_jwt=false` e não valida autenticação própria. Rotacionar/revogar sem reproduzir os valores. |
-| P0 | Token operacional como fallback | `scripts/mcp-phd-suite.mjs:13` contém fallback hardcoded. Remover do histórico corrente não basta: é preciso revogar/rotacionar. |
-| P0 | Push público com privilégio administrativo | `send-push-notification` está `verify_jwt=false`, cria cliente service-role, lê todas as inscrições e insere alertas fallback sem autenticação de entrada. Permite abuso de fan-out e escrita privilegiada. |
-| P1 | Endpoints de IA custosos expostos | `expert-agent` e `analyze-document` dependem apenas de rate limit por IP, sem identidade/autorização de usuário. |
-| P1 | Privilégios amplos de `authenticated` | O catálogo reporta todas as permissões relacionais, inclusive `TRUNCATE`, em 284 relações; RLS reduz acesso a linhas, mas não justifica privilégio de DDL/DML excessivo. |
-| P1 | Grants anônimos residuais | `frontend_error_logs` permite `INSERT` anônimo; `driver_locations_id_seq` e `rpc_observability_metrics_id_seq` expõem privilégios de sequence. O primeiro pode ser telemetria intencional, mas precisa antiabuso. |
+| Prioridade | Achado                                     | Evidência e impacto                                                                                                                                                                                               |
+| ---------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0         | Segredos versionados em `compare-schemas`  | `supabase/functions/compare-schemas/index.ts:17-20` contém URL/chaves de outro projeto; a função está com `verify_jwt=false` e não valida autenticação própria. Rotacionar/revogar sem reproduzir os valores.     |
+| P0         | Token operacional como fallback            | `scripts/mcp-phd-suite.mjs:13` contém fallback hardcoded. Remover do histórico corrente não basta: é preciso revogar/rotacionar.                                                                                  |
+| P0         | Push público com privilégio administrativo | `send-push-notification` está `verify_jwt=false`, cria cliente service-role, lê todas as inscrições e insere alertas fallback sem autenticação de entrada. Permite abuso de fan-out e escrita privilegiada.       |
+| P1         | Endpoints de IA custosos expostos          | `expert-agent` e `analyze-document` dependem apenas de rate limit por IP, sem identidade/autorização de usuário.                                                                                                  |
+| P1         | Privilégios amplos de `authenticated`      | O catálogo reporta todas as permissões relacionais, inclusive `TRUNCATE`, em 284 relações; RLS reduz acesso a linhas, mas não justifica privilégio de DDL/DML excessivo.                                          |
+| P1         | Grants anônimos residuais                  | `frontend_error_logs` permite `INSERT` anônimo; `driver_locations_id_seq` e `rpc_observability_metrics_id_seq` expõem privilégios de sequence. O primeiro pode ser telemetria intencional, mas precisa antiabuso. |
 
 ### 7.2 RLS e policies
 
@@ -377,15 +379,19 @@ Os 102 diretórios locais correspondem exatamente às 102 funções `ACTIVE` do 
 
 Isso corrige documentos antigos que afirmavam dezenas de deploys ausentes. O problema atual não é quantidade de deploy, mas contrato e autenticação. `supabase/config.toml` declara explicitamente apenas 39 das 102 funções, portanto 63 dependem de metadata/defaults fora do arquivo canônico.
 
+As 45 funções cujo runtime está com `verify_jwt=false` são: `analise-fluxo-ia`, `analyze-document`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `categorizar-despesa`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `decidir-regime`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `executar-analise-preditiva`, `executar-regua-cobranca`, `executar-relatorios`, `expert-agent`, `external-data`, `gerar-alertas`, `gerar-alertas-dispatcher`, `gerar-alertas-tributarios`, `gerar-dre-tributaria`, `gerar-heatmap-tributario`, `gerar-pdf-tributario`, `get-vapid-key`, `insights-relatorio`, `monitorar-erros-frontend`, `prever-carga-tributaria`, `scim-server`, `sefaz-dfe-dispatcher`, `sefaz-dfe-puxar`, `send-device-alert`, `send-push-notification`, `sso-callback`, `sso-initiate`, `sso-logout`, `validar-token-contador`, `validate-ip-geo`, `webhook-replay`, `webhook-retry-worker`, `whatsapp-ia-proativo` e `whatsapp-webhook`.
+
+Essa lista é inventário, não condenação automática: webhooks assinados, callbacks de SSO e chaves públicas podem legitimamente dispensar JWT Supabase. Cada exceção ainda precisa comprovar autenticação alternativa, validação, rate limit e escopo.
+
 ### 8.2 Funções ausentes ou sem ligação
 
-| Recurso | Estado |
-|---|---|
-| `api-keys-manage` | O frontend chama a função, mas não existe diretório local nem deploy live; a própria UI admite simulação. |
-| `webhook-financeiro` | Há expectativa/caller de produto, mas não há implementação canônica correspondente. |
-| `migrate-helper` | Ausência parece intencional; era ferramenta de migração, não endpoint de produto. |
-| Push de performance | A migration chama `/enviar-push-notification`, enquanto a função real é `send-push-notification`. |
-| WhatsApp proativo | A Edge é chamada, mas a tela não usa `useCreateWhatsAppCobranca`; o histórico de cobrança pode não ser persistido. |
+| Recurso              | Estado                                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `api-keys-manage`    | O frontend chama a função, mas não existe diretório local nem deploy live; a própria UI admite simulação.          |
+| `webhook-financeiro` | Há expectativa/caller de produto, mas não há implementação canônica correspondente.                                |
+| `migrate-helper`     | Ausência parece intencional; era ferramenta de migração, não endpoint de produto.                                  |
+| Push de performance  | A migration chama `/enviar-push-notification`, enquanto a função real é `send-push-notification`.                  |
+| WhatsApp proativo    | A Edge é chamada, mas a tela não usa `useCreateWhatsAppCobranca`; o histórico de cobrança pode não ser persistido. |
 
 ### 8.3 Controles já bem implementados
 
@@ -400,22 +406,22 @@ Esses padrões devem ser reutilizados nos endpoints públicos frágeis, não rec
 
 ## 9. Funcionalidades incompletas, simuladas ou frágeis
 
-| Módulo/fluxo | Estado real | Risco |
-|---|---|---|
-| Convite de usuário | `ConviteUsuarioDialog.tsx:31` grava apenas `audit_logs`, mas anuncia “Convite enviado”; não cria convite, email ou papel. | Onboarding placebo e acesso não provisionado. |
-| Gestão de API keys | `useApiKeys.ts:44-64` chama `api-keys-manage`, explicitamente não implantada. | Tela parcial; criação/rotação não confiável. |
-| NF-e | `NotasFiscais.tsx`, `NovaNFeForm.tsx` e `ContingenciaNFe.tsx` usam mocks, timers, aleatoriedade e estado local em fluxos apresentados como emissão/SEFAZ. | Operação fiscal aparente sem persistência/integração real. |
-| Boleto “system” | `useBoletos.ts:62-83` gera linha digitável e código de barras com `Math.random` antes de insert real. | Documento financeiro potencialmente inválido. |
-| Oportunidades de elisão | `useOportunidadesElisao.ts:128-154` apaga registros antigos antes de inserir os novos, sem transação e sem verificar erro do delete. | Perda de dados se o insert falhar. |
-| Regras de conciliação | `useRegrasConciliacao.ts` usa `@ts-nocheck` e ignora erros de select/update/insert. | Aprendizado silenciosamente perdido. |
-| Queries “otimizadas” | `useOptimizedQueries.ts` converte falha em `data || []`. | RLS, indisponibilidade e schema drift parecem “sem dados”. |
-| Auditoria de conciliação | `useConciliacaoAudit.ts` não verifica falha de leitura e sempre pode emitir sucesso. | Falso positivo de auditoria. |
-| Histórico de boletos | Escritas secundárias de histórico não verificam retorno. | Estado principal sem trilha correspondente. |
-| Cobranças | `Cobrancas.tsx:232-233` mistura dados reais com `CustomerDeepScore` aleatório. | Métrica artificial influenciando decisão. |
-| WhatsApp proativo | Envia pela Edge, mas não registra pelo hook canônico de histórico. | Canal executado sem rastreabilidade completa. |
-| Alertas preditivos | Deep link do command palette aponta para hash/rota errados. | Navegação quebra ou abre seção incorreta. |
-| Sidebar com hash | Estado ativo ignora `location.hash`. | Destaque incorreto entre subtelas. |
-| Páginas órfãs | `ConsultaRapidaFiscal` e `AdminErrosFrontend` não têm rota confirmada. | Código completo, porém inalcançável. |
+| Módulo/fluxo             | Estado real                                                                                                                                               | Risco                                                      |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Convite de usuário       | `ConviteUsuarioDialog.tsx:31` grava apenas `audit_logs`, mas anuncia “Convite enviado”; não cria convite, email ou papel.                                 | Onboarding placebo e acesso não provisionado.              |
+| Gestão de API keys       | `useApiKeys.ts:44-64` chama `api-keys-manage`, explicitamente não implantada.                                                                             | Tela parcial; criação/rotação não confiável.               |
+| NF-e                     | `NotasFiscais.tsx`, `NovaNFeForm.tsx` e `ContingenciaNFe.tsx` usam mocks, timers, aleatoriedade e estado local em fluxos apresentados como emissão/SEFAZ. | Operação fiscal aparente sem persistência/integração real. |
+| Boleto “system”          | `useBoletos.ts:62-83` gera linha digitável e código de barras com `Math.random` antes de insert real.                                                     | Documento financeiro potencialmente inválido.              |
+| Oportunidades de elisão  | `useOportunidadesElisao.ts:128-154` apaga registros antigos antes de inserir os novos, sem transação e sem verificar erro do delete.                      | Perda de dados se o insert falhar.                         |
+| Regras de conciliação    | `useRegrasConciliacao.ts` usa `@ts-nocheck` e ignora erros de select/update/insert.                                                                       | Aprendizado silenciosamente perdido.                       |
+| Queries “otimizadas”     | `useOptimizedQueries.ts` converte falhas em lista vazia.                                                                                                  | RLS, indisponibilidade e schema drift parecem “sem dados”. |
+| Auditoria de conciliação | `useConciliacaoAudit.ts` não verifica falha de leitura e sempre pode emitir sucesso.                                                                      | Falso positivo de auditoria.                               |
+| Histórico de boletos     | Escritas secundárias de histórico não verificam retorno.                                                                                                  | Estado principal sem trilha correspondente.                |
+| Cobranças                | `Cobrancas.tsx:232-233` mistura dados reais com `CustomerDeepScore` aleatório.                                                                            | Métrica artificial influenciando decisão.                  |
+| WhatsApp proativo        | Envia pela Edge, mas não registra pelo hook canônico de histórico.                                                                                        | Canal executado sem rastreabilidade completa.              |
+| Alertas preditivos       | Deep link do command palette aponta para hash/rota errados.                                                                                               | Navegação quebra ou abre seção incorreta.                  |
+| Sidebar com hash         | Estado ativo ignora `location.hash`.                                                                                                                      | Destaque incorreto entre subtelas.                         |
+| Páginas órfãs            | `ConsultaRapidaFiscal` e `AdminErrosFrontend` não têm rota confirmada.                                                                                    | Código completo, porém inalcançável.                       |
 
 ### 9.1 TODOs de schema
 
@@ -427,18 +433,18 @@ Há 36 TODOs datados de 14/08/2026 em hooks como `useImportacaoXMLNFe`, `useCred
 
 **Nenhum item desta tabela foi removido.** “Sem referência” não é sinônimo de lixo; scripts de recuperação, documentação histórica e caminhos alternativos podem ser deliberados.
 
-| Candidato | Evidência | Risco | Recomendação antes de decidir |
-|---|---|---:|---|
-| `bun.lockb` | CI usa `bun.lock`; nenhuma referência encontrada. | Médio | Validar que nenhuma ferramenta antiga ainda o consome; depois pedir autorização para remover. |
-| `package-lock.json` | CI usa Bun, mas README ainda oferece `npm install`. | Alto | Decidir oficialmente se npm continua suportado. |
-| `e2e-tests/` + `playwright-dyad.config.ts` | Trilha paralela com um teste; CI usa `e2e/`. | Médio | Confirmar se Dyad ainda faz parte do fluxo. |
-| `supabase/tests/test_results*.json` | Snapshots gerados e datados, versionados. | Baixo | Arquivar ou remover somente após decidir política de evidência. |
-| harnesses Supabase | Paths externos hardcoded e uma URL de destino com typo. | Médio | Corrigir/parametrizar antes de classificar. |
-| `db/functions/` | 6 de 7 itens não entram em migrations. | Médio | Definir se é biblioteca documental ou fonte operacional. |
-| `sql/` | 34/34 scripts sem replay oficial; alguns contêm `DROP ... CASCADE`. | Alto | Inventariar intenção individual; nunca executar ou apagar em bloco. |
-| cinco relatórios de restyle/handoff na raiz | Sem referências internas. | Baixo | Arquivar após validação histórica. |
-| `AI_RULES.md`, `SECURITY_RULES.md`, `.hermes.md` | Sem referência por código, mas úteis a agentes/processo. | Alto | Manter. |
-| docs de testes/inventário/Edge/scripts/estado | Contagens e comandos estão desatualizados. | Nenhum | Corrigir; não remover. |
+| Candidato                                        | Evidência                                                           |  Risco | Recomendação antes de decidir                                                                 |
+| ------------------------------------------------ | ------------------------------------------------------------------- | -----: | --------------------------------------------------------------------------------------------- |
+| `bun.lockb`                                      | CI usa `bun.lock`; nenhuma referência encontrada.                   |  Médio | Validar que nenhuma ferramenta antiga ainda o consome; depois pedir autorização para remover. |
+| `package-lock.json`                              | CI usa Bun, mas README ainda oferece `npm install`.                 |   Alto | Decidir oficialmente se npm continua suportado.                                               |
+| `e2e-tests/` + `playwright-dyad.config.ts`       | Trilha paralela com um teste; CI usa `e2e/`.                        |  Médio | Confirmar se Dyad ainda faz parte do fluxo.                                                   |
+| `supabase/tests/test_results*.json`              | Snapshots gerados e datados, versionados.                           |  Baixo | Arquivar ou remover somente após decidir política de evidência.                               |
+| harnesses Supabase                               | Paths externos hardcoded e uma URL de destino com typo.             |  Médio | Corrigir/parametrizar antes de classificar.                                                   |
+| `db/functions/`                                  | 6 de 7 itens não entram em migrations.                              |  Médio | Definir se é biblioteca documental ou fonte operacional.                                      |
+| `sql/`                                           | 34/34 scripts sem replay oficial; alguns contêm `DROP ... CASCADE`. |   Alto | Inventariar intenção individual; nunca executar ou apagar em bloco.                           |
+| cinco relatórios de restyle/handoff na raiz      | Sem referências internas.                                           |  Baixo | Arquivar após validação histórica.                                                            |
+| `AI_RULES.md`, `SECURITY_RULES.md`, `.hermes.md` | Sem referência por código, mas úteis a agentes/processo.            |   Alto | Manter.                                                                                       |
+| docs de testes/inventário/Edge/scripts/estado    | Contagens e comandos estão desatualizados.                          | Nenhum | Corrigir; não remover.                                                                        |
 
 Os candidatos mais perigosos são `sql/fix_user_active_filters.sql`, `sql/views_corrigidas.sql`, `sql/fix_divergencias_col.sql` e `sql/tabelas_ausentes_r5.sql`: contêm operações destrutivas ou representam outra fonte de verdade. Eles devem permanecer intocados até análise individual e sua autorização explícita.
 
@@ -812,402 +818,343 @@ Os candidatos mais perigosos são `sql/fix_user_active_filters.sql`, `sql/views_
 - **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** publicar versões corrigidas gradualmente e acompanhar erros, latência, custo e correlação.
 - **Aceite:** há tráfego real controlado estável e rollback exercitado; presença `ACTIVE` sozinha não encerra a etapa.
 
-### 001. Congelar a baseline oficial da auditoria
+## Onda 6 — frontend parcial e fluxos prometidos
 
-Registrar como linha de base o commit `b44077fa`, o snapshot do destino em `2026-08-26` e todos os artefatos de teste usados nesta revisão.
+### Etapa 051 — Certificar o mapa das 129 rotas
 
-### 002. Revogar e rotacionar as credenciais expostas
+- **Prioridade:** P1.
+- **Ação:** relacionar rota, página, menu, permissão, fonte de dados, vazio, erro e testes.
+- **Aceite:** toda rota é alcançável ou explicitamente interna/descontinuada, sem página completa silenciosamente órfã.
 
-Rotacionar imediatamente as chaves encontradas hardcoded em `compare-schemas` e em utilitários auxiliares, sem republicar os valores em novos commits.
+### Etapa 052 — Corrigir o deep link de alertas preditivos
 
-### 003. Retirar `compare-schemas` da superfície pública
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** trocar `/#alertas-preditivos` por `/inteligencia#alertas-preditivos` no command palette.
+- **Aceite:** navegação direta e pelo comando abre a seção correta em desktop e mobile.
 
-Exigir autenticação administrativa ou retirar a função do runtime se ela for apenas ferramenta interna.
+### Etapa 053 — Decidir o destino das páginas órfãs
 
-### 004. Reclassificar `send-push-notification` como endpoint privilegiado
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** integrar, arquivar ou remover `ConsultaRapidaFiscal.tsx` e `AdminErrosFrontend.tsx` somente após validação do proprietário.
+- **Aceite:** cada página possui rota/permissão/teste ou decisão explícita e recuperável de retirada.
 
-Exigir JWT, papel explícito e trilha de auditoria para qualquer fan-out de push.
+### Etapa 054 — Corrigir seleção de menu por hash
 
-### 005. Inventariar as 45 Edge Functions com `verify_jwt=false`
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** considerar `location.hash` em `SidebarNavGroups`.
+- **Aceite:** item ativo permanece correto em navegação, refresh, histórico e links com âncora.
 
-Classificar uma a uma em: webhook público legítimo, endpoint interno incorretamente exposto, ou caso ambíguo.
+### Etapa 055 — Eliminar score aleatório de cobranças
 
-### 006. Fechar endpoints públicos de IA de alto custo
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** substituir `CustomerDeepScore` aleatório por cálculo persistido ou por estado honesto de “indisponível”.
+- **Aceite:** os mesmos dados geram resultado determinístico, explicável, versionado e testado.
 
-Aplicar identidade, autorização e cota operacional em `expert-agent`, `analyze-document` e equivalentes.
+### Etapa 056 — Persistir o histórico do WhatsApp proativo
 
-### 007. Corrigir a migration que chama `enviar-push-notification`
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** integrar o envio Edge ao registro canônico com correlação e idempotência.
+- **Aceite:** cada envio aceito possui histórico, status, tenant, correlation ID e tratamento de falha/retry.
 
-Alinhar o nome do endpoint invocado com a função real `send-push-notification`.
+### Etapa 057 — Substituir o convite placebo
 
-### 008. Remover fallback hardcoded de token em scripts
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** fazer `ConviteUsuarioDialog` enviar convite real ou mudar a UI para declarar apenas registro de intenção.
+- **Aceite:** sucesso só aparece após confirmação real, e o convite/papel pode ser validado ponta a ponta.
 
-Trocar o padrão atual por leitura obrigatória de segredo em ambiente seguro.
+### Etapa 058 — Isolar ou concluir o módulo NF-e
 
-### 009. Criar um inventário de segredos por superfície
+- **Prioridade:** P1; bloqueador P0 se estiver habilitado como operação fiscal real.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** retirar mocks/aleatoriedade dos fluxos, ligar à homologação SEFAZ ou ocultar claramente o módulo como demonstração.
+- **Aceite:** nenhuma NF-e fictícia é apresentada como emitida; persistência, protocolo, rejeição e contingência reais são comprovados.
 
-Mapear segredos por frontend, Edge, CI, cron, integração externa e script local.
+### Etapa 059 — Eliminar identificadores aleatórios de boletos
 
-### 010. Colocar varredura de segredos como gate de CI
+- **Prioridade:** P1; bloqueador P0 se o provider `system` estiver disponível a clientes.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** delegar número, linha digitável e código de barras ao backend/provedor homologado.
+- **Aceite:** inserções concorrentes não colidem e o identificador exibido corresponde ao documento financeiro real.
 
-Bloquear novos commits que tentem reintroduzir credenciais no repositório.
+### Etapa 060 — Fechar lacunas de carregamento e imports
 
-### 011. Restabelecer acesso somente leitura ao banco origem
+- **Prioridade:** P3.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** expandir prefetch conforme medição e eliminar hooks ambíguos `.ts`/`.tsx` com diff mínimo.
+- **Aceite:** rotas críticas têm carregamento mensurado, imports inequívocos e bundle sem regressão.
 
-Sem esse acesso, a reconciliação origem versus destino permanece parcialmente inferida.
+## Onda 7 — consistência, transações e erros
 
-### 012. Exportar um snapshot novo e reproduzível da origem
+### Etapa 061 — Tornar elisão tributária atômica
 
-Capturar tabelas, colunas, constraints, índices, policies, funções, triggers, views, enums, extensões, grants e jobs com timestamp.
+- **Prioridade:** P1 alto.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** substituir delete-antes-de-insert de `useOportunidadesElisao` por RPC/transação idempotente.
+- **Aceite:** falha no insert preserva o estado anterior e testes concorrentes não criam janela vazia.
 
-### 013. Reexecutar o diff origem x destino com a mesma metodologia
+### Etapa 062 — Fortalecer regras de conciliação
 
-Evitar conclusões assimétricas entre uma origem datada e um destino live.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** regenerar tipos, remover `@ts-nocheck` e tratar erros de leitura, update e insert.
+- **Aceite:** falhas são tipadas/visíveis e não resultam em mensagem falsa de aprendizado ou sucesso.
 
-### 014. Congelar o ledger atual do destino
+### Etapa 063 — Impedir silêncio nas queries otimizadas
 
-Registrar a ordem exata das 28 entradas atuais e os metadados de cada uma.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** parar de converter falhas em arrays vazios em `useOptimizedQueries`.
+- **Aceite:** a UI diferencia vazio legítimo, RLS, indisponibilidade, timeout e incompatibilidade de schema.
 
-### 015. Construir o mapa `arquivo de migration -> ledger live`
+### Etapa 064 — Corrigir sucesso falso na auditoria de conciliação
 
-Relacionar o que existe no repositório com o que realmente foi aplicado no destino.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** verificar cada suboperação de `useConciliacaoAudit` e modelar conclusão parcial/abortada.
+- **Aceite:** qualquer falha impede toast de sucesso integral e gera trilha correlacionada.
 
-### 016. Catalogar as migrations live ausentes em `main`
+### Etapa 065 — Resolver os 36 TODOs de schema
 
-Tratar especialmente as versões de `2026-08-26` e `2026-08-27`.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** confrontar cada payload parcial com catálogo, tipo, default, nulabilidade e regra de domínio.
+- **Aceite:** cada TODO é implementado, removido por mudança intencional ou convertido em tarefa com owner e teste.
 
-### 017. Escolher uma estratégia formal de reconciliação histórica
+### Etapa 066 — Tratar escritas secundárias como contrato
 
-Decidir entre baseline nova, replay reconciliado ou trilha suplementar documentada.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** garantir que histórico, auditoria e notificações não ignorem erro após a operação principal.
+- **Aceite:** cada efeito possui atomicidade, compensação ou tolerância explícita e observável.
 
-### 018. Criar um banco efêmero para replay controlado
+### Etapa 067 — Revisar os 198 awaits Supabase suspeitos
 
-Subir um ambiente descartável para testar a trilha atual sem tocar ambientes reais.
+- **Prioridade:** P1.
+- **Ação:** inspecionar a heurística caso a caso e corrigir apenas chamadas que realmente ignoram `error`.
+- **Aceite:** nenhuma query crítica falha silenciosamente e os falsos positivos estão documentados.
 
-### 019. Medir quais migrations falham no replay
+### Etapa 068 — Liquidar supressões prioritárias
 
-Identificar dependências implícitas, arquivos não idempotentes e ordens inválidas.
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** triar os 46 TODO/FIXME/HACK, sete `@ts-nocheck` e 36 `eslint-disable`.
+- **Aceite:** toda supressão restante tem escopo mínimo, justificativa, prazo/owner e teste compensatório.
 
-### 020. Formalizar a política de migrations futuras
+### Etapa 069 — Mapear objetos sem consumidor encontrado
 
-Proibir aplicações fora da trilha oficial sem registro claro de proveniência.
+- **Prioridade:** P1.
+- **Ação:** relacionar tabelas, colunas, rotinas e jobs sem referência encontrada ao roadmap, migration e proprietário; vazio não é critério.
+- **Aceite:** somente objetos sem propósito confirmado entram na lista de decisão, nunca na fila automática de exclusão.
 
-### 021. Regenerar os tipos Supabase do repositório
+### Etapa 070 — Certificar invariantes dos fluxos centrais
 
-Atualizar o contrato TypeScript com base no estado aprovado do banco.
+- **Prioridade:** P0 de qualidade.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** criar testes de consistência para cobrança, boleto, conciliação, fiscal, convite e elisão.
+- **Aceite:** repetição, concorrência, timeout e falha parcial preservam saldos, histórico, idempotência e isolamento.
 
-### 022. Revisar as 14 tabelas presentes só no repositório
+## Onda 8 — testes, CI e qualidade
 
-Classificar cada uma em legado intencional, perda real no destino ou objeto nunca implantado.
+### Etapa 071 — Alinhar cobertura declarada e exigida
 
-### 023. Revisar as 6 tabelas presentes só no destino
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** corrigir a documentação e elevar gradualmente thresholds a partir do baseline real, sem salto artificial.
+- **Aceite:** CI bloqueia queda e o alvo publicado coincide exatamente com `vitest.config.ts`.
 
-Classificar cada uma em rotação legítima, evolução recente ou drift sem versionamento.
+### Etapa 072 — Expandir o escopo TypeScript
 
-### 024. Revisar as 7 views presentes só no repositório
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** criar configs que incluam testes, E2E e apoio hoje excluídos, avançando strictness por domínio.
+- **Aceite:** todo artefato executável passa por `tsc`; exceções são locais e justificadas.
 
-Confirmar se são vistas legadas, substituídas por tabela ou perda real de runtime.
+### Etapa 073 — Integrar todos os testes Edge
 
-### 025. Revisar as 12 funções presentes só no repositório
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** executar no CI os 28 arquivos de teste Edge, não apenas o subconjunto fixo.
+- **Aceite:** toda função P0/P1 possui teste relevante e qualquer falha interrompe merge.
 
-Confirmar se são assinaturas antigas, rotinas não publicadas ou drift.
+### Etapa 074 — Tornar Deno lint obrigatório
 
-### 026. Revisar as 2 funções presentes só no destino
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** corrigir os 551 problemas em lotes revisáveis e retirar `|| true`.
+- **Aceite:** `deno lint` retorna zero e uma violação deliberada quebra o workflow.
 
-Trazer `fe_error_signature` e `has_any_role` para trilha versionada se forem canônicas.
+### Etapa 075 — Corrigir permissões do comando Deno test
 
-### 027. Auditar as 51 tabelas com diferença de colunas
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** declarar `--allow-read` com escopo mínimo no comando que hoje falha em dois testes.
+- **Aceite:** os 69 testes passam com somente as permissões necessárias, de forma idêntica local/CI.
 
-Classificar coluna por coluna em evolução legítima, quebra de contrato ou tipo desatualizado.
+### Etapa 076 — Fazer lint estrito passar
 
-### 028. Validar a constraint `NOT VALID`
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** resolver os 17 avisos atuais sem ampliar ignores globais.
+- **Aceite:** `npm run lint:strict` retorna zero e passa a ser gate obrigatório.
 
-[AUTORIZAÇÃO OBRIGATÓRIA para alteração] Decidir se a constraint deve ser validada, ajustada ou substituída.
+### Etapa 077 — Corrigir formatação sem esconder semântica
 
-### 029. Revisar os grants massivos para `authenticated`
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** formatar os 1.470 arquivos em lotes isolados, nunca junto a correção funcional.
+- **Aceite:** `format:check` passa e cada lote é revisável, com zero mudança comportamental.
 
-[AUTORIZAÇÃO OBRIGATÓRIA para alteração] Reduzir privilégios que hoje extrapolam o mínimo necessário.
+### Etapa 078 — Alinhar Playwright local e CI
 
-### 030. Revisar grants de sequence expostos
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** tornar a suíte hermética com mocks/ambiente canônico e executar os projetos suportados, ou reduzir a promessa documentada.
+- **Aceite:** browser/dispositivo declarado é exercitado; 111 falhas ambientais deixam de mascarar regressões reais.
 
-[AUTORIZAÇÃO OBRIGATÓRIA para alteração] Tratar especialmente `driver_locations_id_seq` e `rpc_observability_metrics_id_seq`.
+### Etapa 079 — Escolher um lockfile canônico
 
-### 031. Classificar as policies que parecem abertas
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** decidir entre `bun.lock`, `bun.lockb` e `package-lock.json`; remover qualquer um somente em decisão individual.
+- **Aceite:** instalação limpa é determinística no gerenciador oficialmente suportado.
 
-Separar catálogos de leitura ampla, policies `service_role_only` e riscos reais multi-tenant.
+### Etapa 080 — Fixar ferramentas e auditoria de dependências
 
-### 032. Decidir o futuro de `estrategias_elisao_catalogo`
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** alinhar Bun, Supabase JS e runners; retirar máscara de `bun audit`; tornar UUIDs de teste determinísticos e válidos.
+- **Aceite:** versões são reproduzíveis e violações da política de vulnerabilidade bloqueiam a CI.
 
-[AUTORIZAÇÃO OBRIGATÓRIA para alteração] Manter fail-closed, criar policy explícita ou redefinir o contrato.
+## Onda 9 — desempenho, observabilidade, documentação e higiene
 
-### 033. Revisar `SECURITY DEFINER` sem hardening completo de `search_path`
+### Etapa 081 — Instituir orçamento de bundle
 
-[AUTORIZAÇÃO OBRIGATÓRIA para alteração] Priorizar `has_any_role` e `empresa_membro_ativo`.
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** medir e dividir chunks críticos de charts, PDF, Contabilidade, Categorias e OFX.
+- **Aceite:** limites por rota passam em dispositivo/rede representativos e ficam protegidos na CI.
 
-### 034. Auditar famílias de funções sobrecarregadas
+### Etapa 082 — Modernizar a configuração Vite
 
-Confirmar se as 7 sobrecargas são intencionais e seguras no contexto de PostgREST e cron.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** corrigir `__dirname`, opções depreciadas e o uso de `esbuild` ignorado pelo OXC.
+- **Aceite:** build sem os avisos observados e remoção de `console/debugger` comprovada no artefato final.
 
-### 035. Remover ambiguidade de `watch_cron_failures`
+### Etapa 083 — Reduzir arquivos grandes por risco, não por estética
 
-Consolidar assinaturas para impedir repetição de erro histórico de agendamento.
+- **Prioridade:** P3.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** decompor apenas hotspots com baixa coesão, alto churn ou cobertura fraca; `types.ts` gerado é exceção.
+- **Aceite:** complexidade/testabilidade melhoram sem reescrita ampla ou mudança comportamental acidental.
 
-### 036. Revisar os triggers duplicados de `organizacao_membros`
+### Etapa 084 — Manter o mapa arquitetural atualizado
 
-[AUTORIZAÇÃO OBRIGATÓRIA para alteração] Verificar qual trigger é canônica antes de remover qualquer uma.
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** publicar artefatos Graphify não sensíveis com commit, comunidades, hubs e conexões entre frontend, Edge e migrations.
+- **Aceite:** o mapa registra 14.235 nós/37.341 arestas normalizadas e exibe também seu aviso de integridade, sem fingir completude.
 
-### 037. Corrigir a função `check_integrity_invariants`
+### Etapa 085 — Definir baseline de observabilidade
 
-Eliminar referências residuais ao módulo logístico removido sem perder as demais invariantes.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** criar painéis/alertas para frontend, Edge, RPC, cron, webhooks, performance e invariantes.
+- **Aceite:** cada fluxo P0/P1 possui correlação, SLO, alerta acionável, owner e runbook exercitado.
 
-### 038. Auditar views operacionais contra o schema real
+### Etapa 086 — Corrigir documentação obsoleta
 
-Validar `vw_edge_health`, `vw_rpc_hotspots`, `vw_webhooks_recentes` e correlatas.
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** atualizar testing, inventário, catálogo Edge, scripts e estado atual; retirar alegações vencidas.
+- **Aceite:** contagens/comandos são regeneráveis no commit e não contradizem o runtime.
 
-### 039. Revisar os 22 jobs ativos de `pg_cron`
+### Etapa 087 — Deliberar sobre lockfiles candidatos
 
-Confirmar objetivo, owner, dependências, frequência e política de observabilidade.
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** apresentar impacto e recuperação antes de remover `bun.lockb` ou qualquer lockfile.
+- **Aceite:** há decisão registrada por arquivo; duplicidade aparente nunca basta para apagar.
 
-### 040. Documentar retenção e particionamento das tabelas rotativas
+### Etapa 088 — Deliberar sobre a segunda suíte E2E
 
-Evitar que partições mensais sejam confundidas com perda real ou lixo.
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** comparar `e2e-tests/`/Playwright Dyad com a suíte principal antes de integrar, arquivar ou remover.
+- **Aceite:** cobertura exclusiva é preservada e qualquer retirada tem aprovação e caminho de recuperação.
 
-### 041. Criar uma matriz `UI -> hook -> tabela/view -> edge`
+### Etapa 089 — Deliberar sobre artefatos e scripts paralelos
 
-Materializar o encadeamento funcional das áreas críticas do produto.
+- **Prioridade:** P2.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** submeter separadamente `test_results*.json`, relatórios raiz, `sql/` e `db/functions/` à validação do usuário.
+- **Aceite:** cada item tem dependências, risco, recomendação e decisão; nenhuma limpeza acontece em lote.
 
-### 042. Corrigir o deeplink da command palette
+### Etapa 090 — Homologar a matriz de higiene
 
-Trocar `/#alertas-preditivos` pela rota/hash funcional correta.
+- **Prioridade:** P1 de governança.
+- **Ação:** fechar as categorias “manter”, “integrar”, “arquivar”, “remover” e “investigar” para cada candidato.
+- **Aceite:** somente alvo explicitamente aprovado avança para operação posterior, recuperável e auditada.
 
-### 043. Corrigir o estado ativo do menu com `location.hash`
+## Onda 10 — staging, produção e prontidão real
 
-Fazer a `SidebarNavGroups` refletir a subtela real selecionada.
+### Etapa 091 — Preparar staging representativo e rollback
 
-### 044. Decidir o destino das páginas órfãs
+- **Prioridade:** P0 de rollout.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** criar baseline anonimizada, backup verificado e procedimentos de retorno para código, Edge e banco.
+- **Aceite:** restauração é ensaiada, cronometrada e validada antes de qualquer mudança produtiva.
 
-Conectar ou retirar de circulação `ConsultaRapidaFiscal` e `AdminErrosFrontend`.
+### Etapa 092 — Ensaiar migrations do zero e sobre baseline
 
-### 045. Fechar o fluxo real de convite de usuários
+- **Prioridade:** P0 de governança.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** executar a cadeia homologada em banco vazio e cópia anonimizada representativa.
+- **Aceite:** ambos convergem ao mesmo schema sem perda, etapa manual escondida ou migration destino-only.
 
-Implementar backend/serviço de convite ou reclassificar a tela como "em implantação".
+### Etapa 093 — Implantar correções de segurança em staging
 
-### 046. Implementar o backend de `api-keys-manage`
+- **Prioridade:** P0.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** publicar secrets, autenticação, grants, policies e funções corrigidas somente em staging.
+- **Aceite:** testes positivos/negativos e revisão independente confirmam isolamento e mínimo privilégio.
 
-Criar a Edge Function com contrato alinhado ao hook já existente.
+### Etapa 094 — Exercitar os fluxos ponta a ponta
 
-### 047. Implementar ou religar `webhook-financeiro`
+- **Prioridade:** P0 de qualidade.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** validar convite, boleto, cobrança, WhatsApp, conciliação, elisão, NF-e e rotas críticas com integrações de homologação.
+- **Aceite:** cada fluxo persiste histórico, respeita tenant, reconcilia provedor e trata falha real.
 
-Parar de expor uma URL operacional que hoje não encontra backend correspondente.
+### Etapa 095 — Executar regressão integral do banco
 
-### 048. Tornar a persistência de elisão transacional
+- **Prioridade:** P0 de qualidade.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** testar constraints, índices, policies, funções, triggers, views, enums, grants e jobs após replay.
+- **Aceite:** diff contém apenas diferenças aprovadas; zero objeto inválido e zero acesso cross-tenant.
 
-Substituir o padrão `delete + insert` por operação segura e idempotente.
+### Etapa 096 — Testar carga e resiliência
 
-### 049. Remover aleatoriedade de métricas em cobrança
+- **Prioridade:** P1.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** simular concorrência, retries, indisponibilidade e picos em IA, push, webhooks, RPC e cron.
+- **Aceite:** SLO e orçamento são atendidos e idempotência impede duplicação ou perda.
 
-Substituir `CustomerDeepScore` aleatório por dado real, mock explícito ou ausência declarada.
+### Etapa 097 — Ativar portões de observabilidade
 
-### 050. Fechar o histórico operacional do WhatsApp proativo
+- **Prioridade:** P0 de rollout.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** exigir dashboards, correlação, alertas e runbooks operacionais antes de produção.
+- **Aceite:** falhas injetadas alertam no prazo e o responsável executa recuperação documentada.
 
-Garantir que envio, persistência, timeline e auditoria usem a mesma trilha.
+### Etapa 098 — Fazer rollout produtivo progressivo
 
-### 051. Reclassificar o módulo de notas fiscais
+- **Prioridade:** P0 de rollout.
+- **Ação:** **[AUTORIZAÇÃO EXPLÍCITA]** implantar por canário, tenant ou percentual de tráfego, com janela e rollback automático.
+- **Aceite:** cada estágio permanece estável pelo período acordado antes de ampliar exposição.
 
-Decidir se entra em trilha real agora ou se deve ficar marcado como beta/incompleto.
+### Etapa 099 — Comprovar comportamento com tráfego real
 
-### 052. Retirar `mockNotasFiscais` do fluxo principal
+- **Prioridade:** P0 de aceite.
+- **Ação:** observar transações autorizadas e reconciliar frontend, Edge, banco, provedor externo e trilha de auditoria.
+- **Aceite:** amostra suficiente demonstra sucesso, consistência, isolamento e ausência de regressão nos SLOs.
 
-Substituir a fonte inicial por leitura real, ainda que read-only no primeiro passo.
+### Etapa 100 — Declarar prontidão somente com evidência final
 
-### 053. Implementar submissão real em `NovaNFeForm`
+- **Prioridade:** P0 de aceite.
+- **Ação:** obter aceite técnico e do proprietário sobre o dossiê completo; código, teste isolado ou deploy sem uso não contam como pronto.
+- **Aceite:** sistema implantado, com tráfego real, SLOs e invariantes atendidos, rollback testado e nenhum P0/P1 aberto.
 
-Persistir com validação, erro auditável e feedback honesto ao usuário.
+---
 
-### 054. Integrar `ContingenciaNFe` ao backend real
+## 14. Decisões solicitadas ao proprietário — sem execução automática
 
-Parar de tratá-la como ilha visual sem rastreabilidade operacional.
+Quando a execução deste plano chegar às etapas correspondentes, será necessária uma decisão explícita e individual para:
 
-### 055. Revisar `useRegrasConciliacao`
+1. manter ou remover `bun.lockb` e decidir se npm/`package-lock.json` continua suportado;
+2. integrar, arquivar ou remover `e2e-tests/` e `playwright-dyad.config.ts`;
+3. manter no Git, arquivar ou remover `supabase/tests/test_results*.json`;
+4. definir o papel oficial dos 34 arquivos de `sql/` e dos itens de `db/functions/`;
+5. arquivar ou manter os relatórios históricos sem referência na raiz;
+6. alterar qualquer objeto do banco, inclusive resíduos Lalamove, overloads, triggers, grants, policies, constraint e jobs;
+7. escolher se módulos simulados ficam ocultos, explicitamente beta ou serão concluídos agora.
 
-Remover `@ts-nocheck`, tratar erros e validar efeitos colaterais.
+Até essas decisões, a recomendação é **preservar tudo**.
 
-### 056. Revisar `useOptimizedQueries`
+---
 
-Parar de mascarar falhas importantes como listas vazias.
+## 15. Critério de encerramento da auditoria
 
-### 057. Revisar `useConciliacaoAudit`
+Este documento encerra a análise estática e o inventário live possível nesta data, mas não encerra a validação origem × destino. A auditoria comparativa só poderá ser considerada integral quando:
 
-Garantir que leituras e gravações críticas tenham tratamento explícito de erro.
+- o acesso somente leitura à origem for restabelecido;
+- o snapshot tripartido for refeito na mesma janela;
+- a genealogia das migrations destino-only for recuperada;
+- os P0 forem contidos e retestados;
+- os itens de higiene receberem decisão explícita;
+- staging e produção fornecerem evidência de deploy e tráfego real.
 
-### 058. Auditar awaits de Supabase sem verificação de erro
-
-Percorrer os pontos heurísticos e classificar por risco operacional.
-
-### 059. Reduzir `Math.random` e `setTimeout` em runtime de produto
-
-Separar mock/protótipo do fluxo operacional real.
-
-### 060. Transformar `TODO/FIXME/HACK` em backlog rastreável
-
-Dar dono, decisão e prazo aos 46 apontamentos encontrados.
-
-### 061. Remover `@ts-nocheck` por ordem de criticidade
-
-Priorizar arquivos de regra de negócio e integrações.
-
-### 062. Revisar os `eslint-disable` existentes
-
-Separar exceções legítimas de supressões que escondem bug.
-
-### 063. Corrigir o escopo do TypeScript
-
-Incluir testes, E2E e áreas críticas hoje fora do `tsconfig`.
-
-### 064. Corrigir o escopo do ESLint
-
-Passar a analisar Edge Functions, scripts e outras áreas hoje fora da malha.
-
-### 065. Compartilhar contratos tipados entre frontend e Edge
-
-Reduzir drift de payload, rota e nomes de função.
-
-### 066. Padronizar validação de payload ponta a ponta
-
-Aplicar schema na borda de entrada, processamento e persistência.
-
-### 067. Padronizar tratamento de erro da camada Supabase
-
-Unificar toast, retry, auditoria, telemetria e propagação de falha.
-
-### 068. Revisar mutações com efeitos secundários não verificados
-
-Especialmente onde a escrita principal passa e a secundária falha silenciosamente.
-
-### 069. Auditar coerência entre menu, palette, guards e permissões
-
-Garantir que todas as portas de entrada usem a mesma fonte de verdade.
-
-### 070. Auditar rotas administrativas expostas
-
-Priorizar `/admin/*` e superfícies equivalentes do ponto de vista de RBAC.
-
-### 071. Clusterizar as 111 falhas E2E
-
-Separar por causa raiz: autenticação, RBAC, tema, seletor, renderização, dado ausente ou fixture.
-
-### 072. Corrigir primeiro as falhas-base de autenticação
-
-Sem estabilizar login e sessão, o restante do E2E permanece ruidoso.
-
-### 073. Corrigir primeiro as falhas-base de RBAC
-
-Fazer rotas anônimas e protegidas obedecerem ao contrato esperado.
-
-### 074. Corrigir o problema de tema do E2E visual
-
-Resolver o caso em que a expectativa `light` encontra `<html class="dark">`.
-
-### 075. Revisar markup e seletores da tela de login
-
-Os testes hoje não encontram elementos que deveriam existir ou ficar visíveis.
-
-### 076. Revalidar a suíte visual após estabilização
-
-Executar novamente apenas os cenários afetados para reduzir ruído.
-
-### 077. Tornar `deno lint` obrigatório no CI
-
-Remover mascaramento por `|| true` e tratar o backlog de 551 problemas.
-
-### 078. Transformar `lint:strict` em gate real
-
-Fazer o pipeline falhar quando warnings críticos reaparecerem.
-
-### 079. Corrigir as 1.470 diferenças de formatação por lotes
-
-Executar em ondas pequenas para não poluir PRs lógicos.
-
-### 080. Elevar os thresholds mínimos de cobertura
-
-Subir gradualmente os limites hoje permissivos demais para gerar verde confiável.
-
-### 081. Cobrir Edge Functions críticas com testes
-
-Priorizar push, webhooks, observabilidade e integrações sensíveis.
-
-### 082. Cobrir migrations críticas com smoke tests
-
-Validar criação, grants, policies, jobs e replay básico.
-
-### 083. Criar teste de contrato para nomes/URLs de Edge Functions
-
-Evitar nova quebra como `enviar-push-notification` versus `send-push-notification`.
-
-### 084. Criar teste de contrato para rotas essenciais
-
-Capturar regressões de deeplink, páginas órfãs e redirecionamento.
-
-### 085. Cobrir convites e API keys com teste de fluxo
-
-O produto precisa parar de indicar sucesso onde não existe backend real.
-
-### 086. Revisar os warnings do build Vite/OXC
-
-Confirmar que o comportamento de `drop console/debugger` e afins está realmente valendo.
-
-### 087. Reduzir os maiores chunks de frontend
-
-Priorizar `chart`, `pdf`, `Contabilidade`, `Categorias` e `ofx`.
-
-### 088. Revisar a estratégia de prefetch de rotas
-
-Hoje há prefetch para uma fração pequena das 129 rotas mapeadas.
-
-### 089. Revisar "god nodes" e arquivos excessivamente centrais
-
-Quebrar apenas onde o acoplamento estiver gerando risco de manutenção.
-
-### 090. Atualizar a documentação factual do projeto
-
-Corrigir docs de testes, Edge, scripts, inventário e estado atual.
-
-### 091. Triar os scripts de `sql/` por intenção e risco
-
-Separar material destrutivo, histórico, reutilizável e experimental.
-
-### 092. Triar `db/functions/` por papel real
-
-Decidir o que é fonte de verdade, espelho morto ou backlog técnico.
-
-### 093. Definir a política oficial de package manager
-
-Escolher entre Bun, npm ou suporte híbrido explicitamente documentado.
-
-### 094. Definir o destino de `e2e-tests/` e configs paralelas
-
-Arquivar ou reintegrar; duplicidade sem dono só aumenta ruído.
-
-### 095. Decidir sobre artefatos versionados de teste
-
-[AUTORIZAÇÃO OBRIGATÓRIA para exclusão] Validar se `test_results*.json` e equivalentes continuam no Git.
-
-### 096. Decidir sobre relatórios históricos na raiz
-
-[AUTORIZAÇÃO OBRIGATÓRIA para exclusão/arquivamento] Definir política de retenção documental.
-
-### 097. Preparar um staging fiel ao destino
-
-Subir ambiente que reflita grants, policies, jobs e Edge antes de qualquer correção invasiva.
-
-### 098. Executar regressão por ondas controladas
-
-Rodar smoke manual, unitário, Deno, E2E e validação de observabilidade a cada bloco de mudanças.
-
-### 099. Implantar correções em trilhas pequenas e temáticas
-
-Separar segurança, banco, integrações, UI parcial e higiene em PRs independentes.
-
-### 100. Declarar “pronto” apenas com evidência operacional
-
-Considerar concluído somente quando segurança crítica estiver fechada, drift reconciliado, módulos placebo removidos/completados, E2E núcleo estabilizado e ambiente com tráfego real observado.
+**Estado final desta entrega:** relatório e plano produzidos; banco inalterado; código funcional inalterado; nenhuma limpeza executada.
