@@ -60,16 +60,16 @@ function severityBadge(severity: string) {
  * (run_integrity_cycle). Sem este painel os alertas ficavam apenas no banco.
  */
 export function IntegrityAlertsPanel() {
-  const [hours, setHours] = useState(24);
+  const [limit, setLimit] = useState(25);
   const [somenteAbertos, setSomenteAbertos] = useState(true);
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, refetch, isRefetching } = useQuery<IntegrityAlertRow[]>({
-    queryKey: ["integrity-alerts", hours, somenteAbertos],
+    queryKey: ["integrity-alerts", limit, somenteAbertos],
     queryFn: async () => {
       const { data, error } = await supabaseDyn.rpc<IntegrityAlertRow[]>("get_integrity_alerts", {
-        p_hours: hours,
-        p_only_open: somenteAbertos,
+        p_limit: limit,
+        p_incluir_resolvidos: !somenteAbertos,
       });
       if (error) throw error;
       return ((data as unknown as IntegrityAlertRow[]) || []).sort((a, b) => {
@@ -86,7 +86,7 @@ export function IntegrityAlertsPanel() {
     mutationFn: async (id: string) => {
       // RPC dedicada: a tabela não concede UPDATE a `authenticated`, então um
       // update direto seria filtrado pela RLS sem erro (falha silenciosa).
-      const { error } = await supabaseDyn.rpc("resolve_integrity_alert", { p_id: id });
+      const { error } = await supabaseDyn.rpc("resolve_integrity_alert", { p_alert_id: id });
       if (error) throw error;
     },
 
@@ -144,14 +144,14 @@ export function IntegrityAlertsPanel() {
             {somenteAbertos ? "Mostrar encerrados" : "Ocultar encerrados"}
           </Button>
           <select
-            value={hours}
-            onChange={(e) => setHours(Number(e.target.value))}
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
             className="text-xs bg-background border rounded px-2 py-1"
-            aria-label="Período dos invariantes"
+            aria-label="Limite de invariantes"
           >
-            <option value={24}>24h</option>
-            <option value={72}>3 dias</option>
-            <option value={168}>7 dias</option>
+            <option value={25}>25 itens</option>
+            <option value={50}>50 itens</option>
+            <option value={100}>100 itens</option>
           </select>
           <Button
             variant="outline"

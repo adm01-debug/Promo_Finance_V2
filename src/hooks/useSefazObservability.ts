@@ -71,7 +71,7 @@ export function useResolveAlert() {
     mutationFn: async (id: string) => {
       // A RLS de integrity_alerts só concede leitura a admins; o UPDATE direto
       // era silenciosamente descartado. A RPC valida a role e encerra o alerta.
-      const { error } = await supabaseDyn.rpc('resolve_integrity_alert', { p_id: id });
+      const { error } = await supabaseDyn.rpc('resolve_integrity_alert', { p_alert_id: id });
       if (error) throw error;
       return id;
     },

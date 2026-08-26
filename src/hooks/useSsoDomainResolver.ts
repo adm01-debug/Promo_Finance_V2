@@ -6,7 +6,6 @@ export interface ResolvedSsoProvider {
   nome: string;
   tipo: 'oidc' | 'saml';
   preset: string | null;
-  allowed_domains: string[];
   force_sso_for_domains: boolean;
   ordem: number;
 }

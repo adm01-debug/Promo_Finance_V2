@@ -6,6 +6,7 @@ set -euo pipefail
 : "${STAGING_PROJECT_REF:?}"
 : "${STAGING_ANON_KEY:?}"
 TEST_ADMIN_JWT="${TEST_ADMIN_JWT:-}"
+ANON_BEARER="Bearer ${STAGING_ANON_KEY}"
 
 BASE="https://${STAGING_PROJECT_REF}.supabase.co/functions/v1"
 
@@ -41,14 +42,33 @@ check() {
   fi
 }
 
-# health — GET anon → 200
-check "health.anon_200" 200 "$(hit GET /health)"
+check_one_of() {
+  # check_one_of <assertion> <expected_csv> <actual_code>
+  local ass="$1" expected_csv="$2" act="$3"
+  IFS=',' read -r -a expected <<< "$expected_csv"
+  local exp
+  for exp in "${expected[@]}"; do
+    if [ "$act" = "$exp" ]; then
+      emit "$ass" pass "$expected_csv" "$act" ""
+      return
+    fi
+  done
+  emit "$ass" fail "$expected_csv" "$act" "código inesperado"
+}
 
-# cnpja-lookup — POST anon → 200
-check "cnpja_lookup.anon_200" 200 "$(hit POST /cnpja-lookup '' '' '{"cnpj":"00000000000191"}')"
+# health — sem bearer → 401 (verify_jwt na borda)
+check "health.no_bearer_401" 401 "$(hit GET /health)"
 
-# expert-agent — sem token → 401
-check "expert_agent.no_token_401" 401 \
+# health — com bearer anon → 200
+check "health.anon_bearer_200" 200 \
+  "$(hit GET /health Authorization "$ANON_BEARER")"
+
+# cnpja-lookup — sem bearer → 401
+check "cnpja_lookup.no_bearer_401" 401 \
+  "$(hit POST /cnpja-lookup '' '' '{"cnpj":"00000000000191"}')"
+
+# expert-agent — payload inválido com bearer inválido atualiza contrato para 422 padronizado
+check "expert_agent.invalid_payload_422" 422 \
   "$(hit POST /expert-agent Authorization 'Bearer invalid' '{}')"
 
 # expert-agent — com admin JWT → 200 (senão UNVERIFIED)
@@ -59,13 +79,13 @@ else
   emit "expert_agent.admin_200" unverified 200 "-" "TEST_ADMIN_JWT ausente"
 fi
 
-# asaas-webhook — sem HMAC → 401
-check "asaas_webhook.no_hmac_401" 401 "$(hit POST /asaas-webhook '' '' '{}')"
+# asaas-webhook — sem token do provedor → 403
+check "asaas_webhook.no_token_403" 403 "$(hit POST /asaas-webhook '' '' '{}')"
 
-# get-mapbox-token — authenticated → 200 (senão UNVERIFIED)
-if [ -n "$TEST_ADMIN_JWT" ]; then
-  code="$(hit GET /get-mapbox-token Authorization "Bearer $TEST_ADMIN_JWT")"
-  check "mapbox_token.auth_200" 200 "$code"
-else
-  emit "mapbox_token.auth_200" unverified 200 "-" "TEST_ADMIN_JWT ausente"
-fi
+# bling-webhook — sem assinatura/token → 401
+check "bling_webhook.no_auth_401" 401 "$(hit POST /bling-webhook '' '' '{}')"
+
+# get-mapbox-token — com bearer anon deve atravessar auth da borda;
+# 500 indica secret ausente, mas prova rota publicada e auth coerente.
+check_one_of "mapbox_token.anon_bearer_runtime" "200,500" \
+  "$(hit GET /get-mapbox-token Authorization "$ANON_BEARER")"

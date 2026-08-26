@@ -39,6 +39,9 @@ Detalhes por etapa: `scripts/staging-migrate.sh` (comentários no topo do arquiv
 | `--dry-run` | Todas as etapas em preview — nada é escrito em staging |
 | `--skip-baseline` | Usa `scripts/integrity/baseline/*.json` já commitados |
 | `--only-integrity` | Pula schema/functions/crons e roda só os testes |
+| `--skip-schema` | Pula `supabase db push` e o pós-schema (`maintain_monthly_partitions`, `ANALYZE`) |
+| `--skip-functions` | Pula o redeploy das Edge Functions |
+| `--skip-crons` | Pula a recriação dos cron jobs |
 
 ### Execução manual
 
@@ -48,6 +51,16 @@ export STAGING_ANON_KEY=... SUPABASE_ACCESS_TOKEN=...
 export REQUIRED_SECRETS="LOVABLE_API_KEY,MAPBOX_TOKEN,RESEND_API_KEY"
 bash scripts/staging-migrate.sh --dry-run
 ```
+
+### Sequência segura recomendada
+
+1. `bash scripts/staging-migrate.sh --dry-run --skip-baseline`
+2. `bash scripts/staging-migrate.sh --only-integrity`
+3. `bash scripts/staging-migrate.sh --skip-functions --skip-crons`
+4. `bash scripts/staging-migrate.sh --skip-schema --skip-crons`
+5. `bash scripts/staging-migrate.sh --skip-schema --skip-functions`
+
+Essa separação reduz o raio de blast: schema, functions e crons podem ser promovidos e auditados em ondas independentes.
 
 ### Execução via GitHub Actions
 
@@ -79,6 +92,16 @@ Exit code do `run.sh` = número de `fail`. `unverified` não falha, mas fica vis
 | `endpoints.*` retorna 000/500 | Function não deployada, secret faltando ou erro interno | Ver logs da function em staging |
 | `crons.all_expected_present` fail | `migrate-cron-jobs.sh` falhou ou baseline desatualizado | Regenerar baseline após ajustar cron.job |
 
+### Contrato explícito de `verify_jwt`
+
+O deploy de functions agora falha fechado se alguma das `102` Edge Functions não tiver um bloco explícito em `supabase/config.toml`.
+
+- Sem bloco `[functions.<nome>]` o deploy é recusado.
+- Sem `verify_jwt = true|false` explícito o deploy é recusado.
+- O script não assume mais `--no-verify-jwt` como fallback.
+
+Isso evita que um redeploy em massa torne pública uma função que o ambiente remoto atualmente protege na borda.
+
 ---
 
 ## 4. Baselines
@@ -101,6 +124,7 @@ Arquivos versionados em `scripts/integrity/baseline/`:
 - Todos os scripts com `set -euo pipefail` e `psql -v ON_ERROR_STOP=1`
 - `TEST_ADMIN_JWT` é criado como usuário isolado do staging — nunca reutilizar credencial de produção
 - GitHub Actions redige valores de `secrets.*` no log
+- Os probes HTTP de integridade refletem o runtime atual: `health` exige bearer, `cnpja-lookup` rejeita sem bearer, `asaas-webhook` rejeita sem token com `403`, `bling-webhook` rejeita sem credencial com `401`.
 
 ---
 

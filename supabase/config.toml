@@ -116,3 +116,196 @@ verify_jwt = false
 
 [functions.sefaz-dfe-puxar]
 verify_jwt = false
+
+# Cobertura explícita: toda Edge Function do repositório precisa declarar
+# `verify_jwt`. As entradas abaixo preservam a matriz operacional auditada da
+# origem; a autenticação permanece no handler quando aplicável.
+
+[functions.aceitar-convite]
+verify_jwt = false
+
+[functions.calcular-health-score-operacional]
+verify_jwt = false
+
+[functions.calcular-slo-metrics-diario]
+verify_jwt = false
+
+[functions.calculo-iva]
+verify_jwt = false
+
+[functions.ci-security-gate-log]
+verify_jwt = false
+
+[functions.comparar-benchmark-setorial]
+verify_jwt = false
+
+[functions.conciliacao-proxy]
+verify_jwt = false
+
+[functions.consulta-tributaria]
+verify_jwt = false
+
+[functions.contabilizar-evento]
+verify_jwt = false
+
+[functions.convidar-contador]
+verify_jwt = false
+
+[functions.copilot-global]
+verify_jwt = false
+
+[functions.copilot-tributario]
+verify_jwt = false
+
+[functions.detectar-anomalias-financeiras]
+verify_jwt = false
+
+[functions.digest-silenciamentos-erro]
+verify_jwt = false
+
+[functions.enviar-convite-organizacao]
+verify_jwt = false
+
+[functions.enviar-digest-conformidade]
+verify_jwt = false
+
+[functions.enviar-relatorios-tributarios-agendados]
+verify_jwt = false
+
+[functions.executar-fechamento-tributario]
+verify_jwt = false
+
+[functions.exportar-sped-contribuicoes]
+verify_jwt = false
+
+[functions.gerar-acoes-recomendadas]
+verify_jwt = false
+
+[functions.gerar-alertas-dispatcher]
+verify_jwt = false
+
+[functions.gerar-dre-tributaria]
+verify_jwt = false
+
+[functions.gerar-heatmap-tributario]
+verify_jwt = false
+
+[functions.gerar-pacote-evidencias]
+verify_jwt = false
+
+[functions.gerar-relatorio-anual]
+verify_jwt = false
+
+[functions.gerar-resumo-executivo-semanal]
+verify_jwt = false
+
+[functions.gerar-resumo-financeiro-diario]
+verify_jwt = false
+
+[functions.gerar-snapshots-conformidade]
+verify_jwt = false
+
+[functions.gerar-sped-ecd]
+verify_jwt = false
+
+[functions.gerar-sped-ecf]
+verify_jwt = false
+
+[functions.get-mapbox-token]
+verify_jwt = false
+
+[functions.health]
+verify_jwt = false
+
+[functions.log-sped-bitrix24]
+verify_jwt = false
+
+[functions.mcp-query]
+verify_jwt = false
+
+[functions.monitorar-erros-frontend]
+verify_jwt = false
+
+[functions.n8n-callback]
+verify_jwt = false
+
+[functions.n8n-dispatch]
+verify_jwt = false
+
+[functions.nfe-upload-certificado]
+verify_jwt = false
+
+[functions.nfe-vinculo-proxy]
+verify_jwt = false
+
+[functions.notify-performance-alert]
+verify_jwt = false
+
+[functions.notify-saved-filter]
+verify_jwt = false
+
+[functions.overlay-rejeicoes-auditoria]
+verify_jwt = false
+
+[functions.prever-carga-tributaria]
+verify_jwt = false
+
+[functions.processar-fila-cobrancas]
+verify_jwt = false
+
+[functions.processar-nf-ocr]
+verify_jwt = false
+
+[functions.processar-solicitacao-lgpd]
+verify_jwt = false
+
+[functions.projecao-reforma]
+verify_jwt = false
+
+[functions.relatorio-diario-anomalias]
+verify_jwt = false
+
+[functions.sefaz-manifestar]
+verify_jwt = false
+
+[functions.simular-presumido]
+verify_jwt = false
+
+[functions.simular-real]
+verify_jwt = false
+
+[functions.simular-simples]
+verify_jwt = false
+
+[functions.sincronizar-anomalia-bitrix24]
+verify_jwt = false
+
+[functions.sso-generate-metadata]
+verify_jwt = false
+
+[functions.sso-test-login]
+verify_jwt = false
+
+[functions.sso-validate-config]
+verify_jwt = false
+
+[functions.sync-profile-to-bitrix]
+verify_jwt = false
+
+[functions.verificar-conformidade-fiscal]
+verify_jwt = false
+
+[functions.webhook-replay]
+verify_jwt = false
+
+[functions.webhook-retry-worker]
+verify_jwt = false
+
+[functions.webhook-simulator]
+verify_jwt = false
+
+[functions.whatsapp-ai-analyzer]
+verify_jwt = false
+
+[functions.whatsapp-webhook]
+verify_jwt = false

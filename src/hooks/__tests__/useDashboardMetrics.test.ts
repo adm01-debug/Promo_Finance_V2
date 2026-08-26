@@ -13,6 +13,8 @@ const mockPagar = vi.fn();
 const mockReceber = vi.fn();
 const mockClientes = vi.fn();
 const mockAprovacoes = vi.fn();
+const mockDivergencias = vi.fn();
+const mockUseAuth = vi.fn();
 
 vi.mock('@/hooks/useFinancialData', () => ({
   useEmpresas: () => mockEmpresas(),
@@ -31,11 +33,11 @@ vi.mock('@/hooks/useAprovacoesPendentesCount', () => ({
 // isolar a lógica de cálculo dos KPIs. currentEmpresaId nulo faz o filtro
 // "all" incluir todas as linhas (ver useDashboardMetrics linhas 46/55/63).
 vi.mock('@/hooks/useAuth', () => ({
-  useAuth: () => ({ currentEmpresaId: null }),
+  useAuth: () => mockUseAuth(),
 }));
 
 vi.mock('@/hooks/useDivergenciasConciliacao', () => ({
-  useDivergenciasConciliacao: () => ({ divergencias: [] }),
+  useDivergenciasConciliacao: () => mockDivergencias(),
 }));
 
 vi.mock('@/hooks/useBoletos', () => ({
@@ -53,6 +55,7 @@ const FILTERS_ALL = { empresaFilter: 'all', centroCustoFilter: 'all', periodoFlu
 describe('useDashboardMetrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseAuth.mockReturnValue({ currentEmpresaId: null });
     mockEmpresas.mockReturnValue({ data: [{ id: 'e1' }], isLoading: false });
     mockCC.mockReturnValue({ data: [], isLoading: false });
     mockBancos.mockReturnValue({
@@ -66,6 +69,7 @@ describe('useDashboardMetrics', () => {
     mockReceber.mockReturnValue({ data: [], isLoading: false });
     mockClientes.mockReturnValue({ data: [], isLoading: false });
     mockAprovacoes.mockReturnValue({ count: 0 });
+    mockDivergencias.mockReturnValue({ divergencias: [] });
   });
 
   it('soma saldoTotal corretamente', () => {
@@ -118,6 +122,46 @@ describe('useDashboardMetrics', () => {
       useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'e1' }),
     );
     expect(result.current.saldoTotal).toBe(10000);
+  });
+
+  it('normaliza sentinelas sem expandir a autorização da empresa corrente', () => {
+    mockUseAuth.mockReturnValue({ currentEmpresaId: 'e1' });
+    mockBancos.mockReturnValue({
+      data: [
+        { id: 'b1', empresa_id: 'e1', saldo_atual: 10000 },
+        { id: 'b2', empresa_id: 'e2', saldo_atual: 5000 },
+      ],
+      isLoading: false,
+    });
+
+    const { result } = renderHook(() =>
+      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'default', centroCustoFilter: 'todas' }),
+    );
+
+    expect(result.current.saldoTotal).toBe(10000);
+  });
+
+  it('conta divergências pela conta bancária vinculada à empresa filtrada', () => {
+    mockBancos.mockReturnValue({
+      data: [
+        { id: 'b1', empresa_id: 'e1', saldo_atual: 10000 },
+        { id: 'b2', empresa_id: 'e2', saldo_atual: 5000 },
+      ],
+      isLoading: false,
+    });
+    mockDivergencias.mockReturnValue({
+      divergencias: [
+        { id: 'd1', conta_bancaria_id: 'b1', status: 'pendente' },
+        { id: 'd2', conta_bancaria_id: 'b2', status: 'pendente' },
+        { id: 'd3', conta_bancaria_id: 'b1', status: 'corrigido' },
+      ],
+    });
+
+    const { result } = renderHook(() =>
+      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'e1' }),
+    );
+
+    expect(result.current.totalDivergencias).toBe(1);
   });
 
   it('topClientesReceita ordena por receita desc e limita a 10', () => {
