@@ -5,10 +5,9 @@
       "ID": "HC_PLACEHOLDER"
     }
   },
-  "ts": 1700000000,
+  "ts": "1700000000",
   "auth": {
     "domain": "healthcheck.bitrix24.com",
     "application_token": "hc"
-  },
-  "healthcheck_run_id": "__RUN_ID__"
+  }
 }

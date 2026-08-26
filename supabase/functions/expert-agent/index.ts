@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { ExpertAgentSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
+import { exigirUsuario } from "../_shared/auth-guard.ts";
 
 
 const SYSTEM_PROMPT = `Você é o EXPERT, um assistente de IA especializado em finanças corporativas para a empresa Promo Finance.
@@ -107,10 +108,13 @@ Você tem acesso ao histórico da conversa atual. Use-o para:
 - Régua de cobrança automatizada
 - Integração com Bitrix24 CRM`;
 
-serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     // Rate limit: 30 req/min por IP (endpoint de IA com custo)
@@ -126,10 +130,10 @@ serve(async (req) => {
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
-    const rawBody = await req.json();
+    const rawBody = await req.json().catch(() => null);
     const validation = validatePayload(ExpertAgentSchema, rawBody, "expert-agent");
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details);
     }
     const { messages, context, conversationSummary } = validation.data;
 
@@ -209,4 +213,8 @@ Baseado nos dados financeiros acima, você DEVE:
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
-});
+};
+
+if (import.meta.main) {
+  serve(handler);
+}

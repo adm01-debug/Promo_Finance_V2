@@ -3,10 +3,11 @@ import { contractVersionHeaders, validateVersionedContract } from '../_shared/ve
 import { createLogger } from '../_shared/logger.ts'
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
 import { processWithIdempotency, RetryableError, serviceClient } from '../_shared/webhook-idempotency.ts'
+import { createValidationErrorResponse } from '../_shared/contract-response.ts'
 
 const logger = createLogger('asaas-webhook')
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   const startTime = Date.now()
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -27,7 +28,15 @@ Deno.serve(async (req) => {
       return createErrorResponse('Token inválido', 403)
     }
 
-    const body = await req.json()
+    const rawBody = await req.text()
+    let body: unknown
+    try {
+      body = JSON.parse(rawBody)
+    } catch {
+      return createValidationErrorResponse([{
+        path: '$', message: 'JSON malformado', code: 'invalid_json',
+      }], corsHeaders)
+    }
     const validation = validateVersionedContract(req, body, {
       v1: AsaasWebhookSchema, v2: AsaasWebhookV2Schema, functionName: 'asaas-webhook',
     })
@@ -53,7 +62,7 @@ Deno.serve(async (req) => {
 
     // Idempotência atômica + reprocessamento seguro
     const externalId: string | null =
-      (typeof body.id === 'string' && body.id) ||
+      validation.data.id ||
       (payment?.id ? `payment:${payment.id}:${event}` : null) ||
       (transfer?.id ? `transfer:${transfer.id}:${event}` : null) ||
       null
@@ -161,12 +170,12 @@ Deno.serve(async (req) => {
       // Devolvemos 200 para o Asaas não retransmitir — nosso retry é interno.
       return new Response(
         JSON.stringify({ success: false, will_retry: failure.willRetry, status: failure.status }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        { headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' } },
       )
     }
 
     return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
     })
   } catch (error) {
     logger.error('Erro fatal no webhook Asaas', {
@@ -179,4 +188,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
-})
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}

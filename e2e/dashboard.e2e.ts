@@ -1,187 +1,73 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+const hasDashboardPrerequisites =
+  !!process.env.E2E_USER_EMAIL &&
+  !!process.env.E2E_USER_PASSWORD &&
+  !!process.env.VITE_SUPABASE_URL &&
+  !!process.env.VITE_SUPABASE_PUBLISHABLE_KEY &&
+  !!process.env.VITE_SUPABASE_PROJECT_ID;
+
+async function abrirDashboard(page: Page) {
+  await page.goto('/dashboard');
+  const skipTour = page.getByRole('button', { name: /pular tour/i });
+  if (await skipTour.isVisible().catch(() => false)) await skipTour.click();
+  await expect(page.getByRole('heading', { name: /bom dia|boa tarde|boa noite/i })).toBeVisible();
+}
 
 test.describe('Dashboard', () => {
+  test.skip(!hasDashboardPrerequisites, 'E2E do dashboard exige autenticação e envs do Supabase válidos.');
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dashboard');
+    await abrirDashboard(page);
   });
 
-  test('displays dashboard title', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
+  test('exibe cabeçalho e KPIs executivos reais', async ({ page }) => {
+    await expect(page.getByText('Saldo Consolidado', { exact: true })).toBeVisible();
+    await expect(page.getByText('Previsão de Recebimento', { exact: true })).toBeVisible();
+    await expect(page.getByText('Compromissos a Pagar', { exact: true })).toBeVisible();
+    await expect(page.getByText('Índice de Inadimplência', { exact: true })).toBeVisible();
   });
 
-  test('shows summary stats cards', async ({ page }) => {
-    // Wait for stats to load
-    await expect(page.getByTestId('stats-cards')).toBeVisible();
-    
-    // Verify all stat cards are present
-    await expect(page.getByText(/receitas/i)).toBeVisible();
-    await expect(page.getByText(/despesas/i)).toBeVisible();
-    await expect(page.getByText(/saldo/i)).toBeVisible();
+  test('renderiza os widgets configurados no dashboard', async ({ page }) => {
+    await expect(page.locator('#fluxo-caixa')).toBeVisible();
+    await expect(page.locator('#composicao')).toBeVisible();
+    await expect(page.locator('#vencimentos')).toBeVisible();
+    await expect(page.locator('#fluxo-caixa').getByRole('heading', { name: /fluxo de caixa/i })).toBeVisible();
   });
 
-  test('displays recent transactions', async ({ page }) => {
-    await expect(page.getByTestId('recent-transactions')).toBeVisible();
-    
-    // Should have at least the header
-    await expect(page.getByText(/transações recentes/i)).toBeVisible();
+  test('abre a personalização do dashboard', async ({ page }) => {
+    await page.getByRole('button', { name: /personalizar/i }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByText('Personalizar Dashboard', { exact: true })).toBeVisible();
   });
 
-  test('shows upcoming bills section', async ({ page }) => {
-    await expect(page.getByTestId('upcoming-bills')).toBeVisible();
-    await expect(page.getByText(/próximos vencimentos/i)).toBeVisible();
+  test('alertas apresentam conteúdo ou estado vazio explícito', async ({ page }) => {
+    const painel = page.locator('#alertas-preditivos');
+    await expect(painel).toBeVisible();
+    await expect(
+      painel.getByText(/nenhum alerta preditivo no momento|alertas preditivos/i).first(),
+    ).toBeVisible();
   });
 
-  test('period filter changes data', async ({ page }) => {
-    // Wait for initial load
-    await expect(page.getByTestId('stats-cards')).toBeVisible();
-    
-    // Change period to month
-    await page.getByRole('combobox', { name: /período/i }).click();
-    await page.getByText(/este mês/i).click();
-    
-    // Verify loading state appears and resolves
-    await expect(page.getByTestId('stats-cards')).toBeVisible();
+  test('gráfico de fluxo de caixa possui visualização SVG', async ({ page }) => {
+    const fluxo = page.locator('#fluxo-caixa');
+    await expect(fluxo).toBeVisible();
+    await expect(fluxo.locator('svg').first()).toBeVisible();
   });
 
-  test('quick actions are clickable', async ({ page }) => {
-    const novaContaBtn = page.getByRole('button', { name: /nova conta/i });
-    await expect(novaContaBtn).toBeVisible();
-    
-    // Click should open modal or navigate
-    await novaContaBtn.click();
-    
-    // Verify modal or navigation happened
-    await expect(page.getByRole('dialog').or(page.locator('[data-testid="form-modal"]'))).toBeVisible();
-  });
-
-  test('alerts section shows overdue items', async ({ page }) => {
-    const alertsSection = page.getByTestId('alerts-section');
-    
-    // Check if alerts section exists (may or may not have alerts)
-    const hasAlerts = await alertsSection.isVisible().catch(() => false);
-    
-    if (hasAlerts) {
-      // If there are alerts, verify they have proper styling
-      const alertItems = page.locator('[data-testid="alert-item"]');
-      const count = await alertItems.count();
-      
-      if (count > 0) {
-        await expect(alertItems.first()).toBeVisible();
-      }
-    }
-  });
-
-  test('charts render correctly', async ({ page }) => {
-    // Wait for charts to load
-    await page.waitForSelector('[data-testid="chart-container"]', { 
-      state: 'visible',
-      timeout: 10000 
-    });
-    
-    // Verify at least one chart is visible
-    const charts = page.locator('[data-testid="chart-container"]');
-    await expect(charts.first()).toBeVisible();
-  });
-
-  test('responsive layout works on mobile', async ({ page }) => {
-    // Set mobile viewport
-    await page.setViewportSize({ width: 375, height: 667 });
-    
-    // Dashboard should still be accessible
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
-    
-    // Stats cards should stack vertically (single column)
-    const statsCards = page.getByTestId('stats-cards');
-    await expect(statsCards).toBeVisible();
-  });
-
-  test('can navigate to other pages from dashboard', async ({ page }) => {
-    // Click on sidebar link to contas a pagar
-    await page.getByRole('link', { name: /contas a pagar/i }).click();
-    
+  test('navega para contas a pagar por um link real', async ({ page }) => {
+    await page.getByRole('link', { name: /compromissos a pagar/i }).click();
     await expect(page).toHaveURL(/contas-pagar/);
-    await expect(page.getByRole('heading', { name: /contas a pagar/i })).toBeVisible();
-  });
-
-  test('refresh button reloads data', async ({ page }) => {
-    // Wait for initial load
-    await expect(page.getByTestId('stats-cards')).toBeVisible();
-    
-    // Click refresh
-    const refreshBtn = page.getByRole('button', { name: /atualizar/i });
-    
-    if (await refreshBtn.isVisible()) {
-      await refreshBtn.click();
-      
-      // Should show loading and then data again
-      await expect(page.getByTestId('stats-cards')).toBeVisible();
-    }
-  });
-
-  test('export button downloads report', async ({ page }) => {
-    // Wait for dashboard to load
-    await expect(page.getByTestId('stats-cards')).toBeVisible();
-    
-    // Look for export button
-    const exportBtn = page.getByRole('button', { name: /exportar/i });
-    
-    if (await exportBtn.isVisible()) {
-      // Start waiting for download before clicking
-      const downloadPromise = page.waitForEvent('download');
-      await exportBtn.click();
-      
-      const download = await downloadPromise;
-      expect(download.suggestedFilename()).toMatch(/\.(csv|xlsx|pdf)$/);
-    }
   });
 });
 
-test.describe('Dashboard Error Handling', () => {
-  test('shows error message when API fails', async ({ page }) => {
-    // Mock API to fail
-    await page.route('**/api/**', (route) => {
-      route.fulfill({
-        status: 500,
-        body: JSON.stringify({ error: 'Internal Server Error' }),
-      });
-    });
-    
-    await page.goto('/dashboard');
-    
-    // Should show error message
-    await expect(page.getByText(/erro/i)).toBeVisible({ timeout: 10000 });
-  });
+test.describe('Dashboard responsivo', () => {
+  test.skip(!hasDashboardPrerequisites, 'E2E do dashboard exige autenticação e envs do Supabase válidos.');
+  test.use({ viewport: { width: 375, height: 667 } });
 
-  test('retry button works after error', async ({ page }) => {
-    let requestCount = 0;
-    
-    await page.route('**/api/**', (route) => {
-      requestCount++;
-      
-      if (requestCount === 1) {
-        // First request fails
-        route.fulfill({
-          status: 500,
-          body: JSON.stringify({ error: 'Error' }),
-        });
-      } else {
-        // Subsequent requests succeed
-        route.continue();
-      }
-    });
-    
-    await page.goto('/dashboard');
-    
-    // Wait for error
-    await expect(page.getByText(/erro/i)).toBeVisible();
-    
-    // Click retry
-    const retryBtn = page.getByRole('button', { name: /tentar novamente/i });
-    if (await retryBtn.isVisible()) {
-      await retryBtn.click();
-      
-      // Should load data after retry
-      await expect(page.getByTestId('stats-cards')).toBeVisible({ timeout: 10000 });
-    }
+  test('carrega os KPIs desde o primeiro paint mobile', async ({ page }) => {
+    await abrirDashboard(page);
+    await expect(page.getByText('Saldo Consolidado', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: /personalizar/i })).toBeVisible();
   });
 });

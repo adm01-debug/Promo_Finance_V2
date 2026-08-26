@@ -14,9 +14,20 @@ export interface DashboardFilters {
   periodoFluxo: string;
 }
 
+function normalizeFilterSentinel(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'all' || normalized === 'todas' || normalized === 'default') {
+    return undefined;
+  }
+  return value;
+}
+
 export function useDashboardMetrics(filters: DashboardFilters) {
   const { empresaFilter, centroCustoFilter, periodoFluxo } = filters;
   const { currentEmpresaId } = useAuth();
+  const empresaSelecionada = normalizeFilterSentinel(empresaFilter);
+  const centroCustoSelecionado = normalizeFilterSentinel(centroCustoFilter);
 
   
   // Dados reais do Supabase
@@ -33,37 +44,46 @@ export function useDashboardMetrics(filters: DashboardFilters) {
 
   const isLoading = loadingEmpresas || loadingCC || loadingBancos || loadingPagar || loadingReceber || loadingClientes || loadingBoletos || loadingCobranca;
 
+  const contasBancariasFiltradas = useMemo(() => {
+    return (contasBancarias || []).filter(c => {
+      return empresaSelecionada
+        ? c.empresa_id === empresaSelecionada
+        : (c.empresa_id === currentEmpresaId || !currentEmpresaId);
+    });
+  }, [contasBancarias, empresaSelecionada, currentEmpresaId]);
+
+  const contaBancariaIdsFiltradas = useMemo(
+    () => new Set(contasBancariasFiltradas.map((conta) => conta.id)),
+    [contasBancariasFiltradas],
+  );
+
   const totalDivergencias = useMemo(() => {
     return (divergencias || []).filter(d => {
       if (!d) return false;
-      const matchEmpresa = (empresaFilter === 'all' ? true : d.conta_bancaria_id === empresaFilter); // Simplified mapping
-      return d.status === 'pendente' && matchEmpresa;
+      return d.status === 'pendente' && contaBancariaIdsFiltradas.has(d.conta_bancaria_id);
     }).length;
-  }, [divergencias, empresaFilter]);
+  }, [divergencias, contaBancariaIdsFiltradas]);
 
   // Filtrar dados por empresa e centro de custo
   const contasPagarFiltradas = useMemo(() => {
     return (contasPagar || []).filter(c => {
-      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || !currentEmpresaId) : c.empresa_id === empresaFilter);
-
-      const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
+      const matchEmpresa = empresaSelecionada
+        ? c.empresa_id === empresaSelecionada
+        : (c.empresa_id === currentEmpresaId || !currentEmpresaId);
+      const matchCC = !centroCustoSelecionado || c.centro_custo_id === centroCustoSelecionado;
       return matchEmpresa && matchCC;
     });
-  }, [contasPagar, empresaFilter, centroCustoFilter, currentEmpresaId]);
+  }, [contasPagar, empresaSelecionada, centroCustoSelecionado, currentEmpresaId]);
 
   const contasReceberFiltradas = useMemo(() => {
     return (contasReceber || []).filter(c => {
-      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || !currentEmpresaId) : c.empresa_id === empresaFilter);
-      const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
+      const matchEmpresa = empresaSelecionada
+        ? c.empresa_id === empresaSelecionada
+        : (c.empresa_id === currentEmpresaId || !currentEmpresaId);
+      const matchCC = !centroCustoSelecionado || c.centro_custo_id === centroCustoSelecionado;
       return matchEmpresa && matchCC;
     });
-  }, [contasReceber, empresaFilter, centroCustoFilter, currentEmpresaId]);
-
-  const contasBancariasFiltradas = useMemo(() => {
-    return (contasBancarias || []).filter(c => {
-      return (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || !currentEmpresaId) : c.empresa_id === empresaFilter);
-    });
-  }, [contasBancarias, empresaFilter, currentEmpresaId]);
+  }, [contasReceber, empresaSelecionada, centroCustoSelecionado, currentEmpresaId]);
 
   // Cálculos de KPIs
   const hoje = useMemo(() => {

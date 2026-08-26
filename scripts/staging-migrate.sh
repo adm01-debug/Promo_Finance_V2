@@ -16,6 +16,9 @@
 #   --dry-run           Todas as etapas em preview (sem escrever em staging)
 #   --skip-baseline     Usa scripts/integrity/baseline/ já commitado
 #   --only-integrity    Pula 3–6 e roda apenas integrity + summary
+#   --skip-schema       Não aplica migrations nem pós-schema
+#   --skip-functions    Não faz deploy das Edge Functions
+#   --skip-crons        Não recria/valida cron jobs
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -26,6 +29,9 @@ SKIP_BASELINE=0
 ONLY_INTEGRITY=0
 WITH_DATA=0
 SKIP_HEALTHCHECK=0
+SKIP_SCHEMA=0
+SKIP_FUNCTIONS=0
+SKIP_CRONS=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -34,6 +40,9 @@ for arg in "$@"; do
     --only-integrity) ONLY_INTEGRITY=1 ;;
     --with-data) WITH_DATA=1 ;;
     --skip-healthcheck) SKIP_HEALTHCHECK=1 ;;
+    --skip-schema) SKIP_SCHEMA=1 ;;
+    --skip-functions) SKIP_FUNCTIONS=1 ;;
+    --skip-crons) SKIP_CRONS=1 ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "Flag desconhecida: $arg" >&2; exit 2 ;;
   esac
@@ -166,10 +175,22 @@ run_integrity() {
 
 # --------------------------- orquestração ----------------------------------
 if [ "$ONLY_INTEGRITY" -eq 0 ]; then
-  run_schema
+  if [ "$SKIP_SCHEMA" -eq 0 ]; then
+    run_schema
+  else
+    log_step "schema" "skipped" "flag --skip-schema"
+  fi
   run_secrets_check
-  run_functions
-  run_crons
+  if [ "$SKIP_FUNCTIONS" -eq 0 ]; then
+    run_functions
+  else
+    log_step "functions" "skipped" "flag --skip-functions"
+  fi
+  if [ "$SKIP_CRONS" -eq 0 ]; then
+    run_crons
+  else
+    log_step "crons" "skipped" "flag --skip-crons"
+  fi
   if [ "$WITH_DATA" -eq 1 ]; then
     log_step "data" "start"
     data_args=(--yes)

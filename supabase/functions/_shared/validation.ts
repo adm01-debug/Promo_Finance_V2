@@ -127,7 +127,11 @@ export const AsaasWebhookSchema = z.object({
 export const AsaasWebhookV2Schema = AsaasWebhookSchema.extend({ id: z.string().trim().min(1) }).strict();
 
 export const BlingWebhookSchema = z.object({
-  event: z.string(),
+  eventId: z.string().trim().min(1).optional(),
+  date: z.string().datetime().optional(),
+  version: z.union([z.string().trim().min(1), z.number()]).optional(),
+  companyId: z.union([z.string().trim().min(1), z.number()]).optional(),
+  event: z.string().trim().min(1),
   module: z.string().optional(),
   data: z.record(z.any()),
   retries: z.number().optional()

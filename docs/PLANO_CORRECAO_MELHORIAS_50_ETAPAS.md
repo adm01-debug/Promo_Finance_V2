@@ -304,9 +304,9 @@ implementadas parcialmente, simuladas ou sem comprovação de deploy.
 
 ### 40. Revisar o módulo de logística herdado
 
-- [ ] **Resultado:** remover, isolar em produto próprio ou assumir formalmente o domínio Lalamove.
-- **Evidência:** ADR e inventário de rotas, tabelas, funções e integrações afetadas.
-- **Aceite:** zero código morto e zero tabela alheia sem owner.
+- [x] **Resultado:** domínio Lalamove formalmente excluído do Promo Finance; os 14 objetos identificados pertencem a outro projeto e podem ser removidos se reaparecerem.
+- **Evidência:** [ADR-001 — Exclusão do módulo de logística/Lalamove](ADR-001-LALAMOVE-FORA-DE-ESCOPO.md), com inventário nominal de 12 tabelas e 2 views.
+- **Aceite:** a ausência desses objetos é o estado canônico e não deve ser tratada como drift ou perda a recuperar.
 
 ---
 

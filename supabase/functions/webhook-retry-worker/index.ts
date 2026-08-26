@@ -6,6 +6,7 @@ import { createLogger } from '../_shared/logger.ts'
 import { serviceClient, markSuccess, markFailure } from '../_shared/webhook-idempotency.ts'
 import { z } from '../_shared/zod.ts'
 import { createValidationErrorResponse } from '../_shared/contract-response.ts'
+import { corsHeadersComSegredo, exigirChamadaInterna } from '../_shared/auth-guard.ts'
 
 const logger = createLogger('webhook-retry-worker')
 const RetryBodySchema = z.object({ limit: z.number().int().min(1).max(200).optional() }).strict()
@@ -34,14 +35,19 @@ const HANDLERS: Record<string, (payload: unknown, supabase: ReturnType<typeof se
   },
 }
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
+export const handler = async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeadersComSegredo })
+  }
+
+  const guard = await exigirChamadaInterna(req)
+  if (!guard.ok) return guard.resposta
 
   try {
     const supabase = serviceClient()
     const rawBody = await req.json().catch(() => ({}))
     const parsed = RetryBodySchema.safeParse(rawBody)
-    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders)
+    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeadersComSegredo)
     const body = parsed.data
     const limit = Math.min(Number(body.limit ?? 25), 200)
 
@@ -79,10 +85,14 @@ Deno.serve(async (req) => {
     logger.info('Retry worker executado', { picked: rows.length, ok, failed })
 
     return new Response(JSON.stringify({ picked: rows.length, ok, failed }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
     })
   } catch (e) {
     logger.error('Falha no retry worker', { error: (e as Error).message })
     return createErrorResponse((e as Error).message, 500)
   }
-})
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}

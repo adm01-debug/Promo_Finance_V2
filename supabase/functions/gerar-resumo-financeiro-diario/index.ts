@@ -1,17 +1,42 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
+import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
+
+  const guard = await exigirInternaOuUsuario(req)
+  if (!guard.ok) return guard.resposta
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
+
+    if (guard.dados.origem === 'usuario') {
+      const { data: roles, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', guard.dados.userId)
+
+      if (roleError) {
+        throw roleError
+      }
+
+      const allowed = (roles ?? []).some((item: { role: string }) =>
+        ['admin', 'financeiro'].includes(item.role)
+      )
+      if (!allowed) {
+        return new Response(JSON.stringify({ error: 'Acesso restrito a admin ou financeiro' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+    }
 
     console.log("Gerando relatório diário de operações financeiras...")
 
@@ -80,4 +105,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
-})
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 export interface ResolvedSsoProvider {
   id: string;
   nome: string;
   tipo: 'oidc' | 'saml';
   preset: string | null;
-  allowed_domains: string[];
   force_sso_for_domains: boolean;
   ordem: number;
 }
@@ -37,16 +37,40 @@ export function useSsoDomainResolver(email: string, debounceMs = 400): ResolverS
       return;
     }
 
+    let cancelled = false;
     setState((s) => ({ ...s, loading: true, domain: dom }));
     const t = setTimeout(async () => {
-      const { data } = await supabase.rpc('resolve_sso_providers_for_domain', { p_domain: dom });
+      try {
+        const { data, error } = await supabase.rpc('resolve_sso_providers_for_domain', {
+          p_domain: dom,
+        });
+        if (cancelled) return;
+        if (error) {
+          logger.warn('[useSsoDomainResolver] falha ao resolver domínio SSO', {
+            domain: dom,
+            error: error.message,
+          });
+          setState({ providers: [], autoRedirectProvider: null, loading: false, domain: dom });
+          return;
+        }
 
-      const providers = (data ?? []) as ResolvedSsoProvider[];
-      const autoRedirectProvider = providers.find((p) => p.force_sso_for_domains) ?? null;
-      setState({ providers, autoRedirectProvider, loading: false, domain: dom });
+        const providers = (data ?? []) as ResolvedSsoProvider[];
+        const autoRedirectProvider = providers.find((p) => p.force_sso_for_domains) ?? null;
+        setState({ providers, autoRedirectProvider, loading: false, domain: dom });
+      } catch (error) {
+        if (cancelled) return;
+        logger.warn('[useSsoDomainResolver] exceção ao resolver domínio SSO', {
+          domain: dom,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        setState({ providers: [], autoRedirectProvider: null, loading: false, domain: dom });
+      }
     }, debounceMs);
 
-    return () => clearTimeout(t);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, [email, debounceMs]);
 
   return state;

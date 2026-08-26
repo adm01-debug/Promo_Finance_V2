@@ -8,6 +8,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 import forge from 'npm:node-forge@1.3.1';
 import { z } from 'npm:zod@3.23.8';
 import { validateContract } from '../_shared/contract-validator.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -89,10 +90,7 @@ Deno.serve(async (req) => {
     const rawBody = await req.json();
     const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
-      return new Response(
-        JSON.stringify({ error: 'invalid_body', details: parsed.error.flatten() }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return createValidationErrorResponse(parsed.error, corsHeaders);
     }
     const { empresa_id, pfx_base64, password, ambiente, uf } = parsed.data;
 

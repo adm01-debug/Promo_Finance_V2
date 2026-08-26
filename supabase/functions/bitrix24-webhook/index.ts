@@ -8,6 +8,8 @@ import {
 import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { authenticateWebhook, resolveSecret } from '../_shared/webhook-auth.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { processWithIdempotency } from '../_shared/webhook-idempotency.ts';
 
 /** Comparação de segredos em tempo constante-ish (mesmo estilo do auth-guard). */
 function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
@@ -17,7 +19,12 @@ function segredosIguais(a: string | null | undefined, b: string | null | undefin
   return diff === 0;
 }
 
-Deno.serve(async (req) => {
+async function sha256(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+export const handler = async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
@@ -30,6 +37,7 @@ Deno.serve(async (req) => {
     // Bitrix24 envia no corpo quando o webhook de saida e criado com secret key.
     // Fail-closed: sem segredo configurado -> 503, sem credencial valida -> 401.
     const rawBody = await req.text();
+    let rawPayload: Record<string, unknown> | undefined;
 
     const auth = await authenticateWebhook(supabase, {
       provider: 'bitrix24',
@@ -42,7 +50,14 @@ Deno.serve(async (req) => {
     } else if (auth.reason === 'missing_credential') {
       const segredo = await resolveSecret(supabase, 'bitrix24');
       if (!segredo) return createErrorResponse('Webhook nao configurado', 503);
-      const bruto = JSON.parse(rawBody) as { auth?: { application_token?: string } };
+      try {
+        rawPayload = JSON.parse(rawBody) as Record<string, unknown>;
+      } catch {
+        return createValidationErrorResponse([{
+          path: '$', message: 'JSON malformado', code: 'invalid_json',
+        }], corsHeaders);
+      }
+      const bruto = rawPayload as { auth?: { application_token?: string } };
       if (
         !bruto.auth?.application_token ||
         !segredosIguais(bruto.auth.application_token, segredo)
@@ -53,7 +68,15 @@ Deno.serve(async (req) => {
       return auth.response;
     }
 
-    const rawPayload = JSON.parse(rawBody);
+    if (rawPayload === undefined) {
+      try {
+        rawPayload = JSON.parse(rawBody) as Record<string, unknown>;
+      } catch {
+        return createValidationErrorResponse([{
+          path: '$', message: 'JSON malformado', code: 'invalid_json',
+        }], corsHeaders);
+      }
+    }
     console.log('[bitrix24-webhook] Event received:', { evento: rawPayload?.event, ts: rawPayload?.ts });
 
     // Rate limit: 120 req/min por IP (defesa em profundidade apos autenticacao)
@@ -76,14 +99,25 @@ Deno.serve(async (req) => {
 
     const payload = validation.data;
 
-    // Log the webhook
-    await supabase.from('webhooks_log').insert({
-      event_type: payload.event,
-      payload: rawPayload,
-      provider: 'bitrix24',
-      processado: true,
-      correlation_id: crypto.randomUUID(),
-    });
+    const payloadSeguro = structuredClone(rawPayload);
+    const authPayload = payloadSeguro.auth;
+    if (authPayload && typeof authPayload === 'object') {
+      delete (authPayload as Record<string, unknown>).application_token;
+    }
+    const externalId = 'event_id' in payload && typeof payload.event_id === 'string'
+      ? payload.event_id
+      : `${payload.event}:${payload.ts ?? await sha256(rawBody)}`;
+    const { claim, failure } = await processWithIdempotency(
+      supabase,
+      { source: 'bitrix24', externalId, eventType: payload.event, payload: payloadSeguro },
+      async () => undefined,
+    );
+    if (claim.alreadyProcessed) {
+      return new Response(JSON.stringify({ success: true, duplicated: true }), {
+        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
+      });
+    }
+    if (failure) throw new Error(`Falha ao registrar webhook Bitrix24: ${failure.status}`);
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
@@ -93,4 +127,8 @@ Deno.serve(async (req) => {
     console.error('Erro bitrix24 webhook:', errMsg.slice(0, 100));
     return createErrorResponse(errMsg, 500);
   }
-});
+};
+
+if (import.meta.main) {
+  Deno.serve(handler);
+}

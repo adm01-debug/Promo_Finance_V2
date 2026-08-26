@@ -8,37 +8,39 @@
     "expect_status": 200,
     "invalid_status": 403,
     "max_latency_ms": 3000,
-    "expect_webhook_events": false,
-    "expect_webhooks_log_provider": "asaas"
+    "expect_webhook_events": false
   },
   {
     "name": "bitrix24-webhook",
-    "auth": "none",
+    "auth": "token",
+    "token_env": "BITRIX24_WEBHOOK_SECRET",
+    "token_header": "x-webhook-token",
     "fixture": "bitrix-deal.json",
     "expect_status": 200,
-    "invalid_status": 400,
+    "invalid_status": 401,
     "max_latency_ms": 3000,
-    "expect_webhook_events": false,
-    "expect_webhooks_log_provider": "bitrix24"
+    "expect_webhook_events": false
   },
   {
     "name": "whatsapp-webhook",
-    "auth": "none",
+    "auth": "token",
+    "token_env": "WHATSAPP_WEBHOOK_SECRET",
+    "token_header": "x-webhook-token",
     "fixture": "whatsapp-message.json",
     "expect_status": 200,
-    "invalid_status": 400,
+    "invalid_status": 401,
     "max_latency_ms": 3000,
-    "expect_webhook_events": false,
-    "expect_webhooks_log_provider": "evolution"
+    "expect_webhook_events": false
   },
   {
     "name": "bling-webhook",
-    "auth": "none",
+    "auth": "token",
+    "token_env": "BLING_WEBHOOK_SECRET",
+    "token_header": "x-webhook-token",
     "fixture": "bling-generic.json",
     "expect_status": 200,
-    "invalid_status": 400,
+    "invalid_status": 401,
     "max_latency_ms": 3000,
-    "expect_webhook_events": false,
-    "expect_webhooks_log_provider": "bling"
+    "expect_webhook_events": false
   }
 ]

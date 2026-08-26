@@ -101,7 +101,18 @@ fi
 TOTAL=${#FNS[@]}
 echo "📦 ${TOTAL} function(s) alvo."
 
-# --- Helper: descobrir verify_jwt do config.toml ---------------------------
+# --- Helpers: validar cobertura do config.toml -----------------------------
+config_functions() {
+  awk '
+    /^\[functions\.[^]]+\]$/ {
+      line = $0
+      sub(/^\[functions\./, "", line)
+      sub(/\]$/, "", line)
+      print line
+    }
+  ' "$CONFIG_TOML" | sort -u
+}
+
 verify_jwt_for() {
   local fn="$1"
   # Bloco: [functions.<fn>]   ... verify_jwt = true|false
@@ -115,15 +126,62 @@ verify_jwt_for() {
   ' "$CONFIG_TOML" 2>/dev/null
 }
 
+validate_config_coverage() {
+  local tmp_expected tmp_config missing unexpected
+  tmp_expected="$(mktemp)"
+  tmp_config="$(mktemp)"
+
+  printf '%s\n' "${FNS[@]}" | sort -u > "$tmp_expected"
+  config_functions > "$tmp_config"
+
+  missing="$(comm -23 "$tmp_expected" "$tmp_config" || true)"
+  unexpected="$(comm -13 "$tmp_expected" "$tmp_config" || true)"
+
+  if [[ -n "$missing" ]]; then
+    echo "❌ ${CONFIG_TOML} sem blocos [functions.<nome>] para:" >&2
+    printf '%s\n' "$missing" >&2
+    log_event "config_coverage" "-" "failed" \
+      "$(jq -cn --argjson missing "$(printf '%s\n' "$missing" | jq -R . | jq -s .)" '{missing:$missing}')"
+    rm -f "$tmp_expected" "$tmp_config"
+    exit 6
+  fi
+
+  if [[ -n "$unexpected" ]]; then
+    echo "⚠️ ${CONFIG_TOML} possui funções fora do lote alvo:" >&2
+    printf '%s\n' "$unexpected" >&2
+    log_event "config_coverage" "-" "warning" \
+      "$(jq -cn --argjson extra "$(printf '%s\n' "$unexpected" | jq -R . | jq -s .)" '{extra:$extra}')"
+  else
+    log_event "config_coverage" "-" "ok" \
+      "$(jq -cn --argjson total "$TOTAL" '{functions:$total}')"
+  fi
+
+  rm -f "$tmp_expected" "$tmp_config"
+}
+
+validate_config_coverage
+
 # --- Loop de deploy ---------------------------------------------------------
 OK=0; FAIL=0
 for fn in "${FNS[@]}"; do
   vjwt="$(verify_jwt_for "$fn")"
-  # Default do Lovable-managed: verify_jwt = false
-  if [[ "$vjwt" == "true" ]]; then
+  # Segurança fail-closed: toda função precisa declarar explicitamente a política
+  # de JWT. Sem isso, um deploy em massa poderia tornar pública uma função que o
+  # ambiente remoto atualmente protege na borda.
+  if [[ -z "$vjwt" ]]; then
+    echo "❌ ${fn}: verify_jwt ausente em ${CONFIG_TOML}; deploy recusado." >&2
+    FAIL=$((FAIL + 1))
+    log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_missing"}'
+    continue
+  elif [[ "$vjwt" == "true" ]]; then
     FLAG="--verify-jwt"
-  else
+  elif [[ "$vjwt" == "false" ]]; then
     FLAG="--no-verify-jwt"
+  else
+    echo "❌ ${fn}: verify_jwt inválido em ${CONFIG_TOML}: ${vjwt}" >&2
+    FAIL=$((FAIL + 1))
+    log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_invalid"}'
+    continue
   fi
 
   echo "→ deploy ${fn} (${FLAG})"

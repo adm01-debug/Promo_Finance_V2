@@ -1,7 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { BlingWebhookSchema, BlingWebhookV2Schema, corsHeaders, createErrorResponse, isWebhookProcessed } from '../_shared/validation.ts';
+import { BlingWebhookSchema, BlingWebhookV2Schema, corsHeaders, createErrorResponse } from '../_shared/validation.ts';
 import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { authenticateWebhook } from '../_shared/webhook-auth.ts';
+import { processWithIdempotency, RetryableError } from '../_shared/webhook-idempotency.ts';
 
 
 export const handler = async (req: Request) => {
@@ -30,7 +33,25 @@ export const handler = async (req: Request) => {
     });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-    const body = await req.json();
+    const rawBody = await req.text();
+    const auth = await authenticateWebhook(supabase, {
+      provider: 'bling',
+      req,
+      rawBody,
+      corsHeaders,
+    });
+    if (!auth.ok) return auth.response;
+
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return createValidationErrorResponse([{
+        path: '$',
+        message: 'JSON malformado',
+        code: 'invalid_json',
+      }], corsHeaders);
+    }
     console.log("Bling webhook received:", JSON.stringify(body));
 
     const validation = validateVersionedContract(req, body, {
@@ -47,111 +68,64 @@ export const handler = async (req: Request) => {
     const retries = payload.retries || 0;
 
 
-    // Idempotency check using shared helper
-    if (resourceId) {
-      const isProcessed = await isWebhookProcessed(supabase as unknown as Parameters<typeof isWebhookProcessed>[0], 'bling_webhook_events', 'resource_id', resourceId, 'bling');
-      if (isProcessed) {
-        console.log(`Event already processed: ${eventType} for ${resourceId}`);
-        return new Response(JSON.stringify({ ok: true, skipped: true }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    }
-
-    // Store event
-    const { data: event, error: insertError } = await supabase
-      .from("bling_webhook_events")
-      .insert({
-        event_type: eventType,
-        module: module,
-        resource_id: resourceId,
-        payload: payload,
-        retries: retries,
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error("Error storing webhook event:", insertError);
-    }
-
-    // Process event based on module
-    let processed = false;
-    let errorMessage: string | null = null;
-
-    try {
+    const externalId = payload.eventId ??
+      (resourceId ? `${module}:${resourceId}:${eventType}` : null);
+    const { claim, failure } = await processWithIdempotency(
+      supabase,
+      { source: 'bling', externalId, eventType, payload, maxAttempts: Math.max(5, retries + 1) },
+      async () => {
+      try {
       switch (module) {
         case "Pedido de Venda":
           await processPedidoEvent(supabase, eventType, payload.data);
-          processed = true;
           break;
 
         case "Nota Fiscal":
         case "NF-e":
           await processNFeEvent(supabase, eventType, payload.data);
-          processed = true;
           break;
 
         case "Contas a Receber":
           await processContaReceberEvent(supabase, eventType, payload.data);
-          processed = true;
           break;
 
         case "Contas a Pagar":
           await processContaPagarEvent(supabase, eventType, payload.data);
-          processed = true;
           break;
 
         case "Contatos":
           await processContatoEvent(supabase, eventType, payload.data);
-          processed = true;
           break;
 
         case "Produtos":
           await processProdutoEvent(supabase, eventType, payload.data);
-          processed = true;
           break;
 
         case "Estoques":
           await processEstoqueEvent(supabase, eventType, payload.data);
-          processed = true;
           break;
 
         default:
           console.log(`Unhandled module: ${module}`);
-          processed = true;
       }
-    } catch (processError) {
-      errorMessage =
-        processError instanceof Error
-          ? processError.message
-          : "Erro ao processar evento";
-      console.error(`Error processing ${module}/${eventType}:`, processError);
+      } catch (processError) {
+        throw new RetryableError(processError instanceof Error ? processError.message : 'Erro ao processar evento');
+      }
+      },
+    );
+    if (claim.alreadyProcessed) {
+      return new Response(JSON.stringify({ ok: true, duplicated: true }), {
+        status: 200,
+        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), "Content-Type": "application/json" },
+      });
     }
-
-    // Update event status
-    if (event?.id) {
-      await supabase
-        .from("bling_webhook_events")
-        .update({
-          processed,
-          processed_at: processed ? new Date().toISOString() : null,
-          error_message: errorMessage,
-        })
-        .eq("id", event.id);
+    if (failure) {
+      return new Response(JSON.stringify({ ok: false, will_retry: failure.willRetry, status: failure.status }), {
+        status: 200,
+        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), "Content-Type": "application/json" },
+      });
     }
-
-    // Create audit log
-    await supabase.from("audit_logs").insert({
-      action: "webhook_received",
-      table_name: "bling_webhook_events",
-      record_id: event?.id || null,
-      details: `Bling webhook: ${module} - ${eventType} (resource: ${resourceId})`,
-      new_data: payload,
-    });
-
-    return new Response(JSON.stringify({ ok: true, processed }), {
+    return new Response(JSON.stringify({ ok: true, processed: true }), {
       status: 200,
       headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), "Content-Type": "application/json" },
     });
@@ -265,30 +239,12 @@ async function processContatoEvent(supabase: any, event: string, data: any) {
   if (!contatoId) return;
 
   if (event === "incluir" || event === "alterar") {
-    // Sync contact data to clientes table if matching bitrix/bling reference exists
     const nome = data?.nome || data?.nomeFantasia || "";
-    const cnpjCpf = data?.numeroDocumento || "";
-    const email = data?.email || "";
-    const telefone = data?.celular || data?.fone || "";
 
     if (nome) {
-      // Try to update existing client by CNPJ/CPF match
-      if (cnpjCpf) {
-        const { data: existing } = await supabase
-          .from("clientes")
-          .select("id")
-          .or(`cnpj_cpf.eq.${cnpjCpf},cpf_cnpj.eq.${cnpjCpf}`)
-          .limit(1);
-
-        if (existing && existing.length > 0) {
-          await supabase.from("clientes").update({
-            razao_social: nome,
-            email: email || undefined,
-            telefone: telefone || undefined,
-            updated_at: new Date().toISOString(),
-          }).eq("id", existing[0].id);
-        }
-      }
+      // Não atualizamos `clientes` por CPF/CNPJ aqui: o payload não traz
+      // contexto de empresa e uma busca global pode escrever no tenant errado.
+      // A sincronização multiempresa precisa de vínculo explícito por empresa.
 
       // Always create an alert
       await supabase.from("alertas").insert({

@@ -22,7 +22,12 @@ import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4
 const SIGNATURE_HEADERS: Record<string, readonly string[]> = {
   whatsapp: ["x-hub-signature-256", "x-signature", "x-webhook-signature"],
   bitrix24: ["x-bitrix-signature", "x-signature", "x-webhook-signature"],
-  bling: ["x-bling-signature", "x-signature", "x-webhook-signature"],
+  bling: [
+    "x-bling-signature-256",
+    "x-bling-signature",
+    "x-signature",
+    "x-webhook-signature",
+  ],
 };
 
 const DEFAULT_SIGNATURE_HEADERS = ["x-signature", "x-webhook-signature"] as const;
@@ -93,7 +98,7 @@ export async function resolveSecret(
   const chave = `${provider}_webhook_secret`;
 
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("integration_secrets")
       .select("valor")
       .eq("chave", chave)
@@ -101,6 +106,19 @@ export async function resolveSecret(
 
     const valor = (data as { valor?: string } | null)?.valor?.trim();
     if (valor) return valor;
+
+    // Compatibilidade com instalações antigas, nas quais a coluna se chama
+    // `nome`. O fallback só ocorre quando o schema canônico (`chave`) não
+    // existe; outros erros continuam fechando para o secret de ambiente.
+    if (error?.code === "42703") {
+      const legacy = await supabase
+        .from("integration_secrets")
+        .select("valor")
+        .eq("nome", chave)
+        .maybeSingle();
+      const legacyValue = (legacy.data as { valor?: string } | null)?.valor?.trim();
+      if (legacyValue) return legacyValue;
+    }
   } catch (_err) {
     // Tabela indisponível não pode virar bypass — cai para o env abaixo.
   }
