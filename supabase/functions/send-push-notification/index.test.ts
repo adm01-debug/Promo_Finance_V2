@@ -16,7 +16,11 @@ function restaurarAmbiente() {
   Deno.env.get = originalEnvGet;
 }
 
-Deno.test('push rejeita chamada anônima antes de criar client privilegiado', async () => {
+Deno.test({
+  name: 'push rejeita chamada anônima antes de criar client privilegiado',
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
   configurarAmbiente();
   try {
     const response = await handler(new Request('http://localhost/send-push-notification', {
@@ -26,9 +30,14 @@ Deno.test('push rejeita chamada anônima antes de criar client privilegiado', as
   } finally {
     restaurarAmbiente();
   }
+  },
 });
 
-Deno.test('automação interna exige destinatário explícito e não permite broadcast', async () => {
+Deno.test({
+  name: 'automação interna exige destinatário explícito e não permite broadcast',
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
   configurarAmbiente();
   try {
     const response = await handler(new Request('http://localhost/send-push-notification', {
@@ -40,4 +49,5 @@ Deno.test('automação interna exige destinatário explícito e não permite bro
   } finally {
     restaurarAmbiente();
   }
+  },
 });
