@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -20,6 +21,12 @@ const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
+
+  const auth = await exigirUsuario(req);
+  if (!auth.ok) return auth.resposta;
 
   try {
     const raw = await req.json();
@@ -36,8 +43,20 @@ const handler = async (req: Request): Promise<Response> => {
     const parsed = validatePayload(Schema, raw, 'send-device-alert');
     if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
     const { userId, email, browser, os, deviceType, timestamp } = parsed.data as DeviceAlertRequest;
+    if (userId !== auth.dados.userId || !auth.dados.email) {
+      return new Response(JSON.stringify({ error: 'destinatario_nao_autorizado' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    // O email do body é apenas legado de contrato; a identidade autenticada é
+    // a única fonte autorizada do destinatário.
+    if (email.toLowerCase() !== auth.dados.email.toLowerCase()) {
+      return new Response(JSON.stringify({ error: 'destinatario_nao_autorizado' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-    console.log(`Sending new device alert to ${email}`);
+    console.log(`Sending new device alert to authenticated user ${userId}`);
 
     const formattedDate = new Date(timestamp).toLocaleString('pt-BR', {
       timeZone: 'America/Sao_Paulo',

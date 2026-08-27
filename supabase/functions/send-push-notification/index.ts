@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { exigirPapel, exigirUsuario } from '../_shared/auth-guard.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -135,6 +136,12 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
+
+  const auth = await exigirUsuario(req);
+  if (!auth.ok) return auth.resposta;
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -160,8 +167,13 @@ serve(async (req) => {
     const parsed = validatePayload(Schema, raw, 'send-push-notification');
     if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
     const { userId, title, body, icon, badge, tag, data, prioridade } = parsed.data as PushNotificationRequest;
+    let targetUserId = userId ?? auth.dados.userId;
+    if (targetUserId !== auth.dados.userId) {
+      const admin = await exigirPapel(req, ['admin']);
+      if (!admin.ok) return admin.resposta;
+    }
 
-    console.log("[send-push-notification] Enviando notificação:", { userId, title, prioridade });
+    console.log("[send-push-notification] Enviando notificação:", { userId: targetUserId, prioridade });
 
     // Buscar subscriptions ativas
     let query = supabase
@@ -169,9 +181,7 @@ serve(async (req) => {
       .select("*")
       .eq("ativo", true);
 
-    if (userId) {
-      query = query.eq("user_id", userId);
-    }
+    query = query.eq("user_id", targetUserId);
 
     const { data: subscriptions, error: fetchError } = await query;
 

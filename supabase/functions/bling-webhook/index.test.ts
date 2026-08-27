@@ -1,10 +1,6 @@
 import { assertEquals } from "https://deno.land/x/std@0.208.0/assert/mod.ts";
 import { handler } from "./index.ts";
 
-/**
- * Unit Tests for Bling Webhook
- */
-
 const originalEnvGet = Deno.env.get;
 
 function setupMockEnv() {
@@ -25,13 +21,9 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
-    const req = new Request("http://localhost/bling-webhook", {
-      method: "GET",
-    });
-
-    const response = await handler(req);
+    const response = await handler(new Request("http://localhost/bling-webhook", { method: "GET" }));
     assertEquals(response.status, 405);
-  }
+  },
 });
 
 Deno.test({
@@ -41,19 +33,11 @@ Deno.test({
   async fn() {
     setupMockEnv();
     try {
-      const req = new Request("http://localhost/bling-webhook", {
+      const response = await handler(new Request("http://localhost/bling-webhook", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-webhook-token": "test-webhook-secret",
-        },
+        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
         body: JSON.stringify({ invalid: "payload" }),
-      });
-
-      const originalFetch = globalThis.fetch;
-      globalThis.fetch = async () => new Response(JSON.stringify(null), { status: 200 });
-      const response = await handler(req);
-      globalThis.fetch = originalFetch;
+      }));
       assertEquals(response.status, 422);
       const body = await response.json();
       assertEquals(body.code, "VALIDATION_ERROR");
@@ -61,7 +45,7 @@ Deno.test({
     } finally {
       restoreEnv();
     }
-  }
+  },
 });
 
 Deno.test({
@@ -70,36 +54,18 @@ Deno.test({
   sanitizeResources: false,
   async fn() {
     setupMockEnv();
-
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
-      // Mock any Supabase REST or RPC calls
-      if (String(url).includes("/rpc/webhook_claim")) {
-        return new Response(JSON.stringify([{
-          id: "event-123", status: "processing", attempts: 1, already_processed: false,
-        }]), { status: 200 });
-      }
-      if (String(url).includes("/rpc/webhook_mark_success")) {
-        return new Response(JSON.stringify(null), { status: 200 });
-      }
+      if (String(url).includes("/rpc/webhook_claim")) return new Response(JSON.stringify([{ id: "event-123", status: "processing", attempts: 1, already_processed: false }]), { status: 200 });
+      if (String(url).includes("/rpc/webhook_mark_success")) return new Response(JSON.stringify(null), { status: 200 });
       return new Response(JSON.stringify({ id: "event-123", ok: true }), { status: 201 });
     };
-
     try {
-      const req = new Request("http://localhost/bling-webhook", {
+      const response = await handler(new Request("http://localhost/bling-webhook", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-webhook-token": "test-webhook-secret",
-        },
-        body: JSON.stringify({
-          event: "pedido.criado",
-          module: "Pedido de Venda",
-          data: { id: 12345, situacao: { id: 6 } }
-        }),
-      });
-
-      const response = await handler(req);
+        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
+        body: JSON.stringify({ event: "pedido.criado", module: "Pedido de Venda", data: { id: 12345, situacao: { id: 6 } } }),
+      }));
       assertEquals(response.status, 200);
       const body = await response.json();
       assertEquals(body.ok, true);
@@ -107,7 +73,7 @@ Deno.test({
       globalThis.fetch = originalFetch;
       restoreEnv();
     }
-  }
+  },
 });
 
 Deno.test({
@@ -116,8 +82,6 @@ Deno.test({
   sanitizeResources: false,
   async fn() {
     setupMockEnv();
-    const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify(null), { status: 200 });
     try {
       const response = await handler(new Request("http://localhost/bling-webhook", {
         method: "POST",
@@ -126,7 +90,6 @@ Deno.test({
       }));
       assertEquals(response.status, 401);
     } finally {
-      globalThis.fetch = originalFetch;
       restoreEnv();
     }
   },
@@ -138,15 +101,10 @@ Deno.test({
   sanitizeResources: false,
   async fn() {
     setupMockEnv();
-    const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify(null), { status: 200 });
     try {
       const response = await handler(new Request("http://localhost/bling-webhook", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-webhook-token": "test-webhook-secret",
-        },
+        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
         body: "{",
       }));
       const body = await response.json();
@@ -154,7 +112,6 @@ Deno.test({
       assertEquals(body.code, "VALIDATION_ERROR");
       assertEquals(body.fields[0].code, "invalid_json");
     } finally {
-      globalThis.fetch = originalFetch;
       restoreEnv();
     }
   },

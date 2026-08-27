@@ -6,22 +6,25 @@ import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { authenticateWebhook } from '../_shared/webhook-auth.ts';
 import { processWithIdempotency, RetryableError } from '../_shared/webhook-idempotency.ts';
 
-
 export const handler = async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  if (req.method !== "POST") {
-    return createErrorResponse("Method not allowed", 405);
-  }
-
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method !== "POST") return createErrorResponse("Method not allowed", 405);
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    // A assinatura cobre o corpo bruto; autentique antes de qualquer parse,
+    // rate limit persistido ou escrita com service_role.
+    const rawBody = await req.text();
+    const auth = await authenticateWebhook(supabase, {
+      provider: 'bling',
+      req,
+      rawBody,
+      corsHeaders,
+    });
+    if (!auth.ok) return auth.response;
     // Rate limit: 120 req/min por IP (webhook público — HMAC continua sendo defesa primária)
     const ip = (req.headers.get('x-forwarded-for') || '0.0.0.0').split(',')[0].trim();
     const rl = await checkRateLimit(supabase, {
@@ -33,15 +36,6 @@ export const handler = async (req: Request) => {
     });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-    const rawBody = await req.text();
-    const auth = await authenticateWebhook(supabase, {
-      provider: 'bling',
-      req,
-      rawBody,
-      corsHeaders,
-    });
-    if (!auth.ok) return auth.response;
-
     let body: unknown;
     try {
       body = JSON.parse(rawBody);
@@ -52,8 +46,7 @@ export const handler = async (req: Request) => {
         code: 'invalid_json',
       }], corsHeaders);
     }
-    console.log("Bling webhook received:", JSON.stringify(body));
-
+    console.log("Bling webhook recebido", { authMode: auth.mode });
     const validation = validateVersionedContract(req, body, {
       v1: BlingWebhookSchema, v2: BlingWebhookV2Schema, functionName: 'bling-webhook',
     });

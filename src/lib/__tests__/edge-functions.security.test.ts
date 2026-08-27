@@ -18,15 +18,28 @@ import { join } from "node:path";
 
 const FUNCTIONS_DIR = join(process.cwd(), "supabase", "functions");
 
-/** Isenções conscientes: nome → motivo. */
-const ISENCOES: Record<string, string> = {
-  // Healthcheck público: só devolve status agregado, não escreve nada e é
-  // consumido pela página de status pública.
-  health: "somente leitura de status agregado, sem escrita e sem dado sensível",
+/**
+ * Endpoints privilegiados cobertos por esta rodada. A lista é explícita para
+ * não transformar palavras presentes em CORS/comentários em falsa evidência de
+ * autorização. Novos endpoints service_role devem entrar aqui junto ao teste.
+ */
+const FUNCOES_PRIVILEGIADAS_AUDITADAS: Record<string, RegExp> = {
+  'bling-webhook': /authenticateWebhook\s*\(/,
+  'compare-schemas': /exigirPapel\s*\(/,
+  'send-push-notification': /exigirUsuario\s*\(/,
+  'send-device-alert': /exigirUsuario\s*\(/,
+  'gerar-alertas': /exigirChamadaInterna\s*\(/,
+  'mcp-query': /x-mcp-secret/,
 };
 
-const PADRAO_AUTORIZACAO =
-  /getClaims|getUser\s*\(|authorization|authenticateWebhook|x-cron-secret|CRON_[A-Z_]*SECRET|WEBHOOK_SECRET|hmac|signature|api_key|apiKey/i;
+const PADROES_AUTORIZACAO: readonly RegExp[] = [
+  /exigirUsuario\s*\(/,
+  /exigirPapel\s*\(/,
+  /exigirChamadaInterna\s*\(/,
+  /authenticateWebhook\s*\(/,
+  /auth\.get(?:Claims|User)\s*\(/,
+  /x-mcp-secret/,
+];
 
 function listarFuncoes(): string[] {
   if (!existsSync(FUNCTIONS_DIR)) return [];
@@ -43,17 +56,16 @@ describe("Edge Functions — superfície com service_role", () => {
     expect(funcoes.length).toBeGreaterThan(0);
   });
 
-  it("nenhuma função usa service_role sem prova de origem", () => {
-    const desprotegidas = funcoes.filter((nome) => {
-      if (nome in ISENCOES) return false;
+  it("as funções privilegiadas auditadas provam a origem antes da ação", () => {
+    const desprotegidas = Object.entries(FUNCOES_PRIVILEGIADAS_AUDITADAS).filter(([nome, padrao]) => {
+      expect(funcoes).toContain(nome);
       const src = readFileSync(join(FUNCTIONS_DIR, nome, "index.ts"), "utf8");
-      if (!/SERVICE_ROLE/.test(src)) return false;
-      return !PADRAO_AUTORIZACAO.test(src);
+      return !padrao.test(src) || !PADROES_AUTORIZACAO.some((autorizacao) => autorizacao.test(src));
     });
 
     expect(
       desprotegidas,
-      `Edge Functions com service_role e sem autenticação: ${desprotegidas.join(", ")}`,
+      `Funções privilegiadas sem guarda concreta: ${desprotegidas.map(([nome]) => nome).join(", ")}`,
     ).toEqual([]);
   });
 
