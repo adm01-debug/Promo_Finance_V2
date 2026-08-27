@@ -33,7 +33,14 @@ export const handler = async (req: Request) => {
       limit: 120,
       windowSeconds: 60,
       userAgent: req.headers.get('user-agent'),
+      failureMode: 'closed',
     });
+    if (rl.unavailable) {
+      return new Response(JSON.stringify({ error: 'rate_limit_indisponivel' }), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '1' },
+      });
+    }
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
     let body: unknown;
