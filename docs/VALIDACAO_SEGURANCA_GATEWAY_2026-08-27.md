@@ -6,9 +6,11 @@ o guard que está importado pela função de produção.
 
 ## Cenários obrigatórios
 
-- `mcp-query`: bloqueia escrita sem `WHERE`, tautologias booleanas e numéricas,
+- `mcp-query`: bloqueia escrita sem `WHERE`, tautologias booleanas, numéricas e
+  por auto-comparação (`id = id`), predicados amplos (`IS NOT NULL`), `OR`,
   múltiplos statements, comentários/literais malformados e subconsultas sem
-  confirmação explícita; aceita predicados simples e restritivos.
+  confirmação explícita. O guard é deliberadamente conservador: SQL complexo
+  exige `allow_all_rows: true`.
 - `bling-webhook`: rejeita evento válido sem HMAC/token e só processa payload
   válido após autenticar o corpo bruto.
 - Funções com `service_role`: o gate `edge-functions.security.test.ts` exige
@@ -30,3 +32,18 @@ O aceite é reprovado se qualquer bypass listado acima for aceito, se houver
 erro de compilação ou se o build de produção falhar. Consultas administrativas
 complexas exigem `allow_all_rows: true`; essa é uma autorização explícita e não
 uma aprovação automática do parser.
+
+## Limites e pré-requisitos operacionais
+
+- Este documento não substitui a matriz de privilégios/RLS em runtime. O aceite
+  de banco só é completo quando o CI executa os gates que dependem de
+  `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e das credenciais
+  E2E. Se um gate for pulado por segredo ausente, o resultado é **inconclusivo**,
+  nunca aprovado.
+- `compare-schemas` requer `SCHEMA_COMPARE_EXTERNAL_URL` e
+  `SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY`; sem ambos, deve responder 503.
+- `bling-webhook` requer `BLING_WEBHOOK_SECRET` (ou o segredo equivalente em
+  `integration_secrets`) e opera com rate limit fail-closed.
+- Jobs internos que chamam `send-push-notification` devem usar service role ou
+  `INTERNAL_SECRET_SEND_PUSH_NOTIFICATION`/`integration_secrets`, sempre com
+  `userId` explícito.

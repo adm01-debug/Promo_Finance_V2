@@ -63,7 +63,9 @@ jobs:
             supabase/functions/_shared/versioned-contract_test.ts \
             supabase/functions/_shared/contract-coverage_test.ts \
             supabase/functions/_shared/sql-write-guard_test.ts \
+            supabase/functions/_shared/rate-limit_test.ts \
             supabase/functions/bling-webhook/index.test.ts \
+            supabase/functions/send-push-notification/index.test.ts \
             supabase/functions/webhook-simulator/contract_test.ts
 
 

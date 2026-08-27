@@ -31,7 +31,19 @@ setup('authenticate', async ({ page }) => {
 
   await page.locator('#login-email').fill(email);
   await page.locator('#login-password').fill(password);
+  const tokenResponse = page.waitForResponse(
+    (response) => response.url().includes('/auth/v1/token') && response.request().method() === 'POST',
+    { timeout: 15_000 },
+  );
   await page.getByRole('button', { name: /Acessar Plataforma/i }).click();
+
+  const response = await tokenResponse;
+  if (!response.ok()) {
+    throw new Error(
+      `Autenticação E2E rejeitada pelo Supabase Auth (HTTP ${response.status()}). `
+      + 'Verifique E2E_USER_EMAIL, E2E_USER_PASSWORD, confirmação e bloqueio do usuário de teste.',
+    );
+  }
 
   // Wait for redirect off /auth
   await expect(page).not.toHaveURL(/\/auth/, { timeout: 20_000 });

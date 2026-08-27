@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { exigirPapel, exigirUsuario } from '../_shared/auth-guard.ts';
+import { exigirInternaOuUsuario, exigirPapel } from '../_shared/auth-guard.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -132,7 +132,7 @@ async function sendWebPush(
   }
 }
 
-serve(async (req) => {
+export async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -140,8 +140,8 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
-  const auth = await exigirUsuario(req);
-  if (!auth.ok) return auth.resposta;
+  const acesso = await exigirInternaOuUsuario(req, 'send_push_notification');
+  if (!acesso.ok) return acesso.resposta;
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -167,8 +167,22 @@ serve(async (req) => {
     const parsed = validatePayload(Schema, raw, 'send-push-notification');
     if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
     const { userId, title, body, icon, badge, tag, data, prioridade } = parsed.data as PushNotificationRequest;
-    let targetUserId = userId ?? auth.dados.userId;
-    if (targetUserId !== auth.dados.userId) {
+    let targetUserId: string;
+    if (acesso.dados.origem === 'interna') {
+      // Automação não possui identidade de usuário. Exigir destinatário evita
+      // que service_role transforme este endpoint em broadcast global.
+      if (!userId) {
+        return new Response(JSON.stringify({ error: 'user_id_obrigatorio_para_automacao' }), {
+          status: 422,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      targetUserId = userId;
+    } else {
+      targetUserId = userId ?? acesso.dados.userId!;
+    }
+
+    if (acesso.dados.origem === 'usuario' && targetUserId !== acesso.dados.userId) {
       const admin = await exigirPapel(req, ['admin']);
       if (!admin.ok) return admin.resposta;
     }
@@ -288,4 +302,6 @@ serve(async (req) => {
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
-});
+}
+
+if (import.meta.main) serve(handler);

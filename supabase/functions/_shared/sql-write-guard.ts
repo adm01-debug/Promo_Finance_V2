@@ -120,6 +120,17 @@ function comparacaoNumericaConstanteVerdadeira(expressao: string): boolean {
   return Boolean(({ '=': a === b, '!=': a !== b, '<>': a !== b, '>': a > b, '<': a < b, '>=': a >= b, '<=': a <= b })[operador]);
 }
 
+function comparacaoIdenticaVerdadeira(expressao: string): boolean {
+  const semEspacos = expressao.replace(/\s+/g, ' ').trim();
+  const comparacao = semEspacos.match(
+    /^([a-z_][a-z0-9_.]*)\s*(=|>=|<=|is\s+not\s+distinct\s+from)\s*([a-z_][a-z0-9_.]*)$/i,
+  );
+  if (!comparacao) return false;
+  const esquerda = comparacao[1].toLowerCase();
+  const direita = comparacao[3].toLowerCase();
+  return esquerda === direita;
+}
+
 function ehTautologia(expressao: string): boolean {
   const texto = removerParentesesExternos(expressao.toLowerCase().replace(/\s+/g, ' ').trim());
   const disjuntos = separarNoNivelSuperior(texto, 'or');
@@ -134,7 +145,22 @@ function ehTautologia(expressao: string): boolean {
     || texto === 'current_date = current_date'
     || /^current_timestamp\s*(=|>=|<=)\s*current_timestamp$/.test(texto)
     || /^now\(\)\s*=\s*now\(\)$/.test(texto)
+    || comparacaoIdenticaVerdadeira(texto)
     || comparacaoNumericaConstanteVerdadeira(texto);
+}
+
+function possuiPredicadoRestritivo(where: string): boolean {
+  // Sem um parser SQL completo, OR não permite provar que todas as ramificações
+  // continuam escopadas. Escritas administrativas assim exigem confirmação.
+  if (separarNoNivelSuperior(where, 'or').length > 1) return false;
+
+  return separarNoNivelSuperior(where, 'and').some((termo) => {
+    const texto = removerParentesesExternos(termo).trim();
+    if (/^[a-z_][a-z0-9_.]*\s+is\s+(?:not\s+)?null$/i.test(texto)) return false;
+    if (comparacaoIdenticaVerdadeira(texto)) return false;
+
+    return /\b[a-z_][a-z0-9_.]*\s*(=|!=|<>|>=|<=|>|<|\bin\b)/i.test(texto);
+  });
 }
 
 /** Retorna o motivo do bloqueio; `null` significa escrita segura no modo padrão. */
@@ -152,9 +178,7 @@ export function validarEscritaEscopada(sql: string): string | null {
   if (/\b(select|exists)\b/i.test(where)) return 'Subconsulta em escrita exige allow_all_rows:true';
   if (ehTautologia(where)) return 'WHERE tautológico';
 
-  // Exige ao menos uma comparação cujo lado esquerdo seja um identificador.
-  // `IS NULL` é permitido porque é um predicado restritivo comum.
-  if (!/\b[a-z_][a-z0-9_.]*\s*(=|!=|<>|>=|<=|>|<|\bin\b|\bis\s+(?:not\s+)?null\b)/i.test(where)) {
+  if (!possuiPredicadoRestritivo(where)) {
     return 'WHERE sem predicado restritivo verificável';
   }
   return null;
