@@ -19,8 +19,16 @@
  *     admin de auth respondem 403/vazio silenciosamente.
  */
 
-import postgres from 'https://esm.sh/postgres@3.4.5?target=denonext';
+import * as postgresModule from 'https://esm.sh/postgres@3.4.5?target=denonext';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validarEscritaEscopada } from '../_shared/sql-write-guard.ts';
+
+type SqlClient = {
+  unsafe(query: string): Promise<unknown[]>;
+  begin<T>(callback: (transaction: SqlClient) => Promise<T>): Promise<T>;
+};
+type PostgresFactory = (url: string, options: Record<string, unknown>) => SqlClient;
+const postgres = (postgresModule as unknown as { default: PostgresFactory }).default;
 
 const SECRET = Deno.env.get('MCP_SECRET');
 const DB_URL = Deno.env.get('SUPABASE_DB_URL');
@@ -57,25 +65,6 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
-/** Primeiro statement que escreve sem WHERE ou com WHERE tautológico (bypass), ou null. */
-// v1.1.3-fix: bloqueia também WHERE true / WHERE 1=1 / WHERE (true)
-const TAUTOLOGY_WHERE = /\bWHERE\s+(?:true|1\s*=\s*1|'1'\s*=\s*'1'|\(\s*true\s*\))(?:\s*(?:--|;\s*$|$|\bRETURNING\b|\bLIMIT\b|\bORDER\b))/i;
-
-function unscopedWrite(query: string): string | null {
-  for (const parte of query.split(';')) {
-    const stmt = parte.trim();
-    if (!stmt) continue;
-    if (/^(DELETE\s+FROM|UPDATE)\b/i.test(stmt)) {
-      const noWhere = !/\bWHERE\b/i.test(stmt);
-      const tautWhere = TAUTOLOGY_WHERE.test(stmt);
-      if (noWhere || tautWhere) {
-        return stmt.slice(0, 160);
-      }
-    }
-  }
-  return null;
-}
-
 function decodeB64(b64: string): string {
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
@@ -84,7 +73,7 @@ function decodeB64(b64: string): string {
 }
 
 /** Conexão única reaproveitada entre invocações no mesmo isolate. */
-let sql: ReturnType<typeof postgres> | null = null;
+let sql: SqlClient | null = null;
 function getSql(url: string) {
   if (!sql) {
     sql = postgres(url, {
@@ -145,16 +134,16 @@ async function handleTransaction(stmtsB64: string, allowAllRows: boolean): Promi
       return json({ error: 'Query destrutiva bloqueada (DROP/TRUNCATE/ALTER SYSTEM/RESET ALL)', statement: s.slice(0, 80) }, 400);
     }
     if (!allowAllRows) {
-      const sw = unscopedWrite(s);
-      if (sw) {
-        return json({ error: 'DELETE/UPDATE sem WHERE bloqueado — reenvie com allow_all_rows:true', statement: sw }, 400);
+      const motivo = validarEscritaEscopada(s);
+      if (motivo) {
+        return json({ error: 'Escrita administrativa bloqueada — reenvie com allow_all_rows:true somente se intencional', reason: motivo, statement: s.slice(0, 160) }, 400);
       }
     }
   }
 
   try {
     const client = getSql(DB_URL);
-    const results = await client.begin(async (tx) => {
+    const results = await client.begin(async (tx: SqlClient) => {
       const res: Array<{ rows: unknown[]; count: number }> = [];
       for (const stmt of stmts) {
         const s = stmt.trim();
@@ -222,12 +211,13 @@ Deno.serve(async (req) => {
   }
 
   if (!body.allow_all_rows) {
-    const semWhere = unscopedWrite(query);
-    if (semWhere) {
+    const motivo = validarEscritaEscopada(query);
+    if (motivo) {
       return json(
         {
-          error: 'DELETE/UPDATE sem WHERE bloqueado — reenvie com allow_all_rows:true se for intencional',
-          statement: semWhere,
+          error: 'Escrita administrativa bloqueada — reenvie com allow_all_rows:true somente se intencional',
+          reason: motivo,
+          statement: query.slice(0, 160),
         },
         400,
       );
