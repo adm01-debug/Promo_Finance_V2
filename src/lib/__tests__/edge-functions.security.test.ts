@@ -26,7 +26,7 @@ const FUNCTIONS_DIR = join(process.cwd(), "supabase", "functions");
 const FUNCOES_PRIVILEGIADAS_AUDITADAS: Record<string, RegExp> = {
   'bling-webhook': /authenticateWebhook\s*\(/,
   'compare-schemas': /exigirPapel\s*\(/,
-  'send-push-notification': /exigirUsuario\s*\(/,
+  'send-push-notification': /exigirInternaOuUsuario\s*\(/,
   'send-device-alert': /exigirUsuario\s*\(/,
   'gerar-alertas': /exigirChamadaInterna\s*\(/,
   'mcp-query': /x-mcp-secret/,
@@ -36,6 +36,7 @@ const PADROES_AUTORIZACAO: readonly RegExp[] = [
   /exigirUsuario\s*\(/,
   /exigirPapel\s*\(/,
   /exigirChamadaInterna\s*\(/,
+  /exigirInternaOuUsuario\s*\(/,
   /authenticateWebhook\s*\(/,
   /auth\.get(?:Claims|User)\s*\(/,
   /x-mcp-secret/,

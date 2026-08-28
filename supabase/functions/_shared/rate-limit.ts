@@ -22,6 +22,8 @@ export interface RateLimitOptions {
   limit: number;
   windowSeconds?: number;
   userAgent?: string | null;
+  /** Use `closed` em endpoints autenticados que não podem degradar sem limite. */
+  failureMode?: 'open' | 'closed';
 }
 
 export interface RateLimitResult {
@@ -29,6 +31,7 @@ export interface RateLimitResult {
   count: number;
   limit: number;
   retryAfterSeconds: number;
+  unavailable?: boolean;
 }
 
 export async function checkRateLimit(
@@ -36,6 +39,7 @@ export async function checkRateLimit(
   opts: RateLimitOptions,
 ): Promise<RateLimitResult> {
   const window = opts.windowSeconds ?? 60;
+  const failureMode = opts.failureMode ?? 'open';
   const since = new Date(Date.now() - window * 1000).toISOString();
 
   try {
@@ -47,8 +51,14 @@ export async function checkRateLimit(
       .gte('created_at', since);
 
     if (error) {
-      console.warn('[rate-limit] query error, fail-open:', error.message);
-      return { allowed: true, count: 0, limit: opts.limit, retryAfterSeconds: 0 };
+      console.warn(`[rate-limit] query error, fail-${failureMode}:`, error.message);
+      return {
+        allowed: failureMode === 'open',
+        count: 0,
+        limit: opts.limit,
+        retryAfterSeconds: failureMode === 'closed' ? 1 : 0,
+        unavailable: failureMode === 'closed',
+      };
     }
 
     const currentCount = (count ?? 0) + 1;
@@ -72,8 +82,14 @@ export async function checkRateLimit(
       retryAfterSeconds: allowed ? 0 : window,
     };
   } catch (err) {
-    console.warn('[rate-limit] fail-open on exception:', err);
-    return { allowed: true, count: 0, limit: opts.limit, retryAfterSeconds: 0 };
+    console.warn(`[rate-limit] fail-${failureMode} on exception:`, err);
+    return {
+      allowed: failureMode === 'open',
+      count: 0,
+      limit: opts.limit,
+      retryAfterSeconds: failureMode === 'closed' ? 1 : 0,
+      unavailable: failureMode === 'closed',
+    };
   }
 }
 

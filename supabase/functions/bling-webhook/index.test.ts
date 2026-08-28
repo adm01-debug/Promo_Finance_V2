@@ -32,6 +32,8 @@ Deno.test({
   sanitizeResources: false,
   async fn() {
     setupMockEnv();
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
     try {
       const response = await handler(new Request("http://localhost/bling-webhook", {
         method: "POST",
@@ -43,6 +45,7 @@ Deno.test({
       assertEquals(body.code, "VALIDATION_ERROR");
       assertEquals(Array.isArray(body.fields), true);
     } finally {
+      globalThis.fetch = originalFetch;
       restoreEnv();
     }
   },
@@ -82,6 +85,8 @@ Deno.test({
   sanitizeResources: false,
   async fn() {
     setupMockEnv();
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
     try {
       const response = await handler(new Request("http://localhost/bling-webhook", {
         method: "POST",
@@ -90,6 +95,7 @@ Deno.test({
       }));
       assertEquals(response.status, 401);
     } finally {
+      globalThis.fetch = originalFetch;
       restoreEnv();
     }
   },
@@ -101,6 +107,8 @@ Deno.test({
   sanitizeResources: false,
   async fn() {
     setupMockEnv();
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
     try {
       const response = await handler(new Request("http://localhost/bling-webhook", {
         method: "POST",
@@ -112,6 +120,29 @@ Deno.test({
       assertEquals(body.code, "VALIDATION_ERROR");
       assertEquals(body.fields[0].code, "invalid_json");
     } finally {
+      globalThis.fetch = originalFetch;
+      restoreEnv();
+    }
+  },
+});
+
+Deno.test({
+  name: "Bling Webhook: falha fechada quando o rate limit está indisponível",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
+    setupMockEnv();
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => { throw new Error('indisponível'); };
+    try {
+      const response = await handler(new Request("http://localhost/bling-webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
+        body: JSON.stringify({ event: "pedido.criado", module: "Pedido de Venda", data: { id: 1 } }),
+      }));
+      assertEquals(response.status, 503);
+    } finally {
+      globalThis.fetch = originalFetch;
       restoreEnv();
     }
   },
