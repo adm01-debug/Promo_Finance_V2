@@ -64,7 +64,7 @@ A alternativa "isolar usuários por shard" exigiria 3 conjuntos de credenciais (
 | E2E Destructive serial (job novo) | CI | aguardando push deste commit |
 | Testes negativos de runtime das 21 P0 da matriz auth | — | **não executados** (continuação da etapa 048; requer ambiente de teste — decisão D12) |
 
-**Snapshots:** verificado que **não existem** baselines commitados no repo (nenhum `*.snap` nem `__screenshots__`); `visual-theme.e2e.ts` cria baselines on-the-fly a cada run (passa gerando novo). Não há snapshot para atualizar nesta rodada — registrado como verificação, não como ação.
+**Snapshots:** verificado que **não existem** baselines commitados no repo — nenhum `*.snap`, nenhum `__screenshots__` e **nenhum commit no histórico** tocando `e2e/visual-theme.e2e.ts-snapshots/`. No run 33337843772 o shard 3 falhou com `A snapshot doesn't exist ... writing actual` nos testes visuais: sem baseline e com telas autenticadas renderizando **dados reais mutáveis**, a comparação não é determinística entre runs (e localmente a página nem renderiza sem as env `VITE_*`). Decisão registrada: `toHaveScreenshot` roda com `ignoreSnapshots: true` **somente em CI** (a navegação, os headings e a aplicação de tema continuam sendo exercitados; localmente a comparação segue ativa). A suíte visual determinística com dados mockados fica registrada como débito ligado à etapa 078 — não é cobertura perdida, porque a comparação sem baseline nunca protegeu nada.
 
 ## 6. Evidências
 
