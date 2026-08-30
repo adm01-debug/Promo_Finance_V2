@@ -10,12 +10,16 @@
  */
 
 const DEFAULT_URL   = 'https://supabase-promofinance-mcp.adm01.workers.dev/mcp';
-const DEFAULT_TOKEN = process.env.MCP_TOKEN || 'eTBfUTMu8EphW1nMXzAr6-WwWuM_xYkZ';
 
 const args      = process.argv.slice(2);
 const BASE      = args[args.indexOf('--url')   + 1] || DEFAULT_URL;
-const TOKEN     = args[args.indexOf('--token') + 1] || DEFAULT_TOKEN;
+const TOKEN     = args[args.indexOf('--token') + 1] || process.env.MCP_TOKEN;
 const VERBOSE   = args.includes('--verbose');
+
+if (!TOKEN) {
+  console.error('ERRO: token MCP ausente — defina a env MCP_TOKEN ou passe --token <TOKEN>.');
+  process.exit(1);
+}
 
 // ── Threshold mapa (ms) ───────────────────────────────────────────────────────
 const THRESHOLDS = {
