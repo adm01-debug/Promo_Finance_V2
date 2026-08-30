@@ -25,7 +25,7 @@
 | E | Rotas e funcionalidades parciais | 051–060 | contratos/backend definidos | fluxos honestos, sem simulação apresentada como real |
 | F | Consistência de domínio e dívida | 061–070 | tipos/schema homologados | atomicidade, erros visíveis e invariantes |
 | G | Qualidade, CI e build | 071–080 | baseline estável | gates reais, herméticos e sem sucesso por skip |
-| H | Performance, arquitetura e docs | 081–086 | CI confiável | orçamento, config moderna, docs regeneráveis |
+| H | Desempenho, arquitetura e docs | 081–086 | CI confiável | orçamento, config moderna, docs regeneráveis |
 | I | Higiene sob decisão humana | 087–090 | inventário de dependências | matriz manter/integrar/arquivar/remover, sem exclusão automática |
 | J | Staging, rollout e aceite | 091–100 | autorização e todos os P0/P1 anteriores fechados | replay, E2E, carga, canário, tráfego real e dossiê final |
 
@@ -44,6 +44,10 @@ Itens verificados diretamente no código-fonte nesta rodada, com evidência em `
 
 Legenda: ✅ concluída · 🟡 parcial · ❌ pendente · ⛔ bloqueada por decisão/acesso externo.
 
+Notas de edição:
+1. A tabela abaixo foi transcrita do handoff e **adaptada para pt-BR na prosa** (ex.: "Desempenho", "em relação a", "navegadores"), preservando nomes de funções, arquivos e identificadores técnicos.
+2. A contagem de migrations foi **verificada contra o repositório e a auditoria**: 551 arquivos em `supabase/migrations/` (contagem local de 2026-08-30; a auditoria de 2026-08-26 registrava 548) e **28 entradas no ledger live** (`docs/AUDITORIA_EXAUSTIVA_PLANO_100_ETAPAS_2026-08-26.md` §6.3, com 6 versões do ledger ausentes no commit). O handoff original dizia "551 migrations atuais versus ledger live" sem separar repo de ledger — a redação acima corrige essa ambiguidade.
+
 | Etapa | Lote | Status | Descrição |
 |-------|------|--------|-----------|
 | 001 | A | 🟡 | Recriar baseline com commit, ferramentas, ambiente, timestamp e hashes. |
@@ -59,7 +63,7 @@ Legenda: ✅ concluída · 🟡 parcial · ❌ pendente · ⛔ bloqueada por dec
 | 011 | B | ⛔ | Restabelecer MCP da origem estritamente read-only; requer acesso/autorização operacional. |
 | 012 | B | ⛔ | Coletar catálogo integral da origem após 011, sem DDL/DML. |
 | 013 | B | 🟡 | Recoletar destino e explicar variações frente ao snapshot anterior. |
-| 014 | B | ❌ | Construir genealogia das 551 migrations atuais versus ledger live; não replayar em bloco. |
+| 014 | B | ❌ | Construir genealogia das migrations do repo (551 arquivos; ver nota 2 abaixo) em relação ao ledger live (28 entradas); não replayar em bloco. |
 | 015 | B | 🟡 | Internalizar SQL real das migrations destino-only sem reconstrução por suposição ou reaplicação cega. |
 | 016 | B | ❌ | Explicar migration local ausente no ledger e classificar não aplicável, falha, substituição ou perda de deploy. |
 | 017 | B | ❌ | Classificar individualmente `sql/` e `db/functions/` como oficial, biblioteca, diagnóstico ou legado. |
@@ -119,11 +123,11 @@ Legenda: ✅ concluída · 🟡 parcial · ❌ pendente · ⛔ bloqueada por dec
 | 071 | G | ❌ | Alinhar thresholds documentados e reais, elevando gradualmente a partir de baseline comprovado. |
 | 072 | G | ❌ | Incluir testes/E2E/apoio no typecheck e avançar strictness por domínio. |
 | 073 | G | 🟡 | Executar todos os 35 arquivos Deno atuais ou justificar tecnicamente exclusões explícitas. |
-| 074 | G | ❌ | Corrigir Deno lint em lotes revisáveis e remover ` \| \| true`; não gerar mega-diff. |
+| 074 | G | ❌ | Corrigir Deno lint em lotes revisáveis e remover `\|\| true`; não gerar mega-diff. |
 | 075 | G | ✅ | Preservar a permissão mínima de leitura no comando Deno e seu teste de regressão. |
 | 076 | G | ❌ | Fazer `lint:strict` passar sem ignores globais e promovê-lo a gate real. |
 | 077 | G | ❌ | Formatar em PRs mecânicos separados; zero mistura com mudança funcional. |
-| 078 | G | 🟡 | Corrigir E2E Supabase HTTP 400, tornar ambiente hermético e provar os browsers/projetos prometidos. |
+| 078 | G | 🟡 | Corrigir E2E Supabase HTTP 400, tornar ambiente hermético e provar os navegadores/projetos prometidos. |
 | 079 | G | ❌ | Preparar decisão de lockfile; remover somente o arquivo individualmente aprovado. |
 | 080 | G | 🟡 | Fixar Bun/runners/dependências e fazer auditoria de vulnerabilidade bloquear conforme política. |
 | 081 | H | ❌ | Definir e aplicar orçamento de bundle por rota; medir chunks grandes atuais. |

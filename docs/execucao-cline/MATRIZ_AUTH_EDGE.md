@@ -29,7 +29,7 @@ Sinais coletados por função (todos por leitura estática):
 
 | Contrato | Qtde | Observação |
 |----------|------|------------|
-| JWT-gateway (`verify_jwt = true`) | 4 | `analise-preditiva`, `bitrix24-sync`, `conciliacao-ia`, `open-finance` — as duas últimas também validam `getUser` |
+| JWT-gateway (`verify_jwt = true`) | 4 | `analise-preditiva`, `bitrix24-sync`, `conciliacao-ia`, `open-finance` — `bitrix24-sync` e `open-finance` também validam `getUser` em código (ver linhas 8 e 70 da tabela) |
 | JWT-código (validação em código) | 40 | `exigirUsuario`/`exigirPapel`/`getUser`/`getClaims` no `index.ts` |
 | Interna / interna-ou-usuário | 9 | `exigirChamadaInterna`/`exigirInternaOuUsuario` |
 | Admin (`exigirPapel(['admin'])`) | 2 | `compare-schemas`, `webhook-simulator` |

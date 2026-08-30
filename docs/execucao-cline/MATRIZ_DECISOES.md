@@ -8,7 +8,7 @@
 
 ## D1. Baseline por domínio quando origem, destino e migrations divergem
 
-- **Contexto:** três fontes de verdade (banco de origem, banco de destino, migrations no repo) divergem entre si; o handoff registra 551 migrations no ledger atual e objetos só no destino.
+- **Contexto:** três fontes de verdade (banco de origem, banco de destino, migrations no repo) divergem entre si. Contagem verificada em 2026-08-30: **551 arquivos** em `supabase/migrations/` (a auditoria de 2026-08-26 registrava 548) contra **28 entradas no ledger live**, com 6 versões do ledger ausentes no commit (`docs/AUDITORIA_EXAUSTIVA_PLANO_100_ETAPAS_2026-08-26.md` §6.3). Objetos só no destino também existem.
 - **Opções:** (a) destino é o baseline, repo congelado como histórico; (b) repo é o baseline, divergências do destino viram exceção documentada; (c) baseline híbrido por domínio, definido em `MATRIZ_DIVERGENCIAS_BD.md`.
 - **Impacto:** define a régua de todos os diffs e testes dos lotes B–C.
 - **Risco:** 🔴 régua errada valida drift como "oficial" ou descarta alteração de deploy real.
@@ -98,7 +98,7 @@
 
 ## D11. Política de orçamento/custo para IA e provedores externos
 
-- **Contexto:** endpoints caros de IA rodam com service_role e sem cota/orçamento comprovado (etapas 005/047); ver os "sem guard" em `MATRIZ_AUTH_EDGE.md`.
+- **Contexto:** endpoints caros de IA rodam com service_role e sem cota/orçamento comprovado (etapas 005/047); a `MATRIZ_AUTH_EDGE.md` aponta **risco potencial** (não confirmado) de abuso anônimo em endpoints sem guard detectado — a confirmação depende dos testes negativos de runtime (continuação da etapa 048).
 - **Opções:** (a) orçamento global + alerta; (b) cota por tenant/usuário com corte; (c) sem política formal.
 - **Impacto:** custo mensal direto; abuso anônimo em endpoints sem guard detectado.
 - **Risco:** 🔴 (c) combina abuso gratuito com custo ilimitado; 🟡 (b) exige medição por tenant ainda inexistente.
