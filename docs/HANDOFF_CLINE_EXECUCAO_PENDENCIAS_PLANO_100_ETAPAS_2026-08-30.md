@@ -157,6 +157,7 @@ No commit `5093a727` foram observados:
 - zero PR aberto no GitHub no instante da coleta;
 - workflow Deno verde no `main`;
 - CI Pipeline vermelho porque os três shards E2E falharam; o Quality Gate passou, mas vários gates dependentes de segredo/banco foram pulados;
+- após a abertura do PR deste handoff, os novos jobs nem chegaram a iniciar: a anotação do GitHub informou que o orçamento do Actions estava impedindo novos usos. O orçamento/limite deve ser regularizado e a CI reexecutada antes de qualquer merge; job com zero steps é `BLOCKED`, não falha funcional nem aprovação;
 - `migrate-helper` presente, com `verify_jwt=false` e comportamento/credenciais operacionais sensíveis no código;
 - fallback de token sensível detectado em `scripts/mcp-phd-suite.mjs`;
 - `api-keys-manage` e `webhook-financeiro` ausentes;
