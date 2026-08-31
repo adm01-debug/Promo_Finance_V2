@@ -39,15 +39,36 @@ jobs:
         # Falha se novas funções chegarem sem validatePayload (Zod).
         run: bash scripts/security/zod-coverage.sh
 
+      - name: Gate offline do banco canônico
+        # Exercita os avaliadores com snapshots controlados. Não substitui a
+        # verificação live executada pelo workflow Supabase Linter.
+        run: node --test scripts/security/test-canonical-db-gates.test.mjs
+
+      - name: Replay safety das migrations críticas
+        # Impede a reintrodução de ALTER DATABASE privilegiado, delimitadores
+        # SQL ambíguos e escrita manual no ledger de migrations.
+        run: bash scripts/security/test-migration-replay-safety.sh
+
       - name: Lint check
         run: bun run lint
+
+      - name: Preflight dos gates com DATABASE_URL
+        id: db_url_preflight
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          bash scripts/ci/require-env.sh \
+            --label "Quality Gate — DATABASE_URL" \
+            --mode summary \
+            --output available \
+            DATABASE_URL
 
 
       - name: Observability privileges guard (psql)
         # Falha o pipeline se alguma função SECURITY DEFINER de observabilidade
         # regredir privilégios EXECUTE para anon/PUBLIC/authenticated.
         # Requer secret DATABASE_URL apontando para o Postgres do Supabase.
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -62,7 +83,7 @@ jobs:
       - name: Integridade dos catálogos tributários (pgTAP)
         # Valida PK/UNIQUE, enums, formatos e ranges das tabelas fiscais
         # carregadas por seeds. Falha o build em qualquer "not ok".
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -81,7 +102,7 @@ jobs:
         # temporal for criada sem política em public.retencao_politicas (TTL ou
         # isenção justificada), ou se uma política existente apontar para uma
         # coluna temporal inexistente.
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -96,11 +117,33 @@ jobs:
           echo "✅ Gate #35 aprovado."
 
 
+      - name: Registrar gates de banco como inconclusivos sem DATABASE_URL
+        if: ${{ steps.db_url_preflight.outputs.available != 'true' }}
+        run: |
+          {
+            echo "### Gates dependentes de DATABASE_URL"
+            echo
+            echo "- Status: inconclusivo"
+            echo "- Não executados nesta run: Observability privileges guard, Integridade dos catálogos tributários (pgTAP), Gate #35 — Governança de retenção."
+            echo "- Motivo: secret \`DATABASE_URL\` ausente. Nenhum desses gates deve ser interpretado como aprovado."
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preflight do gate Runtime RPC
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        run: |
+          bash scripts/ci/require-env.sh \
+            --label "Quality Gate — Runtime RPC" \
+            SUPABASE_URL SUPABASE_ANON_KEY E2E_USER_EMAIL E2E_USER_PASSWORD
+
       - name: Runtime RPC privilege matrix (anon / authenticated)
         # Invoca cada RPC sensível via /rest/v1/rpc/<fn> como anon e usuário
         # autenticado. O papel service_role é validado apenas pelo gate SQL,
         # sem expor sua chave a um probe HTTP de produção.
-        if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' && env.E2E_USER_EMAIL != '' && env.E2E_USER_PASSWORD != '' }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -117,14 +160,14 @@ jobs:
 
         # Gera um resumo por função × role para inspeção e download no CI.
         # Não falha o build — o gate acima já cobre regressões.
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OUT_DIR: ./artifacts/security
         run: bash scripts/security/export-function-privileges.sh
 
       - name: Upload function privileges artifact
-        if: ${{ env.DATABASE_URL != '' && always() }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: function-privileges
@@ -202,17 +245,9 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
         run: |
-          set -euo pipefail
-          missing=0
-          for key in E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID; do
-            if [ -z "${!key:-}" ]; then
-              echo "::error::Pré-flight E2E crítico falhou: secret obrigatório ausente (${key})."
-              missing=1
-            fi
-          done
-          if [ "$missing" -ne 0 ]; then
-            exit 1
-          fi
+          bash scripts/ci/require-env.sh \
+            --label "E2E crítico" \
+            E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID
 
       - name: E2E crítico obrigatório
         run: bunx playwright test -c playwright.critical.config.ts --project=chromium --reporter=list
@@ -268,17 +303,9 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
         run: |
-          set -euo pipefail
-          missing=0
-          for key in E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID; do
-            if [ -z "${!key:-}" ]; then
-              echo "::error::Pré-flight E2E destrutivo falhou: secret obrigatório ausente (${key})."
-              missing=1
-            fi
-          done
-          if [ "$missing" -ne 0 ]; then
-            exit 1
-          fi
+          bash scripts/ci/require-env.sh \
+            --label "E2E destrutivo" \
+            E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID
 
       - name: E2E Logout Destrutivo
         run: bunx playwright test -c playwright.destructive.config.ts --project=chromium-destructive --reporter=list
@@ -298,6 +325,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-quarantine:
     name: E2E Quarantine (non-blocking)
+    if: ${{ always() }}
     needs: [quality-gate, e2e-critical, e2e-destructive]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -377,6 +405,9 @@ jobs:
             echo "## E2E Quarantine"
             echo
             echo "- Natureza: não bloqueante"
+            echo "- Resultado do quality-gate: ${{ needs.quality-gate.result }}"
+            echo "- Resultado do e2e-critical: ${{ needs.e2e-critical.result }}"
+            echo "- Resultado do e2e-destructive: ${{ needs.e2e-destructive.result }}"
             echo "- Specs listadas: ${{ steps.quarantine_specs.outputs.count }}"
             if [ "${{ steps.quarantine_specs.outputs.count }}" = "0" ]; then
               echo "- Resultado: nenhuma spec elegível para quarentena"

@@ -36,19 +36,44 @@ jobs:
           restore-keys: |
             deno-${{ runner.os }}-
 
-      - name: Lint Deno files
-        run: deno lint supabase/functions/ || true
-
-      - name: Type-check pure modules
+      - name: Lint do escopo crítico alterado
+        # Dívida legada explícita: o repositório ainda usa imports HTTPS e
+        # mantém `any`/variáveis ociosas em funções antigas. O lint global
+        # reprova por esse baseline. Este gate é bloqueante para todas as demais
+        # regras nos guards, no mcp-query e nas funções/testes endurecidos.
         run: |
-          deno check \
-            supabase/functions/sso-test-login/pipeline.ts \
-            supabase/functions/sso-test-login/mocks.ts \
-            supabase/functions/sso-callback/profile-sync-delta.ts \
-            supabase/functions/sso-callback/claims.ts || \
-            { echo "::warning::deno check failed — see above"; exit 1; }
+          deno lint \
+            --rules-exclude=no-import-prefix,no-explicit-any,no-unused-vars,prefer-const,require-await \
+            supabase/functions/_shared/auth-guard.ts \
+            supabase/functions/_shared/sql-write-guard.ts \
+            supabase/functions/_shared/sql-write-guard_test.ts \
+            supabase/functions/_shared/webhook-auth.ts \
+            supabase/functions/_shared/webhook-auth_test.ts \
+            supabase/functions/mcp-query/index.ts \
+            supabase/functions/mcp-query/index_test.ts \
+            supabase/functions/mcp-query/sql-policy_test.ts \
+            supabase/functions/analise-fluxo-ia/index.ts \
+            supabase/functions/analise-fluxo-ia/auth_test.ts \
+            supabase/functions/analyze-document/index.ts \
+            supabase/functions/benchmarking-setorial/index.ts \
+            supabase/functions/categorizar-despesa/index.ts \
+            supabase/functions/insights-relatorio/index.ts \
+            supabase/functions/enviar-alerta-email/index.ts \
+            supabase/functions/enviar-alerta-email/index.test.ts \
+            supabase/functions/executar-analise-preditiva/index.ts \
+            supabase/functions/executar-analise-preditiva/index.test.ts \
+            supabase/functions/gerar-alertas-tributarios/index.ts \
+            supabase/functions/gerar-alertas-tributarios/index.test.ts \
+            supabase/functions/whatsapp-ia-proativo/index.ts \
+            supabase/functions/whatsapp-ia-proativo/index_test.ts
 
-      - name: Run unit tests (no network required)
+      - name: Type-check do escopo endurecido
+        # Escopo focado nas funções endurecidas nesta rodada. O gate global
+        # de todo o diretório `supabase/functions` continua bloqueado por
+        # dívida histórica fora do escopo desta publicação.
+        run: bash scripts/ci/deno-check-functions.sh
+
+      - name: Run unit tests
         run: |
           deno test \
             --allow-env \
@@ -64,8 +89,16 @@ jobs:
             supabase/functions/_shared/contract-coverage_test.ts \
             supabase/functions/_shared/sql-write-guard_test.ts \
             supabase/functions/_shared/rate-limit_test.ts \
+            supabase/functions/_shared/webhook-auth_test.ts \
+            supabase/functions/analise-fluxo-ia/auth_test.ts \
             supabase/functions/bling-webhook/index.test.ts \
+            supabase/functions/enviar-alerta-email/index.test.ts \
+            supabase/functions/executar-analise-preditiva/index.test.ts \
+            supabase/functions/gerar-alertas-tributarios/index.test.ts \
+            supabase/functions/mcp-query/index_test.ts \
+            supabase/functions/mcp-query/sql-policy_test.ts \
             supabase/functions/send-push-notification/index.test.ts \
+            supabase/functions/whatsapp-ia-proativo/index_test.ts \
             supabase/functions/webhook-simulator/contract_test.ts
 
 
@@ -74,8 +107,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: unit-tests
-    # Integração só roda quando os secrets estão presentes (push em branches do
-    # próprio repo). PRs de forks não recebem secrets — pulamos com graça.
+    # PRs externos não recebem secrets e ficam explicitamente fora deste job.
+    # Em pushes e PRs internos, ausência de secret reprova o preflight.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout
@@ -96,21 +129,16 @@ jobs:
           restore-keys: |
             deno-${{ runner.os }}-
 
-      - name: Validate required secrets
-        id: secrets
+      - name: Preflight da integração live
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: |
-          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
-            echo "::warning::Secrets VITE_SUPABASE_URL/VITE_SUPABASE_PUBLISHABLE_KEY ausentes — pulando integração."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
+          bash scripts/ci/require-env.sh \
+            --label "Deno — integração live" \
+            VITE_SUPABASE_URL VITE_SUPABASE_PUBLISHABLE_KEY
 
       - name: Run integration tests against deployed edge functions
-        if: steps.secrets.outputs.skip == 'false'
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}

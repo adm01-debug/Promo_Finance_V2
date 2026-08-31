@@ -4,10 +4,12 @@
 // Hardened: structured logging, retry com exponential backoff, top-level try/catch
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret',
 };
 
 const SIMPLES_SUBLIMITE = 4_800_000;
@@ -36,7 +38,11 @@ function log(level: LogLevel, event: string, ctx: Record<string, unknown> = {}) 
 }
 
 // ─── Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) ─────────────
-async function withRetry<T>(op: () => Promise<T>, label: string, maxAttempts = 3): Promise<T> {
+async function withRetry<T>(
+  op: () => PromiseLike<T>,
+  label: string,
+  maxAttempts = 3,
+): Promise<T> {
   let lastErr: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -57,8 +63,11 @@ async function withRetry<T>(op: () => Promise<T>, label: string, maxAttempts = 3
   throw lastErr;
 }
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  const auth = await exigirChamadaInterna(req, 'gerar_alertas_tributarios');
+  if (!auth.ok) return auth.resposta;
 
   const startedAt = Date.now();
 
@@ -237,7 +246,7 @@ Deno.serve(async (req) => {
             supabase
               .from('movimentacoes')
               .select('valor, data_movimentacao, descricao')
-              .eq('empresa_id' as any, empresa.id)
+              .eq('empresa_id', empresa.id)
               .ilike('descricao', '%dividend%')
               .gte(
                 'data_movimentacao',
@@ -360,4 +369,6 @@ Deno.serve(async (req) => {
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   }
-});
+};
+
+if (import.meta.main) Deno.serve(handler);

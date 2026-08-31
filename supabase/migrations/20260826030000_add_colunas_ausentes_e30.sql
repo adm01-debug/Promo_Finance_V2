@@ -11,6 +11,8 @@
 -- APLICADO em bwwbey: 2026-08-25 23:18 UTC
 -- Resultado: 3430 → 3795 colunas totais no DST
 
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260826030000','add_colunas_ausentes_e30')
-ON CONFLICT (version) DO NOTHING;
+DO $$
+BEGIN
+  RAISE NOTICE '20260826030000 é marcador histórico local; ledger remoto já existente não será reescrito por este arquivo.';
+END
+$$;

@@ -7,6 +7,14 @@ import {
 
 const leiturasPermitidas = [
   "SELECT * FROM public.empresas",
+  "SELECT count(*) FROM public.empresas",
+  "SELECT current_database(), current_setting('search_path', true)",
+  "SELECT pg_size_pretty(pg_database_size(current_database()))",
+  "SELECT pg_total_relation_size('public.empresas'), pg_relation_size('public.empresas')",
+  "SELECT left(nome, 5), random() FROM public.empresas",
+  "SELECT has_function_privilege('authenticated', 'public.exec_sql(text)', 'EXECUTE')",
+  "SELECT pg_get_functiondef(p.oid), format_type(p.prorettype, NULL) FROM pg_proc p LIMIT 1",
+  "SELECT obj_description('public.empresas'::regclass)",
   "SELECT '; DROP TABLE users' AS texto",
   `
     WITH base AS MATERIALIZED (
@@ -31,6 +39,7 @@ const escritasPermitidas = [
   "UPDATE public.contas_pagar SET status = 'pago' WHERE id = 42 AND empresa_id = 7",
   "DELETE FROM public.alertas WHERE user_id = 42 AND created_at < now() - interval '90 days'",
   "UPDATE public.push_subscriptions SET ativo = false WHERE id = 99",
+  "INSERT INTO public.audit_logs (event_type, metadata) SELECT 'login', '{}' WHERE id = 1",
 ];
 
 const bloqueiosSempre = [
@@ -107,6 +116,11 @@ const bloqueiosEscopo = [
   "DELETE FROM public.audit_logs WHERE NULL IS NULL",
   "DELETE FROM public.audit_logs WHERE now() = now()",
   "DELETE FROM public.audit_logs WHERE id IN (SELECT id FROM public.empresas)",
+  "UPDATE public.audit_logs SET archived = true WHERE created_at < now()",
+  "DELETE FROM public.audit_logs WHERE created_at < now()",
+  "UPDATE public.audit_logs SET archived = true WHERE empresa_id = empresa_id AND created_at < now()",
+  "UPDATE public.audit_logs SET archived = true WHERE (id = id OR false) AND created_at < now()",
+  "INSERT INTO public.audit_logs (event_type) SELECT nome FROM public.empresas WHERE created_at < now()",
 ];
 
 Deno.test("analisarSqlMcp permite leituras SELECT/WITH somente leitura", () => {
@@ -138,6 +152,23 @@ Deno.test("analisarSqlMcp bloqueia comandos perigosos, funções laterais e quot
       typeof analise.motivoBloqueio,
       "string",
       `deveria bloquear: ${sql}`,
+    );
+  }
+});
+
+Deno.test("analisarSqlMcp bloqueia funções não allowlisted em SELECT", () => {
+  const casos = [
+    "SELECT pg_sleep(10)",
+    "SELECT public.qualquer_funcao_volatil()",
+    "SELECT custom_safe()",
+  ];
+
+  for (const sql of casos) {
+    const analise = analisarSqlMcp(sql);
+    assertEquals(
+      typeof analise.motivoBloqueio,
+      "string",
+      `deveria bloquear função não allowlisted: ${sql}`,
     );
   }
 });

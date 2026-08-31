@@ -20,7 +20,7 @@
  */
 
 import * as postgresModule from "https://esm.sh/postgres@3.4.5?target=denonext";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from "../_shared/zod.ts";
 import { avaliarSqlMcp } from "./sql-policy.ts";
 
 export type SqlClient = {
@@ -52,15 +52,55 @@ const CORS = {
 };
 
 const ADMIN_PATH = /^(storage|auth)\/v1\/[^?#]*$/;
-const ADMIN_METHODS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
 const MAX_TRANSACTION_STATEMENTS = 100;
 const MAX_TRANSACTION_BYTES = 1024 * 1024;
 const MAX_QUERY_BYTES = 1024 * 1024;
 const MAX_QUERY_B64_BYTES = Math.ceil(MAX_QUERY_BYTES / 3) * 4 + 16;
 const MAX_TRANSACTION_PAYLOAD_B64_BYTES =
   Math.ceil((MAX_TRANSACTION_BYTES * 2) / 3) * 4 + 16;
-const READ_ONLY_STATEMENT_TIMEOUT_MS = 5000;
-const READ_ONLY_LOCK_TIMEOUT_MS = 1000;
+const MAX_RAW_BODY_BYTES = 2 * 1024 * 1024;
+const MAX_ADMIN_REQUEST_BYTES = 256 * 1024;
+const MAX_ADMIN_RESPONSE_BYTES = 1024 * 1024;
+const STATEMENT_TIMEOUT_MS = 5000;
+const LOCK_TIMEOUT_MS = 1000;
+const ADMIN_TIMEOUT_MS = 5000;
+
+const ADMIN_ALLOWLIST: Array<{ method: string; pattern: RegExp }> = [
+  { method: "GET", pattern: /^auth\/v1\/admin\/users$/ },
+  { method: "POST", pattern: /^auth\/v1\/admin\/users$/ },
+  { method: "GET", pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
+  { method: "PUT", pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
+  { method: "DELETE", pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
+  { method: "POST", pattern: /^auth\/v1\/admin\/generate_link$/ },
+  { method: "POST", pattern: /^auth\/v1\/invite$/ },
+  { method: "GET", pattern: /^storage\/v1\/bucket$/ },
+  { method: "POST", pattern: /^storage\/v1\/bucket$/ },
+  { method: "GET", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
+  { method: "PUT", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
+  { method: "DELETE", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
+  { method: "POST", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+\/empty$/i },
+  {
+    method: "POST",
+    pattern: /^storage\/v1\/object\/list(?:\/[a-z0-9._-]+)?$/i,
+  },
+  {
+    method: "GET",
+    pattern:
+      /^storage\/v1\/object\/(?:authenticated|info|public|sign)\/[a-z0-9._-]+\/.+$/i,
+  },
+  { method: "POST", pattern: /^storage\/v1\/object\/sign\/[a-z0-9._-]+\/.+$/i },
+  { method: "POST", pattern: /^storage\/v1\/object\/move$/ },
+  { method: "POST", pattern: /^storage\/v1\/object\/copy$/ },
+  { method: "POST", pattern: /^storage\/v1\/object\/remove$/ },
+  { method: "DELETE", pattern: /^storage\/v1\/object\/[a-z0-9._-]+$/i },
+  {
+    method: "POST",
+    pattern: /^storage\/v1\/object\/upload\/sign\/[a-z0-9._-]+\/.+$/i,
+  },
+  { method: "POST", pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
+  { method: "PUT", pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
+  { method: "DELETE", pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
+];
 
 const RequestSchema = z.object({
   sql: z.string().optional(),
@@ -87,6 +127,33 @@ function decodeB64(b64: string): string {
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder().decode(bytes);
+}
+
+async function lerTextoLimitado(
+  stream: ReadableStream<Uint8Array> | null,
+  maxBytes: number,
+  erro: string,
+): Promise<string> {
+  if (!stream) return "";
+
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let total = 0;
+  let texto = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) throw new Error(erro);
+      texto += decoder.decode(value, { stream: true });
+    }
+    texto += decoder.decode();
+    return texto;
+  } finally {
+    reader.releaseLock();
+  }
 }
 
 let sql: SqlClient | null = null;
@@ -158,29 +225,79 @@ function validarAdminPath(path: string): string | null {
   return null;
 }
 
-async function executarLeituraSomente(
+function validarAdminMetodoERota(path: string, method: string): string | null {
+  const permitido = ADMIN_ALLOWLIST.some((entrada) =>
+    entrada.method === method && entrada.pattern.test(path)
+  );
+  return permitido ? null : "admin.path/admin.method fora da allowlist do MCP";
+}
+
+function validarContratoAdmin(
+  path: string,
+  method: string,
+  payload: unknown,
+): string | null {
+  if (
+    method === "DELETE" && /^storage\/v1\/object\/[a-z0-9._-]+$/i.test(path)
+  ) {
+    if (
+      !payload || typeof payload !== "object" || Array.isArray(payload) ||
+      !("prefixes" in payload)
+    ) {
+      return "admin.body deve conter { prefixes: string[] } para DELETE storage/v1/object/<bucket>";
+    }
+
+    const prefixes = (payload as Record<string, unknown>).prefixes;
+    if (
+      !Array.isArray(prefixes) ||
+      prefixes.length === 0 ||
+      !prefixes.every((prefix) =>
+        typeof prefix === "string" && prefix.trim().length > 0
+      )
+    ) {
+      return "admin.body deve conter { prefixes: string[] } para DELETE storage/v1/object/<bucket>";
+    }
+  }
+
+  return null;
+}
+
+function validarModo(body: z.infer<typeof RequestSchema>): string | null {
+  const temAdmin = body.admin !== undefined;
+  const temTransacao = body.stmts_b64 !== undefined;
+  const temSql = body.sql !== undefined;
+  const temSqlB64 = body.sql_b64 !== undefined;
+
+  if (Number(temSql) + Number(temSqlB64) > 1) {
+    return "sql e sql_b64 são mutuamente exclusivos";
+  }
+
+  const modos = Number(temAdmin) + Number(temTransacao) +
+    Number(temSql || temSqlB64);
+  if (modos !== 1) {
+    return "request deve informar exatamente um modo: admin, stmts_b64 ou sql/sql_b64";
+  }
+
+  return null;
+}
+
+async function executarConsultaComTimeouts(
   client: SqlClient,
-  query: string,
+  callback: (transaction: SqlClient) => Promise<unknown[]>,
+  somenteLeitura: boolean,
 ): Promise<unknown[]> {
   return await client.begin(async (tx) => {
     await tx.unsafe(
-      `SET LOCAL statement_timeout = '${READ_ONLY_STATEMENT_TIMEOUT_MS}ms'`,
+      `SET LOCAL statement_timeout = '${STATEMENT_TIMEOUT_MS}ms'`,
     );
     await tx.unsafe(
-      `SET LOCAL lock_timeout = '${READ_ONLY_LOCK_TIMEOUT_MS}ms'`,
+      `SET LOCAL lock_timeout = '${LOCK_TIMEOUT_MS}ms'`,
     );
-    await tx.unsafe("SET TRANSACTION READ ONLY");
-    return await tx.unsafe(query);
+    if (somenteLeitura) {
+      await tx.unsafe("SET TRANSACTION READ ONLY");
+    }
+    return await callback(tx);
   });
-}
-
-async function executarConsulta(
-  client: SqlClient,
-  query: string,
-  somenteLeitura: boolean,
-): Promise<unknown[]> {
-  if (somenteLeitura) return await executarLeituraSomente(client, query);
-  return await client.unsafe(query);
 }
 
 async function handleAdmin(
@@ -200,23 +317,55 @@ async function handleAdmin(
   if (erroPath) return json({ error: erroPath }, 400);
 
   const method = String(admin.method ?? "GET").toUpperCase();
-  if (!ADMIN_METHODS.has(method)) {
-    return json({ error: "admin.method não é permitido" }, 400);
-  }
+  const erroRota = validarAdminMetodoERota(path, method);
+  if (erroRota) return json({ error: erroRota }, 400);
   const payload = admin.body;
-  const res = await fetchImpl(`${supabaseUrl.replace(/\/$/, "")}/${path}`, {
-    method,
-    headers: {
-      apikey: serviceKey,
-      Authorization: `Bearer ${serviceKey}`,
-      "Content-Type": "application/json",
-    },
-    body: payload === undefined || payload === null
-      ? undefined
-      : JSON.stringify(payload),
-  });
+  const erroContrato = validarContratoAdmin(path, method, payload);
+  if (erroContrato) return json({ error: erroContrato }, 400);
+  const bodyTexto = payload === undefined || payload === null
+    ? undefined
+    : JSON.stringify(payload);
+  if (bodyTexto && medirBytes(bodyTexto) > MAX_ADMIN_REQUEST_BYTES) {
+    return json({ error: "admin.body excede o limite permitido" }, 413);
+  }
 
-  const texto = await res.text();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ADMIN_TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetchImpl(`${supabaseUrl.replace(/\/$/, "")}/${path}`, {
+      method,
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        "Content-Type": "application/json",
+      },
+      body: bodyTexto,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (controller.signal.aborted) {
+      return json({ error: "admin upstream timeout" }, 504);
+    }
+    return json({ error: { message } }, 502);
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  let texto: string;
+  try {
+    texto = await lerTextoLimitado(
+      res.body,
+      MAX_ADMIN_RESPONSE_BYTES,
+      "admin response excede o limite permitido",
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return json({ error: { message } }, 502);
+  }
+
   let data: unknown;
   try {
     data = texto ? JSON.parse(texto) : null;
@@ -291,27 +440,21 @@ async function handleTransaction(
 
   try {
     const client = sqlFactory(dbUrl);
-    const results = await client.begin(async (tx) => {
-      if (apenasLeitura) {
-        await tx.unsafe(
-          `SET LOCAL statement_timeout = '${READ_ONLY_STATEMENT_TIMEOUT_MS}ms'`,
-        );
-        await tx.unsafe(
-          `SET LOCAL lock_timeout = '${READ_ONLY_LOCK_TIMEOUT_MS}ms'`,
-        );
-        await tx.unsafe("SET TRANSACTION READ ONLY");
-      }
-
-      const res: Array<{ rows: unknown[]; count: number }> = [];
-      for (const stmt of stmts) {
-        const s = stmt.trim();
-        if (!s) continue;
-        const rows = await tx.unsafe(s);
-        const lista = Array.isArray(rows) ? Array.from(rows) : [rows];
-        res.push({ rows: lista, count: lista.length });
-      }
-      return res;
-    });
+    const results = await executarConsultaComTimeouts(
+      client,
+      async (tx) => {
+        const res: Array<{ rows: unknown[]; count: number }> = [];
+        for (const stmt of stmts) {
+          const s = stmt.trim();
+          if (!s) continue;
+          const rows = await tx.unsafe(s);
+          const lista = Array.isArray(rows) ? Array.from(rows) : [rows];
+          res.push({ rows: lista, count: lista.length });
+        }
+        return res;
+      },
+      apenasLeitura,
+    );
 
     return json({ results, committed: true, statements: results.length });
   } catch (e) {
@@ -333,9 +476,33 @@ export function createHandler(deps: RuntimeDeps = {}) {
       return json({ error: "unauthorized" }, 401);
     }
 
+    const contentLengthHeader = req.headers.get("content-length");
+    if (contentLengthHeader !== null) {
+      const contentLength = Number(contentLengthHeader);
+      if (!Number.isFinite(contentLength) || contentLength < 0) {
+        return json({ error: "content-length inválido" }, 400);
+      }
+      if (contentLength > MAX_RAW_BODY_BYTES) {
+        return json({ error: "payload excede o limite bruto de 2 MiB" }, 413);
+      }
+    }
+
+    let rawBodyText: string;
+    try {
+      rawBodyText = await lerTextoLimitado(
+        req.body,
+        MAX_RAW_BODY_BYTES,
+        "payload excede o limite bruto de 2 MiB",
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const status = message.includes("2 MiB") ? 413 : 400;
+      return json({ error: message }, status);
+    }
+
     let rawBody: unknown;
     try {
-      rawBody = await req.json();
+      rawBody = JSON.parse(rawBodyText);
     } catch {
       return json({ error: "invalid json" }, 400);
     }
@@ -349,6 +516,8 @@ export function createHandler(deps: RuntimeDeps = {}) {
     }
 
     const body = parsed.data;
+    const erroModo = validarModo(body);
+    if (erroModo) return json({ error: erroModo }, 400);
     if (body.admin) return await handleAdmin(body.admin, deps);
     if (body.stmts_b64) {
       return await handleTransaction(
@@ -403,9 +572,9 @@ export function createHandler(deps: RuntimeDeps = {}) {
 
     try {
       const client = sqlFactory(dbUrl);
-      const rows = await executarConsulta(
+      const rows = await executarConsultaComTimeouts(
         client,
-        avaliacao.finalSql,
+        (tx) => tx.unsafe(avaliacao.finalSql),
         avaliacao.somenteLeitura,
       );
       const bruto2 = Array.isArray(rows) ? Array.from(rows) : [rows];

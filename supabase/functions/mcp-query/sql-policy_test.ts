@@ -6,6 +6,10 @@ import { aplicarLimitePadrao, avaliarSqlMcp } from "./sql-policy.ts";
 
 const permitidosSemAllowAllRows = [
   "SELECT * FROM public.empresas",
+  "SELECT current_database(), current_setting('request.jwt.claim.role', true)",
+  "SELECT pg_size_pretty(pg_total_relation_size('public.empresas'))",
+  "SELECT pg_get_functiondef(p.oid), format_type(p.prorettype, NULL) FROM pg_proc p LIMIT 1",
+  "SELECT has_function_privilege('authenticated', 'public.exec_sql(text)', 'EXECUTE')",
   `
     WITH base AS MATERIALIZED (
       SELECT id
@@ -17,6 +21,7 @@ const permitidosSemAllowAllRows = [
   "INSERT INTO public.audit_logs (event_type, metadata) VALUES ('login', '{\"k\":\"v\"}')",
   "UPDATE public.profiles SET role = 'user' WHERE id = 1 AND empresa_id = 2",
   "DELETE FROM public.alertas WHERE id = 1",
+  "INSERT INTO public.audit_logs (event_type) SELECT 'ok' WHERE id = 1",
 ];
 
 const bloqueadosSempre = [
@@ -84,6 +89,17 @@ Deno.test("avaliarSqlMcp só libera UPDATE/DELETE sem escopo com allow_all_rows:
   );
   assertEquals(avaliarSqlMcp(updateSemWhere, true).motivoBloqueio, null);
   assertEquals(avaliarSqlMcp(deleteSemWhere, true).motivoBloqueio, null);
+});
+
+Deno.test("avaliarSqlMcp exige allow_all_rows para INSERT ... SELECT amplo", () => {
+  const insertAmplo =
+    "INSERT INTO public.audit_logs (event_type) SELECT nome FROM public.empresas WHERE created_at < now()";
+
+  assertEquals(
+    typeof avaliarSqlMcp(insertAmplo, false).motivoBloqueio,
+    "string",
+  );
+  assertEquals(avaliarSqlMcp(insertAmplo, true).motivoBloqueio, null);
 });
 
 Deno.test("aplicarLimitePadrao sempre aplica cap externo em leituras", () => {
