@@ -18,6 +18,7 @@ on:
       - 'scripts/security/test-canonical-db-gates.mjs'
       - 'scripts/security/test-canonical-db-gates.test.mjs'
       - 'scripts/security/test-migration-replay-safety.sh'
+      - 'scripts/security/test-lint-function-repairs.mjs'
       - '.github/workflows/supabase-linter.yml'
   pull_request:
     types: [opened, synchronize, reopened]
@@ -28,6 +29,7 @@ on:
       - 'scripts/security/test-canonical-db-gates.mjs'
       - 'scripts/security/test-canonical-db-gates.test.mjs'
       - 'scripts/security/test-migration-replay-safety.sh'
+      - 'scripts/security/test-lint-function-repairs.mjs'
       - '.github/workflows/supabase-linter.yml'
   workflow_dispatch: {}
 
@@ -45,6 +47,9 @@ jobs:
 
       - name: Replay safety das migrations críticas
         run: bash scripts/security/test-migration-replay-safety.sh
+
+      - name: Gate estático do reparo SQL
+        run: node scripts/security/test-lint-function-repairs.mjs
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1

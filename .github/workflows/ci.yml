@@ -49,6 +49,11 @@ jobs:
         # SQL ambíguos e escrita manual no ledger de migrations.
         run: bash scripts/security/test-migration-replay-safety.sh
 
+      - name: Gate estático do reparo SQL
+        # Evita que a evidência do reparo dos 12 erros reais do linter passe com
+        # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
+        run: node scripts/security/test-lint-function-repairs.mjs
+
       - name: Lint check
         run: bun run lint
 

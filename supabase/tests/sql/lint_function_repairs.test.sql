@@ -7,7 +7,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(60);
+SELECT plan(69);
 
 -- ---------------------------------------------------------------------------
 -- 1. Assinaturas públicas preservadas.

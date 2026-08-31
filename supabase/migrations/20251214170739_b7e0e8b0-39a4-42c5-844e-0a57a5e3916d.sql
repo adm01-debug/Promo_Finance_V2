@@ -241,7 +241,10 @@ CREATE POLICY "Financeiro+ can manage centros_custo" ON public.centros_custo
 -- 8. FORNECEDORES
 -- ============================================
 
-CREATE TABLE public.fornecedores (
+-- `001_create_tables.sql` já cria esta tabela no replay completo. O IF NOT
+-- EXISTS evita recriação; as colunas evolutivas são conciliadas pelas
+-- migrations posteriores, sem apagar ou substituir o objeto existente.
+CREATE TABLE IF NOT EXISTS public.fornecedores (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   cnpj_cpf TEXT,
   razao_social TEXT NOT NULL,
@@ -269,7 +272,7 @@ CREATE POLICY "Operacional+ can manage fornecedores" ON public.fornecedores
 -- 9. CLIENTES
 -- ============================================
 
-CREATE TABLE public.clientes (
+CREATE TABLE IF NOT EXISTS public.clientes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   cnpj_cpf TEXT,
   razao_social TEXT NOT NULL,
@@ -300,7 +303,7 @@ CREATE POLICY "Operacional+ can manage clientes" ON public.clientes
 -- 10. CONTAS A PAGAR
 -- ============================================
 
-CREATE TABLE public.contas_pagar (
+CREATE TABLE IF NOT EXISTS public.contas_pagar (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID REFERENCES public.empresas(id) NOT NULL,
   conta_bancaria_id UUID REFERENCES public.contas_bancarias(id),
@@ -344,7 +347,7 @@ CREATE POLICY "Admin can delete contas_pagar" ON public.contas_pagar
 -- 11. CONTAS A RECEBER
 -- ============================================
 
-CREATE TABLE public.contas_receber (
+CREATE TABLE IF NOT EXISTS public.contas_receber (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID REFERENCES public.empresas(id) NOT NULL,
   conta_bancaria_id UUID REFERENCES public.contas_bancarias(id),

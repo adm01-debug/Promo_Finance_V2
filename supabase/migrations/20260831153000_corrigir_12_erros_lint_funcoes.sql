@@ -1,8 +1,9 @@
 -- Corrige os 12 erros reais reportados por `supabase db lint` em 2026-08-31.
 --
 -- Estratégia:
---   * somente mudanças aditivas de índice e CREATE OR REPLACE de rotinas existentes;
---   * nenhum DROP, DELETE, backfill destrutivo ou alteração de assinatura;
+--   * somente mudanças aditivas de índice, CREATE OR REPLACE de rotinas existentes
+--     e overloads internos mínimos para o proxy autenticado de conciliação;
+--   * nenhum DROP, DELETE, backfill destrutivo ou quebra das assinaturas públicas;
 --   * preflight antes da primeira mudança;
 --   * snapshot temporário e postflight dos contratos de função (owner, ACL,
 --     SECURITY DEFINER, volatilidade, search_path, argumentos e retorno);
