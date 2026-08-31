@@ -7,7 +7,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
-SELECT plan(69);
+SELECT plan(71);
 
 -- ---------------------------------------------------------------------------
 -- 1. Assinaturas públicas preservadas.
@@ -334,19 +334,37 @@ SELECT is(
 SELECT ok(
   position(
     'ue.ativo IS TRUE' IN pg_get_functiondef(
+      'public.confirmar_conciliacao_manual(uuid,uuid,uuid,uuid,numeric)'::regprocedure
+    )
+  ) > 0,
+  'overload interno de conciliação manual exige vínculo ativo em user_empresas'
+);
+
+SELECT ok(
+  position(
+    'auth.uid()' IN pg_get_functiondef(
       'public.confirmar_conciliacao_manual(uuid,uuid,uuid,numeric)'::regprocedure
     )
   ) > 0,
-  'conciliação manual exige vínculo ativo em user_empresas'
+  'wrapper público de conciliação manual delega usando auth.uid()'
 );
 
 SELECT ok(
   position(
     'ue.ativo IS TRUE' IN pg_get_functiondef(
+      'public.desfazer_conciliacao_manual(uuid,uuid)'::regprocedure
+    )
+  ) > 0,
+  'overload interno de desfazer conciliação exige vínculo ativo em user_empresas'
+);
+
+SELECT ok(
+  position(
+    'auth.uid()' IN pg_get_functiondef(
       'public.desfazer_conciliacao_manual(uuid)'::regprocedure
     )
   ) > 0,
-  'desfazer conciliação exige vínculo ativo em user_empresas'
+  'wrapper público de desfazer conciliação delega usando auth.uid()'
 );
 
 SELECT is(

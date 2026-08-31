@@ -1225,20 +1225,40 @@ BEGIN
            to_regprocedure('public.confirmar_conciliacao_manual(uuid,uuid,uuid,numeric)')
          )
     INTO v_def;
+  IF v_def NOT LIKE '%auth.uid()%'
+     OR v_def NOT LIKE '%public.confirmar_conciliacao_manual(%' THEN
+    RAISE EXCEPTION
+      'Postflight lint: wrapper público de conciliação manual não delegou para o overload interno autenticado';
+  END IF;
+
+  SELECT pg_catalog.pg_get_functiondef(
+           to_regprocedure('public.confirmar_conciliacao_manual(uuid,uuid,uuid,uuid,numeric)')
+         )
+    INTO v_def;
   IF v_def NOT LIKE '%ue.ativo IS TRUE%'
      OR position('updated_at' IN split_part(v_def, 'IF p_conta_pagar_id', 1)) > 0 THEN
     RAISE EXCEPTION
-      'Postflight lint: conciliação manual não preservou vínculo ativo/schema real';
+      'Postflight lint: overload interno de conciliação manual não preservou vínculo ativo/schema real';
   END IF;
 
   SELECT pg_catalog.pg_get_functiondef(
            to_regprocedure('public.desfazer_conciliacao_manual(uuid)')
          )
     INTO v_def;
+  IF v_def NOT LIKE '%auth.uid()%'
+     OR v_def NOT LIKE '%public.desfazer_conciliacao_manual(p_transacao_id, auth.uid())%' THEN
+    RAISE EXCEPTION
+      'Postflight lint: wrapper público de desfazer conciliação não delegou para o overload interno autenticado';
+  END IF;
+
+  SELECT pg_catalog.pg_get_functiondef(
+           to_regprocedure('public.desfazer_conciliacao_manual(uuid,uuid)')
+         )
+    INTO v_def;
   IF v_def NOT LIKE '%ue.ativo IS TRUE%'
      OR position('updated_at' IN split_part(v_def, 'UPDATE public.contas_receber', 1)) > 0 THEN
     RAISE EXCEPTION
-      'Postflight lint: desfazer conciliação não preservou vínculo ativo/schema real';
+      'Postflight lint: overload interno de desfazer conciliação não preservou vínculo ativo/schema real';
   END IF;
 
   SELECT array_agg(
