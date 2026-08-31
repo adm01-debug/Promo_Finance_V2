@@ -6,6 +6,7 @@
 -- ==================== CONTAS_PAGAR ====================
 -- Adicionar colunas financeiras para cálculo de valor_final
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_original NUMERIC;
+ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_pago NUMERIC DEFAULT 0;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_desconto NUMERIC DEFAULT 0;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_juros NUMERIC DEFAULT 0;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_multa NUMERIC DEFAULT 0;
@@ -27,6 +28,7 @@ ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS user_id UUID;
 
 -- ==================== CONTAS_RECEBER ====================
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_original NUMERIC;
+ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_recebido NUMERIC DEFAULT 0;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_desconto NUMERIC DEFAULT 0;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_juros NUMERIC DEFAULT 0;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_multa NUMERIC DEFAULT 0;

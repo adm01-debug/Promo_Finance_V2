@@ -42,13 +42,27 @@ ON public.conciliacoes_parciais FOR INSERT TO authenticated
 WITH CHECK (public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]));
 
 -- 7) workflow_aprovacoes: restrict SELECT
-DROP POLICY IF EXISTS "Authenticated users can view workflow_aprovacoes" ON public.workflow_aprovacoes;
-CREATE POLICY "Aprovações visíveis ao solicitante ou financeiro+"
-ON public.workflow_aprovacoes FOR SELECT TO authenticated
-USING (
-  solicitante_id = auth.uid()
-  OR public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role])
-);
+-- A tabela não integra o schema canônico e não é criada por nenhuma migration
+-- anterior. O bloco permanece condicional para preservar ambientes legados sem
+-- impedir o replay limpo do projeto.
+DO $workflow_aprovacoes_policy$
+BEGIN
+  IF to_regclass('public.workflow_aprovacoes') IS NOT NULL THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Authenticated users can view workflow_aprovacoes" ON public.workflow_aprovacoes';
+    EXECUTE $policy$
+      CREATE POLICY "Aprovações visíveis ao solicitante ou financeiro+"
+      ON public.workflow_aprovacoes FOR SELECT TO authenticated
+      USING (
+        solicitante_id = auth.uid()
+        OR public.has_any_role(
+          auth.uid(),
+          ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]
+        )
+      )
+    $policy$;
+  END IF;
+END
+$workflow_aprovacoes_policy$;
 
 -- 8) solicitacoes_aprovacao: restrict SELECT
 DROP POLICY IF EXISTS "Authenticated users can view solicitacoes_aprovacao" ON public.solicitacoes_aprovacao;
@@ -60,10 +74,26 @@ USING (
 );
 
 -- 9) contratos: restrict SELECT to financeiro/admin
-DROP POLICY IF EXISTS "Authenticated users can view contratos" ON public.contratos;
-CREATE POLICY "Financeiro+ podem ver contratos"
-ON public.contratos FOR SELECT TO authenticated
-USING (public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]));
+-- `contratos` só é criada em 20260518. Em instalações legadas onde ela já
+-- exista neste ponto, preservamos o hardening; no replay limpo, a migration de
+-- criação posterior define o contrato inicial de RLS.
+DO $contratos_policy$
+BEGIN
+  IF to_regclass('public.contratos') IS NOT NULL THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Authenticated users can view contratos" ON public.contratos';
+    EXECUTE $policy$
+      CREATE POLICY "Financeiro+ podem ver contratos"
+      ON public.contratos FOR SELECT TO authenticated
+      USING (
+        public.has_any_role(
+          auth.uid(),
+          ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]
+        )
+      )
+    $policy$;
+  END IF;
+END
+$contratos_policy$;
 
 -- 10) parcelas_acordo: restrict SELECT to financeiro/admin
 DROP POLICY IF EXISTS "Authenticated users can view parcelas_acordo" ON public.parcelas_acordo;

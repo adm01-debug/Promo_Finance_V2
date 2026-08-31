@@ -3,6 +3,23 @@
 -- MIGRAÇÃO 1: Tabelas ausentes do módulo Core Financeiro
 -- =====================================================
 
+-- `plano_contas` é referenciada por `categorias` e pelas migrations seguintes,
+-- mas a definição equivalente só aparecia em 20260518. Antecipamos a mesma
+-- estrutura com IF NOT EXISTS para corrigir a ordem do replay sem criar drift.
+CREATE TABLE IF NOT EXISTS public.plano_contas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  empresa_id UUID REFERENCES public.empresas(id),
+  user_id UUID REFERENCES auth.users(id),
+  codigo TEXT NOT NULL,
+  nome TEXT NOT NULL,
+  descricao TEXT,
+  tipo TEXT,
+  natureza TEXT,
+  centro_resultado TEXT,
+  ativo BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
 -- Tabela: contatos_financeiros (20 cols)
 CREATE TABLE IF NOT EXISTS public.contatos_financeiros (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -240,7 +257,19 @@ CREATE POLICY "Auth users can read webhooks_log" ON public.webhooks_log FOR SELE
 
 -- updated_at triggers for new tables
 CREATE TRIGGER update_contatos_financeiros_updated_at BEFORE UPDATE ON public.contatos_financeiros FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER update_categorias_updated_at BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DO $categorias_updated_at_trigger$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_trigger
+    WHERE tgname = 'update_categorias_updated_at'
+      AND tgrelid = 'public.categorias'::regclass
+      AND NOT tgisinternal
+  ) THEN
+    EXECUTE 'CREATE TRIGGER update_categorias_updated_at BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION update_updated_at()';
+  END IF;
+END
+$categorias_updated_at_trigger$;
 CREATE TRIGGER update_formas_pagamento_updated_at BEFORE UPDATE ON public.formas_pagamento FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_movimentacoes_updated_at BEFORE UPDATE ON public.movimentacoes FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_transferencias_updated_at BEFORE UPDATE ON public.transferencias FOR EACH ROW EXECUTE FUNCTION update_updated_at();

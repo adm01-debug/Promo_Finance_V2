@@ -1,62 +1,33 @@
--- Audit Logs Table
-CREATE TABLE IF NOT EXISTS audit_logs (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid REFERENCES auth.users(id),
-  action text NOT NULL,
-  entity_type text NOT NULL,
-  entity_id uuid,
-  old_data jsonb,
-  new_data jsonb,
-  ip_address inet,
-  user_agent text,
-  created_at timestamptz DEFAULT now()
-);
-
--- Indexes
-CREATE INDEX idx_audit_user ON audit_logs(user_id);
-CREATE INDEX idx_audit_entity ON audit_logs(entity_type, entity_id);
-CREATE INDEX idx_audit_created ON audit_logs(created_at DESC);
-CREATE INDEX idx_audit_action ON audit_logs(action);
-
--- RLS
-ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view their own audit logs"
-ON audit_logs FOR SELECT
-USING (auth.uid() = user_id);
-
--- Function to log changes
-CREATE OR REPLACE FUNCTION log_audit()
-RETURNS trigger AS $$
+-- Snapshot legado substituído pelo contrato consolidado criado em
+-- `20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql`.
+--
+-- A versão antiga tentava acrescentar implicitamente `entity_type` e
+-- `entity_id` a uma tabela já existente por meio de CREATE TABLE IF NOT
+-- EXISTS. As colunas nunca eram adicionadas e o primeiro CREATE INDEX falhava.
+-- O contrato canônico usa `table_name` e `record_id`; não devemos introduzir
+-- colunas ou triggers paralelos apenas para fazer o replay passar.
+DO $audit_logs_contract_preflight$
 BEGIN
-  INSERT INTO audit_logs (
-    user_id,
-    action,
-    entity_type,
-    entity_id,
-    old_data,
-    new_data
-  ) VALUES (
-    auth.uid(),
-    TG_OP,
-    TG_TABLE_NAME,
-    COALESCE(NEW.id, OLD.id),
-    to_jsonb(OLD),
-    to_jsonb(NEW)
-  );
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+  IF to_regclass('public.audit_logs') IS NULL THEN
+    RAISE EXCEPTION
+      'replay: public.audit_logs deveria ter sido criada pela migration consolidada';
+  END IF;
 
--- Apply to critical tables
-CREATE TRIGGER audit_contas_pagar
-AFTER INSERT OR UPDATE OR DELETE ON contas_pagar
-FOR EACH ROW EXECUTE FUNCTION log_audit();
-
-CREATE TRIGGER audit_contas_receber
-AFTER INSERT OR UPDATE OR DELETE ON contas_receber
-FOR EACH ROW EXECUTE FUNCTION log_audit();
-
-CREATE TRIGGER audit_notas_fiscais
-AFTER INSERT OR UPDATE OR DELETE ON notas_fiscais
-FOR EACH ROW EXECUTE FUNCTION log_audit();
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'audit_logs'
+      AND column_name = 'table_name'
+  ) OR NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'audit_logs'
+      AND column_name = 'record_id'
+  ) THEN
+    RAISE EXCEPTION
+      'replay: contrato consolidado de public.audit_logs está incompleto';
+  END IF;
+END
+$audit_logs_contract_preflight$;

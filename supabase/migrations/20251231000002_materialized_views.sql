@@ -1,9 +1,11 @@
--- Dashboard Metrics View
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_dashboard_metrics AS
-SELECT 
-  DATE_TRUNC('month', vencimento) as mes,
-  status,
-  COUNT(*) as quantidade,
-  SUM(valor) as total_valor
-FROM contas_pagar
-GROUP BY DATE_TRUNC('month', vencimento), status;
+-- Protótipo legado supersedido.
+--
+-- `mv_dashboard_metrics` nunca integrou o contrato canônico, não existe no
+-- projeto bwwbeyolnnzppeuhgkcd e não possui consumidor no código. Mantê-la no
+-- replay criaria drift em relação ao canônico. O arquivo permanece como marco
+-- histórico, deliberadamente sem DDL.
+DO $legacy_dashboard_matview$
+BEGIN
+  NULL;
+END
+$legacy_dashboard_matview$;
