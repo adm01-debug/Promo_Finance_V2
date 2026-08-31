@@ -14,15 +14,6 @@ ALTER TABLE user_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
--- HELPER FUNCTION
--- ============================================
--- Get the current user ID from JWT
-CREATE OR REPLACE FUNCTION auth.user_id() 
-RETURNS UUID AS $$
-  SELECT NULLIF(current_setting('request.jwt.claims', true)::json->>'sub', '')::UUID;
-$$ LANGUAGE SQL STABLE;
-
--- ============================================
 -- CLIENTES POLICIES
 -- ============================================
 

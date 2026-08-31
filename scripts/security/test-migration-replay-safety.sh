@@ -19,6 +19,12 @@ echo "Verificando replay safety das migrations críticas..."
 check_absent '^[[:space:]]*ALTER DATABASE[[:space:]]+postgres[[:space:]]+SET[[:space:]]+"app\.jwt_secret"' \
   supabase/migrations/001_create_tables.sql
 
+# O schema `auth` é gerenciado pelo Supabase e não concede CREATE ao papel de
+# migrations do Preview. Helpers do projeto devem permanecer em `public` ou
+# `private`; `auth.uid()` já é fornecida pela plataforma.
+check_absent '^[[:space:]]*CREATE([[:space:]]+OR[[:space:]]+REPLACE)?[[:space:]]+FUNCTION[[:space:]]+auth\.' \
+  supabase/migrations
+
 check_absent 'AS \$\$' \
   supabase/migrations/20260826010000_restaurar_exec_sql_wrapper_e03.sql
 
@@ -32,4 +38,4 @@ if [[ "$fail" -ne 0 ]]; then
   exit 1
 fi
 
-echo "OK: nenhum ALTER DATABASE inseguro nem escrita manual de ledger nas migrations críticas."
+echo "OK: nenhum DDL proibido em auth, ALTER DATABASE inseguro ou escrita manual de ledger."
