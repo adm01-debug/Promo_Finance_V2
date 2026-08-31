@@ -14,30 +14,34 @@
 | --- | --- |
 | `node scripts/mcp-phd-suite.mjs --self-test` | 15/15 checks OK |
 | `bun test scripts/security/test-rpc-runtime.evaluate.test.ts` | 4/4 testes OK |
-| `deno test --no-lock ... rate-limit / bling / sql-write-guard / mcp-query` | 28/28 testes OK |
+| `deno test --allow-env=ALLOWED_ORIGINS --no-lock ... rate-limit / bling / sql-write-guard / mcp-query` | 28/28 testes OK |
 | `bun run test:run` | 204 arquivos, 2689 testes OK |
-| `bun run type-check` | não concluiu dentro da janela observável local; não foi marcado como aprovado nesta rodada |
+| `bun run type-check` | OK |
 | `bun run lint` | OK, 0 erros e 19 warnings legados fora do escopo |
-| `bun run test:coverage` | OK, cobertura v8 concluída (`Statements 72.51%`, `Branches 66.33%`, `Functions 63.95%`, `Lines 73.56%`) |
 | `bun run build` | OK com ambiente explícito do projeto canônico (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PROJECT_ID`, `VITE_SUPABASE_PUBLISHABLE_KEY`) |
+| `bunx playwright test e2e/visual-theme.e2e.ts --project=chromium --grep 'Login'` | 2 testes OK, 1 skip esperado (snapshots autenticados opt-in) |
+| `bunx playwright test e2e/auth/admin-rbac.e2e.ts --project=chromium --grep 'Não autenticado' --workers=1` | 14 testes OK, 1 skip esperado (`setup` sem credenciais) |
 | `git diff --check` | OK |
 
 ## GitHub — estado real em 2026-08-31
 
 - `origin/main` ainda está em `5093a727b6cc996bdf3a008e6627a2fc145109ae`
-- as PRs `#48`, `#49`, `#50` e `#51` continuam abertas e não estão refletidas em `main`
+- o repositório está público e `main` está sem branch protection no momento
+- as PRs `#48`, `#49`, `#50`, `#51` e `#52` estão abertas e ainda não estão refletidas em `main`
 - a `#51` ainda falha no workflow `CI Pipeline`; portanto, não é segura para merge direto
-- o repositório tem os secrets necessários para `build` e E2E (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`, `VITE_SUPABASE_*`)
-- a variável de repositório `ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS` não está cadastrada; os snapshots autenticados continuam corretamente tratados como opt-in
-- esta worktree (`fix/codex-h0831-reconciliacao-online`) é a trilha correta para consolidar as correções validadas
+- a `#52` já existe para esta trilha (`fix/codex-h0831-reconciliacao-online`) e o commit `d49ead0d5d0c7bdeba6bacaa21fc0de1c2a894b1` iniciou novos runs: `Supabase Linter` e `Deno Edge Function Tests` em sucesso; `CI Pipeline` em andamento no momento desta evidência
+- o `gh` local está com token inválido, mas a validação remota do branch e das PRs foi confirmada por `git ls-remote` e GitHub API
 
 ## Supabase canônico (`bwwbeyolnnzppeuhgkcd`) — estado real em 2026-08-31
 
 - 102 Edge Functions ativas
 - `migrate-helper` não existe online
 - as migrations `20260826010000`, `20260826020000`, `20260826030000`, `20260826040000` e `20260826050000` já existem no ledger remoto
+- `public.exec_sql(text)` responde no PostgREST do projeto canônico e mantém ACL correta: `anon=false`, `authenticated=false`, `service_role=true`
 - o secret `MCP_SECRET` ainda não existe no projeto
-- os secrets de webhook/cron existem; a edge `mcp-query` ainda depende de publicação coordenada com esse novo secret
+- existem 12 secrets cadastrados; os nomes confirmados desta rodada incluem `ASAAS_WEBHOOK_TOKEN`, `BITRIX24_WEBHOOK_SECRET`, `BLING_WEBHOOK_SECRET`, `REGUA_CRON_SECRET`, `SUPABASE_*` e `WHATSAPP_WEBHOOK_SECRET`
+- a edge `mcp-query` continua online em `version=4` com `verify_jwt=true`; o código validado nesta rodada muda o contrato para `verify_jwt=false` + `x-mcp-secret`, portanto o deploy precisa ser coordenado com a criação de `MCP_SECRET`
+- as revogações de `EXECUTE` para `authenticated` em `confirmar_conciliacao`, `desfazer_conciliacao` e `nfe_apply_manifestacao` estão efetivas no catálogo live
 - antes do deploy desta rodada, as 15 functions mais sensíveis estavam em versões live heterogêneas (`mcp-query` v4, `calcular-slo-metrics-diario` v3, `compare-schemas` v3, `processar-fila-cobrancas` v3, `gerar-resumo-financeiro-diario` v3, webhooks entre v6 e v7)
 - nenhuma DDL foi aplicada nesta rodada; toda a validação remota foi feita em modo leitura
 
@@ -56,10 +60,15 @@
 
 A `20260826030000_add_colunas_ausentes_e30.sql` foi preservada como evidência histórica de ledger e contexto operacional. Ela não contém os `ALTER TABLE ... ADD COLUMN ...` originais; portanto, não deve ser tratada como migration replayável para reconstrução de schema.
 
+## Correções de interpretação aplicadas nesta revalidação
+
+- `performance_alerts_source_check` no catálogo canônico atual é constraint de `public.performance_alerts`, não view. Portanto, a verificação correta é por constraint/catalogo de tabela, não por `pg_get_viewdef(...)`.
+- nomes históricos de policies de conciliação não devem ser usados como prova isolada: a validação precisa comparar tabela, comando e expressão real no catálogo live.
+
 ## Gaps ainda pendentes de publicação
 
 - o código desta rodada ainda não foi enviado para `main`
 - as Edge Functions endurecidas ainda não foram publicadas no projeto canônico
 - a criação de `MCP_SECRET` precisa acontecer no Supabase e no GitHub no mesmo fluxo de deploy
-- o gate SQL remoto via `DATABASE_URL` continua dependente de secret inexistente no GitHub; por isso a prova de ACL em produção foi validada por leitura dirigida e não por job automatizado
-- os E2E reais precisam ser validados via CI remoto, porque o sandbox local não permite abrir a porta `8080` para o `webServer` do Playwright
+- o gate SQL remoto via `DATABASE_URL` continua dependente de secret não comprovado por esta rodada; por isso a prova de ACL em produção foi validada por leitura dirigida e não por job automatizado
+- o fluxo de logout real continua dependendo de credenciais E2E e deve ser validado pelo job `e2e-destructive`; aqui só foram validadas as rotas públicas e anônimas
