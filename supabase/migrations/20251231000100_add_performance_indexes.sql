@@ -3,8 +3,8 @@
 -- Objetivo: Melhorar performance de queries críticas
 
 -- Índices simples
-CREATE INDEX IF NOT EXISTS idx_contas_pagar_vencimento 
-  ON contas_pagar(vencimento);
+CREATE INDEX IF NOT EXISTS idx_contas_pagar_vencimento
+  ON contas_pagar(data_vencimento);
 
 CREATE INDEX IF NOT EXISTS idx_contas_pagar_status 
   ON contas_pagar(status);
@@ -15,8 +15,8 @@ CREATE INDEX IF NOT EXISTS idx_contas_pagar_fornecedor
 CREATE INDEX IF NOT EXISTS idx_contas_receber_cliente 
   ON contas_receber(cliente_id);
 
-CREATE INDEX IF NOT EXISTS idx_contas_receber_vencimento 
-  ON contas_receber(vencimento);
+CREATE INDEX IF NOT EXISTS idx_contas_receber_vencimento
+  ON contas_receber(data_vencimento);
 
 CREATE INDEX IF NOT EXISTS idx_contas_receber_status 
   ON contas_receber(status);
@@ -34,8 +34,8 @@ CREATE INDEX IF NOT EXISTS idx_boletos_vencimento
   ON boletos(vencimento);
 
 -- Índices compostos (mais eficientes para queries comuns)
-CREATE INDEX IF NOT EXISTS idx_cp_status_vencimento 
-  ON contas_pagar(status, vencimento);
+CREATE INDEX IF NOT EXISTS idx_cp_status_vencimento
+  ON contas_pagar(status, data_vencimento);
 
 CREATE INDEX IF NOT EXISTS idx_cp_fornecedor_status 
   ON contas_pagar(fornecedor_id, status);
@@ -43,8 +43,8 @@ CREATE INDEX IF NOT EXISTS idx_cp_fornecedor_status
 CREATE INDEX IF NOT EXISTS idx_cr_cliente_status 
   ON contas_receber(cliente_id, status);
 
-CREATE INDEX IF NOT EXISTS idx_cr_status_vencimento 
-  ON contas_receber(status, vencimento);
+CREATE INDEX IF NOT EXISTS idx_cr_status_vencimento
+  ON contas_receber(status, data_vencimento);
 
 -- Índices para full-text search
 CREATE INDEX IF NOT EXISTS idx_cp_descricao_gin 
@@ -54,12 +54,12 @@ CREATE INDEX IF NOT EXISTS idx_cr_descricao_gin
   ON contas_receber USING gin(to_tsvector('portuguese', descricao));
 
 -- Índices parciais (apenas registros ativos)
-CREATE INDEX IF NOT EXISTS idx_cp_pendentes 
-  ON contas_pagar(vencimento) 
+CREATE INDEX IF NOT EXISTS idx_cp_pendentes
+  ON contas_pagar(data_vencimento)
   WHERE status IN ('pendente', 'vencida');
 
-CREATE INDEX IF NOT EXISTS idx_cr_pendentes 
-  ON contas_receber(vencimento) 
+CREATE INDEX IF NOT EXISTS idx_cr_pendentes
+  ON contas_receber(data_vencimento)
   WHERE status IN ('pendente', 'vencida');
 
 -- Analyze tables para atualizar estatísticas
