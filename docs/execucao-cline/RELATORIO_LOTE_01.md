@@ -87,5 +87,24 @@ A alternativa "isolar usuários por shard" exigiria 3 conjuntos de credenciais (
 - Merges de #48/#49/#50/#51: **aguardando autorização do proprietário**.
 - Isolamento por usuário/shard: requer secrets adicionais (decisão do proprietário).
 - Testes negativos de runtime das P0 da matriz auth: requer ambiente (D12).
-- Nenhuma ação remota/destrutiva foi executada nesta rodada (apenas push do branch próprio).
+- Hermeticidade do E2E (etapa 078): pré-requisito para CI estável em todos os PRs.
+- Nenhuma ação remota/destrutiva foi executada nesta rodada (apenas push do branch próprio e rerun de CI do próprio PR).
+
+## 9. Observação do CI — runs reais nesta rodada (estado honesto)
+
+| Run | Commit | Resultado | Falha |
+|-----|--------|-----------|-------|
+| 33336176738 (#662) | `ebb253bf` | ❌ | shard 2: 34 falhas em cascata (logout destrutivo invalidava sessões) |
+| 33337843772 (#663) | `f7978739` | ❌ | shard 2 ✅ **(serialização funcionou)**; shard 3: 10 testes visuais sem baseline |
+| 33339306874 (#664) | `28cc9fc2` | ❌ | idem #663 (`ignoreSnapshots` na posição errada — não respeitada) |
+| 33339898642 (#665) | `4139d478` | ❌ | snapshot resolvido ✅; shard 3 flaky ambiental: 10→27 passed entre attempt 1 e 2, com conjunto de falhas **diferente a cada execução** (`relatorios` ×7, `system/stability` realtime, `error-states`, tema light do `/auth`) |
+
+**Constatações:**
+1. **Progresso real e retido:** Quality Gate & Tests ✅ verde em todos os runs pós-correção; shards 1 e 2 ✅ verdes; vazamento de artefatos E2E ✕ eliminado (nenhum artefato E2E publicado); logout destrutivo serializado; snapshots visuais explícitos.
+2. **Shard 3 é flaky por natureza do ambiente**: os testes que falham alternam entre execuções e dependem de ambiente real não-hermético (dados vivos, realtime, ordem de workers, tema persistido). Rerun em loop seria bingo, não engenharia — é exatamente a pendência registrada na **etapa 078** do programa ("Corrigir E2E Supabase HTTP 400, **tornar ambiente hermético** e provar os navegadores prometidos").
+3. **Formalmente não há "gates obrigatórios"**: `main` está **sem branch protection e sem rulesets** (verificado via API em 2026-08-31). A exigência de "todos os gates obrigatórios verdes" aguarda o próprio proprietário definir o conjunto required checks — recomendação: `Quality Gate & Tests` + `E2E Tests (shard 1..3)` + `E2E Destructive (serial)` após a hermeticidade da etapa 078.
+4. O job `E2E Destructive (serial)` ainda não chegou a executar: depende de `needs: [e2e]` e o shard 3 falha antes. Sua primeira execução ocorrerá no primeiro run com os 3 shards verdes.
+
+**Recomendação ao proprietário:** autorizar (ou não) o merge deste PR com o estado atual documentado, e tratar a hermeticidade do E2E (etapa 078, lote G) como o próximo bloco de trabalho — ele desbloqueia CI estável para todos os PRs (#48–#51), que hoje sofrem do mesmo flakiness.
+
 
