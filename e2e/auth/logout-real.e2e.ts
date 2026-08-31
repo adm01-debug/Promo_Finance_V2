@@ -9,6 +9,18 @@ import { test, expect, type Page } from '@playwright/test';
 
 test.describe.configure({ mode: 'serial' });
 
+function readRequiredEnv(name: string): string {
+  const value = process.env[name];
+  if (value) return value;
+
+  if (process.env.CI) {
+    throw new Error(`Pré-flight do logout destrutivo falhou: variável obrigatória ausente (${name}).`);
+  }
+
+  test.skip(true, `${name} não definido fora do CI`);
+  return '';
+}
+
 async function loginAs(page: Page, email: string, password: string) {
   await page.goto('/auth');
   await expect(page.locator('#login-email')).toBeVisible({ timeout: 15_000 });
@@ -39,27 +51,16 @@ async function logout(page: Page) {
 test.describe('Login/Logout › fluxo real com admin (isolado)', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  // eslint-disable-next-line no-empty-pattern -- Playwright exige destructuring no 1º arg
-  test.beforeEach(({}, testInfo) => {
-    if (!process.env.E2E_USER_EMAIL || !process.env.E2E_USER_PASSWORD) {
-      testInfo.skip(true, 'E2E_USER_EMAIL/PASSWORD não definidos');
-    }
-  });
+  test('login -> admin -> logout -> rota protegida redireciona para /auth', async ({ page }) => {
+    const email = readRequiredEnv('E2E_USER_EMAIL');
+    const password = readRequiredEnv('E2E_USER_PASSWORD');
 
-  test('login com sucesso redireciona para fora de /auth', async ({ page }) => {
-    await loginAs(page, process.env.E2E_USER_EMAIL!, process.env.E2E_USER_PASSWORD!);
-    await expect(page).not.toHaveURL(/\/auth/);
-  });
+    await loginAs(page, email, password);
 
-  test('admin acessa /admin/system-health após login', async ({ page }) => {
-    await loginAs(page, process.env.E2E_USER_EMAIL!, process.env.E2E_USER_PASSWORD!);
     await page.goto('/admin/system-health');
     await expect(page).toHaveURL(/\/admin\/system-health/);
     await expect(page.getByText(/Acesso restrito/i)).toHaveCount(0);
-  });
 
-  test('logout retorna para /auth e limpa sessão', async ({ page }) => {
-    await loginAs(page, process.env.E2E_USER_EMAIL!, process.env.E2E_USER_PASSWORD!);
     await logout(page);
     await expect(page).toHaveURL(/\/auth/, { timeout: 10_000 });
 

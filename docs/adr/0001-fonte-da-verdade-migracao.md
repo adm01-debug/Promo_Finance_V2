@@ -1,6 +1,6 @@
 # ADR 0001 — Fonte da Verdade para Migracao
 
-Data: 2026-08-25  
+Data: 2026-08-25
 Status: Aceito
 
 ## Contexto
