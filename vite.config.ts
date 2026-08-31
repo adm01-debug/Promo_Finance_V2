@@ -32,11 +32,11 @@ function assertSupabaseEnv(mode: string, env: Record<string, string>) {
 
 /**
  * Performance: build configurado para SPA grande (100+ rotas).
- * - SWC + esbuild minify para builds rápidos
+ * - SWC + Oxc minify para builds rápidos
  * - manualChunks por vendor para cache HTTP estável
  * - reportCompressedSize:false economiza ~30-50% no tempo de build
  * - assetsInlineLimit baixo evita inflar HTML/CSS com base64
- * - drop console/debugger em produção
+ * - sourcemaps ocultos para diagnóstico sem expor referências no bundle
  */
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -59,14 +59,11 @@ export default defineConfig(({ mode }) => {
   ].filter(Boolean),
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
     dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
   },
   optimizeDeps: {
-    esbuildOptions: {
-      target: 'es2020',
-    },
     include: [
       'react',
       'react-dom',
@@ -77,11 +74,8 @@ export default defineConfig(({ mode }) => {
       'framer-motion',
     ],
   },
-  esbuild: mode === 'production'
-    ? { drop: ['console', 'debugger'], legalComments: 'none' }
-    : undefined,
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         // Vite 8/Rolldown aceita apenas a variante em função. A tabela mantém
         // os mesmos agrupamentos estáveis usados para cache de fornecedores.
@@ -116,7 +110,7 @@ export default defineConfig(({ mode }) => {
     },
     chunkSizeWarningLimit: 1200,
     sourcemap: 'hidden',
-    minify: 'esbuild',
+    minify: 'oxc',
     target: 'es2020',
     cssMinify: true,
     cssCodeSplit: true,

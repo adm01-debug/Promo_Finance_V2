@@ -132,7 +132,7 @@
 - [ ] Concluído
 **Por quê:** linha 14 contém o bearer do MCP da origem em repo privado, mas versionado.
 **Como:** trocar por `process.env.MCP_TOKEN` obrigatório (abortar se ausente). Rotação do segredo no worker `supabase-promofinance-mcp` via `cf_secret_put` **só com APROVADO**, porque invalida o conector atual do Claude.ai.
-**Verificação:** `grep -rn "eTBfUTMu" .` vazio; `node scripts/mcp-phd-suite.mjs` sem env → sai com erro claro.
+**Verificação:** grep pelo literal do token antigo em todo o repo vazio; `node scripts/mcp-phd-suite.mjs` sem env → sai com erro claro.
 **Camada:** repo · Cloudflare Worker
 
 ### E14 — Converter 281 policies para `(select auth.uid())`

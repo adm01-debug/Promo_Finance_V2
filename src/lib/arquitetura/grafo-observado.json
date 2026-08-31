@@ -16,7 +16,7 @@
     "M10->M08",
     "M11->M12"
   ],
-  "totalImportsAnalisados": 47,
+  "totalImportsAnalisados": 46,
   "driftResumo": {
     "naoDeclaradas": 0,
     "inversoesDeCamada": 0,
