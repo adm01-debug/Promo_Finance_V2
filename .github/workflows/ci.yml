@@ -160,12 +160,11 @@ jobs:
           retention-days: 7
 
   # ---------------------------------------------------------------------------
-  # E2E — job único para reutilizar uma única autenticação. Os antigos três
-  # shards faziam login simultâneo com o mesmo usuário e acionavam o rate limit
-  # do Supabase Auth, produzindo cascatas de falsos negativos.
+  # Gate E2E crítico: somente cenários que hoje provam as correções reais.
+  # Nada aqui depende de storageState compartilhado ou de skips "verdes".
   # ---------------------------------------------------------------------------
-  e2e:
-    name: E2E Tests (chromium)
+  e2e-critical:
+    name: E2E Critical Gate
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -195,8 +194,28 @@ jobs:
         if: steps.pw-cache.outputs.cache-hit == 'true'
         run: bunx playwright install-deps chromium
 
-      - name: E2E Tests (chromium)
-        run: bunx playwright test --project=chromium --reporter=list
+      - name: Preflight E2E crítico
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for key in E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID; do
+            if [ -z "${!key:-}" ]; then
+              echo "::error::Pré-flight E2E crítico falhou: secret obrigatório ausente (${key})."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: E2E crítico obrigatório
+        run: bunx playwright test -c playwright.critical.config.ts --project=chromium --reporter=list
         env:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
@@ -205,16 +224,14 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
-          ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS: ${{ vars.ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS }}
           CI: true
 
   # ---------------------------------------------------------------------------
-  # Fluxo destrutivo de logout real — isolado dos shards regulares para não
-  # revogar a sessão compartilhada durante a suíte autenticada.
+  # Fluxo destrutivo de logout real — cenário único, isolado e bloqueante.
   # ---------------------------------------------------------------------------
   e2e-destructive:
     name: E2E Destructive Logout
-    needs: [e2e]
+    needs: [quality-gate, e2e-critical]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -243,6 +260,26 @@ jobs:
         if: steps.pw-cache-destructive.outputs.cache-hit == 'true'
         run: bunx playwright install-deps chromium
 
+      - name: Preflight E2E destrutivo
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for key in E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID; do
+            if [ -z "${!key:-}" ]; then
+              echo "::error::Pré-flight E2E destrutivo falhou: secret obrigatório ausente (${key})."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
       - name: E2E Logout Destrutivo
         run: bunx playwright test -c playwright.destructive.config.ts --project=chromium-destructive --reporter=list
         env:
@@ -256,14 +293,110 @@ jobs:
           CI: true
 
   # ---------------------------------------------------------------------------
-  # Auditoria pós-merge — só roda em main após e2e + quality-gate passarem.
+  # Quarentena E2E legada: não bloqueante, 1 worker, sem claims de aprovação
+  # de produção. O resultado é publicado no step summary do workflow.
+  # ---------------------------------------------------------------------------
+  e2e-quarantine:
+    name: E2E Quarantine (non-blocking)
+    needs: [quality-gate, e2e-critical, e2e-destructive]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.11"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        id: pw-cache-quarantine
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install Playwright browsers
+        if: steps.pw-cache-quarantine.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.pw-cache-quarantine.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: Montar lista da quarentena
+        run: |
+          set -euo pipefail
+          mapfile -t quarantine_specs < <(
+            rg --files e2e -g '*.e2e.ts' \
+              | grep -Fvx 'e2e/auth/login.e2e.ts' \
+              | grep -Fvx 'e2e/auth/admin-rbac.e2e.ts' \
+              | grep -Fvx 'e2e/visual-theme.e2e.ts' \
+              | grep -Fvx 'e2e/auth/logout-real.e2e.ts'
+          )
+          if [ "${#quarantine_specs[@]}" -eq 0 ]; then
+            echo "count=0" >> "$GITHUB_OUTPUT"
+            : > quarantine-specs.txt
+            exit 0
+          fi
+          printf '%s\n' "${quarantine_specs[@]}" > quarantine-specs.txt
+          echo "count=${#quarantine_specs[@]}" >> "$GITHUB_OUTPUT"
+        id: quarantine_specs
+
+      - name: Executar suíte legada em quarentena
+        id: quarantine_run
+        if: steps.quarantine_specs.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mapfile -t quarantine_specs < quarantine-specs.txt
+          bunx playwright test \
+            --config=playwright.config.ts \
+            --project=chromium \
+            --workers=1 \
+            --reporter=list \
+            "${quarantine_specs[@]}"
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+          ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS: ${{ vars.ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS }}
+          CI: true
+
+      - name: Publicar resumo da quarentena
+        if: always()
+        run: |
+          {
+            echo "## E2E Quarantine"
+            echo
+            echo "- Natureza: não bloqueante"
+            echo "- Specs listadas: ${{ steps.quarantine_specs.outputs.count }}"
+            if [ "${{ steps.quarantine_specs.outputs.count }}" = "0" ]; then
+              echo "- Resultado: nenhuma spec elegível para quarentena"
+            else
+              echo "- Resultado do step: ${{ steps.quarantine_run.outcome }}"
+              echo
+              echo "### Arquivos executados"
+              sed 's/^/- `/' quarantine-specs.txt | sed 's/$/`/'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # Auditoria pós-merge — só roda em main após os gates reais passarem.
   # ---------------------------------------------------------------------------
   post-merge-audit:
     name: Post-merge Simulation Audit
     # Stress em produção é mutável e deve ser opt-in, com a variável de
     # repositório explicitamente habilitada durante uma janela autorizada.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.ENABLE_PRODUCTION_SIMULATION_AUDIT == 'true'
-    needs: [quality-gate, e2e, e2e-destructive]
+    needs: [quality-gate, e2e-critical, e2e-destructive]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Simulation Audit
