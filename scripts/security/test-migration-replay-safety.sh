@@ -33,9 +33,19 @@ check_absent '^[[:space:]]*INSERT[[:space:]]+INTO[[:space:]]+supabase_migrations
   supabase/migrations/20260826040000_fechar_policies_abertas_e06_e08.sql \
   supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql
 
+# O replay completo reaplica `001_create_tables.sql` e `003_seed_data.sql` antes
+# da migration histórica consolidada de 2025. Esses triggers precisam ser
+# idempotentes para não quebrar Preview/DB reset com "trigger ... already
+# exists".
+check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+update_(fornecedores|clientes|contas_pagar|contas_receber)_updated_at\b' \
+  supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql
+
+check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+on_auth_user_created\b' \
+  supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql
+
 if [[ "$fail" -ne 0 ]]; then
   echo "Falha: replay safety violado nas migrations críticas." >&2
   exit 1
 fi
 
-echo "OK: nenhum DDL proibido em auth, ALTER DATABASE inseguro ou escrita manual de ledger."
+echo "OK: nenhum DDL proibido em auth, ALTER DATABASE inseguro, escrita manual de ledger ou trigger histórico não idempotente."

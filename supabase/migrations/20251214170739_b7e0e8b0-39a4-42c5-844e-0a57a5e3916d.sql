@@ -584,11 +584,33 @@ $replay_auth_user_trigger$;
 
 CREATE INDEX idx_contas_pagar_vencimento ON public.contas_pagar(data_vencimento);
 CREATE INDEX IF NOT EXISTS idx_contas_pagar_status ON public.contas_pagar(status);
-CREATE INDEX idx_contas_pagar_empresa ON public.contas_pagar(empresa_id);
+DO $replay_idx_contas_pagar_empresa$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_catalog.pg_attribute
+    WHERE attrelid = 'public.contas_pagar'::regclass
+      AND attname = 'empresa_id' AND attnum > 0 AND NOT attisdropped
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_contas_pagar_empresa
+      ON public.contas_pagar(empresa_id);
+  END IF;
+END
+$replay_idx_contas_pagar_empresa$;
 
 CREATE INDEX idx_contas_receber_vencimento ON public.contas_receber(data_vencimento);
 CREATE INDEX IF NOT EXISTS idx_contas_receber_status ON public.contas_receber(status);
-CREATE INDEX idx_contas_receber_empresa ON public.contas_receber(empresa_id);
+DO $replay_idx_contas_receber_empresa$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_catalog.pg_attribute
+    WHERE attrelid = 'public.contas_receber'::regclass
+      AND attname = 'empresa_id' AND attnum > 0 AND NOT attisdropped
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_contas_receber_empresa
+      ON public.contas_receber(empresa_id);
+  END IF;
+END
+$replay_idx_contas_receber_empresa$;
 
 CREATE INDEX idx_transacoes_data ON public.transacoes_bancarias(data);
 CREATE INDEX idx_transacoes_conta ON public.transacoes_bancarias(conta_bancaria_id);
