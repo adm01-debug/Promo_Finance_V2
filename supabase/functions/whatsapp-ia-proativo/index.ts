@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import {
+  createClient,
+  type SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import {
   corsHeaders,
   createErrorResponse,
@@ -20,6 +23,169 @@ interface AlertaProativo {
   mensagem: string;
   dados: Record<string, unknown>;
   prioridade: "alta" | "media" | "baixa";
+}
+
+interface IdentidadeAutorizada {
+  origem: "interna" | "usuario";
+  userId: string | null;
+}
+
+type EscopoEmpresas = string[] | null;
+
+type ResultadoEscopo =
+  | { ok: true; empresaIds: EscopoEmpresas }
+  | { ok: false; resposta: Response };
+
+interface ContaReceberAlerta {
+  id: string;
+  empresa_id: string | null;
+  cliente_id: string | null;
+  valor: number;
+  data_vencimento: string;
+  descricao: string;
+}
+
+interface ClienteAlerta {
+  id: string;
+  empresa_id: string | null;
+  razao_social: string | null;
+  nome: string | null;
+  telefone: string | null;
+}
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function respostaJson(
+  body: Record<string, unknown>,
+  status: number,
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function extrairEmpresaSolicitada(
+  data: Record<string, unknown>,
+): { ok: true; empresaId: string | null } | { ok: false; resposta: Response } {
+  const contexto = data.contexto && typeof data.contexto === "object" &&
+      !Array.isArray(data.contexto)
+    ? data.contexto as Record<string, unknown>
+    : null;
+  const candidatos = [data.empresa_id, contexto?.empresa_id]
+    .filter((valor) => valor !== undefined && valor !== null);
+
+  for (const valor of candidatos) {
+    if (typeof valor !== "string" || !UUID_RE.test(valor)) {
+      return {
+        ok: false,
+        resposta: respostaJson(
+          { error: "empresa_invalida", message: "empresa_id deve ser um UUID válido." },
+          400,
+        ),
+      };
+    }
+  }
+
+  const ids = [...new Set(candidatos as string[])];
+  if (ids.length > 1) {
+    return {
+      ok: false,
+      resposta: respostaJson(
+        {
+          error: "empresa_ambigua",
+          message: "Os identificadores de empresa informados não coincidem.",
+        },
+        400,
+      ),
+    };
+  }
+
+  return { ok: true, empresaId: ids[0] ?? null };
+}
+
+async function resolverEscopoEmpresas(
+  supabase: SupabaseClient,
+  identidade: IdentidadeAutorizada,
+  empresaSolicitada: string | null,
+): Promise<ResultadoEscopo> {
+  if (identidade.origem === "interna") {
+    return {
+      ok: true,
+      empresaIds: empresaSolicitada ? [empresaSolicitada] : null,
+    };
+  }
+
+  // A identidade vem do JWT validado pelo guard. O corpo nunca define quais
+  // tenants o usuário pode acessar; a fonte de verdade são os vínculos ativos.
+  if (!identidade.userId) {
+    return {
+      ok: false,
+      resposta: respostaJson(
+        { error: "sem_permissao", message: "Usuário sem identidade válida." },
+        403,
+      ),
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("user_empresas")
+    .select("empresa_id")
+    .eq("user_id", identidade.userId)
+    .eq("ativo", true);
+
+  if (error) {
+    console.error(
+      "[whatsapp-ia-proativo] Falha ao resolver empresas do usuário:",
+      error,
+    );
+    return {
+      ok: false,
+      resposta: respostaJson(
+        {
+          error: "erro_autorizacao",
+          message: "Não foi possível validar o acesso às empresas.",
+        },
+        503,
+      ),
+    };
+  }
+
+  const empresasPermitidas = [...new Set(
+    (data ?? [])
+      .map((vinculo: { empresa_id?: unknown }) => vinculo.empresa_id)
+      .filter((id): id is string => typeof id === "string" && UUID_RE.test(id)),
+  )];
+
+  if (
+    empresasPermitidas.length === 0 ||
+    (empresaSolicitada && !empresasPermitidas.includes(empresaSolicitada))
+  ) {
+    return {
+      ok: false,
+      resposta: respostaJson(
+        {
+          error: "sem_permissao_empresa",
+          message: "A empresa solicitada não está acessível para este usuário.",
+        },
+        403,
+      ),
+    };
+  }
+
+  return {
+    ok: true,
+    empresaIds: empresaSolicitada ? [empresaSolicitada] : empresasPermitidas,
+  };
+}
+
+function empresaEstaNoEscopo(
+  empresaId: unknown,
+  escopo: EscopoEmpresas,
+): empresaId is string {
+  return typeof empresaId === "string" &&
+    (escopo === null || escopo.includes(empresaId));
 }
 
 export interface WhatsappIaProativoDependencies {
@@ -49,11 +215,32 @@ export function createHandler(
     if (!guard.ok) return guard.resposta;
 
     try {
+      const rawBody = normalizarPayloadLegado(await req.json());
+      const validation = validatePayload(
+        WhatsappIaProativoSchema,
+        rawBody,
+        "whatsapp-ia-proativo",
+      );
+      if (!validation.success) {
+        return createErrorResponse(validation.error, 400, validation.details);
+      }
+      const { action } = validation.data;
+      const data = validation.data.data ?? {};
+      const empresaSolicitada = extrairEmpresaSolicitada(data);
+      if (!empresaSolicitada.ok) return empresaSolicitada.resposta;
+
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 
       const supabase = dependencies.criarClient(supabaseUrl, supabaseKey);
+
+      const escopo = await resolverEscopoEmpresas(
+        supabase,
+        guard.dados,
+        empresaSolicitada.empresaId,
+      );
+      if (!escopo.ok) return escopo.resposta;
 
       // Rate limit: 30 req/min por IP (endpoint IA)
       const ip = (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0]
@@ -67,18 +254,6 @@ export function createHandler(
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-      const rawBody = normalizarPayloadLegado(await req.json());
-      const validation = validatePayload(
-        WhatsappIaProativoSchema,
-        rawBody,
-        "whatsapp-ia-proativo",
-      );
-      if (!validation.success) {
-        return createErrorResponse(validation.error, 400, validation.details);
-      }
-      const { action } = validation.data;
-      const data = validation.data.data ?? {};
-
       console.log("[whatsapp-ia-proativo] Ação:", action);
 
       if (action === "analisar-alertas") {
@@ -89,40 +264,120 @@ export function createHandler(
             "T",
           )[0];
 
-        // Contas a receber próximas do vencimento
-        const { data: contasVencer } = await supabase
+        // O client é service_role, portanto TODO acesso de usuário precisa do
+        // filtro derivado de user_empresas. Não usamos empresa_id do payload
+        // como autorização.
+        let contasVencerQuery = supabase
           .from("contas_receber")
-          .select(`
-          *,
-          cliente:clientes(id, razao_social, telefone, email)
-        `)
+          .select(
+            "id,empresa_id,cliente_id,valor,data_vencimento,descricao",
+          )
           .eq("status", "pendente")
           .gte("data_vencimento", hoje)
           .lte("data_vencimento", em3Dias);
+        if (escopo.empresaIds !== null) {
+          contasVencerQuery = contasVencerQuery.in(
+            "empresa_id",
+            escopo.empresaIds,
+          );
+        }
+        const { data: contasVencerRaw, error: erroContasVencer } =
+          await contasVencerQuery;
 
-        // Contas vencidas
-        const { data: contasVencidas } = await supabase
+        let contasVencidasQuery = supabase
           .from("contas_receber")
-          .select(`
-          *,
-          cliente:clientes(id, razao_social, telefone, email)
-        `)
+          .select(
+            "id,empresa_id,cliente_id,valor,data_vencimento,descricao",
+          )
           .in("status", ["pendente", "vencido"])
           .lt("data_vencimento", hoje);
+        if (escopo.empresaIds !== null) {
+          contasVencidasQuery = contasVencidasQuery.in(
+            "empresa_id",
+            escopo.empresaIds,
+          );
+        }
+        const { data: contasVencidasRaw, error: erroContasVencidas } =
+          await contasVencidasQuery;
+
+        if (erroContasVencer || erroContasVencidas) {
+          console.error(
+            "[whatsapp-ia-proativo] Falha ao consultar contas autorizadas:",
+            erroContasVencer ?? erroContasVencidas,
+          );
+          return respostaJson(
+            { error: "erro_consulta", message: "Falha ao consultar alertas." },
+            503,
+          );
+        }
+
+        // Defesa em profundidade: mesmo que um mock/proxy ignore o filtro
+        // PostgREST, dados fora do escopo não chegam à montagem do prompt.
+        const contasVencer = (contasVencerRaw ?? [])
+          .filter((conta: ContaReceberAlerta) =>
+            empresaEstaNoEscopo(conta.empresa_id, escopo.empresaIds)
+          ) as ContaReceberAlerta[];
+        const contasVencidas = (contasVencidasRaw ?? [])
+          .filter((conta: ContaReceberAlerta) =>
+            empresaEstaNoEscopo(conta.empresa_id, escopo.empresaIds)
+          ) as ContaReceberAlerta[];
+
+        const clienteIds = [...new Set(
+          [...contasVencer, ...contasVencidas]
+            .map((conta) => conta.cliente_id)
+            .filter((id): id is string => typeof id === "string"),
+        )];
+        let clientes: ClienteAlerta[] = [];
+
+        if (clienteIds.length > 0) {
+          let clientesQuery = supabase
+            .from("clientes")
+            .select("id,empresa_id,razao_social,nome,telefone")
+            .in("id", clienteIds);
+          if (escopo.empresaIds !== null) {
+            clientesQuery = clientesQuery.in("empresa_id", escopo.empresaIds);
+          }
+          const { data: clientesRaw, error: erroClientes } = await clientesQuery;
+          if (erroClientes) {
+            console.error(
+              "[whatsapp-ia-proativo] Falha ao consultar clientes autorizados:",
+              erroClientes,
+            );
+            return respostaJson(
+              { error: "erro_consulta", message: "Falha ao consultar clientes." },
+              503,
+            );
+          }
+          clientes = (clientesRaw ?? [])
+            .filter((cliente: ClienteAlerta) =>
+              empresaEstaNoEscopo(cliente.empresa_id, escopo.empresaIds)
+            ) as ClienteAlerta[];
+        }
+
+        const clientesPorEmpresa = new Map(
+          clientes.map((cliente) => [
+            `${cliente.empresa_id ?? "sem-empresa"}:${cliente.id}`,
+            cliente,
+          ]),
+        );
 
         const alertas: AlertaProativo[] = [];
 
         // Gerar alertas de vencimento
-        contasVencer?.forEach((conta) => {
-          const cliente = conta.cliente as any;
+        contasVencer.forEach((conta) => {
+          const cliente = clientesPorEmpresa.get(
+            `${conta.empresa_id ?? "sem-empresa"}:${conta.cliente_id}`,
+          );
           if (cliente?.telefone) {
             alertas.push({
               tipo: "vencimento",
               cliente_id: cliente.id,
-              cliente_nome: cliente.razao_social,
+              cliente_nome: cliente.razao_social ?? cliente.nome ?? "Cliente",
               cliente_telefone: cliente.telefone,
               mensagem: "",
               dados: {
+                empresa_id: conta.empresa_id,
+                conta_receber_id: conta.id,
                 valor: conta.valor,
                 vencimento: conta.data_vencimento,
                 descricao: conta.descricao,
@@ -133,8 +388,10 @@ export function createHandler(
         });
 
         // Gerar alertas de inadimplência
-        contasVencidas?.forEach((conta) => {
-          const cliente = conta.cliente as any;
+        contasVencidas.forEach((conta) => {
+          const cliente = clientesPorEmpresa.get(
+            `${conta.empresa_id ?? "sem-empresa"}:${conta.cliente_id}`,
+          );
           if (cliente?.telefone) {
             const diasAtraso = Math.floor(
               (Date.now() - new Date(conta.data_vencimento).getTime()) /
@@ -143,10 +400,12 @@ export function createHandler(
             alertas.push({
               tipo: "inadimplencia",
               cliente_id: cliente.id,
-              cliente_nome: cliente.razao_social,
+              cliente_nome: cliente.razao_social ?? cliente.nome ?? "Cliente",
               cliente_telefone: cliente.telefone,
               mensagem: "",
               dados: {
+                empresa_id: conta.empresa_id,
+                conta_receber_id: conta.id,
                 valor: conta.valor,
                 vencimento: conta.data_vencimento,
                 dias_atraso: diasAtraso,
@@ -226,8 +485,11 @@ export function createHandler(
       }
 
       if (action === "test") {
-        const { telefone, mensagem } = data || {};
-        if (!telefone || !mensagem) {
+        const { telefone, mensagem } = data;
+        if (
+          typeof telefone !== "string" || telefone.trim().length === 0 ||
+          typeof mensagem !== "string" || mensagem.trim().length === 0
+        ) {
           return new Response(
             JSON.stringify({
               success: false,
@@ -256,7 +518,166 @@ export function createHandler(
       }
 
       if (action === "enviar-mensagem") {
-        const { telefone, mensagem, cliente_id } = data;
+        const { telefone, mensagem } = data;
+        if (
+          typeof telefone !== "string" || telefone.trim().length === 0 ||
+          typeof mensagem !== "string" || mensagem.trim().length === 0
+        ) {
+          return respostaJson(
+            {
+              success: false,
+              error: "telefone e mensagem são obrigatórios",
+            },
+            400,
+          );
+        }
+
+        const contaReceberId = data.conta_receber_id;
+        const clienteIdInformado = data.cliente_id;
+        if (
+          (contaReceberId !== undefined && contaReceberId !== null &&
+            (typeof contaReceberId !== "string" ||
+              !UUID_RE.test(contaReceberId))) ||
+          (clienteIdInformado !== undefined && clienteIdInformado !== null &&
+            (typeof clienteIdInformado !== "string" ||
+              !UUID_RE.test(clienteIdInformado)))
+        ) {
+          return respostaJson(
+            {
+              error: "referencia_invalida",
+              message: "conta_receber_id e cliente_id devem ser UUIDs válidos.",
+            },
+            400,
+          );
+        }
+
+        let empresaAutorizada = empresaSolicitada.empresaId;
+        let clienteAutorizado = typeof clienteIdInformado === "string"
+          ? clienteIdInformado
+          : null;
+
+        if (typeof contaReceberId === "string") {
+          let contaQuery = supabase
+            .from("contas_receber")
+            .select("id,empresa_id,cliente_id")
+            .eq("id", contaReceberId);
+          if (escopo.empresaIds !== null) {
+            contaQuery = contaQuery.in("empresa_id", escopo.empresaIds);
+          }
+          const { data: conta, error: erroConta } = await contaQuery.maybeSingle();
+          if (erroConta) {
+            console.error(
+              "[whatsapp-ia-proativo] Falha ao autorizar conta da mensagem:",
+              erroConta,
+            );
+            return respostaJson(
+              {
+                error: "erro_autorizacao",
+                message: "Não foi possível validar a conta informada.",
+              },
+              503,
+            );
+          }
+          if (
+            !conta ||
+            !empresaEstaNoEscopo(conta.empresa_id, escopo.empresaIds) ||
+            (clienteAutorizado && clienteAutorizado !== conta.cliente_id)
+          ) {
+            return respostaJson(
+              {
+                error: "sem_permissao_empresa",
+                message: "Conta ou cliente fora do escopo autorizado.",
+              },
+              403,
+            );
+          }
+          empresaAutorizada = conta.empresa_id;
+          clienteAutorizado = conta.cliente_id;
+
+          // A FK não garante que conta e cliente pertençam ao mesmo tenant.
+          // Validamos a combinação para impedir que um vínculo inconsistente
+          // grave ou exponha referência de outra empresa via service_role.
+          if (clienteAutorizado) {
+            let clienteDaContaQuery = supabase
+              .from("clientes")
+              .select("id,empresa_id")
+              .eq("id", clienteAutorizado)
+              .eq("empresa_id", empresaAutorizada);
+            if (escopo.empresaIds !== null) {
+              clienteDaContaQuery = clienteDaContaQuery.in(
+                "empresa_id",
+                escopo.empresaIds,
+              );
+            }
+            const { data: clienteDaConta, error: erroClienteDaConta } =
+              await clienteDaContaQuery.maybeSingle();
+            if (erroClienteDaConta) {
+              console.error(
+                "[whatsapp-ia-proativo] Falha ao autorizar cliente da conta:",
+                erroClienteDaConta,
+              );
+              return respostaJson(
+                {
+                  error: "erro_autorizacao",
+                  message: "Não foi possível validar o cliente da conta.",
+                },
+                503,
+              );
+            }
+            if (
+              !clienteDaConta ||
+              clienteDaConta.empresa_id !== empresaAutorizada ||
+              !empresaEstaNoEscopo(
+                clienteDaConta.empresa_id,
+                escopo.empresaIds,
+              )
+            ) {
+              return respostaJson(
+                {
+                  error: "sem_permissao_empresa",
+                  message: "Cliente da conta fora do escopo autorizado.",
+                },
+                403,
+              );
+            }
+          }
+        } else if (clienteAutorizado) {
+          let clienteQuery = supabase
+            .from("clientes")
+            .select("id,empresa_id")
+            .eq("id", clienteAutorizado);
+          if (escopo.empresaIds !== null) {
+            clienteQuery = clienteQuery.in("empresa_id", escopo.empresaIds);
+          }
+          const { data: cliente, error: erroCliente } =
+            await clienteQuery.maybeSingle();
+          if (erroCliente) {
+            console.error(
+              "[whatsapp-ia-proativo] Falha ao autorizar cliente da mensagem:",
+              erroCliente,
+            );
+            return respostaJson(
+              {
+                error: "erro_autorizacao",
+                message: "Não foi possível validar o cliente informado.",
+              },
+              503,
+            );
+          }
+          if (
+            !cliente ||
+            !empresaEstaNoEscopo(cliente.empresa_id, escopo.empresaIds)
+          ) {
+            return respostaJson(
+              {
+                error: "sem_permissao_empresa",
+                message: "Cliente fora do escopo autorizado.",
+              },
+              403,
+            );
+          }
+          empresaAutorizada = cliente.empresa_id;
+        }
 
         // Formatar número
         const numeroFormatado = formatarTelefone(telefone);
@@ -269,14 +690,30 @@ export function createHandler(
         // Registrar no histórico — conta_receber_id é NOT NULL na tabela
         // (migration 20251224131124); sem ele, pular o registro (o link
         // ainda é gerado) em vez de falhar com PGRST204/23502.
-        if (data.conta_receber_id) {
-          await supabase.from("historico_cobranca_whatsapp").insert({
-            conta_receber_id: data.conta_receber_id,
-            cliente_id,
+        if (typeof contaReceberId === "string") {
+          const { error: erroHistorico } = await supabase
+            .from("historico_cobranca_whatsapp")
+            .insert({
+            conta_receber_id: contaReceberId,
+            empresa_id: empresaAutorizada,
+            cliente_id: clienteAutorizado,
             telefone: numeroFormatado,
             mensagem,
             status: "gerado",
           });
+          if (erroHistorico) {
+            console.error(
+              "[whatsapp-ia-proativo] Falha ao registrar histórico:",
+              erroHistorico,
+            );
+            return respostaJson(
+              {
+                error: "erro_registro",
+                message: "Não foi possível registrar a mensagem.",
+              },
+              503,
+            );
+          }
         }
 
         return new Response(
@@ -293,6 +730,19 @@ export function createHandler(
 
       if (action === "gerar-resposta-ia") {
         const { pergunta_cliente, contexto } = data;
+
+        if (
+          typeof pergunta_cliente !== "string" ||
+          pergunta_cliente.trim().length === 0
+        ) {
+          return respostaJson(
+            {
+              success: false,
+              error: "pergunta_cliente é obrigatória",
+            },
+            400,
+          );
+        }
 
         if (!lovableApiKey) {
           return new Response(

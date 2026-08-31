@@ -24,7 +24,8 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.1.4
+          # Mesma versão usada para validar as regras de lint deste workflow.
+          deno-version: v2.9.5
 
       - name: Cache Deno dependencies
         uses: actions/cache@v4
@@ -117,7 +118,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.1.4
+          deno-version: v2.9.5
 
       - name: Cache Deno dependencies
         uses: actions/cache@v4
