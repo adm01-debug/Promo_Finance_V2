@@ -39,7 +39,7 @@ for arquivo in "${alvos[@]}"; do
 done
 
 echo "▶ Type-check de ${#alvos[@]} arquivos críticos alterados nesta trilha…"
-deno check --no-lock "${alvos[@]}"
+deno check --no-lock --node-modules-dir=auto "${alvos[@]}"
 
 echo
 echo "✅ Gate Deno do escopo endurecido aprovado."
