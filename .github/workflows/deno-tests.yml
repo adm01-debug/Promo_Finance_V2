@@ -46,6 +46,7 @@ jobs:
           deno lint --no-config \
             --rules-exclude=no-import-prefix,no-explicit-any,no-unused-vars,prefer-const,require-await \
             supabase/functions/_shared/auth-guard.ts \
+            supabase/functions/_shared/proxy-audit.ts \
             supabase/functions/_shared/sql-write-guard.ts \
             supabase/functions/_shared/sql-write-guard_test.ts \
             supabase/functions/_shared/webhook-auth.ts \
@@ -58,6 +59,8 @@ jobs:
             supabase/functions/analyze-document/index.ts \
             supabase/functions/benchmarking-setorial/index.ts \
             supabase/functions/categorizar-despesa/index.ts \
+            supabase/functions/conciliacao-proxy/index.ts \
+            supabase/functions/conciliacao-proxy/index_test.ts \
             supabase/functions/insights-relatorio/index.ts \
             supabase/functions/enviar-alerta-email/index.ts \
             supabase/functions/enviar-alerta-email/index.test.ts \
@@ -93,6 +96,7 @@ jobs:
             supabase/functions/_shared/webhook-auth_test.ts \
             supabase/functions/analise-fluxo-ia/auth_test.ts \
             supabase/functions/bling-webhook/index.test.ts \
+            supabase/functions/conciliacao-proxy/index_test.ts \
             supabase/functions/enviar-alerta-email/index.test.ts \
             supabase/functions/executar-analise-preditiva/index.test.ts \
             supabase/functions/gerar-alertas-tributarios/index.test.ts \

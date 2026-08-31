@@ -71,6 +71,7 @@ export function createHandler(deps: HandlerDeps) {
 
         await auditedRpc(ctx, deps.admin, "confirmar_conciliacao_manual", {
           p_transacao_id: payload.transacaoId,
+          p_user_id: userId,
           p_conta_pagar_id: payload.contaPagarId ?? null,
           p_conta_receber_id: payload.contaReceberId ?? null,
           p_ajuste_centavos: ajuste,
@@ -80,6 +81,7 @@ export function createHandler(deps: HandlerDeps) {
       if (payload.action === "desfazer") {
         await auditedRpc(ctx, deps.admin, "desfazer_conciliacao_manual", {
           p_transacao_id: payload.transacaoId,
+          p_user_id: userId,
         }, "desfazer");
         return json(200, { ok: true }, { action: "desfazer" });
       }
@@ -105,6 +107,6 @@ function defaultDeps(): HandlerDeps {
   };
 }
 
-if (!Deno.env.get("DENO_TESTING")) {
+if (import.meta.main && !Deno.env.get("DENO_TESTING")) {
   Deno.serve(createHandler(defaultDeps()));
 }

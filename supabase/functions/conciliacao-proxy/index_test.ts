@@ -58,8 +58,8 @@ Deno.test("conciliacao-proxy: 405 em GET", async () => {
 Deno.test("conciliacao-proxy: 400 se transacaoId não for UUID", async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(req({ action: "desfazer", transacaoId: "abc" }));
-  assertEquals(res.status, 422);
-  assertEquals((await res.json()).code, "VALIDATION_ERROR");
+  assertEquals(res.status, 400);
+  assertEquals((await res.json()).error, "Invalid payload schema (Contract Violation)");
 });
 
 Deno.test("conciliacao-proxy: 400 quando contaPagarId inválido", async () => {
@@ -67,8 +67,8 @@ Deno.test("conciliacao-proxy: 400 quando contaPagarId inválido", async () => {
   const res = await createHandler(deps)(
     req({ action: "confirmar", transacaoId: T, contaPagarId: "bad" }),
   );
-  assertEquals(res.status, 422);
-  assertEquals((await res.json()).code, "VALIDATION_ERROR");
+  assertEquals(res.status, 400);
+  assertEquals((await res.json()).error, "Invalid payload schema (Contract Violation)");
 });
 
 Deno.test("conciliacao-proxy: sucesso confirmar encaminha args completos", async () => {
@@ -80,7 +80,13 @@ Deno.test("conciliacao-proxy: sucesso confirmar encaminha args completos", async
   assertEquals(await res.json(), { ok: true });
   assertEquals(calls[0], {
     fn: "confirmar_conciliacao_manual",
-    args: { p_transacao_id: T, p_conta_pagar_id: CP, p_conta_receber_id: CR, p_ajuste_centavos: 150 },
+    args: {
+      p_transacao_id: T,
+      p_user_id: "user-1",
+      p_conta_pagar_id: CP,
+      p_conta_receber_id: CR,
+      p_ajuste_centavos: 150,
+    },
   });
 });
 
@@ -88,6 +94,7 @@ Deno.test("conciliacao-proxy: confirmar com ajuste ausente vira 0", async () => 
   const { deps, calls } = makeDeps();
   await createHandler(deps)(req({ action: "confirmar", transacaoId: T, contaPagarId: CP }));
   assertEquals(calls[0].args.p_ajuste_centavos, 0);
+  assertEquals(calls[0].args.p_user_id, "user-1");
   assertEquals(calls[0].args.p_conta_receber_id, null);
 });
 
@@ -95,7 +102,10 @@ Deno.test("conciliacao-proxy: sucesso desfazer chama RPC correta", async () => {
   const { deps, calls } = makeDeps();
   const res = await createHandler(deps)(req({ action: "desfazer", transacaoId: T }));
   assertEquals(res.status, 200);
-  assertEquals(calls[0], { fn: "desfazer_conciliacao_manual", args: { p_transacao_id: T } });
+  assertEquals(calls[0], {
+    fn: "desfazer_conciliacao_manual",
+    args: { p_transacao_id: T, p_user_id: "user-1" },
+  });
 });
 
 Deno.test("conciliacao-proxy: erro do RPC vira 400", async () => {

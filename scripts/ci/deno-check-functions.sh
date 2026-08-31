@@ -17,6 +17,7 @@ while IFS= read -r arquivo; do
   alvos+=("$arquivo")
 done <<'EOF'
 supabase/functions/_shared/auth-guard.ts
+supabase/functions/_shared/proxy-audit.ts
 supabase/functions/_shared/sql-write-guard.ts
 supabase/functions/_shared/webhook-auth.ts
 supabase/functions/mcp-query/index.ts
@@ -24,6 +25,7 @@ supabase/functions/analise-fluxo-ia/index.ts
 supabase/functions/analyze-document/index.ts
 supabase/functions/benchmarking-setorial/index.ts
 supabase/functions/categorizar-despesa/index.ts
+supabase/functions/conciliacao-proxy/index.ts
 supabase/functions/insights-relatorio/index.ts
 supabase/functions/enviar-alerta-email/index.ts
 supabase/functions/executar-analise-preditiva/index.ts
