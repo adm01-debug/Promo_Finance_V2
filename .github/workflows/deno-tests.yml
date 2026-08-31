@@ -43,7 +43,7 @@ jobs:
         # reprova por esse baseline. Este gate é bloqueante para todas as demais
         # regras nos guards, no mcp-query e nas funções/testes endurecidos.
         run: |
-          deno lint \
+          deno lint --no-config \
             --rules-exclude=no-import-prefix,no-explicit-any,no-unused-vars,prefer-const,require-await \
             supabase/functions/_shared/auth-guard.ts \
             supabase/functions/_shared/sql-write-guard.ts \
@@ -76,7 +76,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          deno test \
+          deno test --no-config \
             --allow-env \
             --allow-net \
             --allow-read \
@@ -144,7 +144,7 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: |
-          deno test \
+          deno test --no-config \
             --allow-net \
             --allow-env \
             --allow-read \
