@@ -81,7 +81,10 @@ function extrairEmpresaSolicitada(
       return {
         ok: false,
         resposta: respostaJson(
-          { error: "empresa_invalida", message: "empresa_id deve ser um UUID válido." },
+          {
+            error: "empresa_invalida",
+            message: "empresa_id deve ser um UUID válido.",
+          },
           400,
         ),
       };
@@ -152,11 +155,15 @@ async function resolverEscopoEmpresas(
     };
   }
 
-  const empresasPermitidas = [...new Set(
-    (data ?? [])
-      .map((vinculo: { empresa_id?: unknown }) => vinculo.empresa_id)
-      .filter((id): id is string => typeof id === "string" && UUID_RE.test(id)),
-  )];
+  const empresasPermitidas = [
+    ...new Set(
+      (data ?? [])
+        .map((vinculo: { empresa_id?: unknown }) => vinculo.empresa_id)
+        .filter((id): id is string =>
+          typeof id === "string" && UUID_RE.test(id)
+        ),
+    ),
+  ];
 
   if (
     empresasPermitidas.length === 0 ||
@@ -322,11 +329,13 @@ export function createHandler(
             empresaEstaNoEscopo(conta.empresa_id, escopo.empresaIds)
           ) as ContaReceberAlerta[];
 
-        const clienteIds = [...new Set(
-          [...contasVencer, ...contasVencidas]
-            .map((conta) => conta.cliente_id)
-            .filter((id): id is string => typeof id === "string"),
-        )];
+        const clienteIds = [
+          ...new Set(
+            [...contasVencer, ...contasVencidas]
+              .map((conta) => conta.cliente_id)
+              .filter((id): id is string => typeof id === "string"),
+          ),
+        ];
         let clientes: ClienteAlerta[] = [];
 
         if (clienteIds.length > 0) {
@@ -337,14 +346,18 @@ export function createHandler(
           if (escopo.empresaIds !== null) {
             clientesQuery = clientesQuery.in("empresa_id", escopo.empresaIds);
           }
-          const { data: clientesRaw, error: erroClientes } = await clientesQuery;
+          const { data: clientesRaw, error: erroClientes } =
+            await clientesQuery;
           if (erroClientes) {
             console.error(
               "[whatsapp-ia-proativo] Falha ao consultar clientes autorizados:",
               erroClientes,
             );
             return respostaJson(
-              { error: "erro_consulta", message: "Falha ao consultar clientes." },
+              {
+                error: "erro_consulta",
+                message: "Falha ao consultar clientes.",
+              },
               503,
             );
           }
@@ -564,7 +577,8 @@ export function createHandler(
           if (escopo.empresaIds !== null) {
             contaQuery = contaQuery.in("empresa_id", escopo.empresaIds);
           }
-          const { data: conta, error: erroConta } = await contaQuery.maybeSingle();
+          const { data: conta, error: erroConta } = await contaQuery
+            .maybeSingle();
           if (erroConta) {
             console.error(
               "[whatsapp-ia-proativo] Falha ao autorizar conta da mensagem:",
@@ -649,8 +663,8 @@ export function createHandler(
           if (escopo.empresaIds !== null) {
             clienteQuery = clienteQuery.in("empresa_id", escopo.empresaIds);
           }
-          const { data: cliente, error: erroCliente } =
-            await clienteQuery.maybeSingle();
+          const { data: cliente, error: erroCliente } = await clienteQuery
+            .maybeSingle();
           if (erroCliente) {
             console.error(
               "[whatsapp-ia-proativo] Falha ao autorizar cliente da mensagem:",
@@ -694,13 +708,13 @@ export function createHandler(
           const { error: erroHistorico } = await supabase
             .from("historico_cobranca_whatsapp")
             .insert({
-            conta_receber_id: contaReceberId,
-            empresa_id: empresaAutorizada,
-            cliente_id: clienteAutorizado,
-            telefone: numeroFormatado,
-            mensagem,
-            status: "gerado",
-          });
+              conta_receber_id: contaReceberId,
+              empresa_id: empresaAutorizada,
+              cliente_id: clienteAutorizado,
+              telefone: numeroFormatado,
+              mensagem,
+              status: "gerado",
+            });
           if (erroHistorico) {
             console.error(
               "[whatsapp-ia-proativo] Falha ao registrar histórico:",
@@ -859,7 +873,7 @@ function normalizarPayloadLegado(rawBody: unknown): unknown {
 }
 
 function gerarPromptMensagem(alerta: AlertaProativo): string {
-  const dados = alerta.dados as any;
+  const dados = alerta.dados;
 
   switch (alerta.tipo) {
     case "vencimento":
@@ -879,7 +893,7 @@ function gerarPromptMensagem(alerta: AlertaProativo): string {
 }
 
 function gerarMensagemFallback(alerta: AlertaProativo): string {
-  const dados = alerta.dados as any;
+  const dados = alerta.dados;
 
   switch (alerta.tipo) {
     case "vencimento":

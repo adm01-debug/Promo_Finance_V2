@@ -11,9 +11,115 @@ type Counters = {
   rateLimit: number;
 };
 
+const EMPRESA_AUTORIZADA = "11111111-1111-4111-8111-111111111111";
+const EMPRESA_ALHEIA = "22222222-2222-4222-8222-222222222222";
+const CLIENTE_AUTORIZADO = "33333333-3333-4333-8333-333333333333";
+const CLIENTE_ALHEIO = "44444444-4444-4444-8444-444444444444";
+const CONTA_AUTORIZADA = "55555555-5555-4555-8555-555555555555";
+const CONTA_ALHEIA = "66666666-6666-4666-8666-666666666666";
+
+interface DbCall {
+  table: string;
+  operation: "select" | "insert";
+  filters: Array<{ method: string; column: string; value: unknown }>;
+  payload?: unknown;
+}
+
+interface FakeDatabase {
+  userEmpresas?: { data: unknown[] | null; error: unknown };
+  contasVencer?: { data: unknown[] | null; error: unknown };
+  contasVencidas?: { data: unknown[] | null; error: unknown };
+  clientes?: { data: unknown[] | null; error: unknown };
+  contasPorId?: Record<string, { data: unknown; error: unknown }>;
+  clientesPorId?: Record<string, { data: unknown; error: unknown }>;
+  insertError?: unknown;
+}
+
+function fakeSupabaseClient(
+  database: FakeDatabase = {},
+  calls: DbCall[] = [],
+): ReturnType<WhatsappIaProativoDependencies["criarClient"]> {
+  const client = {
+    from(table: string) {
+      const filters: DbCall["filters"] = [];
+      let operation: DbCall["operation"] = "select";
+
+      const resultForSelect = () => {
+        if (table === "user_empresas") {
+          return database.userEmpresas ?? {
+            data: [{ empresa_id: EMPRESA_AUTORIZADA }],
+            error: null,
+          };
+        }
+        if (table === "contas_receber") {
+          const id = filters.find((f) => f.method === "eq" && f.column === "id")
+            ?.value;
+          if (typeof id === "string") {
+            return database.contasPorId?.[id] ?? { data: null, error: null };
+          }
+          return filters.some((f) =>
+              f.method === "lt" && f.column === "data_vencimento"
+            )
+            ? database.contasVencidas ?? { data: [], error: null }
+            : database.contasVencer ?? { data: [], error: null };
+        }
+        if (table === "clientes") {
+          const id = filters.find((f) => f.method === "eq" && f.column === "id")
+            ?.value;
+          if (typeof id === "string") {
+            return database.clientesPorId?.[id] ?? { data: null, error: null };
+          }
+          return database.clientes ?? { data: [], error: null };
+        }
+        return { data: [], error: null };
+      };
+
+      const executeSelect = () => {
+        calls.push({ table, operation, filters: [...filters] });
+        return resultForSelect();
+      };
+
+      const builder: Record<string, unknown> = {};
+      builder.select = () => builder;
+      for (const method of ["eq", "in", "gte", "lte", "lt"] as const) {
+        builder[method] = (column: string, value: unknown) => {
+          filters.push({ method, column, value });
+          return builder;
+        };
+      }
+      builder.maybeSingle = () => Promise.resolve(executeSelect());
+      builder.insert = (payload: unknown) => {
+        operation = "insert";
+        calls.push({
+          table,
+          operation,
+          filters: [...filters],
+          payload,
+        });
+        return Promise.resolve({
+          data: null,
+          error: database.insertError ?? null,
+        });
+      };
+      builder.then = (
+        resolve: (value: unknown) => unknown,
+        reject?: (reason: unknown) => unknown,
+      ) => Promise.resolve(executeSelect()).then(resolve, reject);
+
+      return builder;
+    },
+  };
+
+  return client as unknown as ReturnType<
+    WhatsappIaProativoDependencies["criarClient"]
+  >;
+}
+
 function dependencies(
   counters: Counters,
   overrides: Partial<WhatsappIaProativoDependencies> = {},
+  database: FakeDatabase = {},
+  dbCalls: DbCall[] = [],
 ): Partial<WhatsappIaProativoDependencies> {
   return {
     autorizar: () => {
@@ -29,7 +135,7 @@ function dependencies(
     }) as typeof fetch,
     criarClient: (() => {
       counters.client++;
-      return {};
+      return fakeSupabaseClient(database, dbCalls);
     }) as unknown as WhatsappIaProativoDependencies["criarClient"],
     verificarRateLimit: (() => {
       counters.rateLimit++;
@@ -65,6 +171,7 @@ async function withAuthEnvironment(run: () => Promise<void>): Promise<void> {
     "SUPABASE_ANON_KEY",
     "SUPABASE_URL",
     "INTERNAL_SECRET_INTERNAL_JOBS",
+    "LOVABLE_API_KEY",
   ] as const;
   const previous = new Map(names.map((name) => [name, Deno.env.get(name)]));
 
@@ -72,6 +179,7 @@ async function withAuthEnvironment(run: () => Promise<void>): Promise<void> {
   Deno.env.set("SUPABASE_ANON_KEY", "anon-publica-teste");
   Deno.env.set("SUPABASE_URL", "http://supabase.invalid");
   Deno.env.set("INTERNAL_SECRET_INTERNAL_JOBS", "segredo-interno-teste");
+  Deno.env.delete("LOVABLE_API_KEY");
 
   try {
     await run();
@@ -162,6 +270,342 @@ Deno.test("whatsapp-ia-proativo: resultado usuário do guard mantém o fluxo do 
   );
   assertEquals(response.headers.get("access-control-allow-origin"), "*");
   assertEquals(calls, { ai: 0, auth: 1, client: 1, rateLimit: 1 });
+});
+
+Deno.test("whatsapp-ia-proativo: empresa alheia falha antes de rate limit, IA ou link", async () => {
+  const calls = counters();
+  const dbCalls: DbCall[] = [];
+  const handler = createHandler(dependencies(calls, {}, {}, dbCalls));
+  const response = await handler(
+    post({
+      action: "enviar-mensagem",
+      data: {
+        empresa_id: EMPRESA_ALHEIA,
+        telefone: "11999999999",
+        mensagem: "não pode sair",
+      },
+    }),
+  );
+
+  assertEquals(response.status, 403);
+  const body = await response.json();
+  assertEquals(body.error, "sem_permissao_empresa");
+  assertEquals(body.whatsapp_link, undefined);
+  assertEquals(calls, { ai: 0, auth: 1, client: 1, rateLimit: 0 });
+  assertEquals(dbCalls.map((call) => call.table), ["user_empresas"]);
+  assertEquals(
+    dbCalls[0].filters,
+    [
+      { method: "eq", column: "user_id", value: "usuario-teste" },
+      { method: "eq", column: "ativo", value: true },
+    ],
+  );
+});
+
+Deno.test("whatsapp-ia-proativo: falha ao resolver tenant fecha antes de IA ou ação", async () => {
+  const calls = counters();
+  const dbCalls: DbCall[] = [];
+  const handler = createHandler(dependencies(
+    calls,
+    {},
+    { userEmpresas: { data: null, error: { message: "indisponível" } } },
+    dbCalls,
+  ));
+  const response = await handler(
+    post({
+      action: "gerar-resposta-ia",
+      data: { pergunta_cliente: "Posso parcelar?", contexto: {} },
+    }),
+  );
+
+  assertEquals(response.status, 503);
+  assertEquals((await response.json()).error, "erro_autorizacao");
+  assertEquals(calls, { ai: 0, auth: 1, client: 1, rateLimit: 0 });
+  assertEquals(dbCalls.map((call) => call.table), ["user_empresas"]);
+});
+
+Deno.test("whatsapp-ia-proativo: usuário sem empresa ativa falha fechado antes do link", async () => {
+  const calls = counters();
+  const handler = createHandler(dependencies(
+    calls,
+    {},
+    { userEmpresas: { data: [], error: null } },
+  ));
+  const response = await handler(
+    post({
+      action: "test",
+      data: { telefone: "11999999999", mensagem: "não pode sair" },
+    }),
+  );
+
+  assertEquals(response.status, 403);
+  const body = await response.json();
+  assertEquals(body.error, "sem_permissao_empresa");
+  assertEquals(body.whatsapp_link, undefined);
+  assertEquals(calls, { ai: 0, auth: 1, client: 1, rateLimit: 0 });
+});
+
+Deno.test("whatsapp-ia-proativo: consultas de alertas filtram contas e clientes pelo tenant", async () => {
+  await withAuthEnvironment(async () => {
+    const calls = counters();
+    const dbCalls: DbCall[] = [];
+    const handler = createHandler(dependencies(
+      calls,
+      {},
+      {
+        contasVencer: {
+          data: [
+            {
+              id: CONTA_AUTORIZADA,
+              empresa_id: EMPRESA_AUTORIZADA,
+              cliente_id: CLIENTE_AUTORIZADO,
+              valor: 100,
+              data_vencimento: "2026-09-02",
+              descricao: "Conta permitida",
+            },
+            {
+              id: CONTA_ALHEIA,
+              empresa_id: EMPRESA_ALHEIA,
+              cliente_id: CLIENTE_ALHEIO,
+              valor: 999,
+              data_vencimento: "2026-09-02",
+              descricao: "Conta alheia injetada pelo mock",
+            },
+          ],
+          error: null,
+        },
+        contasVencidas: { data: [], error: null },
+        clientes: {
+          data: [
+            {
+              id: CLIENTE_AUTORIZADO,
+              empresa_id: EMPRESA_AUTORIZADA,
+              razao_social: "Cliente permitido",
+              nome: null,
+              telefone: "11999999999",
+            },
+            {
+              id: CLIENTE_ALHEIO,
+              empresa_id: EMPRESA_ALHEIA,
+              razao_social: "Cliente alheio",
+              nome: null,
+              telefone: "11888888888",
+            },
+          ],
+          error: null,
+        },
+      },
+      dbCalls,
+    ));
+
+    const response = await handler(
+      post({ action: "analisar-alertas", data: {} }),
+    );
+
+    assertEquals(response.status, 200);
+    const body = await response.json();
+    assertEquals(body.resumo.total, 1);
+    assertEquals(body.alertas[0].cliente_nome, "Cliente permitido");
+    assertEquals(body.alertas[0].dados.empresa_id, EMPRESA_AUTORIZADA);
+    assertEquals(body.alertas[0].dados.conta_receber_id, CONTA_AUTORIZADA);
+    assertEquals(calls.ai, 0);
+
+    const consultasTenant = dbCalls.filter((call) =>
+      call.table === "contas_receber" || call.table === "clientes"
+    );
+    assertEquals(consultasTenant.length, 3);
+    for (const consulta of consultasTenant) {
+      assertEquals(
+        consulta.filters.some((filtro) =>
+          filtro.method === "in" && filtro.column === "empresa_id" &&
+          JSON.stringify(filtro.value) === JSON.stringify([EMPRESA_AUTORIZADA])
+        ),
+        true,
+      );
+    }
+  });
+});
+
+Deno.test("whatsapp-ia-proativo: conta cross-tenant não gera link nem histórico", async () => {
+  const calls = counters();
+  const dbCalls: DbCall[] = [];
+  const handler = createHandler(dependencies(
+    calls,
+    {},
+    {
+      contasPorId: {
+        [CONTA_ALHEIA]: {
+          data: {
+            id: CONTA_ALHEIA,
+            empresa_id: EMPRESA_ALHEIA,
+            cliente_id: CLIENTE_ALHEIO,
+          },
+          error: null,
+        },
+      },
+    },
+    dbCalls,
+  ));
+  const response = await handler(
+    post({
+      action: "enviar-mensagem",
+      data: {
+        conta_receber_id: CONTA_ALHEIA,
+        telefone: "11888888888",
+        mensagem: "tentativa cross-tenant",
+      },
+    }),
+  );
+
+  assertEquals(response.status, 403);
+  const body = await response.json();
+  assertEquals(body.whatsapp_link, undefined);
+  assertEquals(calls.ai, 0);
+  assertEquals(
+    dbCalls.some((call) => call.operation === "insert"),
+    false,
+  );
+  const consultaConta = dbCalls.find((call) => call.table === "contas_receber");
+  assertEquals(
+    consultaConta?.filters.some((filtro) =>
+      filtro.method === "in" && filtro.column === "empresa_id" &&
+      JSON.stringify(filtro.value) === JSON.stringify([EMPRESA_AUTORIZADA])
+    ),
+    true,
+  );
+});
+
+Deno.test("whatsapp-ia-proativo: vínculo conta-cliente entre tenants falha fechado", async () => {
+  const calls = counters();
+  const dbCalls: DbCall[] = [];
+  const handler = createHandler(dependencies(
+    calls,
+    {},
+    {
+      contasPorId: {
+        [CONTA_AUTORIZADA]: {
+          data: {
+            id: CONTA_AUTORIZADA,
+            empresa_id: EMPRESA_AUTORIZADA,
+            cliente_id: CLIENTE_ALHEIO,
+          },
+          error: null,
+        },
+      },
+      clientesPorId: {
+        [CLIENTE_ALHEIO]: {
+          // Simula dado legado inconsistente, mesmo que o proxy ignore filtros.
+          data: { id: CLIENTE_ALHEIO, empresa_id: EMPRESA_ALHEIA },
+          error: null,
+        },
+      },
+    },
+    dbCalls,
+  ));
+  const response = await handler(
+    post({
+      action: "enviar-mensagem",
+      data: {
+        conta_receber_id: CONTA_AUTORIZADA,
+        telefone: "11888888888",
+        mensagem: "não pode sair",
+      },
+    }),
+  );
+
+  assertEquals(response.status, 403);
+  assertEquals((await response.json()).whatsapp_link, undefined);
+  assertEquals(calls.ai, 0);
+  assertEquals(
+    dbCalls.some((call) => call.operation === "insert"),
+    false,
+  );
+  const consultaCliente = dbCalls.find((call) => call.table === "clientes");
+  assertEquals(
+    consultaCliente?.filters.some((filtro) =>
+      filtro.method === "eq" && filtro.column === "empresa_id" &&
+      filtro.value === EMPRESA_AUTORIZADA
+    ),
+    true,
+  );
+});
+
+Deno.test("whatsapp-ia-proativo: histórico usa empresa e cliente da conta autorizada", async () => {
+  const calls = counters();
+  const dbCalls: DbCall[] = [];
+  const handler = createHandler(dependencies(
+    calls,
+    {},
+    {
+      contasPorId: {
+        [CONTA_AUTORIZADA]: {
+          data: {
+            id: CONTA_AUTORIZADA,
+            empresa_id: EMPRESA_AUTORIZADA,
+            cliente_id: CLIENTE_AUTORIZADO,
+          },
+          error: null,
+        },
+      },
+      clientesPorId: {
+        [CLIENTE_AUTORIZADO]: {
+          data: {
+            id: CLIENTE_AUTORIZADO,
+            empresa_id: EMPRESA_AUTORIZADA,
+          },
+          error: null,
+        },
+      },
+    },
+    dbCalls,
+  ));
+  const response = await handler(
+    post({
+      action: "enviar-mensagem",
+      data: {
+        conta_receber_id: CONTA_AUTORIZADA,
+        telefone: "11999999999",
+        mensagem: "mensagem autorizada",
+      },
+    }),
+  );
+
+  assertEquals(response.status, 200);
+  const insert = dbCalls.find((call) => call.operation === "insert");
+  assertEquals(insert?.table, "historico_cobranca_whatsapp");
+  assertEquals(
+    insert?.payload,
+    {
+      conta_receber_id: CONTA_AUTORIZADA,
+      empresa_id: EMPRESA_AUTORIZADA,
+      cliente_id: CLIENTE_AUTORIZADO,
+      telefone: "5511999999999",
+      mensagem: "mensagem autorizada",
+      status: "gerado",
+    },
+  );
+  assertEquals(calls.ai, 0);
+});
+
+Deno.test("whatsapp-ia-proativo: empresa alheia no contexto não chega à IA", async () => {
+  await withAuthEnvironment(async () => {
+    Deno.env.set("LOVABLE_API_KEY", "lovable-teste");
+    const calls = counters();
+    const handler = createHandler(dependencies(calls));
+    const response = await handler(
+      post({
+        action: "gerar-resposta-ia",
+        data: {
+          pergunta_cliente: "Posso parcelar?",
+          contexto: { empresa_id: EMPRESA_ALHEIA },
+        },
+      }),
+    );
+
+    assertEquals(response.status, 403);
+    assertEquals((await response.json()).error, "sem_permissao_empresa");
+    assertEquals(calls, { ai: 0, auth: 1, client: 1, rateLimit: 0 });
+  });
 });
 
 Deno.test("whatsapp-ia-proativo: service_role Bearer mantém chamadas internas", async () => {
