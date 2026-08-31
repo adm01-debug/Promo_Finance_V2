@@ -1,85 +1,335 @@
 /**
- * Guard conservador para escritas administrativas do MCP.
+ * Guard conservador para SQL administrativo do MCP.
  *
- * Este módulo não tenta interpretar SQL inteiro. Em vez disso, permite apenas
- * UPDATE/DELETE de um único statement com predicado simples e verificável. SQL
- * complexo continua possível, mas requer `allow_all_rows: true`, uma decisão
- * explícita e auditável do operador autenticado.
+ * Objetivos:
+ * - permitir leituras `SELECT` e `WITH ... SELECT` somente leitura;
+ * - permitir `INSERT`, `UPDATE` e `DELETE` legítimos;
+ * - bloquear sempre comandos de DDL, privilégios, sessão e execução;
+ * - bloquear funções SQL conhecidas por efeito colateral administrativo;
+ * - exigir `WHERE` restritivo em `UPDATE`/`DELETE`, salvo quando o chamador
+ *   usa `allow_all_rows:true` no nível superior do worker.
+ *
+ * O módulo falha fechado: qualquer padrão não compreendido é rejeitado.
  */
 
-function removerComentariosELiterais(sql: string): { sql: string; invalido: boolean } {
-  let saida = '';
+export type ComandoSqlMcp = "select" | "insert" | "update" | "delete";
+
+export interface AnaliseSqlMcp {
+  sqlNormalizado: string;
+  comando: ComandoSqlMcp | null;
+  somenteLeitura: boolean;
+  escrita: boolean;
+  usaCte: boolean;
+  motivoBloqueio: string | null;
+}
+
+interface EstruturaComando {
+  comando: string | null;
+  usaCte: boolean;
+  motivoBloqueio: string | null;
+}
+
+const COMANDOS_BLOQUEADOS_FIXOS: Record<string, string> = {
+  alter: "Comando ALTER não é permitido no MCP",
+  analyze: "Comando ANALYZE não é permitido no MCP",
+  call: "Comando CALL não é permitido no MCP",
+  checkpoint: "Comando CHECKPOINT não é permitido no MCP",
+  cluster: "Comando CLUSTER não é permitido no MCP",
+  comment: "Comando COMMENT não é permitido no MCP",
+  commit: "Controle transacional não é permitido no MCP",
+  copy: "Comando COPY não é permitido no MCP",
+  create: "Comando CREATE não é permitido no MCP",
+  deallocate: "Comando DEALLOCATE não é permitido no MCP",
+  discard: "Comando DISCARD não é permitido no MCP",
+  do: "Comando DO não é permitido no MCP",
+  drop: "Comando DROP não é permitido no MCP",
+  execute: "Comando EXECUTE não é permitido no MCP",
+  explain: "Comando EXPLAIN não é permitido no MCP",
+  grant: "Comando GRANT não é permitido no MCP",
+  listen: "Comando LISTEN não é permitido no MCP",
+  lock: "Comando LOCK não é permitido no MCP",
+  merge: "Comando MERGE não é permitido no MCP",
+  notify: "Comando NOTIFY não é permitido no MCP",
+  prepare: "Comando PREPARE não é permitido no MCP",
+  refresh: "Comando REFRESH não é permitido no MCP",
+  reindex: "Comando REINDEX não é permitido no MCP",
+  release: "Controle transacional não é permitido no MCP",
+  reset: "Comando RESET não é permitido no MCP",
+  revoke: "Comando REVOKE não é permitido no MCP",
+  rollback: "Controle transacional não é permitido no MCP",
+  savepoint: "Controle transacional não é permitido no MCP",
+  security: "Comando SECURITY LABEL não é permitido no MCP",
+  set: "Comando SET não é permitido no MCP",
+  show: "Comando SHOW não é permitido no MCP",
+  start: "Controle transacional não é permitido no MCP",
+  truncate: "Comando TRUNCATE não é permitido no MCP",
+  unlisten: "Comando UNLISTEN não é permitido no MCP",
+  vacuum: "Comando VACUUM não é permitido no MCP",
+};
+
+const FUNCOES_COM_EFEITO_COLATERAL: Array<{ regex: RegExp; motivo: string }> = [
+  {
+    regex: /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?exec_sql\s*\(/i,
+    motivo: "Função exec_sql não é permitida no MCP",
+  },
+  {
+    regex: /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?set_config\s*\(/i,
+    motivo: "Função set_config não é permitida no MCP",
+  },
+  {
+    regex:
+      /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?pg_(terminate_backend|cancel_backend|reload_conf)\s*\(/i,
+    motivo: "Função administrativa de backend não é permitida no MCP",
+  },
+  {
+    regex: /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?dblink_exec\s*\(/i,
+    motivo: "Função dblink_exec não é permitida no MCP",
+  },
+  {
+    regex: /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?lo_(import|export)\s*\(/i,
+    motivo: "Função large object administrativa não é permitida no MCP",
+  },
+  {
+    regex: /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?(nextval|setval)\s*\(/i,
+    motivo: "Funções nextval/setval não são permitidas no MCP",
+  },
+  {
+    regex:
+      /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?pg_(?:try_)?advisory_(?:xact_)?lock(?:_shared)?\s*\(/i,
+    motivo: "Locks advisory não são permitidos no MCP",
+  },
+  {
+    regex:
+      /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?pg_advisory_unlock(?:_all|_shared)?\s*\(/i,
+    motivo: "Unlock advisory não é permitido no MCP",
+  },
+  {
+    regex: /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?pg_notify\s*\(/i,
+    motivo: "Função pg_notify não é permitida no MCP",
+  },
+  {
+    regex:
+      /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?pg_(read_file|read_binary_file|ls_dir|stat_file|log_backend_memory_contexts|rotate_logfile)\s*\(/i,
+    motivo: "Função de arquivo/servidor não é permitida no MCP",
+  },
+  {
+    regex: /\b(?:[a-z_][a-z0-9_]*\s*\.\s*)?lo_get\s*\(/i,
+    motivo: "Função large object não é permitida no MCP",
+  },
+];
+
+function temIdentificadorQuoted(sql: string): boolean {
   let i = 0;
-  let aspas: "'" | '"' | null = null;
+  let aspasSimples = false;
   let comentarioLinha = false;
   let comentarioBloco = false;
+  let literalDollar: string | null = null;
+
+  const encontrarDelimitadorDollar = (inicio: number): string | null => {
+    if (sql[inicio] !== "$") return null;
+    let cursor = inicio + 1;
+    while (cursor < sql.length && /[a-zA-Z0-9_]/.test(sql[cursor])) cursor++;
+    if (sql[cursor] !== "$") return null;
+    return sql.slice(inicio, cursor + 1);
+  };
 
   while (i < sql.length) {
     const atual = sql[i];
     const proximo = sql[i + 1];
 
     if (comentarioLinha) {
-      if (atual === '\n') {
-        comentarioLinha = false;
-        saida += '\n';
-      } else saida += ' ';
+      if (atual === "\n") comentarioLinha = false;
       i++;
       continue;
     }
+
     if (comentarioBloco) {
-      if (atual === '*' && proximo === '/') {
+      if (atual === "*" && proximo === "/") {
         comentarioBloco = false;
-        saida += '  ';
         i += 2;
       } else {
-        saida += atual === '\n' ? '\n' : ' ';
         i++;
       }
       continue;
     }
+
+    if (literalDollar) {
+      if (sql.startsWith(literalDollar, i)) {
+        i += literalDollar.length;
+        literalDollar = null;
+      } else {
+        i++;
+      }
+      continue;
+    }
+
+    if (aspasSimples) {
+      if (atual === "'" && proximo === "'") {
+        i += 2;
+      } else if (atual === "'") {
+        aspasSimples = false;
+        i++;
+      } else {
+        i++;
+      }
+      continue;
+    }
+
+    if (atual === "-" && proximo === "-") {
+      comentarioLinha = true;
+      i += 2;
+      continue;
+    }
+
+    if (atual === "/" && proximo === "*") {
+      comentarioBloco = true;
+      i += 2;
+      continue;
+    }
+
+    if (atual === "$") {
+      const delimitador = encontrarDelimitadorDollar(i);
+      if (delimitador) {
+        literalDollar = delimitador;
+        i += delimitador.length;
+        continue;
+      }
+    }
+
+    if (atual === "'") {
+      aspasSimples = true;
+      i++;
+      continue;
+    }
+
+    if (atual === '"') return true;
+    i++;
+  }
+
+  return false;
+}
+
+export function removerComentariosELiterais(
+  sql: string,
+): { sql: string; invalido: boolean } {
+  let saida = "";
+  let i = 0;
+  let aspas: "'" | '"' | null = null;
+  let comentarioLinha = false;
+  let comentarioBloco = false;
+  let literalDollar: string | null = null;
+
+  const encontrarDelimitadorDollar = (inicio: number): string | null => {
+    if (sql[inicio] !== "$") return null;
+    let cursor = inicio + 1;
+    while (cursor < sql.length && /[a-zA-Z0-9_]/.test(sql[cursor])) cursor++;
+    if (sql[cursor] !== "$") return null;
+    return sql.slice(inicio, cursor + 1);
+  };
+
+  while (i < sql.length) {
+    const atual = sql[i];
+    const proximo = sql[i + 1];
+
+    if (comentarioLinha) {
+      if (atual === "\n") {
+        comentarioLinha = false;
+        saida += "\n";
+      } else {
+        saida += " ";
+      }
+      i++;
+      continue;
+    }
+
+    if (comentarioBloco) {
+      if (atual === "*" && proximo === "/") {
+        comentarioBloco = false;
+        saida += "  ";
+        i += 2;
+      } else {
+        saida += atual === "\n" ? "\n" : " ";
+        i++;
+      }
+      continue;
+    }
+
+    if (literalDollar) {
+      if (sql.startsWith(literalDollar, i)) {
+        saida += " ".repeat(literalDollar.length);
+        i += literalDollar.length;
+        literalDollar = null;
+      } else {
+        saida += atual === "\n" ? "\n" : " ";
+        i++;
+      }
+      continue;
+    }
+
     if (aspas) {
       if (atual === aspas && proximo === aspas && aspas === "'") {
-        saida += '  ';
+        saida += "  ";
         i += 2;
       } else if (atual === aspas) {
         aspas = null;
-        saida += ' ';
+        saida += " ";
         i++;
       } else {
-        saida += atual === '\n' ? '\n' : ' ';
+        saida += atual === "\n" ? "\n" : " ";
         i++;
       }
       continue;
     }
-    if (atual === '-' && proximo === '-') {
+
+    if (atual === "-" && proximo === "-") {
       comentarioLinha = true;
-      saida += '  ';
+      saida += "  ";
       i += 2;
-    } else if (atual === '/' && proximo === '*') {
-      comentarioBloco = true;
-      saida += '  ';
-      i += 2;
-    } else if (atual === "'" || atual === '"') {
-      aspas = atual;
-      saida += ' ';
-      i++;
-    } else {
-      saida += atual;
-      i++;
+      continue;
     }
+
+    if (atual === "/" && proximo === "*") {
+      comentarioBloco = true;
+      saida += "  ";
+      i += 2;
+      continue;
+    }
+
+    if (atual === "$") {
+      const delimitador = encontrarDelimitadorDollar(i);
+      if (delimitador) {
+        literalDollar = delimitador;
+        saida += " ".repeat(delimitador.length);
+        i += delimitador.length;
+        continue;
+      }
+    }
+
+    if (atual === "'" || atual === '"') {
+      aspas = atual;
+      saida += " ";
+      i++;
+      continue;
+    }
+
+    saida += atual;
+    i++;
   }
 
-  return { sql: saida, invalido: Boolean(aspas || comentarioBloco) };
+  return {
+    sql: saida,
+    invalido: Boolean(aspas || comentarioBloco || literalDollar),
+  };
 }
 
 function removerParentesesExternos(valor: string): string {
   let texto = valor.trim();
-  while (texto.startsWith('(') && texto.endsWith(')')) {
+  while (texto.startsWith("(") && texto.endsWith(")")) {
     let profundidade = 0;
     let fechaAntesDoFim = false;
     for (let i = 0; i < texto.length; i++) {
-      if (texto[i] === '(') profundidade++;
-      if (texto[i] === ')') profundidade--;
+      if (texto[i] === "(") profundidade++;
+      if (texto[i] === ")") profundidade--;
       if (profundidade === 0 && i < texto.length - 1) fechaAntesDoFim = true;
     }
     if (fechaAntesDoFim || profundidade !== 0) break;
@@ -88,16 +338,18 @@ function removerParentesesExternos(valor: string): string {
   return texto;
 }
 
-function separarNoNivelSuperior(expressao: string, operador: 'and' | 'or'): string[] {
+function separarNoNivelSuperior(
+  expressao: string,
+  operador: "and" | "or",
+): string[] {
   const partes: string[] = [];
   let inicio = 0;
   let profundidade = 0;
-  const limite = expressao.length;
-  const padrao = new RegExp(`\\s+${operador}\\s+`, 'iy');
+  const padrao = new RegExp(`\\s+${operador}\\s+`, "iy");
 
-  for (let i = 0; i < limite; i++) {
-    if (expressao[i] === '(') profundidade++;
-    if (expressao[i] === ')') profundidade--;
+  for (let i = 0; i < expressao.length; i++) {
+    if (expressao[i] === "(") profundidade++;
+    if (expressao[i] === ")") profundidade--;
     if (profundidade !== 0) continue;
     padrao.lastIndex = i;
     const encontrado = padrao.exec(expressao);
@@ -107,21 +359,181 @@ function separarNoNivelSuperior(expressao: string, operador: 'and' | 'or'): stri
       inicio = padrao.lastIndex;
     }
   }
+
   partes.push(expressao.slice(inicio).trim());
   return partes.filter(Boolean);
 }
 
+function consumirParentesesBalanceados(texto: string, inicio: number): number {
+  if (texto[inicio] !== "(") return -1;
+  let profundidade = 0;
+  for (let i = inicio; i < texto.length; i++) {
+    if (texto[i] === "(") profundidade++;
+    if (texto[i] === ")") profundidade--;
+    if (profundidade === 0) return i + 1;
+  }
+  return -1;
+}
+
+function avancarEspacos(texto: string, cursor: number): number {
+  let i = cursor;
+  while (i < texto.length && /\s/.test(texto[i])) i++;
+  return i;
+}
+
+function lerPalavra(
+  texto: string,
+  cursor: number,
+): { palavra: string | null; fim: number } {
+  const inicio = avancarEspacos(texto, cursor);
+  const match = texto.slice(inicio).match(/^[a-z_][a-z0-9_]*/i);
+  if (!match) return { palavra: null, fim: inicio };
+  return { palavra: match[0].toLowerCase(), fim: inicio + match[0].length };
+}
+
+function extrairEstruturaComando(statement: string): EstruturaComando {
+  const texto = statement.trim();
+  if (!texto) {
+    return { comando: null, usaCte: false, motivoBloqueio: "SQL vazio" };
+  }
+
+  const primeiraPalavra = lerPalavra(texto, 0);
+  if (primeiraPalavra.palavra !== "with") {
+    return {
+      comando: primeiraPalavra.palavra,
+      usaCte: false,
+      motivoBloqueio: null,
+    };
+  }
+
+  let cursor = primeiraPalavra.fim;
+  const recursivo = lerPalavra(texto, cursor);
+  if (recursivo.palavra === "recursive") cursor = recursivo.fim;
+
+  while (cursor < texto.length) {
+    const nomeCte = lerPalavra(texto, cursor);
+    if (!nomeCte.palavra) {
+      return {
+        comando: null,
+        usaCte: true,
+        motivoBloqueio: "CTE inválida: nome não reconhecido",
+      };
+    }
+    cursor = avancarEspacos(texto, nomeCte.fim);
+
+    if (texto[cursor] === "(") {
+      cursor = consumirParentesesBalanceados(texto, cursor);
+      if (cursor < 0) {
+        return {
+          comando: null,
+          usaCte: true,
+          motivoBloqueio: "CTE inválida: lista de colunas não terminou",
+        };
+      }
+    }
+
+    const asToken = lerPalavra(texto, cursor);
+    if (asToken.palavra !== "as") {
+      return {
+        comando: null,
+        usaCte: true,
+        motivoBloqueio: "CTE inválida: cláusula AS ausente",
+      };
+    }
+    cursor = avancarEspacos(texto, asToken.fim);
+
+    const materializacao = lerPalavra(texto, cursor);
+    if (materializacao.palavra === "materialized") {
+      cursor = avancarEspacos(texto, materializacao.fim);
+    } else if (materializacao.palavra === "not") {
+      const materialized = lerPalavra(texto, materializacao.fim);
+      if (materialized.palavra !== "materialized") {
+        return {
+          comando: null,
+          usaCte: true,
+          motivoBloqueio: "CTE inválida: esperado MATERIALIZED após NOT",
+        };
+      }
+      cursor = avancarEspacos(texto, materialized.fim);
+    }
+
+    if (texto[cursor] !== "(") {
+      return {
+        comando: null,
+        usaCte: true,
+        motivoBloqueio: "CTE inválida: corpo deve abrir com parênteses",
+      };
+    }
+
+    const fimCorpo = consumirParentesesBalanceados(texto, cursor);
+    if (fimCorpo < 0) {
+      return {
+        comando: null,
+        usaCte: true,
+        motivoBloqueio: "CTE inválida: corpo não terminou",
+      };
+    }
+
+    const corpo = texto.slice(cursor + 1, fimCorpo - 1);
+    const estruturaInterna = extrairEstruturaComando(corpo);
+    if (estruturaInterna.motivoBloqueio) {
+      return {
+        comando: null,
+        usaCte: true,
+        motivoBloqueio: `CTE inválida: ${estruturaInterna.motivoBloqueio}`,
+      };
+    }
+
+    if (estruturaInterna.comando !== "select") {
+      return {
+        comando: null,
+        usaCte: true,
+        motivoBloqueio: "CTE com escrita ou comando não permitido",
+      };
+    }
+
+    cursor = avancarEspacos(texto, fimCorpo);
+    if (texto[cursor] === ",") {
+      cursor++;
+      continue;
+    }
+
+    const comandoPrincipal = lerPalavra(texto, cursor);
+    return {
+      comando: comandoPrincipal.palavra,
+      usaCte: true,
+      motivoBloqueio: comandoPrincipal.palavra
+        ? null
+        : "Comando principal após WITH não reconhecido",
+    };
+  }
+
+  return { comando: null, usaCte: true, motivoBloqueio: "CTE incompleta" };
+}
+
 function comparacaoNumericaConstanteVerdadeira(expressao: string): boolean {
-  const match = expressao.match(/^(-?\d+(?:\.\d+)?)\s*(=|!=|<>|>=|<=|>|<)\s*(-?\d+(?:\.\d+)?)$/);
+  const match = expressao.match(
+    /^(-?\d+(?:\.\d+)?)\s*(=|!=|<>|>=|<=|>|<)\s*(-?\d+(?:\.\d+)?)$/,
+  );
   if (!match) return false;
   const [, esquerda, operador, direita] = match;
   const a = Number(esquerda);
   const b = Number(direita);
-  return Boolean(({ '=': a === b, '!=': a !== b, '<>': a !== b, '>': a > b, '<': a < b, '>=': a >= b, '<=': a <= b })[operador]);
+  return Boolean(
+    ({
+      "=": a === b,
+      "!=": a !== b,
+      "<>": a !== b,
+      ">": a > b,
+      "<": a < b,
+      ">=": a >= b,
+      "<=": a <= b,
+    })[operador],
+  );
 }
 
 function comparacaoIdenticaVerdadeira(expressao: string): boolean {
-  const semEspacos = expressao.replace(/\s+/g, ' ').trim();
+  const semEspacos = expressao.replace(/\s+/g, " ").trim();
   const comparacao = semEspacos.match(
     /^([a-z_][a-z0-9_.]*)\s*(=|>=|<=|is\s+not\s+distinct\s+from)\s*([a-z_][a-z0-9_.]*)$/i,
   );
@@ -132,29 +544,30 @@ function comparacaoIdenticaVerdadeira(expressao: string): boolean {
 }
 
 function ehTautologia(expressao: string): boolean {
-  const texto = removerParentesesExternos(expressao.toLowerCase().replace(/\s+/g, ' ').trim());
-  const disjuntos = separarNoNivelSuperior(texto, 'or');
+  const texto = removerParentesesExternos(
+    expressao.toLowerCase().replace(/\s+/g, " ").trim(),
+  );
+  const disjuntos = separarNoNivelSuperior(texto, "or");
   if (disjuntos.length > 1) return disjuntos.some(ehTautologia);
-  const conjuntos = separarNoNivelSuperior(texto, 'and');
+
+  const conjuntos = separarNoNivelSuperior(texto, "and");
   if (conjuntos.length > 1) return conjuntos.every(ehTautologia);
 
-  return texto === 'true'
-    || texto === 'not false'
-    || texto === 'not (false)'
-    || texto === 'null is null'
-    || texto === 'current_date = current_date'
-    || /^current_timestamp\s*(=|>=|<=)\s*current_timestamp$/.test(texto)
-    || /^now\(\)\s*=\s*now\(\)$/.test(texto)
-    || comparacaoIdenticaVerdadeira(texto)
-    || comparacaoNumericaConstanteVerdadeira(texto);
+  return texto === "true" ||
+    texto === "not false" ||
+    texto === "not (false)" ||
+    texto === "null is null" ||
+    texto === "current_date = current_date" ||
+    /^current_timestamp\s*(=|>=|<=)\s*current_timestamp$/.test(texto) ||
+    /^now\(\)\s*=\s*now\(\)$/.test(texto) ||
+    comparacaoIdenticaVerdadeira(texto) ||
+    comparacaoNumericaConstanteVerdadeira(texto);
 }
 
 function possuiPredicadoRestritivo(where: string): boolean {
-  // Sem um parser SQL completo, OR não permite provar que todas as ramificações
-  // continuam escopadas. Escritas administrativas assim exigem confirmação.
-  if (separarNoNivelSuperior(where, 'or').length > 1) return false;
+  if (separarNoNivelSuperior(where, "or").length > 1) return false;
 
-  return separarNoNivelSuperior(where, 'and').some((termo) => {
+  return separarNoNivelSuperior(where, "and").some((termo) => {
     const texto = removerParentesesExternos(termo).trim();
     if (/^[a-z_][a-z0-9_.]*\s+is\s+(?:not\s+)?null$/i.test(texto)) return false;
     if (comparacaoIdenticaVerdadeira(texto)) return false;
@@ -163,23 +576,186 @@ function possuiPredicadoRestritivo(where: string): boolean {
   });
 }
 
+function detectarFuncaoPerigosa(statement: string): string | null {
+  for (const entrada of FUNCOES_COM_EFEITO_COLATERAL) {
+    if (entrada.regex.test(statement)) return entrada.motivo;
+  }
+  return null;
+}
+
+export function analisarSqlMcp(sql: string): AnaliseSqlMcp {
+  if (temIdentificadorQuoted(sql)) {
+    return {
+      sqlNormalizado: sql,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: false,
+      motivoBloqueio: "Identificadores quoted não são suportados pelo MCP",
+    };
+  }
+
+  const normalizado = removerComentariosELiterais(sql);
+  if (normalizado.invalido) {
+    return {
+      sqlNormalizado: normalizado.sql,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: false,
+      motivoBloqueio: "SQL com literal ou comentário não terminado",
+    };
+  }
+
+  const statement = normalizado.sql.trim().replace(/;\s*$/, "");
+  if (!statement) {
+    return {
+      sqlNormalizado: statement,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: false,
+      motivoBloqueio: "SQL vazio",
+    };
+  }
+
+  if (statement.includes(";")) {
+    return {
+      sqlNormalizado: statement,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: false,
+      motivoBloqueio: "Apenas um statement é permitido por operação",
+    };
+  }
+
+  const funcaoPerigosa = detectarFuncaoPerigosa(statement);
+  if (funcaoPerigosa) {
+    return {
+      sqlNormalizado: statement,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: false,
+      motivoBloqueio: funcaoPerigosa,
+    };
+  }
+
+  const estrutura = extrairEstruturaComando(statement);
+  if (estrutura.motivoBloqueio) {
+    return {
+      sqlNormalizado: statement,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: estrutura.usaCte,
+      motivoBloqueio: estrutura.motivoBloqueio,
+    };
+  }
+
+  const comando = estrutura.comando?.toLowerCase() ?? null;
+  const motivoComandoBloqueado = comando
+    ? COMANDOS_BLOQUEADOS_FIXOS[comando] ?? null
+    : null;
+  if (motivoComandoBloqueado) {
+    return {
+      sqlNormalizado: statement,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: estrutura.usaCte,
+      motivoBloqueio: motivoComandoBloqueado,
+    };
+  }
+
+  if (
+    estrutura.usaCte && ["insert", "update", "delete"].includes(comando ?? "")
+  ) {
+    return {
+      sqlNormalizado: statement,
+      comando: null,
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: true,
+      motivoBloqueio: "Escritas com CTE não são permitidas no MCP",
+    };
+  }
+
+  if (
+    comando === "select" &&
+    /\bfor\s+(update|share|no\s+key\s+update|key\s+share)\b/i.test(statement)
+  ) {
+    return {
+      sqlNormalizado: statement,
+      comando: "select",
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: estrutura.usaCte,
+      motivoBloqueio: "SELECT com lock não é permitido no MCP",
+    };
+  }
+
+  if (comando === "select" && /\bselect\b[\s\S]*\binto\b/i.test(statement)) {
+    return {
+      sqlNormalizado: statement,
+      comando: "select",
+      somenteLeitura: false,
+      escrita: false,
+      usaCte: estrutura.usaCte,
+      motivoBloqueio: "SELECT INTO não é permitido no MCP",
+    };
+  }
+
+  if (comando === "select") {
+    return {
+      sqlNormalizado: statement,
+      comando: "select",
+      somenteLeitura: true,
+      escrita: false,
+      usaCte: estrutura.usaCte,
+      motivoBloqueio: null,
+    };
+  }
+
+  if (comando === "insert" || comando === "update" || comando === "delete") {
+    return {
+      sqlNormalizado: statement,
+      comando,
+      somenteLeitura: false,
+      escrita: true,
+      usaCte: estrutura.usaCte,
+      motivoBloqueio: null,
+    };
+  }
+
+  return {
+    sqlNormalizado: statement,
+    comando: null,
+    somenteLeitura: false,
+    escrita: false,
+    usaCte: estrutura.usaCte,
+    motivoBloqueio: "Comando SQL não suportado no MCP",
+  };
+}
+
 /** Retorna o motivo do bloqueio; `null` significa escrita segura no modo padrão. */
 export function validarEscritaEscopada(sql: string): string | null {
-  const normalizado = removerComentariosELiterais(sql);
-  if (normalizado.invalido) return 'SQL com literal ou comentário não terminado';
+  const analise = analisarSqlMcp(sql);
+  if (analise.motivoBloqueio) return analise.motivoBloqueio;
+  if (!analise.escrita || analise.comando === "insert") return null;
 
-  const statement = normalizado.sql.trim().replace(/;\s*$/, '');
-  if (!statement || statement.includes(';')) return 'Apenas um statement é permitido por operação';
-  if (!/^(update\s+[^\s]+\s+set\b|delete\s+from\s+[^\s]+)/i.test(statement)) return null;
-  if (/^with\b/i.test(statement)) return 'Escritas com CTE exigem allow_all_rows:true';
-
-  const where = statement.match(/\bwhere\b([\s\S]+)$/i)?.[1]?.trim();
-  if (!where) return 'DELETE/UPDATE sem WHERE';
-  if (/\b(select|exists)\b/i.test(where)) return 'Subconsulta em escrita exige allow_all_rows:true';
-  if (ehTautologia(where)) return 'WHERE tautológico';
+  const where = analise.sqlNormalizado.match(/\bwhere\b([\s\S]+)$/i)?.[1]
+    ?.trim();
+  if (!where) return "DELETE/UPDATE sem WHERE";
+  if (/\b(select|exists)\b/i.test(where)) {
+    return "Subconsulta em escrita exige allow_all_rows:true";
+  }
+  if (ehTautologia(where)) return "WHERE tautológico";
 
   if (!possuiPredicadoRestritivo(where)) {
-    return 'WHERE sem predicado restritivo verificável';
+    return "WHERE sem predicado restritivo verificável";
   }
+
   return null;
 }
