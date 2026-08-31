@@ -15,6 +15,8 @@ on:
       - 'supabase/migrations/**'
       - 'supabase/functions/**'
       - 'scripts/ci/require-env.sh'
+      - 'scripts/security/check-supabase-lint-baseline.mjs'
+      - 'scripts/security/check-supabase-lint-baseline.test.mjs'
       - 'scripts/security/test-canonical-db-gates.mjs'
       - 'scripts/security/test-canonical-db-gates.test.mjs'
       - 'scripts/security/test-migration-replay-safety.sh'
@@ -25,6 +27,8 @@ on:
       - 'supabase/migrations/**'
       - 'supabase/functions/**'
       - 'scripts/ci/require-env.sh'
+      - 'scripts/security/check-supabase-lint-baseline.mjs'
+      - 'scripts/security/check-supabase-lint-baseline.test.mjs'
       - 'scripts/security/test-canonical-db-gates.mjs'
       - 'scripts/security/test-canonical-db-gates.test.mjs'
       - 'scripts/security/test-migration-replay-safety.sh'
@@ -42,6 +46,9 @@ jobs:
 
       - name: Gate offline do banco canônico
         run: node --test scripts/security/test-canonical-db-gates.test.mjs
+
+      - name: Teste da baseline do Supabase linter
+        run: node --test scripts/security/check-supabase-lint-baseline.test.mjs
 
       - name: Replay safety das migrations críticas
         run: bash scripts/security/test-migration-replay-safety.sh
@@ -66,7 +73,7 @@ jobs:
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
         run: node scripts/security/test-canonical-db-gates.mjs
 
-      - name: Run Supabase linter (fail on ERROR)
+      - name: Run Supabase linter (baseline-aware)
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
@@ -81,63 +88,8 @@ jobs:
             --output-format json > lint.json || lint_exit=$?
 
           echo "── Linter output ──"
-          if ! jq -e '
-            (type == "object" and (.results | type == "array"))
-            or type == "array"
-          ' lint.json >/dev/null; then
-            echo "::error::Supabase linter não produziu o JSON esperado."
-            if [ -s lint.json ]; then
-              cat lint.json
-            fi
-            if [ "$lint_exit" -ne 0 ]; then
-              exit "$lint_exit"
-            fi
-            exit 1
-          fi
           cat lint.json
-
-          if [ "$lint_exit" -ne 0 ]; then
-            echo "::error::Supabase linter detectou ERROR(s) de segurança/RLS/GRANT."
-            jq -r '
-              if type == "object" then
-                .results[]? as $routine
-                | $routine.issues[]?
-                | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\($routine.function // "desconhecida")] \(.message // "erro sem detalhe")"
-              else
-                .[]?
-                | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\(.name // .function // "desconhecida")] \(.description // .message // "erro sem detalhe")"
-              end
-            ' lint.json
-            exit "$lint_exit"
-          fi
-
-          if jq -e '
-            if type == "object" then
-              .results[]?.issues[]?
-            else
-              .[]?
-            end
-            | select(((.level // "") | ascii_downcase) == "error")
-          ' lint.json >/dev/null; then
-            echo "::error::Supabase linter retornou ERROR no JSON com exit code zero."
-            jq -r '
-              if type == "object" then
-                .results[]? as $routine
-                | $routine.issues[]?
-                | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\($routine.function // "desconhecida")] \(.message // "erro sem detalhe")"
-              else
-                .[]?
-                | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\(.name // .function // "desconhecida")] \(.description // .message // "erro sem detalhe")"
-              end
-            ' lint.json
-            exit 1
-          fi
-
-          echo "✅ Nenhum ERROR bloqueante de segurança no banco."
+          node scripts/security/check-supabase-lint-baseline.mjs lint.json "$lint_exit"
 
       - name: Upload linter report
         if: always()
