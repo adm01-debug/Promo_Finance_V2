@@ -40,7 +40,8 @@
 - `public.exec_sql(text)` responde no PostgREST do projeto canônico e mantém ACL correta: `anon=false`, `authenticated=false`, `service_role=true`
 - o secret `MCP_SECRET` ainda não existe no projeto
 - existem 12 secrets cadastrados; os nomes confirmados desta rodada incluem `ASAAS_WEBHOOK_TOKEN`, `BITRIX24_WEBHOOK_SECRET`, `BLING_WEBHOOK_SECRET`, `REGUA_CRON_SECRET`, `SUPABASE_*` e `WHATSAPP_WEBHOOK_SECRET`
-- a edge `mcp-query` continua online em `version=4` com `verify_jwt=true`; o código validado nesta rodada muda o contrato para `verify_jwt=false` + `x-mcp-secret`, portanto o deploy precisa ser coordenado com a criação de `MCP_SECRET`
+- a edge `mcp-query` continua online em `version=5` com `verify_jwt=true`; o código validado nesta rodada muda o contrato para `verify_jwt=false` + `x-mcp-secret`, portanto o deploy precisa ser coordenado com a criação de `MCP_SECRET`
+- a matriz `verify_jwt` do repositório foi reconciliada contra o catálogo canônico live em 2026-08-31; após essa reconciliação, o único drift remanescente entre `supabase/config.toml` e o ambiente online é `mcp-query`
 - as revogações de `EXECUTE` para `authenticated` em `confirmar_conciliacao`, `desfazer_conciliacao` e `nfe_apply_manifestacao` estão efetivas no catálogo live
 - antes do deploy desta rodada, as 15 functions mais sensíveis estavam em versões live heterogêneas (`mcp-query` v4, `calcular-slo-metrics-diario` v3, `compare-schemas` v3, `processar-fila-cobrancas` v3, `gerar-resumo-financeiro-diario` v3, webhooks entre v6 e v7)
 - nenhuma DDL foi aplicada nesta rodada; toda a validação remota foi feita em modo leitura
@@ -68,7 +69,7 @@ A `20260826030000_add_colunas_ausentes_e30.sql` foi preservada como evidência h
 ## Gaps ainda pendentes de publicação
 
 - o código desta rodada ainda não foi enviado para `main`
-- as Edge Functions endurecidas ainda não foram publicadas no projeto canônico
-- a criação de `MCP_SECRET` precisa acontecer no Supabase e no GitHub no mesmo fluxo de deploy
+- `mcp-query` ainda não foi republicada no projeto canônico com `verify_jwt=false` + `x-mcp-secret`
+- a criação de `MCP_SECRET` precisa acontecer no Supabase no mesmo fluxo de deploy da `mcp-query`
 - o gate SQL remoto via `DATABASE_URL` continua dependente de secret não comprovado por esta rodada; por isso a prova de ACL em produção foi validada por leitura dirigida e não por job automatizado
 - o fluxo de logout real continua dependendo de credenciais E2E e deve ser validado pelo job `e2e-destructive`; aqui só foram validadas as rotas públicas e anônimas
