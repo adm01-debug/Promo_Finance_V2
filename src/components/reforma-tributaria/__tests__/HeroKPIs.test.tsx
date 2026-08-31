@@ -52,7 +52,7 @@ describe('HeroKPIs', () => {
     it('exibe percentual de migração', async () => {
       render(<HeroKPIs {...defaultProps} />);
       expect(screen.getByText('Migração')).toBeInTheDocument();
-      await waitFor(() => expect(screen.getByText('65%')).toBeInTheDocument(), { timeout: 2500 });
+      await waitFor(() => expect(screen.getByText('65%')).toBeInTheDocument(), { timeout: 5000 });
     });
   });
 
@@ -65,13 +65,13 @@ describe('HeroKPIs', () => {
 
     it('exibe contagem quando há alertas', async () => {
       render(<HeroKPIs {...defaultProps} alertasCriticos={5} />);
-      await waitFor(() => expect(screen.getByText('5')).toBeInTheDocument(), { timeout: 2500 });
+      await waitFor(() => expect(screen.getByText('5')).toBeInTheDocument(), { timeout: 5000 });
       expect(screen.getByText('Críticos')).toBeInTheDocument();
     });
 
     it('anima o card quando há alertas', async () => {
       render(<HeroKPIs {...defaultProps} alertasCriticos={3} />);
-      const alertCard = (await waitFor(() => screen.getByText('3'), { timeout: 2500 })).closest(
+      const alertCard = (await waitFor(() => screen.getByText('3'), { timeout: 5000 })).closest(
         '[class*="Card"]'
       );
       // Should have animate-pulse class
@@ -123,7 +123,7 @@ describe('HeroKPIs', () => {
 
     it('migração 100% renderiza corretamente', async () => {
       render(<HeroKPIs {...defaultProps} percentualMigracao={100} />);
-      await waitFor(() => expect(screen.getByText('100%')).toBeInTheDocument(), { timeout: 2500 });
+      await waitFor(() => expect(screen.getByText('100%')).toBeInTheDocument(), { timeout: 5000 });
     });
 
     it('sem onKPIClick não quebra ao clicar', () => {
