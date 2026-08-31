@@ -566,6 +566,12 @@ Deno.test("whatsapp-ia-proativo: histórico usa empresa e cliente da conta autor
         conta_receber_id: CONTA_AUTORIZADA,
         telefone: "11999999999",
         mensagem: "mensagem autorizada",
+        metadata: {
+          origem: "painel-cobranca",
+          tentativa: 2,
+          conta_receber_id: CONTA_ALHEIA,
+          telefone: "valor-não-confiável",
+        },
       },
     }),
   );
@@ -573,15 +579,23 @@ Deno.test("whatsapp-ia-proativo: histórico usa empresa e cliente da conta autor
   assertEquals(response.status, 200);
   const insert = dbCalls.find((call) => call.operation === "insert");
   assertEquals(insert?.table, "historico_cobranca_whatsapp");
+  const payload = insert?.payload as Record<string, unknown>;
+  // Gate de compatibilidade com o schema canônico: estas colunas não existem.
+  assertEquals(Object.hasOwn(payload, "conta_receber_id"), false);
+  assertEquals(Object.hasOwn(payload, "telefone"), false);
   assertEquals(
-    insert?.payload,
+    payload,
     {
-      conta_receber_id: CONTA_AUTORIZADA,
       empresa_id: EMPRESA_AUTORIZADA,
       cliente_id: CLIENTE_AUTORIZADO,
-      telefone: "5511999999999",
       mensagem: "mensagem autorizada",
       status: "gerado",
+      metadata: {
+        origem: "painel-cobranca",
+        tentativa: 2,
+        conta_receber_id: CONTA_AUTORIZADA,
+        telefone: "5511999999999",
+      },
     },
   );
   assertEquals(calls.ai, 0);
@@ -654,6 +668,76 @@ Deno.test("whatsapp-ia-proativo: service_role via apikey mantém chamadas intern
   });
 });
 
+Deno.test("whatsapp-ia-proativo: job interno sem empresa preserva escopo global", async () => {
+  await withAuthEnvironment(async () => {
+    const calls = counters();
+    const dbCalls: DbCall[] = [];
+    const deps = dependencies(calls, {}, {}, dbCalls);
+    delete deps.autorizar;
+    const handler = createHandler(deps);
+    const response = await handler(
+      post(
+        { action: "analisar-alertas", data: {} },
+        { Authorization: "Bearer service-role-teste" },
+      ),
+    );
+
+    assertEquals(response.status, 200);
+    assertEquals(
+      dbCalls.some((call) => call.table === "user_empresas"),
+      false,
+    );
+    const consultasNegocio = dbCalls.filter((call) =>
+      call.table === "contas_receber" || call.table === "clientes"
+    );
+    assertEquals(consultasNegocio.length, 2);
+    assertEquals(
+      consultasNegocio.some((call) =>
+        call.filters.some((filtro) => filtro.column === "empresa_id")
+      ),
+      false,
+    );
+  });
+});
+
+Deno.test("whatsapp-ia-proativo: job interno com empresa restringe o próprio escopo", async () => {
+  await withAuthEnvironment(async () => {
+    const calls = counters();
+    const dbCalls: DbCall[] = [];
+    const deps = dependencies(calls, {}, {}, dbCalls);
+    delete deps.autorizar;
+    const handler = createHandler(deps);
+    const response = await handler(
+      post(
+        {
+          action: "analisar-alertas",
+          data: { empresa_id: EMPRESA_AUTORIZADA },
+        },
+        { Authorization: "Bearer service-role-teste" },
+      ),
+    );
+
+    assertEquals(response.status, 200);
+    assertEquals(
+      dbCalls.some((call) => call.table === "user_empresas"),
+      false,
+    );
+    const consultasNegocio = dbCalls.filter((call) =>
+      call.table === "contas_receber" || call.table === "clientes"
+    );
+    assertEquals(consultasNegocio.length, 2);
+    for (const consulta of consultasNegocio) {
+      assertEquals(
+        consulta.filters.some((filtro) =>
+          filtro.method === "in" && filtro.column === "empresa_id" &&
+          JSON.stringify(filtro.value) === JSON.stringify([EMPRESA_AUTORIZADA])
+        ),
+        true,
+      );
+    }
+  });
+});
+
 Deno.test("whatsapp-ia-proativo: segredo interno rotacionável mantém automações", async () => {
   await withAuthEnvironment(async () => {
     const calls = counters();
@@ -694,7 +778,7 @@ Deno.test("whatsapp-ia-proativo: segredo interno incorreto falha fechado", async
   });
 });
 
-Deno.test("whatsapp-ia-proativo: contrato legado dos callers internos continua válido", async () => {
+Deno.test("whatsapp-ia-proativo: contrato legado continua válido para usuário autorizado", async () => {
   const calls = counters();
   const handler = createHandler(dependencies(calls));
   const response = await handler(

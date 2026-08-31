@@ -701,19 +701,28 @@ export function createHandler(
         const whatsappLink =
           `https://wa.me/${numeroFormatado}?text=${mensagemEncoded}`;
 
-        // Registrar no histórico — conta_receber_id é NOT NULL na tabela
-        // (migration 20251224131124); sem ele, pular o registro (o link
-        // ainda é gerado) em vez de falhar com PGRST204/23502.
+        // O schema canônico não possui conta_receber_id nem telefone como
+        // colunas. Mantemos essas referências em metadata, preservando campos
+        // adicionais do caller, mas sobrescrevendo os dois valores sensíveis
+        // com as versões já validadas/normalizadas pelo servidor.
         if (typeof contaReceberId === "string") {
+          const metadataRecebida = data.metadata &&
+              typeof data.metadata === "object" &&
+              !Array.isArray(data.metadata)
+            ? data.metadata as Record<string, unknown>
+            : {};
           const { error: erroHistorico } = await supabase
             .from("historico_cobranca_whatsapp")
             .insert({
-              conta_receber_id: contaReceberId,
               empresa_id: empresaAutorizada,
               cliente_id: clienteAutorizado,
-              telefone: numeroFormatado,
               mensagem,
               status: "gerado",
+              metadata: {
+                ...metadataRecebida,
+                conta_receber_id: contaReceberId,
+                telefone: numeroFormatado,
+              },
             });
           if (erroHistorico) {
             console.error(
