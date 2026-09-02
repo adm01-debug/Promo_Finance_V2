@@ -194,19 +194,17 @@ serve(async (req) => {
     const empresaIdFiltro = validation.data.empresa_id ?? null;
 
     if (guard.dados.origem === "usuario") {
-      if (empresaIdFiltro) {
+      const { data: isAdmin } = await client.rpc("has_role", { _user_id: guard.dados.userId, _role: "admin" });
+      if (!isAdmin) {
+        if (!empresaIdFiltro) {
+          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         const { data: vinculo } = await client.from("user_empresas").select("id")
           .eq("user_id", guard.dados.userId).eq("empresa_id", empresaIdFiltro).eq("ativo", true).maybeSingle();
         if (!vinculo) {
           return new Response(JSON.stringify({ error: "Sem permissão para esta empresa" }), {
-            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-      } else {
-        const { data: isAdmin } = await client.from("user_roles").select("role")
-          .eq("user_id", guard.dados.userId).eq("role", "admin").maybeSingle();
-        if (!isAdmin) {
-          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
             status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
