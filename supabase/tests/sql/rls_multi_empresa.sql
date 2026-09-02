@@ -56,30 +56,51 @@ BEGIN
   END IF;
 END $$;
 
--- 3) Policies USING/WITH CHECK devem referenciar empresa_id OU usar
---    helper user_has_empresa_access(). Sinaliza policies "TRUE" absolutas.
+-- 3) Toda policy (USING e WITH CHECK) em tabela com empresa_id direto deve
+--    referenciar a própria coluna empresa_id. Isto pega tanto o padrão
+--    "has_role(...) sem empresa_id" (uma role sozinha NÃO é escopo de
+--    tenant — o achado central da auditoria de 2026-09-02, PR #54) quanto
+--    qualquer outra policy que ignore a coluna por completo. A checagem
+--    antiga só sinalizava `USING (true)` literal e EXCLUÍA qualquer qual
+--    que mencionasse has_role/auth.uid — exatamente o padrão que vazou
+--    dados cross-tenant por meses sem o CI acusar.
 DO $$
 DECLARE
   suspect record;
   offenders text := '';
 BEGIN
   FOR suspect IN
-    SELECT p.tablename, p.policyname, p.qual
+    SELECT p.tablename, p.policyname, p.cmd,
+           COALESCE(p.qual, '') AS qual,
+           COALESCE(p.with_check, '') AS with_check
     FROM pg_policies p
     JOIN information_schema.columns c
       ON c.table_schema = p.schemaname
      AND c.table_name  = p.tablename
      AND c.column_name = 'empresa_id'
     WHERE p.schemaname = 'public'
-      AND p.qual IS NOT NULL
-      AND p.qual !~* '(empresa_id|user_has_empresa_access|has_role|auth\.uid|current_setting)'
-      AND p.qual ~* '^\s*(true|\(true\))\s*$'
+      -- RESTRICTIVE policies só estreitam acesso (AND com as PERMISSIVE) —
+      -- nunca são a origem de um vazamento; checar só as PERMISSIVE, que
+      -- combinam via OR e foram a causa raiz do bug original.
+      AND p.permissive = 'PERMISSIVE'
+      AND (
+        -- USING presente mas sem referência a empresa_id
+        (p.qual IS NOT NULL AND p.qual !~* 'empresa_id')
+        -- WITH CHECK presente mas sem referência a empresa_id
+        OR (p.with_check IS NOT NULL AND p.with_check !~* 'empresa_id')
+        -- tautologia: "empresa_id IN (SELECT id FROM empresas)" sem
+        -- filtro nenhum no subselect — sempre verdadeiro para qualquer
+        -- empresa_id válido, equivale a não ter policy nenhuma.
+        OR (p.qual ~* 'empresa_id\s+in\s*\(\s*select\s+id\s+from\s+(public\.)?empresas\s*\)')
+        OR (p.with_check ~* 'empresa_id\s+in\s*\(\s*select\s+id\s+from\s+(public\.)?empresas\s*\)')
+      )
   LOOP
-    offenders := offenders || format(E'\n  - %s.%s : %s', suspect.tablename, suspect.policyname, suspect.qual);
+    offenders := offenders || format(E'\n  - %s.%s [%s] USING: %s | WITH CHECK: %s',
+      suspect.tablename, suspect.policyname, suspect.cmd, suspect.qual, suspect.with_check);
   END LOOP;
 
   IF offenders <> '' THEN
-    RAISE EXCEPTION 'Policies permissivas em tabelas multi-empresa:%', offenders;
+    RAISE EXCEPTION 'Policies sem escopo de empresa_id (ou tautológicas) em tabelas multi-empresa:%', offenders;
   END IF;
 END $$;
 
@@ -108,20 +129,27 @@ BEGIN
   END IF;
 END $$;
 
--- 5) Sanidade: helper user_has_empresa_access existe e é SECURITY DEFINER
---    com search_path fixo.
+-- 5) Sanidade: helpers empresa_acessivel/empresa_membro_ativo existem e são
+--    SECURITY DEFINER com search_path fixo (nomes reais em uso no schema —
+--    "user_has_empresa_access", checado aqui antes, nunca existiu em
+--    nenhuma migration).
 DO $$
+DECLARE
+  fn text;
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_proc p
-    JOIN pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname = 'public'
-      AND p.proname = 'user_has_empresa_access'
-      AND p.prosecdef = true
-      AND array_to_string(p.proconfig, ',') LIKE '%search_path=%'
-  ) THEN
-    RAISE WARNING 'user_has_empresa_access ausente OU sem SECURITY DEFINER + search_path fixo';
-  END IF;
+  FOREACH fn IN ARRAY ARRAY['empresa_acessivel', 'empresa_membro_ativo']
+  LOOP
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_proc p
+      JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname = 'public'
+        AND p.proname = fn
+        AND p.prosecdef = true
+        AND array_to_string(p.proconfig, ',') LIKE '%search_path=%'
+    ) THEN
+      RAISE WARNING '% ausente OU sem SECURITY DEFINER + search_path fixo', fn;
+    END IF;
+  END LOOP;
 END $$;
 
 ROLLBACK;
