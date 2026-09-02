@@ -56,6 +56,17 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'empresa_id e ano_calendario são obrigatórios' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    // financeiro sem vínculo ativo com a empresa pedia ECD de QUALQUER
+    // empresa via empresa_id arbitrário (achado do cubic-dev-ai); admin
+    // mantém acesso global, igual ao resto do sistema.
+    if (!(roles || []).some((r: { role: string }) => r.role === 'admin')) {
+      const { data: vinculo } = await supabase.from('user_empresas').select('id')
+        .eq('user_id', user.id).eq('empresa_id', empresa_id).eq('ativo', true).maybeSingle();
+      if (!vinculo) {
+        return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
+
     const periodo_inicio = `${ano_calendario}-01-01`;
     const periodo_fim = `${ano_calendario}-12-31`;
 
