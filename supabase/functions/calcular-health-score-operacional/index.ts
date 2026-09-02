@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { OptionalEmpresaIdSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
 
 
 const PESOS = {
@@ -177,6 +178,9 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const guard = await exigirInternaOuUsuario(req, "p13_health_score_diario");
+  if (!guard.ok) return guard.resposta;
+
   try {
     const url = Deno.env.get("SUPABASE_URL")!;
     const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -189,6 +193,25 @@ serve(async (req) => {
     }
     const empresaIdFiltro = validation.data.empresa_id ?? null;
 
+    if (guard.dados.origem === "usuario") {
+      if (empresaIdFiltro) {
+        const { data: vinculo } = await client.from("user_empresas").select("id")
+          .eq("user_id", guard.dados.userId).eq("empresa_id", empresaIdFiltro).eq("ativo", true).maybeSingle();
+        if (!vinculo) {
+          return new Response(JSON.stringify({ error: "Sem permissão para esta empresa" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } else {
+        const { data: isAdmin } = await client.from("user_roles").select("role")
+          .eq("user_id", guard.dados.userId).eq("role", "admin").maybeSingle();
+        if (!isAdmin) {
+          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
 
     const { data: empresas } = await client
       .from("empresas")
