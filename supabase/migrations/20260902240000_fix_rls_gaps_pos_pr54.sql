@@ -129,7 +129,17 @@ BEGIN
 END$$;
 
 -- ============ pagamentos_recorrentes ============
--- Mesma migration 20260314212617, mesmo padrão sem empresa_id.
+-- INSERT ("Usuários podem criar pagamentos recorrentes", 20251224130327)
+-- só checava auth.uid() = created_by, sem empresa_acessivel(empresa_id) —
+-- nunca tocado pelo fix de DELETE/SELECT/UPDATE em 20260902210000. Como
+-- policies permissivas combinam via OR, qualquer authenticated inseria
+-- pagamento recorrente com empresa_id de outra empresa (achado do
+-- coderabbitai).
+DROP POLICY IF EXISTS "Usuários podem criar pagamentos recorrentes" ON public.pagamentos_recorrentes;
+CREATE POLICY "Usuários podem criar pagamentos recorrentes"
+  ON public.pagamentos_recorrentes FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = created_by AND empresa_acessivel(empresa_id));
+
 DROP POLICY IF EXISTS "Operacional+ podem ver pagamentos_recorrentes" ON public.pagamentos_recorrentes;
 CREATE POLICY "Operacional+ podem ver pagamentos_recorrentes"
   ON public.pagamentos_recorrentes FOR SELECT TO authenticated
