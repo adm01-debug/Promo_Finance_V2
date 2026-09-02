@@ -69,15 +69,33 @@ END $$;
 --    antiga só sinalizava `USING (true)` literal e EXCLUÍA qualquer qual
 --    que mencionasse has_role/auth.uid — exatamente o padrão que vazou
 --    dados cross-tenant por meses sem o CI acusar.
+--
+-- Fallback USING <-> WITH CHECK: no Postgres, quando uma cláusula é
+-- omitida a outra é usada no lugar dela (e se as DUAS forem omitidas, a
+-- policy equivale a USING(true)/WITH CHECK(true) — totalmente aberta). A
+-- primeira versão desta checagem só examinava qual/with_check quando
+-- NÃO eram NULL, então uma policy sem USING nenhum (ex.: `FOR SELECT`
+-- sem cláusula) passava batida — mesma categoria do bug original.
+-- USING vale para SELECT/DELETE/UPDATE/ALL; WITH CHECK vale para
+-- INSERT/UPDATE/ALL (ver CREATE POLICY na doc do Postgres).
+--
+-- Nota de limitação conhecida: a checagem é busca textual, não parsing
+-- estrutural do SQL — uma policy tautológica que referencie `empresa_id`
+-- de uma tabela não relacionada (ex.: EXISTS numa subquery que nunca
+-- amarra a linha externa) tecnicamente escaparia. Construir um parser
+-- SQL em plpgsql para eliminar esse caso é desproporcional para um
+-- smoke-test de CI; todas as policies do schema atual foram verificadas
+-- manualmente na auditoria (PR #54) e referenciam a própria coluna.
 DO $$
 DECLARE
   suspect record;
   offenders text := '';
+  tautologia text := '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)';
 BEGIN
   FOR suspect IN
     SELECT p.tablename, p.policyname, p.cmd,
-           COALESCE(p.qual, '') AS qual,
-           COALESCE(p.with_check, '') AS with_check
+           COALESCE(p.qual, '<NULL>') AS qual,
+           COALESCE(p.with_check, '<NULL>') AS with_check
     FROM pg_policies p
     JOIN information_schema.columns c
       ON c.table_schema = p.schemaname
@@ -89,18 +107,28 @@ BEGIN
       -- combinam via OR e foram a causa raiz do bug original.
       AND p.permissive = 'PERMISSIVE'
       AND (
-        -- USING presente mas sem referência a empresa_id
-        (p.qual IS NOT NULL AND p.qual !~* 'empresa_id')
-        -- WITH CHECK presente mas sem referência a empresa_id
-        OR (p.with_check IS NOT NULL AND p.with_check !~* 'empresa_id')
-        -- tautologia: "empresa_id IN (SELECT id FROM empresas)" sem
-        -- filtro nenhum no subselect — sempre verdadeiro para qualquer
-        -- empresa_id válido, equivale a não ter policy nenhuma. Tolera
-        -- alias de tabela/coluna (ex.: "t.empresa_id IN (SELECT e.id FROM
-        -- empresas e)") para não deixar passar a mesma tautologia só por
-        -- causa de um alias.
-        OR (p.qual ~* '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)')
-        OR (p.with_check ~* '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)')
+        -- comandos que aplicam USING (com fallback para WITH CHECK
+        -- quando USING é omitido, igual ao comportamento real do
+        -- Postgres): NULL nos dois == policy totalmente aberta.
+        (
+          p.cmd IN ('SELECT', 'DELETE', 'UPDATE', 'ALL')
+          AND (
+            COALESCE(p.qual, p.with_check) IS NULL
+            OR COALESCE(p.qual, p.with_check) !~* 'empresa_id'
+            OR COALESCE(p.qual, p.with_check) ~* tautologia
+          )
+        )
+        OR
+        -- comandos que aplicam WITH CHECK (com fallback para USING
+        -- quando WITH CHECK é omitido).
+        (
+          p.cmd IN ('INSERT', 'UPDATE', 'ALL')
+          AND (
+            COALESCE(p.with_check, p.qual) IS NULL
+            OR COALESCE(p.with_check, p.qual) !~* 'empresa_id'
+            OR COALESCE(p.with_check, p.qual) ~* tautologia
+          )
+        )
       )
   LOOP
     offenders := offenders || format(E'\n  - %s.%s [%s] USING: %s | WITH CHECK: %s',
@@ -108,7 +136,7 @@ BEGIN
   END LOOP;
 
   IF offenders <> '' THEN
-    RAISE EXCEPTION 'Policies sem escopo de empresa_id (ou tautológicas) em tabelas multi-empresa:%', offenders;
+    RAISE EXCEPTION 'Policies sem escopo de empresa_id (ou tautológicas, ou sem USING/WITH CHECK) em tabelas multi-empresa:%', offenders;
   END IF;
 END $$;
 
