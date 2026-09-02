@@ -183,7 +183,7 @@ BEGIN
         AND p.prosecdef = true
         AND array_to_string(p.proconfig, ',') LIKE '%search_path=%'
     ) THEN
-      RAISE WARNING '% ausente OU sem SECURITY DEFINER + search_path fixo', fn;
+      RAISE EXCEPTION '% ausente OU sem SECURITY DEFINER + search_path fixo', fn;
     END IF;
   END LOOP;
 END $$;
