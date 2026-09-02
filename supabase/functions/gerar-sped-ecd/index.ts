@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
+    const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id).eq('is_active', true);
     const allowed = (roles || []).some((r: { role: string }) => ['admin', 'financeiro'].includes(r.role));
     if (!allowed) return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
