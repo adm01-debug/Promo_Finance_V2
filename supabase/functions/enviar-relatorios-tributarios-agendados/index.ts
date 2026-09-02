@@ -118,7 +118,11 @@ Deno.serve(async (req) => {
         const nomeEmp = empresa?.razao_social ?? 'Empresa';
 
         const pdfBytes = await gerarPdf(relatorio as Record<string, unknown>, nomeEmp, ag.ano);
-        const path = `agendados/${ag.empresa_id}/${ag.ano}/${Date.now()}.pdf`;
+        // Prefixo precisa começar com empresa_id — é o que a policy de
+        // SELECT/DELETE do bucket relatorios-tributarios checa via
+        // split_part(name,'/',1) (achado do coderabbitai: "agendados/..."
+        // na frente fazia esse split retornar "agendados", não empresa_id).
+        const path = `${ag.empresa_id}/agendados/${ag.ano}/${Date.now()}.pdf`;
 
         const { error: upErr } = await sb.storage
           .from('relatorios-tributarios')

@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
+import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,6 +26,9 @@ interface AcaoIA {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const guard = await exigirInternaOuUsuario(req, "p13_gerar_acoes_recomendadas");
+  if (!guard.ok) return guard.resposta;
+
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
     const supabase = createClient(
@@ -36,6 +40,24 @@ serve(async (req) => {
     const validation = await validateContract(AcoesRecomendadasBodySchema, rawBody);
     if (!validation.success) return validation.response;
     const empresaIdFilter: string | undefined = validation.data.empresa_id;
+
+    if (guard.dados.origem === "usuario") {
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: guard.dados.userId, _role: "admin" });
+      if (!isAdmin) {
+        if (!empresaIdFilter) {
+          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { data: vinculo } = await supabase.from("user_empresas").select("id")
+          .eq("user_id", guard.dados.userId).eq("empresa_id", empresaIdFilter).eq("ativo", true).maybeSingle();
+        if (!vinculo) {
+          return new Response(JSON.stringify({ error: "Sem permissão para esta empresa" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
 
     let q = supabase.from("empresas").select("id, razao_social").eq("ativa", true);
     if (empresaIdFilter) q = q.eq("id", empresaIdFilter);

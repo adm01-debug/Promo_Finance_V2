@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
+import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
 
 const ResumoSemanalBodySchema = z.object({
   empresa_id: z.string().uuid().optional(),
@@ -11,6 +12,26 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+// Lê o corpo dentro do mesmo try/finally do fetch — limpar o timer logo
+// após fetch() resolver (que só espera os headers) deixava a leitura do
+// corpo sem proteção do AbortController caso a resposta travasse a meio
+// do stream (achado do coderabbitai).
+async function fetchComTimeout(url: string, init: RequestInit, timeoutMs = 20000): Promise<{ response: Response; text: string }> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...init, signal: controller.signal });
+    const text = await response.text();
+    return { response, text };
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 interface KPIs {
   receita_total: number;
@@ -24,27 +45,39 @@ interface KPIs {
 }
 
 async function gerarResumoEmpresa(supabase: any, LOVABLE_API_KEY: string, empresaId: string, semanaInicio: string, semanaFim: string) {
+  // semanaFimExclusive = dia seguinte a semanaFim, para incluir o dia
+  // inteiro de semanaFim nos filtros de created_at (timestamptz).
+  const semanaFimExclusive = new Date(semanaFim + "T00:00:00Z");
+  semanaFimExclusive.setUTCDate(semanaFimExclusive.getUTCDate() + 1);
+  const semanaFimExclusiveIso = semanaFimExclusive.toISOString();
+
   // Agrega KPIs últimos 7 dias
-  const { data: receitas } = await supabase
+  const { data: receitas, error: errReceitas } = await supabase
     .from("contas_receber").select("valor")
     .eq("empresa_id", empresaId)
     .gte("data_recebimento", semanaInicio).lte("data_recebimento", semanaFim);
-  const { data: despesas } = await supabase
+  if (errReceitas) throw errReceitas;
+  const { data: despesas, error: errDespesas } = await supabase
     .from("contas_pagar").select("valor")
     .eq("empresa_id", empresaId)
     .gte("data_pagamento", semanaInicio).lte("data_pagamento", semanaFim);
-  const { count: alertasTotal } = await supabase
+  if (errDespesas) throw errDespesas;
+  const { count: alertasTotal, error: errAlertasTotal } = await supabase
     .from("alertas_tributarios").select("*", { count: "exact", head: true })
-    .eq("empresa_id", empresaId).gte("created_at", semanaInicio);
-  const { count: alertasCriticos } = await supabase
+    .eq("empresa_id", empresaId).gte("created_at", semanaInicio).lt("created_at", semanaFimExclusiveIso);
+  if (errAlertasTotal) throw errAlertasTotal;
+  const { count: alertasCriticos, error: errAlertasCriticos } = await supabase
     .from("alertas_tributarios").select("*", { count: "exact", head: true })
-    .eq("empresa_id", empresaId).eq("prioridade", "critica").gte("created_at", semanaInicio);
-  const { count: cpVencidas } = await supabase
+    .eq("empresa_id", empresaId).eq("prioridade", "critica").gte("created_at", semanaInicio).lt("created_at", semanaFimExclusiveIso);
+  if (errAlertasCriticos) throw errAlertasCriticos;
+  const { count: cpVencidas, error: errCpVencidas } = await supabase
     .from("contas_pagar").select("*", { count: "exact", head: true })
     .eq("empresa_id", empresaId).eq("status", "vencido");
-  const { count: crVencidas } = await supabase
+  if (errCpVencidas) throw errCpVencidas;
+  const { count: crVencidas, error: errCrVencidas } = await supabase
     .from("contas_receber").select("*", { count: "exact", head: true })
     .eq("empresa_id", empresaId).eq("status", "vencido");
+  if (errCrVencidas) throw errCrVencidas;
 
   const receita_total = (receitas ?? []).reduce((s: number, r: any) => s + Number(r.valor || 0), 0);
   const despesa_total = (despesas ?? []).reduce((s: number, r: any) => s + Number(r.valor || 0), 0);
@@ -75,7 +108,7 @@ Dados da semana ${semanaInicio} a ${semanaFim}:
 
 Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
 
-  const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const { response: aiResp, text: aiText } = await fetchComTimeout("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -88,13 +121,12 @@ Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
   });
 
   if (!aiResp.ok) {
-    const errTxt = await aiResp.text();
     if (aiResp.status === 429) throw new Error("Rate limit excedido");
     if (aiResp.status === 402) throw new Error("Créditos esgotados");
-    throw new Error(`AI gateway: ${errTxt}`);
+    throw new Error(`AI gateway: ${aiText}`);
   }
 
-  const aiData = await aiResp.json();
+  const aiData = JSON.parse(aiText);
   const resumoMd = aiData.choices?.[0]?.message?.content ?? "Resumo indisponível";
 
   return { kpis, resumoMd };
@@ -102,6 +134,9 @@ Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const guard = await exigirInternaOuUsuario(req, "p13_resumo_executivo_semanal");
+  if (!guard.ok) return guard.resposta;
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
@@ -112,6 +147,24 @@ serve(async (req) => {
     const validation = await validateContract(ResumoSemanalBodySchema, rawBody);
     if (!validation.success) return validation.response;
     const empresaIdFilter: string | undefined = validation.data.empresa_id;
+
+    if (guard.dados.origem === "usuario") {
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: guard.dados.userId, _role: "admin" });
+      if (!isAdmin) {
+        if (!empresaIdFilter) {
+          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { data: vinculo } = await supabase.from("user_empresas").select("id")
+          .eq("user_id", guard.dados.userId).eq("empresa_id", empresaIdFilter).eq("ativo", true).maybeSingle();
+        if (!vinculo) {
+          return new Response(JSON.stringify({ error: "Sem permissão para esta empresa" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
 
     const hoje = new Date();
     const semanaFim = new Date(hoje); semanaFim.setDate(hoje.getDate() - 1);
@@ -143,25 +196,26 @@ serve(async (req) => {
         let enviadoEm: string | null = null;
         let erroEnvio: string | null = null;
         if (RESEND_API_KEY && dest.length > 0) {
-          const r = await fetch("https://api.resend.com/emails", {
+          const { response: r, text: rText } = await fetchComTimeout("https://api.resend.com/emails", {
             method: "POST",
             headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
               from: "Resumo Executivo <onboarding@resend.dev>",
               to: dest,
               subject: `📊 Resumo semanal — ${emp.razao_social} (${sIni} a ${sFim})`,
-              html: `<div style="font-family:system-ui,sans-serif;max-width:680px;margin:auto"><h1>Resumo Executivo Semanal</h1><p><strong>${emp.razao_social}</strong> · ${sIni} a ${sFim}</p><pre style="white-space:pre-wrap;font-family:inherit">${resumoMd}</pre></div>`,
+              html: `<div style="font-family:system-ui,sans-serif;max-width:680px;margin:auto"><h1>Resumo Executivo Semanal</h1><p><strong>${escapeHtml(emp.razao_social)}</strong> · ${sIni} a ${sFim}</p><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(resumoMd)}</pre></div>`,
             }),
           });
           if (r.ok) enviadoEm = new Date().toISOString();
-          else erroEnvio = await r.text();
+          else erroEnvio = rText;
         }
 
-        await supabase.from("resumos_executivos_semanais").upsert({
+        const { error: errUpsert } = await supabase.from("resumos_executivos_semanais").upsert({
           empresa_id: emp.id, semana_inicio: sIni, semana_fim: sFim,
           resumo_md: resumoMd, kpis: kpis as any,
           destinatarios: dest, enviado_em: enviadoEm, erro_envio: erroEnvio,
         }, { onConflict: "empresa_id,semana_inicio" });
+        if (errUpsert) throw errUpsert;
 
         resultados.push({ empresa_id: emp.id, ok: true });
       } catch (e) {

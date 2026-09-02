@@ -1,9 +1,9 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
-import { z } from "../_shared/zod.ts";
-import { validateContract } from "../_shared/contract-validator.ts";
-import { exigirUsuario } from "../_shared/auth-guard.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { z } from '../_shared/zod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
 const InsightsRelatorioBodySchema = z.object({
   dados: z.unknown(),
@@ -12,7 +12,8 @@ const InsightsRelatorioBodySchema = z.object({
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version, x-request-id',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version, x-request-id',
 };
 
 export const handler = async (req: Request): Promise<Response> => {
@@ -31,7 +32,10 @@ export const handler = async (req: Request): Promise<Response> => {
     if (supabaseUrl && serviceRoleKey) {
       const supa = createClient(supabaseUrl, serviceRoleKey);
       const rl = await checkRateLimit(supa, {
-        endpoint: 'insights-relatorio', ip, limit: 30, windowSeconds: 60,
+        endpoint: 'insights-relatorio',
+        ip,
+        limit: 30,
+        windowSeconds: 60,
         userAgent: req.headers.get('user-agent'),
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
@@ -70,40 +74,54 @@ Responda EXCLUSIVAMENTE com um JSON válido no seguinte formato (sem markdown, s
 
 Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com números e percentuais.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: 'google/gemini-3-flash-preview',
         messages: [
-          { role: "system", content: "Você é um analista financeiro sênior. Responda sempre com JSON válido, sem markdown." },
-          { role: "user", content: prompt },
+          {
+            role: 'system',
+            content:
+              'Você é um analista financeiro sênior. Responda sempre com JSON válido, sem markdown.',
+          },
+          { role: 'user', content: prompt },
         ],
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Tente novamente em alguns segundos." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: 'Rate limit exceeded. Tente novamente em alguns segundos.' }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes. Adicione fundos em Settings > Workspace > Usage." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({
+            error: 'Créditos insuficientes. Adicione fundos em Settings > Workspace > Usage.',
+          }),
+          {
+            status: 402,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error('AI gateway error:', response.status, errorText);
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const aiData = await response.json();
     const content = aiData.choices?.[0]?.message?.content || '';
-    
+
     // Parse JSON from response (handle potential markdown wrapping)
     let parsed;
     try {
@@ -113,20 +131,32 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
       parsed = {
         resumo: content.substring(0, 200),
         score: 50,
-        insights: [{ tipo: 'recomendacao', titulo: 'Análise disponível', descricao: content.substring(0, 500), impacto: 'medio', acao: 'Revisar dados' }],
+        insights: [
+          {
+            tipo: 'recomendacao',
+            titulo: 'Análise disponível',
+            descricao: content.substring(0, 500),
+            impacto: 'medio',
+            acao: 'Revisar dados',
+          },
+        ],
         comparativo: '',
         projecao: '',
       };
     }
 
     return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error("insights-relatorio error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error('insights-relatorio error:', e);
+    return new Response(
+      JSON.stringify({ error: e instanceof Error ? e.message : 'Erro desconhecido' }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 };
 

@@ -19,19 +19,16 @@
  *     admin de auth respondem 403/vazio silenciosamente.
  */
 
-import * as postgresModule from "https://esm.sh/postgres@3.4.5?target=denonext";
-import { z } from "../_shared/zod.ts";
-import { avaliarSqlMcp } from "./sql-policy.ts";
+import * as postgresModule from 'https://esm.sh/postgres@3.4.5?target=denonext';
+import { z } from '../_shared/zod.ts';
+import { avaliarSqlMcp } from './sql-policy.ts';
 
 export type SqlClient = {
   unsafe(query: string): Promise<unknown[]>;
   begin<T>(callback: (transaction: SqlClient) => Promise<T>): Promise<T>;
 };
 
-type PostgresFactory = (
-  url: string,
-  options: Record<string, unknown>,
-) => SqlClient;
+type PostgresFactory = (url: string, options: Record<string, unknown>) => SqlClient;
 
 export interface RuntimeDeps {
   secret?: string | null;
@@ -42,13 +39,12 @@ export interface RuntimeDeps {
   fetchImpl?: typeof fetch;
 }
 
-const postgres =
-  (postgresModule as unknown as { default: PostgresFactory }).default;
+const postgres = (postgresModule as unknown as { default: PostgresFactory }).default;
 
 const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "x-mcp-secret, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'x-mcp-secret, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 const ADMIN_PATH = /^(storage|auth)\/v1\/[^?#]*$/;
@@ -56,8 +52,7 @@ const MAX_TRANSACTION_STATEMENTS = 100;
 const MAX_TRANSACTION_BYTES = 1024 * 1024;
 const MAX_QUERY_BYTES = 1024 * 1024;
 const MAX_QUERY_B64_BYTES = Math.ceil(MAX_QUERY_BYTES / 3) * 4 + 16;
-const MAX_TRANSACTION_PAYLOAD_B64_BYTES =
-  Math.ceil((MAX_TRANSACTION_BYTES * 2) / 3) * 4 + 16;
+const MAX_TRANSACTION_PAYLOAD_B64_BYTES = Math.ceil((MAX_TRANSACTION_BYTES * 2) / 3) * 4 + 16;
 const MAX_RAW_BODY_BYTES = 2 * 1024 * 1024;
 const MAX_ADMIN_REQUEST_BYTES = 256 * 1024;
 const MAX_ADMIN_RESPONSE_BYTES = 1024 * 1024;
@@ -66,59 +61,62 @@ const LOCK_TIMEOUT_MS = 1000;
 const ADMIN_TIMEOUT_MS = 5000;
 
 const ADMIN_ALLOWLIST: Array<{ method: string; pattern: RegExp }> = [
-  { method: "GET", pattern: /^auth\/v1\/admin\/users$/ },
-  { method: "POST", pattern: /^auth\/v1\/admin\/users$/ },
-  { method: "GET", pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
-  { method: "PUT", pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
-  { method: "DELETE", pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
-  { method: "POST", pattern: /^auth\/v1\/admin\/generate_link$/ },
-  { method: "POST", pattern: /^auth\/v1\/invite$/ },
-  { method: "GET", pattern: /^storage\/v1\/bucket$/ },
-  { method: "POST", pattern: /^storage\/v1\/bucket$/ },
-  { method: "GET", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
-  { method: "PUT", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
-  { method: "DELETE", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
-  { method: "POST", pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+\/empty$/i },
+  { method: 'GET', pattern: /^auth\/v1\/admin\/users$/ },
+  { method: 'POST', pattern: /^auth\/v1\/admin\/users$/ },
+  { method: 'GET', pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
+  { method: 'PUT', pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
+  { method: 'DELETE', pattern: /^auth\/v1\/admin\/users\/[a-z0-9-]+$/i },
+  { method: 'POST', pattern: /^auth\/v1\/admin\/generate_link$/ },
+  { method: 'POST', pattern: /^auth\/v1\/invite$/ },
+  { method: 'GET', pattern: /^storage\/v1\/bucket$/ },
+  { method: 'POST', pattern: /^storage\/v1\/bucket$/ },
+  { method: 'GET', pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
+  { method: 'PUT', pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
+  { method: 'DELETE', pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+$/i },
+  { method: 'POST', pattern: /^storage\/v1\/bucket\/[a-z0-9._-]+\/empty$/i },
   {
-    method: "POST",
+    method: 'POST',
     pattern: /^storage\/v1\/object\/list(?:\/[a-z0-9._-]+)?$/i,
   },
   {
-    method: "GET",
-    pattern:
-      /^storage\/v1\/object\/(?:authenticated|info|public|sign)\/[a-z0-9._-]+\/.+$/i,
+    method: 'GET',
+    pattern: /^storage\/v1\/object\/(?:authenticated|info|public|sign)\/[a-z0-9._-]+\/.+$/i,
   },
-  { method: "POST", pattern: /^storage\/v1\/object\/sign\/[a-z0-9._-]+\/.+$/i },
-  { method: "POST", pattern: /^storage\/v1\/object\/move$/ },
-  { method: "POST", pattern: /^storage\/v1\/object\/copy$/ },
-  { method: "POST", pattern: /^storage\/v1\/object\/remove$/ },
-  { method: "DELETE", pattern: /^storage\/v1\/object\/[a-z0-9._-]+$/i },
+  { method: 'POST', pattern: /^storage\/v1\/object\/sign\/[a-z0-9._-]+\/.+$/i },
+  { method: 'POST', pattern: /^storage\/v1\/object\/move$/ },
+  { method: 'POST', pattern: /^storage\/v1\/object\/copy$/ },
+  { method: 'POST', pattern: /^storage\/v1\/object\/remove$/ },
+  { method: 'DELETE', pattern: /^storage\/v1\/object\/[a-z0-9._-]+$/i },
   {
-    method: "POST",
+    method: 'POST',
     pattern: /^storage\/v1\/object\/upload\/sign\/[a-z0-9._-]+\/.+$/i,
   },
-  { method: "POST", pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
-  { method: "PUT", pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
-  { method: "DELETE", pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
+  { method: 'POST', pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
+  { method: 'PUT', pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
+  { method: 'DELETE', pattern: /^storage\/v1\/object\/[a-z0-9._-]+\/.+$/i },
 ];
 
-const RequestSchema = z.object({
-  sql: z.string().optional(),
-  sql_b64: z.string().optional(),
-  stmts_b64: z.string().optional(),
-  limit: z.number().int().optional(),
-  allow_all_rows: z.boolean().optional(),
-  admin: z.object({
-    path: z.string(),
-    method: z.string().optional(),
-    body: z.unknown().optional(),
-  }).optional(),
-}).strict();
+const RequestSchema = z
+  .object({
+    sql: z.string().optional(),
+    sql_b64: z.string().optional(),
+    stmts_b64: z.string().optional(),
+    limit: z.number().int().optional(),
+    allow_all_rows: z.boolean().optional(),
+    admin: z
+      .object({
+        path: z.string(),
+        method: z.string().optional(),
+        body: z.unknown().optional(),
+      })
+      .optional(),
+  })
+  .strict();
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS, "Content-Type": "application/json" },
+    headers: { ...CORS, 'Content-Type': 'application/json' },
   });
 }
 
@@ -132,14 +130,14 @@ function decodeB64(b64: string): string {
 async function lerTextoLimitado(
   stream: ReadableStream<Uint8Array> | null,
   maxBytes: number,
-  erro: string,
+  erro: string
 ): Promise<string> {
-  if (!stream) return "";
+  if (!stream) return '';
 
   const reader = stream.getReader();
   const decoder = new TextDecoder();
   let total = 0;
-  let texto = "";
+  let texto = '';
 
   try {
     while (true) {
@@ -170,17 +168,14 @@ function getSql(url: string) {
   return sql;
 }
 
-function runtimeValue(
-  override: string | null | undefined,
-  envName: string,
-): string | null {
+function runtimeValue(override: string | null | undefined, envName: string): string | null {
   if (override !== undefined) return override;
   return Deno.env.get(envName) ?? null;
 }
 
 function timingSafeEqual(left: string | null, right: string): boolean {
   const encoder = new TextEncoder();
-  const a = encoder.encode(left ?? "");
+  const a = encoder.encode(left ?? '');
   const b = encoder.encode(right);
   const max = Math.max(a.length, b.length);
   let diff = a.length ^ b.length;
@@ -194,11 +189,7 @@ function medirBytes(texto: string): number {
   return new TextEncoder().encode(texto).byteLength;
 }
 
-function validarCargaBase64(
-  payload: string,
-  maxBytes: number,
-  label: string,
-): string | null {
+function validarCargaBase64(payload: string, maxBytes: number, label: string): string | null {
   if (medirBytes(payload) > maxBytes) {
     return `${label} excede o limite de ${maxBytes} bytes codificados`;
   }
@@ -207,55 +198,45 @@ function validarCargaBase64(
 
 function validarAdminPath(path: string): string | null {
   if (!ADMIN_PATH.test(path)) {
-    return "admin.path deve começar com storage/v1/ ou auth/v1/";
+    return 'admin.path deve começar com storage/v1/ ou auth/v1/';
   }
-  if (path.includes("\\") || path.includes("%")) {
-    return "admin.path contém caracteres não permitidos";
+  if (path.includes('\\') || path.includes('%')) {
+    return 'admin.path contém caracteres não permitidos';
   }
 
-  const segmentos = path.split("/");
-  if (
-    segmentos.some((segmento) =>
-      segmento === "" || segmento === "." || segmento === ".."
-    )
-  ) {
-    return "admin.path contém segmentos inválidos";
+  const segmentos = path.split('/');
+  if (segmentos.some((segmento) => segmento === '' || segmento === '.' || segmento === '..')) {
+    return 'admin.path contém segmentos inválidos';
   }
 
   return null;
 }
 
 function validarAdminMetodoERota(path: string, method: string): string | null {
-  const permitido = ADMIN_ALLOWLIST.some((entrada) =>
-    entrada.method === method && entrada.pattern.test(path)
+  const permitido = ADMIN_ALLOWLIST.some(
+    (entrada) => entrada.method === method && entrada.pattern.test(path)
   );
-  return permitido ? null : "admin.path/admin.method fora da allowlist do MCP";
+  return permitido ? null : 'admin.path/admin.method fora da allowlist do MCP';
 }
 
-function validarContratoAdmin(
-  path: string,
-  method: string,
-  payload: unknown,
-): string | null {
-  if (
-    method === "DELETE" && /^storage\/v1\/object\/[a-z0-9._-]+$/i.test(path)
-  ) {
+function validarContratoAdmin(path: string, method: string, payload: unknown): string | null {
+  if (method === 'DELETE' && /^storage\/v1\/object\/[a-z0-9._-]+$/i.test(path)) {
     if (
-      !payload || typeof payload !== "object" || Array.isArray(payload) ||
-      !("prefixes" in payload)
+      !payload ||
+      typeof payload !== 'object' ||
+      Array.isArray(payload) ||
+      !('prefixes' in payload)
     ) {
-      return "admin.body deve conter { prefixes: string[] } para DELETE storage/v1/object/<bucket>";
+      return 'admin.body deve conter { prefixes: string[] } para DELETE storage/v1/object/<bucket>';
     }
 
     const prefixes = (payload as Record<string, unknown>).prefixes;
     if (
       !Array.isArray(prefixes) ||
       prefixes.length === 0 ||
-      !prefixes.every((prefix) =>
-        typeof prefix === "string" && prefix.trim().length > 0
-      )
+      !prefixes.every((prefix) => typeof prefix === 'string' && prefix.trim().length > 0)
     ) {
-      return "admin.body deve conter { prefixes: string[] } para DELETE storage/v1/object/<bucket>";
+      return 'admin.body deve conter { prefixes: string[] } para DELETE storage/v1/object/<bucket>';
     }
   }
 
@@ -269,13 +250,12 @@ function validarModo(body: z.infer<typeof RequestSchema>): string | null {
   const temSqlB64 = body.sql_b64 !== undefined;
 
   if (Number(temSql) + Number(temSqlB64) > 1) {
-    return "sql e sql_b64 são mutuamente exclusivos";
+    return 'sql e sql_b64 são mutuamente exclusivos';
   }
 
-  const modos = Number(temAdmin) + Number(temTransacao) +
-    Number(temSql || temSqlB64);
+  const modos = Number(temAdmin) + Number(temTransacao) + Number(temSql || temSqlB64);
   if (modos !== 1) {
-    return "request deve informar exatamente um modo: admin, stmts_b64 ou sql/sql_b64";
+    return 'request deve informar exatamente um modo: admin, stmts_b64 ou sql/sql_b64';
   }
 
   return null;
@@ -284,49 +264,40 @@ function validarModo(body: z.infer<typeof RequestSchema>): string | null {
 async function executarConsultaComTimeouts(
   client: SqlClient,
   callback: (transaction: SqlClient) => Promise<unknown[]>,
-  somenteLeitura: boolean,
+  somenteLeitura: boolean
 ): Promise<unknown[]> {
   return await client.begin(async (tx) => {
-    await tx.unsafe(
-      `SET LOCAL statement_timeout = '${STATEMENT_TIMEOUT_MS}ms'`,
-    );
-    await tx.unsafe(
-      `SET LOCAL lock_timeout = '${LOCK_TIMEOUT_MS}ms'`,
-    );
+    await tx.unsafe(`SET LOCAL statement_timeout = '${STATEMENT_TIMEOUT_MS}ms'`);
+    await tx.unsafe(`SET LOCAL lock_timeout = '${LOCK_TIMEOUT_MS}ms'`);
     if (somenteLeitura) {
-      await tx.unsafe("SET TRANSACTION READ ONLY");
+      await tx.unsafe('SET TRANSACTION READ ONLY');
     }
     return await callback(tx);
   });
 }
 
-async function handleAdmin(
-  admin: Record<string, unknown>,
-  deps: RuntimeDeps,
-): Promise<Response> {
-  const serviceKey = runtimeValue(deps.serviceKey, "SUPABASE_SERVICE_ROLE_KEY");
-  const supabaseUrl = runtimeValue(deps.supabaseUrl, "SUPABASE_URL");
+async function handleAdmin(admin: Record<string, unknown>, deps: RuntimeDeps): Promise<Response> {
+  const serviceKey = runtimeValue(deps.serviceKey, 'SUPABASE_SERVICE_ROLE_KEY');
+  const supabaseUrl = runtimeValue(deps.supabaseUrl, 'SUPABASE_URL');
   const fetchImpl = deps.fetchImpl ?? fetch;
 
   if (!serviceKey || !supabaseUrl) {
-    return json({ error: "service_role_indisponivel" }, 500);
+    return json({ error: 'service_role_indisponivel' }, 500);
   }
 
-  const path = String(admin.path ?? "");
+  const path = String(admin.path ?? '');
   const erroPath = validarAdminPath(path);
   if (erroPath) return json({ error: erroPath }, 400);
 
-  const method = String(admin.method ?? "GET").toUpperCase();
+  const method = String(admin.method ?? 'GET').toUpperCase();
   const erroRota = validarAdminMetodoERota(path, method);
   if (erroRota) return json({ error: erroRota }, 400);
   const payload = admin.body;
   const erroContrato = validarContratoAdmin(path, method, payload);
   if (erroContrato) return json({ error: erroContrato }, 400);
-  const bodyTexto = payload === undefined || payload === null
-    ? undefined
-    : JSON.stringify(payload);
+  const bodyTexto = payload === undefined || payload === null ? undefined : JSON.stringify(payload);
   if (bodyTexto && medirBytes(bodyTexto) > MAX_ADMIN_REQUEST_BYTES) {
-    return json({ error: "admin.body excede o limite permitido" }, 413);
+    return json({ error: 'admin.body excede o limite permitido' }, 413);
   }
 
   const controller = new AbortController();
@@ -334,12 +305,12 @@ async function handleAdmin(
 
   let res: Response;
   try {
-    res = await fetchImpl(`${supabaseUrl.replace(/\/$/, "")}/${path}`, {
+    res = await fetchImpl(`${supabaseUrl.replace(/\/$/, '')}/${path}`, {
       method,
       headers: {
         apikey: serviceKey,
         Authorization: `Bearer ${serviceKey}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: bodyTexto,
       signal: controller.signal,
@@ -347,7 +318,7 @@ async function handleAdmin(
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (controller.signal.aborted) {
-      return json({ error: "admin upstream timeout" }, 504);
+      return json({ error: 'admin upstream timeout' }, 504);
     }
     return json({ error: { message } }, 502);
   } finally {
@@ -359,7 +330,7 @@ async function handleAdmin(
     texto = await lerTextoLimitado(
       res.body,
       MAX_ADMIN_RESPONSE_BYTES,
-      "admin response excede o limite permitido",
+      'admin response excede o limite permitido'
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -386,7 +357,7 @@ function validarCargaTransacional(stmts: string[]): string | null {
   }
 
   if (stmts.every((stmt) => stmt.trim().length === 0)) {
-    return "transação deve conter ao menos um statement não vazio";
+    return 'transação deve conter ao menos um statement não vazio';
   }
 
   return null;
@@ -395,29 +366,29 @@ function validarCargaTransacional(stmts: string[]): string | null {
 async function handleTransaction(
   stmtsB64: string,
   allowAllRows: boolean,
-  deps: RuntimeDeps,
+  deps: RuntimeDeps
 ): Promise<Response> {
-  const dbUrl = runtimeValue(deps.dbUrl, "SUPABASE_DB_URL");
+  const dbUrl = runtimeValue(deps.dbUrl, 'SUPABASE_DB_URL');
   const sqlFactory = deps.getSql ?? getSql;
-  if (!dbUrl) return json({ error: "server_misconfigured" }, 500);
+  if (!dbUrl) return json({ error: 'server_misconfigured' }, 500);
 
   const erroPayloadCodificado = validarCargaBase64(
     stmtsB64,
     MAX_TRANSACTION_PAYLOAD_B64_BYTES,
-    "stmts_b64",
+    'stmts_b64'
   );
   if (erroPayloadCodificado) return json({ error: erroPayloadCodificado }, 400);
 
   let stmts: string[];
   try {
     const bruto = JSON.parse(decodeB64(stmtsB64));
-    if (!Array.isArray(bruto)) throw new Error("payload não é array");
-    if (!bruto.every((stmt) => typeof stmt === "string")) {
-      throw new Error("payload deve conter apenas strings");
+    if (!Array.isArray(bruto)) throw new Error('payload não é array');
+    if (!bruto.every((stmt) => typeof stmt === 'string')) {
+      throw new Error('payload deve conter apenas strings');
     }
     stmts = bruto;
   } catch (e) {
-    return json({ error: "stmts_b64 inválido: " + String(e) }, 400);
+    return json({ error: 'stmts_b64 inválido: ' + String(e) }, 400);
   }
 
   const erroCarga = validarCargaTransacional(stmts);
@@ -429,11 +400,14 @@ async function handleTransaction(
     if (!s) continue;
     const avaliacao = avaliarSqlMcp(s, allowAllRows);
     if (avaliacao.motivoBloqueio) {
-      return json({
-        error: "SQL bloqueado pela política de segurança do MCP",
-        reason: avaliacao.motivoBloqueio,
-        statement: s.slice(0, 160),
-      }, 400);
+      return json(
+        {
+          error: 'SQL bloqueado pela política de segurança do MCP',
+          reason: avaliacao.motivoBloqueio,
+          statement: s.slice(0, 160),
+        },
+        400
+      );
     }
     apenasLeitura &&= avaliacao.somenteLeitura;
   }
@@ -453,7 +427,7 @@ async function handleTransaction(
         }
         return res;
       },
-      apenasLeitura,
+      apenasLeitura
     );
 
     return json({ results, committed: true, statements: results.length });
@@ -465,25 +439,25 @@ async function handleTransaction(
 
 export function createHandler(deps: RuntimeDeps = {}) {
   return async (req: Request): Promise<Response> => {
-    if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
-    if (req.method !== "POST") {
-      return json({ error: "method_not_allowed" }, 405);
+    if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
+    if (req.method !== 'POST') {
+      return json({ error: 'method_not_allowed' }, 405);
     }
 
-    const secret = runtimeValue(deps.secret, "MCP_SECRET");
-    if (!secret) return json({ error: "server_misconfigured" }, 500);
-    if (!timingSafeEqual(req.headers.get("x-mcp-secret"), secret)) {
-      return json({ error: "unauthorized" }, 401);
+    const secret = runtimeValue(deps.secret, 'MCP_SECRET');
+    if (!secret) return json({ error: 'server_misconfigured' }, 500);
+    if (!timingSafeEqual(req.headers.get('x-mcp-secret'), secret)) {
+      return json({ error: 'unauthorized' }, 401);
     }
 
-    const contentLengthHeader = req.headers.get("content-length");
+    const contentLengthHeader = req.headers.get('content-length');
     if (contentLengthHeader !== null) {
       const contentLength = Number(contentLengthHeader);
       if (!Number.isFinite(contentLength) || contentLength < 0) {
-        return json({ error: "content-length inválido" }, 400);
+        return json({ error: 'content-length inválido' }, 400);
       }
       if (contentLength > MAX_RAW_BODY_BYTES) {
-        return json({ error: "payload excede o limite bruto de 2 MiB" }, 413);
+        return json({ error: 'payload excede o limite bruto de 2 MiB' }, 413);
       }
     }
 
@@ -492,11 +466,11 @@ export function createHandler(deps: RuntimeDeps = {}) {
       rawBodyText = await lerTextoLimitado(
         req.body,
         MAX_RAW_BODY_BYTES,
-        "payload excede o limite bruto de 2 MiB",
+        'payload excede o limite bruto de 2 MiB'
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      const status = message.includes("2 MiB") ? 413 : 400;
+      const status = message.includes('2 MiB') ? 413 : 400;
       return json({ error: message }, status);
     }
 
@@ -504,15 +478,12 @@ export function createHandler(deps: RuntimeDeps = {}) {
     try {
       rawBody = JSON.parse(rawBodyText);
     } catch {
-      return json({ error: "invalid json" }, 400);
+      return json({ error: 'invalid json' }, 400);
     }
 
     const parsed = RequestSchema.safeParse(rawBody);
     if (!parsed.success) {
-      return json(
-        { error: "invalid payload", details: parsed.error.format() },
-        400,
-      );
+      return json({ error: 'invalid payload', details: parsed.error.format() }, 400);
     }
 
     const body = parsed.data;
@@ -520,23 +491,19 @@ export function createHandler(deps: RuntimeDeps = {}) {
     if (erroModo) return json({ error: erroModo }, 400);
     if (body.admin) return await handleAdmin(body.admin, deps);
     if (body.stmts_b64) {
-      return await handleTransaction(
-        body.stmts_b64,
-        !!body.allow_all_rows,
-        deps,
-      );
+      return await handleTransaction(body.stmts_b64, !!body.allow_all_rows, deps);
     }
 
-    const dbUrl = runtimeValue(deps.dbUrl, "SUPABASE_DB_URL");
+    const dbUrl = runtimeValue(deps.dbUrl, 'SUPABASE_DB_URL');
     const sqlFactory = deps.getSql ?? getSql;
-    if (!dbUrl) return json({ error: "server_misconfigured" }, 500);
+    if (!dbUrl) return json({ error: 'server_misconfigured' }, 500);
 
-    let bruto = body.sql ?? "";
+    let bruto = body.sql ?? '';
     if (body.sql_b64) {
       const erroPayloadCodificado = validarCargaBase64(
         body.sql_b64,
         MAX_QUERY_B64_BYTES,
-        "sql_b64",
+        'sql_b64'
       );
       if (erroPayloadCodificado) {
         return json({ error: erroPayloadCodificado }, 400);
@@ -544,30 +511,28 @@ export function createHandler(deps: RuntimeDeps = {}) {
       try {
         bruto = decodeB64(body.sql_b64);
       } catch {
-        return json({ error: "sql_b64 inválido" }, 400);
+        return json({ error: 'sql_b64 inválido' }, 400);
       }
     }
 
     const query = bruto.trim();
-    if (!query) return json({ error: "empty sql" }, 400);
+    if (!query) return json({ error: 'empty sql' }, 400);
     if (medirBytes(query) > MAX_QUERY_BYTES) {
-      return json(
-        { error: `sql excede o limite de ${MAX_QUERY_BYTES} bytes` },
-        400,
-      );
+      return json({ error: `sql excede o limite de ${MAX_QUERY_BYTES} bytes` }, 400);
     }
 
-    const limite = Number.isFinite(body.limit)
-      ? Math.trunc(body.limit as number)
-      : 100;
+    const limite = Number.isFinite(body.limit) ? Math.trunc(body.limit as number) : 100;
     const limiteSeguro = Math.min(Math.max(limite, 1), 10_000);
     const avaliacao = avaliarSqlMcp(query, !!body.allow_all_rows, limiteSeguro);
     if (avaliacao.motivoBloqueio) {
-      return json({
-        error: "SQL bloqueado pela política de segurança do MCP",
-        reason: avaliacao.motivoBloqueio,
-        statement: query.slice(0, 160),
-      }, 400);
+      return json(
+        {
+          error: 'SQL bloqueado pela política de segurança do MCP',
+          reason: avaliacao.motivoBloqueio,
+          statement: query.slice(0, 160),
+        },
+        400
+      );
     }
 
     try {
@@ -575,13 +540,11 @@ export function createHandler(deps: RuntimeDeps = {}) {
       const rows = await executarConsultaComTimeouts(
         client,
         (tx) => tx.unsafe(avaliacao.finalSql),
-        avaliacao.somenteLeitura,
+        avaliacao.somenteLeitura
       );
       const bruto2 = Array.isArray(rows) ? Array.from(rows) : [rows];
       const multi = bruto2.length > 0 && bruto2.every((r) => Array.isArray(r));
-      const lista = multi
-        ? bruto2.flatMap((r) => Array.from(r as unknown[]))
-        : bruto2;
+      const lista = multi ? bruto2.flatMap((r) => Array.from(r as unknown[])) : bruto2;
       return json({
         rows: lista,
         count: lista.length,

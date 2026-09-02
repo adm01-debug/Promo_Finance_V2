@@ -61,7 +61,6 @@ export default defineConfig({
         branches: 50,
         statements: 6,
       },
-
     },
     testTimeout: 10000,
     hookTimeout: 10000,

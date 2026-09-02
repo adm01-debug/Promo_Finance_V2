@@ -14,7 +14,9 @@ function readRequiredEnv(name: string): string {
   if (value) return value;
 
   if (process.env.CI) {
-    throw new Error(`Pré-flight do logout destrutivo falhou: variável obrigatória ausente (${name}).`);
+    throw new Error(
+      `Pré-flight do logout destrutivo falhou: variável obrigatória ausente (${name}).`
+    );
   }
 
   test.skip(true, `${name} não definido fora do CI`);

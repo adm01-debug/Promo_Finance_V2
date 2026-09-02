@@ -1,9 +1,13 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { CategorizarDespesaSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
-import { exigirUsuario } from "../_shared/auth-guard.ts";
-
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import {
+  CategorizarDespesaSchema,
+  corsHeaders,
+  validatePayload,
+  createErrorResponse,
+} from '../_shared/validation.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
 interface Despesa {
   id?: string;
@@ -38,25 +42,27 @@ export const handler = async (req: Request): Promise<Response> => {
     if (supabaseUrl && serviceRoleKey) {
       const supa = createClient(supabaseUrl, serviceRoleKey);
       const rl = await checkRateLimit(supa, {
-        endpoint: 'categorizar-despesa', ip, limit: 30, windowSeconds: 60,
+        endpoint: 'categorizar-despesa',
+        ip,
+        limit: 30,
+        windowSeconds: 60,
         userAgent: req.headers.get('user-agent'),
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
     const rawBody = await req.json();
-    const validation = validatePayload(CategorizarDespesaSchema, rawBody, "categorizar-despesa");
+    const validation = validatePayload(CategorizarDespesaSchema, rawBody, 'categorizar-despesa');
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details);
     }
     const { despesas } = validation.data;
 
-
     if (!despesas || despesas.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'Nenhuma despesa fornecida' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Nenhuma despesa fornecida' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -65,9 +71,12 @@ export const handler = async (req: Request): Promise<Response> => {
     }
 
     // Preparar prompt para categorização
-    const despesasTexto = despesas.map((d, i) => 
-      `${i + 1}. Descrição: "${d.descricao}", Valor: R$ ${d.valor.toFixed(2)}, Fornecedor: "${d.fornecedor_nome || 'Não informado'}"`
-    ).join('\n');
+    const despesasTexto = despesas
+      .map(
+        (d, i) =>
+          `${i + 1}. Descrição: "${d.descricao}", Valor: R$ ${d.valor.toFixed(2)}, Fornecedor: "${d.fornecedor_nome || 'Não informado'}"`
+      )
+      .join('\n');
 
     const systemPrompt = `Você é um especialista em categorização de despesas empresariais no Brasil.
 Sua tarefa é analisar despesas e categorizá-las de forma precisa.
@@ -101,14 +110,14 @@ Responda APENAS com o array JSON, sem texto adicional.`;
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userPrompt },
         ],
         temperature: 0.3,
       }),
@@ -127,7 +136,7 @@ Responda APENAS com o array JSON, sem texto adicional.`;
 
     // Extrair JSON da resposta
     let categorias: CategoriaDetectada[] = [];
-    
+
     try {
       // Tentar extrair JSON do conteúdo
       const jsonMatch = content.match(/\[[\s\S]*\]/);
@@ -140,7 +149,7 @@ Responda APENAS com o array JSON, sem texto adicional.`;
     } catch (parseError) {
       console.error('Erro ao parsear resposta da IA:', parseError);
       // Fallback: categorização básica
-      categorias = despesas.map(d => ({
+      categorias = despesas.map((d) => ({
         categoria: 'Outros',
         subcategoria: 'Diversos',
         confianca: 0.5,
@@ -149,18 +158,16 @@ Responda APENAS com o array JSON, sem texto adicional.`;
       }));
     }
 
-    return new Response(
-      JSON.stringify({ categorias, success: true }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
+    return new Response(JSON.stringify({ categorias, success: true }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Erro ao categorizar despesas:', error);
     const errorMessage = error instanceof Error ? error.message : 'Erro interno';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 };
 

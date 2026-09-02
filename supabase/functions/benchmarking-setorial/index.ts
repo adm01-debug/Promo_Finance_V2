@@ -1,9 +1,13 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { BenchmarkingSetorialSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
-import { exigirUsuario } from "../_shared/auth-guard.ts";
-
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import {
+  BenchmarkingSetorialSchema,
+  corsHeaders,
+  validatePayload,
+  createErrorResponse,
+} from '../_shared/validation.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
 export const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
@@ -21,14 +25,21 @@ export const handler = async (req: Request): Promise<Response> => {
     if (supabaseUrl && serviceRoleKey) {
       const supa = createClient(supabaseUrl, serviceRoleKey);
       const rl = await checkRateLimit(supa, {
-        endpoint: 'benchmarking-setorial', ip, limit: 30, windowSeconds: 60,
+        endpoint: 'benchmarking-setorial',
+        ip,
+        limit: 30,
+        windowSeconds: 60,
         userAgent: req.headers.get('user-agent'),
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
     const rawBody = await req.json();
-    const validation = validatePayload(BenchmarkingSetorialSchema, rawBody, "benchmarking-setorial");
+    const validation = validatePayload(
+      BenchmarkingSetorialSchema,
+      rawBody,
+      'benchmarking-setorial'
+    );
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details);
     }
@@ -81,30 +92,39 @@ Use referências reais do mercado brasileiro de eventos. Métricas importantes:
 - Taxa de recorrência de clientes
 - Ticket médio por evento`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: 'google/gemini-3-flash-preview',
         messages: [
-          { role: "system", content: "Você é um analista financeiro sênior especializado em benchmarking setorial. Responda sempre com JSON válido." },
-          { role: "user", content: prompt },
+          {
+            role: 'system',
+            content:
+              'Você é um analista financeiro sênior especializado em benchmarking setorial. Responda sempre com JSON válido.',
+          },
+          { role: 'user', content: prompt },
         ],
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit. Tente novamente em alguns segundos." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: 'Rate limit. Tente novamente em alguns segundos.' }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ error: 'Créditos insuficientes.' }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
       throw new Error(`AI gateway error: ${response.status}`);
@@ -118,16 +138,25 @@ Use referências reais do mercado brasileiro de eventos. Métricas importantes:
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : content);
     } catch {
-      parsed = { score_geral: 50, resumo_executivo: content.substring(0, 500), benchmarks: [], pontos_fortes: [], pontos_fracos: [], oportunidades: [], tendencias_setor: [] };
+      parsed = {
+        score_geral: 50,
+        resumo_executivo: content.substring(0, 500),
+        benchmarks: [],
+        pontos_fortes: [],
+        pontos_fracos: [],
+        oportunidades: [],
+        tendencias_setor: [],
+      };
     }
 
     return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error("benchmarking error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    console.error('benchmarking error:', e);
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'Erro' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 };

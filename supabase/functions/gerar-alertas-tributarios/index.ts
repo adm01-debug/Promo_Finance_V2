@@ -4,7 +4,7 @@
 // Hardened: structured logging, retry com exponential backoff, top-level try/catch
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -38,11 +38,7 @@ function log(level: LogLevel, event: string, ctx: Record<string, unknown> = {}) 
 }
 
 // ─── Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) ─────────────
-async function withRetry<T>(
-  op: () => PromiseLike<T>,
-  label: string,
-  maxAttempts = 3,
-): Promise<T> {
+async function withRetry<T>(op: () => PromiseLike<T>, label: string, maxAttempts = 3): Promise<T> {
   let lastErr: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -74,7 +70,7 @@ export const handler = async (req: Request): Promise<Response> => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
     const novosAlertas: AlertaInsert[] = [];
@@ -83,16 +79,13 @@ export const handler = async (req: Request): Promise<Response> => {
 
     log('info', 'fn_start', { competencia: competenciaAtual });
 
-    const empresasRes = await withRetry(
-      async () => {
-        const r = await supabase
-          .from('empresas')
-          .select('id, razao_social, cnpj, regime_tributario, cnae_principal');
-        if (r.error) throw r.error;
-        return r;
-      },
-      'select_empresas',
-    );
+    const empresasRes = await withRetry(async () => {
+      const r = await supabase
+        .from('empresas')
+        .select('id, razao_social, cnpj, regime_tributario, cnae_principal');
+      if (r.error) throw r.error;
+      return r;
+    }, 'select_empresas');
     const empresas = empresasRes.data;
 
     log('info', 'empresas_loaded', { count: empresas?.length ?? 0 });
@@ -108,7 +101,7 @@ export const handler = async (req: Request): Promise<Response> => {
               .select('receita_bruta, ano, mes')
               .eq('empresa_id', empresa.id)
               .gte('ano', ano - 1),
-          `faturamento_${empresa.id}`,
+          `faturamento_${empresa.id}`
         );
 
         const rbt12 = (faturamentos ?? [])
@@ -140,7 +133,7 @@ export const handler = async (req: Request): Promise<Response> => {
               .select('total_folha, ano, mes')
               .eq('empresa_id', empresa.id)
               .gte('ano', ano - 1),
-          `folha_${empresa.id}`,
+          `folha_${empresa.id}`
         );
 
         const folhaUlt12 = (folha ?? [])
@@ -175,7 +168,7 @@ export const handler = async (req: Request): Promise<Response> => {
               .select('id, ano, mes, status, total_geral')
               .eq('empresa_id', empresa.id)
               .neq('status', 'pago'),
-          `apuracoes_${empresa.id}`,
+          `apuracoes_${empresa.id}`
         );
 
         for (const ap of apuracoes ?? []) {
@@ -206,7 +199,7 @@ export const handler = async (req: Request): Promise<Response> => {
                 .eq('regime', empresa.regime_tributario ?? 'simples_nacional')
                 .ilike('cnae_prefix', `${cnaePrefix}%`)
                 .limit(1),
-            `benchmark_${empresa.id}`,
+            `benchmark_${empresa.id}`
           );
 
           if (bench && bench.length > 0) {
@@ -219,7 +212,7 @@ export const handler = async (req: Request): Promise<Response> => {
                   .order('ano', { ascending: false })
                   .order('mes', { ascending: false })
                   .limit(1),
-              `ultima_apuracao_${empresa.id}`,
+              `ultima_apuracao_${empresa.id}`
             );
 
             if (ultimaApuracao?.[0]) {
@@ -250,14 +243,14 @@ export const handler = async (req: Request): Promise<Response> => {
               .ilike('descricao', '%dividend%')
               .gte(
                 'data_movimentacao',
-                new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1).toISOString().slice(0, 10),
+                new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1).toISOString().slice(0, 10)
               ),
-          `dividendos_${empresa.id}`,
+          `dividendos_${empresa.id}`
         );
 
         const totalDividendos = (divPF ?? []).reduce(
           (acc: number, m: any) => acc + Number(m.valor || 0),
-          0,
+          0
         );
         if (totalDividendos > IRPFM_MENSAL_LIMITE) {
           novosAlertas.push({
@@ -292,14 +285,14 @@ export const handler = async (req: Request): Promise<Response> => {
               .eq('tipo', alerta.tipo)
               .gte('created_at', new Date(Date.now() - 7 * 86400000).toISOString())
               .limit(1),
-          `dedup_${alerta.tipo}`,
+          `dedup_${alerta.tipo}`
         );
 
         if (existe && existe.length > 0) continue;
 
         const { error } = await withRetry(
           () => supabase.from('alertas_tributarios').insert(alerta),
-          `insert_${alerta.tipo}`,
+          `insert_${alerta.tipo}`
         );
         if (!error) inseridos++;
       } catch (insertErr) {
@@ -332,7 +325,9 @@ export const handler = async (req: Request): Promise<Response> => {
           alertas_inseridos: inseridos,
         },
       });
-    } catch { /* observability nunca derruba */ }
+    } catch {
+      /* observability nunca derruba */
+    }
 
     return new Response(
       JSON.stringify({
@@ -342,7 +337,7 @@ export const handler = async (req: Request): Promise<Response> => {
         alertas_avaliados: novosAlertas.length,
         duration_ms,
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
     const duration_ms = Date.now() - startedAt;
@@ -352,7 +347,7 @@ export const handler = async (req: Request): Promise<Response> => {
     try {
       const sb = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       );
       await sb.from('edge_function_logs').insert({
         function_name: FN_NAME,
@@ -362,12 +357,14 @@ export const handler = async (req: Request): Promise<Response> => {
         status_code: 500,
         error_message,
       });
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
 
-    return new Response(
-      JSON.stringify({ ok: false, error: error_message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    return new Response(JSON.stringify({ ok: false, error: error_message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 };
 

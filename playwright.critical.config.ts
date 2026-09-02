@@ -9,11 +9,7 @@ const chromiumLaunchOptions = chromiumExecutablePath
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: [
-    '**/auth/login.e2e.ts',
-    '**/auth/admin-rbac.e2e.ts',
-    '**/visual-theme.e2e.ts',
-  ],
+  testMatch: ['**/auth/login.e2e.ts', '**/auth/admin-rbac.e2e.ts', '**/visual-theme.e2e.ts'],
   testIgnore: ['**/auth/auth.setup.ts', '**/auth/logout-real.e2e.ts'],
   grepInvert: /RBAC › usuário autenticado sem perfil admin|Regressão visual — Telas autenticadas/,
   fullyParallel: false,

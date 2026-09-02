@@ -34,22 +34,22 @@
 
 ## Evidência local validada nesta rodada
 
-| Verificação | Resultado |
-| --- | --- |
-| `node scripts/mcp-phd-suite.mjs --self-test` | 15/15 checks OK |
-| `bun test scripts/security/test-rpc-runtime.evaluate.test.ts` | 4/4 testes OK |
-| `node --test scripts/security/test-canonical-db-gates.test.mjs` | gate offline do banco canônico OK |
-| `node scripts/security/test-canonical-db-gates.mjs` | gate live do banco canônico OK (`bwwbeyolnnzppeuhgkcd`) |
-| `bash scripts/security/test-migration-replay-safety.sh` | replay safety das migrations críticas OK |
-| `bash scripts/ci/deno-check-functions.sh` | type-check do escopo endurecido OK (13 arquivos críticos) |
-| `deno test --allow-env --allow-net --allow-read --no-check ... auth-guard / webhook-auth / sql-write-guard / mcp-query / funções endurecidas` | 54 testes OK |
-| `bun run test:run` | 204 arquivos, 2689 testes OK |
-| `bun run type-check` | OK |
-| `bun run lint` | OK, 0 erros e 19 warnings legados fora do escopo |
-| `bun run build` | OK com ambiente explícito (`VITE_SUPABASE_URL=https://bwwbeyolnnzppeuhgkcd.supabase.co`, `VITE_SUPABASE_PROJECT_ID=bwwbeyolnnzppeuhgkcd`, `VITE_SUPABASE_PUBLISHABLE_KEY=test-key`) |
-| `bunx playwright test e2e/visual-theme.e2e.ts --project=chromium --grep 'Login'` | 2 testes OK, 1 skip esperado (snapshots autenticados opt-in) |
-| `bunx playwright test e2e/auth/admin-rbac.e2e.ts --project=chromium --grep 'Não autenticado' --workers=1` | 14 testes OK, 1 skip esperado (`setup` sem credenciais) |
-| `git diff --check` | OK |
+| Verificação                                                                                                                                   | Resultado                                                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node scripts/mcp-phd-suite.mjs --self-test`                                                                                                  | 15/15 checks OK                                                                                                                                                                     |
+| `bun test scripts/security/test-rpc-runtime.evaluate.test.ts`                                                                                 | 4/4 testes OK                                                                                                                                                                       |
+| `node --test scripts/security/test-canonical-db-gates.test.mjs`                                                                               | gate offline do banco canônico OK                                                                                                                                                   |
+| `node scripts/security/test-canonical-db-gates.mjs`                                                                                           | gate live do banco canônico OK (`bwwbeyolnnzppeuhgkcd`)                                                                                                                             |
+| `bash scripts/security/test-migration-replay-safety.sh`                                                                                       | replay safety das migrations críticas OK                                                                                                                                            |
+| `bash scripts/ci/deno-check-functions.sh`                                                                                                     | type-check do escopo endurecido OK (13 arquivos críticos)                                                                                                                           |
+| `deno test --allow-env --allow-net --allow-read --no-check ... auth-guard / webhook-auth / sql-write-guard / mcp-query / funções endurecidas` | 54 testes OK                                                                                                                                                                        |
+| `bun run test:run`                                                                                                                            | 204 arquivos, 2689 testes OK                                                                                                                                                        |
+| `bun run type-check`                                                                                                                          | OK                                                                                                                                                                                  |
+| `bun run lint`                                                                                                                                | OK, 0 erros e 19 warnings legados fora do escopo                                                                                                                                    |
+| `bun run build`                                                                                                                               | OK com ambiente explícito (`VITE_SUPABASE_URL=https://bwwbeyolnnzppeuhgkcd.supabase.co`, `VITE_SUPABASE_PROJECT_ID=bwwbeyolnnzppeuhgkcd`, `VITE_SUPABASE_PUBLISHABLE_KEY=test-key`) |
+| `bunx playwright test e2e/visual-theme.e2e.ts --project=chromium --grep 'Login'`                                                              | 2 testes OK, 1 skip esperado (snapshots autenticados opt-in)                                                                                                                        |
+| `bunx playwright test e2e/auth/admin-rbac.e2e.ts --project=chromium --grep 'Não autenticado' --workers=1`                                     | 14 testes OK, 1 skip esperado (`setup` sem credenciais)                                                                                                                             |
+| `git diff --check`                                                                                                                            | OK                                                                                                                                                                                  |
 
 ## GitHub — estado real em 2026-08-31
 
@@ -91,14 +91,14 @@
 
 ## Proveniência dos arquivos restaurados
 
-| Arquivo | Proveniência exata | Estado remoto validado | Ressalva |
-| --- | --- | --- | --- |
-| `supabase/migrations/20260826010000_restaurar_exec_sql_wrapper_e03.sql` | commit `1cb59c32f2b863bd8089f27e1cd5b4eb600436e5` | ledger remoto presente | restaurado localmente a partir da fonte exata |
-| `supabase/migrations/20260826020000_fix_cron_source_check_e23_e24.sql` | commit `1cb59c32f2b863bd8089f27e1cd5b4eb600436e5` | ledger remoto presente | restaurado localmente a partir da fonte exata |
-| `supabase/migrations/20260826030000_add_colunas_ausentes_e30.sql` | commit `489e7fc3732a2c5babc302f584e087f3969bef2d` | ledger remoto presente | marcador histórico local, sem reescrita de ledger |
-| `supabase/migrations/20260826040000_fechar_policies_abertas_e06_e08.sql` | commit `94bd5f5ce06f0f9da4662193a8ca9c1925c11330` | ledger remoto presente | replay local endurecido; sem reescrita de ledger |
-| `supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql` | commit `94bd5f5ce06f0f9da4662193a8ca9c1925c11330` | ledger remoto presente | replay local endurecido; sem reescrita de ledger |
-| `docs/adr/0001-fonte-da-verdade-migracao.md` | commit `489e7fc3732a2c5babc302f584e087f3969bef2d` | não aplicável | ADR restaurado textualmente |
+| Arquivo                                                                   | Proveniência exata                                | Estado remoto validado | Ressalva                                          |
+| ------------------------------------------------------------------------- | ------------------------------------------------- | ---------------------- | ------------------------------------------------- |
+| `supabase/migrations/20260826010000_restaurar_exec_sql_wrapper_e03.sql`   | commit `1cb59c32f2b863bd8089f27e1cd5b4eb600436e5` | ledger remoto presente | restaurado localmente a partir da fonte exata     |
+| `supabase/migrations/20260826020000_fix_cron_source_check_e23_e24.sql`    | commit `1cb59c32f2b863bd8089f27e1cd5b4eb600436e5` | ledger remoto presente | restaurado localmente a partir da fonte exata     |
+| `supabase/migrations/20260826030000_add_colunas_ausentes_e30.sql`         | commit `489e7fc3732a2c5babc302f584e087f3969bef2d` | ledger remoto presente | marcador histórico local, sem reescrita de ledger |
+| `supabase/migrations/20260826040000_fechar_policies_abertas_e06_e08.sql`  | commit `94bd5f5ce06f0f9da4662193a8ca9c1925c11330` | ledger remoto presente | replay local endurecido; sem reescrita de ledger  |
+| `supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql` | commit `94bd5f5ce06f0f9da4662193a8ca9c1925c11330` | ledger remoto presente | replay local endurecido; sem reescrita de ledger  |
+| `docs/adr/0001-fonte-da-verdade-migracao.md`                              | commit `489e7fc3732a2c5babc302f584e087f3969bef2d` | não aplicável          | ADR restaurado textualmente                       |
 
 ## Observação importante sobre a `20260826030000`
 
