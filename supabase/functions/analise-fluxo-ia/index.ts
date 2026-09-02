@@ -1,12 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from "../_shared/zod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
+import { exigirUsuario } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-request-id',
 };
 
 const DadosFluxoSchema = z.object({
@@ -33,10 +34,13 @@ interface Insight {
   prioridade: 'alta' | 'media' | 'baixa';
 }
 
-serve(async (req) => {
+export const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     // Rate limit: 30 req/min por IP (endpoint IA)
@@ -195,7 +199,11 @@ REGRAS:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
-});
+};
+
+if (import.meta.main) {
+  serve(handler);
+}
 
 function gerarAnaliseFallback(dados: DadosFluxo) {
   const insights: Insight[] = [];

@@ -1,15 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret",
 };
 
-serve(async (req) => {
+export const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const auth = await exigirChamadaInterna(req, "executar_analise_preditiva");
+  if (!auth.ok) return auth.resposta;
 
   try {
     console.log("[executar-analise-preditiva] Iniciando análise preditiva agendada...");
@@ -312,4 +317,6 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-});
+};
+
+if (import.meta.main) serve(handler);

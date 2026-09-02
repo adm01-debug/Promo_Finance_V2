@@ -1,12 +1,26 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { EnviarAlertaEmailSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import {
+  corsHeaders as baseCorsHeaders,
+  createErrorResponse,
+  EnviarAlertaEmailSchema,
+  validatePayload,
+} from "../_shared/validation.ts";
 
+const corsHeaders = {
+  ...baseCorsHeaders,
+  "Access-Control-Allow-Headers":
+    `${baseCorsHeaders["Access-Control-Allow-Headers"]}, x-cron-secret, x-internal-secret`,
+};
 
-const handler = async (req: Request): Promise<Response> => {
+export const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const auth = await exigirChamadaInterna(req, "enviar_alerta_email");
+  if (!auth.ok) return auth.resposta;
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -190,4 +204,4 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-serve(handler);
+if (import.meta.main) serve(handler);

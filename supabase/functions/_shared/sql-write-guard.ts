@@ -118,6 +118,114 @@ const FUNCOES_COM_EFEITO_COLATERAL: Array<{ regex: RegExp; motivo: string }> = [
   },
 ];
 
+const FUNCOES_SELECT_ALLOWLIST = new Set([
+  "abs",
+  "array_agg",
+  "array_length",
+  "avg",
+  "btrim",
+  "ceil",
+  "ceiling",
+  "char_length",
+  "coalesce",
+  "concat",
+  "concat_ws",
+  "count",
+  "date_part",
+  "date_trunc",
+  "extract",
+  "format_type",
+  "floor",
+  "greatest",
+  "has_function_privilege",
+  "json_agg",
+  "json_array_length",
+  "json_build_object",
+  "json_object_agg",
+  "jsonb_agg",
+  "jsonb_array_length",
+  "jsonb_build_object",
+  "jsonb_object_agg",
+  "least",
+  "left",
+  "length",
+  "lower",
+  "ltrim",
+  "max",
+  "min",
+  "obj_description",
+  "pg_database_size",
+  "pg_relation_size",
+  "pg_size_pretty",
+  "pg_total_relation_size",
+  "now",
+  "nullif",
+  "octet_length",
+  "random",
+  "replace",
+  "round",
+  "row_to_json",
+  "rtrim",
+  "split_part",
+  "string_agg",
+  "strpos",
+  "substring",
+  "sum",
+  "to_char",
+  "to_json",
+  "to_jsonb",
+  "trim",
+  "trunc",
+  "unnest",
+  "upper",
+  "current_database",
+  "current_setting",
+]);
+
+const PREFIXOS_FUNCAO_SELECT_ALLOWLIST = [
+  "pg_get_",
+];
+
+const TOKENS_NAO_FUNCAO = new Set([
+  "and",
+  "array",
+  "as",
+  "case",
+  "cast",
+  "distinct",
+  "else",
+  "end",
+  "exists",
+  "from",
+  "group",
+  "in",
+  "limit",
+  "materialized",
+  "not",
+  "on",
+  "or",
+  "order",
+  "over",
+  "partition",
+  "recursive",
+  "select",
+  "then",
+  "values",
+  "when",
+  "where",
+]);
+
+const COLUNAS_IDENTIDADE_OU_TENANT = new Set([
+  "empresa_id",
+  "id",
+  "org_id",
+  "organization_id",
+  "organizacao_id",
+  "profile_id",
+  "tenant_id",
+  "user_id",
+]);
+
 function temIdentificadorQuoted(sql: string): boolean {
   let i = 0;
   let aspasSimples = false;
@@ -364,6 +472,40 @@ function separarNoNivelSuperior(
   return partes.filter(Boolean);
 }
 
+function separarNoNivelSuperiorComFaixas(
+  expressao: string,
+  operador: "and" | "or",
+): Array<{ trecho: string; inicio: number; fim: number }> {
+  const partes: Array<{ trecho: string; inicio: number; fim: number }> = [];
+  let inicio = 0;
+  let profundidade = 0;
+  const padrao = new RegExp(`\\s+${operador}\\s+`, "iy");
+
+  for (let i = 0; i < expressao.length; i++) {
+    if (expressao[i] === "(") profundidade++;
+    if (expressao[i] === ")") profundidade--;
+    if (profundidade !== 0) continue;
+    padrao.lastIndex = i;
+    const encontrado = padrao.exec(expressao);
+    if (encontrado) {
+      partes.push({
+        trecho: expressao.slice(inicio, i).trim(),
+        inicio,
+        fim: i,
+      });
+      i = padrao.lastIndex - 1;
+      inicio = padrao.lastIndex;
+    }
+  }
+
+  partes.push({
+    trecho: expressao.slice(inicio).trim(),
+    inicio,
+    fim: expressao.length,
+  });
+  return partes.filter((parte) => parte.trecho.length > 0);
+}
+
 function consumirParentesesBalanceados(texto: string, inicio: number): number {
   if (texto[inicio] !== "(") return -1;
   let profundidade = 0;
@@ -511,6 +653,67 @@ function extrairEstruturaComando(statement: string): EstruturaComando {
   return { comando: null, usaCte: true, motivoBloqueio: "CTE incompleta" };
 }
 
+function encontrarKeywordNoNivelSuperior(
+  texto: string,
+  keyword: string,
+  inicio = 0,
+): number {
+  let profundidade = 0;
+  const lower = texto.toLowerCase();
+  const alvo = keyword.toLowerCase();
+
+  for (let i = inicio; i <= lower.length - alvo.length; i++) {
+    const atual = lower[i];
+    if (atual === "(") {
+      profundidade++;
+      continue;
+    }
+    if (atual === ")") {
+      profundidade = Math.max(0, profundidade - 1);
+      continue;
+    }
+    if (profundidade !== 0) continue;
+    if (lower.slice(i, i + alvo.length) !== alvo) continue;
+    const anterior = i === 0 ? " " : lower[i - 1];
+    const proximo = lower[i + alvo.length] ?? " ";
+    if (/[a-z0-9_]/.test(anterior) || /[a-z0-9_]/.test(proximo)) continue;
+    return i;
+  }
+
+  return -1;
+}
+
+function extrairFaixaWhere(
+  original: string,
+  normalizado: string,
+): { original: string; normalizado: string } | null {
+  const idxWhere = encontrarKeywordNoNivelSuperior(normalizado, "where");
+  if (idxWhere < 0) return null;
+
+  const palavrasFim = [
+    "returning",
+    "order",
+    "limit",
+    "offset",
+    "for",
+  ];
+  let fim = normalizado.length;
+  for (const palavra of palavrasFim) {
+    const idx = encontrarKeywordNoNivelSuperior(
+      normalizado,
+      palavra,
+      idxWhere + "where".length,
+    );
+    if (idx >= 0) fim = Math.min(fim, idx);
+  }
+
+  const inicioConteudo = idxWhere + "where".length;
+  return {
+    original: original.slice(inicioConteudo, fim).trim(),
+    normalizado: normalizado.slice(inicioConteudo, fim).trim(),
+  };
+}
+
 function comparacaoNumericaConstanteVerdadeira(expressao: string): boolean {
   const match = expressao.match(
     /^(-?\d+(?:\.\d+)?)\s*(=|!=|<>|>=|<=|>|<)\s*(-?\d+(?:\.\d+)?)$/,
@@ -580,6 +783,124 @@ function detectarFuncaoPerigosa(statement: string): string | null {
   for (const entrada of FUNCOES_COM_EFEITO_COLATERAL) {
     if (entrada.regex.test(statement)) return entrada.motivo;
   }
+  return null;
+}
+
+function extrairChamadasDeFuncao(
+  statement: string,
+): Array<{ schema: string | null; nome: string }> {
+  const chamadas: Array<{ schema: string | null; nome: string }> = [];
+  const regex =
+    /\b(?:(?<schema>[a-z_][a-z0-9_]*)\s*\.\s*)?(?<nome>[a-z_][a-z0-9_]*)\s*\(/gi;
+
+  for (const match of statement.matchAll(regex)) {
+    const schema = match.groups?.schema?.toLowerCase() ?? null;
+    const nome = match.groups?.nome?.toLowerCase() ?? null;
+    if (!nome || TOKENS_NAO_FUNCAO.has(nome)) continue;
+    chamadas.push({ schema, nome });
+  }
+
+  return chamadas;
+}
+
+function validarChamadasSelect(statement: string): string | null {
+  let alvo = statement;
+  const idxSelect = encontrarKeywordNoNivelSuperior(statement, "select");
+  if (idxSelect >= 0) {
+    alvo = statement.slice(idxSelect);
+  }
+
+  for (const chamada of extrairChamadasDeFuncao(alvo)) {
+    if (chamada.nome === "pg_sleep") {
+      return "Função pg_sleep não é permitida no MCP";
+    }
+
+    if (chamada.schema && chamada.schema !== "pg_catalog") {
+      return `Função ${chamada.schema}.${chamada.nome} não está allowlisted para SELECT no MCP`;
+    }
+
+    const allowlisted = FUNCOES_SELECT_ALLOWLIST.has(chamada.nome) ||
+      PREFIXOS_FUNCAO_SELECT_ALLOWLIST.some((prefixo) =>
+        chamada.nome.startsWith(prefixo)
+      );
+    if (!allowlisted) {
+      return `Função ${chamada.nome} não está allowlisted para SELECT no MCP`;
+    }
+  }
+
+  return null;
+}
+
+function ehColunaIdentidadeOuTenant(identificador: string): boolean {
+  const ultimaParte = identificador.split(".").pop()?.toLowerCase() ?? "";
+  return COLUNAS_IDENTIDADE_OU_TENANT.has(ultimaParte);
+}
+
+function ehLiteralSimples(expressao: string): boolean {
+  const texto = expressao.trim();
+  return /^-?\d+(?:\.\d+)?(?:\s*::\s*[a-z_][a-z0-9_.]*(?:\[\])?)?$/i.test(
+    texto,
+  ) ||
+    /^(?:true|false)(?:\s*::\s*[a-z_][a-z0-9_.]*(?:\[\])?)?$/i.test(texto) ||
+    /^'(?:''|[^'])*'(?:\s*::\s*[a-z_][a-z0-9_.]*(?:\[\])?)?$/i.test(texto);
+}
+
+function termoTemIdentidadeIgualLiteral(
+  termoOriginal: string,
+  termoNormalizado: string,
+): boolean {
+  const original = removerParentesesExternos(termoOriginal).trim();
+  const normalizado = removerParentesesExternos(termoNormalizado).trim();
+
+  const match = normalizado.match(/^([a-z_][a-z0-9_.]*)\s*=\s*(.+)$/i);
+  if (!match) return false;
+
+  const esquerdaNormalizada = match[1];
+  const idxIgual = normalizado.indexOf("=");
+  if (idxIgual < 0) return false;
+
+  const esquerdaOriginal = removerParentesesExternos(
+    original.slice(0, idxIgual),
+  ).trim();
+  const direitaOriginal = removerParentesesExternos(
+    original.slice(idxIgual + 1),
+  ).trim();
+
+  if (esquerdaOriginal.toLowerCase() !== esquerdaNormalizada.toLowerCase()) {
+    return false;
+  }
+
+  return ehColunaIdentidadeOuTenant(esquerdaOriginal) &&
+    ehLiteralSimples(direitaOriginal);
+}
+
+function validarWhereEstrito(
+  statementOriginal: string,
+  statementNormalizado: string,
+): string | null {
+  const where = extrairFaixaWhere(statementOriginal, statementNormalizado);
+  if (!where) return "Escrita sem WHERE";
+  if (!where.normalizado) return "Escrita sem WHERE";
+  if (/\bor\b/i.test(where.normalizado)) {
+    return "WHERE com OR exige allow_all_rows:true";
+  }
+  if (/\b(select|exists)\b/i.test(where.normalizado)) {
+    return "Subconsulta em escrita exige allow_all_rows:true";
+  }
+  if (ehTautologia(where.normalizado)) return "WHERE tautológico";
+
+  const termos = separarNoNivelSuperiorComFaixas(where.normalizado, "and");
+  const encontrouIdentidade = termos.some((termo) =>
+    termoTemIdentidadeIgualLiteral(
+      where.original.slice(termo.inicio, termo.fim),
+      termo.trecho,
+    )
+  );
+
+  if (!encontrouIdentidade) {
+    return "WHERE padrão exige igualdade por identidade/tenant a literal";
+  }
+
   return null;
 }
 
@@ -707,6 +1028,24 @@ export function analisarSqlMcp(sql: string): AnaliseSqlMcp {
     };
   }
 
+  if (
+    comando === "select" ||
+    (comando === "insert" &&
+      encontrarKeywordNoNivelSuperior(statement, "select") >= 0)
+  ) {
+    const motivoFuncaoNaoAllowlisted = validarChamadasSelect(statement);
+    if (motivoFuncaoNaoAllowlisted) {
+      return {
+        sqlNormalizado: statement,
+        comando: comando as ComandoSqlMcp,
+        somenteLeitura: false,
+        escrita: comando === "insert",
+        usaCte: estrutura.usaCte,
+        motivoBloqueio: motivoFuncaoNaoAllowlisted,
+      };
+    }
+  }
+
   if (comando === "select") {
     return {
       sqlNormalizado: statement,
@@ -743,18 +1082,28 @@ export function analisarSqlMcp(sql: string): AnaliseSqlMcp {
 export function validarEscritaEscopada(sql: string): string | null {
   const analise = analisarSqlMcp(sql);
   if (analise.motivoBloqueio) return analise.motivoBloqueio;
-  if (!analise.escrita || analise.comando === "insert") return null;
+  if (!analise.escrita) return null;
 
-  const where = analise.sqlNormalizado.match(/\bwhere\b([\s\S]+)$/i)?.[1]
-    ?.trim();
-  if (!where) return "DELETE/UPDATE sem WHERE";
-  if (/\b(select|exists)\b/i.test(where)) {
-    return "Subconsulta em escrita exige allow_all_rows:true";
+  const statement = sql.trim().replace(/;\s*$/, "");
+  if (analise.comando === "insert") {
+    if (encontrarKeywordNoNivelSuperior(analise.sqlNormalizado, "select") < 0) {
+      return null;
+    }
+    const motivoWhere = validarWhereEstrito(statement, analise.sqlNormalizado);
+    if (motivoWhere) {
+      return "INSERT ... SELECT amplo exige allow_all_rows:true";
+    }
+    return null;
   }
-  if (ehTautologia(where)) return "WHERE tautológico";
 
-  if (!possuiPredicadoRestritivo(where)) {
-    return "WHERE sem predicado restritivo verificável";
+  const motivoWhere = validarWhereEstrito(statement, analise.sqlNormalizado);
+  if (motivoWhere) {
+    return motivoWhere
+      .replace(/^Escrita sem WHERE$/, "DELETE/UPDATE sem WHERE")
+      .replace(
+        /^WHERE padrão exige igualdade por identidade\/tenant a literal$/,
+        "DELETE/UPDATE padrão exige igualdade por identidade/tenant a literal",
+      );
   }
 
   return null;

@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   test: {
@@ -17,9 +17,7 @@ export default defineConfig({
     // da suíte (78 arquivos) estourava a heap do worker em CI
     // (ERR_WORKER_OUT_OF_MEMORY), mesmo com todos os testes passando.
     pool: 'forks',
-    poolOptions: {
-      forks: { minForks: 1, maxForks: 2 },
-    },
+    maxWorkers: 2,
     isolate: true,
     // Workers escrevem o console direto no stdout em vez de o processo
     // coordenador bufferizar/agrupar os logs de ~1185 testes — reduz bastante
