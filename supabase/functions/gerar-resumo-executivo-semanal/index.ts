@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
+import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
 
 const ResumoSemanalBodySchema = z.object({
   empresa_id: z.string().uuid().optional(),
@@ -103,6 +104,9 @@ Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const guard = await exigirInternaOuUsuario(req, "p13_resumo_executivo_semanal");
+  if (!guard.ok) return guard.resposta;
+
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -112,6 +116,26 @@ serve(async (req) => {
     const validation = await validateContract(ResumoSemanalBodySchema, rawBody);
     if (!validation.success) return validation.response;
     const empresaIdFilter: string | undefined = validation.data.empresa_id;
+
+    if (guard.dados.origem === "usuario") {
+      if (empresaIdFilter) {
+        const { data: vinculo } = await supabase.from("user_empresas").select("id")
+          .eq("user_id", guard.dados.userId).eq("empresa_id", empresaIdFilter).eq("ativo", true).maybeSingle();
+        if (!vinculo) {
+          return new Response(JSON.stringify({ error: "Sem permissão para esta empresa" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } else {
+        const { data: isAdmin } = await supabase.from("user_roles").select("role")
+          .eq("user_id", guard.dados.userId).eq("role", "admin").maybeSingle();
+        if (!isAdmin) {
+          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
 
     const hoje = new Date();
     const semanaFim = new Date(hoje); semanaFim.setDate(hoje.getDate() - 1);
