@@ -10,10 +10,12 @@ BEGIN;
 -- qualquer financeiro lista/baixa SPED/DRE/pacotes de evidência de
 -- QUALQUER empresa. Reescreve no mesmo padrão do bucket nfe-xml
 -- (path prefixado por empresa_id, checado contra user_empresas).
--- Os uploads que gravavam sem prefixo (gerar-sped-ecd/ecf,
--- exportar-sped-contribuicoes) foram corrigidos no mesmo commit desta
--- migration para escrever em "{empresa_id}/...". gerar-pdf-tributario e
--- enviar-relatorios-tributarios-agendados já prefixavam corretamente.
+-- Os uploads que gravavam sem prefixo empresa_id (gerar-sped-ecd/ecf,
+-- exportar-sped-contribuicoes, e enviar-relatorios-tributarios-agendados,
+-- que prefixava com "agendados/{empresa_id}/..." — achado do coderabbitai:
+-- split_part(name,'/',1) resolvia para "agendados", não empresa_id) foram
+-- corrigidos para escrever em "{empresa_id}/...". gerar-pdf-tributario já
+-- prefixava corretamente.
 DROP POLICY IF EXISTS "Admin/financeiro visualiza tax reports" ON storage.objects;
 CREATE POLICY "Admin/financeiro visualiza tax reports" ON storage.objects
   FOR SELECT TO authenticated
@@ -65,8 +67,21 @@ CREATE POLICY "nfe_xml_empresa_read" ON storage.objects
 -- vw_totals_by_category). Roda como dono da view (bypass de RLS de
 -- audit_logs) e expõe old_data/new_data de TODAS as empresas para
 -- authenticated. Não referenciada em src/ nem supabase/functions/ —
--- morta para usuários finais, revoga como as outras 4 legadas.
-REVOKE ALL ON public.vw_audit_report FROM anon, authenticated;
+-- morta para usuários finais, revoga como as outras 4 legadas. REVOKE
+-- direto falha (e aborta a migration inteira) se a view não existir;
+-- segue o mesmo guard de existência via pg_class de 20260902160000
+-- (achado do coderabbitai).
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relname = 'vw_audit_report' AND c.relkind = 'v'
+  ) THEN
+    REVOKE ALL ON public.vw_audit_report FROM PUBLIC, anon, authenticated;
+  END IF;
+END;
+$$;
 
 -- ============ asaas_audit_trail (payment_id IS NULL) ============
 -- A cláusula "OR payment_id IS NULL" que eu mesmo adicionei na migration
@@ -88,16 +103,13 @@ CREATE POLICY "Users can view audit trail of their company" ON public.asaas_audi
     OR (payment_id IS NULL AND user_id = auth.uid())
   );
 
+-- FOR ALL com WITH CHECK dava a admin INSERT/UPDATE/DELETE nesta trilha de
+-- auditoria — escrita real já acontece via service_role (bypassa RLS);
+-- manter admin com UPDATE/DELETE por RLS permite apagar/alterar a própria
+-- evidência de auditoria (achado do coderabbitai). Restrito a SELECT.
 DROP POLICY IF EXISTS asaas_audit_admin_all ON public.asaas_audit_trail;
-CREATE POLICY asaas_audit_admin_all ON public.asaas_audit_trail AS PERMISSIVE FOR ALL TO authenticated
+CREATE POLICY asaas_audit_admin_all ON public.asaas_audit_trail AS PERMISSIVE FOR SELECT TO authenticated
   USING (
-    has_role((SELECT auth.uid()), 'admin'::app_role)
-    AND (
-      payment_id IN (SELECT p.id FROM public.asaas_payments p WHERE empresa_acessivel(p.empresa_id))
-      OR payment_id IS NULL
-    )
-  )
-  WITH CHECK (
     has_role((SELECT auth.uid()), 'admin'::app_role)
     AND (
       payment_id IN (SELECT p.id FROM public.asaas_payments p WHERE empresa_acessivel(p.empresa_id))
