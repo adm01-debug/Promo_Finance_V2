@@ -17,11 +17,17 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-async function fetchComTimeout(url: string, init: RequestInit, timeoutMs = 20000): Promise<Response> {
+// Lê o corpo dentro do mesmo try/finally do fetch — limpar o timer logo
+// após fetch() resolver (que só espera os headers) deixava a leitura do
+// corpo sem proteção do AbortController caso a resposta travasse a meio
+// do stream (achado do coderabbitai).
+async function fetchComTimeout(url: string, init: RequestInit, timeoutMs = 20000): Promise<{ response: Response; text: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(url, { ...init, signal: controller.signal });
+    const response = await fetch(url, { ...init, signal: controller.signal });
+    const text = await response.text();
+    return { response, text };
   } finally {
     clearTimeout(timer);
   }
@@ -102,7 +108,7 @@ Dados da semana ${semanaInicio} a ${semanaFim}:
 
 Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
 
-  const aiResp = await fetchComTimeout("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const { response: aiResp, text: aiText } = await fetchComTimeout("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -115,13 +121,12 @@ Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
   });
 
   if (!aiResp.ok) {
-    const errTxt = await aiResp.text();
     if (aiResp.status === 429) throw new Error("Rate limit excedido");
     if (aiResp.status === 402) throw new Error("Créditos esgotados");
-    throw new Error(`AI gateway: ${errTxt}`);
+    throw new Error(`AI gateway: ${aiText}`);
   }
 
-  const aiData = await aiResp.json();
+  const aiData = JSON.parse(aiText);
   const resumoMd = aiData.choices?.[0]?.message?.content ?? "Resumo indisponível";
 
   return { kpis, resumoMd };
@@ -191,7 +196,7 @@ serve(async (req) => {
         let enviadoEm: string | null = null;
         let erroEnvio: string | null = null;
         if (RESEND_API_KEY && dest.length > 0) {
-          const r = await fetchComTimeout("https://api.resend.com/emails", {
+          const { response: r, text: rText } = await fetchComTimeout("https://api.resend.com/emails", {
             method: "POST",
             headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -202,7 +207,7 @@ serve(async (req) => {
             }),
           });
           if (r.ok) enviadoEm = new Date().toISOString();
-          else erroEnvio = await r.text();
+          else erroEnvio = rText;
         }
 
         const { error: errUpsert } = await supabase.from("resumos_executivos_semanais").upsert({
