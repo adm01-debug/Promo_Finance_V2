@@ -75,10 +75,30 @@ USING (
 );
 
 -- 9) contratos: restrict SELECT to financeiro/admin
-DROP POLICY IF EXISTS "Authenticated users can view contratos" ON public.contratos;
-CREATE POLICY "Financeiro+ podem ver contratos"
-ON public.contratos FOR SELECT TO authenticated
-USING (public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]));
+-- Tabela só existe a partir de 20260518190304 — posterior a este arquivo
+-- (20260314213748). Sem guard, o replay em ambiente novo (Supabase Preview)
+-- falha com "relation public.contratos does not exist" antes de chegar na
+-- migration que a cria. Mesmo padrão já usado no item 7 (workflow_aprovacoes)
+-- neste arquivo.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'contratos'
+  ) THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Authenticated users can view contratos" ON public.contratos';
+    EXECUTE $policy$
+      CREATE POLICY "Financeiro+ podem ver contratos"
+      ON public.contratos FOR SELECT TO authenticated
+      USING (public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]))
+    $policy$;
+  ELSE
+    RAISE NOTICE '20260314213748: contratos ausente no schema atual; bloco ignorado.';
+  END IF;
+END
+$$;
 
 -- 10) parcelas_acordo: restrict SELECT to financeiro/admin
 DROP POLICY IF EXISTS "Authenticated users can view parcelas_acordo" ON public.parcelas_acordo;
