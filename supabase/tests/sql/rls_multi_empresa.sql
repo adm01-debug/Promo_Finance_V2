@@ -107,20 +107,22 @@ BEGIN
       -- combinam via OR e foram a causa raiz do bug original.
       AND p.permissive = 'PERMISSIVE'
       AND (
-        -- comandos que aplicam USING (com fallback para WITH CHECK
-        -- quando USING é omitido, igual ao comportamento real do
-        -- Postgres): NULL nos dois == policy totalmente aberta.
+        -- comandos que aplicam USING: o Postgres NÃO usa WITH CHECK como
+        -- fallback aqui — se USING é omitido, o padrão é `true` (aberto),
+        -- não o WITH CHECK. Uma policy de UPDATE/ALL só com WITH CHECK
+        -- filtrando empresa_id passaria batida se aplicássemos o fallback
+        -- errado (achado do coderabbitai). Usa p.qual puro.
         (
           p.cmd IN ('SELECT', 'DELETE', 'UPDATE', 'ALL')
           AND (
-            COALESCE(p.qual, p.with_check) IS NULL
-            OR COALESCE(p.qual, p.with_check) !~* 'empresa_id'
-            OR COALESCE(p.qual, p.with_check) ~* tautologia
+            p.qual IS NULL
+            OR p.qual !~* 'empresa_id'
+            OR p.qual ~* tautologia
           )
         )
         OR
-        -- comandos que aplicam WITH CHECK (com fallback para USING
-        -- quando WITH CHECK é omitido).
+        -- comandos que aplicam WITH CHECK: aqui sim o Postgres usa USING
+        -- como fallback quando WITH CHECK é omitido.
         (
           p.cmd IN ('INSERT', 'UPDATE', 'ALL')
           AND (
