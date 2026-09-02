@@ -37,15 +37,20 @@ BEGIN
 END $$;
 
 -- 2) Tabelas com empresa_id sem NENHUMA policy (RLS default-deny é bom,
---    mas expõe bug de "esquecemos a policy") — apenas WARN.
+--    mas expõe bug de "esquecemos a policy") — apenas WARN. Restrito a
+--    tabelas físicas (relkind='r'): views com empresa_id não suportam
+--    policy própria (usam security_invoker), então seriam ruído
+--    permanente aqui sem o filtro.
 DO $$
 DECLARE
   missing text[];
 BEGIN
   SELECT array_agg(c.table_name ORDER BY c.table_name) INTO missing
   FROM information_schema.columns c
+  JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = 'public'::regnamespace
   WHERE c.table_schema = 'public'
     AND c.column_name = 'empresa_id'
+    AND pc.relkind = 'r'
     AND NOT EXISTS (
       SELECT 1 FROM pg_policies p
       WHERE p.schemaname = 'public' AND p.tablename = c.table_name
@@ -90,9 +95,12 @@ BEGIN
         OR (p.with_check IS NOT NULL AND p.with_check !~* 'empresa_id')
         -- tautologia: "empresa_id IN (SELECT id FROM empresas)" sem
         -- filtro nenhum no subselect — sempre verdadeiro para qualquer
-        -- empresa_id válido, equivale a não ter policy nenhuma.
-        OR (p.qual ~* 'empresa_id\s+in\s*\(\s*select\s+id\s+from\s+(public\.)?empresas\s*\)')
-        OR (p.with_check ~* 'empresa_id\s+in\s*\(\s*select\s+id\s+from\s+(public\.)?empresas\s*\)')
+        -- empresa_id válido, equivale a não ter policy nenhuma. Tolera
+        -- alias de tabela/coluna (ex.: "t.empresa_id IN (SELECT e.id FROM
+        -- empresas e)") para não deixar passar a mesma tautologia só por
+        -- causa de um alias.
+        OR (p.qual ~* '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)')
+        OR (p.with_check ~* '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)')
       )
   LOOP
     offenders := offenders || format(E'\n  - %s.%s [%s] USING: %s | WITH CHECK: %s',
@@ -104,13 +112,13 @@ BEGIN
   END IF;
 END $$;
 
--- 4) Toda tabela multi-empresa deve ter GRANT explícito para service_role
---    (proxies dependem disso) e não deve conceder ALL para anon.
+-- 4) Nenhuma tabela multi-empresa pode conceder DELETE/UPDATE/INSERT direto
+--    para anon. (service_role tem bypass implícito de RLS no Supabase —
+--    não é checado aqui por não precisar de GRANT explícito.)
 DO $$
 DECLARE
   bad text[];
 BEGIN
-  -- service_role em Supabase tem bypass implícito; não exigimos GRANT direto.
   -- anon jamais deve receber DELETE/UPDATE/INSERT direto em tabelas multi-empresa
   SELECT array_agg(DISTINCT c.table_name ORDER BY c.table_name) INTO bad
   FROM information_schema.columns c
