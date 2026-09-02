@@ -1,4 +1,8 @@
 -- 1. Create plano_contas table
+-- Fica de fora do fresh replay quando 20260317000749 já bootstrou a
+-- tabela (só com "id", para desbloquear as referências forward de
+-- março-maio) — este CREATE TABLE IF NOT EXISTS vira no-op nesse caso, e
+-- os ADD COLUMN IF NOT EXISTS abaixo completam o schema.
 CREATE TABLE IF NOT EXISTS public.plano_contas (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     empresa_id UUID REFERENCES public.empresas(id),
@@ -12,6 +16,16 @@ CREATE TABLE IF NOT EXISTS public.plano_contas (
     ativo BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS codigo TEXT;
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS nome TEXT;
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS descricao TEXT;
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS tipo TEXT;
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS natureza TEXT;
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS centro_resultado TEXT;
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT true;
+ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT now();
 
 -- 2. Add columns to contas_receber and contas_pagar
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS cliente_nome TEXT;
@@ -23,7 +37,7 @@ ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS categoria_nome TEXT;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS centro_resultado TEXT;
 
 -- Contrapartida do guard em 20260317000844: plano_contas agora existe,
--- então a FK que ficou de fora lá pode ser adicionada aqui.
+-- então as FKs que ficaram de fora lá podem ser adicionadas aqui.
 DO $do_block$
 BEGIN
   IF NOT EXISTS (
@@ -31,6 +45,12 @@ BEGIN
     WHERE conname = 'contas_pagar_plano_conta_id_fkey' AND connamespace = 'public'::regnamespace
   ) THEN
     EXECUTE 'ALTER TABLE public.contas_pagar ADD CONSTRAINT contas_pagar_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id)';
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'contas_receber_plano_conta_id_fkey' AND connamespace = 'public'::regnamespace
+  ) THEN
+    EXECUTE 'ALTER TABLE public.contas_receber ADD CONSTRAINT contas_receber_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id)';
   END IF;
 END
 $do_block$;

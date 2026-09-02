@@ -51,7 +51,15 @@ ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS total_parcelas INTEGE
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS categoria TEXT;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS forma_recebimento TEXT;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS forma_pagamento_id UUID REFERENCES public.formas_pagamento(id);
-ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+-- Mesmo forward-reference de plano_contas do bloco contas_pagar acima.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+    ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+  ELSE
+    ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS plano_conta_id UUID;
+  END IF;
+END $$;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS contato_id UUID REFERENCES public.contatos_financeiros(id);
 
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS frequencia_recorrencia TEXT;
