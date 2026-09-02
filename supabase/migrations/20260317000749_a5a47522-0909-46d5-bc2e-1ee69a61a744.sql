@@ -240,6 +240,7 @@ CREATE POLICY "Auth users can read webhooks_log" ON public.webhooks_log FOR SELE
 
 -- updated_at triggers for new tables
 CREATE TRIGGER update_contatos_financeiros_updated_at BEFORE UPDATE ON public.contatos_financeiros FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_categorias_updated_at ON public.categorias;
 CREATE TRIGGER update_categorias_updated_at BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_formas_pagamento_updated_at BEFORE UPDATE ON public.formas_pagamento FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_movimentacoes_updated_at BEFORE UPDATE ON public.movimentacoes FOR EACH ROW EXECUTE FUNCTION update_updated_at();
