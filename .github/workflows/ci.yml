@@ -22,12 +22,15 @@ jobs:
     # nenhum commit (confirmado via API de jobs do GitHub, status "skipped"),
     # o que por sua vez explica como o vazamento cross-tenant original (PR #54)
     # sobreviveu meses sem o CI acusar nada.
+    #
+    # Aqui embaixo só flags booleanas, não os segredos em si — colocar
+    # DATABASE_URL/SUPABASE_ANON_KEY/etc no env do job os exporia a TODOS os
+    # steps (install de deps, lint, actions de terceiros), não só aos que
+    # precisam deles. Cada step que usa um segredo continua declarando seu
+    # próprio env: abaixo, escopado só a ele.
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
-      E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+      HAS_DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}
+      HAS_RPC_MATRIX_SECRETS: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' && secrets.E2E_USER_EMAIL != '' && secrets.E2E_USER_PASSWORD != '' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +66,7 @@ jobs:
         # Falha o pipeline se alguma função SECURITY DEFINER de observabilidade
         # regredir privilégios EXECUTE para anon/PUBLIC/authenticated.
         # Requer secret DATABASE_URL apontando para o Postgres do Supabase.
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ env.HAS_DATABASE_URL == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -78,7 +81,7 @@ jobs:
       - name: Integridade dos catálogos tributários (pgTAP)
         # Valida PK/UNIQUE, enums, formatos e ranges das tabelas fiscais
         # carregadas por seeds. Falha o build em qualquer "not ok".
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ env.HAS_DATABASE_URL == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -97,7 +100,7 @@ jobs:
         # temporal for criada sem política em public.retencao_politicas (TTL ou
         # isenção justificada), ou se uma política existente apontar para uma
         # coluna temporal inexistente.
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ env.HAS_DATABASE_URL == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -116,7 +119,7 @@ jobs:
         # Invoca cada RPC sensível via /rest/v1/rpc/<fn> como anon e usuário
         # autenticado. O papel service_role é validado apenas pelo gate SQL,
         # sem expor sua chave a um probe HTTP de produção.
-        if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' && env.E2E_USER_EMAIL != '' && env.E2E_USER_PASSWORD != '' }}
+        if: ${{ env.HAS_RPC_MATRIX_SECRETS == 'true' }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -133,14 +136,14 @@ jobs:
 
         # Gera um resumo por função × role para inspeção e download no CI.
         # Não falha o build — o gate acima já cobre regressões.
-        if: ${{ env.DATABASE_URL != '' }}
+        if: ${{ env.HAS_DATABASE_URL == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OUT_DIR: ./artifacts/security
         run: bash scripts/security/export-function-privileges.sh
 
       - name: Upload function privileges artifact
-        if: ${{ env.DATABASE_URL != '' && always() }}
+        if: ${{ env.HAS_DATABASE_URL == 'true' && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: function-privileges
