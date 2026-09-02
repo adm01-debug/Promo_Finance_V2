@@ -1,11 +1,12 @@
 # ADR 0001 — Fonte da Verdade para Migracao
 
-Data: 2026-08-25  
+Data: 2026-08-25
 Status: Aceito
 
 ## Contexto
 
 O projeto Promo Finance V2 tem dois projetos Supabase:
+
 - **SRC** (`lszcmoymovkpckehlagr`) — Lovable Cloud, origem do schema e código
 - **DST** (`bwwbeyolnnzppeuhgkcd`) — destino canônico, alvo do go-live
 

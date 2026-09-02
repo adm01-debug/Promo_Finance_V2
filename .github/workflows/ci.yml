@@ -12,25 +12,6 @@ jobs:
     name: Quality Gate & Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # env de nível de job: `if:` de step só enxerga env de workflow/job, NUNCA
-    # o próprio `env:` daquele step (a condição decide se o step roda ANTES do
-    # runner aplicar o env dele — confirmado na doc oficial do GitHub Actions).
-    # Sem isto, todo `if: ${{ env.DATABASE_URL != '' }}` abaixo resolve sempre
-    # para falso e o step correspondente fica SEMPRE skipped, mesmo com o
-    # secret configurado — foi exatamente o que aconteceu com o gate que roda
-    # supabase/tests/sql/rls_multi_empresa.sql: nunca executou de verdade em
-    # nenhum commit (confirmado via API de jobs do GitHub, status "skipped"),
-    # o que por sua vez explica como o vazamento cross-tenant original (PR #54)
-    # sobreviveu meses sem o CI acusar nada.
-    #
-    # Aqui embaixo só flags booleanas, não os segredos em si — colocar
-    # DATABASE_URL/SUPABASE_ANON_KEY/etc no env do job os exporia a TODOS os
-    # steps (install de deps, lint, actions de terceiros), não só aos que
-    # precisam deles. Cada step que usa um segredo continua declarando seu
-    # próprio env: abaixo, escopado só a ele.
-    env:
-      HAS_DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}
-      HAS_RPC_MATRIX_SECRETS: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' && secrets.E2E_USER_EMAIL != '' && secrets.E2E_USER_PASSWORD != '' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -58,15 +39,41 @@ jobs:
         # Falha se novas funções chegarem sem validatePayload (Zod).
         run: bash scripts/security/zod-coverage.sh
 
+      - name: Gate offline do banco canônico
+        # Exercita os avaliadores com snapshots controlados. Não substitui a
+        # verificação live executada pelo workflow Supabase Linter.
+        run: node --test scripts/security/test-canonical-db-gates.test.mjs
+
+      - name: Replay safety das migrations críticas
+        # Impede a reintrodução de ALTER DATABASE privilegiado, delimitadores
+        # SQL ambíguos e escrita manual no ledger de migrations.
+        run: bash scripts/security/test-migration-replay-safety.sh
+
+      - name: Gate estático do reparo SQL
+        # Evita que a evidência do reparo dos 12 erros reais do linter passe com
+        # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
+        run: node scripts/security/test-lint-function-repairs.mjs
+
       - name: Lint check
         run: bun run lint
+
+      - name: Preflight dos gates com DATABASE_URL
+        id: db_url_preflight
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          bash scripts/ci/require-env.sh \
+            --label "Quality Gate — DATABASE_URL" \
+            --mode summary \
+            --output available \
+            DATABASE_URL
 
 
       - name: Observability privileges guard (psql)
         # Falha o pipeline se alguma função SECURITY DEFINER de observabilidade
         # regredir privilégios EXECUTE para anon/PUBLIC/authenticated.
         # Requer secret DATABASE_URL apontando para o Postgres do Supabase.
-        if: ${{ env.HAS_DATABASE_URL == 'true' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -81,7 +88,7 @@ jobs:
       - name: Integridade dos catálogos tributários (pgTAP)
         # Valida PK/UNIQUE, enums, formatos e ranges das tabelas fiscais
         # carregadas por seeds. Falha o build em qualquer "not ok".
-        if: ${{ env.HAS_DATABASE_URL == 'true' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -100,7 +107,7 @@ jobs:
         # temporal for criada sem política em public.retencao_politicas (TTL ou
         # isenção justificada), ou se uma política existente apontar para uma
         # coluna temporal inexistente.
-        if: ${{ env.HAS_DATABASE_URL == 'true' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -115,11 +122,33 @@ jobs:
           echo "✅ Gate #35 aprovado."
 
 
+      - name: Registrar gates de banco como inconclusivos sem DATABASE_URL
+        if: ${{ steps.db_url_preflight.outputs.available != 'true' }}
+        run: |
+          {
+            echo "### Gates dependentes de DATABASE_URL"
+            echo
+            echo "- Status: inconclusivo"
+            echo "- Não executados nesta run: Observability privileges guard, Integridade dos catálogos tributários (pgTAP), Gate #35 — Governança de retenção."
+            echo "- Motivo: secret \`DATABASE_URL\` ausente. Nenhum desses gates deve ser interpretado como aprovado."
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preflight do gate Runtime RPC
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        run: |
+          bash scripts/ci/require-env.sh \
+            --label "Quality Gate — Runtime RPC" \
+            SUPABASE_URL SUPABASE_ANON_KEY E2E_USER_EMAIL E2E_USER_PASSWORD
+
       - name: Runtime RPC privilege matrix (anon / authenticated)
         # Invoca cada RPC sensível via /rest/v1/rpc/<fn> como anon e usuário
         # autenticado. O papel service_role é validado apenas pelo gate SQL,
         # sem expor sua chave a um probe HTTP de produção.
-        if: ${{ env.HAS_RPC_MATRIX_SECRETS == 'true' }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -136,14 +165,14 @@ jobs:
 
         # Gera um resumo por função × role para inspeção e download no CI.
         # Não falha o build — o gate acima já cobre regressões.
-        if: ${{ env.HAS_DATABASE_URL == 'true' }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OUT_DIR: ./artifacts/security
         run: bash scripts/security/export-function-privileges.sh
 
       - name: Upload function privileges artifact
-        if: ${{ env.HAS_DATABASE_URL == 'true' && always() }}
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: function-privileges
@@ -179,12 +208,11 @@ jobs:
           retention-days: 7
 
   # ---------------------------------------------------------------------------
-  # E2E — job único para reutilizar uma única autenticação. Os antigos três
-  # shards faziam login simultâneo com o mesmo usuário e acionavam o rate limit
-  # do Supabase Auth, produzindo cascatas de falsos negativos.
+  # Gate E2E crítico: somente cenários que hoje provam as correções reais.
+  # Nada aqui depende de storageState compartilhado ou de skips "verdes".
   # ---------------------------------------------------------------------------
-  e2e:
-    name: E2E Tests (chromium)
+  e2e-critical:
+    name: E2E Critical Gate
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -214,8 +242,20 @@ jobs:
         if: steps.pw-cache.outputs.cache-hit == 'true'
         run: bunx playwright install-deps chromium
 
-      - name: E2E Tests (chromium)
-        run: bunx playwright test --project=chromium --reporter=list
+      - name: Preflight E2E crítico
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+        run: |
+          bash scripts/ci/require-env.sh \
+            --label "E2E crítico" \
+            E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID
+
+      - name: E2E crítico obrigatório
+        run: bunx playwright test -c playwright.critical.config.ts --project=chromium --reporter=list
         env:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
@@ -224,16 +264,14 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
-          ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS: ${{ vars.ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS }}
           CI: true
 
   # ---------------------------------------------------------------------------
-  # Fluxo destrutivo de logout real — isolado dos shards regulares para não
-  # revogar a sessão compartilhada durante a suíte autenticada.
+  # Fluxo destrutivo de logout real — cenário único, isolado e bloqueante.
   # ---------------------------------------------------------------------------
   e2e-destructive:
     name: E2E Destructive Logout
-    needs: [e2e]
+    needs: [quality-gate, e2e-critical]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -262,6 +300,18 @@ jobs:
         if: steps.pw-cache-destructive.outputs.cache-hit == 'true'
         run: bunx playwright install-deps chromium
 
+      - name: Preflight E2E destrutivo
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+        run: |
+          bash scripts/ci/require-env.sh \
+            --label "E2E destrutivo" \
+            E2E_USER_EMAIL E2E_USER_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY VITE_SUPABASE_PROJECT_ID
+
       - name: E2E Logout Destrutivo
         run: bunx playwright test -c playwright.destructive.config.ts --project=chromium-destructive --reporter=list
         env:
@@ -275,14 +325,114 @@ jobs:
           CI: true
 
   # ---------------------------------------------------------------------------
-  # Auditoria pós-merge — só roda em main após e2e + quality-gate passarem.
+  # Quarentena E2E legada: não bloqueante, 1 worker, sem claims de aprovação
+  # de produção. O resultado é publicado no step summary do workflow.
+  # ---------------------------------------------------------------------------
+  e2e-quarantine:
+    name: E2E Quarantine (non-blocking)
+    if: ${{ always() }}
+    needs: [quality-gate, e2e-critical, e2e-destructive]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.11"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        id: pw-cache-quarantine
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install Playwright browsers
+        if: steps.pw-cache-quarantine.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.pw-cache-quarantine.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: Montar lista da quarentena
+        run: |
+          set -euo pipefail
+          mapfile -t quarantine_specs < <(
+            rg --files e2e -g '*.e2e.ts' \
+              | grep -Fvx 'e2e/auth/login.e2e.ts' \
+              | grep -Fvx 'e2e/auth/admin-rbac.e2e.ts' \
+              | grep -Fvx 'e2e/visual-theme.e2e.ts' \
+              | grep -Fvx 'e2e/auth/logout-real.e2e.ts'
+          )
+          if [ "${#quarantine_specs[@]}" -eq 0 ]; then
+            echo "count=0" >> "$GITHUB_OUTPUT"
+            : > quarantine-specs.txt
+            exit 0
+          fi
+          printf '%s\n' "${quarantine_specs[@]}" > quarantine-specs.txt
+          echo "count=${#quarantine_specs[@]}" >> "$GITHUB_OUTPUT"
+        id: quarantine_specs
+
+      - name: Executar suíte legada em quarentena
+        id: quarantine_run
+        if: steps.quarantine_specs.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mapfile -t quarantine_specs < quarantine-specs.txt
+          bunx playwright test \
+            --config=playwright.config.ts \
+            --project=chromium \
+            --workers=1 \
+            --reporter=list \
+            "${quarantine_specs[@]}"
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+          ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS: ${{ vars.ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS }}
+          CI: true
+
+      - name: Publicar resumo da quarentena
+        if: always()
+        run: |
+          {
+            echo "## E2E Quarantine"
+            echo
+            echo "- Natureza: não bloqueante"
+            echo "- Resultado do quality-gate: ${{ needs.quality-gate.result }}"
+            echo "- Resultado do e2e-critical: ${{ needs.e2e-critical.result }}"
+            echo "- Resultado do e2e-destructive: ${{ needs.e2e-destructive.result }}"
+            echo "- Specs listadas: ${{ steps.quarantine_specs.outputs.count }}"
+            if [ "${{ steps.quarantine_specs.outputs.count }}" = "0" ]; then
+              echo "- Resultado: nenhuma spec elegível para quarentena"
+            else
+              echo "- Resultado do step: ${{ steps.quarantine_run.outcome }}"
+              echo
+              echo "### Arquivos executados"
+              sed 's/^/- `/' quarantine-specs.txt | sed 's/$/`/'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # Auditoria pós-merge — só roda em main após os gates reais passarem.
   # ---------------------------------------------------------------------------
   post-merge-audit:
     name: Post-merge Simulation Audit
     # Stress em produção é mutável e deve ser opt-in, com a variável de
     # repositório explicitamente habilitada durante uma janela autorizada.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.ENABLE_PRODUCTION_SIMULATION_AUDIT == 'true'
-    needs: [quality-gate, e2e, e2e-destructive]
+    needs: [quality-gate, e2e-critical, e2e-destructive]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Simulation Audit

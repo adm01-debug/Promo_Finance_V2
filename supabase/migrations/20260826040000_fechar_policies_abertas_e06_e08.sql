@@ -150,6 +150,7 @@ DROP POLICY IF EXISTS "read_for_authenticated" ON public."ufs";
 -- Somente admins gerenciam exceções de índice ON indices_uso_excecoes: já existe no DST
 -- itens_iss_select_authenticated ON itens_lista_iss: já existe no DST
 -- itens_iss_write_admin ON itens_lista_iss: já existe no DST
+DROP POLICY IF EXISTS "kpis_operacionais_owner" ON public."kpis_operacionais";
 CREATE POLICY "kpis_operacionais_owner" ON public."kpis_operacionais" FOR ALL TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 -- ncms_select_authenticated ON ncms: já existe no DST
 -- ncms_write_admin ON ncms: já existe no DST
@@ -181,8 +182,10 @@ CREATE POLICY "kpis_operacionais_owner" ON public."kpis_operacionais" FOR ALL TO
 -- Empresa-based access ON retencoes_fonte: já existe no DST
 -- saved_filter_subscriptions_owner ON saved_filter_subscriptions: já existe no DST
 -- scim_operations_log_admin_select ON scim_operations_log: já existe no DST
+DROP POLICY IF EXISTS "scim_checklist_own" ON public."scim_setup_checklist";
 CREATE POLICY "scim_checklist_own" ON public."scim_setup_checklist" FOR ALL TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 -- security_alerts_admin_all ON security_alerts: já existe no DST
+DROP POLICY IF EXISTS "sim_trib_acesso" ON public."simulacao_tributos_detalhados";
 CREATE POLICY "sim_trib_acesso" ON public."simulacao_tributos_detalhados" FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM simulacoes s
   WHERE ((s.id = simulacao_tributos_detalhados.simulacao_id) AND empresa_acessivel(s.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
@@ -195,13 +198,10 @@ CREATE POLICY "sim_trib_acesso" ON public."simulacao_tributos_detalhados" FOR AL
 -- sped_arquivos_select ON sped_contabil_arquivos: já existe no DST
 -- sped_arquivos_update_admin ON sped_contabil_arquivos: já existe no DST
 -- sso_role_mappings_admin ON sso_role_mappings: já existe no DST
+DROP POLICY IF EXISTS "sso_sandbox_runs_admin" ON public."sso_sandbox_runs";
 CREATE POLICY "sso_sandbox_runs_admin" ON public."sso_sandbox_runs" FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin'::app_role)) WITH CHECK ((has_role(auth.uid(), 'admin'::app_role) AND (created_by = auth.uid())));
 -- sso_user_groups_select ON sso_user_groups: já existe no DST
 -- ufs_select_authenticated ON ufs: já existe no DST
 -- ufs_write_admin ON ufs: já existe no DST
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260826040000','fechar_policies_abertas_e06_e08')
-ON CONFLICT (version) DO NOTHING;

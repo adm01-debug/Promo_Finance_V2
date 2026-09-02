@@ -1,38 +1,47 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret',
 };
 
-serve(async (req) => {
+export const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    console.log("[executar-analise-preditiva] Iniciando análise preditiva agendada...");
+  const auth = await exigirChamadaInterna(req, 'executar_analise_preditiva');
+  if (!auth.ok) return auth.resposta;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  try {
+    console.log('[executar-analise-preditiva] Iniciando análise preditiva agendada...');
+
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Buscar dados financeiros para análise
     const hoje = new Date();
     const tresMesesAtras = new Date(hoje);
     tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
-    
+
     const [contasReceber, contasPagar, clientes, transacoes, metas] = await Promise.all([
       supabase.from('contas_receber').select('*').order('data_vencimento'),
       supabase.from('contas_pagar').select('*').order('data_vencimento'),
       supabase.from('clientes').select('*'),
-      supabase.from('transacoes_bancarias').select('*').gte('data', tresMesesAtras.toISOString().split('T')[0]).order('data'),
+      supabase
+        .from('transacoes_bancarias')
+        .select('*')
+        .gte('data', tresMesesAtras.toISOString().split('T')[0])
+        .order('data'),
       supabase.from('metas_financeiras').select('*').eq('ativo', true),
     ]);
 
@@ -40,7 +49,7 @@ serve(async (req) => {
     if (contasPagar.error) throw contasPagar.error;
     if (clientes.error) throw clientes.error;
 
-    console.log("[executar-analise-preditiva] Dados carregados:", {
+    console.log('[executar-analise-preditiva] Dados carregados:', {
       contasReceber: contasReceber.data?.length,
       contasPagar: contasPagar.data?.length,
       clientes: clientes.data?.length,
@@ -50,8 +59,8 @@ serve(async (req) => {
 
     // Preparar contexto para a IA
     const hojeStr = hoje.toISOString().split('T')[0];
-    
-    const recebiveisData = contasReceber.data.map(cr => ({
+
+    const recebiveisData = contasReceber.data.map((cr) => ({
       cliente: cr.cliente_nome,
       valor: cr.valor,
       vencimento: cr.data_vencimento,
@@ -60,7 +69,7 @@ serve(async (req) => {
       valor_recebido: cr.valor_recebido || 0,
     }));
 
-    const pagaveisData = contasPagar.data.map(cp => ({
+    const pagaveisData = contasPagar.data.map((cp) => ({
       fornecedor: cp.fornecedor_nome,
       valor: cp.valor,
       vencimento: cp.data_vencimento,
@@ -68,26 +77,29 @@ serve(async (req) => {
       valor_pago: cp.valor_pago || 0,
     }));
 
-    const clientesData = clientes.data.map(c => ({
+    const clientesData = clientes.data.map((c) => ({
       nome: c.razao_social,
       score: c.score,
       limite_credito: c.limite_credito,
     }));
 
     // Agrupar transações por mês
-    const transacoesPorMes = (transacoes.data || []).reduce((acc: Record<string, { receitas: number; despesas: number }>, t) => {
-      const mes = t.data.substring(0, 7);
-      if (!acc[mes]) acc[mes] = { receitas: 0, despesas: 0 };
-      if (t.tipo === 'receita') {
-        acc[mes].receitas += Number(t.valor);
-      } else {
-        acc[mes].despesas += Number(t.valor);
-      }
-      return acc;
-    }, {});
+    const transacoesPorMes = (transacoes.data || []).reduce(
+      (acc: Record<string, { receitas: number; despesas: number }>, t) => {
+        const mes = t.data.substring(0, 7);
+        if (!acc[mes]) acc[mes] = { receitas: 0, despesas: 0 };
+        if (t.tipo === 'receita') {
+          acc[mes].receitas += Number(t.valor);
+        } else {
+          acc[mes].despesas += Number(t.valor);
+        }
+        return acc;
+      },
+      {}
+    );
 
     // Dados de metas para recomendações
-    const metasData = (metas.data || []).map(m => ({
+    const metasData = (metas.data || []).map((m) => ({
       tipo: m.tipo,
       titulo: m.titulo,
       valor_meta: m.valor_meta,
@@ -148,26 +160,29 @@ Responda em JSON:
 
 IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
 
-    console.log("[executar-analise-preditiva] Chamando IA...");
+    console.log('[executar-analise-preditiva] Chamando IA...');
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: 'google/gemini-2.5-flash',
         messages: [
-          { role: "system", content: "Você é um analista financeiro expert. Responda em JSON válido." },
-          { role: "user", content: prompt }
+          {
+            role: 'system',
+            content: 'Você é um analista financeiro expert. Responda em JSON válido.',
+          },
+          { role: 'user', content: prompt },
         ],
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("[executar-analise-preditiva] Erro IA:", response.status, errorText);
+      console.error('[executar-analise-preditiva] Erro IA:', response.status, errorText);
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
@@ -175,19 +190,22 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
-      throw new Error("No content in AI response");
+      throw new Error('No content in AI response');
     }
 
     let analise;
     try {
-      const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const cleanContent = content
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
       analise = JSON.parse(cleanContent);
     } catch (parseError) {
-      console.error("[executar-analise-preditiva] Erro parse:", content);
-      throw new Error("Invalid JSON response from AI");
+      console.error('[executar-analise-preditiva] Erro parse:', content);
+      throw new Error('Invalid JSON response from AI');
     }
 
-    console.log("[executar-analise-preditiva] Análise recebida, salvando...");
+    console.log('[executar-analise-preditiva] Análise recebida, salvando...');
 
     // Salvar análise preditiva
     const { data: analiseRecord, error: analiseError } = await supabase
@@ -209,20 +227,18 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       .single();
 
     if (analiseError) {
-      console.error("[executar-analise-preditiva] Erro salvar análise:", analiseError);
+      console.error('[executar-analise-preditiva] Erro salvar análise:', analiseError);
     }
 
     // Salvar score de saúde
-    const { error: scoreError } = await supabase
-      .from('historico_score_saude')
-      .insert({
-        score: analise.score_saude_financeira || 50,
-        indicadores: analise.indicadores,
-        observacoes: analise.resumo_executivo,
-      });
+    const { error: scoreError } = await supabase.from('historico_score_saude').insert({
+      score: analise.score_saude_financeira || 50,
+      indicadores: analise.indicadores,
+      observacoes: analise.resumo_executivo,
+    });
 
     if (scoreError) {
-      console.error("[executar-analise-preditiva] Erro salvar score:", scoreError);
+      console.error('[executar-analise-preditiva] Erro salvar score:', scoreError);
     }
 
     // Salvar alertas preditivos
@@ -232,7 +248,9 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       descricao: alerta.descricao,
       probabilidade: alerta.probabilidade,
       impacto_estimado: alerta.impacto_estimado,
-      data_previsao: alerta.data_previsao || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      data_previsao:
+        alerta.data_previsao ||
+        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       sugestoes: alerta.sugestoes,
       prioridade: alerta.prioridade || 'media',
       analise_preditiva_id: analiseRecord?.id,
@@ -244,13 +262,15 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
         .insert(alertasParaSalvar);
 
       if (alertasError) {
-        console.error("[executar-analise-preditiva] Erro salvar alertas:", alertasError);
+        console.error('[executar-analise-preditiva] Erro salvar alertas:', alertasError);
       } else {
         console.log(`[executar-analise-preditiva] ${alertasParaSalvar.length} alertas salvos`);
       }
 
       // Enviar push notifications para alertas críticos
-      const alertasCriticos = alertasParaSalvar.filter((a: any) => a.prioridade === 'critica' || a.prioridade === 'alta');
+      const alertasCriticos = alertasParaSalvar.filter(
+        (a: any) => a.prioridade === 'critica' || a.prioridade === 'alta'
+      );
       for (const alerta of alertasCriticos) {
         try {
           await supabase.functions.invoke('send-push-notification', {
@@ -263,7 +283,7 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
             },
           });
         } catch (pushError) {
-          console.error("[executar-analise-preditiva] Erro push:", pushError);
+          console.error('[executar-analise-preditiva] Erro push:', pushError);
         }
       }
     }
@@ -276,7 +296,9 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       baseado_em: { indicadores: analise.indicadores, tendencias: analise.tendencias },
       confianca: rec.confianca,
       periodo_referencia_inicio: new Date().toISOString().split('T')[0],
-      periodo_referencia_fim: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      periodo_referencia_fim: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
     }));
 
     if (recomendacoesParaSalvar.length > 0) {
@@ -285,31 +307,40 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
         .insert(recomendacoesParaSalvar);
 
       if (recError) {
-        console.error("[executar-analise-preditiva] Erro salvar recomendações:", recError);
+        console.error('[executar-analise-preditiva] Erro salvar recomendações:', recError);
       } else {
-        console.log(`[executar-analise-preditiva] ${recomendacoesParaSalvar.length} recomendações salvas`);
+        console.log(
+          `[executar-analise-preditiva] ${recomendacoesParaSalvar.length} recomendações salvas`
+        );
       }
     }
 
-    console.log("[executar-analise-preditiva] Análise concluída com sucesso!");
+    console.log('[executar-analise-preditiva] Análise concluída com sucesso!');
 
-    return new Response(JSON.stringify({ 
-      success: true,
-      analise_id: analiseRecord?.id,
-      score: analise.score_saude_financeira,
-      alertas_gerados: alertasParaSalvar.length,
-      recomendacoes_geradas: recomendacoesParaSalvar.length,
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        analise_id: analiseRecord?.id,
+        score: analise.score_saude_financeira,
+        alertas_gerados: alertasParaSalvar.length,
+        recomendacoes_geradas: recomendacoesParaSalvar.length,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
-    console.error("[executar-analise-preditiva] Erro:", error);
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : "Erro desconhecido" 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error('[executar-analise-preditiva] Erro:', error);
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
-});
+};
+
+if (import.meta.main) serve(handler);

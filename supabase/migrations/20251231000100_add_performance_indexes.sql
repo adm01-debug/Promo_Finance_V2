@@ -3,8 +3,8 @@
 -- Objetivo: Melhorar performance de queries críticas
 
 -- Índices simples
-CREATE INDEX IF NOT EXISTS idx_contas_pagar_vencimento 
-  ON contas_pagar(vencimento);
+CREATE INDEX IF NOT EXISTS idx_contas_pagar_vencimento
+  ON contas_pagar(data_vencimento);
 
 CREATE INDEX IF NOT EXISTS idx_contas_pagar_status 
   ON contas_pagar(status);
@@ -15,8 +15,8 @@ CREATE INDEX IF NOT EXISTS idx_contas_pagar_fornecedor
 CREATE INDEX IF NOT EXISTS idx_contas_receber_cliente 
   ON contas_receber(cliente_id);
 
-CREATE INDEX IF NOT EXISTS idx_contas_receber_vencimento 
-  ON contas_receber(vencimento);
+CREATE INDEX IF NOT EXISTS idx_contas_receber_vencimento
+  ON contas_receber(data_vencimento);
 
 CREATE INDEX IF NOT EXISTS idx_contas_receber_status 
   ON contas_receber(status);
@@ -24,18 +24,30 @@ CREATE INDEX IF NOT EXISTS idx_contas_receber_status
 CREATE INDEX IF NOT EXISTS idx_nfe_data_emissao 
   ON notas_fiscais(data_emissao);
 
-CREATE INDEX IF NOT EXISTS idx_nfe_numero 
+CREATE INDEX IF NOT EXISTS idx_nfe_numero
   ON notas_fiscais(numero);
 
-CREATE INDEX IF NOT EXISTS idx_conciliacao_data 
-  ON conciliacao_bancaria(data_transacao);
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'conciliacao_bancaria'
+  ) THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_conciliacao_data ON public.conciliacao_bancaria(data_transacao)';
+  ELSE
+    RAISE NOTICE '20251231000100: conciliacao_bancaria ausente no schema atual; índice ignorado.';
+  END IF;
+END
+$$;
 
 CREATE INDEX IF NOT EXISTS idx_boletos_vencimento 
   ON boletos(vencimento);
 
 -- Índices compostos (mais eficientes para queries comuns)
-CREATE INDEX IF NOT EXISTS idx_cp_status_vencimento 
-  ON contas_pagar(status, vencimento);
+CREATE INDEX IF NOT EXISTS idx_cp_status_vencimento
+  ON contas_pagar(status, data_vencimento);
 
 CREATE INDEX IF NOT EXISTS idx_cp_fornecedor_status 
   ON contas_pagar(fornecedor_id, status);
@@ -43,8 +55,8 @@ CREATE INDEX IF NOT EXISTS idx_cp_fornecedor_status
 CREATE INDEX IF NOT EXISTS idx_cr_cliente_status 
   ON contas_receber(cliente_id, status);
 
-CREATE INDEX IF NOT EXISTS idx_cr_status_vencimento 
-  ON contas_receber(status, vencimento);
+CREATE INDEX IF NOT EXISTS idx_cr_status_vencimento
+  ON contas_receber(status, data_vencimento);
 
 -- Índices para full-text search
 CREATE INDEX IF NOT EXISTS idx_cp_descricao_gin 
@@ -54,12 +66,12 @@ CREATE INDEX IF NOT EXISTS idx_cr_descricao_gin
   ON contas_receber USING gin(to_tsvector('portuguese', descricao));
 
 -- Índices parciais (apenas registros ativos)
-CREATE INDEX IF NOT EXISTS idx_cp_pendentes 
-  ON contas_pagar(vencimento) 
+CREATE INDEX IF NOT EXISTS idx_cp_pendentes
+  ON contas_pagar(data_vencimento)
   WHERE status IN ('pendente', 'vencida');
 
-CREATE INDEX IF NOT EXISTS idx_cr_pendentes 
-  ON contas_receber(vencimento) 
+CREATE INDEX IF NOT EXISTS idx_cr_pendentes
+  ON contas_receber(data_vencimento)
   WHERE status IN ('pendente', 'vencida');
 
 -- Analyze tables para atualizar estatísticas
@@ -67,7 +79,20 @@ ANALYZE contas_pagar;
 ANALYZE contas_receber;
 ANALYZE notas_fiscais;
 ANALYZE boletos;
-ANALYZE conciliacao_bancaria;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'conciliacao_bancaria'
+  ) THEN
+    EXECUTE 'ANALYZE public.conciliacao_bancaria';
+  ELSE
+    RAISE NOTICE '20251231000100: conciliacao_bancaria ausente no schema atual; analyze ignorado.';
+  END IF;
+END
+$$;
 
 COMMENT ON INDEX idx_contas_pagar_vencimento IS 'Otimiza queries por vencimento';
 COMMENT ON INDEX idx_cp_status_vencimento IS 'Otimiza listagem de contas por status e vencimento';

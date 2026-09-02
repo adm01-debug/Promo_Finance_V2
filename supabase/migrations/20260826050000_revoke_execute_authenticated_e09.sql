@@ -13,10 +13,35 @@ REVOKE EXECUTE ON FUNCTION public.capture_slow_queries(threshold_ms numeric) FRO
 REVOKE EXECUTE ON FUNCTION public.check_catalogos_tributarios_invariants() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.check_integrity_invariants() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.check_nfe_xml_path_invariants() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.cleanup_expired_tokens() FROM authenticated;
+DO $$
+BEGIN
+  IF to_regprocedure('public.cleanup_expired_tokens()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.cleanup_expired_tokens() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.cleanup_old_cron_logs()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.cleanup_old_cron_logs() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.cleanup_old_login_attempts()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.cleanup_old_login_attempts() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.invalidate_old_tokens()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.invalidate_old_tokens() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.run_daily_cleanup()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.run_daily_cleanup_with_logging()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup_with_logging() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.sanitize_auth_log_metadata()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.sanitize_auth_log_metadata() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.set_token_expiration()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.set_token_expiration() FROM authenticated';
+  END IF;
+END
+$$;
 REVOKE EXECUTE ON FUNCTION public.cleanup_log_tables() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.cleanup_old_cron_logs() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.cleanup_old_login_attempts() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.cleanup_pgss_baseline(p_days integer) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.cleanup_rpc_observability_metrics() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.clear_login_attempts(p_email text) FROM authenticated;
@@ -48,7 +73,6 @@ REVOKE EXECUTE ON FUNCTION public.get_bloat_snapshots(p_days integer, p_table_na
 REVOKE EXECUTE ON FUNCTION public.handle_updated_at() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.has_permission(_user_id uuid, _permission_name text) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.internal_job_secret() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.invalidate_old_tokens() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.is_country_allowed_for_login(_country text) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.is_country_blocked(_country_code text) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.is_ip_allowed_for_login(_ip inet) FROM authenticated;
@@ -80,11 +104,8 @@ REVOKE EXECUTE ON FUNCTION public.record_failed_login_v2(p_email text, p_ip_addr
 REVOKE EXECUTE ON FUNCTION public.refresh_performance_alerts_weekly() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.registrar_evento_cobranca(p_conta_id uuid, p_evento text, p_mensagem text, p_canal text, p_destinatario text, p_metadata jsonb) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.reprocess_dlq(p_dlq_id uuid, p_notes text) FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup_with_logging() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.run_integrity_cycle() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.run_observability_rpc(_function_name text) FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.sanitize_auth_log_metadata() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.sefaz_cursor_advance(p_cnpj text, p_ambiente sefaz_ambiente, p_novo_nsu bigint, p_max_nsu bigint, p_status text, p_erro text) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.sefaz_detect_nsu_gaps(p_max_gap bigint) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.sefaz_detect_stuck_cursors() FROM authenticated;
@@ -92,7 +113,6 @@ REVOKE EXECUTE ON FUNCTION public.sefaz_process_batch(p_cnpj text, p_ambiente te
 REVOKE EXECUTE ON FUNCTION public.sefaz_run_observability_checks() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.set_empresa_id_default() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.set_empresa_id_from_profile() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.set_token_expiration() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.snapshot_table_bloat() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.sync_regime_tributario_empresa() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.trigger_bitrix24_sync() FROM authenticated;
@@ -109,7 +129,3 @@ REVOKE EXECUTE ON FUNCTION public.webhook_mark_success(p_id uuid, p_response jso
 REVOKE EXECUTE ON FUNCTION public.webhook_replay(p_id uuid) FROM authenticated;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260826050000','revoke_execute_authenticated_e09')
-ON CONFLICT (version) DO NOTHING;
