@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: roles } = await admin.from('user_roles').select('role').eq('user_id', userData.user.id);
+    const { data: roles } = await admin.from('user_roles').select('role').eq('user_id', userData.user.id).eq('is_active', true);
     const userRoles = (roles ?? []).map((r) => r.role);
     if (!userRoles.some((r) => ['admin', 'financeiro'].includes(r))) {
       await logger.flush();
@@ -73,6 +73,20 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'empresa_id e periodo (YYYY-MM) obrigatórios' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // financeiro sem vínculo ativo com a empresa pedia dados fiscais de
+    // QUALQUER empresa via empresa_id arbitrário (achado P0 do cubic-dev-ai);
+    // admin mantém acesso global, igual ao resto do sistema.
+    if (!userRoles.includes('admin')) {
+      const { data: vinculo } = await admin.from('user_empresas').select('id')
+        .eq('user_id', userData.user.id).eq('empresa_id', empresa_id).eq('ativo', true).maybeSingle();
+      if (!vinculo) {
+        await logger.flush();
+        return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     const [ano, mes] = periodo.split('-').map(Number);
