@@ -77,6 +77,24 @@ Deno.serve(async (req) => {
       });
     }
 
+    // user_roles é global (não por empresa) — sem esta checagem, qualquer
+    // usuário autenticado com role admin/financeiro/visualizador em UMA
+    // empresa consegue consultar conformidade fiscal de QUALQUER empresa
+    // via este client service_role (que ignora RLS).
+    const { data: vinculo } = await admin
+      .from('user_empresas')
+      .select('id')
+      .eq('user_id', userData.user.id)
+      .eq('empresa_id', empresa_id)
+      .eq('ativo', true)
+      .maybeSingle();
+    if (!vinculo) {
+      await logger.flush();
+      return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const [ano, mes] = periodo.split('-').map(Number);
     const checks: CheckResult[] = [];
 

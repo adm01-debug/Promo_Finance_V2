@@ -58,6 +58,29 @@ serve(async (req) => {
       throw fetchError;
     }
 
+    // relatorios_agendados.empresa_id não é checado pela query acima (client
+    // service_role ignora RLS). Sem isto, um usuário autenticado que
+    // descubra/adivinhe o UUID de um relatorio_id de outra empresa consegue
+    // disparar a geração/gravação do relatório dela (IDOR).
+    if (relatorioId && guard.dados.origem === 'usuario') {
+      const empresaIds = [...new Set((relatoriosParaExecutar ?? []).map((r) => r.empresa_id).filter(Boolean))];
+      if (empresaIds.length > 0) {
+        const { data: vinculos } = await supabase
+          .from('user_empresas')
+          .select('empresa_id')
+          .eq('user_id', guard.dados.userId)
+          .eq('ativo', true)
+          .in('empresa_id', empresaIds);
+        const permitidas = new Set((vinculos ?? []).map((v) => v.empresa_id));
+        if (!empresaIds.every((id) => permitidas.has(id))) {
+          return new Response(JSON.stringify({ error: 'Sem permissão para este relatório' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+      }
+    }
+
     console.log(
       `[executar-relatorios] Encontrados ${relatoriosParaExecutar?.length || 0} relatórios para executar`
     );
