@@ -42,19 +42,17 @@ serve(async (req) => {
     const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
     if (guard.dados.origem === "usuario") {
-      if (empresaIdFilter) {
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: guard.dados.userId, _role: "admin" });
+      if (!isAdmin) {
+        if (!empresaIdFilter) {
+          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         const { data: vinculo } = await supabase.from("user_empresas").select("id")
           .eq("user_id", guard.dados.userId).eq("empresa_id", empresaIdFilter).eq("ativo", true).maybeSingle();
         if (!vinculo) {
           return new Response(JSON.stringify({ error: "Sem permissão para esta empresa" }), {
-            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-      } else {
-        const { data: isAdmin } = await supabase.from("user_roles").select("role")
-          .eq("user_id", guard.dados.userId).eq("role", "admin").maybeSingle();
-        if (!isAdmin) {
-          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
             status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
