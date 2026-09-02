@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
     checklist.push({
       id: 'lucro',
       label: 'Lucro líquido coerente com movimentação',
-      status: !temMovimento || lucro_liquido !== 0 ? 'ok' : 'warn',
+      status: temMovimento && lucro_liquido !== 0 ? 'ok' : 'warn',
       detail: temMovimento
         ? `Lucro líquido: R$ ${lucro_liquido.toFixed(2)} (Rec ${receitas.toFixed(2)} − Desp ${despesas.toFixed(2)})`
         : 'Sem movimento de receita/despesa no período',
