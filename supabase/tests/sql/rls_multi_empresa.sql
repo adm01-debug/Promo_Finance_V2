@@ -28,7 +28,7 @@ BEGIN
   JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = 'public'::regnamespace
   WHERE c.table_schema = 'public'
     AND c.column_name = 'empresa_id'
-    AND pc.relkind = 'r'        -- somente tabelas físicas (exclui views/matviews)
+    AND pc.relkind IN ('r', 'p') -- tabelas físicas + particionadas (exclui views/matviews)
     AND pc.relrowsecurity = false;
 
   IF offenders IS NOT NULL THEN
@@ -38,9 +38,9 @@ END $$;
 
 -- 2) Tabelas com empresa_id sem NENHUMA policy (RLS default-deny é bom,
 --    mas expõe bug de "esquecemos a policy") — apenas WARN. Restrito a
---    tabelas físicas (relkind='r'): views com empresa_id não suportam
---    policy própria (usam security_invoker), então seriam ruído
---    permanente aqui sem o filtro.
+--    tabelas físicas + particionadas (relkind IN ('r','p')): views com
+--    empresa_id não suportam policy própria (usam security_invoker),
+--    então seriam ruído permanente aqui sem o filtro.
 DO $$
 DECLARE
   missing text[];
@@ -50,7 +50,7 @@ BEGIN
   JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = 'public'::regnamespace
   WHERE c.table_schema = 'public'
     AND c.column_name = 'empresa_id'
-    AND pc.relkind = 'r'
+    AND pc.relkind IN ('r', 'p')
     AND NOT EXISTS (
       SELECT 1 FROM pg_policies p
       WHERE p.schemaname = 'public' AND p.tablename = c.table_name
@@ -158,7 +158,7 @@ BEGIN
    AND g.privilege_type IN ('DELETE','UPDATE','INSERT')
   WHERE c.table_schema = 'public'
     AND c.column_name = 'empresa_id'
-    AND pc.relkind = 'r';
+    AND pc.relkind IN ('r', 'p');
 
   IF bad IS NOT NULL THEN
     RAISE EXCEPTION 'anon com GRANT de escrita direto em tabelas multi-empresa: %', bad;
