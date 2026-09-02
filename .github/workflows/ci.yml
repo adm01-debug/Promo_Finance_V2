@@ -12,6 +12,22 @@ jobs:
     name: Quality Gate & Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # env de nível de job: `if:` de step só enxerga env de workflow/job, NUNCA
+    # o próprio `env:` daquele step (a condição decide se o step roda ANTES do
+    # runner aplicar o env dele — confirmado na doc oficial do GitHub Actions).
+    # Sem isto, todo `if: ${{ env.DATABASE_URL != '' }}` abaixo resolve sempre
+    # para falso e o step correspondente fica SEMPRE skipped, mesmo com o
+    # secret configurado — foi exatamente o que aconteceu com o gate que roda
+    # supabase/tests/sql/rls_multi_empresa.sql: nunca executou de verdade em
+    # nenhum commit (confirmado via API de jobs do GitHub, status "skipped"),
+    # o que por sua vez explica como o vazamento cross-tenant original (PR #54)
+    # sobreviveu meses sem o CI acusar nada.
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+      E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v4
