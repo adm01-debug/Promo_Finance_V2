@@ -68,7 +68,8 @@ async function calcularEmpresa(
   try {
     const { data: txs } = await client
       .from("transacoes_bancarias")
-      .select("conciliada")
+      .select("conciliada, contas_bancarias!inner(empresa_id)")
+      .eq("contas_bancarias.empresa_id", empresaId)
       .gte("data", new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().slice(0, 10));
     if (txs && txs.length > 0) {
       const conc = txs.filter((t: { conciliada: boolean | null }) => t.conciliada).length;
