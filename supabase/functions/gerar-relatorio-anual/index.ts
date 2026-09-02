@@ -79,6 +79,23 @@ Deno.serve(async (req) => {
     if (!validation.success) return validation.response;
     const body: ReqBody = validation.data;
 
+    // user_roles é global (não por empresa) — sem esta checagem, qualquer
+    // usuário autenticado com role admin/financeiro/contador_readonly em UMA
+    // empresa consegue gerar relatório tributário anual de QUALQUER empresa
+    // via este client service_role (que ignora RLS).
+    const { data: vinculo } = await admin
+      .from('user_empresas')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('empresa_id', body.empresa_id)
+      .eq('ativo', true)
+      .maybeSingle();
+    if (!vinculo) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Empresa
     const { data: empresa } = await admin
