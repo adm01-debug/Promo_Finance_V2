@@ -64,9 +64,12 @@ Deno.serve(async (req) => {
       const supa = createClient(SUPABASE_URL, SERVICE_KEY);
 
       if (guard.dados.origem === 'usuario') {
-        const { data: vinculo } = await supa.from('user_empresas').select('id')
-          .eq('user_id', guard.dados.userId).eq('empresa_id', empresaId).eq('ativo', true).maybeSingle();
-        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+        const { data: isAdmin } = await supa.rpc('has_role', { _user_id: guard.dados.userId, _role: 'admin' });
+        if (!isAdmin) {
+          const { data: vinculo } = await supa.from('user_empresas').select('id')
+            .eq('user_id', guard.dados.userId).eq('empresa_id', empresaId).eq('ativo', true).maybeSingle();
+          if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+        }
       }
 
       const { data: fat } = await supa
