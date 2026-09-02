@@ -54,6 +54,21 @@ Deno.serve(async (req) => {
 
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  // Qualquer authenticated passava sem checar role nem vínculo com a
+  // empresa — este client usa service_role e ignora RLS, então sem esta
+  // checagem qualquer usuário logado grava lançamento contábil em
+  // QUALQUER empresa via empresa_id arbitrário no body.
+  const [{ data: papeis }, { data: vinculo }] = await Promise.all([
+    admin.from('user_roles').select('role').eq('user_id', userId).in('role', ['admin', 'financeiro']),
+    admin.from('user_empresas').select('id').eq('user_id', userId).eq('empresa_id', body.empresa_id).eq('ativo', true).maybeSingle(),
+  ]);
+  if (!papeis?.length || !vinculo) {
+    return new Response(JSON.stringify({ error: 'Sem permissão para contabilizar eventos desta empresa' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   // Idempotência: já contabilizado?
   const { data: existente } = await admin
     .from('eventos_contabilizacao_log')
