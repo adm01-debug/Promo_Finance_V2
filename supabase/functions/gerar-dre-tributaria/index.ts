@@ -22,7 +22,8 @@ Deno.serve(async (req) => {
 
   try {
     const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
-    if (!parsed.success) return jsonComCors({ error: 'empresa_id e periodo YYYY-MM são obrigatórios' }, 400);
+    if (!parsed.success)
+      return jsonComCors({ error: 'empresa_id e periodo YYYY-MM são obrigatórios' }, 400);
     const { empresa_id: empresaId, periodo } = parsed.data;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -34,6 +35,24 @@ Deno.serve(async (req) => {
 
     if (supabaseUrl && serviceKey) {
       const supa = createClient(supabaseUrl, serviceKey);
+
+      // service_role ignora RLS: valida o vínculo do usuário com a empresa
+      // antes de ler dados fiscais (mesmo padrão de comparar-benchmark-setorial).
+      const { data: isAdmin } = await supa.rpc('has_role', {
+        _user_id: guard.dados.userId,
+        _role: 'admin',
+      });
+      if (!isAdmin) {
+        const { data: vinculo } = await supa
+          .from('user_empresas')
+          .select('id')
+          .eq('user_id', guard.dados.userId)
+          .eq('empresa_id', empresaId)
+          .eq('ativo', true)
+          .maybeSingle();
+        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+      }
+
       const [ano, mes] = periodo.split('-').map(Number);
 
       const { data: fat } = await supa

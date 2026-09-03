@@ -2,8 +2,8 @@
 // Cria Deal no Bitrix24 + anexa PDF tributário + comentário com resumo
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const _BxTribSchema = z.object({
   empresaId: z.string().uuid(),
@@ -17,8 +17,7 @@ const _BxTribSchema = z.object({
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
@@ -88,9 +87,10 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsErr } =
-      await supabaseAuth.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims) {
+    const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
+    // Exigir `sub`: a anon key (pública) também é um JWT válido do projeto,
+    // mas não carrega subject — sem esta checagem ela passaria o guard.
+    if (claimsErr || !claimsData?.claims?.sub) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -102,13 +102,10 @@ Deno.serve(async (req) => {
     if (!_v.success) return _v.response;
     const body = _v.data as unknown as ReqBody;
     if (!body.empresaId || !body.signedUrl || !body.empresaNome) {
-      return new Response(
-        JSON.stringify({ error: 'Campos obrigatórios ausentes' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const titulo = `Recomendação Tributária — ${body.empresaNome} — ${body.periodo}`;
@@ -160,13 +157,10 @@ Deno.serve(async (req) => {
       context: { dealId, empresaId: body.empresaId },
     });
     await logger.flush();
-    return new Response(
-      JSON.stringify({ success: true, dealId, dealUrl }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ success: true, dealId, dealUrl }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erro desconhecido';
     logger.error('fn_failure', {
