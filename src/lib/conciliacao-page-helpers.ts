@@ -61,7 +61,7 @@ interface ConfirmarConciliacaoVars {
 
 export function montarLancamentosSistema(
   contasPagar: ContaPagarRow[] | null | undefined,
-  contasReceber: ContaReceberRow[] | null | undefined,
+  contasReceber: ContaReceberRow[] | null | undefined
 ): LancamentoSistema[] {
   const lancamentosPagar = converterContasPagarParaLancamentos(
     (contasPagar || []).map((cp) => ({
@@ -79,7 +79,7 @@ export function montarLancamentosSistema(
           }
         : null,
       centro_custo_nome: cp.centro_custo_nome,
-    })),
+    }))
   );
   const lancamentosReceber = converterContasReceberParaLancamentos(
     (contasReceber || []).map((cr) => ({
@@ -97,20 +97,21 @@ export function montarLancamentosSistema(
           }
         : null,
       centro_custo_nome: cr.centro_custo_nome,
-    })),
+    }))
   );
   return [...lancamentosPagar, ...lancamentosReceber];
 }
 
 export async function carregarTransacoesBanco(
-  contaId: string,
+  contaId: string
 ): Promise<TransacaoImportada[] | null> {
   try {
     const { data, error } = await supabase
       .from('transacoes_bancarias')
       .select('*')
       .eq('conta_bancaria_id', contaId)
-      .order('data', { ascending: false });
+      .order('data', { ascending: false })
+      .limit(500);
 
     if (error) {
       toast.error('Erro ao carregar transações');
@@ -136,9 +137,7 @@ export async function carregarTransacoesBanco(
   }
 }
 
-export async function buscarConfigConciliacao(
-  contaId: string,
-): Promise<ConfigConciliacaoConta> {
+export async function buscarConfigConciliacao(contaId: string): Promise<ConfigConciliacaoConta> {
   const { data: contaInfo } = await supabase
     .from('contas_bancarias')
     .select('configuracoes_conciliacao')
@@ -167,8 +166,20 @@ export async function aplicarConciliacoesAutomaticas(params: {
   confirmarConciliacao: { mutateAsync: (vars: ConfirmarConciliacaoVars) => Promise<unknown> };
   selectedBanco: string | null;
   onResolverManual: (transacaoId: string) => void;
-}): Promise<{ autoConciliadas: number; valorAutoConciliado: number; matchesAlta: ImportReport['matchesAlta'] }> {
-  const { transacoes, matches, config, novasTransacoes, confirmarConciliacao, selectedBanco, onResolverManual } = params;
+}): Promise<{
+  autoConciliadas: number;
+  valorAutoConciliado: number;
+  matchesAlta: ImportReport['matchesAlta'];
+}> {
+  const {
+    transacoes,
+    matches,
+    config,
+    novasTransacoes,
+    confirmarConciliacao,
+    selectedBanco,
+    onResolverManual,
+  } = params;
   const matchesAlta: ImportReport['matchesAlta'] = [];
   let autoConciliadas = 0;
   let valorAutoConciliado = 0;
@@ -258,7 +269,13 @@ export function filtrarTransacoes(params: {
   transacoes: TransacaoImportada[];
   search: string;
   statusTab: string;
-  filters: { tipo: string; periodoInicio: string; periodoFim: string; valorMin: string; valorMax: string };
+  filters: {
+    tipo: string;
+    periodoInicio: string;
+    periodoFim: string;
+    valorMin: string;
+    valorMax: string;
+  };
 }): TransacaoImportada[] {
   const { transacoes, search, statusTab, filters } = params;
   return transacoes.filter((t) => {
