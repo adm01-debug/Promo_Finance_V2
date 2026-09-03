@@ -182,6 +182,13 @@ Deno.serve(async (req: Request) => {
         error_message: rlError.message,
         context: { userId },
       });
+      await logger.flush();
+      return new Response(
+        JSON.stringify({
+          error: 'Serviço de rate limit indisponível. Tente novamente em instantes.',
+        }),
+        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     } else if (allowed === false) {
       logger.warn('rate_limit_exceeded', {
         status_code: 429,

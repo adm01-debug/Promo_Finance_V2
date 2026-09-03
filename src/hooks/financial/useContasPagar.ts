@@ -17,8 +17,7 @@ export function useContasPagar(empresaId?: string) {
       let query = supabaseDyn
         .from('vw_contas_pagar_painel')
         .select(sel('*'))
-        .order('data_vencimento', { ascending: true })
-        .limit(1000);
+        .order('data_vencimento', { ascending: true });
 
       if (empresaId && empresaId !== 'all') {
         query = query.eq('empresa_id', empresaId);
@@ -31,7 +30,6 @@ export function useContasPagar(empresaId?: string) {
     staleTime: STALE_TIMES.financial,
   });
 }
-
 
 export interface PaginatedContasPagarParams {
   page: number;
@@ -61,9 +59,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
       contaBancariaId,
     ],
     queryFn: async () => {
-      let countQuery = supabase
-        .from('contas_pagar')
-        .select('*', { count: 'exact', head: true });
+      let countQuery = supabase.from('contas_pagar').select('*', { count: 'exact', head: true });
 
       let dataQuery = supabase
         .from('vw_contas_pagar_painel')
@@ -112,9 +108,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
 export function useCreateContaPagar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (
-      data: Partial<Database['public']['Tables']['contas_pagar']['Insert']>,
-    ) => {
+    mutationFn: async (data: Partial<Database['public']['Tables']['contas_pagar']['Insert']>) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();

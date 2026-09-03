@@ -108,6 +108,21 @@ Deno.serve(async (req) => {
       });
     }
 
+    const userId = claimsData.claims.sub;
+    const { data: acesso, error: acessoErr } = await supabaseAuth
+      .from('user_empresas')
+      .select('empresa_id')
+      .eq('user_id', userId)
+      .eq('empresa_id', body.empresaId)
+      .eq('ativo', true)
+      .maybeSingle();
+    if (acessoErr || !acesso) {
+      return new Response(JSON.stringify({ error: 'Acesso negado a esta empresa' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const titulo = `Recomendação Tributária — ${body.empresaNome} — ${body.periodo}`;
     const economiaTxt =
       body.economiaAnual > 0

@@ -59,8 +59,8 @@ BEGIN
    LIMIT 1;
 
   IF v_forn_id IS NULL AND v_cnpj <> '' THEN
-    INSERT INTO public.fornecedores (razao_social, cnpj, user_id)
-    VALUES (coalesce(v_nfe.razao_emitente, v_cnpj), v_cnpj, auth.uid())
+    INSERT INTO public.fornecedores (razao_social, cnpj, empresa_id, user_id)
+    VALUES (coalesce(v_nfe.razao_emitente, v_cnpj), v_cnpj, v_nfe.empresa_id, auth.uid())
     RETURNING id INTO v_forn_id;
   END IF;
 
