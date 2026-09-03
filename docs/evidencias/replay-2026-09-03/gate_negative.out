@@ -1,0 +1,154 @@
+Pager usage is off.
+BEGIN
+DO
+psql:supabase/tests/sql/rls_multi_empresa.sql:62: WARNING:  Tabelas multi-empresa sem policies (default-deny): {drivers,lalamove_orders,orders}
+DO
+psql:supabase/tests/sql/rls_multi_empresa.sql:143: ERROR:  Policies sem escopo de empresa_id (ou tautológicas, ou sem USING/WITH CHECK) em tabelas multi-empresa:
+  - clientes.Users can delete own clientes [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - clientes.Users can insert own clientes [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - clientes.Users can update own clientes [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - clientes.Users can view own clientes [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - clientes.clientes_owner_delete [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - clientes.clientes_owner_select [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - clientes.clientes_owner_update [UPDATE] USING: (( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id) | WITH CHECK: ((( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id) AND ((empresa_id IS NULL) OR empresa_membro_ativo(empresa_id)))
+  - bitrix24_stage_mappings.Admins can delete stage mappings [DELETE] USING: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) | WITH CHECK: <NULL>
+  - bitrix24_stage_mappings.Authorized roles can view stage mappings [SELECT] USING: (has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'operator'::app_role)) | WITH CHECK: <NULL>
+  - bitrix24_stage_mappings.Managers can insert stage mappings [INSERT] USING: <NULL> | WITH CHECK: (has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role))
+  - bitrix24_stage_mappings.Managers can update stage mappings [UPDATE] USING: (has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role)) | WITH CHECK: <NULL>
+  - user_roles.Admins can delete user roles [DELETE] USING: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) | WITH CHECK: <NULL>
+  - user_roles.Admins can insert user roles [INSERT] USING: <NULL> | WITH CHECK: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)
+  - user_roles.Admins can manage all roles [ALL] USING: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) | WITH CHECK: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)
+  - user_roles.Admins can update user roles [UPDATE] USING: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) | WITH CHECK: <NULL>
+  - user_roles.Users can view own roles [SELECT] USING: ((( SELECT auth.uid() AS uid) = user_id) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)) | WITH CHECK: <NULL>
+  - categorias.Auth users can read categorias [SELECT] USING: (( SELECT auth.uid() AS uid) IS NOT NULL) | WITH CHECK: <NULL>
+  - categorias.Users can delete own categorias [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - categorias.Users can insert own categorias [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - categorias.Users can update own categorias [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - categorias.Users can view own categorias [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - alertas.Owner manage alertas [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - alertas.alertas_owner_delete [DELETE] USING: (( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id) | WITH CHECK: <NULL>
+  - alertas.alertas_owner_select [SELECT] USING: (( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id) | WITH CHECK: <NULL>
+  - alertas.alertas_owner_update [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: ((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR empresa_acessivel(empresa_id)))
+  - bitrix_field_mappings.Authenticated users can view field mappings [SELECT] USING: (( SELECT auth.uid() AS uid) IS NOT NULL) | WITH CHECK: <NULL>
+  - scim_tokens.Admins manage scim_tokens [ALL] USING: (EXISTS ( SELECT 1
+   FROM user_roles
+  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))) | WITH CHECK: <NULL>
+  - entregas_obrigacoes.entregas_obrigacoes_admin_all [ALL] USING: (EXISTS ( SELECT 1
+   FROM profiles p
+  WHERE ((p.id = ( SELECT auth.uid() AS uid)) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))) | WITH CHECK: <NULL>
+  - asaas_customers.Service role full access asaas_customers [ALL] USING: true | WITH CHECK: true
+  - asaas_payments.Service role full access asaas_payments [ALL] USING: true | WITH CHECK: true
+  - auditoria_financeira.auditoria_user_insert [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - conciliacoes.conciliacoes_owner_all [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - execucoes_cobranca.Owner manage execucoes [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - fechamentos_tributarios.fechamentos_tributarios_all_admin [ALL] USING: (EXISTS ( SELECT 1
+   FROM profiles
+  WHERE ((profiles.id = ( SELECT auth.uid() AS uid)) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))) | WITH CHECK: (EXISTS ( SELECT 1
+   FROM profiles
+  WHERE ((profiles.id = ( SELECT auth.uid() AS uid)) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))
+  - lancamentos_contabeis.Owner manage lancamentos [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - configuracoes_receber.Users can manage their company settings [ALL] USING: true | WITH CHECK: <NULL>
+  - auditoria_configuracoes.Usuários podem inserir auditoria [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - auditoria_configuracoes.Usuários podem ver auditoria das suas empresas [SELECT] USING: (EXISTS ( SELECT 1
+   FROM user_roles
+  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND ((user_roles.role = 'admin'::app_role) OR (user_roles.role = 'financeiro'::app_role))))) | WITH CHECK: <NULL>
+  - boletos.Owner manage boletos [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - pedidos_compra.Users can create their own purchase orders [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - pedidos_compra.Users can delete their own purchase orders [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - pedidos_compra.Users can update their own purchase orders [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - pedidos_compra.Users can view their own purchase orders [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - solicitacoes_lgpd.Usuários criam suas próprias solicitações [INSERT] USING: <NULL> | WITH CHECK: (user_id = ( SELECT auth.uid() AS uid))
+  - solicitacoes_lgpd.solicitacoes_lgpd_admin_all [ALL] USING: (EXISTS ( SELECT 1
+   FROM profiles p
+  WHERE ((p.id = ( SELECT auth.uid() AS uid)) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))) | WITH CHECK: <NULL>
+  - solicitacoes_lgpd.solicitacoes_lgpd_user_insert [INSERT] USING: <NULL> | WITH CHECK: (user_id = ( SELECT auth.uid() AS uid))
+  - solicitacoes_lgpd.solicitacoes_lgpd_user_select [SELECT] USING: (user_id = ( SELECT auth.uid() AS uid)) | WITH CHECK: <NULL>
+  - historico_analises_preditivas.hap_user_insert [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - integration_secrets.admin_only_integration_secrets [ALL] USING: (EXISTS ( SELECT 1
+   FROM user_roles
+  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))) | WITH CHECK: <NULL>
+  - obrigacoes_acessorias.Users can manage their company obligations [ALL] USING: (( SELECT auth.uid() AS uid) IN ( SELECT user_roles.user_id
+   FROM user_roles
+  WHERE (user_roles.role = ANY (ARRAY['admin'::app_role, 'financeiro'::app_role])))) | WITH CHECK: <NULL>
+  - obrigacoes_acessorias.Users can view their company obligations [SELECT] USING: (( SELECT auth.uid() AS uid) IN ( SELECT user_roles.user_id
+   FROM user_roles
+  WHERE (user_roles.role = ANY (ARRAY['admin'::app_role, 'financeiro'::app_role, 'visualizador'::app_role])))) | WITH CHECK: <NULL>
+  - profiles.Users can update own profile [UPDATE] USING: ((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id)) | WITH CHECK: (((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id)) AND profile_sensitive_fields_unchanged(id, user_id, role, empresa_id))
+  - recomendacoes_metas_ia.Sistema pode inserir recomendações [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) IS NOT NULL)
+  - sessoes_conciliacao.Owner manage sessoes [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - sessoes_conciliacao.Users can manage their own sessoes_conciliacao [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - user_filter_presets.Users can manage their own filter presets [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - user_filter_presets.Users can manage their presets [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - user_filter_presets.users_own_presets [ALL] USING: ((user_id = ( SELECT auth.uid() AS uid)) OR true) | WITH CHECK: <NULL>
+  - user_passkeys.Users can delete own passkeys [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - user_passkeys.Users can delete their passkeys [DELETE] USING: ((( SELECT auth.uid() AS uid) = user_id) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)) | WITH CHECK: <NULL>
+  - user_passkeys.Users can insert own passkeys [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - user_passkeys.Users can insert their passkeys [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - user_passkeys.Users can update own passkeys [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - user_passkeys.Users can update their passkeys [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - user_passkeys.Users can view own passkeys [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - verificacoes_conformidade.Service role pode atualizar verificacoes [UPDATE] USING: true | WITH CHECK: true
+  - verificacoes_conformidade.Service role pode inserir verificacoes [INSERT] USING: <NULL> | WITH CHECK: true
+  - bitrix24_tokens.Admins can delete tokens [DELETE] USING: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) | WITH CHECK: <NULL>
+  - bitrix24_tokens.Admins can insert tokens [INSERT] USING: <NULL> | WITH CHECK: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)
+  - bitrix24_tokens.Admins can update tokens [UPDATE] USING: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) | WITH CHECK: <NULL>
+  - bitrix24_tokens.Only admins can view tokens [SELECT] USING: has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) | WITH CHECK: <NULL>
+  - whatsapp_conversas.User-based access [ALL] USING: ((user_id = ( SELECT auth.uid() AS uid)) OR (EXISTS ( SELECT 1
+   FROM user_roles
+  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role))))) | WITH CHECK: <NULL>
+  - pix_templates.Authenticated users can insert pix_templates [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = created_by)
+  - relatorios_tributarios_agendados.relatorios_tributarios_agendados_all_admin [ALL] USING: (EXISTS ( SELECT 1
+   FROM profiles
+  WHERE ((profiles.id = ( SELECT auth.uid() AS uid)) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))) | WITH CHECK: (EXISTS ( SELECT 1
+   FROM profiles
+  WHERE ((profiles.id = ( SELECT auth.uid() AS uid)) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))
+  - logs_baixa_automatica.Owner manage logs_baixa [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - logs_baixa_automatica.Users can view their write-off logs [SELECT] USING: true | WITH CHECK: <NULL>
+  - logs_baixa_automatica.logs_baixa_insert_owner [INSERT] USING: <NULL> | WITH CHECK: (( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)
+  - logs_baixa_automatica.logs_baixa_select_owner [SELECT] USING: (( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id) | WITH CHECK: <NULL>
+  - logs_conciliacao_retroativa.Users can insert logs [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) IS NOT NULL)
+  - logs_conciliacao_retroativa.Users can view logs [SELECT] USING: true | WITH CHECK: <NULL>
+  - logs_conciliacao_retroativa.logs_retro_insert_owner [INSERT] USING: <NULL> | WITH CHECK: (( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)
+  - logs_conciliacao_retroativa.logs_retro_owner_all [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - logs_conciliacao_retroativa.logs_retro_select_owner [SELECT] USING: (( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id) | WITH CHECK: <NULL>
+  - acordos_parcelamento.Owner manage acordos [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - execucoes_regua_cobranca.Users can view their billing executions [SELECT] USING: true | WITH CHECK: <NULL>
+  - extrato_bancario.Users can manage their own extrato_bancario [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - extrato_bancario.extrato_owner_all [ALL] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - fornecedores.Users can delete own fornecedores [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - fornecedores.Users can insert own fornecedores [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - fornecedores.Users can update own fornecedores [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - fornecedores.Users can view own fornecedores [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - fornecedores.fornecedores_owner_delete [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - fornecedores.fornecedores_owner_insert [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - fornecedores.fornecedores_owner_select [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - fornecedores.fornecedores_owner_update [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - contas_receber.Users can delete own contas_receber [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - contas_receber.Users can insert own contas_receber [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - contas_receber.Users can update own contas_receber [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - contas_receber.Users can view own contas_receber [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - contas_pagar.Users can delete own contas_pagar [DELETE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - contas_pagar.Users can insert own contas_pagar [INSERT] USING: <NULL> | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - contas_pagar.Users can update own contas_pagar [UPDATE] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: (( SELECT auth.uid() AS uid) = user_id)
+  - contas_pagar.Users can view own contas_pagar [SELECT] USING: (( SELECT auth.uid() AS uid) = user_id) | WITH CHECK: <NULL>
+  - notas_fiscais_ocr.notas_fiscais_ocr_all_admin [ALL] USING: (EXISTS ( SELECT 1
+   FROM profiles
+  WHERE ((profiles.id = ( SELECT auth.uid() AS uid)) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))) | WITH CHECK: (EXISTS ( SELECT 1
+   FROM profiles
+  WHERE ((profiles.id = ( SELECT auth.uid() AS uid)) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))
+  - gate_probe.gate_probe_v1_true [SELECT] USING: true | WITH CHECK: <NULL>
+  - gate_probe.gate_probe_v2_tautologia [SELECT] USING: (empresa_id IN ( SELECT empresas.id
+   FROM empresas)) | WITH CHECK: <NULL>
+  - gate_probe.gate_probe_v3_uid_not_null [SELECT] USING: (auth.uid() IS NOT NULL) | WITH CHECK: <NULL>
+  - bitrix_sync_logs.Authenticated users can view sync logs [SELECT] USING: (( SELECT auth.uid() AS uid) IS NOT NULL) | WITH CHECK: <NULL>
+  - per_dcomp.per_dcomp_admin_all [ALL] USING: (EXISTS ( SELECT 1
+   FROM profiles p
+  WHERE ((p.id = ( SELECT auth.uid() AS uid)) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))) | WITH CHECK: <NULL>
+  - saved_filters.saved_filters_admin_all [ALL] USING: (EXISTS ( SELECT 1
+   FROM profiles p
+  WHERE ((p.id = ( SELECT auth.uid() AS uid)) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))) | WITH CHECK: <NULL>
+  - saved_filters.saved_filters_delete [DELETE] USING: (( SELECT auth.uid() AS uid) = COALESCE(created_by, user_id)) | WITH CHECK: <NULL>
+  - saved_filters.saved_filters_owner_all [ALL] USING: (user_id = ( SELECT auth.uid() AS uid)) | WITH CHECK: (user_id = ( SELECT auth.uid() AS uid))
+  - saved_filters.saved_filters_owner_write [ALL] USING: (user_id = ( SELECT auth.uid() AS uid)) | WITH CHECK: (user_id = ( SELECT auth.uid() AS uid))
+  - saved_filters.saved_filters_update [UPDATE] USING: (( SELECT auth.uid() AS uid) = COALESCE(created_by, user_id)) | WITH CHECK: (( SELECT auth.uid() AS uid) = COALESCE(created_by, user_id))
+CONTEXT:  PL/pgSQL function inline_code_block line 53 at RAISE

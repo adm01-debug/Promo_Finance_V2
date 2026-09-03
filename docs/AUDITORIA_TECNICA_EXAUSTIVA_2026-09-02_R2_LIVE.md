@@ -292,3 +292,32 @@ Extras de drift/documentação: a coluna `login_attempts.email` **não é criada
 ### A1 — Replay das 571 migrations
 
 Em execução (Postgres local + gate RLS + teste negativo); resultado será anexado ao PR quando concluir.
+
+---
+
+## Apêndice R2.3 — Replay local das 571 migrations (veredito final da validação)
+
+Replay completo do zero em PostgreSQL local (ambiente Supabase emulado: roles, auth, extensions, baseline de default privileges), migration a migration, com evidência integral em `docs/evidencias/replay-2026-09-03/`.
+
+### O repo de migrations NÃO é autocontido (prova em escala do drift)
+
+571/571 aplicadas, mas **91 arquivos (16%) exigiram 173 intervenções** para o replay convergir. **13+ tabelas e dezenas de colunas que o schema final exige nunca são criadas por migration nenhuma** (`auth_logs`, `webhook_events`, `cron_job_logs`, `bitrix24_tokens`, `password_reset_tokens`, o domínio logístico inteiro…); `has_role` referencia `profiles.role` e `user_roles.is_active/expires_at` que não nascem em lugar algum; o reconciliador `20260825100000` **não aplica limpo em banco nenhum** (FK criada antes da tabela referenciada, sintaxe `MAINTAIN` de PG17); os `DROP POLICY` do reconciliador v3 usam nome concatenado errado e **nunca dropam**. Consequência direta: **confirmada a causa do check "Supabase Preview" quebrado** — o replay do zero passa limpo pela `001` (a coluna `categoria` existe), logo o erro do Preview só é possível partindo de um schema pré-existente divergente. É o mesmo drift, visto de dois ângulos.
+
+### O gate RLS REPROVA o schema final — aplicar o PR #54 é necessário, mas NÃO fecha o leak
+
+`rls_multi_empresa.sql` contra o schema pós-replay: **FALHA com ~120 policies sem escopo de empresa** (lista integral em `docs/evidencias/replay-2026-09-03/gate_real_schema.out`). Auditoria direta: **111 policies em 45 tabelas** (96 seguramente reais do repo, em 42 tabelas; 15 possivelmente ruído de stub) — padrões `has_role`-only, owner-only e `USING(true)` em tabelas multi-empresa (`fornecedores` 8, `clientes` 7, `contas_pagar`/`contas_receber` 4 cada, `asaas_*`, `integration_secrets`, `scim_tokens`…). Causa: os reconciliadores de 25/08 **reintroduziram policies do dump de origem por baixo dos fixes** do PR #54. **Nova onda de correção de policies é necessária** — e quando `DATABASE_URL` for configurado, o gate vai (corretamente) reprovar até essa onda ser feita.
+
+Caso escancarado corrigido **neste PR** (migration `20260903000100`): `user_filter_presets.users_own_presets` com `USING ((user_id = auth.uid()) OR true)` — tautologia introduzida pela otimização initplan (`20260825230000:800`) que abria os presets de todos os usuários a qualquer authenticated.
+
+### O que o replay CONFIRMOU de bom (contraprova positiva)
+
+- **0** tabelas com `empresa_id` sem RLS · **0** funções SECURITY DEFINER sem `search_path` · **0** grants de anon em tabelas multi-empresa (o hardening `20260825090000` funcionou — verificado com o baseline de grants do Supabase emulado).
+- ACL do lockout: `{postgres, service_role}` apenas, sem PUBLIC — **confirma o cenário "inoperante silencioso" do apêndice R2.2** (as chamadas do front como anon falham com 42501 engolido).
+- 5 views sem `security_invoker` (4 legadas já mitigadas por REVOKE + `mcp_probe`).
+- **O gate do PR #55 detecta o que promete**: teste negativo com 3 policies vulneráveis plantadas → acusou exatamente as 3 (`gate_negative.out`).
+- PR #54: 8 das 9 migrations do intervalo aplicam 100% limpas do zero; `20260902210000` depende de `notas_fiscais_ocr.criado_por` (coluna prod-era — deve existir em produção).
+- Totais do schema final: 298 tabelas, 832 policies, 242 funções, 298 triggers, 29 views.
+
+### Consequência para o roadmap
+
+A condição de recuperação da dimensão Autorização muda: **rotacionar token + aplicar as 11 migrations + configurar `DATABASE_URL` destrava a validação, mas o gate vai reprovar** — a onda seguinte é corrigir as ~96 policies reais listadas na evidência (com a mesma disciplina de verificação individual do PR #54). Só então o gate verde passa a significar "leak fechado".
