@@ -63,6 +63,12 @@ test.describe('Login/Logout › fluxo real com admin (isolado)', () => {
     await expect(page).toHaveURL(/\/admin\/system-health/);
     await expect(page.getByText(/Acesso restrito/i)).toHaveCount(0);
 
+    // AdminSystemHealth renderiza fora do MainLayout (src/pages/AdminSystemHealth.tsx),
+    // então essa rota não monta <Header> nem [data-testid="user-menu"]. O menu do
+    // usuário só existe em rotas com layout — volta ao dashboard antes do logout.
+    await page.goto('/dashboard');
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
+
     await logout(page);
     await expect(page).toHaveURL(/\/auth/, { timeout: 10_000 });
 
