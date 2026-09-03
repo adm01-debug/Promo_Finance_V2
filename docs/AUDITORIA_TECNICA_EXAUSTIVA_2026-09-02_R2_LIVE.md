@@ -261,3 +261,34 @@ A R1 fez um trabalho real e valioso (o diagnóstico do vazamento cross-tenant e 
 ### Impacto nas notas (parcial, honesto)
 
 CI/CD 4.0 → **4.5** (branch protection ativa; sobe mais quando main ficar verde) · Manutenibilidade 5.5 → **6.0** (lockfile único) · Documentação 6.5 → **7.0** (CLAUDE.md/CHANGELOG corretos) · Testes: fix do gate destructive pushado (aguardando CI) · Performance/Data Integrity: achado #3 (KPIs truncados) pesa contra — mantidas até correção. **Nota ponderada ~5.8 → ~5.9.** O salto real (→ ~7) continua atrás do token: aplicar as 11 migrations, `DATABASE_URL`, linter verde executando.
+
+---
+
+## Apêndice R2.2 — Matriz de auth das edge functions + veredito do lockout + fixes aplicados
+
+### A2 — Matriz de autenticação (102 functions lidas, evidência arquivo:linha no transcript do PR)
+
+46 com `verify_jwt=false` / 56 com `true`. **33 das 46 têm guard efetivo e completo.** Lista crítica: **11 funções distintas**:
+
+- 🔴 **`sso-callback` — PKCE era efetivamente opcional**: `if (attempt.code_verifier_hash && verifier)` — omitir o `verifier` (controlado pelo cliente) pulava a checagem inteira e o fluxo seguia para a troca do code com service_role. **CORRIGIDO neste PR** (verifier obrigatório quando o initiate registrou PKCE).
+- 🔴 `validate-ip-geo`: NENHUM guard + service_role + INSERT em `auth_logs` com `email` controlado pelo chamador anônimo (forja de trilha de auditoria + oráculo de política IP/país, sem rate-limit). Pendente (fluxo pré-login — precisa rate-limit, não guard de usuário).
+- 🔴 `sso-initiate`: pré-auth por design, mas `select *` de `sso_providers` carrega `client_secret` na memória e INSERT anônimo ilimitado em `sso_login_attempts`. Pendente (rate-limit + colunas explícitas).
+- 🟠 Guard fraco (`getClaims` sem exigir `sub` — **a anon key pública passava**): `gerar-pdf-tributario`, `enviar-bitrix24-tributario`, `cnpja-lookup` — **CORRIGIDOS neste PR** (`?.sub` obrigatório); `sso-logout` pendente (logout precisa tolerância a token expirado — tratar junto do redesenho do lockout).
+- 🟠 **IDOR cross-tenant ativo**: `gerar-dre-tributaria` e `gerar-heatmap-tributario` — qualquer usuário logado lia `faturamento_mensal`/regime de **qualquer** empresa via service_role; `gerar-pdf-tributario` idem + gravava PDF no Storage da empresa alheia. **CORRIGIDOS neste PR** (vínculo `has_role`/`user_empresas`, padrão de `comparar-benchmark-setorial`).
+- 🟡 Sem RBAC/escopo: `bling-proxy` (qualquer logado opera a API Bling, incl. `revogar_token`), `external-data` (devolve todas as `companies` do projeto externo a qualquer logado), `copilot-global` (tools do LLM leem `acoes_recomendadas`/`health_scores_operacionais` sem filtro de tenant). Pendentes documentados.
+- ⚪ Sem impacto: `gerar-alertas-dispatcher` (proxy sem service_role), `get-vapid-key` (chave pública). `health` (verify_jwt=true) expõe status de infra a qualquer JWT válido — recomendado `exigirPapel(['admin'])`.
+
+Isto **fecha a lacuna da R1** ("16 edge functions não auditadas individualmente"): as 102 agora têm classificação com evidência.
+
+### A3 — Timeline ACL do lockout (veredito final)
+
+Reconstrução completa das migrations que tocam `increment_failed_attempts`/`reset_failed_attempts`/`get_lockout_details`/`login_attempts`. **O lockout não funciona em NENHUM dos dois cenários de ACL possíveis**:
+
+- **Cenário migrations-aplicadas** (`20260711182305` revogou EXECUTE de PUBLIC/anon/authenticated e concedeu só a service_role; nenhum DROP posterior — ACL preservada, com postflight de `20260831153000` provando): as 3 chamadas do front (`Auth.hooks.ts:164/218/229`) falham com `42501` **silencioso** (o `error` é descartado nas 3) → contador nunca sobe, gate nunca bloqueia.
+- **Cenário banco-real-divergente** (os lints `0028/0029` citados em `AUDITORIA_BACKEND_SENIOR.md` só disparam quando anon/authenticated executam): o lockout "funciona", mas vira **arma** — `increment_failed_attempts(email)` com a anon key trava a conta de terceiros (DoS), `get_lockout_details` permite **enumeração de usuários**, e `reset_failed_attempts` deixa o atacante **zerar o próprio contador** (brute-force ilimitado). Agravante: até `20260831` o corpo usava `ON CONFLICT (email)` sem índice único → `42P10`.
+
+Extras de drift/documentação: a coluna `login_attempts.email` **não é criada por nenhuma migration do repo** (1ª referência em `20260518175808`), e `docs/SECURITY_DEFINER_ATTESTATION.md` afirma uma validação `has_role('admin')` em `get_lockout_details` que **não existe no corpo**. Patch definitivo (Sprint 1): Auth Hook `password_verification_attempt` server-side + migration idempotente re-afirmando a ACL + `has_role` real no `get_lockout_details` + checar `error` nas chamadas.
+
+### A1 — Replay das 571 migrations
+
+Em execução (Postgres local + gate RLS + teste negativo); resultado será anexado ao PR quando concluir.
