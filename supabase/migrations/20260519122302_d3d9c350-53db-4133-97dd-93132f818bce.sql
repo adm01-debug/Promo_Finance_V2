@@ -31,10 +31,17 @@ ALTER TABLE public.boletos ALTER COLUMN rastreio_status TYPE JSONB USING (CASE W
 ALTER TABLE public.boletos ALTER COLUMN rastreio_status SET DEFAULT '[]'::JSONB;
 
 -- 3. Categorias: add plano_conta_id
-DO $$ 
+-- Coluna e FK guardadas separadamente: 20260317000749 (replay do zero)
+-- já cria a coluna sem FK (plano_contas ainda não existia lá) — se a FK
+-- ficasse condicionada à ausência da coluna, nunca seria adicionada nesse
+-- caminho. Checa cada uma pelo seu próprio critério de existência.
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'categorias' AND column_name = 'plano_conta_id') THEN
-        ALTER TABLE public.categorias ADD COLUMN plano_conta_id UUID REFERENCES public.plano_contas(id);
+        ALTER TABLE public.categorias ADD COLUMN plano_conta_id UUID;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'categorias_plano_conta_id_fkey' AND connamespace = 'public'::regnamespace) THEN
+        ALTER TABLE public.categorias ADD CONSTRAINT categorias_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id);
     END IF;
 END $$;
 

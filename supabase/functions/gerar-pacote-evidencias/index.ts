@@ -1,49 +1,55 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import JSZip from "https://esm.sh/jszip@3.10.1";
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import JSZip from 'https://esm.sh/jszip@3.10.1';
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const _EvidBodySchema = z.object({
   periodo_inicio: z.string().min(1),
   periodo_fim: z.string().min(1),
-  escopos: z.array(z.enum(["financeiro","tributario","sistema","conformidade"])).min(1),
+  escopos: z.array(z.enum(['financeiro', 'tributario', 'sistema', 'conformidade'])).min(1),
+  // Obrigatório quando o pacote inclui algum escopo com dado por empresa
+  // (financeiro/tributario/conformidade). "sistema" (audit_logs) não tem
+  // empresa_id — é trilha de plataforma, não de tenant.
+  empresa_id: z.string().uuid().optional(),
 });
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-type Escopo = "financeiro" | "tributario" | "sistema" | "conformidade";
+type Escopo = 'financeiro' | 'tributario' | 'sistema' | 'conformidade';
 
 interface Body {
   periodo_inicio: string;
   periodo_fim: string;
   escopos: Escopo[];
+  empresa_id?: string;
 }
 
+// "sistema" (audit_logs) é trilha de plataforma, sem empresa_id — os
+// outros 3 escopos têm dado por empresa e vazam cross-tenant sem filtro.
+const ESCOPOS_POR_EMPRESA: Escopo[] = ['financeiro', 'tributario', 'conformidade'];
+
 function toCSV(rows: Record<string, unknown>[]): string {
-  if (rows.length === 0) return "";
+  if (rows.length === 0) return '';
   const headers = Object.keys(rows[0]);
   const escape = (v: unknown) => {
-    if (v === null || v === undefined) return "";
-    const s = typeof v === "object" ? JSON.stringify(v) : String(v);
+    if (v === null || v === undefined) return '';
+    const s = typeof v === 'object' ? JSON.stringify(v) : String(v);
     return `"${s.replace(/"/g, '""')}"`;
   };
-  const lines = [
-    headers.join(","),
-    ...rows.map((r) => headers.map((h) => escape(r[h])).join(",")),
-  ];
-  return "\uFEFF" + lines.join("\n");
+  const lines = [headers.join(','), ...rows.map((r) => headers.map((h) => escape(r[h])).join(','))];
+  return '\uFEFF' + lines.join('\n');
 }
 
 async function sha256(text: string): Promise<string> {
   const buf = new TextEncoder().encode(text);
-  const hash = await crypto.subtle.digest("SHA-256", buf);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
   return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 interface ProgressEvent {
@@ -57,18 +63,41 @@ interface ProgressEvent {
 
 type Emit = (ev: ProgressEvent | { done: true; payload: unknown } | { error: string }) => void;
 
-const ESCOPO_CONFIG: Record<Escopo, { table: string; dateCol: string; filename: string; label: string }> = {
-  financeiro: { table: "auditoria_financeira", dateCol: "created_at", filename: "trilha-financeira.csv", label: "trilha financeira" },
-  tributario: { table: "auditoria_tributaria", dateCol: "criado_em", filename: "trilha-tributaria.csv", label: "trilha tributária" },
-  sistema: { table: "audit_logs", dateCol: "created_at", filename: "trilha-sistema.csv", label: "trilha de sistema" },
-  conformidade: { table: "verificacoes_conformidade", dateCol: "created_at", filename: "conformidade-fiscal.csv", label: "conformidade fiscal" },
+const ESCOPO_CONFIG: Record<
+  Escopo,
+  { table: string; dateCol: string; filename: string; label: string }
+> = {
+  financeiro: {
+    table: 'auditoria_financeira',
+    dateCol: 'created_at',
+    filename: 'trilha-financeira.csv',
+    label: 'trilha financeira',
+  },
+  tributario: {
+    table: 'auditoria_tributaria',
+    dateCol: 'criado_em',
+    filename: 'trilha-tributaria.csv',
+    label: 'trilha tributária',
+  },
+  sistema: {
+    table: 'audit_logs',
+    dateCol: 'created_at',
+    filename: 'trilha-sistema.csv',
+    label: 'trilha de sistema',
+  },
+  conformidade: {
+    table: 'verificacoes_conformidade',
+    dateCol: 'created_at',
+    filename: 'conformidade-fiscal.csv',
+    label: 'conformidade fiscal',
+  },
 };
 
 async function processarPacote(
   body: Body,
   user: { id: string; email: string | null | undefined },
   admin: ReturnType<typeof createClient>,
-  emit: Emit,
+  emit: Emit
 ) {
   const inicioISO = `${body.periodo_inicio}T00:00:00.000Z`;
   const fimISO = `${body.periodo_fim}T23:59:59.999Z`;
@@ -112,22 +141,28 @@ async function processarPacote(
 
   for (const escopo of escopos) {
     const cfg = ESCOPO_CONFIG[escopo];
-    const { data } = await admin
+    let query = admin
       .from(cfg.table)
-      .select("*")
+      .select('*')
       .gte(cfg.dateCol, inicioISO)
-      .lte(cfg.dateCol, fimISO)
-      .order(cfg.dateCol, { ascending: false })
-      .limit(50000);
+      .lte(cfg.dateCol, fimISO);
+    if (ESCOPOS_POR_EMPRESA.includes(escopo)) {
+      query = query.eq('empresa_id', body.empresa_id as string);
+    }
+    const { data } = await query.order(cfg.dateCol, { ascending: false }).limit(50000);
     const rows = (data ?? []) as Record<string, unknown>[];
     await adicionarArquivo(cfg.filename, rows);
-    send(`coleta_${escopo}`, `Coletando ${cfg.label}`, `${rows.length.toLocaleString("pt-BR")} registros`);
+    send(
+      `coleta_${escopo}`,
+      `Coletando ${cfg.label}`,
+      `${rows.length.toLocaleString('pt-BR')} registros`
+    );
   }
 
   const manifestJson = JSON.stringify(manifest, null, 2);
-  zip.file("manifest.json", manifestJson);
+  zip.file('manifest.json', manifestJson);
   zip.file(
-    "README.txt",
+    'README.txt',
     `Pacote de Evidências de Auditoria
 Gerado em: ${manifest.gerado_em}
 Gerado por: ${manifest.gerado_por}
@@ -138,27 +173,33 @@ com os hashes em manifest.json.
 
 Unix:    shasum -a 256 trilha-financeira.csv
 Windows: Get-FileHash trilha-financeira.csv -Algorithm SHA256
-`,
+`
   );
 
-  const zipBytes = await zip.generateAsync({ type: "uint8array" });
-  send("compactar", "Compactando ZIP", `${(zipBytes.byteLength / 1024 / 1024).toFixed(2)} MB`);
+  const zipBytes = await zip.generateAsync({ type: 'uint8array' });
+  send('compactar', 'Compactando ZIP', `${(zipBytes.byteLength / 1024 / 1024).toFixed(2)} MB`);
 
   const filename = `evidencias_${body.periodo_inicio}_${body.periodo_fim}_${Date.now()}.zip`;
-  const storagePath = `evidencias/${filename}`;
+  // Prefixo precisa começar com empresa_id — é o que a policy de SELECT/DELETE
+  // do bucket relatorios-tributarios checa via split_part(name,'/',1) contra
+  // user_empresas (mesmo padrão já corrigido em nfe-xml e nos relatórios
+  // agendados). Pacote sem escopo por empresa (só "sistema") vai em "global/".
+  const storagePath = body.empresa_id
+    ? `${body.empresa_id}/evidencias/${filename}`
+    : `global/evidencias/${filename}`;
   const { error: uploadErr } = await admin.storage
-    .from("relatorios-tributarios")
-    .upload(storagePath, zipBytes, { contentType: "application/zip", upsert: false });
+    .from('relatorios-tributarios')
+    .upload(storagePath, zipBytes, { contentType: 'application/zip', upsert: false });
   if (uploadErr) throw uploadErr;
-  send("upload", "Enviando ao storage seguro");
+  send('upload', 'Enviando ao storage seguro');
 
   const { data: signed, error: signErr } = await admin.storage
-    .from("relatorios-tributarios")
+    .from('relatorios-tributarios')
     .createSignedUrl(storagePath, 60 * 60 * 24 * 7);
   if (signErr) throw signErr;
 
   const { data: pacote, error: insErr } = await admin
-    .from("evidencias_pacotes")
+    .from('evidencias_pacotes')
     .insert({
       gerado_por: user.id,
       gerado_por_email: user.email,
@@ -180,13 +221,13 @@ Windows: Get-FileHash trilha-financeira.csv -Algorithm SHA256
   const totalLinhas = Object.values(arquivos).reduce((s, a) => s + a.linhas, 0);
   const detalhes =
     `Pacote de evidências gerado | período=${body.periodo_inicio}→${body.periodo_fim} | ` +
-    `escopos=${escopos.join(",")} | arquivos=${Object.keys(arquivos).length} | ` +
+    `escopos=${escopos.join(',')} | arquivos=${Object.keys(arquivos).length} | ` +
     `linhas_total=${totalLinhas} | tamanho=${(zipBytes.byteLength / 1024 / 1024).toFixed(2)}MB | ` +
     `storage=${storagePath}`;
 
-  const { error: auditErr } = await admin.rpc("log_audit", {
-    _action: "EXPORT",
-    _table_name: "evidencias_pacotes",
+  const { error: auditErr } = await admin.rpc('log_audit', {
+    _action: 'EXPORT',
+    _table_name: 'evidencias_pacotes',
     _record_id: (pacote as { id: string }).id,
     _old_data: null,
     _new_data: {
@@ -203,47 +244,47 @@ Windows: Get-FileHash trilha-financeira.csv -Algorithm SHA256
   let audit_warning: string | null = null;
   if (auditErr) {
     // Não bloqueia a geração — apenas loga, sinaliza ao cliente e segue
-    console.error("audit_logs insert falhou:", auditErr.message);
+    console.error('audit_logs insert falhou:', auditErr.message);
     audit_warning = `Pacote gerado, mas a trilha de auditoria não foi registrada: ${auditErr.message}`;
-    send("registrar", "Registrando pacote", "concluído (sem audit log)");
+    send('registrar', 'Registrando pacote', 'concluído (sem audit log)');
   } else {
-    send("registrar", "Registrando pacote", "concluído");
+    send('registrar', 'Registrando pacote', 'concluído');
   }
 
   return { ok: true, pacote, signed_url: signed.signedUrl, manifest, audit_warning };
 }
 
 async function autenticar(req: Request) {
-  const url = Deno.env.get("SUPABASE_URL")!;
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const authHeader = req.headers.get("Authorization") ?? "";
+  const url = Deno.env.get('SUPABASE_URL')!;
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const authHeader = req.headers.get('Authorization') ?? '';
 
-  const userClient = createClient(url, Deno.env.get("SUPABASE_ANON_KEY")!, {
+  const userClient = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, {
     global: { headers: { Authorization: authHeader } },
   });
   const { data: userData, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !userData.user) return { error: "unauthorized" as const, status: 401 };
+  if (userErr || !userData.user) return { error: 'unauthorized' as const, status: 401 };
 
   const admin = createClient(url, serviceKey);
   const { data: roleCheck } = await admin
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userData.user.id)
-    .eq("role", "admin")
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userData.user.id)
+    .eq('role', 'admin')
     .maybeSingle();
-  if (!roleCheck) return { error: "forbidden: admin only" as const, status: 403 };
+  if (!roleCheck) return { error: 'forbidden: admin only' as const, status: 403 };
 
   return { admin, user: userData.user };
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   const auth = await autenticar(req);
-  if ("error" in auth) {
+  if ('error' in auth) {
     return new Response(JSON.stringify({ error: auth.error }), {
       status: auth.status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
@@ -254,20 +295,59 @@ serve(async (req) => {
     if (!_v.success) return _v.response;
     body = _v.data as unknown as Body;
   } catch {
-    return new Response(JSON.stringify({ error: "invalid json" }), {
+    return new Response(JSON.stringify({ error: 'invalid json' }), {
       status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
-  if (!body.periodo_inicio || !body.periodo_fim || !Array.isArray(body.escopos) || body.escopos.length === 0) {
-    return new Response(JSON.stringify({ error: "invalid payload" }), {
+  if (
+    !body.periodo_inicio ||
+    !body.periodo_fim ||
+    !Array.isArray(body.escopos) ||
+    body.escopos.length === 0
+  ) {
+    return new Response(JSON.stringify({ error: 'invalid payload' }), {
       status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
-  const wantStream = new URL(req.url).searchParams.get("stream") === "1";
+  const exigeEmpresa = body.escopos.some((e) => ESCOPOS_POR_EMPRESA.includes(e));
+  if (exigeEmpresa) {
+    if (!body.empresa_id) {
+      return new Response(
+        JSON.stringify({
+          error: 'empresa_id é obrigatório para os escopos financeiro/tributario/conformidade',
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+    // "admin" em user_roles é papel global (RBAC), não vínculo com empresa —
+    // sem esta checagem, qualquer global-admin exportaria a trilha de
+    // QUALQUER empresa, mesmo sem vínculo com ela em user_empresas.
+    const { data: vinculo } = await auth.admin
+      .from('user_empresas')
+      .select('empresa_id')
+      .eq('user_id', auth.user.id)
+      .eq('empresa_id', body.empresa_id)
+      .eq('ativo', true)
+      .maybeSingle();
+    if (!vinculo) {
+      return new Response(
+        JSON.stringify({ error: 'forbidden: sem vínculo com a empresa informada' }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+  }
+
+  const wantStream = new URL(req.url).searchParams.get('stream') === '1';
 
   if (wantStream) {
     const stream = new ReadableStream({
@@ -280,7 +360,7 @@ serve(async (req) => {
           const result = await processarPacote(body, auth.user, auth.admin, send as Emit);
           send({ done: true, payload: result });
         } catch (e) {
-          send({ error: e instanceof Error ? e.message : "unknown" });
+          send({ error: e instanceof Error ? e.message : 'unknown' });
         } finally {
           controller.close();
         }
@@ -290,9 +370,9 @@ serve(async (req) => {
     return new Response(stream, {
       headers: {
         ...corsHeaders,
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "X-Accel-Buffering": "no",
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'X-Accel-Buffering': 'no',
       },
     });
   }
@@ -301,13 +381,13 @@ serve(async (req) => {
   try {
     const result = await processarPacote(body, auth.user, auth.admin, () => {});
     return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error("gerar-pacote-evidencias error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "unknown" }), {
+    console.error('gerar-pacote-evidencias error:', e);
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });

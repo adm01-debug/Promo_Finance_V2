@@ -90,7 +90,13 @@ DO $$
 DECLARE
   suspect record;
   offenders text := '';
-  tautologia text := '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)';
+  -- Além do "empresa_id IN (SELECT id FROM empresas)", cobre dois outros
+  -- padrões tautológicos reais encontrados em auditoria: um NOT NULL
+  -- sozinho (não restringe A empresa, só exige que a coluna esteja
+  -- preenchida) e a comparação trivial empresa_id = empresa_id.
+  tautologia text := '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)'
+    || '|(\w+\.)?empresa_id\s+is\s+not\s+null'
+    || '|(\w+\.)?empresa_id\s*=\s*(\w+\.)?empresa_id\b';
 BEGIN
   FOR suspect IN
     SELECT p.tablename, p.policyname, p.cmd,
@@ -188,6 +194,47 @@ BEGIN
       RAISE EXCEPTION '% ausente OU sem SECURITY DEFINER + search_path fixo', fn;
     END IF;
   END LOOP;
+END $$;
+
+-- 6) Tabelas multi-empresa SEM empresa_id direto (escopo por FK indireta,
+--    ex.: historico_conciliacao_ia via conta_pagar_id/conta_receber_id) são
+--    invisíveis às checagens 1-5 acima, que filtram por
+--    information_schema.columns.column_name = 'empresa_id'. É exatamente
+--    a classe de blind spot que deixou historico_conciliacao_ia_role_select
+--    (has_role(admin) OR has_role(financeiro), zero referência a empresa)
+--    sobreviver a três rodadas de fix consecutivas. Allowlist explícita —
+--    adicionar aqui qualquer nova tabela multi-tenant sem empresa_id direto.
+--    Critério: toda policy PERMISSIVE deve pelo menos MENCIONAR
+--    empresa_acessivel/empresa_membro_ativo/empresa_id em algum lugar do
+--    USING ou WITH CHECK — não valida a lógica da referência (mesma
+--    limitação textual documentada acima na checagem 3), só pega o caso
+--    "role sozinho, zero menção a empresa" que já vazou em produção.
+DO $$
+DECLARE
+  suspect record;
+  offenders text := '';
+  tabelas_fk_indireta text[] := ARRAY['historico_conciliacao_ia'];
+BEGIN
+  FOR suspect IN
+    SELECT p.tablename, p.policyname, p.cmd,
+           COALESCE(p.qual, '<NULL>') AS qual,
+           COALESCE(p.with_check, '<NULL>') AS with_check
+    FROM pg_policies p
+    WHERE p.schemaname = 'public'
+      AND p.permissive = 'PERMISSIVE'
+      AND p.tablename = ANY (tabelas_fk_indireta)
+      AND NOT (
+        COALESCE(p.qual, '') ~* 'empresa_acessivel|empresa_membro_ativo|empresa_id'
+        OR COALESCE(p.with_check, '') ~* 'empresa_acessivel|empresa_membro_ativo|empresa_id'
+      )
+  LOOP
+    offenders := offenders || format(E'\n  - %s.%s [%s] USING: %s | WITH CHECK: %s',
+      suspect.tablename, suspect.policyname, suspect.cmd, suspect.qual, suspect.with_check);
+  END LOOP;
+
+  IF offenders <> '' THEN
+    RAISE EXCEPTION 'Policies sem NENHUMA referência a empresa (FK indireta) em tabelas multi-empresa:%', offenders;
+  END IF;
 END $$;
 
 ROLLBACK;
