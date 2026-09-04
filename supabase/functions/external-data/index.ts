@@ -22,6 +22,7 @@ async function emitTelemetry(opts: {
   count_mode?: string;
   error_message?: string;
   user_id?: string;
+  empresa_id?: string;
 }) {
   let severity = 'normal';
   if (opts.error_message) {
@@ -83,6 +84,7 @@ async function emitTelemetry(opts: {
         severity,
         error_message: opts.error_message || null,
         user_id: opts.user_id || null,
+        empresa_id: opts.empresa_id || null,
       })
       .then(({ error: insertErr }) => {
         if (insertErr) console.warn('[telemetry-persist] Insert failed:', insertErr.message);
@@ -133,6 +135,10 @@ Deno.serve(async (req) => {
     // Compensating control: user must be an active member of at least one empresa.
     // Prevents deactivated users and service tokens with no empresa binding from
     // accessing the external CRM (which is queried with service_role, bypassing RLS).
+    // Scope note: the external CRM is a single shared Gestao de Clientes project
+    // (read-only). All empresas in Promo Finance share the same external client/supplier
+    // dataset. empresa_id is captured for audit trails and telemetry, not for row-level
+    // filtering in the external DB (which has no per-empresa partition).
     const { data: activeEmpresa } = await localSupabase
       .from('user_empresas')
       .select('empresa_id')
@@ -145,6 +151,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    const empresaId = activeEmpresa.empresa_id as string;
 
     // Parse request
     const url = new URL(req.url);
@@ -250,6 +257,7 @@ Deno.serve(async (req) => {
         count_mode: 'exact',
         error_message: error.message,
         user_id: userId,
+        empresa_id: empresaId,
       });
 
       return new Response(JSON.stringify({ error: error.message, details: error }), {
@@ -268,6 +276,7 @@ Deno.serve(async (req) => {
       query_offset: offset,
       count_mode: 'exact',
       user_id: userId,
+      empresa_id: empresaId,
     });
 
     // Map external "companies" format to the local format expected by the frontend
