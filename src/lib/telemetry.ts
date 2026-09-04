@@ -10,7 +10,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
-import { onCLS, onFID, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
+import { onCLS, onINP, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
 
 // Breadcrumbs para rastreamento de ações do usuário e chamadas Supabase
 // (Json para persistir em frontend_error_logs.metadata sem casts)
@@ -146,7 +146,7 @@ export function initTelemetry(): void {
   // Web Vitals
   try {
     onCLS(reportMetric);
-    onFID(reportMetric);
+    onINP(reportMetric);
     onLCP(reportMetric);
     onFCP(reportMetric);
     onTTFB(reportMetric);

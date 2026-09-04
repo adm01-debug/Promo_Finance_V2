@@ -18,7 +18,7 @@ export function AccountLockoutBanner({ locked, remainingMinutes = 0 }: AccountLo
   useEffect(() => {
     if (!locked || secondsLeft <= 0) return;
     const interval = setInterval(() => {
-      setSecondsLeft(prev => {
+      setSecondsLeft((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
           return 0;
@@ -41,9 +41,7 @@ export function AccountLockoutBanner({ locked, remainingMinutes = 0 }: AccountLo
       <ShieldAlert className="h-5 w-5" />
       <AlertTitle className="font-bold">Conta Temporariamente Bloqueada</AlertTitle>
       <AlertDescription className="space-y-3">
-        <p>
-          Sua conta foi bloqueada por excesso de tentativas de login incorretas.
-        </p>
+        <p>Sua conta foi bloqueada por excesso de tentativas de login incorretas.</p>
         {secondsLeft > 0 ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -55,11 +53,11 @@ export function AccountLockoutBanner({ locked, remainingMinutes = 0 }: AccountLo
             </div>
             <Progress value={progress} className="h-2" />
           </div>
-        ) : (
+        ) : remainingMinutes > 0 ? (
           <p className="text-sm font-medium">
             O bloqueio expirou. Tente novamente com suas credenciais corretas.
           </p>
-        )}
+        ) : null}
         <p className="text-xs text-muted-foreground">
           Se você não reconhece estas tentativas, entre em contato com o administrador.
         </p>

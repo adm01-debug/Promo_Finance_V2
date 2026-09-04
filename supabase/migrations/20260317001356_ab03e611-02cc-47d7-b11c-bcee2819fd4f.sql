@@ -6,9 +6,13 @@
 -- achado do CI (Supabase Preview, replay do zero) que motivou o guard em
 -- 20260317000844. Sem a tabela ainda, pula aqui; 20260518190420 recria as
 -- duas views (CREATE OR REPLACE, idempotente) já com o JOIN funcionando.
+-- Guard duplo: plano_contas E contas_pagar.conta_bancaria_id devem existir.
+-- conta_bancaria_id é adicionada a contas_pagar em migração posterior; no
+-- caminho incremental do Preview, plano_contas pode existir mas a coluna não.
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'conta_bancaria_id') THEN
     EXECUTE $view$
       CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
       SELECT cp.*, f.nome AS fornecedor_display, f.cnpj AS fornecedor_cnpj_display, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
@@ -22,7 +26,7 @@ BEGIN
       WHERE cr.status IN ('pendente','vencido','parcial','atrasado')
     $view$;
   ELSE
-    RAISE NOTICE '20260317001356: plano_contas ausente no schema atual; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
+    RAISE NOTICE '20260317001356: plano_contas ausente ou conta_bancaria_id ausente; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
   END IF;
 END
 $$;
@@ -31,19 +35,50 @@ CREATE OR REPLACE VIEW public.vw_dre_mensal AS
 SELECT date_trunc('month',m.data_movimentacao) AS mes, m.empresa_id, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE 0 END) AS receitas, SUM(CASE WHEN m.tipo='saida' THEN m.valor ELSE 0 END) AS despesas, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE -m.valor END) AS resultado
 FROM movimentacoes m WHERE m.deleted_at IS NULL GROUP BY 1,2;
 
-CREATE OR REPLACE VIEW public.vw_fluxo_caixa AS
-SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia
-FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia)
-LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_recebido,0)) AS valor FROM contas_receber WHERE status IN ('pendente','parcial') GROUP BY 1) r ON r.dia=d.dia
-LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_pago,0)) AS valor FROM contas_pagar WHERE status IN ('pendente','parcial') GROUP BY 1) p ON p.dia=d.dia;
+-- vw_fluxo_caixa depende de contas_pagar.valor_pago adicionado em 20260317000928.
+-- No replay from-scratch 20260317000928 ja rodou; no Preview incremental a coluna pode
+-- nao existir ainda — nesse caso pula aqui e 20260904000600 recria apos adicionar a coluna.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'valor_pago'
+  ) THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_fluxo_caixa AS
+      SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia
+      FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia)
+      LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_recebido,0)) AS valor FROM contas_receber WHERE status IN ('pendente','parcial') GROUP BY 1) r ON r.dia=d.dia
+      LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_pago,0)) AS valor FROM contas_pagar WHERE status IN ('pendente','parcial') GROUP BY 1) p ON p.dia=d.dia
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: contas_pagar.valor_pago ausente; vw_fluxo_caixa sera recriada em 20260904000600.';
+  END IF;
+END
+$$;
 
 CREATE OR REPLACE VIEW public.vw_fluxo_caixa_diario AS
 SELECT m.data_movimentacao AS dia, m.empresa_id, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE 0 END) AS entradas, SUM(CASE WHEN m.tipo='saida' THEN m.valor ELSE 0 END) AS saidas, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE -m.valor END) AS saldo
 FROM movimentacoes m WHERE m.deleted_at IS NULL GROUP BY 1,2;
 
-CREATE OR REPLACE VIEW public.vw_gastos_centro_custo AS
-SELECT cc.id AS centro_custo_id, cc.nome, cc.codigo, cc.orcamento_previsto, COALESCE(SUM(cp.valor),0) AS total_gasto, CASE WHEN cc.orcamento_previsto>0 THEN ROUND((COALESCE(SUM(cp.valor),0)/cc.orcamento_previsto)*100,2) ELSE 0 END AS percentual_utilizado
-FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id=cc.id AND cp.status='pago' GROUP BY 1,2,3,4;
+-- vw_gastos_centro_custo depende de contas_pagar.centro_custo_id adicionada em 20260518164611.
+-- No Preview incremental essa coluna nao existe ainda; pula aqui e a view e recriada em 20260518190420.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'centro_custo_id'
+  ) THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_gastos_centro_custo AS
+      SELECT cc.id AS centro_custo_id, cc.nome, cc.codigo, cc.orcamento_previsto, COALESCE(SUM(cp.valor),0) AS total_gasto, CASE WHEN cc.orcamento_previsto>0 THEN ROUND((COALESCE(SUM(cp.valor),0)/cc.orcamento_previsto)*100,2) ELSE 0 END AS percentual_utilizado
+      FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id=cc.id AND cp.status='pago' GROUP BY 1,2,3,4
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: contas_pagar.centro_custo_id ausente; vw_gastos_centro_custo sera recriada em 20260518190420.';
+  END IF;
+END
+$$;
 
 CREATE OR REPLACE VIEW public.vw_saldos_contas AS
 SELECT cb.id,cb.banco,cb.agencia,cb.conta,cb.tipo_conta,cb.saldo_atual,cb.cor,cb.ativo,cb.empresa_id,e.razao_social AS empresa_nome FROM contas_bancarias cb LEFT JOIN empresas e ON e.id=cb.empresa_id WHERE cb.ativo=true;
@@ -53,21 +88,55 @@ SELECT t.*,co.banco AS banco_origem,co.conta AS conta_origem_numero,cd.banco AS 
 
 CREATE OR REPLACE VIEW public.vw_webhooks_recentes AS SELECT * FROM webhooks_log ORDER BY created_at DESC LIMIT 100;
 
-CREATE OR REPLACE VIEW public.vw_dso_aging AS
-SELECT cr.empresa_id, COUNT(*) AS total_titulos, SUM(cr.valor) AS valor_total, SUM(cr.valor-COALESCE(cr.valor_recebido,0)) AS saldo_aberto,
-SUM(CASE WHEN cr.data_vencimento>=CURRENT_DATE THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS a_vencer,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 0 AND 7 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_0_7,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 8 AND 15 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_8_15,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 16 AND 30 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_16_30,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 31 AND 60 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_31_60,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 61 AND 90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_61_90,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento>90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_90_mais
-FROM contas_receber cr WHERE cr.status IN ('pendente','vencido','parcial','atrasado') GROUP BY 1;
+-- vw_dso_aging depende de contas_receber.empresa_id e valor_recebido adicionadas em migracoes posteriores.
+-- No Preview incremental essas colunas podem nao existir ainda; pula aqui.
+-- Guard duplo: empresa_id (usada no SELECT/GROUP BY) E valor_recebido (usada nas somas).
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'empresa_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'valor_recebido'
+  ) THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_dso_aging AS
+      SELECT cr.empresa_id, COUNT(*) AS total_titulos, SUM(cr.valor) AS valor_total, SUM(cr.valor-COALESCE(cr.valor_recebido,0)) AS saldo_aberto,
+      SUM(CASE WHEN cr.data_vencimento>=CURRENT_DATE THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS a_vencer,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 0 AND 7 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_0_7,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 8 AND 15 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_8_15,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 16 AND 30 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_16_30,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 31 AND 60 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_31_60,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 61 AND 90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_61_90,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento>90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_90_mais
+      FROM contas_receber cr WHERE cr.status IN ('pendente','vencido','parcial','atrasado') GROUP BY 1
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: contas_receber.empresa_id ou valor_recebido ausente; vw_dso_aging sera recriada em migracao posterior.';
+  END IF;
+END
+$$;
 
-CREATE OR REPLACE VIEW public.vw_metricas_cobranca AS
-SELECT ec.etapa,ec.canal,ec.empresa_id, COUNT(*) AS total_enviados, SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END) AS total_entregues, SUM(CASE WHEN ec.lido THEN 1 ELSE 0 END) AS total_lidos,
-CASE WHEN COUNT(*)>0 THEN ROUND((SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END)::NUMERIC/COUNT(*))*100,2) ELSE 0 END AS taxa_entrega
-FROM execucoes_cobranca ec GROUP BY 1,2,3;
+-- vw_metricas_cobranca depende de execucoes_cobranca criada em 20260317124844 (posterior).
+-- No Preview incremental a tabela pode nao existir ainda; pula aqui.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'execucoes_cobranca'
+  ) THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_metricas_cobranca AS
+      SELECT ec.etapa,ec.canal,ec.empresa_id, COUNT(*) AS total_enviados, SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END) AS total_entregues, SUM(CASE WHEN ec.lido THEN 1 ELSE 0 END) AS total_lidos,
+      CASE WHEN COUNT(*)>0 THEN ROUND((SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END)::NUMERIC/COUNT(*))*100,2) ELSE 0 END AS taxa_entrega
+      FROM execucoes_cobranca ec GROUP BY 1,2,3
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: execucoes_cobranca ausente; vw_metricas_cobranca sera recriada em 20260317124844.';
+  END IF;
+END
+$$;
 
 -- RPCs de Cobrança
 CREATE OR REPLACE FUNCTION public.processar_regua_cobranca(p_empresa_id UUID DEFAULT NULL)
