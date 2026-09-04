@@ -2,7 +2,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 // ── Telemetry constants ─────────────────────────────────────────────────
@@ -32,12 +33,17 @@ async function emitTelemetry(opts: {
   }
 
   // Structured console logging
-  const icon = severity === 'very_slow' ? '🔴'
-    : severity === 'slow' ? '🟡'
-    : severity === 'error' ? '❌'
-    : '✅';
+  const icon =
+    severity === 'very_slow'
+      ? '🔴'
+      : severity === 'slow'
+        ? '🟡'
+        : severity === 'error'
+          ? '❌'
+          : '✅';
   const target = opts.rpc_name || opts.table_name || 'unknown';
-  const line = `${icon} [telemetry] ${opts.operation}:${target} ${opts.duration_ms}ms` +
+  const line =
+    `${icon} [telemetry] ${opts.operation}:${target} ${opts.duration_ms}ms` +
     ` | records=${opts.record_count ?? '-'}` +
     ` limit=${opts.query_limit ?? '-'}` +
     ` offset=${opts.query_offset ?? '-'}` +
@@ -63,21 +69,24 @@ async function emitTelemetry(opts: {
     );
 
     // Fire-and-forget: persist but don't block the response
-    serviceClient.from('query_telemetry').insert({
-      operation: opts.operation,
-      table_name: opts.table_name || null,
-      rpc_name: opts.rpc_name || null,
-      duration_ms: opts.duration_ms,
-      record_count: opts.record_count ?? null,
-      query_limit: opts.query_limit ?? null,
-      query_offset: opts.query_offset ?? null,
-      count_mode: opts.count_mode ?? null,
-      severity,
-      error_message: opts.error_message || null,
-      user_id: opts.user_id || null,
-    }).then(({ error: insertErr }) => {
-      if (insertErr) console.warn('[telemetry-persist] Insert failed:', insertErr.message);
-    });
+    serviceClient
+      .from('query_telemetry')
+      .insert({
+        operation: opts.operation,
+        table_name: opts.table_name || null,
+        rpc_name: opts.rpc_name || null,
+        duration_ms: opts.duration_ms,
+        record_count: opts.record_count ?? null,
+        query_limit: opts.query_limit ?? null,
+        query_offset: opts.query_offset ?? null,
+        count_mode: opts.count_mode ?? null,
+        severity,
+        error_message: opts.error_message || null,
+        user_id: opts.user_id || null,
+      })
+      .then(({ error: insertErr }) => {
+        if (insertErr) console.warn('[telemetry-persist] Insert failed:', insertErr.message);
+      });
   } catch (e) {
     // Fire-and-forget: NEVER block the main response
     console.error('[telemetry] Failed to persist telemetry:', e);
@@ -98,7 +107,8 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -108,13 +118,33 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: { user }, error: userError } = await localSupabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await localSupabase.auth.getUser();
     if (userError || !user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     userId = user.id;
+
+    // Compensating control: user must be an active member of at least one empresa.
+    // Prevents deactivated users and service tokens with no empresa binding from
+    // accessing the external CRM (which is queried with service_role, bypassing RLS).
+    const { data: activeEmpresa } = await localSupabase
+      .from('user_empresas')
+      .select('empresa_id')
+      .eq('ativo', true)
+      .limit(1)
+      .maybeSingle();
+    if (!activeEmpresa) {
+      return new Response(JSON.stringify({ error: 'Sem empresa ativa associada ao usuário.' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Parse request
     const url = new URL(req.url);
@@ -125,9 +155,13 @@ Deno.serve(async (req) => {
     const offset = (page - 1) * limit;
 
     if (!tabela || !['clientes', 'fornecedores'].includes(tabela)) {
-      return new Response(JSON.stringify({ error: 'Parâmetro "tabela" inválido. Use: clientes ou fornecedores' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'Parâmetro "tabela" inválido. Use: clientes ou fornecedores' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Connect to external DB
@@ -145,24 +179,28 @@ Deno.serve(async (req) => {
         `Enquanto isso, a listagem retorna vazia (fallback) sem interromper o app.`;
 
       console.warn(
-        `[external-data] EXTERNAL_DB_NOT_CONFIGURED — missing=[${missing.join(', ')}] tabela=${tabela}`,
+        `[external-data] EXTERNAL_DB_NOT_CONFIGURED — missing=[${missing.join(', ')}] tabela=${tabela}`
       );
 
-      return new Response(JSON.stringify({
-        data: [],
-        total: 0,
-        page: 1,
-        limit: 0,
-        total_pages: 0,
-        fallback: true,
-        error: 'EXTERNAL_DB_NOT_CONFIGURED',
-        message,
-        missing_secrets: missing,
-        hint: 'Adicione os secrets EXTERNAL_SUPABASE_URL e EXTERNAL_SUPABASE_SERVICE_KEY nas Edge Functions Secrets do projeto.',
-        docs_url: 'https://docs.lovable.dev/features/cloud#secrets',
-      }), {
-        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({
+          data: [],
+          total: 0,
+          page: 1,
+          limit: 0,
+          total_pages: 0,
+          fallback: true,
+          error: 'EXTERNAL_DB_NOT_CONFIGURED',
+          message,
+          missing_secrets: missing,
+          hint: 'Adicione os secrets EXTERNAL_SUPABASE_URL e EXTERNAL_SUPABASE_SERVICE_KEY nas Edge Functions Secrets do projeto.',
+          docs_url: 'https://docs.lovable.dev/features/cloud#secrets',
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     let extKey = extKeyRaw.replace(/[^\x20-\x7E]/g, '').trim();
@@ -189,7 +227,9 @@ Deno.serve(async (req) => {
       .is('deleted_at', null);
 
     if (search) {
-      query = query.or(`razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj.ilike.%${search}%,nome_crm.ilike.%${search}%`);
+      query = query.or(
+        `razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj.ilike.%${search}%,nome_crm.ilike.%${search}%`
+      );
     }
 
     query = query.order('razao_social', { ascending: true }).range(offset, offset + limit - 1);
@@ -213,7 +253,8 @@ Deno.serve(async (req) => {
       });
 
       return new Response(JSON.stringify({ error: error.message, details: error }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -256,35 +297,42 @@ Deno.serve(async (req) => {
         status_externo: company.status,
         is_customer: company.is_customer,
         is_supplier: company.is_supplier,
-        ...(isCliente && subData ? {
-          vendedor_nome: subData.vendedor_nome,
-          cliente_ativado: subData.cliente_ativado,
-          ja_comprou: subData.ja_comprou,
-          total_pedidos: subData.total_pedidos,
-          valor_total_compras: subData.valor_total_compras,
-          ticket_medio: subData.ticket_medio,
-          grupo_clientes: subData.grupo_clientes,
-        } : {}),
-        ...(!isCliente && subData ? {
-          categoria: subData.categoria,
-          tipo_fornecedor: subData.tipo_fornecedor,
-          prazo_entrega_medio: subData.prazo_entrega_medio,
-          pedido_minimo: subData.pedido_minimo,
-          forma_pagamento: subData.forma_pagamento,
-          prazo_pagamento: subData.prazo_pagamento,
-        } : {}),
+        ...(isCliente && subData
+          ? {
+              vendedor_nome: subData.vendedor_nome,
+              cliente_ativado: subData.cliente_ativado,
+              ja_comprou: subData.ja_comprou,
+              total_pedidos: subData.total_pedidos,
+              valor_total_compras: subData.valor_total_compras,
+              ticket_medio: subData.ticket_medio,
+              grupo_clientes: subData.grupo_clientes,
+            }
+          : {}),
+        ...(!isCliente && subData
+          ? {
+              categoria: subData.categoria,
+              tipo_fornecedor: subData.tipo_fornecedor,
+              prazo_entrega_medio: subData.prazo_entrega_medio,
+              pedido_minimo: subData.pedido_minimo,
+              forma_pagamento: subData.forma_pagamento,
+              prazo_pagamento: subData.prazo_pagamento,
+            }
+          : {}),
       };
     });
 
-    return new Response(JSON.stringify({
-      data: mappedData,
-      total: count,
-      page,
-      limit,
-      total_pages: Math.ceil((count || 0) / limit),
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({
+        data: mappedData,
+        total: count,
+        page,
+        limit,
+        total_pages: Math.ceil((count || 0) / limit),
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
     const durationMs = Math.round(performance.now() - startTime);
     console.error('[external-data] Unexpected error:', error);
@@ -299,7 +347,8 @@ Deno.serve(async (req) => {
     });
 
     return new Response(JSON.stringify({ error: (error as Error).message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
