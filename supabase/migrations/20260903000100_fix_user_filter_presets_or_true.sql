@@ -10,8 +10,6 @@
 -- evidência em docs/evidencias/replay-2026-09-03/). Restaura o escopo
 -- dono-somente, agora com WITH CHECK explícito.
 
-BEGIN;
-
 DROP POLICY IF EXISTS users_own_presets ON public.user_filter_presets;
 
 CREATE POLICY users_own_presets ON public.user_filter_presets
@@ -20,16 +18,3 @@ CREATE POLICY users_own_presets ON public.user_filter_presets
   TO authenticated
   USING (user_id = (SELECT auth.uid()))
   WITH CHECK (user_id = (SELECT auth.uid()));
-
-COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000100',
-  'fix_user_filter_presets_or_true',
-  ARRAY[
-    'DROP POLICY IF EXISTS users_own_presets ON public.user_filter_presets',
-    'CREATE POLICY users_own_presets ON public.user_filter_presets AS PERMISSIVE FOR ALL TO authenticated USING (user_id = (SELECT auth.uid())) WITH CHECK (user_id = (SELECT auth.uid()))'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

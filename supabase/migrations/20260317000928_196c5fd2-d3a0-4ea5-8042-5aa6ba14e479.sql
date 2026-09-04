@@ -20,11 +20,16 @@ ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS vencimento DATE GENER
 -- contas_receber: parcela_atual (alias)
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS parcela_atual INTEGER GENERATED ALWAYS AS (numero_parcela_atual) STORED;
 
--- contas_receber: valor_recebido (must exist before the GENERATED column below references it)
-ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_recebido NUMERIC DEFAULT 0;
+-- contas_receber.valor_recebido: existe no CREATE TABLE de 20251214170739,
+-- mas esse CREATE TABLE IF NOT EXISTS é no-op no replay do zero — quem
+-- cria contas_receber de verdade é 001_create_tables.sql (roda primeiro
+-- em ordem alfabética), cujo schema legado não tem essa coluna. Achado do
+-- CI (Supabase Preview): "column valor_recebido does not exist" na
+-- GENERATED abaixo, que depende dela.
+ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_recebido DECIMAL(15,2) DEFAULT 0;
 
--- contas_receber: valor_pago (plain numeric — Asaas escreve diretamente; não pode ser GENERATED)
-ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_pago NUMERIC;
+-- contas_receber: valor_pago (alias de valor_recebido)
+ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_pago NUMERIC GENERATED ALWAYS AS (COALESCE(valor_recebido, 0)) STORED;
 
 -- contas_receber: valor_final (calculado)
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_final NUMERIC GENERATED ALWAYS AS (COALESCE(valor_original, valor) - COALESCE(valor_desconto, 0) + COALESCE(valor_juros, 0) + COALESCE(valor_multa, 0)) STORED;

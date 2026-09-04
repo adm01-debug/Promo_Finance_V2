@@ -1,32 +1,31 @@
 
 -- Views corrigidas (clientes usa cnpj_cpf não cpf_cnpj)
 
--- Colunas adicionadas por migrações posteriores (20260518164611); necessárias aqui para fresh-apply.
-ALTER TABLE public.contas_pagar
-  ADD COLUMN IF NOT EXISTS conta_bancaria_id uuid,
-  ADD COLUMN IF NOT EXISTS centro_custo_id uuid,
-  ADD COLUMN IF NOT EXISTS valor_pago numeric;
-
-ALTER TABLE public.contas_receber
-  ADD COLUMN IF NOT EXISTS conta_bancaria_id uuid,
-  ADD COLUMN IF NOT EXISTS centro_custo_id uuid;
-
--- plano_contas criada em 20260518190420; stub mínimo para fresh-apply
-CREATE TABLE IF NOT EXISTS public.plano_contas (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  descricao text,
-  codigo text
-);
-
-CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
-SELECT cp.*, f.nome AS fornecedor_display, f.cnpj AS fornecedor_cnpj_display, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
-FROM contas_pagar cp LEFT JOIN fornecedores f ON f.id=cp.fornecedor_id LEFT JOIN contas_bancarias cb ON cb.id=cp.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cp.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cp.plano_conta_id
-WHERE cp.status IN ('pendente','vencido','parcial','atrasado');
-
-CREATE OR REPLACE VIEW public.vw_contas_receber_painel AS
-SELECT cr.*, c.razao_social AS cliente_display, c.cnpj_cpf AS cliente_cpf_cnpj_display, c.score AS cliente_score, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome
-FROM contas_receber cr LEFT JOIN clientes c ON c.id=cr.cliente_id LEFT JOIN contas_bancarias cb ON cb.id=cr.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cr.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cr.plano_conta_id
-WHERE cr.status IN ('pendente','vencido','parcial','atrasado');
+-- vw_contas_pagar_painel/vw_contas_receber_painel referenciam plano_contas,
+-- que só é criada em 20260518190420 (posterior a este arquivo) — mesmo
+-- achado do CI (Supabase Preview, replay do zero) que motivou o guard em
+-- 20260317000844. Sem a tabela ainda, pula aqui; 20260518190420 recria as
+-- duas views (CREATE OR REPLACE, idempotente) já com o JOIN funcionando.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
+      SELECT cp.*, f.nome AS fornecedor_display, f.cnpj AS fornecedor_cnpj_display, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
+      FROM contas_pagar cp LEFT JOIN fornecedores f ON f.id=cp.fornecedor_id LEFT JOIN contas_bancarias cb ON cb.id=cp.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cp.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cp.plano_conta_id
+      WHERE cp.status IN ('pendente','vencido','parcial','atrasado')
+    $view$;
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_contas_receber_painel AS
+      SELECT cr.*, c.razao_social AS cliente_display, c.cnpj_cpf AS cliente_cpf_cnpj_display, c.score AS cliente_score, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome
+      FROM contas_receber cr LEFT JOIN clientes c ON c.id=cr.cliente_id LEFT JOIN contas_bancarias cb ON cb.id=cr.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cr.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cr.plano_conta_id
+      WHERE cr.status IN ('pendente','vencido','parcial','atrasado')
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: plano_contas ausente no schema atual; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
+  END IF;
+END
+$$;
 
 CREATE OR REPLACE VIEW public.vw_dre_mensal AS
 SELECT date_trunc('month',m.data_movimentacao) AS mes, m.empresa_id, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE 0 END) AS receitas, SUM(CASE WHEN m.tipo='saida' THEN m.valor ELSE 0 END) AS despesas, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE -m.valor END) AS resultado
