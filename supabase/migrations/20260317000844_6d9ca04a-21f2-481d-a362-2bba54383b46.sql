@@ -18,7 +18,14 @@ ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS total_parcelas INTEGER 
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS categoria TEXT;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS forma_pagamento TEXT;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS forma_pagamento_id UUID REFERENCES public.formas_pagamento(id);
-ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'plano_conta_id') THEN
+      ALTER TABLE public.contas_pagar ADD COLUMN plano_conta_id UUID REFERENCES public.plano_contas(id);
+    END IF;
+  END IF;
+END $$;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS contato_id UUID REFERENCES public.contatos_financeiros(id);
 
 -- Colunas de recorrência e user
@@ -37,7 +44,14 @@ ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS total_parcelas INTEGE
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS categoria TEXT;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS forma_recebimento TEXT;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS forma_pagamento_id UUID REFERENCES public.formas_pagamento(id);
-ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'plano_conta_id') THEN
+      ALTER TABLE public.contas_receber ADD COLUMN plano_conta_id UUID REFERENCES public.plano_contas(id);
+    END IF;
+  END IF;
+END $$;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS contato_id UUID REFERENCES public.contatos_financeiros(id);
 
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS frequencia_recorrencia TEXT;
