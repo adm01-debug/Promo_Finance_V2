@@ -6,9 +6,13 @@
 -- achado do CI (Supabase Preview, replay do zero) que motivou o guard em
 -- 20260317000844. Sem a tabela ainda, pula aqui; 20260518190420 recria as
 -- duas views (CREATE OR REPLACE, idempotente) já com o JOIN funcionando.
+-- Guard duplo: plano_contas E contas_pagar.conta_bancaria_id devem existir.
+-- conta_bancaria_id é adicionada a contas_pagar em migração posterior; no
+-- caminho incremental do Preview, plano_contas pode existir mas a coluna não.
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'conta_bancaria_id') THEN
     EXECUTE $view$
       CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
       SELECT cp.*, f.nome AS fornecedor_display, f.cnpj AS fornecedor_cnpj_display, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
@@ -22,7 +26,7 @@ BEGIN
       WHERE cr.status IN ('pendente','vencido','parcial','atrasado')
     $view$;
   ELSE
-    RAISE NOTICE '20260317001356: plano_contas ausente no schema atual; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
+    RAISE NOTICE '20260317001356: plano_contas ausente ou conta_bancaria_id ausente; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
   END IF;
 END
 $$;
