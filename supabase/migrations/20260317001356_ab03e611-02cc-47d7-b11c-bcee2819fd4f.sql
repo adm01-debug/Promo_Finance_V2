@@ -1,6 +1,16 @@
 
 -- Views corrigidas (clientes usa cnpj_cpf não cpf_cnpj)
 
+-- Colunas adicionadas por migrações posteriores (20260518164611); necessárias aqui para fresh-apply.
+ALTER TABLE public.contas_pagar
+  ADD COLUMN IF NOT EXISTS conta_bancaria_id uuid,
+  ADD COLUMN IF NOT EXISTS centro_custo_id uuid,
+  ADD COLUMN IF NOT EXISTS valor_pago numeric;
+
+ALTER TABLE public.contas_receber
+  ADD COLUMN IF NOT EXISTS conta_bancaria_id uuid,
+  ADD COLUMN IF NOT EXISTS centro_custo_id uuid;
+
 CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
 SELECT cp.*, f.nome AS fornecedor_display, f.cnpj AS fornecedor_cnpj_display, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
 FROM contas_pagar cp LEFT JOIN fornecedores f ON f.id=cp.fornecedor_id LEFT JOIN contas_bancarias cb ON cb.id=cp.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cp.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cp.plano_conta_id
