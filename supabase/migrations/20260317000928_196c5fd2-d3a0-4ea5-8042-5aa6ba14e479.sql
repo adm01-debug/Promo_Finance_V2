@@ -23,8 +23,8 @@ ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS parcela_atual INTEGER
 -- contas_receber: valor_recebido (must exist before the GENERATED column below references it)
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_recebido NUMERIC DEFAULT 0;
 
--- contas_receber: valor_pago (alias de valor_recebido)
-ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_pago NUMERIC GENERATED ALWAYS AS (COALESCE(valor_recebido, 0)) STORED;
+-- contas_receber: valor_pago (plain numeric — Asaas escreve diretamente; não pode ser GENERATED)
+ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_pago NUMERIC;
 
 -- contas_receber: valor_final (calculado)
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_final NUMERIC GENERATED ALWAYS AS (COALESCE(valor_original, valor) - COALESCE(valor_desconto, 0) + COALESCE(valor_juros, 0) + COALESCE(valor_multa, 0)) STORED;
