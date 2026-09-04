@@ -88,11 +88,15 @@ SELECT t.*,co.banco AS banco_origem,co.conta AS conta_origem_numero,cd.banco AS 
 
 CREATE OR REPLACE VIEW public.vw_webhooks_recentes AS SELECT * FROM webhooks_log ORDER BY created_at DESC LIMIT 100;
 
--- vw_dso_aging depende de contas_receber.valor_recebido adicionada em migracao posterior.
--- No Preview incremental essa coluna pode nao existir ainda; pula aqui.
+-- vw_dso_aging depende de contas_receber.empresa_id e valor_recebido adicionadas em migracoes posteriores.
+-- No Preview incremental essas colunas podem nao existir ainda; pula aqui.
+-- Guard duplo: empresa_id (usada no SELECT/GROUP BY) E valor_recebido (usada nas somas).
 DO $$
 BEGIN
   IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'empresa_id'
+  ) AND EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'valor_recebido'
   ) THEN
@@ -109,7 +113,7 @@ BEGIN
       FROM contas_receber cr WHERE cr.status IN ('pendente','vencido','parcial','atrasado') GROUP BY 1
     $view$;
   ELSE
-    RAISE NOTICE '20260317001356: contas_receber.valor_recebido ausente; vw_dso_aging sera recriada em migracao posterior.';
+    RAISE NOTICE '20260317001356: contas_receber.empresa_id ou valor_recebido ausente; vw_dso_aging sera recriada em migracao posterior.';
   END IF;
 END
 $$;
