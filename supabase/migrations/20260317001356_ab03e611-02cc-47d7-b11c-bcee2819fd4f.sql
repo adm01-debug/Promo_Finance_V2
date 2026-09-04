@@ -11,6 +11,13 @@ ALTER TABLE public.contas_receber
   ADD COLUMN IF NOT EXISTS conta_bancaria_id uuid,
   ADD COLUMN IF NOT EXISTS centro_custo_id uuid;
 
+-- plano_contas criada em 20260518190420; stub mínimo para fresh-apply
+CREATE TABLE IF NOT EXISTS public.plano_contas (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  descricao text,
+  codigo text
+);
+
 CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
 SELECT cp.*, f.nome AS fornecedor_display, f.cnpj AS fornecedor_cnpj_display, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
 FROM contas_pagar cp LEFT JOIN fornecedores f ON f.id=cp.fornecedor_id LEFT JOIN contas_bancarias cb ON cb.id=cp.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cp.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cp.plano_conta_id
