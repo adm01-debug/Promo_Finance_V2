@@ -8,8 +8,10 @@
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_pago NUMERIC DEFAULT 0;
 
 -- Recriar vw_fluxo_caixa agora que valor_pago existe (foi pulada em 20260317001356 no caminho incremental).
--- No replay from-scratch esta migration e no-op para a coluna; o CREATE OR REPLACE e idempotente.
-CREATE OR REPLACE VIEW public.vw_fluxo_caixa AS
+-- DROP + CREATE necessario: 20260825100000 recriou a view com colunas incompativeis (stub de 6 colunas),
+-- e CREATE OR REPLACE nao permite remover/renomear colunas existentes no PostgreSQL.
+DROP VIEW IF EXISTS public.vw_fluxo_caixa;
+CREATE VIEW public.vw_fluxo_caixa WITH (security_invoker='on') AS
 SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia
 FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia)
 LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_recebido,0)) AS valor FROM contas_receber WHERE status IN ('pendente','parcial') GROUP BY 1) r ON r.dia=d.dia
