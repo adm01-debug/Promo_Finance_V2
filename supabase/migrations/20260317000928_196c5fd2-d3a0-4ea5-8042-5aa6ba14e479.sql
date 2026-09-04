@@ -28,6 +28,9 @@ ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS parcela_atual INTEGER
 -- GENERATED abaixo, que depende dela.
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_recebido DECIMAL(15,2) DEFAULT 0;
 
+-- contas_pagar: valor_pago (total pago — escrito pelo trigger fn_sync_valor_pago_movimentacao)
+ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_pago NUMERIC DEFAULT 0;
+
 -- contas_receber: valor_pago (alias de valor_recebido)
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_pago NUMERIC GENERATED ALWAYS AS (COALESCE(valor_recebido, 0)) STORED;
 
