@@ -12,7 +12,8 @@ export function useContasReceber(empresaId?: string) {
       let query = supabase
         .from('vw_contas_receber_painel')
         .select('*')
-        .order('data_vencimento', { ascending: true });
+        .order('data_vencimento', { ascending: true })
+        .limit(1000);
 
       if (empresaId && empresaId !== 'all') {
         query = query.eq('empresa_id', empresaId);

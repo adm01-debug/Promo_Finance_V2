@@ -61,9 +61,24 @@ CREATE OR REPLACE VIEW public.vw_fluxo_caixa_diario AS
 SELECT m.data_movimentacao AS dia, m.empresa_id, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE 0 END) AS entradas, SUM(CASE WHEN m.tipo='saida' THEN m.valor ELSE 0 END) AS saidas, SUM(CASE WHEN m.tipo='entrada' THEN m.valor ELSE -m.valor END) AS saldo
 FROM movimentacoes m WHERE m.deleted_at IS NULL GROUP BY 1,2;
 
-CREATE OR REPLACE VIEW public.vw_gastos_centro_custo AS
-SELECT cc.id AS centro_custo_id, cc.nome, cc.codigo, cc.orcamento_previsto, COALESCE(SUM(cp.valor),0) AS total_gasto, CASE WHEN cc.orcamento_previsto>0 THEN ROUND((COALESCE(SUM(cp.valor),0)/cc.orcamento_previsto)*100,2) ELSE 0 END AS percentual_utilizado
-FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id=cc.id AND cp.status='pago' GROUP BY 1,2,3,4;
+-- vw_gastos_centro_custo depende de contas_pagar.centro_custo_id adicionada em 20260518164611.
+-- No Preview incremental essa coluna nao existe ainda; pula aqui e a view e recriada em 20260518190420.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'centro_custo_id'
+  ) THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_gastos_centro_custo AS
+      SELECT cc.id AS centro_custo_id, cc.nome, cc.codigo, cc.orcamento_previsto, COALESCE(SUM(cp.valor),0) AS total_gasto, CASE WHEN cc.orcamento_previsto>0 THEN ROUND((COALESCE(SUM(cp.valor),0)/cc.orcamento_previsto)*100,2) ELSE 0 END AS percentual_utilizado
+      FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id=cc.id AND cp.status='pago' GROUP BY 1,2,3,4
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: contas_pagar.centro_custo_id ausente; vw_gastos_centro_custo sera recriada em 20260518190420.';
+  END IF;
+END
+$$;
 
 CREATE OR REPLACE VIEW public.vw_saldos_contas AS
 SELECT cb.id,cb.banco,cb.agencia,cb.conta,cb.tipo_conta,cb.saldo_atual,cb.cor,cb.ativo,cb.empresa_id,e.razao_social AS empresa_nome FROM contas_bancarias cb LEFT JOIN empresas e ON e.id=cb.empresa_id WHERE cb.ativo=true;

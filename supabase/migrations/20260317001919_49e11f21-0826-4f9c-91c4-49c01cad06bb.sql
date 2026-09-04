@@ -13,6 +13,10 @@ DECLARE
   v_view TEXT;
 BEGIN
   FOREACH v_view IN ARRAY v_views LOOP
-    EXECUTE format('ALTER VIEW public.%I SET (security_invoker = true)', v_view);
+    BEGIN
+      EXECUTE format('ALTER VIEW public.%I SET (security_invoker = true)', v_view);
+    EXCEPTION WHEN undefined_table THEN
+      RAISE NOTICE '20260317001919: view % nao existe ainda, pulando security_invoker', v_view;
+    END;
   END LOOP;
 END $$;

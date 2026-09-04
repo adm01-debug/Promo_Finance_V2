@@ -17,7 +17,8 @@ export function useContasPagar(empresaId?: string) {
       let query = supabaseDyn
         .from('vw_contas_pagar_painel')
         .select(sel('*'))
-        .order('data_vencimento', { ascending: true });
+        .order('data_vencimento', { ascending: true })
+        .limit(1000);
 
       if (empresaId && empresaId !== 'all') {
         query = query.eq('empresa_id', empresaId);
