@@ -110,8 +110,8 @@ export async function carregarTransacoesBanco(
       .from('transacoes_bancarias')
       .select('*')
       .eq('conta_bancaria_id', contaId)
-      .order('data', { ascending: false })
-      .limit(500);
+      .limit(500)
+      .order('data', { ascending: false });
 
     if (error) {
       toast.error('Erro ao carregar transações');

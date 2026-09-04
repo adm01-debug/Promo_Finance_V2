@@ -88,21 +88,51 @@ SELECT t.*,co.banco AS banco_origem,co.conta AS conta_origem_numero,cd.banco AS 
 
 CREATE OR REPLACE VIEW public.vw_webhooks_recentes AS SELECT * FROM webhooks_log ORDER BY created_at DESC LIMIT 100;
 
-CREATE OR REPLACE VIEW public.vw_dso_aging AS
-SELECT cr.empresa_id, COUNT(*) AS total_titulos, SUM(cr.valor) AS valor_total, SUM(cr.valor-COALESCE(cr.valor_recebido,0)) AS saldo_aberto,
-SUM(CASE WHEN cr.data_vencimento>=CURRENT_DATE THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS a_vencer,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 0 AND 7 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_0_7,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 8 AND 15 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_8_15,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 16 AND 30 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_16_30,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 31 AND 60 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_31_60,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 61 AND 90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_61_90,
-SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento>90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_90_mais
-FROM contas_receber cr WHERE cr.status IN ('pendente','vencido','parcial','atrasado') GROUP BY 1;
+-- vw_dso_aging depende de contas_receber.valor_recebido adicionada em migracao posterior.
+-- No Preview incremental essa coluna pode nao existir ainda; pula aqui.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'valor_recebido'
+  ) THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_dso_aging AS
+      SELECT cr.empresa_id, COUNT(*) AS total_titulos, SUM(cr.valor) AS valor_total, SUM(cr.valor-COALESCE(cr.valor_recebido,0)) AS saldo_aberto,
+      SUM(CASE WHEN cr.data_vencimento>=CURRENT_DATE THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS a_vencer,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 0 AND 7 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_0_7,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 8 AND 15 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_8_15,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 16 AND 30 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_16_30,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 31 AND 60 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_31_60,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento BETWEEN 61 AND 90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_61_90,
+      SUM(CASE WHEN CURRENT_DATE-cr.data_vencimento>90 THEN cr.valor-COALESCE(cr.valor_recebido,0) ELSE 0 END) AS vencido_90_mais
+      FROM contas_receber cr WHERE cr.status IN ('pendente','vencido','parcial','atrasado') GROUP BY 1
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: contas_receber.valor_recebido ausente; vw_dso_aging sera recriada em migracao posterior.';
+  END IF;
+END
+$$;
 
-CREATE OR REPLACE VIEW public.vw_metricas_cobranca AS
-SELECT ec.etapa,ec.canal,ec.empresa_id, COUNT(*) AS total_enviados, SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END) AS total_entregues, SUM(CASE WHEN ec.lido THEN 1 ELSE 0 END) AS total_lidos,
-CASE WHEN COUNT(*)>0 THEN ROUND((SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END)::NUMERIC/COUNT(*))*100,2) ELSE 0 END AS taxa_entrega
-FROM execucoes_cobranca ec GROUP BY 1,2,3;
+-- vw_metricas_cobranca depende de execucoes_cobranca criada em 20260317124844 (posterior).
+-- No Preview incremental a tabela pode nao existir ainda; pula aqui.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'execucoes_cobranca'
+  ) THEN
+    EXECUTE $view$
+      CREATE OR REPLACE VIEW public.vw_metricas_cobranca AS
+      SELECT ec.etapa,ec.canal,ec.empresa_id, COUNT(*) AS total_enviados, SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END) AS total_entregues, SUM(CASE WHEN ec.lido THEN 1 ELSE 0 END) AS total_lidos,
+      CASE WHEN COUNT(*)>0 THEN ROUND((SUM(CASE WHEN ec.entregue THEN 1 ELSE 0 END)::NUMERIC/COUNT(*))*100,2) ELSE 0 END AS taxa_entrega
+      FROM execucoes_cobranca ec GROUP BY 1,2,3
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317001356: execucoes_cobranca ausente; vw_metricas_cobranca sera recriada em 20260317124844.';
+  END IF;
+END
+$$;
 
 -- RPCs de Cobrança
 CREATE OR REPLACE FUNCTION public.processar_regua_cobranca(p_empresa_id UUID DEFAULT NULL)
