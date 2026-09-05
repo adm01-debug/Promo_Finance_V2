@@ -170,13 +170,17 @@ Deno.serve(async (req) => {
 
     // RBAC
     const sbAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { data: roleRow } = await sbAdmin
+    // Usuário pode ter múltiplos papéis ativos simultâneos (UNIQUE é
+    // user_id+role, não user_id sozinho) — .maybeSingle() sem filtrar por
+    // role quebrava (>1 linha) para esses usuários, negando acesso mesmo
+    // com papel permitido. Filtra pelos papéis aceitos e checa existência.
+    const { data: roleRows } = await sbAdmin
       .from('user_roles')
       .select('role')
       .eq('user_id', userData.user.id)
       .eq('is_active', true)
-      .maybeSingle();
-    if (!roleRow || !ROLES_PERMITIDOS.has((roleRow as any).role)) {
+      .in('role', Array.from(ROLES_PERMITIDOS));
+    if (!roleRows || roleRows.length === 0) {
       return new Response(JSON.stringify({ error: 'forbidden' }), {
         status: 403,
         headers: corsHeaders,

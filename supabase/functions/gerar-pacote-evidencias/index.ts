@@ -271,6 +271,7 @@ async function autenticar(req: Request) {
     .select('role')
     .eq('user_id', userData.user.id)
     .eq('role', 'admin')
+    .eq('is_active', true)
     .maybeSingle();
   if (!roleCheck) return { error: 'forbidden: admin only' as const, status: 403 };
 

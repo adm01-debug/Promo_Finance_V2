@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface EvidenciaPacote {
   id: string;
@@ -18,12 +18,12 @@ export function useEvidenciasPacotes() {
   const qc = useQueryClient();
 
   const list = useQuery({
-    queryKey: ["evidencias-pacotes"],
+    queryKey: ['evidencias-pacotes'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("evidencias_pacotes")
-        .select("*")
-        .order("created_at", { ascending: false })
+        .from('evidencias_pacotes')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(50);
       if (error) throw error;
       return (data ?? []) as EvidenciaPacote[];
@@ -31,8 +31,13 @@ export function useEvidenciasPacotes() {
   });
 
   const gerar = useMutation({
-    mutationFn: async (input: { periodo_inicio: string; periodo_fim: string; escopos: string[] }) => {
-      const { data, error } = await supabase.functions.invoke("gerar-pacote-evidencias", {
+    mutationFn: async (input: {
+      periodo_inicio: string;
+      periodo_fim: string;
+      escopos: string[];
+      empresa_id?: string;
+    }) => {
+      const { data, error } = await supabase.functions.invoke('gerar-pacote-evidencias', {
         body: input,
       });
       if (error) throw error;
@@ -40,16 +45,16 @@ export function useEvidenciasPacotes() {
       return data as { signed_url: string; pacote: EvidenciaPacote; audit_warning?: string | null };
     },
     onSuccess: (d) => {
-      toast.success("Pacote gerado com sucesso");
+      toast.success('Pacote gerado com sucesso');
       if (d.audit_warning) {
-        toast.warning("Trilha de auditoria não registrada", {
+        toast.warning('Trilha de auditoria não registrada', {
           description: d.audit_warning,
           duration: 8000,
         });
       }
-      window.open(d.signed_url, "_blank");
-      qc.invalidateQueries({ queryKey: ["evidencias-pacotes"] });
-      qc.invalidateQueries({ queryKey: ["compliance-kpis"] });
+      window.open(d.signed_url, '_blank');
+      qc.invalidateQueries({ queryKey: ['evidencias-pacotes'] });
+      qc.invalidateQueries({ queryKey: ['compliance-kpis'] });
     },
     onError: (e: Error) => toast.error(`Falha ao gerar: ${e.message}`),
   });
@@ -57,12 +62,12 @@ export function useEvidenciasPacotes() {
   const baixar = useMutation({
     mutationFn: async (storagePath: string) => {
       const { data, error } = await supabase.storage
-        .from("relatorios-tributarios")
+        .from('relatorios-tributarios')
         .createSignedUrl(storagePath, 60 * 60);
       if (error) throw error;
       return data.signedUrl;
     },
-    onSuccess: (url) => window.open(url, "_blank"),
+    onSuccess: (url) => window.open(url, '_blank'),
     onError: (e: Error) => toast.error(`Falha: ${e.message}`),
   });
 

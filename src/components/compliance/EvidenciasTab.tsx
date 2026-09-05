@@ -1,29 +1,30 @@
-import { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Package, Download, Loader2, FileArchive, FileSpreadsheet, FileText } from "lucide-react";
+import { useMemo, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Package, Download, Loader2, FileArchive, FileSpreadsheet, FileText } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useEvidenciasPacotes } from "@/hooks/useEvidenciasPack";
-import { useGerarEvidenciasStream } from "@/hooks/useGerarEvidenciasStream";
-import { EvidenciaStatusDialog } from "./EvidenciaStatusDialog";
-import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
-import { exportToCSV, exportToPDF, type ExportColumn } from "@/lib/export-utils";
-import { toast } from "sonner";
+} from '@/components/ui/dropdown-menu';
+import { useEvidenciasPacotes } from '@/hooks/useEvidenciasPack';
+import { useGerarEvidenciasStream } from '@/hooks/useGerarEvidenciasStream';
+import { EvidenciaStatusDialog } from './EvidenciaStatusDialog';
+import { AuditFiltersBar, type FiltrosState } from './AuditFiltersBar';
+import { exportToCSV, exportToPDF, type ExportColumn } from '@/lib/export-utils';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 const ESCOPOS = [
-  { value: "financeiro", label: "Trilha Financeira" },
-  { value: "tributario", label: "Trilha Tributária" },
-  { value: "sistema", label: "Trilha de Sistema" },
-  { value: "conformidade", label: "Conformidade Fiscal" },
+  { value: 'financeiro', label: 'Trilha Financeira' },
+  { value: 'tributario', label: 'Trilha Tributária' },
+  { value: 'sistema', label: 'Trilha de Sistema' },
+  { value: 'conformidade', label: 'Conformidade Fiscal' },
 ];
 
 function isoDays(dias: number) {
@@ -31,30 +32,49 @@ function isoDays(dias: number) {
 }
 
 function formatBytes(b: number | null) {
-  if (!b) return "—";
+  if (!b) return '—';
   const mb = b / 1024 / 1024;
   return mb >= 1 ? `${mb.toFixed(2)} MB` : `${(b / 1024).toFixed(1)} KB`;
 }
 
 export function EvidenciasTab() {
+  const { currentEmpresaId } = useAuth();
   const [inicio, setInicio] = useState(isoDays(30));
   const [fim, setFim] = useState(isoDays(0));
-  const [escopos, setEscopos] = useState<string[]>(["financeiro", "tributario", "sistema", "conformidade"]);
+  const [escopos, setEscopos] = useState<string[]>([
+    'financeiro',
+    'tributario',
+    'sistema',
+    'conformidade',
+  ]);
   const { data, isLoading, baixar } = useEvidenciasPacotes();
   const stream = useGerarEvidenciasStream();
   const [statusOpen, setStatusOpen] = useState(false);
 
+  const exigeEmpresa = escopos.some(
+    (e) => e === 'financeiro' || e === 'tributario' || e === 'conformidade'
+  );
+
   const handleGerar = () => {
+    if (exigeEmpresa && !currentEmpresaId) {
+      toast.error('Selecione uma empresa para incluir trilhas financeira/tributária/conformidade.');
+      return;
+    }
     setStatusOpen(true);
-    stream.start({ periodo_inicio: inicio, periodo_fim: fim, escopos });
+    stream.start({
+      periodo_inicio: inicio,
+      periodo_fim: fim,
+      escopos,
+      empresa_id: currentEmpresaId ?? undefined,
+    });
   };
 
   const [filtros, setFiltros] = useState<FiltrosState>({
-    inicio: "",
-    fim: "",
-    busca: "",
-    acao: "todas",
-    usuario: "",
+    inicio: '',
+    fim: '',
+    busca: '',
+    acao: 'todas',
+    usuario: '',
     escopos: [],
   });
 
@@ -73,11 +93,12 @@ export function EvidenciasTab() {
       if (filtros.usuario && p.gerado_por_email !== filtros.usuario) return false;
       if (filtros.busca) {
         const hay =
-          `${p.periodo_inicio} ${p.periodo_fim} ${p.escopos.join(" ")} ${p.gerado_por_email ?? ""}`.toLowerCase();
+          `${p.periodo_inicio} ${p.periodo_fim} ${p.escopos.join(' ')} ${p.gerado_por_email ?? ''}`.toLowerCase();
         if (!hay.includes(filtros.busca.toLowerCase())) return false;
       }
       // Escopos: pacote precisa conter ao menos um dos selecionados
-      if (escoposFiltro.length > 0 && !p.escopos.some((e) => escoposFiltro.includes(e))) return false;
+      if (escoposFiltro.length > 0 && !p.escopos.some((e) => escoposFiltro.includes(e)))
+        return false;
       return true;
     });
   }, [data, filtros]);
@@ -87,30 +108,31 @@ export function EvidenciasTab() {
   };
 
   const colunasExport: ExportColumn<Record<string, string>>[] = [
-    { header: "Início", key: "Início" },
-    { header: "Fim", key: "Fim" },
-    { header: "Escopos", key: "Escopos" },
-    { header: "Gerado por", key: "Gerado por" },
-    { header: "Data geração", key: "Data geração" },
-    { header: "Tamanho", key: "Tamanho" },
+    { header: 'Início', key: 'Início' },
+    { header: 'Fim', key: 'Fim' },
+    { header: 'Escopos', key: 'Escopos' },
+    { header: 'Gerado por', key: 'Gerado por' },
+    { header: 'Data geração', key: 'Data geração' },
+    { header: 'Tamanho', key: 'Tamanho' },
   ];
 
-  const handleExport = (formato: "csv" | "pdf") => {
+  const handleExport = (formato: 'csv' | 'pdf') => {
     if (pacotesFiltrados.length === 0) {
-      toast.warning("Nada para exportar com os filtros atuais.");
+      toast.warning('Nada para exportar com os filtros atuais.');
       return;
     }
     const linhas = pacotesFiltrados.map((p) => ({
       Início: p.periodo_inicio,
       Fim: p.periodo_fim,
-      Escopos: p.escopos.join(", "),
-      "Gerado por": p.gerado_por_email ?? "—",
-      "Data geração": new Date(p.created_at).toLocaleString("pt-BR"),
+      Escopos: p.escopos.join(', '),
+      'Gerado por': p.gerado_por_email ?? '—',
+      'Data geração': new Date(p.created_at).toLocaleString('pt-BR'),
       Tamanho: formatBytes(p.tamanho_bytes),
     }));
-    const periodoSuffix = filtros.inicio && filtros.fim ? `_${filtros.inicio}_${filtros.fim}` : "";
-    if (formato === "csv") exportToCSV(linhas, colunasExport, `evidencias-historico${periodoSuffix}`);
-    else exportToPDF(linhas, colunasExport, "Histórico de Pacotes de Evidências");
+    const periodoSuffix = filtros.inicio && filtros.fim ? `_${filtros.inicio}_${filtros.fim}` : '';
+    if (formato === 'csv')
+      exportToCSV(linhas, colunasExport, `evidencias-historico${periodoSuffix}`);
+    else exportToPDF(linhas, colunasExport, 'Histórico de Pacotes de Evidências');
     toast.success(`${linhas.length} pacote(s) exportado(s).`);
   };
 
@@ -141,28 +163,42 @@ export function EvidenciasTab() {
                   key={e.value}
                   className="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-muted/30"
                 >
-                  <Checkbox checked={escopos.includes(e.value)} onChange={() => toggleEscopo(e.value)} />
+                  <Checkbox
+                    checked={escopos.includes(e.value)}
+                    onChange={() => toggleEscopo(e.value)}
+                  />
                   <span className="text-sm">{e.label}</span>
                 </label>
               ))}
             </div>
           </div>
           <div className="bg-muted/30 p-3 rounded text-xs text-muted-foreground">
-            O pacote ZIP contém um CSV por escopo, um <code>manifest.json</code> com hashes SHA-256 para validação de
-            integridade e um <code>README.txt</code> com instruções. URL assinada válida por 7 dias.
+            O pacote ZIP contém um CSV por escopo, um <code>manifest.json</code> com hashes SHA-256
+            para validação de integridade e um <code>README.txt</code> com instruções. URL assinada
+            válida por 7 dias.
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
               onClick={handleGerar}
-              disabled={stream.status === "running" || escopos.length === 0 || !inicio || !fim}
+              disabled={
+                stream.status === 'running' ||
+                escopos.length === 0 ||
+                !inicio ||
+                !fim ||
+                (exigeEmpresa && !currentEmpresaId)
+              }
             >
-              {stream.status === "running" ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando pacote...</>
+              {stream.status === 'running' ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando pacote...
+                </>
               ) : (
-                <><FileArchive className="h-4 w-4 mr-2" /> Gerar pacote</>
+                <>
+                  <FileArchive className="h-4 w-4 mr-2" /> Gerar pacote
+                </>
               )}
             </Button>
-            {(stream.status === "success" || stream.status === "error") && (
+            {(stream.status === 'success' || stream.status === 'error') && (
               <Button variant="outline" onClick={() => setStatusOpen(true)}>
                 Ver último status
               </Button>
@@ -188,8 +224,8 @@ export function EvidenciasTab() {
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
               {isLoading
-                ? "Carregando..."
-                : `${pacotesFiltrados.length.toLocaleString("pt-BR")} de ${(data ?? []).length.toLocaleString("pt-BR")} pacotes`}
+                ? 'Carregando...'
+                : `${pacotesFiltrados.length.toLocaleString('pt-BR')} de ${(data ?? []).length.toLocaleString('pt-BR')} pacotes`}
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -198,10 +234,10 @@ export function EvidenciasTab() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleExport("csv")} className="gap-2">
+                <DropdownMenuItem onClick={() => handleExport('csv')} className="gap-2">
                   <FileSpreadsheet className="h-4 w-4" /> Exportar CSV
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport("pdf")} className="gap-2">
+                <DropdownMenuItem onClick={() => handleExport('pdf')} className="gap-2">
                   <FileText className="h-4 w-4" /> Exportar PDF
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -215,7 +251,9 @@ export function EvidenciasTab() {
               ))}
             </div>
           ) : pacotesFiltrados.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">Nenhum pacote encontrado.</p>
+            <p className="text-sm text-muted-foreground py-8 text-center">
+              Nenhum pacote encontrado.
+            </p>
           ) : (
             <ul className="space-y-2">
               {pacotesFiltrados.map((p) => (
@@ -232,8 +270,9 @@ export function EvidenciasTab() {
                       ))}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Gerado por {p.gerado_por_email ?? "—"} em{" "}
-                      {new Date(p.created_at).toLocaleString("pt-BR")} · {formatBytes(p.tamanho_bytes)}
+                      Gerado por {p.gerado_por_email ?? '—'} em{' '}
+                      {new Date(p.created_at).toLocaleString('pt-BR')} ·{' '}
+                      {formatBytes(p.tamanho_bytes)}
                     </p>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => baixar.mutate(p.storage_path)}>
