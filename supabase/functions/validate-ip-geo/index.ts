@@ -12,8 +12,8 @@
 // verify_jwt = false — chamada antes do login. Não retorna dados sensíveis.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const _IpGeoSchema = z.object({ email: z.string().email().optional() }).partial();
 
@@ -83,10 +83,10 @@ Deno.serve(async (req: Request) => {
   const url = Deno.env.get('SUPABASE_URL');
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if (!url || !key) {
-    return new Response(
-      JSON.stringify({ error: 'server_misconfigured' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    return new Response(JSON.stringify({ error: 'server_misconfigured' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
   const admin = createClient(url, key);
 
@@ -105,32 +105,48 @@ Deno.serve(async (req: Request) => {
   if (!ip) {
     // Sem IP resolvido, não podemos afirmar bloqueio nem liberação — negar por padrão
     // é seguro, mas quebraria previews sem proxy. Optamos por permitir e registrar.
-    await admin.from('auth_logs').insert({
-      event_type: 'ip_geo_validation_no_ip',
-      email,
-      metadata: { headers: {
-        'x-forwarded-for': req.headers.get('x-forwarded-for'),
-        'cf-connecting-ip': req.headers.get('cf-connecting-ip'),
-      } },
-    }).then(() => {}, () => {});
+    await admin
+      .from('auth_logs')
+      .insert({
+        event_type: 'ip_geo_validation_no_ip',
+        metadata: {
+          // email_informado não é validado contra auth.users — é o valor bruto
+          // enviado pelo caller (endpoint pré-login, sem autenticação). Nunca
+          // tratar como identidade confirmada em análises forenses.
+          email_informado: email,
+          headers: {
+            'x-forwarded-for': req.headers.get('x-forwarded-for'),
+            'cf-connecting-ip': req.headers.get('cf-connecting-ip'),
+          },
+        },
+      })
+      .then(
+        () => {},
+        () => {}
+      );
     return new Response(
       JSON.stringify({ allowed: true, reason: 'ip_unresolved', ip: null, country: null }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 
   // 1) IP bloqueado?
   const { data: ipBlocked } = await admin.rpc('is_ip_blocked', { p_ip_address: ip });
   if (ipBlocked === true) {
-    await admin.from('auth_logs').insert({
-      event_type: 'ip_geo_validation_blocked_ip',
-      email,
-      ip_address: ip,
-      metadata: { reason: 'blocked_ip' },
-    }).then(() => {}, () => {});
+    await admin
+      .from('auth_logs')
+      .insert({
+        event_type: 'ip_geo_validation_blocked_ip',
+        ip_address: ip,
+        metadata: { reason: 'blocked_ip', email_informado: email },
+      })
+      .then(
+        () => {},
+        () => {}
+      );
     return new Response(
       JSON.stringify({ allowed: false, reason: 'blocked_ip', ip, country: null }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 
@@ -161,15 +177,25 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  await admin.from('auth_logs').insert({
-    event_type: allowed ? 'ip_geo_validation_ok' : 'ip_geo_validation_denied',
-    email,
-    ip_address: ip,
-    metadata: { country: geo.country, source: geo.source, reason: reason ?? null },
-  }).then(() => {}, () => {});
+  await admin
+    .from('auth_logs')
+    .insert({
+      event_type: allowed ? 'ip_geo_validation_ok' : 'ip_geo_validation_denied',
+      ip_address: ip,
+      metadata: {
+        country: geo.country,
+        source: geo.source,
+        reason: reason ?? null,
+        email_informado: email,
+      },
+    })
+    .then(
+      () => {},
+      () => {}
+    );
 
-  return new Response(
-    JSON.stringify({ allowed, reason, ip, country: geo.country }),
-    { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-  );
+  return new Response(JSON.stringify({ allowed, reason, ip, country: geo.country }), {
+    status: 200,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
 });

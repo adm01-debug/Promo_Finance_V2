@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -8,7 +7,7 @@ interface RateLimitLog {
   id: string;
   ip_address: string;
   endpoint: string;
-  requests_count: number;
+  request_count: number;
   window_start: string;
   blocked: boolean;
   created_at: string;
@@ -61,7 +60,9 @@ export function useRateLimitLogs() {
         return;
       }
 
-      setLogs(logsData || []);
+      // ip_address vem como `unknown` do Postgrest (tipo inet do Postgres serializado como string).
+      const logs = (logsData ?? []) as unknown as RateLimitLog[];
+      setLogs(logs);
 
       // Fetch blocked IPs
       const { data: blockedData, error: blockedError } = await supabase
@@ -74,19 +75,22 @@ export function useRateLimitLogs() {
         return;
       }
 
-      setBlockedIPs(blockedData || []);
+      setBlockedIPs((blockedData ?? []) as unknown as BlockedIP[]);
 
       // Calculate stats
-      if (logsData) {
-        const totalRequests = logsData.reduce((sum, log) => sum + log.requests_count, 0);
-        const blockedRequests = logsData.filter(log => log.blocked).length;
-        const uniqueIPs = new Set(logsData.map(log => log.ip_address)).size;
+      if (logs.length) {
+        const totalRequests = logs.reduce((sum, log) => sum + log.request_count, 0);
+        const blockedRequests = logs.filter((log) => log.blocked).length;
+        const uniqueIPs = new Set(logs.map((log) => log.ip_address)).size;
 
         // Top endpoints
-        const endpointCounts = logsData.reduce((acc, log) => {
-          acc[log.endpoint] = (acc[log.endpoint] || 0) + log.requests_count;
-          return acc;
-        }, {} as Record<string, number>);
+        const endpointCounts = logs.reduce(
+          (acc, log) => {
+            acc[log.endpoint] = (acc[log.endpoint] || 0) + log.request_count;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
 
         const topEndpoints = Object.entries(endpointCounts)
           .map(([endpoint, count]) => ({ endpoint, count }))
@@ -94,10 +98,13 @@ export function useRateLimitLogs() {
           .slice(0, 10);
 
         // Top IPs
-        const ipCounts = logsData.reduce((acc, log) => {
-          acc[log.ip_address] = (acc[log.ip_address] || 0) + log.requests_count;
-          return acc;
-        }, {} as Record<string, number>);
+        const ipCounts = logs.reduce(
+          (acc, log) => {
+            acc[log.ip_address] = (acc[log.ip_address] || 0) + log.request_count;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
 
         const topIPs = Object.entries(ipCounts)
           .map(([ip, count]) => ({ ip, count }))
@@ -123,17 +130,20 @@ export function useRateLimitLogs() {
     fetchLogs();
   }, [fetchLogs]);
 
-  const blockIP = async (ipAddress: string, reason: string, permanent: boolean = false, blockedUntil?: string) => {
+  const blockIP = async (
+    ipAddress: string,
+    reason: string,
+    permanent: boolean = false,
+    blockedUntil?: string
+  ) => {
     try {
-      const { error } = await supabase
-        .from('blocked_ips')
-        .insert({
-          ip_address: ipAddress,
-          reason,
-          permanent,
-          blocked_until: blockedUntil || null,
-          blocked_by: user?.id,
-        });
+      const { error } = await supabase.from('blocked_ips').insert({
+        ip_address: ipAddress,
+        reason,
+        permanent,
+        blocked_until: blockedUntil || null,
+        blocked_by: user?.id,
+      });
 
       if (error) throw error;
       await fetchLogs();

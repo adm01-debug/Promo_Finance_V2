@@ -15,6 +15,8 @@ const mockClientes = vi.fn();
 const mockAprovacoes = vi.fn();
 const mockDivergencias = vi.fn();
 const mockUseAuth = vi.fn();
+const mockTotaisPagar = vi.fn();
+const mockTotaisReceber = vi.fn();
 
 vi.mock('@/hooks/useFinancialData', () => ({
   useEmpresas: () => mockEmpresas(),
@@ -23,6 +25,14 @@ vi.mock('@/hooks/useFinancialData', () => ({
   useContasPagar: () => mockPagar(),
   useContasReceber: () => mockReceber(),
   useClientes: () => mockClientes(),
+}));
+
+// Totais agregados por RPC (SUM() no banco) — hook próprio, mockado à parte
+// para manter os testes desta suíte síncronos (ver B2 em
+// docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md e useTotaisFinanceiros.ts).
+vi.mock('@/hooks/financial/useTotaisFinanceiros', () => ({
+  useTotaisContasPagar: () => mockTotaisPagar(),
+  useTotaisContasReceber: () => mockTotaisReceber(),
 }));
 
 vi.mock('@/hooks/useAprovacoesPendentesCount', () => ({
@@ -70,6 +80,14 @@ describe('useDashboardMetrics', () => {
     mockClientes.mockReturnValue({ data: [], isLoading: false });
     mockAprovacoes.mockReturnValue({ count: 0 });
     mockDivergencias.mockReturnValue({ divergencias: [] });
+    mockTotaisPagar.mockReturnValue({
+      data: { total_pagar: 0, total_vencidas_pagar: 0, despesas_mes: 0 },
+      isLoading: false,
+    });
+    mockTotaisReceber.mockReturnValue({
+      data: { total_receber: 0, total_vencidas_receber: 0, receitas_mes: 0 },
+      isLoading: false,
+    });
   });
 
   it('soma saldoTotal corretamente', () => {
@@ -77,26 +95,21 @@ describe('useDashboardMetrics', () => {
     expect(result.current.saldoTotal).toBe(15000);
   });
 
-  it('calcula totalReceber excluindo pagas e canceladas', () => {
-    mockReceber.mockReturnValue({
-      data: [
-        { id: '1', empresa_id: 'e1', valor: 1000, valor_recebido: 0, status: 'pendente', data_vencimento: '2025-01-01' },
-        { id: '2', empresa_id: 'e1', valor: 500, valor_recebido: 500, status: 'pago', data_vencimento: '2025-01-01' },
-        { id: '3', empresa_id: 'e1', valor: 200, valor_recebido: 0, status: 'cancelado', data_vencimento: '2025-01-01' },
-        { id: '4', empresa_id: 'e1', valor: 800, valor_recebido: 300, status: 'parcial', data_vencimento: '2025-01-01' },
-      ],
+  it('repassa totalReceber calculado pela RPC totais_contas_receber', () => {
+    // A soma em si agora é feita no banco (SUM() via RPC, sem cap de 1000
+    // linhas — ver useTotaisFinanceiros.ts); este teste valida apenas que o
+    // hook repassa o valor, não a lógica de agregação (coberta na migration).
+    mockTotaisReceber.mockReturnValue({
+      data: { total_receber: 1500, total_vencidas_receber: 0, receitas_mes: 0 },
       isLoading: false,
     });
     const { result } = renderHook(() => useDashboardMetrics(FILTERS_ALL));
-    expect(result.current.totalReceber).toBe(1000 + 500); // 1000 pendente + (800-300) parcial
+    expect(result.current.totalReceber).toBe(1500);
   });
 
   it('calcula inadimplência como percentual de vencidas sobre total a receber', () => {
-    mockReceber.mockReturnValue({
-      data: [
-        { id: '1', empresa_id: 'e1', valor: 1000, valor_recebido: 0, status: 'pendente', data_vencimento: '2025-12-01' },
-        { id: '2', empresa_id: 'e1', valor: 500, valor_recebido: 0, status: 'vencido', data_vencimento: '2024-01-01' },
-      ],
+    mockTotaisReceber.mockReturnValue({
+      data: { total_receber: 1500, total_vencidas_receber: 500, receitas_mes: 0 },
       isLoading: false,
     });
     const { result } = renderHook(() => useDashboardMetrics(FILTERS_ALL));
@@ -119,7 +132,7 @@ describe('useDashboardMetrics', () => {
       isLoading: false,
     });
     const { result } = renderHook(() =>
-      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'e1' }),
+      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'e1' })
     );
     expect(result.current.saldoTotal).toBe(10000);
   });
@@ -135,7 +148,7 @@ describe('useDashboardMetrics', () => {
     });
 
     const { result } = renderHook(() =>
-      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'default', centroCustoFilter: 'todas' }),
+      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'default', centroCustoFilter: 'todas' })
     );
 
     expect(result.current.saldoTotal).toBe(10000);
@@ -158,7 +171,7 @@ describe('useDashboardMetrics', () => {
     });
 
     const { result } = renderHook(() =>
-      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'e1' }),
+      useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'e1' })
     );
 
     expect(result.current.totalDivergencias).toBe(1);
@@ -186,7 +199,7 @@ describe('useDashboardMetrics', () => {
     const { result } = renderHook(() => useDashboardMetrics(FILTERS_ALL));
     expect(result.current.topClientesReceita).toHaveLength(10);
     expect(result.current.topClientesReceita[0].receita).toBeGreaterThanOrEqual(
-      result.current.topClientesReceita[9].receita,
+      result.current.topClientesReceita[9].receita
     );
   });
 });

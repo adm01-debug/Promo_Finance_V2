@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: IRPJ/CSLL - LUCRO REAL
 // Gerencia apurações de IRPJ e CSLL
 
@@ -13,58 +12,58 @@ export interface ApuracaoIRPJCSLL {
   ano: number;
   trimestre?: number;
   mes?: number;
-  
+
   // Lucro Contábil
   lucro_contabil: number;
-  
+
   // Adições
   adicoes_permanentes: number;
   adicoes_temporarias: number;
   total_adicoes: number;
-  
+
   // Exclusões
   exclusoes_permanentes: number;
   exclusoes_temporarias: number;
   total_exclusoes: number;
-  
+
   // Lucro Real
   lucro_real_antes_compensacao: number;
   compensacao_prejuizos: number;
   lucro_real: number;
-  
+
   // IRPJ
   irpj_aliquota_normal: number;
   irpj_normal: number;
   irpj_adicional_base: number;
   irpj_adicional: number;
   irpj_total: number;
-  
+
   // CSLL
   csll_aliquota: number;
   csll_base: number;
   csll_total: number;
-  
+
   // Deduções
   irpj_incentivos_deducoes: number;
   total_tributos: number;
-  
+
   // Retenções
   irrf_retido: number;
   csrf_retido: number;
   saldo_negativo_anterior: number;
   estimativas_pagas: number;
-  
+
   // Saldo Final
   irpj_a_pagar: number;
   csll_a_pagar: number;
   saldo_negativo_irpj: number;
   saldo_negativo_csll: number;
-  
+
   // Controle
   status: 'rascunho' | 'calculado' | 'revisado' | 'transmitido' | 'retificado';
   data_transmissao?: string;
   numero_recibo?: string;
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -97,11 +96,42 @@ export interface LalurLancamento {
   historico?: string;
 }
 
+// Deriva o intervalo de datas do período de apuração a partir do tipo/ano/trimestre/mês.
+function calcularPeriodoApuracao(
+  tipo: 'trimestral' | 'anual' | 'estimativa',
+  ano: number,
+  trimestre?: number,
+  mes?: number
+): { periodo_inicio: string; periodo_fim: string } {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const ultimoDia = (y: number, m: number) => new Date(y, m, 0).getDate();
+
+  if (tipo === 'estimativa') {
+    const m = mes ?? 1;
+    return {
+      periodo_inicio: `${ano}-${pad(m)}-01`,
+      periodo_fim: `${ano}-${pad(m)}-${pad(ultimoDia(ano, m))}`,
+    };
+  }
+
+  if (tipo === 'trimestral') {
+    const t = trimestre ?? 1;
+    const mesInicio = (t - 1) * 3 + 1;
+    const mesFim = mesInicio + 2;
+    return {
+      periodo_inicio: `${ano}-${pad(mesInicio)}-01`,
+      periodo_fim: `${ano}-${pad(mesFim)}-${pad(ultimoDia(ano, mesFim))}`,
+    };
+  }
+
+  return { periodo_inicio: `${ano}-01-01`, periodo_fim: `${ano}-12-31` };
+}
+
 // Limite de isenção do adicional de IRPJ por mês
 const LIMITE_ADICIONAL_MES = 20000;
 // Alíquotas
 const ALIQUOTA_IRPJ = 0.15;
-const ALIQUOTA_IRPJ_ADICIONAL = 0.10;
+const ALIQUOTA_IRPJ_ADICIONAL = 0.1;
 const ALIQUOTA_CSLL = 0.09;
 
 export function useIRPJCSLL(empresaId?: string) {
@@ -116,11 +146,11 @@ export function useIRPJCSLL(empresaId?: string) {
         .select('*')
         .order('ano', { ascending: false })
         .order('trimestre', { ascending: false });
-      
+
       if (empresaId) {
         query = query.eq('empresa_id', empresaId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as ApuracaoIRPJCSLL[];
@@ -136,11 +166,11 @@ export function useIRPJCSLL(empresaId?: string) {
         .select('*')
         .eq('status', 'disponivel')
         .order('ano_origem', { ascending: true });
-      
+
       if (empresaId) {
         query = query.eq('empresa_id', empresaId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as PrejuizoFiscal[];
@@ -149,8 +179,14 @@ export function useIRPJCSLL(empresaId?: string) {
 
   // Saldo de prejuízos disponíveis
   const saldoPrejuizos = {
-    irpj: prejuizos?.filter(p => p.tipo === 'IRPJ').reduce((acc, p) => acc + Number(p.saldo_disponivel), 0) || 0,
-    csll: prejuizos?.filter(p => p.tipo === 'CSLL').reduce((acc, p) => acc + Number(p.saldo_disponivel), 0) || 0,
+    irpj:
+      prejuizos
+        ?.filter((p) => p.tipo === 'IRPJ')
+        .reduce((acc, p) => acc + Number(p.saldo_disponivel), 0) || 0,
+    csll:
+      prejuizos
+        ?.filter((p) => p.tipo === 'CSLL')
+        .reduce((acc, p) => acc + Number(p.saldo_disponivel), 0) || 0,
   };
 
   // Criar apuração
@@ -166,11 +202,12 @@ export function useIRPJCSLL(empresaId?: string) {
         .from('apuracoes_irpj_csll')
         .insert({
           ...input,
+          ...calcularPeriodoApuracao(input.tipo_apuracao, input.ano, input.trimestre, input.mes),
           status: 'rascunho',
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -183,7 +220,12 @@ export function useIRPJCSLL(empresaId?: string) {
 
   // Calcular apuração
   const calcularApuracao = useMutation({
-    mutationFn: async ({ id, lucroContabil, adicoes, exclusoes }: {
+    mutationFn: async ({
+      id,
+      lucroContabil,
+      adicoes,
+      exclusoes,
+    }: {
       id: string;
       lucroContabil: number;
       adicoes: { permanentes: number; temporarias: number };
@@ -195,53 +237,55 @@ export function useIRPJCSLL(empresaId?: string) {
         .select('*')
         .eq('id', id)
         .single();
-      
+
       if (fetchError) throw fetchError;
 
       const totalAdicoes = adicoes.permanentes + adicoes.temporarias;
       const totalExclusoes = exclusoes.permanentes + exclusoes.temporarias;
-      
+
       // Lucro Real antes da compensação
       const lucroRealAntesComp = lucroContabil + totalAdicoes - totalExclusoes;
-      
+
       // Compensação de prejuízos (máximo 30%)
-      const limiteCompensacao = Math.max(0, lucroRealAntesComp * 0.30);
+      const limiteCompensacao = Math.max(0, lucroRealAntesComp * 0.3);
       const compensacaoPrejuizos = Math.min(limiteCompensacao, saldoPrejuizos.irpj);
-      
+
       // Lucro Real
       const lucroReal = Math.max(0, lucroRealAntesComp - compensacaoPrejuizos);
-      
+
       // IRPJ Normal (15%)
       const irpjNormal = lucroReal * ALIQUOTA_IRPJ;
-      
+
       // IRPJ Adicional (10% sobre excedente)
       let mesesPeriodo = 3; // Trimestral
       if (apuracao.tipo_apuracao === 'anual') mesesPeriodo = 12;
       if (apuracao.tipo_apuracao === 'estimativa') mesesPeriodo = 1;
-      
+
       const limiteIsentoAdicional = LIMITE_ADICIONAL_MES * mesesPeriodo;
       const baseAdicional = Math.max(0, lucroReal - limiteIsentoAdicional);
       const irpjAdicional = baseAdicional * ALIQUOTA_IRPJ_ADICIONAL;
-      
+
       const irpjTotal = irpjNormal + irpjAdicional;
-      
+
       // CSLL (9%)
       const csllBase = lucroReal;
       const csllTotal = csllBase * ALIQUOTA_CSLL;
-      
+
       // Total
       const totalTributos = irpjTotal + csllTotal;
-      
+
       // Deduzir retenções e estimativas
       const irrf = Number(apuracao.irrf_retido) || 0;
       const csrf = Number(apuracao.csrf_retido) || 0;
       const saldoNegAnterior = Number(apuracao.saldo_negativo_anterior) || 0;
       const estimativas = Number(apuracao.estimativas_pagas) || 0;
-      
+
       const irpjAPagar = Math.max(0, irpjTotal - irrf - saldoNegAnterior - estimativas);
       const csllAPagar = Math.max(0, csllTotal - csrf);
-      
-      const saldoNegativoIrpj = Math.abs(Math.min(0, irpjTotal - irrf - saldoNegAnterior - estimativas));
+
+      const saldoNegativoIrpj = Math.abs(
+        Math.min(0, irpjTotal - irrf - saldoNegAnterior - estimativas)
+      );
       const saldoNegativoCsll = Math.abs(Math.min(0, csllTotal - csrf));
 
       // Atualizar
@@ -274,7 +318,7 @@ export function useIRPJCSLL(empresaId?: string) {
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -294,6 +338,12 @@ export function useIRPJCSLL(empresaId?: string) {
       trimestre_origem?: number;
       valor: number;
     }) => {
+      const { periodo_inicio } = calcularPeriodoApuracao(
+        input.trimestre_origem ? 'trimestral' : 'anual',
+        input.ano_origem,
+        input.trimestre_origem
+      );
+
       const { data, error } = await supabase
         .from('prejuizos_fiscais')
         .insert({
@@ -301,6 +351,7 @@ export function useIRPJCSLL(empresaId?: string) {
           tipo: input.tipo,
           ano_origem: input.ano_origem,
           trimestre_origem: input.trimestre_origem,
+          periodo: periodo_inicio,
           valor_original: input.valor,
           valor_compensado: 0,
           saldo_disponivel: input.valor,
@@ -308,7 +359,7 @@ export function useIRPJCSLL(empresaId?: string) {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },

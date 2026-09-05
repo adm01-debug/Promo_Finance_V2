@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -11,7 +10,7 @@ interface UserSession {
   device_info: string | null;
   ip_address: string | null;
   user_agent: string | null;
-  last_activity: string;
+  last_active: string;
   created_at: string;
   is_current: boolean;
   revoked: boolean;
@@ -25,7 +24,7 @@ export function useSessions() {
 
   const parseUserAgent = (ua: string | null): string => {
     if (!ua) return 'Dispositivo desconhecido';
-    
+
     const patterns = [
       { regex: /Windows NT 10/i, name: 'Windows 10' },
       { regex: /Windows NT 6.3/i, name: 'Windows 8.1' },
@@ -76,14 +75,15 @@ export function useSessions() {
         .select('*')
         .eq('user_id', user.id)
         .eq('revoked', false)
-        .order('last_activity', { ascending: false });
+        .order('last_active', { ascending: false });
 
       if (error) {
         logger.error('[useSessions] Erro ao buscar sessões:', error);
         return;
       }
 
-      setSessions(data || []);
+      // ip_address vem como `unknown` do Postgrest (tipo inet do Postgres serializado como string).
+      setSessions((data ?? []) as unknown as UserSession[]);
     } catch {
       // Silently fail - sessions will remain empty
     } finally {
@@ -111,16 +111,14 @@ export function useSessions() {
 
       const deviceInfo = parseUserAgent(navigator.userAgent);
 
-      const { error } = await supabase
-        .from('user_sessions')
-        .insert({
-          user_id: user.id,
-          device_info: deviceInfo,
-          ip_address: ipAddress,
-          user_agent: navigator.userAgent,
-          is_current: true,
-          last_activity: new Date().toISOString(),
-        });
+      const { error } = await supabase.from('user_sessions').insert({
+        user_id: user.id,
+        device_info: deviceInfo,
+        ip_address: ipAddress,
+        user_agent: navigator.userAgent,
+        is_current: true,
+        last_active: new Date().toISOString(),
+      });
 
       if (error) {
         logger.error('[useSessions] Erro ao criar sessão:', error);
@@ -144,7 +142,7 @@ export function useSessions() {
 
       if (error) throw error;
 
-      setSessions(prev => prev.filter(s => s.id !== sessionId));
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
       toast.success('Sessão encerrada');
     } catch (error: unknown) {
       logger.error('[useSessions] Erro ao encerrar sessão:', error);
@@ -167,7 +165,7 @@ export function useSessions() {
 
       if (error) throw error;
 
-      setSessions(prev => prev.filter(s => s.is_current));
+      setSessions((prev) => prev.filter((s) => s.is_current));
       toast.success('Todas as outras sessões foram encerradas');
     } catch (error: unknown) {
       logger.error('[useSessions] Erro ao encerrar sessões:', error);
@@ -179,7 +177,7 @@ export function useSessions() {
     try {
       await supabase
         .from('user_sessions')
-        .update({ last_activity: new Date().toISOString() })
+        .update({ last_active: new Date().toISOString() })
         .eq('id', sessionId);
     } catch {
       // Silently fail - activity update is not critical
