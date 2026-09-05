@@ -1,22 +1,26 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { ExternalListResponse } from './types';
 import { env } from '@/config/env';
+import type { ExternalListResponse } from './types';
 
 const EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES = new Set([
+  'External DB not configured',
   'EXTERNAL_DB_NOT_CONFIGURED',
-  'EXTERNAL_DB_ERROR',
-  'EXTERNAL_DB_TIMEOUT',
 ]);
 
-function isExternalDataNotConfigured(payload: { error?: string; message?: string } | null): boolean {
+export function isExternalDataNotConfigured(
+  payload: ExternalListResponse<unknown> | null | undefined,
+) {
+  if (!payload) return false;
   return (
-    EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES.has(payload?.error ?? '') ||
-    EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES.has(payload?.message ?? '')
+    EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES.has(payload.error ?? '') ||
+    Boolean(payload.fallback) ||
+    (payload.message?.toLowerCase().includes('não configurada') ?? false) ||
+    (payload.message?.toLowerCase().includes('not configured') ?? false)
   );
 }
 
-export async function fetchExternalList<T>(params: {
-  tabela: string;
+export async function fetchExternalData<T>(params: {
+  tabela: 'clientes' | 'fornecedores';
   limit: number;
   page?: number;
   search?: string;
@@ -57,5 +61,9 @@ export async function fetchExternalList<T>(params: {
     );
   }
 
-  return payload as ExternalListResponse<T>;
+  if (isExternalDataNotConfigured(payload)) {
+    return { ...payload, data: [], total: 0, total_pages: 0, fallback: true };
+  }
+
+  return payload ?? { data: [], total: 0, total_pages: 0 };
 }
