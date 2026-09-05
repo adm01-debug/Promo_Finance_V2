@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
+import { env } from '@/config/env';
 
 interface SyncLog {
   id: string;
@@ -42,7 +43,6 @@ export function useBitrix24() {
   const [syncProgress, setSyncProgress] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
 
-  // Fetch sync logs
   const { data: syncLogs, isLoading: logsLoading, refetch: refetchLogs } = useQuery({
     queryKey: ['bitrix-sync-logs'],
     queryFn: async () => {
@@ -51,13 +51,11 @@ export function useBitrix24() {
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
-      
       if (error) throw error;
       return data as SyncLog[];
     },
   });
 
-  // Fetch field mappings
   const { data: fieldMappings, isLoading: mappingsLoading, refetch: refetchMappings } = useQuery({
     queryKey: ['bitrix-field-mappings'],
     queryFn: async () => {
@@ -65,13 +63,11 @@ export function useBitrix24() {
         .from('bitrix_field_mappings')
         .select('*')
         .order('entidade', { ascending: true });
-      
       if (error) throw error;
       return data as FieldMapping[];
     },
   });
 
-  // Fetch deals synced from Bitrix (contas_receber with bitrix_deal_id)
   const { data: syncedDeals, isLoading: dealsLoading, refetch: refetchDeals } = useQuery({
     queryKey: ['bitrix-synced-deals'],
     queryFn: async () => {
@@ -80,13 +76,11 @@ export function useBitrix24() {
         .select('*')
         .not('bitrix_deal_id', 'is', null)
         .order('created_at', { ascending: false });
-      
       if (error) throw error;
       return data;
     },
   });
 
-  // Fetch clients synced from Bitrix
   const { data: syncedClients, isLoading: clientsLoading, refetch: refetchClients } = useQuery({
     queryKey: ['bitrix-synced-clients'],
     queryFn: async () => {
@@ -95,22 +89,17 @@ export function useBitrix24() {
         .select('*')
         .not('bitrix_id', 'is', null)
         .order('created_at', { ascending: false });
-      
       if (error) throw error;
       return data;
     },
   });
 
-  // Call edge function for sync actions
   const callBitrixSync = useCallback(async (action: string, params?: Record<string, unknown>): Promise<SyncResult> => {
     const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      throw new Error('Usuário não autenticado');
-    }
+    if (!session) throw new Error('Usuário não autenticado');
 
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/bitrix24-sync`,
+      `${env.SUPABASE_URL}/functions/v1/bitrix24-sync`,
       {
         method: 'POST',
         headers: {
@@ -125,11 +114,9 @@ export function useBitrix24() {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || 'Erro na comunicação com Bitrix24');
     }
-
     return response.json();
   }, []);
 
-  // Test connection
   const testConnection = useCallback(async () => {
     try {
       const result = await callBitrixSync('test_connection');
@@ -142,189 +129,86 @@ export function useBitrix24() {
     }
   }, [callBitrixSync]);
 
-  // Sync mutations
   const syncDealsMutation = useMutation({
     mutationFn: () => callBitrixSync('sync_deals'),
     onSuccess: (result) => {
-      toast({
-        title: result.success ? 'Deals sincronizados' : 'Sincronização parcial',
-        description: result.message,
-        variant: result.success ? 'default' : 'destructive',
-      });
-      refetchLogs();
-      refetchDeals();
+      toast({ title: result.success ? 'Deals sincronizados' : 'Sincronização parcial', description: result.message, variant: result.success ? 'default' : 'destructive' });
+      refetchLogs(); refetchDeals();
     },
-    onError: (error: Error) => {
-      toast({
-        title: 'Erro na sincronização',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
+    onError: (error: Error) => { toast({ title: 'Erro na sincronização', description: error.message, variant: 'destructive' }); },
   });
 
   const syncContactsMutation = useMutation({
     mutationFn: () => callBitrixSync('sync_contacts'),
     onSuccess: (result) => {
-      toast({
-        title: result.success ? 'Contatos sincronizados' : 'Sincronização parcial',
-        description: result.message,
-        variant: result.success ? 'default' : 'destructive',
-      });
-      refetchLogs();
-      refetchClients();
+      toast({ title: result.success ? 'Contatos sincronizados' : 'Sincronização parcial', description: result.message, variant: result.success ? 'default' : 'destructive' });
+      refetchLogs(); refetchClients();
     },
-    onError: (error: Error) => {
-      toast({
-        title: 'Erro na sincronização',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
+    onError: (error: Error) => { toast({ title: 'Erro na sincronização', description: error.message, variant: 'destructive' }); },
   });
 
   const syncCompaniesMutation = useMutation({
     mutationFn: () => callBitrixSync('sync_companies'),
     onSuccess: (result) => {
-      toast({
-        title: result.success ? 'Empresas sincronizadas' : 'Sincronização parcial',
-        description: result.message,
-        variant: result.success ? 'default' : 'destructive',
-      });
-      refetchLogs();
-      refetchClients();
+      toast({ title: result.success ? 'Empresas sincronizadas' : 'Sincronização parcial', description: result.message, variant: result.success ? 'default' : 'destructive' });
+      refetchLogs(); refetchClients();
     },
-    onError: (error: Error) => {
-      toast({
-        title: 'Erro na sincronização',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
+    onError: (error: Error) => { toast({ title: 'Erro na sincronização', description: error.message, variant: 'destructive' }); },
   });
 
   const exportPaymentStatusMutation = useMutation({
     mutationFn: () => callBitrixSync('export_payment_status'),
     onSuccess: (result) => {
-      toast({
-        title: result.success ? 'Status exportados' : 'Exportação parcial',
-        description: result.message,
-        variant: result.success ? 'default' : 'destructive',
-      });
+      toast({ title: result.success ? 'Status exportados' : 'Exportação parcial', description: result.message, variant: result.success ? 'default' : 'destructive' });
       refetchLogs();
     },
-    onError: (error: Error) => {
-      toast({
-        title: 'Erro na exportação',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
+    onError: (error: Error) => { toast({ title: 'Erro na exportação', description: error.message, variant: 'destructive' }); },
   });
 
-  // Toggle field mapping
   const toggleMappingMutation = useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await supabase
-        .from('bitrix_field_mappings')
-        .update({ ativo })
-        .eq('id', id);
-      
+      const { error } = await supabase.from('bitrix_field_mappings').update({ ativo }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
       refetchMappings();
-      toast({
-        title: 'Mapeamento atualizado',
-        description: 'Configuração salva com sucesso.',
-      });
+      toast({ title: 'Mapeamento atualizado', description: 'Configuração salva com sucesso.' });
     },
   });
 
-  // Full sync (all entities)
   const fullSync = useCallback(async () => {
-    setIsSyncing(true);
-    setSyncProgress(0);
-
+    setIsSyncing(true); setSyncProgress(0);
     try {
-      // Test connection first
       setSyncProgress(5);
       const connectionResult = await testConnection();
-      
-      if (!connectionResult.success) {
-        throw new Error('Falha na conexão com Bitrix24');
-      }
-
-      // Sync contacts
-      setSyncProgress(20);
-      await syncContactsMutation.mutateAsync();
-
-      // Sync companies
-      setSyncProgress(40);
-      await syncCompaniesMutation.mutateAsync();
-
-      // Sync deals
-      setSyncProgress(60);
-      await syncDealsMutation.mutateAsync();
-
-      // Export payment status
-      setSyncProgress(80);
-      await exportPaymentStatusMutation.mutateAsync();
-
+      if (!connectionResult.success) throw new Error('Falha na conexão com Bitrix24');
+      setSyncProgress(20); await syncContactsMutation.mutateAsync();
+      setSyncProgress(40); await syncCompaniesMutation.mutateAsync();
+      setSyncProgress(60); await syncDealsMutation.mutateAsync();
+      setSyncProgress(80); await exportPaymentStatusMutation.mutateAsync();
       setSyncProgress(100);
-      
-      toast({
-        title: 'Sincronização completa',
-        description: 'Todos os dados foram sincronizados com sucesso.',
-      });
+      toast({ title: 'Sincronização completa', description: 'Todos os dados foram sincronizados com sucesso.' });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      toast({
-        title: 'Erro na sincronização',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast({ title: 'Erro na sincronização', description: error instanceof Error ? error.message : 'Erro desconhecido', variant: 'destructive' });
     } finally {
-      setIsSyncing(false);
-      setSyncProgress(0);
+      setIsSyncing(false); setSyncProgress(0);
     }
   }, [testConnection, syncContactsMutation, syncCompaniesMutation, syncDealsMutation, exportPaymentStatusMutation, toast]);
 
-  // Check connection on mount
-  useEffect(() => {
-    testConnection().catch(() => setIsConnected(false));
-  }, [testConnection]);
+  useEffect(() => { testConnection().catch(() => setIsConnected(false)); }, [testConnection]);
 
-  // Stats calculation
   const stats = {
     totalSincronizados: (syncedDeals?.length || 0) + (syncedClients?.length || 0),
     dealsImportados: syncedDeals?.length || 0,
     clientesImportados: syncedClients?.length || 0,
     ultimaSync: syncLogs?.[0]?.finalizado_em || syncLogs?.[0]?.iniciado_em,
-    errosHoje: syncLogs?.filter(
-      (log) => 
-        log.status === 'erro' && 
-        new Date(log.created_at).toDateString() === new Date().toDateString()
-    ).length || 0,
+    errosHoje: syncLogs?.filter(log => log.status === 'erro' && new Date(log.created_at).toDateString() === new Date().toDateString()).length || 0,
   };
 
   return {
-    // State
-    isConnected,
-    isSyncing,
-    syncProgress,
-    
-    // Data
-    syncLogs,
-    fieldMappings,
-    syncedDeals,
-    syncedClients,
-    stats,
-    
-    // Loading states
+    isConnected, isSyncing, syncProgress,
+    syncLogs, fieldMappings, syncedDeals, syncedClients, stats,
     isLoading: logsLoading || mappingsLoading || dealsLoading || clientsLoading,
-    
-    // Actions
     testConnection,
     syncDeals: syncDealsMutation.mutate,
     syncContacts: syncContactsMutation.mutate,
@@ -332,13 +216,6 @@ export function useBitrix24() {
     exportPaymentStatus: exportPaymentStatusMutation.mutate,
     fullSync,
     toggleMapping: toggleMappingMutation.mutate,
-    
-    // Refetch
-    refetchAll: () => {
-      refetchLogs();
-      refetchMappings();
-      refetchDeals();
-      refetchClients();
-    },
+    refetchAll: () => { refetchLogs(); refetchMappings(); refetchDeals(); refetchClients(); },
   };
 }
