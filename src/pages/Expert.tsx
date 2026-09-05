@@ -41,6 +41,7 @@ import { ptBR } from 'date-fns/locale';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { supabase } from '@/integrations/supabase/client';
+import { env } from '@/config/env';
 
 interface LocalMessage {
   id: string;
@@ -51,7 +52,7 @@ interface LocalMessage {
   actionsExecuted?: boolean;
 }
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/expert-agent`;
+const CHAT_URL = `${env.SUPABASE_URL}/functions/v1/expert-agent`;
 
 export default function Expert() {
   const [messages, setMessages] = useState<LocalMessage[]>([]);

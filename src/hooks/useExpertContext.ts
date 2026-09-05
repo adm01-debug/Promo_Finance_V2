@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, startOfMonth, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { env } from '@/config/env';
 
 interface ExpertContextData {
   resumoFinanceiro: string;
@@ -64,13 +65,13 @@ export function useExpertContext(): ExpertContextData {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return [];
 
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const projectId = env.SUPABASE_PROJECT_ID;
       const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=20`;
 
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          'apikey': env.SUPABASE_PUBLISHABLE_KEY,
         },
       });
 
