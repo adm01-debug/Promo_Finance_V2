@@ -123,7 +123,12 @@ BEGIN
           AND (
             p.qual IS NULL
             OR p.qual !~* 'empresa_id'
-            OR p.qual ~* tautologia
+            -- Substring, não match da expressão inteira: só conta como
+            -- tautologia se NÃO houver, em outro trecho do mesmo qual, uma
+            -- chamada real de escopo — senão uma policy legítima como
+            -- "empresa_id IS NOT NULL AND empresa_acessivel(empresa_id)"
+            -- seria falso-positivo (achado de 2 bot reviewers no PR #56).
+            OR (p.qual ~* tautologia AND p.qual !~* 'empresa_acessivel|empresa_membro_ativo')
           )
         )
         OR
@@ -134,7 +139,10 @@ BEGIN
           AND (
             COALESCE(p.with_check, p.qual) IS NULL
             OR COALESCE(p.with_check, p.qual) !~* 'empresa_id'
-            OR COALESCE(p.with_check, p.qual) ~* tautologia
+            OR (
+              COALESCE(p.with_check, p.qual) ~* tautologia
+              AND COALESCE(p.with_check, p.qual) !~* 'empresa_acessivel|empresa_membro_ativo'
+            )
           )
         )
       )
