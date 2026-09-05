@@ -45,6 +45,9 @@ verify_jwt = false
 [functions.analise-fluxo-ia]
 verify_jwt = false
 
+[functions.ci-security-gate-log]
+verify_jwt = false
+
 [functions.send-device-alert]
 verify_jwt = false
 
@@ -67,6 +70,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.external-data]
+verify_jwt = false
+
+[functions.n8n-callback]
 verify_jwt = false
 
 [functions.compare-schemas]
@@ -112,6 +118,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.sefaz-dfe-dispatcher]
+verify_jwt = false
+
+[functions.notify-performance-alert]
 verify_jwt = false
 
 [functions.sefaz-dfe-puxar]
