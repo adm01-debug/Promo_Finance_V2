@@ -3,13 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { STALE_TIMES } from '@/lib/queryClient';
 import type {
-import { env } from '@/config/env';
   CentroCusto,
   ContaBancaria,
   ContaBancariaComRegras,
   Empresa,
   RegraRoteamento,
 } from './types';
+import { env } from '@/config/env';
 
 export function useEmpresas() {
   return useQuery({
