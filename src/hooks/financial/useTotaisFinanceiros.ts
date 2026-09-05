@@ -29,9 +29,17 @@ const TOTAIS_RECEBER_VAZIO: TotaisContasReceber = {
 // Totais agregados via SUM() no banco (RPC totais_contas_pagar/receber),
 // sem o cap de 1000 linhas que afeta useContasPagar/useContasReceber —
 // ver B2 em docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md.
+//
+// queryKey aninhada sob 'contas-pagar'/'contas-receber' (não uma raiz nova
+// 'totais-contas-pagar') deliberadamente: todo mutation site do projeto já
+// chama queryClient.invalidateQueries({ queryKey: ['contas-pagar'] }) (ou
+// ['contas-receber']) sem `exact: true` — o React Query invalida por
+// prefixo por padrão, então esses ~20 pontos de invalidação já existentes
+// (criar/editar/pagar/conciliar conta) passam a cobrir estes totais
+// automaticamente, sem precisar tocar em nenhum deles.
 export function useTotaisContasPagar(empresaId?: string | null, centroCustoId?: string | null) {
   return useQuery<TotaisContasPagar>({
-    queryKey: ['totais-contas-pagar', empresaId ?? null, centroCustoId ?? null],
+    queryKey: ['contas-pagar', 'totais', empresaId ?? null, centroCustoId ?? null],
     queryFn: async () => {
       const { data, error } = await supabase.rpc(
         'totais_contas_pagar' as never,
@@ -50,7 +58,7 @@ export function useTotaisContasPagar(empresaId?: string | null, centroCustoId?: 
 
 export function useTotaisContasReceber(empresaId?: string | null, centroCustoId?: string | null) {
   return useQuery<TotaisContasReceber>({
-    queryKey: ['totais-contas-receber', empresaId ?? null, centroCustoId ?? null],
+    queryKey: ['contas-receber', 'totais', empresaId ?? null, centroCustoId ?? null],
     queryFn: async () => {
       const { data, error } = await supabase.rpc(
         'totais_contas_receber' as never,
