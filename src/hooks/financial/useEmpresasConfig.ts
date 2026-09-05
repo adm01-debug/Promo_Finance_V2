@@ -1,96 +1,79 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
-import { STALE_TIMES } from '@/lib/queryClient';
-import type {
-  CentroCusto,
-  ContaBancaria,
-  ContaBancariaComRegras,
-  Empresa,
-  RegraRoteamento,
-} from './types';
+import { env } from '@/config/env';
+import type { ExternalListResponse } from './types';
 
-export function useEmpresas() {
+type Empresa = {
+  id: string;
+  nome: string;
+  cnpj?: string;
+  ativa: boolean;
+  eh_principal: boolean;
+  supabase_project_id?: string;
+  supabase_anon_key?: string;
+};
+
+export function useEmpresasConfig() {
   return useQuery({
-    queryKey: ['empresas'],
-    queryFn: async () => {
+    queryKey: ['empresas-config'],
+    queryFn: async (): Promise<Empresa[]> => {
       const { data, error } = await supabase
         .from('empresas')
-        .select('*')
-        .eq('ativo', true)
-        .order('razao_social');
+        .select('id, nome, cnpj, ativa, eh_principal, supabase_project_id, supabase_anon_key')
+        .eq('ativa', true)
+        .order('eh_principal', { ascending: false });
+
       if (error) throw error;
-      return data as Empresa[];
+      return data ?? [];
     },
-    staleTime: STALE_TIMES.static,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useCentrosCusto(empresaId?: string) {
-  return useQuery({
-    queryKey: ['centros-custo', empresaId || 'all'],
-    queryFn: async () => {
-      let query = supabase
-        .from('centros_custo')
-        .select('*')
-        .eq('ativo', true)
-        .order('nome');
+export async function fetchEmpresaExternalData<T>(params: {
+  empresa: Empresa;
+  tabela: string;
+  limit: number;
+  page?: number;
+  search?: string;
+}): Promise<ExternalListResponse<T>> {
+  const { empresa } = params;
 
-      if (empresaId && empresaId !== 'all') {
-        query = query.eq('empresa_id', empresaId);
-      }
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) throw new Error('Não autenticado');
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as CentroCusto[];
-    },
-    staleTime: STALE_TIMES.static,
+  // Se a empresa tem projeto externo configurado, usa esse; caso contrário usa o projeto principal
+  const projectId = empresa.supabase_project_id ?? env.SUPABASE_PROJECT_ID;
+  const apiKey = empresa.supabase_anon_key ?? env.SUPABASE_PUBLISHABLE_KEY;
+
+  const queryParams = new URLSearchParams({
+    tabela: params.tabela,
+    limit: String(params.limit),
+    ...(params.page ? { page: String(params.page) } : {}),
+    ...(params.search ? { search: params.search } : {}),
   });
-}
 
-export function useContasBancarias(empresaId?: string) {
-  return useQuery({
-    queryKey: ['contas-bancarias', empresaId],
-    queryFn: async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error('Não autenticado');
+  const client = empresa.supabase_project_id ? supabaseDyn(projectId, apiKey) : supabase;
+  void client; // usado abaixo via fetch direto para manter headers corretos
 
-      const queryParams = new URLSearchParams({
-        select: '*,empresas:empresa_id(razao_social,nome_fantasia)',
-        ativo: 'eq.true',
-        order: 'banco',
-      });
-
-      if (empresaId && empresaId !== 'all') {
-        queryParams.append('empresa_id', `eq.${empresaId}`);
-      }
-
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const response = await fetch(
-        `https://${projectId}.supabase.co/rest/v1/contas_bancarias?${queryParams}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-        },
-      );
-
-      if (!response.ok) throw new Error('Erro ao buscar contas bancárias');
-      const data = await response.json();
-
-      const { data: rules } = await supabaseDyn
-        .from<RegraRoteamento>('regras_roteamento_financeiro')
-        .select('*')
-        .eq('ativo', true);
-
-      return ((data || []) as ContaBancaria[]).map((conta) => ({
-        ...conta,
-        regras: (rules || []).filter((r) => r.conta_bancaria_id === conta.id),
-      })) as ContaBancariaComRegras[];
+  const response = await fetch(
+    `https://${projectId}.supabase.co/functions/v1/external-data?${queryParams}`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        apikey: apiKey,
+      },
     },
-    staleTime: STALE_TIMES.config,
-  });
+  );
+
+  const payload = (await response.json().catch(() => null)) as ExternalListResponse<T> | null;
+
+  if (!response.ok) {
+    return { data: [], total: 0, total_pages: 0, fallback: true };
+  }
+
+  return payload ?? { data: [], total: 0, total_pages: 0 };
 }
