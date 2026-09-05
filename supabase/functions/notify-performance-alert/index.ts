@@ -1,105 +1,135 @@
 // Envia notificação (Slack e/ou e-mail via Resend) para alertas críticos de performance.
-// Chamado pelo trigger DB `performance_alerts_notify_trigger` via pg_net após INSERT crítico.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+// Chamado por automações internas autenticadas via service_role ou x-cron-secret.
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { exigirChamadaInterna, type ChamadaInterna } from '../_shared/auth-guard.ts';
+import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-interface AlertPayload {
-  id?: string;
-  source?: string;
-  alert_key?: string;
-  severity?: string;
-  reason?: string | null;
-  current_value?: number | null;
-  baseline_value?: number | null;
-  ratio?: number | null;
-  sample_count?: number | null;
-  query_snippet?: string | null;
-  created_at?: string;
+const alertShape = z
+  .object({
+    id: z.string().optional(),
+    source: z.string().optional(),
+    alert_key: z.string().optional(),
+    severity: z.string(),
+    reason: z.string().nullable().optional(),
+    current_value: z.number().nullable().optional(),
+    baseline_value: z.number().nullable().optional(),
+    ratio: z.number().nullable().optional(),
+    sample_count: z.number().nullable().optional(),
+    query_snippet: z.string().nullable().optional(),
+    created_at: z.string().optional(),
+  })
+  .passthrough();
+
+const schema = z.union([z.object({ alert: alertShape }).passthrough(), alertShape]);
+
+type AlertBody = { alert: AlertPayload } | AlertPayload;
+
+export interface HandlerDeps {
+  getEnv: (name: string) => string | undefined;
+  guardInternal: (
+    req: Request,
+    secretKey: string
+  ) => Promise<{ ok: true; dados: ChamadaInterna } | { ok: false; resposta: Response }>;
+  readJson: (req: Request) => Promise<unknown>;
+  fetch: typeof fetch;
+  telemetryInsert: (row: Record<string, unknown>) => Promise<void>;
+  nowIso: () => string;
 }
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+type AlertPayload = z.infer<typeof alertShape>;
 
-  try {
-    const raw = await req.json();
-    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
-    const AlertShape = z.record(z.any());
-    const Schema = z.union([z.object({ alert: AlertShape }).passthrough(), AlertShape]);
-    const parsed = validatePayload(Schema, raw, 'notify-performance-alert');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
-    const body = parsed.data as { alert?: AlertPayload } | AlertPayload;
-    const alert: AlertPayload = (body as { alert?: AlertPayload })?.alert ?? (body as AlertPayload);
+export function createHandler(deps: HandlerDeps) {
+  return async (req: Request): Promise<Response> => {
+    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+    if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
-    if (!alert || !alert.severity) {
-      return new Response(JSON.stringify({ error: "payload inválido" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const auth = await deps.guardInternal(req, 'internal_jobs');
+    if (!auth.ok) return withCors(auth.resposta);
+
+    let raw: unknown;
+    try {
+      raw = await deps.readJson(req);
+    } catch (error) {
+      return json({ error: error instanceof Error ? error.message : 'invalid_json' }, 400);
     }
 
-    // Só notifica crítico/warning
-    if (alert.severity !== "critical" && alert.severity !== "warning") {
-      return new Response(JSON.stringify({ ok: true, skipped: "severity" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const parsed = validatePayload(schema, raw, 'notify-performance-alert');
+    if (!parsed.success) return withCors(createErrorResponse(parsed.error, 400, parsed.details));
+    const alert = extractAlert(parsed.data as AlertBody);
+
+    if (!alert?.severity) {
+      return json({ error: 'payload inválido' }, 400);
     }
 
-    const slackUrl = Deno.env.get("SLACK_WEBHOOK_URL");
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    const emailTo = Deno.env.get("ALERTS_EMAIL_TO");
-    const emailFrom = Deno.env.get("ALERTS_EMAIL_FROM") ?? "alerts@resend.dev";
+    if (alert.severity !== 'critical' && alert.severity !== 'warning') {
+      return json({ ok: true, skipped: 'severity' }, 200);
+    }
 
-    const emoji = alert.severity === "critical" ? "🚨" : "⚠️";
+    const slackUrl = deps.getEnv('SLACK_WEBHOOK_URL');
+    const resendKey = deps.getEnv('RESEND_API_KEY');
+    const emailTo = deps.getEnv('ALERTS_EMAIL_TO');
+    const emailFrom = deps.getEnv('ALERTS_EMAIL_FROM') ?? 'alerts@resend.dev';
+
+    const emoji = alert.severity === 'critical' ? '🚨' : '⚠️';
     const title = `${emoji} Regressão de performance (${alert.severity})`;
-    const ratioTxt = alert.ratio != null ? `${Number(alert.ratio).toFixed(2)}x` : "—";
-    const curTxt = alert.current_value != null ? `${Math.round(alert.current_value)}ms` : "—";
-    const baseTxt = alert.baseline_value != null ? `${Math.round(alert.baseline_value)}ms` : "—";
-    const summary = alert.reason || alert.alert_key || "Regressão detectada";
+    const ratioTxt = alert.ratio != null ? `${Number(alert.ratio).toFixed(2)}x` : '—';
+    const curTxt = alert.current_value != null ? `${Math.round(alert.current_value)}ms` : '—';
+    const baseTxt = alert.baseline_value != null ? `${Math.round(alert.baseline_value)}ms` : '—';
+    const summary = alert.reason || alert.alert_key || 'Regressão detectada';
 
     const results: Record<string, unknown> = {};
 
-    // Slack
     if (slackUrl) {
-      const slackRes = await fetch(slackUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const slackRes = await deps.fetch(slackUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: `${title}\n*${summary}*\n• Atual: ${curTxt} • Baseline: ${baseTxt} • Ratio: ${ratioTxt}\n• Origem: ${alert.source ?? "—"} • Amostras: ${alert.sample_count ?? "—"}${alert.query_snippet ? `\n\`\`\`${alert.query_snippet.slice(0, 400)}\`\`\`` : ""}`,
+          text:
+            `${title}\n*${summary}*\n• Atual: ${curTxt} • Baseline: ${baseTxt} • Ratio: ${ratioTxt}\n` +
+            `• Origem: ${alert.source ?? '—'} • Amostras: ${alert.sample_count ?? '—'}` +
+            (alert.query_snippet ? `\n\`\`\`${alert.query_snippet.slice(0, 400)}\`\`\`` : ''),
         }),
       });
       results.slack = { status: slackRes.status, ok: slackRes.ok };
     }
 
-    // E-mail via Resend
     if (resendKey && emailTo) {
       const html = `
-        <h2 style="font-family:system-ui;color:${alert.severity === "critical" ? "#dc2626" : "#d97706"}">${title}</h2>
+        <h2 style="font-family:system-ui;color:${alert.severity === 'critical' ? '#dc2626' : '#d97706'}">${title}</h2>
         <p style="font-family:system-ui;font-size:15px"><strong>${summary}</strong></p>
         <table style="font-family:system-ui;font-size:13px;border-collapse:collapse">
           <tr><td style="padding:4px 8px;color:#666">Valor atual</td><td style="padding:4px 8px"><strong>${curTxt}</strong></td></tr>
           <tr><td style="padding:4px 8px;color:#666">Baseline</td><td style="padding:4px 8px">${baseTxt}</td></tr>
           <tr><td style="padding:4px 8px;color:#666">Ratio</td><td style="padding:4px 8px"><strong>${ratioTxt}</strong></td></tr>
-          <tr><td style="padding:4px 8px;color:#666">Origem</td><td style="padding:4px 8px">${alert.source ?? "—"}</td></tr>
-          <tr><td style="padding:4px 8px;color:#666">Amostras</td><td style="padding:4px 8px">${alert.sample_count ?? "—"}</td></tr>
-          <tr><td style="padding:4px 8px;color:#666">Detectado em</td><td style="padding:4px 8px">${alert.created_at ?? new Date().toISOString()}</td></tr>
+          <tr><td style="padding:4px 8px;color:#666">Origem</td><td style="padding:4px 8px">${alert.source ?? '—'}</td></tr>
+          <tr><td style="padding:4px 8px;color:#666">Amostras</td><td style="padding:4px 8px">${alert.sample_count ?? '—'}</td></tr>
+          <tr><td style="padding:4px 8px;color:#666">Detectado em</td><td style="padding:4px 8px">${alert.created_at ?? deps.nowIso()}</td></tr>
         </table>
-        ${alert.query_snippet ? `<pre style="background:#f5f5f5;padding:12px;border-radius:6px;font-size:12px;overflow:auto">${alert.query_snippet.replace(/</g, "&lt;")}</pre>` : ""}
+        ${alert.query_snippet ? `<pre style="background:#f5f5f5;padding:12px;border-radius:6px;font-size:12px;overflow:auto">${alert.query_snippet.replace(/</g, '&lt;')}</pre>` : ''}
         <p style="font-family:system-ui;font-size:12px;color:#666;margin-top:16px">Acesse o painel em <em>/admin/telemetria</em> para investigar.</p>
       `;
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
+
+      const resendRes = await deps.fetch('https://api.resend.com/emails', {
+        method: 'POST',
         headers: {
-          "Authorization": `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendKey}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           from: emailFrom,
-          to: emailTo.split(",").map((s) => s.trim()).filter(Boolean),
+          to: emailTo
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
           subject: `${title}: ${summary.slice(0, 80)}`,
           html,
         }),
@@ -107,30 +137,64 @@ Deno.serve(async (req) => {
       results.email = { status: resendRes.status, ok: resendRes.ok };
     }
 
-    // Registra tentativa em query_telemetry (usando service role)
     try {
-      const supaUrl = Deno.env.get("SUPABASE_URL");
-      const supaKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-      if (supaUrl && supaKey) {
-        const supa = createClient(supaUrl, supaKey);
-        await supa.from("query_telemetry").insert({
-          source: "performance_alert_notifier",
-          severity: "info",
-          message: `Alerta ${alert.severity} notificado`,
-          metadata: { alert_id: alert.id, channels: results },
-        });
-      }
-    } catch (_) {
-      // não bloqueia resposta
+      await deps.telemetryInsert({
+        source: 'performance_alert_notifier',
+        severity: 'info',
+        message: `Alerta ${alert.severity} notificado`,
+        metadata: { alert_id: alert.id, channels: results, origem: auth.dados.origem },
+      });
+    } catch {
+      // Telemetria não deve bloquear a resposta.
     }
 
-    return new Response(JSON.stringify({ ok: true, results }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return json({ ok: true, results }, 200);
+  };
+}
+
+function defaultDeps(): HandlerDeps {
+  const supaUrl = Deno.env.get('SUPABASE_URL');
+  const supaKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const admin = supaUrl && supaKey ? createClient(supaUrl, supaKey) : null;
+
+  return {
+    getEnv: (name) => Deno.env.get(name),
+    guardInternal: (req, secretKey) => exigirChamadaInterna(req, secretKey),
+    readJson: (req) => req.json(),
+    fetch: globalThis.fetch,
+    telemetryInsert: async (row) => {
+      if (!admin) return;
+      await admin.from('query_telemetry').insert(row);
+    },
+    nowIso: () => new Date().toISOString(),
+  };
+}
+
+function extractAlert(body: AlertBody): AlertPayload {
+  if (typeof body === 'object' && body !== null && 'alert' in body) {
+    return body.alert as AlertPayload;
   }
-});
+
+  return body as AlertPayload;
+}
+
+function withCors(response: Response): Response {
+  const headers = new Headers(response.headers);
+  for (const [key, value] of Object.entries(corsHeaders)) headers.set(key, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+function json(payload: unknown, status = 200): Response {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+if (!Deno.env.get('DENO_TESTING')) {
+  Deno.serve(createHandler(defaultDeps()));
+}
