@@ -10,15 +10,13 @@
  * e mantém o mesmo localStorage key usado pelo `getCurrentEmpresaId()` legado,
  * de modo que hooks ainda não migrados continuam funcionando.
  */
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-  type ReactNode,
-} from 'react';
+import { useEffect, useMemo, useState, useCallback, type ReactNode } from 'react';
 import { useUserEmpresas } from '@/hooks/useUserEmpresas';
-import { EmpresaScopeContext, type ScopeMode, type EmpresaScopeContextValue } from './useEmpresaScope';
+import {
+  EmpresaScopeContext,
+  type ScopeMode,
+  type EmpresaScopeContextValue,
+} from './useEmpresaScope';
 
 const LEGACY_KEY = 'pf:current-empresa-id';
 const SCOPE_KEY = 'pf:empresa-scope-v1';
@@ -37,7 +35,9 @@ function loadPersisted(): PersistedScope | null {
     if (!parsed || typeof parsed !== 'object') return null;
     return {
       mode: parsed.mode === 'focused' ? 'focused' : 'consolidated',
-      selectedIds: Array.isArray(parsed.selectedIds) ? parsed.selectedIds.filter((x): x is string => typeof x === 'string') : [],
+      selectedIds: Array.isArray(parsed.selectedIds)
+        ? parsed.selectedIds.filter((x): x is string => typeof x === 'string')
+        : [],
       focusedId: typeof parsed.focusedId === 'string' ? parsed.focusedId : null,
     };
   } catch {
@@ -60,12 +60,36 @@ function syncLegacyKey(currentId: string | null) {
   } catch {
     /* ignore */
   }
+
+  // Sem isso, AuthProvider (useAuth().currentEmpresaId — consumido por ~28
+  // hooks/páginas) e os listeners de 'sync-financial-filters' (BankAccountSwitcher,
+  // useContasPagarLogic, useContasReceberLogic) nunca ficam sabendo que o escopo
+  // mudou: eles só reagem a estes eventos, disparados historicamente apenas pelo
+  // setCurrentEmpresaId() legado (useUserEmpresas.ts) — que o EmpresaScopeBar não
+  // chama mais. Mesmos eventos/shape do legado, para os listeners existentes
+  // funcionarem sem alteração.
+  window.dispatchEvent(
+    new CustomEvent('current-empresa-changed', {
+      detail: currentId,
+      bubbles: true,
+      composed: true,
+    })
+  );
+  window.dispatchEvent(
+    new CustomEvent('sync-financial-filters', {
+      detail: { empresaId: currentId },
+      bubbles: true,
+      composed: true,
+    })
+  );
 }
 export function EmpresaScopeProvider({ children }: { children: ReactNode }) {
   const { data: vinculos = [], isLoading } = useUserEmpresas();
 
   const [mode, setModeState] = useState<ScopeMode>(() => loadPersisted()?.mode ?? 'consolidated');
-  const [selectedIds, setSelectedIdsState] = useState<string[]>(() => loadPersisted()?.selectedIds ?? []);
+  const [selectedIds, setSelectedIdsState] = useState<string[]>(
+    () => loadPersisted()?.selectedIds ?? []
+  );
   const [focusedId, setFocusedIdState] = useState<string | null>(() => {
     const persisted = loadPersisted();
     if (persisted?.focusedId) return persisted.focusedId;
@@ -105,12 +129,12 @@ export function EmpresaScopeProvider({ children }: { children: ReactNode }) {
   // Valor derivado: IDs em escopo de fato
   const ids = useMemo(
     () => (mode === 'focused' && focusedId ? [focusedId] : selectedIds),
-    [mode, focusedId, selectedIds],
+    [mode, focusedId, selectedIds]
   );
 
   const currentEmpresaId = useMemo(
-    () => (mode === 'focused' ? focusedId : ids[0] ?? null),
-    [mode, focusedId, ids],
+    () => (mode === 'focused' ? focusedId : (ids[0] ?? null)),
+    [mode, focusedId, ids]
   );
 
   // Sincroniza chave legada para hooks ainda não migrados
@@ -120,7 +144,7 @@ export function EmpresaScopeProvider({ children }: { children: ReactNode }) {
 
   const scopedEmpresas = useMemo(
     () => vinculos.filter((v) => ids.includes(v.empresa_id)),
-    [vinculos, ids],
+    [vinculos, ids]
   );
 
   const setMode = useCallback((next: ScopeMode) => {
