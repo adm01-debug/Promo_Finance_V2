@@ -1,25 +1,22 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { ExternalListResponse } from './types';
+import { env } from '@/config/env';
 
 const EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES = new Set([
-  'External DB not configured',
   'EXTERNAL_DB_NOT_CONFIGURED',
+  'EXTERNAL_DB_ERROR',
+  'EXTERNAL_DB_TIMEOUT',
 ]);
 
-export function isExternalDataNotConfigured(
-  payload: ExternalListResponse<unknown> | null | undefined,
-) {
-  if (!payload) return false;
+function isExternalDataNotConfigured(payload: { error?: string; message?: string } | null): boolean {
   return (
-    EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES.has(payload.error ?? '') ||
-    Boolean(payload.fallback) ||
-    (payload.message?.toLowerCase().includes('não configurada') ?? false) ||
-    (payload.message?.toLowerCase().includes('not configured') ?? false)
+    EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES.has(payload?.error ?? '') ||
+    EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES.has(payload?.message ?? '')
   );
 }
 
-export async function fetchExternalData<T>(params: {
-  tabela: 'clientes' | 'fornecedores';
+export async function fetchExternalList<T>(params: {
+  tabela: string;
   limit: number;
   page?: number;
   search?: string;
@@ -29,7 +26,7 @@ export async function fetchExternalData<T>(params: {
   } = await supabase.auth.getSession();
   if (!session) throw new Error('Não autenticado');
 
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const projectId = env.SUPABASE_PROJECT_ID;
   const queryParams = new URLSearchParams({
     tabela: params.tabela,
     limit: String(params.limit),
@@ -42,7 +39,7 @@ export async function fetchExternalData<T>(params: {
     {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        apikey: env.SUPABASE_PUBLISHABLE_KEY,
       },
     },
   );
@@ -60,9 +57,5 @@ export async function fetchExternalData<T>(params: {
     );
   }
 
-  if (isExternalDataNotConfigured(payload)) {
-    return { ...payload, data: [], total: 0, total_pages: 0, fallback: true };
-  }
-
-  return payload ?? { data: [], total: 0, total_pages: 0 };
+  return payload as ExternalListResponse<T>;
 }
