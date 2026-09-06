@@ -76,8 +76,20 @@ CREATE INDEX IF NOT EXISTS idx_user_empresas_user_ativo_empresa ON public.user_e
 CREATE INDEX IF NOT EXISTS idx_user_empresas_empresa_ativo ON public.user_empresas(empresa_id, ativo);
 CREATE INDEX IF NOT EXISTS idx_user_roles_user_role_active ON public.user_roles(user_id, role, is_active);
 CREATE INDEX IF NOT EXISTS idx_allowed_ips_created_at ON public.allowed_ips(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_apuracoes_tributarias_empresa ON public.apuracoes_tributarias(empresa_id);
-CREATE INDEX IF NOT EXISTS idx_configuracoes_aprovacao_empresa ON public.configuracoes_aprovacao(empresa_id);
+-- Guard: 42703(empresa_id) — column may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='apuracoes_tributarias' AND column_name='empresa_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_apuracoes_tributarias_empresa ON public.apuracoes_tributarias(empresa_id)';
+  END IF;
+END $$;
+-- Guard: 42703(empresa_id) — column may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='configuracoes_aprovacao' AND column_name='empresa_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_configuracoes_aprovacao_empresa ON public.configuracoes_aprovacao(empresa_id)';
+  END IF;
+END $$;
 
 -- 4) Replace broad/public policies with authenticated scoped policies.
 DROP POLICY IF EXISTS "Admins can manage allowed ips" ON public.allowed_ips;
