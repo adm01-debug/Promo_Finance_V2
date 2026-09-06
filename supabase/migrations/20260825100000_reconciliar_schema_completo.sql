@@ -11,7 +11,7 @@ END IF; END $$;
 -- FASE 2: Tabelas ausentes
 -- TABLE acessos_suspeitos
 
-CREATE TABLE public.acessos_suspeitos (
+CREATE TABLE IF NOT EXISTS public.acessos_suspeitos (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     tipo text NOT NULL,
     severidade text NOT NULL,
@@ -35,26 +35,29 @@ CREATE TABLE public.acessos_suspeitos (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.acessos_suspeitos
     ADD CONSTRAINT acessos_suspeitos_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_acessos_suspeitos_created ON public.acessos_suspeitos USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_acessos_suspeitos_created ON public.acessos_suspeitos USING btree (created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_acessos_suspeitos_empresa_id ON public.acessos_suspeitos USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_acessos_suspeitos_empresa_id ON public.acessos_suspeitos USING btree (empresa_id);
 
 
 --
 
 
-CREATE UNIQUE INDEX uq_acessos_suspeitos_janela ON public.acessos_suspeitos USING btree (tipo, janela_inicio, COALESCE(user_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(empresa_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(table_name, ''::text));
+CREATE UNIQUE INDEX IF NOT EXISTS uq_acessos_suspeitos_janela ON public.acessos_suspeitos USING btree (tipo, janela_inicio, COALESCE(user_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(empresa_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(table_name, ''::text));
 
 
 --
@@ -65,7 +68,10 @@ ALTER TABLE public.acessos_suspeitos ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY acessos_suspeitos_tenant_select ON public.acessos_suspeitos FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -82,7 +88,7 @@ GRANT SELECT ON TABLE public.acessos_suspeitos TO anon;
 
 -- TABLE auditoria_tributaria
 
-CREATE TABLE public.auditoria_tributaria (
+CREATE TABLE IF NOT EXISTS public.auditoria_tributaria (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid,
     user_id uuid,
@@ -101,39 +107,48 @@ CREATE TABLE public.auditoria_tributaria (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.auditoria_tributaria
     ADD CONSTRAINT auditoria_tributaria_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_auditoria_trib_criado ON public.auditoria_tributaria USING btree (criado_em DESC);
+CREATE INDEX IF NOT EXISTS idx_auditoria_trib_criado ON public.auditoria_tributaria USING btree (criado_em DESC);
 
 
 --
 
 
-CREATE INDEX idx_auditoria_trib_entidade ON public.auditoria_tributaria USING btree (entidade_tipo, entidade_id);
+CREATE INDEX IF NOT EXISTS idx_auditoria_trib_entidade ON public.auditoria_tributaria USING btree (entidade_tipo, entidade_id);
 
 
 --
 
 
-CREATE INDEX idx_auditoria_tributaria_empresa_id ON public.auditoria_tributaria USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_auditoria_tributaria_empresa_id ON public.auditoria_tributaria USING btree (empresa_id);
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.auditoria_tributaria
     ADD CONSTRAINT auditoria_tributaria_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -154,7 +169,7 @@ GRANT SELECT,INSERT ON TABLE public.auditoria_tributaria TO sandbox_exec;
 
 -- TABLE benchmarks_setoriais
 
-CREATE TABLE public.benchmarks_setoriais (
+CREATE TABLE IF NOT EXISTS public.benchmarks_setoriais (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     setor text NOT NULL,
     cnae_prefix text NOT NULL,
@@ -181,39 +196,54 @@ CREATE TABLE public.benchmarks_setoriais (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.benchmarks_setoriais
     ADD CONSTRAINT benchmark_unico UNIQUE (cnae_prefix, regime, vigencia_inicio);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.benchmarks_setoriais
     ADD CONSTRAINT benchmarks_setoriais_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_benchmarks_lookup ON public.benchmarks_setoriais USING btree (regime, cnae_prefix);
+CREATE INDEX IF NOT EXISTS idx_benchmarks_lookup ON public.benchmarks_setoriais USING btree (regime, cnae_prefix);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY benchmarks_admin_write ON public.benchmarks_setoriais TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY benchmarks_select ON public.benchmarks_setoriais FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -234,7 +264,7 @@ GRANT SELECT,INSERT ON TABLE public.benchmarks_setoriais TO sandbox_exec;
 
 -- TABLE bitrix_oauth_tokens
 
-CREATE TABLE public.bitrix_oauth_tokens (
+CREATE TABLE IF NOT EXISTS public.bitrix_oauth_tokens (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     access_token text NOT NULL,
     refresh_token text,
@@ -248,20 +278,26 @@ CREATE TABLE public.bitrix_oauth_tokens (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bitrix_oauth_tokens
     ADD CONSTRAINT bitrix_oauth_tokens_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_bitrix_tokens_created ON public.bitrix_oauth_tokens USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bitrix_tokens_created ON public.bitrix_oauth_tokens USING btree (created_at DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -272,7 +308,10 @@ ALTER TABLE public.bitrix_oauth_tokens ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix_oauth_tokens_service_role_only ON public.bitrix_oauth_tokens TO service_role USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -287,7 +326,7 @@ GRANT SELECT,INSERT ON TABLE public.bitrix_oauth_tokens TO sandbox_exec;
 
 -- TABLE bling_sync_logs
 
-CREATE TABLE public.bling_sync_logs (
+CREATE TABLE IF NOT EXISTS public.bling_sync_logs (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     tipo text NOT NULL,
     modulo text NOT NULL,
@@ -312,20 +351,23 @@ CREATE TABLE public.bling_sync_logs (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bling_sync_logs
     ADD CONSTRAINT bling_sync_logs_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_bling_sync_logs_created ON public.bling_sync_logs USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bling_sync_logs_created ON public.bling_sync_logs USING btree (created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_bling_sync_logs_modulo ON public.bling_sync_logs USING btree (modulo);
+CREATE INDEX IF NOT EXISTS idx_bling_sync_logs_modulo ON public.bling_sync_logs USING btree (modulo);
 
 
 --
@@ -336,13 +378,19 @@ ALTER TABLE public.bling_sync_logs ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_sync_logs_insert ON public.bling_sync_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_sync_logs_select ON public.bling_sync_logs FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -358,7 +406,7 @@ GRANT SELECT,INSERT ON TABLE public.bling_sync_logs TO sandbox_exec;
 
 -- TABLE bling_tokens
 
-CREATE TABLE public.bling_tokens (
+CREATE TABLE IF NOT EXISTS public.bling_tokens (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     access_token text NOT NULL,
     refresh_token text,
@@ -372,20 +420,26 @@ CREATE TABLE public.bling_tokens (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bling_tokens
     ADD CONSTRAINT bling_tokens_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_bling_tokens_created ON public.bling_tokens USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bling_tokens_created ON public.bling_tokens USING btree (created_at DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_bling_tokens_updated_at BEFORE UPDATE ON public.bling_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -396,7 +450,10 @@ ALTER TABLE public.bling_tokens ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_tokens_service_role_only ON public.bling_tokens TO service_role USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -411,7 +468,7 @@ GRANT SELECT,INSERT ON TABLE public.bling_tokens TO sandbox_exec;
 
 -- TABLE bling_webhook_events
 
-CREATE TABLE public.bling_webhook_events (
+CREATE TABLE IF NOT EXISTS public.bling_webhook_events (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     event_type text NOT NULL,
     module text NOT NULL,
@@ -430,26 +487,29 @@ CREATE TABLE public.bling_webhook_events (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bling_webhook_events
     ADD CONSTRAINT bling_webhook_events_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_bling_webhook_events_created ON public.bling_webhook_events USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_created ON public.bling_webhook_events USING btree (created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_bling_webhook_events_processed ON public.bling_webhook_events USING btree (processed);
+CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_processed ON public.bling_webhook_events USING btree (processed);
 
 
 --
 
 
-CREATE INDEX idx_bling_webhook_events_resource ON public.bling_webhook_events USING btree (module, resource_id);
+CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_resource ON public.bling_webhook_events USING btree (module, resource_id);
 
 
 --
@@ -460,7 +520,10 @@ ALTER TABLE public.bling_webhook_events ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_webhook_events_admin_select ON public.bling_webhook_events FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -476,7 +539,7 @@ GRANT SELECT,INSERT ON TABLE public.bling_webhook_events TO sandbox_exec;
 
 -- TABLE catalogos_fiscais_cargas
 
-CREATE TABLE public.catalogos_fiscais_cargas (
+CREATE TABLE IF NOT EXISTS public.catalogos_fiscais_cargas (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     origem text DEFAULT 'cron'::text NOT NULL,
     status text DEFAULT 'ok'::text NOT NULL,
@@ -498,26 +561,32 @@ CREATE TABLE public.catalogos_fiscais_cargas (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.catalogos_fiscais_cargas
     ADD CONSTRAINT catalogos_fiscais_cargas_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE UNIQUE INDEX catalogos_fiscais_cargas_checksum_key ON public.catalogos_fiscais_cargas USING btree (checksum);
+CREATE UNIQUE INDEX IF NOT EXISTS catalogos_fiscais_cargas_checksum_key ON public.catalogos_fiscais_cargas USING btree (checksum);
 
 
 --
 
 
-CREATE INDEX catalogos_fiscais_cargas_last_updated_idx ON public.catalogos_fiscais_cargas USING btree (last_updated DESC);
+CREATE INDEX IF NOT EXISTS catalogos_fiscais_cargas_last_updated_idx ON public.catalogos_fiscais_cargas USING btree (last_updated DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.catalogos_fiscais_cargas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -544,7 +613,7 @@ GRANT SELECT,INSERT ON TABLE public.catalogos_fiscais_cargas TO sandbox_exec;
 
 -- TABLE catalogos_tributarios_health_history
 
-CREATE TABLE public.catalogos_tributarios_health_history (
+CREATE TABLE IF NOT EXISTS public.catalogos_tributarios_health_history (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     dia date NOT NULL,
     criticos integer DEFAULT 0 NOT NULL,
@@ -565,21 +634,30 @@ CREATE TABLE public.catalogos_tributarios_health_history (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.catalogos_tributarios_health_history
     ADD CONSTRAINT catalogos_health_history_dia_key UNIQUE (dia);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.catalogos_tributarios_health_history
     ADD CONSTRAINT catalogos_tributarios_health_history_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.catalogos_tributarios_health_history FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -606,7 +684,7 @@ GRANT SELECT,INSERT ON TABLE public.catalogos_tributarios_health_history TO sand
 
 -- TABLE cnpja_cache
 
-CREATE TABLE public.cnpja_cache (
+CREATE TABLE IF NOT EXISTS public.cnpja_cache (
     cnpj text NOT NULL,
     data jsonb NOT NULL,
     situacao_cadastral text,
@@ -622,20 +700,26 @@ CREATE TABLE public.cnpja_cache (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.cnpja_cache
     ADD CONSTRAINT cnpja_cache_pkey PRIMARY KEY (cnpj);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_cnpja_cache_expires ON public.cnpja_cache USING btree (expires_at DESC);
+CREATE INDEX IF NOT EXISTS idx_cnpja_cache_expires ON public.cnpja_cache USING btree (expires_at DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_cnpja_cache_updated_at BEFORE UPDATE ON public.cnpja_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -646,7 +730,10 @@ ALTER TABLE public.cnpja_cache ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY cnpja_cache_service_role_only ON public.cnpja_cache TO service_role USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -662,7 +749,7 @@ GRANT SELECT,INSERT ON TABLE public.cnpja_cache TO sandbox_exec;
 
 -- TABLE convites_contador
 
-CREATE TABLE public.convites_contador (
+CREATE TABLE IF NOT EXISTS public.convites_contador (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid NOT NULL,
     email text NOT NULL,
@@ -684,40 +771,52 @@ CREATE TABLE public.convites_contador (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.convites_contador
     ADD CONSTRAINT convites_contador_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.convites_contador
     ADD CONSTRAINT convites_contador_token_hash_key UNIQUE (token_hash);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_convites_contador_empresa ON public.convites_contador USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_convites_contador_empresa ON public.convites_contador USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE UNIQUE INDEX uq_convite_contador_ativo ON public.convites_contador USING btree (empresa_id, lower(email)) WHERE ((revoked_at IS NULL) AND (accepted_at IS NULL));
+CREATE UNIQUE INDEX IF NOT EXISTS uq_convite_contador_ativo ON public.convites_contador USING btree (empresa_id, lower(email)) WHERE ((revoked_at IS NULL) AND (accepted_at IS NULL));
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_convites_contador_updated_at BEFORE UPDATE ON public.convites_contador FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.convites_contador
     ADD CONSTRAINT convites_contador_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -728,13 +827,19 @@ ALTER TABLE public.convites_contador ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY convites_contador_revogar ON public.convites_contador FOR UPDATE TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY convites_contador_select ON public.convites_contador FOR SELECT TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -750,7 +855,7 @@ GRANT SELECT,INSERT ON TABLE public.convites_contador TO sandbox_exec;
 
 -- TABLE elisao_simulacoes_regime
 
-CREATE TABLE public.elisao_simulacoes_regime (
+CREATE TABLE IF NOT EXISTS public.elisao_simulacoes_regime (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid NOT NULL,
     regime_atual text NOT NULL,
@@ -768,33 +873,45 @@ CREATE TABLE public.elisao_simulacoes_regime (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.elisao_simulacoes_regime
     ADD CONSTRAINT elisao_simulacoes_regime_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_elisao_sim_empresa ON public.elisao_simulacoes_regime USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_elisao_sim_empresa ON public.elisao_simulacoes_regime USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.elisao_simulacoes_regime
     ADD CONSTRAINT elisao_simulacoes_regime_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY elisao_sim_regime_acesso ON public.elisao_simulacoes_regime TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -815,7 +932,7 @@ GRANT SELECT,INSERT ON TABLE public.elisao_simulacoes_regime TO sandbox_exec;
 
 -- TABLE estrategias_elisao
 
-CREATE TABLE public.estrategias_elisao (
+CREATE TABLE IF NOT EXISTS public.estrategias_elisao (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     codigo text NOT NULL,
     nome text NOT NULL,
@@ -837,27 +954,36 @@ CREATE TABLE public.estrategias_elisao (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.estrategias_elisao
     ADD CONSTRAINT estrategias_elisao_codigo_key UNIQUE (codigo);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.estrategias_elisao
     ADD CONSTRAINT estrategias_elisao_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_estrategias_ativo ON public.estrategias_elisao USING btree (ativo);
+CREATE INDEX IF NOT EXISTS idx_estrategias_ativo ON public.estrategias_elisao USING btree (ativo);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_estrategias_updated_at BEFORE UPDATE ON public.estrategias_elisao FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -868,13 +994,19 @@ ALTER TABLE public.estrategias_elisao ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY estrategias_select_authenticated ON public.estrategias_elisao FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY estrategias_write_admin ON public.estrategias_elisao TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -890,7 +1022,7 @@ GRANT SELECT,INSERT ON TABLE public.estrategias_elisao TO sandbox_exec;
 
 -- TABLE eventos_contabilizacao_log
 
-CREATE TABLE public.eventos_contabilizacao_log (
+CREATE TABLE IF NOT EXISTS public.eventos_contabilizacao_log (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid NOT NULL,
     tipo_evento text NOT NULL,
@@ -908,33 +1040,42 @@ CREATE TABLE public.eventos_contabilizacao_log (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.eventos_contabilizacao_log
     ADD CONSTRAINT eventos_contabilizacao_log_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_eventos_contab_empresa ON public.eventos_contabilizacao_log USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_eventos_contab_empresa ON public.eventos_contabilizacao_log USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE UNIQUE INDEX uq_eventos_contab_sucesso ON public.eventos_contabilizacao_log USING btree (tipo_evento, evento_id) WHERE (status = 'sucesso'::text);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_eventos_contab_sucesso ON public.eventos_contabilizacao_log USING btree (tipo_evento, evento_id) WHERE (status = 'sucesso'::text);
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.eventos_contabilizacao_log
     ADD CONSTRAINT eventos_contabilizacao_log_regra_id_fkey FOREIGN KEY (regra_id) REFERENCES public.regras_contabilizacao_automatica(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY eventos_contab_select ON public.eventos_contabilizacao_log FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -955,7 +1096,7 @@ GRANT SELECT,INSERT ON TABLE public.eventos_contabilizacao_log TO sandbox_exec;
 
 -- TABLE frontend_error_alert_state
 
-CREATE TABLE public.frontend_error_alert_state (
+CREATE TABLE IF NOT EXISTS public.frontend_error_alert_state (
     assinatura text NOT NULL,
     severity text DEFAULT 'error'::text NOT NULL,
     exemplo_mensagem text,
@@ -974,26 +1115,35 @@ CREATE TABLE public.frontend_error_alert_state (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.frontend_error_alert_state
     ADD CONSTRAINT frontend_error_alert_state_pkey PRIMARY KEY (assinatura);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_fe_alert_state_ultimo ON public.frontend_error_alert_state USING btree (ultimo_alerta_em DESC);
+CREATE INDEX IF NOT EXISTS idx_fe_alert_state_ultimo ON public.frontend_error_alert_state USING btree (ultimo_alerta_em DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fe_alert_state_admin_select ON public.frontend_error_alert_state FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1014,7 +1164,7 @@ GRANT SELECT ON TABLE public.frontend_error_alert_state TO authenticated;
 
 -- TABLE frontend_error_silence_digest_log
 
-CREATE TABLE public.frontend_error_silence_digest_log (
+CREATE TABLE IF NOT EXISTS public.frontend_error_silence_digest_log (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     executado_em timestamp with time zone DEFAULT now() NOT NULL,
     janela_horas integer NOT NULL,
@@ -1027,20 +1177,26 @@ CREATE TABLE public.frontend_error_silence_digest_log (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.frontend_error_silence_digest_log
     ADD CONSTRAINT frontend_error_silence_digest_log_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_fe_silence_digest_executado ON public.frontend_error_silence_digest_log USING btree (executado_em DESC);
+CREATE INDEX IF NOT EXISTS idx_fe_silence_digest_executado ON public.frontend_error_silence_digest_log USING btree (executado_em DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fe_silence_digest_admin_select ON public.frontend_error_silence_digest_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1061,7 +1217,7 @@ GRANT SELECT,INSERT ON TABLE public.frontend_error_silence_digest_log TO sandbox
 
 -- TABLE glossario_tributario
 
-CREATE TABLE public.glossario_tributario (
+CREATE TABLE IF NOT EXISTS public.glossario_tributario (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     termo text NOT NULL,
     sigla text,
@@ -1079,39 +1235,54 @@ CREATE TABLE public.glossario_tributario (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.glossario_tributario
     ADD CONSTRAINT glossario_tributario_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.glossario_tributario
     ADD CONSTRAINT glossario_tributario_termo_key UNIQUE (termo);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_glossario_categoria ON public.glossario_tributario USING btree (categoria, termo);
+CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributario USING btree (categoria, termo);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY glossario_admin ON public.glossario_tributario TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY glossario_leitura ON public.glossario_tributario FOR SELECT TO authenticated USING (ativo);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1132,7 +1303,7 @@ GRANT SELECT,INSERT ON TABLE public.glossario_tributario TO sandbox_exec;
 
 -- TABLE index_usage_snapshots
 
-CREATE TABLE public.index_usage_snapshots (
+CREATE TABLE IF NOT EXISTS public.index_usage_snapshots (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     snapshot_date date DEFAULT CURRENT_DATE NOT NULL,
     schema_name text NOT NULL,
@@ -1149,21 +1320,27 @@ CREATE TABLE public.index_usage_snapshots (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.index_usage_snapshots
     ADD CONSTRAINT index_usage_snapshots_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.index_usage_snapshots
     ADD CONSTRAINT index_usage_snapshots_unico UNIQUE (snapshot_date, schema_name, index_name);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_index_usage_snapshots_idx_date ON public.index_usage_snapshots USING btree (index_name, snapshot_date DESC);
+CREATE INDEX IF NOT EXISTS idx_index_usage_snapshots_idx_date ON public.index_usage_snapshots USING btree (index_name, snapshot_date DESC);
 
 
 --
@@ -1190,7 +1367,7 @@ GRANT SELECT,INSERT ON TABLE public.index_usage_snapshots TO sandbox_exec;
 
 -- TABLE indices_uso_excecoes
 
-CREATE TABLE public.indices_uso_excecoes (
+CREATE TABLE IF NOT EXISTS public.indices_uso_excecoes (
     index_name text NOT NULL,
     motivo text NOT NULL,
     criado_por uuid,
@@ -1201,8 +1378,11 @@ CREATE TABLE public.indices_uso_excecoes (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.indices_uso_excecoes
     ADD CONSTRAINT indices_uso_excecoes_pkey PRIMARY KEY (index_name);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -1229,7 +1409,7 @@ GRANT SELECT,INSERT ON TABLE public.indices_uso_excecoes TO sandbox_exec;
 
 -- TABLE operacoes_icms
 
-CREATE TABLE public.operacoes_icms (
+CREATE TABLE IF NOT EXISTS public.operacoes_icms (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid NOT NULL,
     uf_origem public.uf_brasil NOT NULL,
@@ -1259,33 +1439,42 @@ CREATE TABLE public.operacoes_icms (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.operacoes_icms
     ADD CONSTRAINT operacoes_icms_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_op_icms_empresa ON public.operacoes_icms USING btree (empresa_id, data_operacao DESC);
+CREATE INDEX IF NOT EXISTS idx_op_icms_empresa ON public.operacoes_icms USING btree (empresa_id, data_operacao DESC);
 
 
 --
 
 
-CREATE INDEX idx_op_icms_rota ON public.operacoes_icms USING btree (uf_origem, uf_destino);
+CREATE INDEX IF NOT EXISTS idx_op_icms_rota ON public.operacoes_icms USING btree (uf_origem, uf_destino);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_icms FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.operacoes_icms
     ADD CONSTRAINT operacoes_icms_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -1296,7 +1485,10 @@ ALTER TABLE public.operacoes_icms ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY operacoes_icms_acesso ON public.operacoes_icms TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1312,7 +1504,7 @@ GRANT SELECT,INSERT ON TABLE public.operacoes_icms TO sandbox_exec;
 
 -- TABLE overlay_rejeicoes_auditoria
 
-CREATE TABLE public.overlay_rejeicoes_auditoria (
+CREATE TABLE IF NOT EXISTS public.overlay_rejeicoes_auditoria (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     catalogo text NOT NULL,
     identificador text NOT NULL,
@@ -1338,33 +1530,42 @@ CREATE TABLE public.overlay_rejeicoes_auditoria (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.overlay_rejeicoes_auditoria
     ADD CONSTRAINT overlay_rejeicoes_auditoria_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.overlay_rejeicoes_auditoria
     ADD CONSTRAINT overlay_rejeicoes_unicidade UNIQUE (catalogo, identificador, campo, motivo, referencia);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_overlay_rejeicoes_abertas ON public.overlay_rejeicoes_auditoria USING btree (resolvido_em) WHERE (resolvido_em IS NULL);
+CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_abertas ON public.overlay_rejeicoes_auditoria USING btree (resolvido_em) WHERE (resolvido_em IS NULL);
 
 
 --
 
 
-CREATE INDEX idx_overlay_rejeicoes_catalogo ON public.overlay_rejeicoes_auditoria USING btree (catalogo, referencia DESC);
+CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_catalogo ON public.overlay_rejeicoes_auditoria USING btree (catalogo, referencia DESC);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_rejeicoes_auditoria FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1409,7 +1610,7 @@ GRANT SELECT,INSERT ON TABLE public.overlay_rejeicoes_auditoria TO sandbox_exec;
 
 -- TABLE projecoes_reforma
 
-CREATE TABLE public.projecoes_reforma (
+CREATE TABLE IF NOT EXISTS public.projecoes_reforma (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid NOT NULL,
     ano integer NOT NULL,
@@ -1433,28 +1634,40 @@ CREATE TABLE public.projecoes_reforma (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.projecoes_reforma
     ADD CONSTRAINT projecoes_reforma_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.projecoes_reforma
     ADD CONSTRAINT uq_proj_emp_ano UNIQUE (empresa_id, ano);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_proj_reforma_updated_at BEFORE UPDATE ON public.projecoes_reforma FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.projecoes_reforma
     ADD CONSTRAINT projecoes_reforma_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -1465,7 +1678,10 @@ ALTER TABLE public.projecoes_reforma ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY projecoes_reforma_acesso ON public.projecoes_reforma TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1481,7 +1697,7 @@ GRANT SELECT,INSERT ON TABLE public.projecoes_reforma TO sandbox_exec;
 
 -- TABLE regras_contabilizacao_automatica
 
-CREATE TABLE public.regras_contabilizacao_automatica (
+CREATE TABLE IF NOT EXISTS public.regras_contabilizacao_automatica (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid NOT NULL,
     nome text NOT NULL,
@@ -1505,60 +1721,84 @@ CREATE TABLE public.regras_contabilizacao_automatica (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regra_nome_unico_empresa UNIQUE (empresa_id, nome);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_regras_contab_lookup ON public.regras_contabilizacao_automatica USING btree (empresa_id, tipo_evento, ativo, prioridade);
+CREATE INDEX IF NOT EXISTS idx_regras_contab_lookup ON public.regras_contabilizacao_automatica USING btree (empresa_id, tipo_evento, ativo, prioridade);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_regras_contab_updated_at BEFORE UPDATE ON public.regras_contabilizacao_automatica FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_conta_credito_id_fkey FOREIGN KEY (conta_credito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_conta_debito_id_fkey FOREIGN KEY (conta_debito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_contab_select ON public.regras_contabilizacao_automatica FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1579,7 +1819,7 @@ GRANT SELECT,INSERT ON TABLE public.regras_contabilizacao_automatica TO sandbox_
 
 -- TABLE retencao_politicas
 
-CREATE TABLE public.retencao_politicas (
+CREATE TABLE IF NOT EXISTS public.retencao_politicas (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     tabela text NOT NULL,
     coluna text,
@@ -1596,21 +1836,30 @@ CREATE TABLE public.retencao_politicas (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.retencao_politicas
     ADD CONSTRAINT retencao_politicas_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.retencao_politicas
     ADD CONSTRAINT retencao_politicas_tabela_key UNIQUE (tabela);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1621,7 +1870,10 @@ ALTER TABLE public.retencao_politicas ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY retencao_politicas_admin_select ON public.retencao_politicas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1637,7 +1889,7 @@ GRANT SELECT,INSERT ON TABLE public.retencao_politicas TO sandbox_exec;
 
 -- TABLE saved_filter_subscriptions
 
-CREATE TABLE public.saved_filter_subscriptions (
+CREATE TABLE IF NOT EXISTS public.saved_filter_subscriptions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     saved_filter_id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -1655,28 +1907,40 @@ CREATE TABLE public.saved_filter_subscriptions (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.saved_filter_subscriptions
     ADD CONSTRAINT saved_filter_subscriptions_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.saved_filter_subscriptions
     ADD CONSTRAINT saved_filter_subscriptions_unique UNIQUE (saved_filter_id, user_id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_saved_filter_subs_updated_at BEFORE UPDATE ON public.saved_filter_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.saved_filter_subscriptions
     ADD CONSTRAINT saved_filter_subscriptions_saved_filter_id_fkey FOREIGN KEY (saved_filter_id) REFERENCES public.saved_filters(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -1687,7 +1951,10 @@ ALTER TABLE public.saved_filter_subscriptions ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1703,7 +1970,7 @@ GRANT SELECT,INSERT ON TABLE public.saved_filter_subscriptions TO sandbox_exec;
 
 -- TABLE scim_operations_log
 
-CREATE TABLE public.scim_operations_log (
+CREATE TABLE IF NOT EXISTS public.scim_operations_log (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     token_id uuid,
     empresa_id uuid,
@@ -1726,26 +1993,29 @@ CREATE TABLE public.scim_operations_log (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.scim_operations_log
     ADD CONSTRAINT scim_operations_log_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_scim_operations_log_empresa_id ON public.scim_operations_log USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_scim_operations_log_empresa_id ON public.scim_operations_log USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_scim_ops_created ON public.scim_operations_log USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_scim_ops_created ON public.scim_operations_log USING btree (created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_scim_ops_token ON public.scim_operations_log USING btree (token_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_scim_ops_token ON public.scim_operations_log USING btree (token_id, created_at DESC);
 
 
 --
@@ -1756,7 +2026,10 @@ ALTER TABLE public.scim_operations_log ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1772,7 +2045,7 @@ GRANT SELECT,INSERT ON TABLE public.scim_operations_log TO sandbox_exec;
 
 -- TABLE security_alerts
 
-CREATE TABLE public.security_alerts (
+CREATE TABLE IF NOT EXISTS public.security_alerts (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     type text NOT NULL,
     severity text DEFAULT 'medium'::text NOT NULL,
@@ -1793,26 +2066,29 @@ CREATE TABLE public.security_alerts (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.security_alerts
     ADD CONSTRAINT security_alerts_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_security_alerts_created_at ON public.security_alerts USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_security_alerts_created_at ON public.security_alerts USING btree (created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_security_alerts_resolved ON public.security_alerts USING btree (resolved) WHERE (resolved = false);
+CREATE INDEX IF NOT EXISTS idx_security_alerts_resolved ON public.security_alerts USING btree (resolved) WHERE (resolved = false);
 
 
 --
 
 
-CREATE INDEX idx_security_alerts_type ON public.security_alerts USING btree (type);
+CREATE INDEX IF NOT EXISTS idx_security_alerts_type ON public.security_alerts USING btree (type);
 
 
 --
@@ -1823,7 +2099,10 @@ ALTER TABLE public.security_alerts ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY security_alerts_admin_all ON public.security_alerts TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1839,7 +2118,7 @@ GRANT SELECT,INSERT ON TABLE public.security_alerts TO sandbox_exec;
 
 -- TABLE simulacao_tributos_detalhados
 
-CREATE TABLE public.simulacao_tributos_detalhados (
+CREATE TABLE IF NOT EXISTS public.simulacao_tributos_detalhados (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     simulacao_id uuid NOT NULL,
     regime public.regime_tributario_enum NOT NULL,
@@ -1861,37 +2140,46 @@ CREATE TABLE public.simulacao_tributos_detalhados (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacao_tributos_detalhados
     ADD CONSTRAINT simulacao_tributos_detalhados_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_sim_trib_regime ON public.simulacao_tributos_detalhados USING btree (simulacao_id, regime);
+CREATE INDEX IF NOT EXISTS idx_sim_trib_regime ON public.simulacao_tributos_detalhados USING btree (simulacao_id, regime);
 
 
 --
 
 
-CREATE INDEX idx_sim_trib_sim ON public.simulacao_tributos_detalhados USING btree (simulacao_id);
+CREATE INDEX IF NOT EXISTS idx_sim_trib_sim ON public.simulacao_tributos_detalhados USING btree (simulacao_id);
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacao_tributos_detalhados
     ADD CONSTRAINT simulacao_tributos_detalhados_simulacao_id_fkey FOREIGN KEY (simulacao_id) REFERENCES public.simulacoes(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sim_trib_acesso ON public.simulacao_tributos_detalhados TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.simulacoes s
   WHERE ((s.id = simulacao_tributos_detalhados.simulacao_id) AND public.empresa_acessivel(s.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.simulacoes s
   WHERE ((s.id = simulacao_tributos_detalhados.simulacao_id) AND public.empresa_acessivel(s.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1912,7 +2200,7 @@ GRANT SELECT,INSERT ON TABLE public.simulacao_tributos_detalhados TO sandbox_exe
 
 -- TABLE simulacoes
 
-CREATE TABLE public.simulacoes (
+CREATE TABLE IF NOT EXISTS public.simulacoes (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     empresa_id uuid NOT NULL,
     periodo_inicio date NOT NULL,
@@ -1941,40 +2229,52 @@ CREATE TABLE public.simulacoes (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_sim_empresa_data ON public.simulacoes USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sim_empresa_data ON public.simulacoes USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_sim_hash ON public.simulacoes USING btree (hash_inputs);
+CREATE INDEX IF NOT EXISTS idx_sim_hash ON public.simulacoes USING btree (hash_inputs);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_simulacoes_updated_at BEFORE UPDATE ON public.simulacoes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_executada_por_fkey FOREIGN KEY (executada_por) REFERENCES auth.users(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -1985,7 +2285,10 @@ ALTER TABLE public.simulacoes ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY simulacoes_acesso ON public.simulacoes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2001,7 +2304,7 @@ GRANT SELECT,INSERT ON TABLE public.simulacoes TO sandbox_exec;
 
 -- TABLE slo_metrics_diarias
 
-CREATE TABLE public.slo_metrics_diarias (
+CREATE TABLE IF NOT EXISTS public.slo_metrics_diarias (
     data date NOT NULL,
     total_requisicoes bigint DEFAULT 0 NOT NULL,
     latencia_p50_ms numeric DEFAULT 0 NOT NULL,
@@ -2021,14 +2324,20 @@ CREATE TABLE public.slo_metrics_diarias (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.slo_metrics_diarias
     ADD CONSTRAINT slo_metrics_diarias_pkey PRIMARY KEY (data);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY slo_metrics_admin_select ON public.slo_metrics_diarias FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2049,7 +2358,7 @@ GRANT SELECT,INSERT ON TABLE public.slo_metrics_diarias TO sandbox_exec;
 
 -- TABLE sso_role_mappings
 
-CREATE TABLE public.sso_role_mappings (
+CREATE TABLE IF NOT EXISTS public.sso_role_mappings (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     provider_id uuid NOT NULL,
     idp_group text NOT NULL,
@@ -2065,34 +2374,46 @@ CREATE TABLE public.sso_role_mappings (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_role_mappings
     ADD CONSTRAINT sso_role_mapping_unico UNIQUE (provider_id, idp_group);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_role_mappings
     ADD CONSTRAINT sso_role_mappings_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_sso_role_mappings_provider ON public.sso_role_mappings USING btree (provider_id, ordem);
+CREATE INDEX IF NOT EXISTS idx_sso_role_mappings_provider ON public.sso_role_mappings USING btree (provider_id, ordem);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_sso_role_mappings_updated_at BEFORE UPDATE ON public.sso_role_mappings FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_role_mappings
     ADD CONSTRAINT sso_role_mappings_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -2103,7 +2424,10 @@ ALTER TABLE public.sso_role_mappings ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sso_role_mappings_admin ON public.sso_role_mappings TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2119,7 +2443,7 @@ GRANT SELECT,INSERT ON TABLE public.sso_role_mappings TO sandbox_exec;
 
 -- TABLE sso_sandbox_runs
 
-CREATE TABLE public.sso_sandbox_runs (
+CREATE TABLE IF NOT EXISTS public.sso_sandbox_runs (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     created_by uuid,
     created_by_email text,
@@ -2142,27 +2466,33 @@ CREATE TABLE public.sso_sandbox_runs (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_sandbox_runs
     ADD CONSTRAINT sso_sandbox_runs_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_sso_sandbox_runs_batch ON public.sso_sandbox_runs USING btree (batch_id);
+CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_batch ON public.sso_sandbox_runs USING btree (batch_id);
 
 
 --
 
 
-CREATE INDEX idx_sso_sandbox_runs_created ON public.sso_sandbox_runs USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_created ON public.sso_sandbox_runs USING btree (created_at DESC);
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_sandbox_runs
     ADD CONSTRAINT sso_sandbox_runs_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -2173,7 +2503,10 @@ ALTER TABLE public.sso_sandbox_runs ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sso_sandbox_runs_admin ON public.sso_sandbox_runs TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND (created_by = auth.uid())));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2189,7 +2522,7 @@ GRANT SELECT,INSERT ON TABLE public.sso_sandbox_runs TO sandbox_exec;
 
 -- TABLE sso_user_groups
 
-CREATE TABLE public.sso_user_groups (
+CREATE TABLE IF NOT EXISTS public.sso_user_groups (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     provider_id uuid NOT NULL,
@@ -2205,34 +2538,46 @@ CREATE TABLE public.sso_user_groups (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_user_groups
     ADD CONSTRAINT sso_user_group_unico UNIQUE (user_id, provider_id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_user_groups
     ADD CONSTRAINT sso_user_groups_pkey PRIMARY KEY (id);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE INDEX idx_sso_user_groups_user ON public.sso_user_groups USING btree (user_id);
+CREATE INDEX IF NOT EXISTS idx_sso_user_groups_user ON public.sso_user_groups USING btree (user_id);
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_sso_user_groups_updated_at BEFORE UPDATE ON public.sso_user_groups FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_user_groups
     ADD CONSTRAINT sso_user_groups_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
@@ -2243,7 +2588,10 @@ ALTER TABLE public.sso_user_groups ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sso_user_groups_select ON public.sso_user_groups FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -5140,594 +5488,873 @@ $$;
 
 -- FASE 5a: Triggers ausentes em tabelas comuns
 
+DO $$ BEGIN
 CREATE TRIGGER trg_alert_configurations_set_empresa BEFORE INSERT ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_alertas_set_empresa BEFORE INSERT ON public.alertas FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_alerts_set_empresa BEFORE INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_aliq_inter_updated_at BEFORE UPDATE ON public.aliquotas_interestaduais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_aliq_internas_updated_at BEFORE UPDATE ON public.aliquotas_internas_uf FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_aliq_iss_updated_at BEFORE UPDATE ON public.aliquotas_iss_municipal FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_api_keys_updated_at BEFORE UPDATE ON public.api_keys FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_conformidade_snapshots_updated_at BEFORE UPDATE ON public.conformidade_snapshots FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_empresas_unica_padrao BEFORE INSERT OR UPDATE OF is_padrao, ativo ON public.empresas FOR EACH ROW EXECUTE FUNCTION public.empresas_unica_padrao();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_entregas_obrigacoes_updated_at BEFORE UPDATE ON public.entregas_obrigacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_faixas_simples_updated_at BEFORE UPDATE ON public.faixas_simples_nacional FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_fechamentos_updated_at BEFORE UPDATE ON public.fechamentos_tributarios FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON public.integration_secrets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_kpis_operacionais_updated_at BEFORE UPDATE ON public.kpis_operacionais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_lancamento_contabil_before_update BEFORE UPDATE ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_update();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.pagamentos_recorrentes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_pix_template_sync_legacy BEFORE INSERT OR UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_pix_templates_updated_at BEFORE UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_planos_acao_updated_at BEFORE UPDATE ON public.planos_acao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_sync_regime_empresa AFTER INSERT OR UPDATE ON public.regimes_tributarios FOR EACH ROW EXECUTE FUNCTION public.sync_regime_tributario_empresa();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_risk_rules_set_empresa BEFORE INSERT ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_saved_filters_updated_at BEFORE UPDATE ON public.saved_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_scim_checklist_updated_at BEFORE UPDATE ON public.scim_setup_checklist FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_solicitacoes_lgpd_set_empresa BEFORE INSERT ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_solicitacoes_lgpd_updated_at BEFORE UPDATE ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_sped_arquivos_updated_at BEFORE UPDATE ON public.sped_contabil_arquivos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_user_active_filters_updated_at BEFORE UPDATE ON public.user_active_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER tr_user_digest_preferences_updated_at BEFORE UPDATE ON public.user_digest_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.auto_vincular_empresa_padrao();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 -- FASE 5b: Policies ausentes em tabelas comuns
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_delete ON public.alert_configurations FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_insert ON public.alert_configurations FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_select ON public.alert_configurations FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_update ON public.alert_configurations FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_delete ON public.alertas FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_insert ON public.alertas FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_select ON public.alertas FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_update ON public.alertas FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_delete ON public.alerts FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_insert ON public.alerts FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_select ON public.alerts FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_delete ON public.alerts_sent FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_insert ON public.alerts_sent FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_select ON public.alerts_sent FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_update ON public.alerts_sent FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_inter_select_authenticated ON public.aliquotas_interestaduais FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_inter_write_admin ON public.aliquotas_interestaduais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_internas_select_authenticated ON public.aliquotas_internas_uf FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_internas_write_admin ON public.aliquotas_internas_uf TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_iss_select_authenticated ON public.aliquotas_iss_municipal FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_iss_write_admin ON public.aliquotas_iss_municipal TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY anomalias_detectadas_tenant_rw ON public.anomalias_detectadas TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY api_keys_delete ON public.api_keys FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY api_keys_select ON public.api_keys FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_audit_trail.payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_config_tenant_rw ON public.asaas_config TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_customers_tenant_rw ON public.asaas_customers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_payments_tenant_rw ON public.asaas_payments TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_reconciliation_suggestions_tenant_rw ON public.asaas_reconciliation_suggestions TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_sync_queue.payment_id) AND public.empresa_acessivel(p.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_sync_queue.payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_transfers_tenant_rw ON public.asaas_transfers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY audit_logs_insert_self_attributed ON public.audit_logs FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email'::text))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY centros_custo_tenant_rw ON public.centros_custo TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY cnaes_select_authenticated ON public.cnaes FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY cnaes_write_admin ON public.cnaes TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_empresa_insert ON public.conformidade_snapshots FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_empresa_select ON public.conformidade_snapshots FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_empresa_update ON public.conformidade_snapshots FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY contas_receber_tenant_rw ON public.contas_receber TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY darfs_tenant_rw ON public.darfs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -5739,122 +6366,177 @@ CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.diges
 --
 
 
+DO $$ BEGIN
 CREATE POLICY elisao_alertas_acesso ON public.elisao_alertas TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY creditos_auditoria_insert ON public.elisao_creditos_auditoria FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY creditos_auditoria_select ON public.elisao_creditos_auditoria FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_creditos_admin ON public.elisao_regras_creditos TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_creditos_leitura ON public.elisao_regras_creditos FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY faixas_simples_select_authenticated ON public.faixas_simples_nacional FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY faixas_simples_write_admin ON public.faixas_simples_nacional TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fechamentos_insert ON public.fechamentos_tributarios FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fechamentos_select ON public.fechamentos_tributarios FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fechamentos_update ON public.fechamentos_tributarios FOR UPDATE TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia FOR SELECT TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND ((EXISTS ( SELECT 1
    FROM public.contas_receber cr
   WHERE ((cr.id = historico_conciliacao_ia.conta_receber_id) AND public.empresa_acessivel(cr.empresa_id)))) OR (EXISTS ( SELECT 1
@@ -5862,36 +6544,53 @@ CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_concili
   WHERE ((cp.id = historico_conciliacao_ia.conta_pagar_id) AND public.empresa_acessivel(cp.empresa_id)))) OR (EXISTS ( SELECT 1
    FROM public.sessoes_conciliacao s
   WHERE ((s.id = historico_conciliacao_ia.sessao_id) AND ((s.user_id = ( SELECT auth.uid() AS uid)) OR public.empresa_acessivel(s.empresa_id))))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY incentivos_fiscais_acesso ON public.incentivos_fiscais TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY integration_secrets_no_client_access ON public.integration_secrets AS RESTRICTIVE TO authenticated, anon USING (false) WITH CHECK (false);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY itens_iss_select_authenticated ON public.itens_lista_iss FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY itens_iss_write_admin ON public.itens_lista_iss TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY kpis_operacionais_owner ON public.kpis_operacionais TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -5907,269 +6606,398 @@ CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis TO
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_baixa_insert_owner ON public.logs_baixa_automatica FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_baixa_select_owner ON public.logs_baixa_automatica FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_retro_insert_owner ON public.logs_conciliacao_retroativa FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ncms_select_authenticated ON public.ncms FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ncms_write_admin ON public.ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY negativacoes_tenant_rw ON public.negativacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY notas_fiscais_ocr_acesso ON public.notas_fiscais_ocr TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY oportunidades_elisao_acesso ON public.oportunidades_elisao TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY pagamentos_recorrentes_acesso ON public.pagamentos_recorrentes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY parcelas_acordo_tenant_write ON public.parcelas_acordo TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND (EXISTS ( SELECT 1
    FROM public.acordos_parcelamento a
   WHERE ((a.id = parcelas_acordo.acordo_id) AND public.empresa_acessivel(a.empresa_id)))))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND (EXISTS ( SELECT 1
    FROM public.acordos_parcelamento a
   WHERE ((a.id = parcelas_acordo.acordo_id) AND public.empresa_acessivel(a.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY per_dcomp_acesso ON public.per_dcomp TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY pix_templates_tenant_rw ON public.pix_templates TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY planos_acao_owner ON public.planos_acao TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protestos_tenant_rw ON public.protestos TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_select_authenticated ON public.protocolos_st FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_write_admin ON public.protocolos_st TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ncms_select_authenticated ON public.protocolos_st_ncms FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ncms_write_admin ON public.protocolos_st_ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ufs_select_authenticated ON public.protocolos_st_ufs FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ufs_write_admin ON public.protocolos_st_ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regua_cobranca_etapas_tenant_write ON public.regua_cobranca_etapas TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.regua_cobranca r
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND public.empresa_acessivel(r.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.regua_cobranca r
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND public.empresa_acessivel(r.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY rel_trib_agend_all ON public.relatorios_tributarios_agendados TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_delete ON public.risk_rules FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_insert ON public.risk_rules FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_select ON public.risk_rules FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY saved_filters_select ON public.saved_filters FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR (is_shared AND (empresa_id IS NOT NULL) AND public.empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1
    FROM public.user_roles ur
   WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY scim_checklist_own ON public.scim_setup_checklist TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY lgpd_owner_insert ON public.solicitacoes_lgpd FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY lgpd_scoped_select ON public.solicitacoes_lgpd FOR SELECT TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY lgpd_scoped_update ON public.solicitacoes_lgpd FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_insert ON public.sped_contabil_arquivos FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_select ON public.sped_contabil_arquivos FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos FOR UPDATE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ufs_select_authenticated ON public.ufs FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ufs_write_admin ON public.ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY user_active_filters_owner ON public.user_active_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -6194,802 +7022,898 @@ CREATE POLICY "Users can update their challenges" ON public.webauthn_challenges 
 
 -- FASE 5c: Indices ausentes em tabelas comuns
 
-CREATE UNIQUE INDEX aliq_iss_mun_geral_unq ON public.aliquotas_iss_municipal USING btree (codigo_ibge, vigente_de) WHERE (item_lista_id IS NULL);
+CREATE UNIQUE INDEX IF NOT EXISTS aliq_iss_mun_geral_unq ON public.aliquotas_iss_municipal USING btree (codigo_ibge, vigente_de) WHERE (item_lista_id IS NULL);
 
 
 --
 
 
-CREATE INDEX frontend_error_logs_2026_05_severity_created_at_idx ON public.frontend_error_logs_2026_05 USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_05_severity_created_at_idx ON public.frontend_error_logs_2026_05 USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX frontend_error_logs_2026_06_severity_created_at_idx ON public.frontend_error_logs_2026_06 USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_06_severity_created_at_idx ON public.frontend_error_logs_2026_06 USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX frontend_error_logs_2026_07_severity_created_at_idx ON public.frontend_error_logs_2026_07 USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_07_severity_created_at_idx ON public.frontend_error_logs_2026_07 USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX frontend_error_logs_2026_08_severity_created_at_idx ON public.frontend_error_logs_2026_08 USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_08_severity_created_at_idx ON public.frontend_error_logs_2026_08 USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX frontend_error_logs_2026_09_severity_created_at_idx ON public.frontend_error_logs_2026_09 USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_09_severity_created_at_idx ON public.frontend_error_logs_2026_09 USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX frontend_error_logs_2026_10_severity_created_at_idx ON public.frontend_error_logs_2026_10 USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_10_severity_created_at_idx ON public.frontend_error_logs_2026_10 USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX frontend_error_logs_default_severity_created_at_idx ON public.frontend_error_logs_default USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS frontend_error_logs_default_severity_created_at_idx ON public.frontend_error_logs_default USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_alert_configurations_empresa ON public.alert_configurations USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_alertas_empresa_id ON public.alertas USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_alertas_empresa_id ON public.alertas USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_alertas_preditivos_empresa_id ON public.alertas_preditivos USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_alertas_preditivos_empresa_id ON public.alertas_preditivos USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_alerts_empresa ON public.alerts USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_aliq_iss_item ON public.aliquotas_iss_municipal USING btree (item_lista_id);
+CREATE INDEX IF NOT EXISTS idx_aliq_iss_item ON public.aliquotas_iss_municipal USING btree (item_lista_id);
 
 
 --
 
 
-CREATE INDEX idx_aliq_iss_mun ON public.aliquotas_iss_municipal USING btree (codigo_ibge, vigente_de DESC);
+CREATE INDEX IF NOT EXISTS idx_aliq_iss_mun ON public.aliquotas_iss_municipal USING btree (codigo_ibge, vigente_de DESC);
 
 
 --
 
 
-CREATE INDEX idx_aliquotas_iss_municipal_vigencia ON public.aliquotas_iss_municipal USING btree (vigente_de, vigente_ate);
+CREATE INDEX IF NOT EXISTS idx_aliquotas_iss_municipal_vigencia ON public.aliquotas_iss_municipal USING btree (vigente_de, vigente_ate);
 
 
 --
 
 
-CREATE INDEX idx_api_keys_empresa ON public.api_keys USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_api_keys_empresa ON public.api_keys USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_asaas_customers_empresa_id ON public.asaas_customers USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_asaas_customers_empresa_id ON public.asaas_customers USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_asaas_payments_empresa_id ON public.asaas_payments USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_asaas_payments_empresa_id ON public.asaas_payments USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_asaas_reconciliation_suggestions_empresa_id ON public.asaas_reconciliation_suggestions USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_asaas_reconciliation_suggestions_empresa_id ON public.asaas_reconciliation_suggestions USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_asaas_transfers_empresa_id ON public.asaas_transfers USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_asaas_transfers_empresa_id ON public.asaas_transfers USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_auditoria_financeira_empresa_id ON public.auditoria_financeira USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_auditoria_financeira_empresa_id ON public.auditoria_financeira USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_beneficios_uf ON public.beneficios_fiscais USING btree (uf);
+CREATE INDEX IF NOT EXISTS idx_beneficios_uf ON public.beneficios_fiscais USING btree (uf);
 
 
 --
 
 
-CREATE INDEX idx_centros_custo_empresa_id ON public.centros_custo USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_centros_custo_empresa_id ON public.centros_custo USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_clientes_empresa_id ON public.clientes USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_clientes_empresa_id ON public.clientes USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_cnaes_anexo ON public.cnaes USING btree (anexo_simples);
+CREATE INDEX IF NOT EXISTS idx_cnaes_anexo ON public.cnaes USING btree (anexo_simples);
 
 
 --
 
 
-CREATE INDEX idx_conciliacoes_empresa_id ON public.conciliacoes USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_conciliacoes_empresa_id ON public.conciliacoes USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_configuracoes_duplicidade_empresa_id ON public.configuracoes_duplicidade USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_configuracoes_duplicidade_empresa_id ON public.configuracoes_duplicidade USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_contas_receber_bitrix_deal ON public.contas_receber USING btree (bitrix_deal_id) WHERE (bitrix_deal_id IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_contas_receber_bitrix_deal ON public.contas_receber USING btree (bitrix_deal_id) WHERE (bitrix_deal_id IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX idx_convites_organizacao_id ON public.convites USING btree (organizacao_id);
+CREATE INDEX IF NOT EXISTS idx_convites_organizacao_id ON public.convites USING btree (organizacao_id);
 
 
 --
 
 
-CREATE INDEX idx_cred_aud_empresa ON public.elisao_creditos_auditoria USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_cred_aud_empresa ON public.elisao_creditos_auditoria USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_cred_aud_status ON public.elisao_creditos_auditoria USING btree (empresa_id, status_aprovacao);
+CREATE INDEX IF NOT EXISTS idx_cred_aud_status ON public.elisao_creditos_auditoria USING btree (empresa_id, status_aprovacao);
 
 
 --
 
 
-CREATE INDEX idx_digest_envios_log_created_at ON public.digest_envios_log USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_digest_envios_log_created_at ON public.digest_envios_log USING btree (created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_digest_envios_log_email ON public.digest_envios_log USING btree (email, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_digest_envios_log_email ON public.digest_envios_log USING btree (email, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_digest_envios_log_execucao ON public.digest_envios_log USING btree (execucao_id);
+CREATE INDEX IF NOT EXISTS idx_digest_envios_log_execucao ON public.digest_envios_log USING btree (execucao_id);
 
 
 --
 
 
-CREATE INDEX idx_digest_envios_log_situacao ON public.digest_envios_log USING btree (situacao, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_digest_envios_log_situacao ON public.digest_envios_log USING btree (situacao, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_divergencias_conciliacao_empresa_id ON public.divergencias_conciliacao USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_divergencias_conciliacao_empresa_id ON public.divergencias_conciliacao USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_elisao_alertas_empresa ON public.elisao_alertas USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_elisao_alertas_empresa ON public.elisao_alertas USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_empresas_certificados_criado_por ON public.empresas_certificados USING btree (criado_por) WHERE (criado_por IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_empresas_certificados_criado_por ON public.empresas_certificados USING btree (criado_por) WHERE (criado_por IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX idx_frontend_error_logs_sev_created ON ONLY public.frontend_error_logs USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_frontend_error_logs_sev_created ON ONLY public.frontend_error_logs USING btree (severity, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_historico_analises_preditivas_empresa_id ON public.historico_analises_preditivas USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_historico_analises_preditivas_empresa_id ON public.historico_analises_preditivas USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_incentivos_empresa ON public.incentivos_fiscais USING btree (empresa_id, ativo);
+CREATE INDEX IF NOT EXISTS idx_incentivos_empresa ON public.incentivos_fiscais USING btree (empresa_id, ativo);
 
 
 --
 
 
-CREATE INDEX idx_integrity_alerts_resolved_created ON public.integrity_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_integrity_alerts_resolved_created ON public.integrity_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX idx_itens_lista_iss_vigencia ON public.itens_lista_iss USING btree (vigente_de, vigente_ate);
+CREATE INDEX IF NOT EXISTS idx_itens_lista_iss_vigencia ON public.itens_lista_iss USING btree (vigente_de, vigente_ate);
 
 
 --
 
 
-CREATE INDEX idx_logs_conciliacao_retroativa_empresa_id ON public.logs_conciliacao_retroativa USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_logs_conciliacao_retroativa_empresa_id ON public.logs_conciliacao_retroativa USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_n8n_dispatch_logs_config_id ON public.n8n_dispatch_logs USING btree (config_id) WHERE (config_id IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_n8n_dispatch_logs_config_id ON public.n8n_dispatch_logs USING btree (config_id) WHERE (config_id IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX idx_n8n_workflow_configs_created_by ON public.n8n_workflow_configs USING btree (created_by) WHERE (created_by IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_n8n_workflow_configs_created_by ON public.n8n_workflow_configs USING btree (created_by) WHERE (created_by IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX idx_ncms_mono ON public.ncms USING btree (monofasico_pis_cofins);
+CREATE INDEX IF NOT EXISTS idx_ncms_mono ON public.ncms USING btree (monofasico_pis_cofins);
 
 
 --
 
 
-CREATE INDEX idx_ncms_st ON public.ncms USING btree (sujeito_st);
+CREATE INDEX IF NOT EXISTS idx_ncms_st ON public.ncms USING btree (sujeito_st);
 
 
 --
 
 
-CREATE INDEX idx_ncms_vigencia ON public.ncms USING btree (vigente_de, vigente_ate);
+CREATE INDEX IF NOT EXISTS idx_ncms_vigencia ON public.ncms USING btree (vigente_de, vigente_ate);
 
 
 --
 
 
-CREATE INDEX idx_negativacoes_empresa_id ON public.negativacoes USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_negativacoes_empresa_id ON public.negativacoes USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_nf_ocr_empresa ON public.notas_fiscais_ocr USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_nf_ocr_empresa ON public.notas_fiscais_ocr USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_nfe_eventos_created_by ON public.nfe_eventos USING btree (created_by) WHERE (created_by IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_nfe_eventos_created_by ON public.nfe_eventos USING btree (created_by) WHERE (created_by IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX idx_operacoes_trib_competencia ON public.operacoes_tributaveis USING btree (empresa_id, competencia);
+CREATE INDEX IF NOT EXISTS idx_operacoes_trib_competencia ON public.operacoes_tributaveis USING btree (empresa_id, competencia);
 
 
 --
 
 
-CREATE INDEX idx_operacoes_trib_nota_fiscal ON public.operacoes_tributaveis USING btree (nota_fiscal_id);
+CREATE INDEX IF NOT EXISTS idx_operacoes_trib_nota_fiscal ON public.operacoes_tributaveis USING btree (nota_fiscal_id);
 
 
 --
 
 
-CREATE INDEX idx_oport_empresa ON public.oportunidades_elisao USING btree (empresa_id, aplicavel);
+CREATE INDEX IF NOT EXISTS idx_oport_empresa ON public.oportunidades_elisao USING btree (empresa_id, aplicavel);
 
 
 --
 
 
-CREATE INDEX idx_oport_status ON public.oportunidades_elisao USING btree (empresa_id, status);
+CREATE INDEX IF NOT EXISTS idx_oport_status ON public.oportunidades_elisao USING btree (empresa_id, status);
 
 
 --
 
 
-CREATE INDEX idx_pag_recorr_empresa ON public.pagamentos_recorrentes USING btree (empresa_id, ativo);
+CREATE INDEX IF NOT EXISTS idx_pag_recorr_empresa ON public.pagamentos_recorrentes USING btree (empresa_id, ativo);
 
 
 --
 
 
-CREATE INDEX idx_pag_recorr_proxima ON public.pagamentos_recorrentes USING btree (proxima_geracao) WHERE ativo;
+CREATE INDEX IF NOT EXISTS idx_pag_recorr_proxima ON public.pagamentos_recorrentes USING btree (proxima_geracao) WHERE ativo;
 
 
 --
 
 
-CREATE INDEX idx_pedidos_compra_empresa_id ON public.pedidos_compra USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_pedidos_compra_empresa_id ON public.pedidos_compra USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_perf_alerts_open ON public.performance_alerts USING btree (created_at DESC) WHERE (resolved_at IS NULL);
+CREATE INDEX IF NOT EXISTS idx_perf_alerts_open ON public.performance_alerts USING btree (created_at DESC) WHERE (resolved_at IS NULL);
 
 
 --
 
 
-CREATE INDEX idx_perf_alerts_resolved_created ON public.performance_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_perf_alerts_resolved_created ON public.performance_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX idx_pix_templates_empresa_id ON public.pix_templates USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_pix_templates_empresa_id ON public.pix_templates USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_pix_templates_uso ON public.pix_templates USING btree (ativo, uso_count DESC);
+CREATE INDEX IF NOT EXISTS idx_pix_templates_uso ON public.pix_templates USING btree (ativo, uso_count DESC);
 
 
 --
 
 
-CREATE INDEX idx_profiles_empresa_id ON public.profiles USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_empresa_id ON public.profiles USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_protestos_empresa_id ON public.protestos USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_protestos_empresa_id ON public.protestos USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_protocolos_st_ncms_ncm ON public.protocolos_st_ncms USING btree (ncm_id);
+CREATE INDEX IF NOT EXISTS idx_protocolos_st_ncms_ncm ON public.protocolos_st_ncms USING btree (ncm_id);
 
 
 --
 
 
-CREATE INDEX idx_protocolos_st_ncms_protocolo ON public.protocolos_st_ncms USING btree (protocolo_id);
+CREATE INDEX IF NOT EXISTS idx_protocolos_st_ncms_protocolo ON public.protocolos_st_ncms USING btree (protocolo_id);
 
 
 --
 
 
-CREATE INDEX idx_protocolos_st_ncms_vigencia ON public.protocolos_st_ncms USING btree (vigente_de, vigente_ate);
+CREATE INDEX IF NOT EXISTS idx_protocolos_st_ncms_vigencia ON public.protocolos_st_ncms USING btree (vigente_de, vigente_ate);
 
 
 --
 
 
-CREATE INDEX idx_protocolos_st_ufs_protocolo ON public.protocolos_st_ufs USING btree (protocolo_id);
+CREATE INDEX IF NOT EXISTS idx_protocolos_st_ufs_protocolo ON public.protocolos_st_ufs USING btree (protocolo_id);
 
 
 --
 
 
-CREATE INDEX idx_regimes_simulados_ajustes_aplicados ON public.regimes_simulados USING gin (ajustes_aplicados);
+CREATE INDEX IF NOT EXISTS idx_regimes_simulados_ajustes_aplicados ON public.regimes_simulados USING gin (ajustes_aplicados);
 
 
 --
 
 
-CREATE INDEX idx_regras_conciliacao_empresa_id ON public.regras_conciliacao USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_regras_conciliacao_empresa_id ON public.regras_conciliacao USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_regua_cobranca_empresa_id ON public.regua_cobranca USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_regua_cobranca_empresa_id ON public.regua_cobranca USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_rel_trib_agend_proximo ON public.relatorios_tributarios_agendados USING btree (ativo, proximo_envio_em);
+CREATE INDEX IF NOT EXISTS idx_rel_trib_agend_proximo ON public.relatorios_tributarios_agendados USING btree (ativo, proximo_envio_em);
 
 
 --
 
 
-CREATE INDEX idx_relatorios_agendados_empresa_id ON public.relatorios_agendados USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_relatorios_agendados_empresa_id ON public.relatorios_agendados USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_relatorios_tributarios_agendados_empresa_id ON public.relatorios_tributarios_agendados USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_relatorios_tributarios_agendados_empresa_id ON public.relatorios_tributarios_agendados USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_retencoes_fonte_competencia ON public.retencoes_fonte USING btree (empresa_id, competencia);
+CREATE INDEX IF NOT EXISTS idx_retencoes_fonte_competencia ON public.retencoes_fonte USING btree (empresa_id, competencia);
 
 
 --
 
 
-CREATE INDEX idx_risk_rules_empresa ON public.risk_rules USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_risk_rules_empresa ON public.risk_rules USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_sessoes_conciliacao_empresa_id ON public.sessoes_conciliacao USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_sessoes_conciliacao_empresa_id ON public.sessoes_conciliacao USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_solicitacoes_lgpd_empresa_id ON public.solicitacoes_lgpd USING btree (empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_solicitacoes_lgpd_empresa_id ON public.solicitacoes_lgpd USING btree (empresa_id, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_sped_arq_empresa_tipo_ano ON public.sped_contabil_arquivos USING btree (empresa_id, tipo, ano_calendario, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sped_arq_empresa_tipo_ano ON public.sped_contabil_arquivos USING btree (empresa_id, tipo, ano_calendario, created_at DESC);
 
 
 --
 
 
-CREATE INDEX idx_tarefas_elisao_empresa ON public.elisao_tarefas_acionaveis USING btree (empresa_id, prazo);
+CREATE INDEX IF NOT EXISTS idx_tarefas_elisao_empresa ON public.elisao_tarefas_acionaveis USING btree (empresa_id, prazo);
 
 
 --
 
 
-CREATE INDEX idx_templates_cobranca_empresa_id ON public.templates_cobranca USING btree (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_templates_cobranca_empresa_id ON public.templates_cobranca USING btree (empresa_id);
 
 
 --
 
 
-CREATE INDEX idx_ufs_vigencia ON public.ufs USING btree (vigente_de, vigente_ate);
+CREATE INDEX IF NOT EXISTS idx_ufs_vigencia ON public.ufs USING btree (vigente_de, vigente_ate);
 
 
 --
 
 
-CREATE INDEX idx_user_digest_preferences_ativo ON public.user_digest_preferences USING btree (ativo, frequencia, hora_envio);
+CREATE INDEX IF NOT EXISTS idx_user_digest_preferences_ativo ON public.user_digest_preferences USING btree (ativo, frequencia, hora_envio);
 
 
 --
 
 
-CREATE INDEX idx_webhooks_log_dlq_id ON public.webhooks_log USING btree (dlq_id) WHERE (dlq_id IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_webhooks_log_dlq_id ON public.webhooks_log USING btree (dlq_id) WHERE (dlq_id IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX lancamentos_contabeis_empresa_comp_idx ON public.lancamentos_contabeis USING btree (empresa_id, competencia);
+CREATE INDEX IF NOT EXISTS lancamentos_contabeis_empresa_comp_idx ON public.lancamentos_contabeis USING btree (empresa_id, competencia);
 
 
 --
 
 
-CREATE INDEX lancamentos_contabeis_empresa_data_idx ON public.lancamentos_contabeis USING btree (empresa_id, data_lancamento);
+CREATE INDEX IF NOT EXISTS lancamentos_contabeis_empresa_data_idx ON public.lancamentos_contabeis USING btree (empresa_id, data_lancamento);
 
 
 --
 
 
-CREATE INDEX partidas_contabeis_conta_idx ON public.partidas_contabeis USING btree (conta_id);
+CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_idx ON public.partidas_contabeis USING btree (conta_id);
 
 
 --
 
 
-CREATE INDEX partidas_contabeis_conta_lanc_idx ON public.partidas_contabeis USING btree (conta_id, lancamento_id) INCLUDE (tipo, valor);
+CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_lanc_idx ON public.partidas_contabeis USING btree (conta_id, lancamento_id) INCLUDE (tipo, valor);
 
 
 --
 
 
-CREATE INDEX plano_contas_codigo_referencial_idx ON public.plano_contas USING btree (empresa_id, codigo_referencial);
+CREATE INDEX IF NOT EXISTS plano_contas_codigo_referencial_idx ON public.plano_contas USING btree (empresa_id, codigo_referencial);
 
 
 --
 
 
-CREATE UNIQUE INDEX plano_contas_empresa_codigo_uidx ON public.plano_contas USING btree (empresa_id, codigo) WHERE (empresa_id IS NOT NULL);
+CREATE UNIQUE INDEX IF NOT EXISTS plano_contas_empresa_codigo_uidx ON public.plano_contas USING btree (empresa_id, codigo) WHERE (empresa_id IS NOT NULL);
 
 
 --
 
 
-CREATE INDEX plano_contas_parent_idx ON public.plano_contas USING btree (parent_id);
+CREATE INDEX IF NOT EXISTS plano_contas_parent_idx ON public.plano_contas USING btree (parent_id);
 
 
 --
 
 
-CREATE UNIQUE INDEX ufs_codigo_ibge_unq ON public.ufs USING btree (codigo_ibge);
+CREATE UNIQUE INDEX IF NOT EXISTS ufs_codigo_ibge_unq ON public.ufs USING btree (codigo_ibge);
 
 
 --
 
 
-CREATE UNIQUE INDEX uniq_empresas_is_padrao ON public.empresas USING btree ((true)) WHERE is_padrao;
+CREATE UNIQUE INDEX IF NOT EXISTS uniq_empresas_is_padrao ON public.empresas USING btree ((true)) WHERE is_padrao;
 
 
 --
 
 
-CREATE UNIQUE INDEX ux_faturamento_mensal_empresa_ano_mes ON public.faturamento_mensal USING btree (empresa_id, ano, mes);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_faturamento_mensal_empresa_ano_mes ON public.faturamento_mensal USING btree (empresa_id, ano, mes);
 
 
 --
 
 
-CREATE UNIQUE INDEX ux_folha_pagamento_empresa_ano_mes ON public.folha_pagamento USING btree (empresa_id, ano, mes);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_folha_pagamento_empresa_ano_mes ON public.folha_pagamento USING btree (empresa_id, ano, mes);
 
 
 --
 
 -- FASE 5d: Constraints ausentes em tabelas comuns
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alert_configurations
     ADD CONSTRAINT alert_configurations_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alertas
     ADD CONSTRAINT alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.aliquotas_interestaduais
     ADD CONSTRAINT aliquotas_interestaduais_unq UNIQUE (uf_origem, uf_destino, vigente_de);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.aliquotas_internas_uf
     ADD CONSTRAINT aliquotas_internas_uf_unq UNIQUE (uf, categoria_produto, vigente_de);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.aliquotas_iss_municipal
     ADD CONSTRAINT aliq_iss_mun_unq UNIQUE (codigo_ibge, item_lista_id, vigente_de);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.api_keys
     ADD CONSTRAINT api_keys_hash_unico UNIQUE (key_hash);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.api_keys
     ADD CONSTRAINT api_keys_nome_unico_por_empresa UNIQUE (empresa_id, name);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.audit_logs
     ADD CONSTRAINT audit_logs_pkey1 PRIMARY KEY (id, created_at);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bitrix24_activities
     ADD CONSTRAINT bitrix24_activities_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bitrix24_stage_mappings
     ADD CONSTRAINT bitrix24_stage_mappings_lalamove_status_key UNIQUE (lalamove_status);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.conformidade_snapshots
     ADD CONSTRAINT conformidade_snapshots_unica UNIQUE (empresa_id, competencia);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.elisao_creditos_auditoria
     ADD CONSTRAINT elisao_creditos_auditoria_nota_id_fkey FOREIGN KEY (nota_id) REFERENCES public.notas_fiscais_ocr(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.entregas_obrigacoes
     ADD CONSTRAINT entregas_obrigacoes_unica UNIQUE (empresa_id, obrigacao_id, competencia);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.faixas_simples_nacional
     ADD CONSTRAINT faixas_simples_unq UNIQUE (anexo, faixa, vigente_de);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.fechamentos_tributarios
     ADD CONSTRAINT fechamento_unico UNIQUE (empresa_id, ano, mes);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.frontend_error_logs
     ADD CONSTRAINT frontend_error_logs_pkey1 PRIMARY KEY (id, created_at);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.integration_secrets
     ADD CONSTRAINT integration_secrets_chave_key UNIQUE (chave);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.kpis_operacionais
     ADD CONSTRAINT kpis_operacionais_unique UNIQUE (user_id, nome);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.plano_contas
     ADD CONSTRAINT plano_contas_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.plano_contas(id) ON DELETE SET NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.protocolos_st_ncms
     ADD CONSTRAINT protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.protocolos_st_ufs
     ADD CONSTRAINT protocolos_st_ufs_unq UNIQUE (protocolo_id, uf);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.risk_rules
     ADD CONSTRAINT risk_rules_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.saved_filters
     ADD CONSTRAINT saved_filters_unique UNIQUE (user_id, entity_type, name);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.scim_setup_checklist
     ADD CONSTRAINT scim_checklist_unico UNIQUE (user_id, item_key);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.solicitacoes_lgpd
     ADD CONSTRAINT solicitacoes_lgpd_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_active_filters
     ADD CONSTRAINT user_active_filters_unique UNIQUE (user_id, entity_type);
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_anomalia_preferences
     ADD CONSTRAINT user_anomalia_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_digest_preferences
     ADD CONSTRAINT user_digest_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_roles
     ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
 
 --
