@@ -51,18 +51,31 @@ END;
 $function$;
 
 -- Sprint 2 / Item 7: normalizar email em login_attempts e adicionar CHECK
-UPDATE public.login_attempts
-   SET email = lower(email)
- WHERE email IS NOT NULL AND email <> lower(email);
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'login_attempts' AND column_name = 'email'
+  ) THEN
+    UPDATE public.login_attempts
+       SET email = lower(email)
+     WHERE email IS NOT NULL AND email <> lower(email);
 
-ALTER TABLE public.login_attempts
-  DROP CONSTRAINT IF EXISTS login_attempts_email_lowercase_chk;
+    ALTER TABLE public.login_attempts
+      DROP CONSTRAINT IF EXISTS login_attempts_email_lowercase_chk;
 
-ALTER TABLE public.login_attempts
-  ADD CONSTRAINT login_attempts_email_lowercase_chk
-  CHECK (email IS NULL OR email = lower(email)) NOT VALID;
+    ALTER TABLE public.login_attempts
+      ADD CONSTRAINT login_attempts_email_lowercase_chk
+      CHECK (email IS NULL OR email = lower(email)) NOT VALID;
 
-ALTER TABLE public.login_attempts VALIDATE CONSTRAINT login_attempts_email_lowercase_chk;
+    ALTER TABLE public.login_attempts VALIDATE CONSTRAINT login_attempts_email_lowercase_chk;
+  END IF;
+END $$;
 
-INSERT INTO public.audit_logs (table_name, action, details, user_email, created_at)
-VALUES ('multi', 'SPRINT2_5_7', 'audit_trigger emite WARNING; login_attempts.email normalizado + CHECK', 'system', now());
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='audit_logs') THEN
+    INSERT INTO public.audit_logs (table_name, action, details, user_email, created_at)
+    VALUES ('multi', 'SPRINT2_5_7', 'audit_trigger emite WARNING; login_attempts.email normalizado + CHECK', 'system', now());
+  END IF;
+END $$;
