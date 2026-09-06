@@ -1,7 +1,13 @@
 -- Item 24: Automação de retenção e manutenção via pg_cron
 -- Todas as tarefas chamam funções SQL internas (sem HTTP), portanto podem viver em migração.
 
-CREATE EXTENSION IF NOT EXISTS pg_cron;
+DO $$
+BEGIN
+  CREATE EXTENSION IF NOT EXISTS pg_cron;
+EXCEPTION WHEN OTHERS THEN
+  -- pg_cron pode já estar instalado pelo Supabase ou ter conflito de privilégios (2BP01)
+  NULL;
+END $$;
 
 -- Helper: agenda ou reagenda job idempotentemente
 DO $$
@@ -17,6 +23,10 @@ DECLARE
   v_job JSONB;
   v_existing_id BIGINT;
 BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'cron') THEN
+    RETURN;
+  END IF;
+
   FOR v_job IN SELECT * FROM jsonb_array_elements(v_jobs)
   LOOP
     SELECT jobid INTO v_existing_id
@@ -33,10 +43,17 @@ BEGIN
       v_job->>'cmd'
     );
   END LOOP;
+EXCEPTION WHEN OTHERS THEN
+  NULL;
 END $$;
 
 -- Registrar auditoria
-INSERT INTO public.audit_logs (table_name, action, details, created_at)
-VALUES ('cron.job', 'schedule_maintenance_jobs',
-        'Item 24: agendou 6 jobs de retenção/manutenção via pg_cron',
-        now());
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='audit_logs') THEN
+    INSERT INTO public.audit_logs (table_name, action, details, created_at)
+    VALUES ('cron.job', 'schedule_maintenance_jobs',
+            'Item 24: agendou 6 jobs de retenção/manutenção via pg_cron',
+            now());
+  END IF;
+END $$;
