@@ -27,7 +27,13 @@ BEGIN
 END $$;
 
 CREATE INDEX IF NOT EXISTS idx_darfs_empresa_competencia ON public.darfs(empresa_id, competencia);
-CREATE INDEX IF NOT EXISTS idx_darfs_alerta_id ON public.darfs(alerta_id);
+-- Guard: 42703(alerta_id) — column added by a later migration, may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='darfs' AND column_name='alerta_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_darfs_alerta_id ON public.darfs(alerta_id)';
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_darfs_status_vencimento ON public.darfs(status, data_vencimento);
 
 -- 2) Complete SSO provider schema expected by SSO UI/functions.
