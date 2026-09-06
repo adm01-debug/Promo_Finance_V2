@@ -71,17 +71,12 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE public.profiles ALTER COLUMN role SET DEFAULT 'visualizador';
 
 -- RPCs for automation
--- DROP first: 42P13 fires when an existing version has a different return type
+-- DROP first: 42P13 fires when get_cron_jobs() already exists with a different return type
+-- get_cron_run_history is NOT stubbed here: 20260417194817 defines the 2-arg version, and
+-- 20260518170823 replaces it. Creating a 0-arg overload here would cause SQLSTATE 42725
+-- (ambiguous function) in the REVOKE loop of 20260518170823.
 DROP FUNCTION IF EXISTS public.get_cron_jobs();
 CREATE OR REPLACE FUNCTION public.get_cron_jobs()
-RETURNS JSONB AS $$
-BEGIN
-    RETURN '[]'::jsonb;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-DROP FUNCTION IF EXISTS public.get_cron_run_history();
-CREATE OR REPLACE FUNCTION public.get_cron_run_history()
 RETURNS JSONB AS $$
 BEGIN
     RETURN '[]'::jsonb;
