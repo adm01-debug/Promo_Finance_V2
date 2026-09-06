@@ -169,18 +169,33 @@ SELECT cb.id, cb.banco, cb.agencia, cb.conta, cb.tipo_conta, cb.saldo_atual, cb.
     cb.empresa_id, cb.nome, cb.tipo, e.razao_social AS empresa_nome
 FROM contas_bancarias cb LEFT JOIN empresas e ON e.id = cb.empresa_id WHERE cb.ativo = true;
 
-CREATE VIEW public.vw_fluxo_caixa AS
-SELECT m.data_movimentacao, m.tipo, m.descricao, m.valor, m.valor_liquido, m.taxa_gateway,
-    cb.banco AS conta_bancaria, cat.nome AS categoria, pc.tipo AS tipo_categoria, cc.nome AS centro_custo,
-    cf.nome AS contato, m.conciliado, m.asaas_transaction_id, m.asaas_type, m.origem,
-    m.created_at, m.empresa_id, m.conta_bancaria_id
-FROM movimentacoes m
-    LEFT JOIN contas_bancarias cb ON cb.id = m.conta_bancaria_id
-    LEFT JOIN plano_contas pc ON pc.id = m.plano_conta_id
-    LEFT JOIN centros_custo cc ON cc.id = m.centro_custo_id
-    LEFT JOIN contatos_financeiros cf ON cf.id = m.contato_id
-    LEFT JOIN categorias cat ON cat.id = m.categoria_id
-WHERE m.deleted_at IS NULL;
+-- Guard: plano_contas.tipo só existe a partir de migration posterior —
+-- sem o guard, preview DB falha com SQLSTATE 42703 ao recriar do zero.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'plano_contas' AND column_name = 'tipo'
+  ) THEN
+    EXECUTE $view$
+      CREATE VIEW public.vw_fluxo_caixa AS
+      SELECT m.data_movimentacao, m.tipo, m.descricao, m.valor, m.valor_liquido, m.taxa_gateway,
+          cb.banco AS conta_bancaria, cat.nome AS categoria, pc.tipo AS tipo_categoria, cc.nome AS centro_custo,
+          cf.nome AS contato, m.conciliado, m.asaas_transaction_id, m.asaas_type, m.origem,
+          m.created_at, m.empresa_id, m.conta_bancaria_id
+      FROM movimentacoes m
+          LEFT JOIN contas_bancarias cb ON cb.id = m.conta_bancaria_id
+          LEFT JOIN plano_contas pc ON pc.id = m.plano_conta_id
+          LEFT JOIN centros_custo cc ON cc.id = m.centro_custo_id
+          LEFT JOIN contatos_financeiros cf ON cf.id = m.contato_id
+          LEFT JOIN categorias cat ON cat.id = m.categoria_id
+      WHERE m.deleted_at IS NULL
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317125441: plano_contas.tipo ausente; vw_fluxo_caixa recriada em migration posterior.';
+  END IF;
+END
+$$;
 
 CREATE VIEW public.vw_fluxo_caixa_diario AS
 SELECT m.data_movimentacao AS dia, m.data_movimentacao AS data, m.empresa_id,
@@ -208,7 +223,7 @@ BEGIN
           COALESCE(sum(cp.valor), 0) AS total_gasto,
           CASE WHEN cc.orcamento_previsto > 0 THEN round((COALESCE(sum(cp.valor), 0) / cc.orcamento_previsto) * 100, 2) ELSE 0 END AS percentual_utilizado,
           cc.tipo, (cc.orcamento_previsto - COALESCE(sum(cp.valor), 0)) AS saldo_orcamento, cc.bitrix_deal_id
-      FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id = cc.id AND cp.status = 'pago'::status_pagamento
+      FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id = cc.id AND cp.status = 'pago'
       GROUP BY cc.id, cc.nome, cc.codigo, cc.orcamento_previsto, cc.tipo, cc.bitrix_deal_id
     $view$;
   ELSE
