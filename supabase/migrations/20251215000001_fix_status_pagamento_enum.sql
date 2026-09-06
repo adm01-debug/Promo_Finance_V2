@@ -27,9 +27,13 @@ BEGIN
       AND column_name = 'status'
       AND data_type = 'character varying'
   ) THEN
+    -- DROP DEFAULT first; PostgreSQL cannot auto-cast a text default to an ENUM
+    ALTER TABLE public.contas_pagar ALTER COLUMN status DROP DEFAULT;
     ALTER TABLE public.contas_pagar
       ALTER COLUMN status TYPE public.status_pagamento
         USING status::public.status_pagamento;
+    ALTER TABLE public.contas_pagar
+      ALTER COLUMN status SET DEFAULT 'pendente'::public.status_pagamento;
   END IF;
 END
 $$;
@@ -44,9 +48,13 @@ BEGIN
       AND column_name = 'status'
       AND data_type = 'character varying'
   ) THEN
+    -- DROP DEFAULT first; PostgreSQL cannot auto-cast a text default to an ENUM
+    ALTER TABLE public.contas_receber ALTER COLUMN status DROP DEFAULT;
     ALTER TABLE public.contas_receber
       ALTER COLUMN status TYPE public.status_pagamento
         USING status::public.status_pagamento;
+    ALTER TABLE public.contas_receber
+      ALTER COLUMN status SET DEFAULT 'pendente'::public.status_pagamento;
   END IF;
 END
 $$;
