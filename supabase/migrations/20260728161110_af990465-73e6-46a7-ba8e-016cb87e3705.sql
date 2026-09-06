@@ -31,7 +31,7 @@ CREATE POLICY "saved_filters_select" ON public.saved_filters
       AND EXISTS (
         SELECT 1 FROM public.user_roles ur
         WHERE ur.user_id = auth.uid()
-          AND ur.role::text = ANY (saved_filters.shared_with_roles)
+          AND ur.role::text = ANY (saved_filters.shared_with_roles::text[])
       )
     )
   );
