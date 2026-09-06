@@ -4,6 +4,7 @@
 -- Padrão substituído: empresa_id IN (SELECT id FROM empresas)  ❌
 -- Padrão novo:        empresa_id IN (SELECT empresa_id FROM user_empresas
 --                                     WHERE user_id=auth.uid() AND ativo)
+-- Guard duplo: 42P01 (tabela) + 42703 (coluna empresa_id)
 -- =====================================================================
 
 -- 1) active_tracking — remove catch-all que vazava GPS de todos motoristas
@@ -28,10 +29,11 @@ BEGIN
 END $$;
 
 -- 3) apuracoes_tributarias
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='apuracoes_tributarias') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='apuracoes_tributarias')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='apuracoes_tributarias' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Authenticated users can view tax calculations" ON public.apuracoes_tributarias$sql$;
     EXECUTE $sql$CREATE POLICY "apuracoes_tributarias_empresa_select" ON public.apuracoes_tributarias
   FOR SELECT TO authenticated
@@ -40,10 +42,11 @@ BEGIN
 END $$;
 
 -- 4) bitrix_field_mappings
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='bitrix_field_mappings') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='bitrix_field_mappings')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='bitrix_field_mappings' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users see own mappings" ON public.bitrix_field_mappings$sql$;
     EXECUTE $sql$CREATE POLICY "bitrix_field_mappings_empresa_select" ON public.bitrix_field_mappings
   FOR SELECT TO authenticated
@@ -52,10 +55,11 @@ BEGIN
 END $$;
 
 -- 5) bitrix_sync_logs
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='bitrix_sync_logs') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='bitrix_sync_logs')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='bitrix_sync_logs' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users see own sync logs" ON public.bitrix_sync_logs$sql$;
     EXECUTE $sql$CREATE POLICY "bitrix_sync_logs_empresa_select" ON public.bitrix_sync_logs
   FOR SELECT TO authenticated
@@ -64,10 +68,11 @@ BEGIN
 END $$;
 
 -- 6) centros_custo
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='centros_custo') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='centros_custo')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='centros_custo' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view centros de custo" ON public.centros_custo$sql$;
     EXECUTE $sql$CREATE POLICY "centros_custo_empresa_select" ON public.centros_custo
   FOR SELECT TO authenticated
@@ -76,10 +81,11 @@ BEGIN
 END $$;
 
 -- 7) configuracoes_aprovacao
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='configuracoes_aprovacao') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='configuracoes_aprovacao')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='configuracoes_aprovacao' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Authenticated users can view approval config" ON public.configuracoes_aprovacao$sql$;
     EXECUTE $sql$CREATE POLICY "configuracoes_aprovacao_empresa_select" ON public.configuracoes_aprovacao
   FOR SELECT TO authenticated
@@ -88,10 +94,11 @@ BEGIN
 END $$;
 
 -- 8) execucoes_cobranca — substitui isolation quebrado
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='execucoes_cobranca') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='execucoes_cobranca')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='execucoes_cobranca' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "execucoes_cobranca_isolation" ON public.execucoes_cobranca$sql$;
     EXECUTE $sql$CREATE POLICY "execucoes_cobranca_empresa_all" ON public.execucoes_cobranca
   FOR ALL TO authenticated
@@ -101,10 +108,11 @@ BEGIN
 END $$;
 
 -- 9) fila_cobrancas
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='fila_cobrancas') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='fila_cobrancas')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='fila_cobrancas' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view queue" ON public.fila_cobrancas$sql$;
     EXECUTE $sql$CREATE POLICY "fila_cobrancas_empresa_select" ON public.fila_cobrancas
   FOR SELECT TO authenticated
@@ -113,10 +121,11 @@ BEGIN
 END $$;
 
 -- 10) historico_analises_preditivas
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='historico_analises_preditivas') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='historico_analises_preditivas')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='historico_analises_preditivas' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Authenticated read hap" ON public.historico_analises_preditivas$sql$;
     EXECUTE $sql$CREATE POLICY "historico_analises_preditivas_empresa_select" ON public.historico_analises_preditivas
   FOR SELECT TO authenticated
@@ -125,10 +134,11 @@ BEGIN
 END $$;
 
 -- 11) historico_cobranca — corrige USING(true) E isolation quebrado
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='historico_cobranca') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='historico_cobranca')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='historico_cobranca' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view history" ON public.historico_cobranca$sql$;
     EXECUTE $sql$DROP POLICY IF EXISTS "historico_cobranca_isolation" ON public.historico_cobranca$sql$;
     EXECUTE $sql$CREATE POLICY "historico_cobranca_empresa_all" ON public.historico_cobranca
@@ -169,10 +179,11 @@ BEGIN
 END $$;
 
 -- 14) notas_fiscais
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='notas_fiscais') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='notas_fiscais')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notas_fiscais' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users view own NFs" ON public.notas_fiscais$sql$;
     EXECUTE $sql$CREATE POLICY "notas_fiscais_empresa_select" ON public.notas_fiscais
   FOR SELECT TO authenticated
@@ -181,10 +192,11 @@ BEGIN
 END $$;
 
 -- 15) operacoes_tributaveis
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='operacoes_tributaveis') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='operacoes_tributaveis')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='operacoes_tributaveis' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users view own operacoes" ON public.operacoes_tributaveis$sql$;
     EXECUTE $sql$CREATE POLICY "operacoes_tributaveis_empresa_select" ON public.operacoes_tributaveis
   FOR SELECT TO authenticated
@@ -193,10 +205,11 @@ BEGIN
 END $$;
 
 -- 16) pedidos_compra
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='pedidos_compra') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='pedidos_compra')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='pedidos_compra' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view everything" ON public.pedidos_compra$sql$;
     EXECUTE $sql$CREATE POLICY "pedidos_compra_empresa_select" ON public.pedidos_compra
   FOR SELECT TO authenticated
@@ -205,10 +218,11 @@ BEGIN
 END $$;
 
 -- 17) pix_templates
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='pix_templates') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='pix_templates')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='pix_templates' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view pix" ON public.pix_templates$sql$;
     EXECUTE $sql$DROP POLICY IF EXISTS "pix_templates_isolation" ON public.pix_templates$sql$;
     EXECUTE $sql$CREATE POLICY "pix_templates_empresa_select" ON public.pix_templates
@@ -218,10 +232,11 @@ BEGIN
 END $$;
 
 -- 18) regimes_simulados — SELECT/INSERT/UPDATE com escopo por empresa
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='regimes_simulados') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='regimes_simulados')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='regimes_simulados' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view simulation history" ON public.regimes_simulados$sql$;
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can insert simulations" ON public.regimes_simulados$sql$;
     EXECUTE $sql$CREATE POLICY "regimes_simulados_empresa_select" ON public.regimes_simulados
@@ -234,10 +249,11 @@ BEGIN
 END $$;
 
 -- 19) regua_cobranca — corrige isolation quebrado E USING(true)
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='regua_cobranca') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='regua_cobranca')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='regua_cobranca' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view regua" ON public.regua_cobranca$sql$;
     EXECUTE $sql$DROP POLICY IF EXISTS "regua_cobranca_isolation" ON public.regua_cobranca$sql$;
     EXECUTE $sql$CREATE POLICY "regua_cobranca_empresa_select" ON public.regua_cobranca
@@ -247,10 +263,11 @@ BEGIN
 END $$;
 
 -- 20) split_payment_transacoes — SELECT/INSERT/UPDATE com escopo real por empresa
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703 — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='split_payment_transacoes') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='split_payment_transacoes')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='split_payment_transacoes' AND column_name='empresa_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view split transactions of their companies" ON public.split_payment_transacoes$sql$;
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can insert split transactions" ON public.split_payment_transacoes$sql$;
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can update split transactions" ON public.split_payment_transacoes$sql$;
