@@ -25,26 +25,32 @@ GRANT SELECT, UPDATE ON public.convites_contador TO authenticated;
 GRANT ALL ON public.convites_contador TO service_role;
 ALTER TABLE public.convites_contador ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "convites_contador_select" ON public.convites_contador
-  FOR SELECT TO authenticated
-  USING (
-    public.empresa_acessivel(empresa_id)
-    AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
-  );
-CREATE POLICY "convites_contador_revogar" ON public.convites_contador
-  FOR UPDATE TO authenticated
-  USING (
-    public.empresa_acessivel(empresa_id)
-    AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
-  )
-  WITH CHECK (
-    public.empresa_acessivel(empresa_id)
-    AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
-  );
+DO $$ BEGIN
+  CREATE POLICY "convites_contador_select" ON public.convites_contador
+    FOR SELECT TO authenticated
+    USING (
+      public.empresa_acessivel(empresa_id)
+      AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
+    );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  CREATE POLICY "convites_contador_revogar" ON public.convites_contador
+    FOR UPDATE TO authenticated
+    USING (
+      public.empresa_acessivel(empresa_id)
+      AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
+    )
+    WITH CHECK (
+      public.empresa_acessivel(empresa_id)
+      AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
+    );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE TRIGGER trg_convites_contador_updated_at
-  BEFORE UPDATE ON public.convites_contador
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_convites_contador_updated_at
+    BEFORE UPDATE ON public.convites_contador
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============ Execuções da régua de cobrança ============
 CREATE TABLE IF NOT EXISTS public.execucoes_regua_cobranca (
@@ -72,8 +78,10 @@ GRANT SELECT ON public.execucoes_regua_cobranca TO authenticated;
 GRANT ALL ON public.execucoes_regua_cobranca TO service_role;
 ALTER TABLE public.execucoes_regua_cobranca ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "execucoes_regua_select" ON public.execucoes_regua_cobranca
-  FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+DO $$ BEGIN
+  CREATE POLICY "execucoes_regua_select" ON public.execucoes_regua_cobranca
+    FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============ Análise de risco de crédito (Asaas/IA) ============
 CREATE TABLE IF NOT EXISTS public.asaas_credit_risk_analysis (
@@ -92,10 +100,12 @@ GRANT SELECT ON public.asaas_credit_risk_analysis TO authenticated;
 GRANT ALL ON public.asaas_credit_risk_analysis TO service_role;
 ALTER TABLE public.asaas_credit_risk_analysis ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "credit_risk_select" ON public.asaas_credit_risk_analysis
-  FOR SELECT TO authenticated
-  USING (EXISTS (
-    SELECT 1 FROM public.clientes c
-    WHERE c.id = asaas_credit_risk_analysis.cliente_id
-      AND public.empresa_acessivel(c.empresa_id)
-  ));
+DO $$ BEGIN
+  CREATE POLICY "credit_risk_select" ON public.asaas_credit_risk_analysis
+    FOR SELECT TO authenticated
+    USING (EXISTS (
+      SELECT 1 FROM public.clientes c
+      WHERE c.id = asaas_credit_risk_analysis.cliente_id
+        AND public.empresa_acessivel(c.empresa_id)
+    ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
