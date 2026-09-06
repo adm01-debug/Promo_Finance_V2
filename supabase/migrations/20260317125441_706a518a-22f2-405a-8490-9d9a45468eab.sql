@@ -11,6 +11,9 @@ BEGIN
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'conta_bancaria_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'plano_contas' AND column_name = 'descricao'
   ) THEN
     DROP VIEW IF EXISTS public.vw_contas_pagar_painel;
     DROP VIEW IF EXISTS public.vw_contas_receber_painel;
@@ -64,7 +67,7 @@ BEGIN
       WHERE cr.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento])
     $view$;
   ELSE
-    RAISE NOTICE '20260317125441: contas_pagar.conta_bancaria_id ausente; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
+    RAISE NOTICE '20260317125441: contas_pagar.conta_bancaria_id ou plano_contas.descricao ausente; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
   END IF;
 END
 $$;
