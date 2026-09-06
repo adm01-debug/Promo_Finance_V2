@@ -233,9 +233,6 @@ verify_jwt = false
 [functions.monitorar-erros-frontend]
 verify_jwt = false
 
-[functions.n8n-callback]
-verify_jwt = true
-
 [functions.n8n-dispatch]
 verify_jwt = true
 
@@ -243,9 +240,6 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.nfe-vinculo-proxy]
-verify_jwt = true
-
-[functions.notify-performance-alert]
 verify_jwt = true
 
 [functions.notify-saved-filter]
