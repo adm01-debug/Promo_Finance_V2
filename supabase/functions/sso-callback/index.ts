@@ -1,30 +1,30 @@
-import { corsHeaders } from "../_shared/cors.ts";
-import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
-import { resolveClaim, resolveClaimArray } from "./claims.ts";
+import { corsHeaders } from '../_shared/cors.ts';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { resolveClaim, resolveClaimArray } from './claims.ts';
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const SUPABASE_ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-const PUBLIC_APP_URL = Deno.env.get("PUBLIC_APP_URL") ?? "";
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
+const PUBLIC_APP_URL = Deno.env.get('PUBLIC_APP_URL') ?? '';
 
 type Admin = SupabaseClient;
 
 async function sha256(s: string) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 function decodeJwtPayload(jwt: string): Record<string, unknown> {
-  const part = jwt.split(".")[1] || "";
-  const pad = "=".repeat((4 - (part.length % 4)) % 4);
-  const json = atob(part.replace(/-/g, "+").replace(/_/g, "/") + pad);
+  const part = jwt.split('.')[1] || '';
+  const pad = '='.repeat((4 - (part.length % 4)) % 4);
+  const json = atob(part.replace(/-/g, '+').replace(/_/g, '/') + pad);
   return JSON.parse(json);
 }
 
 function getClientIp(req: Request): string | null {
-  const fwd = req.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0].trim();
-  return req.headers.get("x-real-ip");
+  const fwd = req.headers.get('x-forwarded-for');
+  if (fwd) return fwd.split(',')[0].trim();
+  return req.headers.get('x-real-ip');
 }
 
 // resolveClaim / resolveClaimArray foram movidos para ./claims.ts
@@ -50,9 +50,9 @@ async function findUserByEmail(admin: Admin, email: string) {
   }
   // Fallback via profiles (id == auth.users.id)
   const { data: prof } = await admin
-    .from("profiles")
-    .select("id, email, full_name")
-    .ilike("email", email)
+    .from('profiles')
+    .select('id, email, full_name')
+    .ilike('email', email)
     .maybeSingle();
   if (!prof) return null;
   const { data: full } = await admin.auth.admin.getUserById(prof.id);
@@ -64,26 +64,26 @@ async function vincularEmpresaComoPadrao(
   admin: Admin,
   userId: string,
   empresaId: string,
-  role: string,
+  role: string
 ) {
   // Zera default em todos os outros vínculos do usuário
   await admin
-    .from("user_empresas")
+    .from('user_empresas')
     .update({ is_default: false })
-    .eq("user_id", userId)
-    .neq("empresa_id", empresaId);
+    .eq('user_id', userId)
+    .neq('empresa_id', empresaId);
 
   // Upsert do vínculo alvo como padrão e ativo
-  await admin.from("user_empresas").upsert(
+  await admin.from('user_empresas').upsert(
     {
       user_id: userId,
       empresa_id: empresaId,
       role,
-      provisioned_via: "sso",
+      provisioned_via: 'sso',
       is_default: true,
       ativo: true,
     },
-    { onConflict: "user_id,empresa_id" },
+    { onConflict: 'user_id,empresa_id' }
   );
 }
 
@@ -116,7 +116,7 @@ async function logAttempt(args: {
     if (args.context && Object.keys(args.context).length > 0) {
       row.context = args.context;
     }
-    await admin.from("sso_login_attempts").insert(row);
+    await admin.from('sso_login_attempts').insert(row);
   } catch {
     /* não propagar */
   }
@@ -138,7 +138,7 @@ function safeOrigin(req: Request, fallback?: string | null): string {
     }
   }
   // Origem do referer/origin do request, NÃO do hostname do Supabase
-  const referer = req.headers.get("referer") || req.headers.get("origin");
+  const referer = req.headers.get('referer') || req.headers.get('origin');
   if (referer) {
     try {
       return new URL(referer).origin;
@@ -186,20 +186,24 @@ function normalizeClaim(v: unknown, email: string): string | null {
  * Retorna { value, changed, raw } para que o caller possa auditar normalizações
  * que efetivamente alteraram o valor recebido do IdP.
  */
-function normalizePhone(v: unknown): { value: string | null; changed: boolean; raw: string | null } {
+function normalizePhone(v: unknown): {
+  value: string | null;
+  changed: boolean;
+  raw: string | null;
+} {
   if (v === null || v === undefined) return { value: null, changed: false, raw: null };
   const raw = String(v);
   const trimmed = raw.trim();
-  if (!trimmed) return { value: null, changed: raw !== "", raw };
-  const hasPlus = trimmed.startsWith("+");
-  const digits = trimmed.replace(/[^\d]/g, "");
+  if (!trimmed) return { value: null, changed: raw !== '', raw };
+  const hasPlus = trimmed.startsWith('+');
+  const digits = trimmed.replace(/[^\d]/g, '');
   if (!digits) return { value: null, changed: true, raw };
-  const value = (hasPlus ? "+" : "") + digits;
+  const value = (hasPlus ? '+' : '') + digits;
   return { value, changed: value !== raw, raw };
 }
 
 // buildProfileSyncDelta foi extraída para ./profile-sync-delta.ts
-import { buildProfileSyncDelta } from "./profile-sync-delta.ts";
+import { buildProfileSyncDelta } from './profile-sync-delta.ts';
 
 async function applyPipeline(opts: {
   admin: Admin;
@@ -211,24 +215,37 @@ async function applyPipeline(opts: {
   groups: string[];
   existingUserId?: string | null; // SAML: já existe (broker criou); OIDC: descoberto/criado aqui
   allowJit: boolean;
-}): Promise<{
-  userId: string;
-  role: string;
-  matchedGroup: string | null;
-  jitCreated: boolean;
-} | { error: string; details?: string }> {
-  const { admin, provider, email, fullName, avatarUrl, telefone, groups, existingUserId, allowJit } = opts;
+}): Promise<
+  | {
+      userId: string;
+      role: string;
+      matchedGroup: string | null;
+      jitCreated: boolean;
+    }
+  | { error: string; details?: string }
+> {
+  const {
+    admin,
+    provider,
+    email,
+    fullName,
+    avatarUrl,
+    telefone,
+    groups,
+    existingUserId,
+    allowJit,
+  } = opts;
   const providerId = provider.id as string;
   const providerNome = provider.nome as string;
   const empresaId = (provider.empresa_id as string | null) ?? null;
-  const defaultRole = (provider.default_role as string) || "visualizador";
+  const defaultRole = (provider.default_role as string) || 'visualizador';
   const allowedDomains = (provider.allowed_domains as string[]) ?? [];
 
   // Domínio
   if (allowedDomains.length) {
-    const dom = email.split("@")[1];
+    const dom = email.split('@')[1];
     if (!allowedDomains.includes(dom)) {
-      return { error: "domain_not_allowed", details: dom };
+      return { error: 'domain_not_allowed', details: dom };
     }
   }
 
@@ -242,11 +259,11 @@ async function applyPipeline(opts: {
   // Audita quando a normalização alterou o valor original do IdP
   if (phoneNorm.changed && incomingTelefoneRaw) {
     try {
-      await admin.from("audit_logs").insert({
+      await admin.from('audit_logs').insert({
         user_id: existingUserId,
         user_email: email,
-        action: "UPDATE",
-        table_name: "sso_phone_normalized",
+        action: 'UPDATE',
+        table_name: 'sso_phone_normalized',
         record_id: existingUserId,
         new_data: {
           provider_id: providerId,
@@ -255,12 +272,12 @@ async function applyPipeline(opts: {
           raw: phoneNorm.raw,
           normalized: phoneNorm.value,
         },
-        details: `Telefone SSO normalizado (${providerNome}): "${phoneNorm.raw}" → "${phoneNorm.value ?? "—"}"`,
+        details: `Telefone SSO normalizado (${providerNome}): "${phoneNorm.raw}" → "${phoneNorm.value ?? '—'}"`,
       });
     } catch (err) {
       console.warn(
-        "[sso-callback] falha ao registrar audit_logs sso_phone_normalized:",
-        err instanceof Error ? err.message : String(err),
+        '[sso-callback] falha ao registrar audit_logs sso_phone_normalized:',
+        err instanceof Error ? err.message : String(err)
       );
     }
   }
@@ -286,7 +303,7 @@ async function applyPipeline(opts: {
         user_metadata: jitMeta,
       });
       if (created.error || !created.data.user) {
-        return { error: "create_user_failed", details: created.error?.message };
+        return { error: 'create_user_failed', details: created.error?.message };
       }
       userId = created.data.user.id;
       jitCreated = true;
@@ -297,10 +314,10 @@ async function applyPipeline(opts: {
       if (incomingAvatarUrl) jitProfileUpdates.avatar_url = incomingAvatarUrl;
       if (incomingTelefone) jitProfileUpdates.telefone = incomingTelefone;
       if (Object.keys(jitProfileUpdates).length > 0) {
-        await admin.from("profiles").update(jitProfileUpdates).eq("id", userId);
+        await admin.from('profiles').update(jitProfileUpdates).eq('id', userId);
       }
     } else {
-      return { error: "user_not_provisioned" };
+      return { error: 'user_not_provisioned' };
     }
   } else {
     // SAML: usuário já existe (broker criou)
@@ -322,9 +339,9 @@ async function applyPipeline(opts: {
   // Compara claims do IdP com profiles atuais e atualiza apenas o que mudou.
   if (userId && !jitCreated && existingAuthUser) {
     const { data: currentProfile } = await admin
-      .from("profiles")
-      .select("full_name, avatar_url, telefone")
-      .eq("id", userId)
+      .from('profiles')
+      .select('full_name, avatar_url, telefone')
+      .eq('id', userId)
       .maybeSingle();
 
     const current = {
@@ -350,12 +367,12 @@ async function applyPipeline(opts: {
       await admin.auth.admin.updateUserById(userId, { user_metadata: newMeta });
     }
     if (Object.keys(updates).length > 0) {
-      await admin.from("profiles").update(updates).eq("id", userId);
+      await admin.from('profiles').update(updates).eq('id', userId);
 
       // Trilha de auditoria — só quando houve alteração real
       try {
         // Ordem canônica para depuração rápida (sempre na mesma sequência).
-        const FIELD_ORDER = ["full_name", "avatar_url", "telefone"] as const;
+        const FIELD_ORDER = ['full_name', 'avatar_url', 'telefone'] as const;
         const fieldsChanged = FIELD_ORDER.filter((f) => f in changes);
 
         // Detalhe estruturado por atributo: [{ field, old, new }]
@@ -374,11 +391,11 @@ async function applyPipeline(opts: {
           newDataPerField[f] = changes[f].to;
         }
 
-        await admin.from("audit_logs").insert({
+        await admin.from('audit_logs').insert({
           user_id: userId,
           user_email: email,
-          action: "UPDATE",
-          table_name: "sso_profile_sync",
+          action: 'UPDATE',
+          table_name: 'sso_profile_sync',
           record_id: userId,
           old_data: oldDataPerField,
           new_data: {
@@ -391,11 +408,11 @@ async function applyPipeline(opts: {
             changes,
             ...newDataPerField,
           },
-          details: `Sincronização SSO (${providerNome}): ${fieldsChanged.length} campo(s) atualizado(s) — ${fieldsChanged.join(", ")}`,
+          details: `Sincronização SSO (${providerNome}): ${fieldsChanged.length} campo(s) atualizado(s) — ${fieldsChanged.join(', ')}`,
         });
       } catch (err) {
         console.warn(
-          "[sso-callback] falha ao registrar audit_logs sso_profile_sync:",
+          '[sso-callback] falha ao registrar audit_logs sso_profile_sync:',
           err instanceof Error ? err.message : String(err)
         );
       }
@@ -407,10 +424,10 @@ async function applyPipeline(opts: {
   let matchedGroup: string | null = null;
   if (groups.length) {
     const { data: maps } = await admin
-      .from("sso_role_mappings")
-      .select("idp_group, app_role")
-      .eq("provider_id", providerId)
-      .order("ordem");
+      .from('sso_role_mappings')
+      .select('idp_group, app_role')
+      .eq('provider_id', providerId)
+      .order('ordem');
     const match = maps?.find((m: { idp_group: string }) => groups.includes(m.idp_group));
     if (match) {
       role = match.app_role;
@@ -422,13 +439,13 @@ async function applyPipeline(opts: {
   // Permite refletir alterações de grupo no IdP a cada login.
   try {
     const normalizedGroups = Array.from(
-      new Set((groups ?? []).map((g) => String(g).trim()).filter(Boolean)),
+      new Set((groups ?? []).map((g) => String(g).trim()).filter(Boolean))
     ).sort();
     const { data: existingGroupsRow } = await admin
-      .from("sso_user_groups")
-      .select("groups, matched_group, matched_role")
-      .eq("user_id", userId)
-      .eq("provider_id", providerId)
+      .from('sso_user_groups')
+      .select('groups, matched_group, matched_role')
+      .eq('user_id', userId)
+      .eq('provider_id', providerId)
       .maybeSingle();
 
     const prevGroups: string[] = Array.isArray(existingGroupsRow?.groups)
@@ -441,7 +458,7 @@ async function applyPipeline(opts: {
       (existingGroupsRow?.matched_role ?? null) !== role ||
       (existingGroupsRow?.matched_group ?? null) !== matchedGroup;
 
-    await admin.from("sso_user_groups").upsert(
+    await admin.from('sso_user_groups').upsert(
       {
         user_id: userId,
         provider_id: providerId,
@@ -450,15 +467,15 @@ async function applyPipeline(opts: {
         matched_role: role,
         last_synced_at: new Date().toISOString(),
       },
-      { onConflict: "user_id,provider_id" },
+      { onConflict: 'user_id,provider_id' }
     );
 
     if (groupsChanged || roleChanged) {
-      await admin.from("audit_logs").insert({
+      await admin.from('audit_logs').insert({
         user_id: userId,
         user_email: email,
-        action: existingGroupsRow ? "UPDATE" : "INSERT",
-        table_name: "sso_user_groups",
+        action: existingGroupsRow ? 'UPDATE' : 'INSERT',
+        table_name: 'sso_user_groups',
         record_id: userId,
         old_data: {
           groups: prevGroups,
@@ -480,8 +497,8 @@ async function applyPipeline(opts: {
     }
   } catch (err) {
     console.warn(
-      "[sso-callback] falha ao sincronizar sso_user_groups:",
-      err instanceof Error ? err.message : String(err),
+      '[sso-callback] falha ao sincronizar sso_user_groups:',
+      err instanceof Error ? err.message : String(err)
     );
   }
 
@@ -491,23 +508,21 @@ async function applyPipeline(opts: {
   }
 
   // Compat user_roles global
-  await admin
-    .from("user_roles")
-    .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+  await admin.from('user_roles').upsert({ user_id: userId, role }, { onConflict: 'user_id,role' });
 
   // Audit — trilha estruturada
   const providerTipo = (provider.tipo as string) ?? null;
   if (jitCreated) {
     // OIDC: createUser rodou aqui; SAML: broker criou nos últimos 60s.
     // Em ambos os casos, gravamos um evento dedicado e filtrável.
-    const isOidc = providerTipo === "oidc";
-    const via = isOidc ? "oidc-jit" : "saml-broker-jit";
+    const isOidc = providerTipo === 'oidc';
+    const via = isOidc ? 'oidc-jit' : 'saml-broker-jit';
     try {
-      await admin.from("audit_logs").insert({
+      await admin.from('audit_logs').insert({
         user_id: userId,
         user_email: email,
-        action: "INSERT",
-        table_name: "sso_jit_provisioning",
+        action: 'INSERT',
+        table_name: 'sso_jit_provisioning',
         record_id: userId,
         new_data: {
           provider_id: providerId,
@@ -522,29 +537,29 @@ async function applyPipeline(opts: {
           via,
         },
         details: `JIT via ${providerNome}: role=${role}${
-          matchedGroup ? ` (grupo ${matchedGroup})` : " (default)"
+          matchedGroup ? ` (grupo ${matchedGroup})` : ' (default)'
         }`,
       });
     } catch (err) {
       console.warn(
-        "[sso-callback] falha ao registrar audit_logs sso_jit_provisioning:",
+        '[sso-callback] falha ao registrar audit_logs sso_jit_provisioning:',
         err instanceof Error ? err.message : String(err)
       );
     }
   } else if (matchedGroup) {
     try {
-      await admin.from("audit_logs").insert({
+      await admin.from('audit_logs').insert({
         user_id: userId,
         user_email: email,
-        action: "UPDATE",
-        table_name: "user_roles",
+        action: 'UPDATE',
+        table_name: 'user_roles',
         record_id: userId,
         new_data: { role, matched_group: matchedGroup, provider_id: providerId },
         details: `SSO role mapping aplicado (${providerNome}): ${matchedGroup} → ${role}`,
       });
     } catch (err) {
       console.warn(
-        "[sso-callback] falha ao registrar audit_logs user_roles:",
+        '[sso-callback] falha ao registrar audit_logs user_roles:',
         err instanceof Error ? err.message : String(err)
       );
     }
@@ -562,14 +577,14 @@ async function applyPipeline(opts: {
 async function handleSamlFinalize(req: Request): Promise<Response> {
   const t0 = Date.now();
   const ip = getClientIp(req);
-  const ua = req.headers.get("user-agent");
+  const ua = req.headers.get('user-agent');
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-  const authHeader = req.headers.get("Authorization") ?? "";
-  if (!authHeader.startsWith("Bearer ")) {
-    return jsonResp({ error: "unauthorized" }, 401);
+  const authHeader = req.headers.get('Authorization') ?? '';
+  if (!authHeader.startsWith('Bearer ')) {
+    return jsonResp({ error: 'unauthorized' }, 401);
   }
-  const token = authHeader.slice("Bearer ".length);
+  const token = authHeader.slice('Bearer '.length);
 
   // Valida JWT
   const userClient = createClient(SUPABASE_URL, SUPABASE_ANON, {
@@ -577,37 +592,51 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
   });
   const { data: claimsResp, error: claimsErr } = await userClient.auth.getClaims(token);
   if (claimsErr || !claimsResp?.claims) {
-    return jsonResp({ error: "invalid_token" }, 401);
+    return jsonResp({ error: 'invalid_token' }, 401);
   }
   const userId = claimsResp.claims.sub as string;
 
   const body = (await safeJson(req)) ?? {};
   const providerId = body.provider_id as string | undefined;
-  if (!providerId) return jsonResp({ error: "provider_id_required" }, 400);
+  if (!providerId) return jsonResp({ error: 'provider_id_required' }, 400);
 
   // Busca provider
   const { data: provider } = await admin
-    .from("sso_providers")
-    .select("*")
-    .eq("id", providerId)
-    .eq("tipo", "saml")
+    .from('sso_providers')
+    .select('*')
+    .eq('id', providerId)
+    .eq('tipo', 'saml')
     .maybeSingle();
   if (!provider) {
     await logAttempt({
-      admin, providerId, email: null, success: false,
-      errCode: "provider_missing", errMsg: null, t0, ip, ua,
+      admin,
+      providerId,
+      email: null,
+      success: false,
+      errCode: 'provider_missing',
+      errMsg: null,
+      t0,
+      ip,
+      ua,
     });
-    return jsonResp({ error: "provider_missing" }, 404);
+    return jsonResp({ error: 'provider_missing' }, 404);
   }
 
   // Busca o user completo (precisamos de email + identities + app_metadata.groups)
   const { data: u } = await admin.auth.admin.getUserById(userId);
   if (!u?.user || !u.user.email) {
     await logAttempt({
-      admin, providerId, email: null, success: false,
-      errCode: "user_not_found", errMsg: null, t0, ip, ua,
+      admin,
+      providerId,
+      email: null,
+      success: false,
+      errCode: 'user_not_found',
+      errMsg: null,
+      t0,
+      ip,
+      ua,
     });
-    return jsonResp({ error: "user_not_found" }, 404);
+    return jsonResp({ error: 'user_not_found' }, 404);
   }
   const email = u.user.email.toLowerCase();
   const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
@@ -617,22 +646,21 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
   const appMeta = (u.user.app_metadata || {}) as Record<string, unknown>;
   const sources = [meta, appMeta];
 
-  const fullName =
-    resolveClaim(sources, cm, "full_name", ["name", "full_name"]) || email;
-  const avatarUrl = resolveClaim(sources, cm, "avatar_url", [
-    "picture",
-    "avatar_url",
-    "photoUrl",
-    "photo_url",
+  const fullName = resolveClaim(sources, cm, 'full_name', ['name', 'full_name']) || email;
+  const avatarUrl = resolveClaim(sources, cm, 'avatar_url', [
+    'picture',
+    'avatar_url',
+    'photoUrl',
+    'photo_url',
   ]);
-  const telefone = resolveClaim(sources, cm, "telefone", [
-    "phone_number",
-    "phoneNumber",
-    "phone",
-    "mobile",
-    "mobilePhone",
+  const telefone = resolveClaim(sources, cm, 'telefone', [
+    'phone_number',
+    'phoneNumber',
+    'phone',
+    'mobile',
+    'mobilePhone',
   ]);
-  const groups = resolveClaimArray(sources, cm, "groups", ["groups"]);
+  const groups = resolveClaimArray(sources, cm, 'groups', ['groups']);
 
   const result = await applyPipeline({
     admin,
@@ -646,31 +674,48 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
     allowJit: false,
   });
 
-  if ("error" in result) {
+  if ('error' in result) {
     await logAttempt({
-      admin, providerId, email, success: false,
-      errCode: result.error, errMsg: result.details ?? null, t0, ip, ua,
+      admin,
+      providerId,
+      email,
+      success: false,
+      errCode: result.error,
+      errMsg: result.details ?? null,
+      t0,
+      ip,
+      ua,
     });
     return jsonResp({ error: result.error, details: result.details }, 400);
   }
 
   await logAttempt({
-    admin, providerId, email, success: true,
-    errCode: null, errMsg: "saml_finalized", t0, ip, ua,
+    admin,
+    providerId,
+    email,
+    success: true,
+    errCode: null,
+    errMsg: 'saml_finalized',
+    t0,
+    ip,
+    ua,
   });
 
-  return jsonResp({
-    ok: true,
-    role: result.role,
-    matched_group: result.matchedGroup,
-    empresa_id: provider.empresa_id ?? null,
-  }, 200);
+  return jsonResp(
+    {
+      ok: true,
+      role: result.role,
+      matched_group: result.matchedGroup,
+      empresa_id: provider.empresa_id ?? null,
+    },
+    200
+  );
 }
 
 function jsonResp(data: unknown, status: number) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 }
 
@@ -678,15 +723,15 @@ function jsonResp(data: unknown, status: number) {
  * Handler principal
  * ============================================================================= */
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   // Roteia POST com body { kind: 'saml-finalize' } para o branch SAML
-  if (req.method === "POST") {
+  if (req.method === 'POST') {
     const peek = await safeJson(req);
-    if (peek && (peek.kind === "saml-finalize" || peek.kind === "saml_finalize")) {
+    if (peek && (peek.kind === 'saml-finalize' || peek.kind === 'saml_finalize')) {
       // restitui body para o handler
       const reused = new Request(req.url, {
-        method: "POST",
+        method: 'POST',
         headers: req.headers,
         body: JSON.stringify(peek),
       });
@@ -697,30 +742,37 @@ Deno.serve(async (req) => {
   // ============= OIDC callback (GET com code/state vindo do IdP) =============
   const t0 = Date.now();
   const ip = getClientIp(req);
-  const ua = req.headers.get("user-agent");
+  const ua = req.headers.get('user-agent');
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
   const url = new URL(req.url);
-  const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
-  const verifier = url.searchParams.get("verifier") || (await safeJson(req))?.verifier;
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
+  const verifier = url.searchParams.get('verifier') || (await safeJson(req))?.verifier;
 
   if (!code || !state) {
     await logAttempt({
-      admin, providerId: null, email: null, success: false,
-      errCode: "missing_code_or_state", errMsg: null, t0, ip, ua,
+      admin,
+      providerId: null,
+      email: null,
+      success: false,
+      errCode: 'missing_code_or_state',
+      errMsg: null,
+      t0,
+      ip,
+      ua,
     });
-    return redirectErr(req, "missing_code_or_state");
+    return redirectErr(req, 'missing_code_or_state');
   }
 
   let appRedirect: string | null = null;
 
   try {
     const { data: attempt } = await admin
-      .from("sso_login_attempts")
-      .select("*")
-      .eq("state", state)
-      .order("created_at", { ascending: false })
+      .from('sso_login_attempts')
+      .select('*')
+      .eq('state', state)
+      .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
@@ -728,30 +780,75 @@ Deno.serve(async (req) => {
 
     if (!attempt || (attempt.expires_at && new Date(attempt.expires_at) < new Date())) {
       await logAttempt({
-        admin, providerId: attempt?.provider_id ?? null, email: null, success: false,
-        errCode: "state_invalid_or_expired", errMsg: null, t0, ip, ua, appRedirect,
+        admin,
+        providerId: attempt?.provider_id ?? null,
+        email: null,
+        success: false,
+        errCode: 'state_invalid_or_expired',
+        errMsg: null,
+        t0,
+        ip,
+        ua,
+        appRedirect,
       });
-      return redirectErr(req, "state_invalid_or_expired", appRedirect);
+      return redirectErr(req, 'state_invalid_or_expired', appRedirect);
     }
-    if (attempt.code_verifier_hash && verifier) {
+    if (attempt.code_verifier_hash) {
+      // PKCE registrado no initiate é obrigatório: aceitar a ausência do
+      // verifier seria um downgrade — o atacante omitiria o parâmetro e
+      // pularia a checagem inteira.
+      if (!verifier) {
+        await logAttempt({
+          admin,
+          providerId: attempt.provider_id,
+          email: null,
+          success: false,
+          errCode: 'pkce_verifier_missing',
+          errMsg: null,
+          t0,
+          ip,
+          ua,
+          appRedirect,
+        });
+        return redirectErr(req, 'pkce_verifier_missing', appRedirect);
+      }
       const h = await sha256(verifier);
       if (h !== attempt.code_verifier_hash) {
         await logAttempt({
-          admin, providerId: attempt.provider_id, email: null, success: false,
-          errCode: "pkce_mismatch", errMsg: null, t0, ip, ua, appRedirect,
+          admin,
+          providerId: attempt.provider_id,
+          email: null,
+          success: false,
+          errCode: 'pkce_mismatch',
+          errMsg: null,
+          t0,
+          ip,
+          ua,
+          appRedirect,
         });
-        return redirectErr(req, "pkce_mismatch", appRedirect);
+        return redirectErr(req, 'pkce_mismatch', appRedirect);
       }
     }
 
     const { data: provider } = await admin
-      .from("sso_providers").select("*").eq("id", attempt.provider_id).maybeSingle();
+      .from('sso_providers')
+      .select('*')
+      .eq('id', attempt.provider_id)
+      .maybeSingle();
     if (!provider) {
       await logAttempt({
-        admin, providerId: attempt.provider_id, email: null, success: false,
-        errCode: "provider_missing", errMsg: null, t0, ip, ua, appRedirect,
+        admin,
+        providerId: attempt.provider_id,
+        email: null,
+        success: false,
+        errCode: 'provider_missing',
+        errMsg: null,
+        t0,
+        ip,
+        ua,
+        appRedirect,
       });
-      return redirectErr(req, "provider_missing", appRedirect);
+      return redirectErr(req, 'provider_missing', appRedirect);
     }
 
     // Discovery
@@ -763,35 +860,49 @@ Deno.serve(async (req) => {
       userinfoEndpoint ??= meta.userinfo_endpoint;
     }
 
-    const clientSecret = provider.client_secret_ref ? Deno.env.get(provider.client_secret_ref) : null;
+    const clientSecret = provider.client_secret_ref
+      ? Deno.env.get(provider.client_secret_ref)
+      : null;
 
     // Exchange code → tokens
     const callback = `${SUPABASE_URL}/functions/v1/sso-callback`;
     const body = new URLSearchParams({
-      grant_type: "authorization_code",
+      grant_type: 'authorization_code',
       code,
       redirect_uri: callback,
-      client_id: provider.client_id || "",
+      client_id: provider.client_id || '',
       ...(clientSecret ? { client_secret: clientSecret } : {}),
       ...(verifier ? { code_verifier: verifier } : {}),
     });
     const tokRes = await fetch(tokenEndpoint!, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body,
     });
     if (!tokRes.ok) {
       await logAttempt({
-        admin, providerId: provider.id, email: null, success: false,
-        errCode: "token_exchange_failed", errMsg: await tokRes.text(), t0, ip, ua, appRedirect,
+        admin,
+        providerId: provider.id,
+        email: null,
+        success: false,
+        errCode: 'token_exchange_failed',
+        errMsg: await tokRes.text(),
+        t0,
+        ip,
+        ua,
+        appRedirect,
       });
-      return redirectErr(req, "token_exchange_failed", appRedirect);
+      return redirectErr(req, 'token_exchange_failed', appRedirect);
     }
     const tokens = await tokRes.json();
 
     let claims: Record<string, unknown> = {};
     if (tokens.id_token) {
-      try { claims = decodeJwtPayload(tokens.id_token); } catch { /* ignore */ }
+      try {
+        claims = decodeJwtPayload(tokens.id_token);
+      } catch {
+        /* ignore */
+      }
     }
     if (!claims.email && tokens.access_token && userinfoEndpoint) {
       const ui = await fetch(userinfoEndpoint, {
@@ -802,29 +913,37 @@ Deno.serve(async (req) => {
 
     const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
     const sources = [claims];
-    const email = (resolveClaim(sources, cm, "email", ["email"]) || "").toLowerCase();
-    const fullName = resolveClaim(sources, cm, "full_name", ["name", "full_name"]) || email;
-    const avatarUrl = resolveClaim(sources, cm, "avatar_url", [
-      "picture",
-      "avatar_url",
-      "photoUrl",
-      "photo_url",
+    const email = (resolveClaim(sources, cm, 'email', ['email']) || '').toLowerCase();
+    const fullName = resolveClaim(sources, cm, 'full_name', ['name', 'full_name']) || email;
+    const avatarUrl = resolveClaim(sources, cm, 'avatar_url', [
+      'picture',
+      'avatar_url',
+      'photoUrl',
+      'photo_url',
     ]);
-    const telefone = resolveClaim(sources, cm, "telefone", [
-      "phone_number",
-      "phoneNumber",
-      "phone",
-      "mobile",
-      "mobilePhone",
+    const telefone = resolveClaim(sources, cm, 'telefone', [
+      'phone_number',
+      'phoneNumber',
+      'phone',
+      'mobile',
+      'mobilePhone',
     ]);
-    const groups = resolveClaimArray(sources, cm, "groups", ["groups"]);
+    const groups = resolveClaimArray(sources, cm, 'groups', ['groups']);
 
     if (!email) {
       await logAttempt({
-        admin, providerId: provider.id, email: null, success: false,
-        errCode: "no_email_claim", errMsg: null, t0, ip, ua, appRedirect,
+        admin,
+        providerId: provider.id,
+        email: null,
+        success: false,
+        errCode: 'no_email_claim',
+        errMsg: null,
+        t0,
+        ip,
+        ua,
+        appRedirect,
       });
-      return redirectErr(req, "no_email_claim", appRedirect);
+      return redirectErr(req, 'no_email_claim', appRedirect);
     }
 
     const result = await applyPipeline({
@@ -839,19 +958,27 @@ Deno.serve(async (req) => {
       allowJit: !!provider.auto_provision_users,
     });
 
-    if ("error" in result) {
+    if ('error' in result) {
       await logAttempt({
-        admin, providerId: provider.id, email, success: false,
-        errCode: result.error, errMsg: result.details ?? null, t0, ip, ua, appRedirect,
+        admin,
+        providerId: provider.id,
+        email,
+        success: false,
+        errCode: result.error,
+        errMsg: result.details ?? null,
+        t0,
+        ip,
+        ua,
+        appRedirect,
       });
       return redirectErr(req, result.error, appRedirect);
     }
 
-    const providerNome = (provider.nome as string) ?? "";
+    const providerNome = (provider.nome as string) ?? '';
     const providerTipo = (provider.tipo as string) ?? null;
-    const defaultRole = (provider.default_role as string) || "visualizador";
-    const roleOrigin = result.matchedGroup ? "group_mapped" : "default";
-    const via = providerTipo === "oidc" ? "oidc-jit" : "saml-broker-jit";
+    const defaultRole = (provider.default_role as string) || 'visualizador';
+    const roleOrigin = result.matchedGroup ? 'group_mapped' : 'default';
+    const via = providerTipo === 'oidc' ? 'oidc-jit' : 'saml-broker-jit';
     const magicLinkContext = {
       provider_nome: providerNome,
       provider_tipo: providerTipo,
@@ -866,18 +993,26 @@ Deno.serve(async (req) => {
     };
 
     await logAttempt({
-      admin, providerId: provider.id, email, success: true,
-      errCode: null, errMsg: result.jitCreated ? "jit_provisioned" : null,
-      t0, ip, ua, appRedirect, context: magicLinkContext,
+      admin,
+      providerId: provider.id,
+      email,
+      success: true,
+      errCode: null,
+      errMsg: result.jitCreated ? 'jit_provisioned' : null,
+      t0,
+      ip,
+      ua,
+      appRedirect,
+      context: magicLinkContext,
     });
 
     // Trilha dedicada: magic link → provider → grupo → role (existe em todo login)
     try {
-      await admin.from("audit_logs").insert({
+      await admin.from('audit_logs').insert({
         user_id: result.userId,
         user_email: email,
-        action: "LOGIN",
-        table_name: "sso_magic_link_issued",
+        action: 'LOGIN',
+        table_name: 'sso_magic_link_issued',
         record_id: result.userId,
         new_data: {
           provider_id: provider.id,
@@ -893,33 +1028,40 @@ Deno.serve(async (req) => {
           app_redirect: appRedirect ?? null,
         },
         details: `Magic link emitido via ${providerNome} → role=${result.role} (${
-          roleOrigin === "group_mapped" ? `grupo ${result.matchedGroup}` : "default"
+          roleOrigin === 'group_mapped' ? `grupo ${result.matchedGroup}` : 'default'
         })`,
       });
     } catch (err) {
       console.warn(
-        "[sso-callback] falha ao registrar audit_logs sso_magic_link_issued:",
-        err instanceof Error ? err.message : String(err),
+        '[sso-callback] falha ao registrar audit_logs sso_magic_link_issued:',
+        err instanceof Error ? err.message : String(err)
       );
     }
 
     // Magic link e redirect para o app
     const redirectTo = appRedirect || safeOrigin(req, null);
     const link = await admin.auth.admin.generateLink({
-      type: "magiclink",
+      type: 'magiclink',
       email,
       options: { redirectTo },
     });
     if (link.error || !link.data.properties?.action_link) {
-      return redirectErr(req, "magiclink_failed", appRedirect);
+      return redirectErr(req, 'magiclink_failed', appRedirect);
     }
     return Response.redirect(link.data.properties.action_link, 302);
   } catch (e) {
     await logAttempt({
-      admin, providerId: null, email: null, success: false,
-      errCode: "unexpected", errMsg: e instanceof Error ? e.message : String(e),
-      t0, ip, ua, appRedirect,
+      admin,
+      providerId: null,
+      email: null,
+      success: false,
+      errCode: 'unexpected',
+      errMsg: e instanceof Error ? e.message : String(e),
+      t0,
+      ip,
+      ua,
+      appRedirect,
     });
-    return redirectErr(req, "unexpected", appRedirect);
+    return redirectErr(req, 'unexpected', appRedirect);
   }
 });

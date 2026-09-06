@@ -5,12 +5,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { PDFDocument, StandardFonts, rgb } from 'https://esm.sh/pdf-lib@1.17.1';
 import { createLogger } from '../_shared/observability.ts';
+import { exigirChamadaInterna, corsHeadersComSegredo } from '../_shared/auth-guard.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+const corsHeaders = corsHeadersComSegredo;
 
 interface Agendamento {
   id: string;
@@ -32,7 +29,11 @@ function calcularProximoEnvio(freq: Agendamento['frequencia'], dia: number): str
   return d.toISOString();
 }
 
-async function gerarPdf(payload: Record<string, unknown>, empresa: string, ano: number): Promise<Uint8Array> {
+async function gerarPdf(
+  payload: Record<string, unknown>,
+  empresa: string,
+  ano: number
+): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -40,7 +41,13 @@ async function gerarPdf(payload: Record<string, unknown>, empresa: string, ano: 
   const { height } = page.getSize();
   let y = height - 60;
 
-  page.drawText('Relatório Anual Tributário', { x: 50, y, size: 22, font: fontBold, color: rgb(0.1, 0.2, 0.5) });
+  page.drawText('Relatório Anual Tributário', {
+    x: 50,
+    y,
+    size: 22,
+    font: fontBold,
+    color: rgb(0.1, 0.2, 0.5),
+  });
   y -= 30;
   page.drawText(`${empresa} · Ano ${ano}`, { x: 50, y, size: 12, font, color: rgb(0.3, 0.3, 0.3) });
   y -= 40;
@@ -49,17 +56,33 @@ async function gerarPdf(payload: Record<string, unknown>, empresa: string, ano: 
   page.drawText('Sumário Executivo', { x: 50, y, size: 14, font: fontBold });
   y -= 22;
   for (const [k, v] of Object.entries(kpis)) {
-    page.drawText(`${k}: ${typeof v === 'number' ? v.toLocaleString('pt-BR') : String(v)}`, { x: 60, y, size: 10, font });
+    page.drawText(`${k}: ${typeof v === 'number' ? v.toLocaleString('pt-BR') : String(v)}`, {
+      x: 60,
+      y,
+      size: 10,
+      font,
+    });
     y -= 16;
     if (y < 80) break;
   }
 
   y -= 20;
-  page.drawText('Gerado automaticamente pelo agendador.', { x: 50, y: 40, size: 8, font, color: rgb(0.5, 0.5, 0.5) });
+  page.drawText('Gerado automaticamente pelo agendador.', {
+    x: 50,
+    y: 40,
+    size: 8,
+    font,
+    color: rgb(0.5, 0.5, 0.5),
+  });
   return await pdf.save();
 }
 
-async function enviarEmail(destinatarios: string[], assunto: string, corpoHtml: string, anexoUrl: string): Promise<boolean> {
+async function enviarEmail(
+  destinatarios: string[],
+  assunto: string,
+  corpoHtml: string,
+  anexoUrl: string
+): Promise<boolean> {
   const apiKey = Deno.env.get('RESEND_API_KEY');
   if (!apiKey) return false;
   const res = await fetch('https://api.resend.com/emails', {
@@ -78,13 +101,16 @@ async function enviarEmail(destinatarios: string[], assunto: string, corpoHtml: 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  const guard = await exigirChamadaInterna(req, 'relatorios_tributarios_cron');
+  if (!guard.ok) return guard.resposta;
+
   const logger = createLogger('enviar-relatorios-tributarios-agendados');
   const t0 = Date.now();
   logger.info('fn_start');
 
   const sb = createClient(
     Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   );
 
   try {
@@ -109,16 +135,27 @@ Deno.serve(async (req) => {
         }
 
         // Gera o relatório anual reusando edge P6
-        const { data: relatorio, error: relErr } = await sb.functions.invoke('gerar-relatorio-anual', {
-          body: { empresa_id: ag.empresa_id, ano: ag.ano },
-        });
+        const { data: relatorio, error: relErr } = await sb.functions.invoke(
+          'gerar-relatorio-anual',
+          {
+            body: { empresa_id: ag.empresa_id, ano: ag.ano },
+          }
+        );
         if (relErr || !relatorio) throw new Error(relErr?.message || 'relatorio_vazio');
 
-        const { data: empresa } = await sb.from('empresas').select('razao_social').eq('id', ag.empresa_id).maybeSingle();
+        const { data: empresa } = await sb
+          .from('empresas')
+          .select('razao_social')
+          .eq('id', ag.empresa_id)
+          .maybeSingle();
         const nomeEmp = empresa?.razao_social ?? 'Empresa';
 
         const pdfBytes = await gerarPdf(relatorio as Record<string, unknown>, nomeEmp, ag.ano);
-        const path = `agendados/${ag.empresa_id}/${ag.ano}/${Date.now()}.pdf`;
+        // Prefixo precisa começar com empresa_id — é o que a policy de
+        // SELECT/DELETE do bucket relatorios-tributarios checa via
+        // split_part(name,'/',1) (achado do coderabbitai: "agendados/..."
+        // na frente fazia esse split retornar "agendados", não empresa_id).
+        const path = `${ag.empresa_id}/agendados/${ag.ano}/${Date.now()}.pdf`;
 
         const { error: upErr } = await sb.storage
           .from('relatorios-tributarios')
@@ -133,7 +170,7 @@ Deno.serve(async (req) => {
           ag.destinatarios,
           `Relatório Tributário ${ag.ano} — ${nomeEmp}`,
           `<p>Olá,</p><p>Segue o relatório tributário automático de <strong>${nomeEmp}</strong> para o ano <strong>${ag.ano}</strong>.</p>`,
-          signed?.signedUrl ?? '',
+          signed?.signedUrl ?? ''
         );
 
         await sb
@@ -162,14 +199,20 @@ Deno.serve(async (req) => {
     });
     await logger.flush();
     return new Response(JSON.stringify({ total: lista.length, processados, falhas }), {
-      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
     const msg = (err as Error).message || 'Erro interno';
-    logger.error('fn_failure', { duration_ms: Date.now() - t0, status_code: 500, error_message: msg });
+    logger.error('fn_failure', {
+      duration_ms: Date.now() - t0,
+      status_code: 500,
+      error_message: msg,
+    });
     await logger.flush();
     return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });

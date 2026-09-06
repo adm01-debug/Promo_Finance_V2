@@ -8,6 +8,9 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Added
+
+- Auditoria técnica R2 com validação live (`docs/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02_R2_LIVE.md`) — nota 5.8/10, achado central: malha de validação live do banco inoperante (token expirado + `DATABASE_URL` ausente)
+- Branch protection em `main` (Quality Gate + E2E Critical + Deno Tests obrigatórios)
 - Sistema completo de testes (unit + E2E)
 - Dark mode com ThemeProvider
 - Skeleton loading states
@@ -21,11 +24,15 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Documentação técnica completa
 
 ### Changed
+
 - Refatoração de componentes grandes
 - Performance otimizada (bundle < 500KB)
 - Coverage de testes 2% → 20%
 
 ### Fixed
+
+- CLAUDE.md atualizado com números reais (105 edge functions, 571+ migrations, meta 2689 testes, `calculo-iva`)
+- Lockfiles consolidados em `bun.lock` único (removidos `bun.lockb` e `package-lock.json` divergentes; supabase-js 2.87.1 × 2.110.9)
 - Segurança: .env removido do repositório
 - ESLint warnings
 - TypeScript strict errors
@@ -33,6 +40,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [1.0.0] - 2025-01-15
 
 ### Added
+
 - Sistema completo de contas a pagar/receber
 - Conciliação bancária com IA
 - Geração de boletos
@@ -45,6 +53,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Real-time updates
 
 ### Technical
+
 - React 18 + TypeScript 5
 - Supabase backend
 - 50 tabelas PostgreSQL
@@ -56,6 +65,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [0.1.0] - 2024-12-14
 
 ### Added
+
 - Projeto inicial
 - Setup básico
 - Autenticação

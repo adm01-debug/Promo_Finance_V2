@@ -5,9 +5,9 @@ const originalEnvGet = Deno.env.get;
 
 function setupMockEnv() {
   Deno.env.get = (key: string) => {
-    if (key === 'SUPABASE_URL') return 'https://test.supabase.co';
-    if (key === 'SUPABASE_SERVICE_ROLE_KEY') return 'test-service-key';
-    if (key === 'BLING_WEBHOOK_SECRET') return 'test-webhook-secret';
+    if (key === "SUPABASE_URL") return "https://test.supabase.co";
+    if (key === "SUPABASE_SERVICE_ROLE_KEY") return "test-service-key";
+    if (key === "BLING_WEBHOOK_SECRET") return "test-webhook-secret";
     return originalEnvGet(key);
   };
 }
@@ -21,7 +21,9 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
-    const response = await handler(new Request("http://localhost/bling-webhook", { method: "GET" }));
+    const response = await handler(
+      new Request("http://localhost/bling-webhook", { method: "GET" }),
+    );
     assertEquals(response.status, 405);
   },
 });
@@ -33,13 +35,19 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify([]), { status: 200 });
     try {
-      const response = await handler(new Request("http://localhost/bling-webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
-        body: JSON.stringify({ invalid: "payload" }),
-      }));
+      const response = await handler(
+        new Request("http://localhost/bling-webhook", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-token": "test-webhook-secret",
+          },
+          body: JSON.stringify({ invalid: "payload" }),
+        }),
+      );
       assertEquals(response.status, 422);
       const body = await response.json();
       assertEquals(body.code, "VALIDATION_ERROR");
@@ -59,16 +67,39 @@ Deno.test({
     setupMockEnv();
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
-      if (String(url).includes("/rpc/webhook_claim")) return new Response(JSON.stringify([{ id: "event-123", status: "processing", attempts: 1, already_processed: false }]), { status: 200 });
-      if (String(url).includes("/rpc/webhook_mark_success")) return new Response(JSON.stringify(null), { status: 200 });
-      return new Response(JSON.stringify({ id: "event-123", ok: true }), { status: 201 });
+      if (String(url).includes("/rpc/webhook_claim")) {
+        return new Response(
+          JSON.stringify([{
+            id: "event-123",
+            status: "processing",
+            attempts: 1,
+            already_processed: false,
+          }]),
+          { status: 200 },
+        );
+      }
+      if (String(url).includes("/rpc/webhook_mark_success")) {
+        return new Response(JSON.stringify(null), { status: 200 });
+      }
+      return new Response(JSON.stringify({ id: "event-123", ok: true }), {
+        status: 201,
+      });
     };
     try {
-      const response = await handler(new Request("http://localhost/bling-webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
-        body: JSON.stringify({ event: "pedido.criado", module: "Pedido de Venda", data: { id: 12345, situacao: { id: 6 } } }),
-      }));
+      const response = await handler(
+        new Request("http://localhost/bling-webhook", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-token": "test-webhook-secret",
+          },
+          body: JSON.stringify({
+            event: "pedido.criado",
+            module: "Pedido de Venda",
+            data: { id: 12345, situacao: { id: 6 } },
+          }),
+        }),
+      );
       assertEquals(response.status, 200);
       const body = await response.json();
       assertEquals(body.ok, true);
@@ -86,13 +117,20 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify([]), { status: 200 });
     try {
-      const response = await handler(new Request("http://localhost/bling-webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ event: "pedido.criado", module: "Pedido de Venda", data: { id: 1 } }),
-      }));
+      const response = await handler(
+        new Request("http://localhost/bling-webhook", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "pedido.criado",
+            module: "Pedido de Venda",
+            data: { id: 1 },
+          }),
+        }),
+      );
       assertEquals(response.status, 401);
     } finally {
       globalThis.fetch = originalFetch;
@@ -108,13 +146,19 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify([]), { status: 200 });
     try {
-      const response = await handler(new Request("http://localhost/bling-webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
-        body: "{",
-      }));
+      const response = await handler(
+        new Request("http://localhost/bling-webhook", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-token": "test-webhook-secret",
+          },
+          body: "{",
+        }),
+      );
       const body = await response.json();
       assertEquals(response.status, 422);
       assertEquals(body.code, "VALIDATION_ERROR");
@@ -133,14 +177,94 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => { throw new Error('indisponível'); };
+    globalThis.fetch = async () => {
+      throw new Error("indisponível");
+    };
     try {
-      const response = await handler(new Request("http://localhost/bling-webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-webhook-token": "test-webhook-secret" },
-        body: JSON.stringify({ event: "pedido.criado", module: "Pedido de Venda", data: { id: 1 } }),
-      }));
+      const response = await handler(
+        new Request("http://localhost/bling-webhook", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-token": "test-webhook-secret",
+          },
+          body: JSON.stringify({
+            event: "pedido.criado",
+            module: "Pedido de Venda",
+            data: { id: 1 },
+          }),
+        }),
+      );
       assertEquals(response.status, 503);
+      assertEquals(response.headers.get("Retry-After"), "1");
+      const body = await response.json();
+      assertEquals(body.error, "rate_limit_indisponivel");
+    } finally {
+      globalThis.fetch = originalFetch;
+      restoreEnv();
+    }
+  },
+});
+
+Deno.test({
+  name:
+    "Bling Webhook: contato não sincroniza clientes globalmente sem empresa_id",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
+    setupMockEnv();
+    const originalFetch = globalThis.fetch;
+    const urls: string[] = [];
+    globalThis.fetch = async (input) => {
+      const url = String(input);
+      urls.push(url);
+
+      if (url.includes("/rpc/webhook_claim")) {
+        return new Response(
+          JSON.stringify([{
+            id: "event-456",
+            status: "processing",
+            attempts: 1,
+            already_processed: false,
+          }]),
+          { status: 200 },
+        );
+      }
+      if (url.includes("/rpc/webhook_mark_success")) {
+        return new Response(JSON.stringify(null), { status: 200 });
+      }
+      return new Response(JSON.stringify({ id: "ok" }), { status: 201 });
+    };
+
+    try {
+      const response = await handler(
+        new Request("http://localhost/bling-webhook", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-token": "test-webhook-secret",
+          },
+          body: JSON.stringify({
+            event: "alterar",
+            module: "Contatos",
+            data: {
+              id: 99,
+              nome: "Cliente sem tenant",
+              numeroDocumento: "12345678000199",
+              email: "cliente@empresa.com",
+              celular: "11999999999",
+            },
+          }),
+        }),
+      );
+
+      assertEquals(response.status, 200);
+      const body = await response.json();
+      assertEquals(body.ok, true);
+      assertEquals(
+        urls.some((url) => /\/rest\/v1\/clientes(\?|$)/.test(url)),
+        false,
+      );
     } finally {
       globalThis.fetch = originalFetch;
       restoreEnv();

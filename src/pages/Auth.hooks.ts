@@ -12,7 +12,8 @@ import { readSloFailure, type SloFailureSnapshot } from '@/lib/sso-slo-state';
 
 // Validation schemas
 const emailSchema = z.string().email('Email inválido');
-const passwordSchema = z.string()
+const passwordSchema = z
+  .string()
   .min(8, 'Senha deve ter no mínimo 8 caracteres')
   .regex(/[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/~`]/, 'Senha deve conter caractere especial');
 
@@ -21,8 +22,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5 }
-  }
+    transition: { duration: 0.5 },
+  },
 };
 
 export { containerVariants };
@@ -37,17 +38,26 @@ export function useAuthPage() {
   });
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>(
+    {}
+  );
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [accountLocked, setAccountLocked] = useState(false);
   const [lockoutMessage, setLockoutMessage] = useState('');
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ isStrong: false, isLeaked: false });
-  const [sloFailure, setSloFailureState] = useState<SloFailureSnapshot | null>(() => readSloFailure());
+  const [sloFailure, setSloFailureState] = useState<SloFailureSnapshot | null>(() =>
+    readSloFailure()
+  );
 
   const { checkDevice } = useDeviceDetection();
-  const { isSupported: webAuthnSupported, isLoading: webAuthnLoading, authenticate, isPlatformAuthenticatorAvailable } = useWebAuthn();
+  const {
+    isSupported: webAuthnSupported,
+    isLoading: webAuthnLoading,
+    authenticate,
+    isPlatformAuthenticatorAvailable,
+  } = useWebAuthn();
   const {
     geoData,
     ipBlocked,
@@ -56,7 +66,7 @@ export function useAuthPage() {
     validateGeo,
     checkBlockedIp,
     logLoginAttempt,
-    resetBlocks
+    resetBlocks,
   } = useAuthValidation();
 
   // Toast único quando o usuário chega aqui após SSO Single Logout (?slo=ok)
@@ -73,14 +83,18 @@ export function useAuthPage() {
   // Check if user is already logged in
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         navigate('/');
       }
     };
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         navigate('/');
       }
@@ -123,32 +137,35 @@ export function useAuthPage() {
     checkBiometric();
   }, [webAuthnSupported, isPlatformAuthenticatorAvailable]);
 
-  const validateForm = useCallback((isSignUp: boolean) => {
-    const newErrors: typeof errors = {};
+  const validateForm = useCallback(
+    (isSignUp: boolean) => {
+      const newErrors: typeof errors = {};
 
-    try {
-      emailSchema.parse(email);
-    } catch (error: unknown) {
-      if (error instanceof z.ZodError) {
-        newErrors.email = error.errors[0].message;
+      try {
+        emailSchema.parse(email);
+      } catch (error: unknown) {
+        if (error instanceof z.ZodError) {
+          newErrors.email = error.errors[0].message;
+        }
       }
-    }
 
-    try {
-      passwordSchema.parse(password);
-    } catch (error: unknown) {
-      if (error instanceof z.ZodError) {
-        newErrors.password = error.errors[0].message;
+      try {
+        passwordSchema.parse(password);
+      } catch (error: unknown) {
+        if (error instanceof z.ZodError) {
+          newErrors.password = error.errors[0].message;
+        }
       }
-    }
 
-    if (isSignUp && !fullName.trim()) {
-      newErrors.fullName = 'Nome completo é obrigatório';
-    }
+      if (isSignUp && !fullName.trim()) {
+        newErrors.fullName = 'Nome completo é obrigatório';
+      }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [email, password, fullName]);
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    },
+    [email, password, fullName]
+  );
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,27 +177,16 @@ export function useAuthPage() {
     setAccountLocked(false);
 
     try {
-      // Check account lockout
-      const { data: lockoutData } = await supabase.rpc('get_lockout_details', { _email: email });
+      // Check account lockout — uses is_user_locked (boolean, granted to anon).
+      // get_lockout_details is revoked from anon (lockout oracle risk); this wrapper
+      // returns only true/false without exposing counts or remaining duration.
+      const { data: isLocked, error: lockoutError } = await supabase.rpc('is_user_locked', {
+        _email: email,
+      });
 
-      if (lockoutData && lockoutData.length > 0 && lockoutData[0].is_locked) {
-        const remainingMinutes = lockoutData[0].remaining_minutes;
-        const lockoutCount = lockoutData[0].lockout_count;
+      if (!lockoutError && isLocked === true) {
         setAccountLocked(true);
-
-        let timeMessage = '';
-        if (remainingMinutes >= 60) {
-          const hours = Math.floor(remainingMinutes / 60);
-          const mins = remainingMinutes % 60;
-          timeMessage = mins > 0 ? `${hours}h ${mins}min` : `${hours} hora(s)`;
-        } else {
-          timeMessage = `${remainingMinutes} minuto(s)`;
-        }
-
-        setLockoutMessage(
-          `Sua conta foi bloqueada temporariamente (bloqueio #${lockoutCount}). ` +
-          `Tente novamente em ${timeMessage}. `
-        );
+        setLockoutMessage('Sua conta está temporariamente bloqueada. Tente novamente mais tarde.');
         await logLoginAttempt(email, false, 'Conta bloqueada');
         setIsLoading(false);
         return;
@@ -229,7 +235,9 @@ export function useAuthPage() {
         await supabase.rpc('reset_failed_attempts', { _email: email });
         await logLoginAttempt(email, true);
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           await checkDevice(user.id);
         }

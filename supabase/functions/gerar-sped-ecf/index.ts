@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
+    const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id).eq('is_active', true);
     const allowed = (roles || []).some((r: { role: string }) => ['admin', 'financeiro'].includes(r.role));
     if (!allowed) return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
@@ -49,6 +49,17 @@ Deno.serve(async (req) => {
     const mode: 'validate' | 'generate' = body.mode === 'validate' ? 'validate' : 'generate';
     if (!empresa_id || !ano_calendario) {
       return new Response(JSON.stringify({ error: 'empresa_id e ano_calendario são obrigatórios' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // financeiro sem vínculo ativo com a empresa pedia ECF de QUALQUER
+    // empresa via empresa_id arbitrário (achado do cubic-dev-ai); admin
+    // mantém acesso global, igual ao resto do sistema.
+    if (!(roles || []).some((r: { role: string }) => r.role === 'admin')) {
+      const { data: vinculo } = await supabase.from('user_empresas').select('id')
+        .eq('user_id', user.id).eq('empresa_id', empresa_id).eq('ativo', true).maybeSingle();
+      if (!vinculo) {
+        return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
     }
 
     const periodo_inicio = `${ano_calendario}-01-01`;
@@ -129,7 +140,7 @@ Deno.serve(async (req) => {
     checklist.push({
       id: 'lucro',
       label: 'Lucro líquido coerente com movimentação',
-      status: !temMovimento || lucro_liquido !== 0 ? 'warn' : 'warn',
+      status: temMovimento && lucro_liquido !== 0 ? 'ok' : 'warn',
       detail: temMovimento
         ? `Lucro líquido: R$ ${lucro_liquido.toFixed(2)} (Rec ${receitas.toFixed(2)} − Desp ${despesas.toFixed(2)})`
         : 'Sem movimento de receita/despesa no período',
@@ -253,7 +264,7 @@ Deno.serve(async (req) => {
     const conteudo = linhas.join('\r\n') + '\r\n';
     const hash = await sha256(conteudo);
     const file_name = `ECF-${cleanCnpj(empresa.cnpj)}-${ano_calendario}.txt`;
-    const storage_path = `sped-contabil/${file_name}`;
+    const storage_path = `${empresa_id}/sped-contabil/${file_name}`;
 
     await supabase.storage.from('relatorios-tributarios').upload(storage_path, new Blob([conteudo], { type: 'text/plain' }), { upsert: true, contentType: 'text/plain' });
     const { data: signed } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(storage_path, 60*60*24*7);

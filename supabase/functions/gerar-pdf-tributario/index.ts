@@ -9,8 +9,7 @@ import { validateContract } from '../_shared/contract-validator.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
@@ -56,9 +55,10 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsErr } =
-      await supabaseAuth.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims) {
+    const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
+    // Exigir `sub`: a anon key (pública) também é um JWT válido do projeto,
+    // mas não carrega subject — sem esta checagem ela passaria o guard.
+    if (claimsErr || !claimsData?.claims?.sub) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -70,21 +70,40 @@ Deno.serve(async (req) => {
     if (!validation.success) return validation.response;
     const body: ReqBody = validation.data;
 
-
     const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
-    // Chama decidir-regime internamente
-    const decidirRes = await fetch(
-      `${supabaseUrl}/functions/v1/decidir-regime`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
+    // service_role ignora RLS: valida o vínculo do usuário com a empresa
+    // antes de ler dados e gravar o PDF no Storage dela.
+    const userId = claimsData.claims.sub as string;
+    const { data: isAdmin } = await supabaseAdmin.rpc('has_role', {
+      _user_id: userId,
+      _role: 'admin',
+    });
+    if (!isAdmin) {
+      const { data: vinculo } = await supabaseAdmin
+        .from('user_empresas')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('empresa_id', body.empresaId)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (!vinculo) {
+        return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
-    );
+    }
+
+    // Chama decidir-regime internamente
+    const decidirRes = await fetch(`${supabaseUrl}/functions/v1/decidir-regime`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
 
     if (!decidirRes.ok) {
       const errText = await decidirRes.text();
@@ -137,11 +156,7 @@ Deno.serve(async (req) => {
       15,
       132
     );
-    doc.text(
-      `Tributos anuais: ${formatBRL(decisao?.recomendado?.totalTributos ?? 0)}`,
-      15,
-      140
-    );
+    doc.text(`Tributos anuais: ${formatBRL(decisao?.recomendado?.totalTributos ?? 0)}`, 15, 140);
 
     if (decisao?.economiaAnualVsAtual && decisao.economiaAnualVsAtual > 0) {
       doc.setFillColor(220, 252, 231);
@@ -155,18 +170,14 @@ Deno.serve(async (req) => {
 
     doc.setTextColor(100, 116, 139);
     doc.setFontSize(8);
-    doc.text(
-      `Documento gerado em ${new Date().toLocaleString('pt-BR')}`,
-      15,
-      280
-    );
+    doc.text(`Documento gerado em ${new Date().toLocaleString('pt-BR')}`, 15, 280);
 
     // PÁGINA 2 — Parâmetros e Resumo Executivo
     doc.addPage();
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(16);
     doc.text('Parâmetros da Simulação', 15, 20);
-    
+
     const params = decisao?.params || {};
     autoTable(doc, {
       startY: 28,
@@ -188,7 +199,10 @@ Deno.serve(async (req) => {
     doc.text('Resumo Executivo', 15, resumoY);
     doc.setFontSize(10);
     doc.setTextColor(71, 85, 105);
-    const justificativa = decisao?.justificativaIA || decisao?.justificativa || 'Análise baseada nos parâmetros informados.';
+    const justificativa =
+      decisao?.justificativaIA ||
+      decisao?.justificativa ||
+      'Análise baseada nos parâmetros informados.';
     const splitJust = doc.splitTextToSize(justificativa, pageWidth - 30);
     doc.text(splitJust, 15, resumoY + 10);
 
@@ -212,7 +226,9 @@ Deno.serve(async (req) => {
     const cenarios = decisao?.cenarios ?? [];
     autoTable(doc, {
       startY: 28,
-      head: [['Regime', 'Elegível', 'IRPJ+CSLL', 'PIS+COFINS', 'CPP', 'ICMS+ISS', 'Total', 'Carga']],
+      head: [
+        ['Regime', 'Elegível', 'IRPJ+CSLL', 'PIS+COFINS', 'CPP', 'ICMS+ISS', 'Total', 'Carga'],
+      ],
       body: cenarios.map((c: Record<string, number | string | boolean>) => [
         String(c.nome ?? '—'),
         c.elegivel ? 'Sim' : 'Não',

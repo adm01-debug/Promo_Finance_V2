@@ -18,7 +18,21 @@ ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS total_parcelas INTEGER 
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS categoria TEXT;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS forma_pagamento TEXT;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS forma_pagamento_id UUID REFERENCES public.formas_pagamento(id);
-ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+-- plano_contas só é criada em 20260518190420 (posterior a este arquivo) —
+-- achado do CI (Supabase Preview, replay do zero): "relation
+-- public.plano_contas does not exist" ao tentar a REFERENCES inline.
+-- Guard: sem a tabela ainda, cria a coluna sem FK; 20260518190420 adiciona
+-- a constraint depois, via ALTER TABLE ADD CONSTRAINT guardado por
+-- pg_constraint (idempotente nos dois ambientes — replay do zero e prod,
+-- onde coluna e FK já existem de quando a ordem real de deploy foi outra).
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+    ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+  ELSE
+    ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS plano_conta_id UUID;
+  END IF;
+END $$;
 ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS contato_id UUID REFERENCES public.contatos_financeiros(id);
 
 -- Colunas de recorrência e user
@@ -37,7 +51,15 @@ ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS total_parcelas INTEGE
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS categoria TEXT;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS forma_recebimento TEXT;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS forma_pagamento_id UUID REFERENCES public.formas_pagamento(id);
-ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+-- Mesmo forward-reference de plano_contas do bloco contas_pagar acima.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'plano_contas') THEN
+    ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS plano_conta_id UUID REFERENCES public.plano_contas(id);
+  ELSE
+    ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS plano_conta_id UUID;
+  END IF;
+END $$;
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS contato_id UUID REFERENCES public.contatos_financeiros(id);
 
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS frequencia_recorrencia TEXT;

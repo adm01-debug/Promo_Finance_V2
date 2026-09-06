@@ -1,12 +1,14 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-import { validateContract } from "../_shared/contract-validator.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { z } from '../_shared/zod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-request-id',
 };
 
 const DadosFluxoSchema = z.object({
@@ -33,10 +35,13 @@ interface Insight {
   prioridade: 'alta' | 'media' | 'baixa';
 }
 
-serve(async (req) => {
+export const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     // Rate limit: 30 req/min por IP (endpoint IA)
@@ -46,7 +51,10 @@ serve(async (req) => {
     if (supabaseUrl && serviceRoleKey) {
       const supa = createClient(supabaseUrl, serviceRoleKey);
       const rl = await checkRateLimit(supa, {
-        endpoint: 'analise-fluxo-ia', ip, limit: 30, windowSeconds: 60,
+        endpoint: 'analise-fluxo-ia',
+        ip,
+        limit: 30,
+        windowSeconds: 60,
         userAgent: req.headers.get('user-agent'),
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
@@ -54,14 +62,13 @@ serve(async (req) => {
 
     const body = await req.json();
     const validation = await validateContract(DadosFluxoSchema, body);
-    
+
     if (!validation.success) {
       return validation.response;
     }
 
     const dados = validation.data;
     console.log('Dados validados para análise:', dados);
-
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -93,60 +100,61 @@ REGRAS:
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { 
-            role: 'system', 
-            content: 'Você é um CFO especialista. Responda APENAS com JSON válido seguindo a estrutura: {"resumo": "string", "insights": [{"tipo": "alerta|oportunidade|recomendacao", "titulo": "string", "descricao": "string", "impacto": "string opcional", "prioridade": "alta|media|baixa"}], "acoes_sugeridas": ["string"], "score_saude": number}'
+          {
+            role: 'system',
+            content:
+              'Você é um CFO especialista. Responda APENAS com JSON válido seguindo a estrutura: {"resumo": "string", "insights": [{"tipo": "alerta|oportunidade|recomendacao", "titulo": "string", "descricao": "string", "impacto": "string opcional", "prioridade": "alta|media|baixa"}], "acoes_sugeridas": ["string"], "score_saude": number}',
           },
-          { role: 'user', content: prompt }
+          { role: 'user', content: prompt },
         ],
         tools: [
           {
-            type: "function",
+            type: 'function',
             function: {
-              name: "analise_fluxo",
-              description: "Retorna análise estruturada do fluxo de caixa",
+              name: 'analise_fluxo',
+              description: 'Retorna análise estruturada do fluxo de caixa',
               parameters: {
-                type: "object",
+                type: 'object',
                 properties: {
                   resumo: {
-                    type: "string",
-                    description: "Resumo executivo da situação financeira em 1-2 frases"
+                    type: 'string',
+                    description: 'Resumo executivo da situação financeira em 1-2 frases',
                   },
                   insights: {
-                    type: "array",
+                    type: 'array',
                     items: {
-                      type: "object",
+                      type: 'object',
                       properties: {
-                        tipo: { type: "string", enum: ["alerta", "oportunidade", "recomendacao"] },
-                        titulo: { type: "string" },
-                        descricao: { type: "string" },
-                        impacto: { type: "string" },
-                        prioridade: { type: "string", enum: ["alta", "media", "baixa"] }
+                        tipo: { type: 'string', enum: ['alerta', 'oportunidade', 'recomendacao'] },
+                        titulo: { type: 'string' },
+                        descricao: { type: 'string' },
+                        impacto: { type: 'string' },
+                        prioridade: { type: 'string', enum: ['alta', 'media', 'baixa'] },
                       },
-                      required: ["tipo", "titulo", "descricao", "prioridade"]
-                    }
+                      required: ['tipo', 'titulo', 'descricao', 'prioridade'],
+                    },
                   },
                   acoes_sugeridas: {
-                    type: "array",
-                    items: { type: "string" }
+                    type: 'array',
+                    items: { type: 'string' },
                   },
                   score_saude: {
-                    type: "number",
-                    description: "Score de saúde financeira de 0 a 100"
-                  }
+                    type: 'number',
+                    description: 'Score de saúde financeira de 0 a 100',
+                  },
                 },
-                required: ["resumo", "insights", "acoes_sugeridas", "score_saude"]
-              }
-            }
-          }
+                required: ['resumo', 'insights', 'acoes_sugeridas', 'score_saude'],
+              },
+            },
+          },
         ],
-        tool_choice: { type: "function", function: { name: "analise_fluxo" } }
+        tool_choice: { type: 'function', function: { name: 'analise_fluxo' } },
       }),
     });
 
@@ -186,7 +194,6 @@ REGRAS:
     return new Response(JSON.stringify(analiseFallback), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
-
   } catch (error) {
     console.error('Erro na análise de fluxo:', error);
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
@@ -195,7 +202,11 @@ REGRAS:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
-});
+};
+
+if (import.meta.main) {
+  serve(handler);
+}
 
 function gerarAnaliseFallback(dados: DadosFluxo) {
   const insights: Insight[] = [];
@@ -209,7 +220,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
       titulo: 'Cobertura de Caixa Crítica',
       descricao: `Apenas ${dados.dias_cobertura} dias de cobertura. Risco alto de ruptura de caixa.`,
       impacto: 'Pode comprometer operações essenciais',
-      prioridade: 'alta'
+      prioridade: 'alta',
     });
     acoes.push('Antecipar recebíveis com desconto ou negociar linha de crédito emergencial');
     score -= 25;
@@ -218,7 +229,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
       tipo: 'alerta',
       titulo: 'Cobertura de Caixa Baixa',
       descricao: `${dados.dias_cobertura} dias de cobertura está abaixo do ideal de 30 dias.`,
-      prioridade: 'media'
+      prioridade: 'media',
     });
     score -= 10;
   }
@@ -230,7 +241,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
       titulo: 'Alto Risco de Ruptura',
       descricao: `Probabilidade de ${dados.probabilidade_ruptura.toFixed(0)}% de saldo negativo no período.`,
       impacto: 'Pode gerar juros por uso de cheque especial',
-      prioridade: 'alta'
+      prioridade: 'alta',
     });
     acoes.push('Revisar cronograma de pagamentos e postergar despesas não essenciais');
     score -= 15;
@@ -242,7 +253,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
       tipo: 'oportunidade',
       titulo: 'Margem Operacional Saudável',
       descricao: `Margem de ${dados.margem_operacional.toFixed(1)}% indica boa gestão de custos.`,
-      prioridade: 'baixa'
+      prioridade: 'baixa',
     });
     score += 10;
   } else if (dados.margem_operacional < 5) {
@@ -250,7 +261,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
       tipo: 'alerta',
       titulo: 'Margem Operacional Apertada',
       descricao: `Margem de apenas ${dados.margem_operacional.toFixed(1)}%. Pouco espaço para imprevistos.`,
-      prioridade: 'media'
+      prioridade: 'media',
     });
     acoes.push('Revisar contratos de fornecedores e buscar renegociações');
     score -= 10;
@@ -262,7 +273,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
       tipo: 'oportunidade',
       titulo: 'Tendência de Crescimento',
       descricao: `Projeção de aumento de R$ ${dados.variacao_saldo.toLocaleString('pt-BR')} no saldo.`,
-      prioridade: 'baixa'
+      prioridade: 'baixa',
     });
   } else if (dados.variacao_saldo < -50000) {
     insights.push({
@@ -270,7 +281,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
       titulo: 'Queima de Caixa Elevada',
       descricao: `Redução projetada de R$ ${Math.abs(dados.variacao_saldo).toLocaleString('pt-BR')} no período.`,
       impacto: 'Necessidade de captação ou redução de custos',
-      prioridade: 'alta'
+      prioridade: 'alta',
     });
     acoes.push('Mapear despesas cortáveis e acelerar ciclo de recebimento');
   }
@@ -280,7 +291,7 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
     tipo: 'recomendacao',
     titulo: 'Monitoramento Contínuo',
     descricao: 'Acompanhe diariamente as movimentações e ajuste projeções conforme realizações.',
-    prioridade: 'baixa'
+    prioridade: 'baixa',
   });
 
   if (acoes.length === 0) {
@@ -307,6 +318,6 @@ function gerarAnaliseFallback(dados: DadosFluxo) {
     resumo,
     insights,
     acoes_sugeridas: acoes,
-    score_saude: score
+    score_saude: score,
   };
 }

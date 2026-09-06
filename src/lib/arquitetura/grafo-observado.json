@@ -10,12 +10,13 @@
     "M03->M11",
     "M03->M12",
     "M04->M12",
+    "M06->M12",
     "M07->M09",
     "M10->M07",
     "M10->M08",
     "M11->M12"
   ],
-  "totalImportsAnalisados": 45,
+  "totalImportsAnalisados": 46,
   "driftResumo": {
     "naoDeclaradas": 0,
     "inversoesDeCamada": 0,
@@ -37,7 +38,6 @@
       "M06->M07",
       "M06->M10",
       "M06->M11",
-      "M06->M12",
       "M07->M11",
       "M08->M11",
       "M09->M11",

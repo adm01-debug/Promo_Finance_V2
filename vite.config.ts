@@ -32,102 +32,95 @@ function assertSupabaseEnv(mode: string, env: Record<string, string>) {
 
 /**
  * Performance: build configurado para SPA grande (100+ rotas).
- * - SWC + esbuild minify para builds rápidos
+ * - SWC + Oxc minify para builds rápidos
  * - manualChunks por vendor para cache HTTP estável
  * - reportCompressedSize:false economiza ~30-50% no tempo de build
  * - assetsInlineLimit baixo evita inflar HTML/CSS com base64
- * - drop console/debugger em produção
+ * - sourcemaps ocultos para diagnóstico sem expor referências no bundle
  */
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   assertSupabaseEnv(mode, env);
   return {
-
-  plugins: [dyadComponentTagger(), 
-    react(),
-    mode === 'development' && componentTagger(),
-    // Analisador de bundle sob demanda: `ANALYZE=1 bun run build`
-    // Gera dist/stats.html com treemap gzip/brotli para identificar
-    // chunks acima de 200KB e candidatos a code-splitting.
-    process.env.ANALYZE === '1' && visualizer({
-      filename: 'dist/stats.html',
-      gzipSize: true,
-      brotliSize: true,
-      template: 'treemap',
-      open: false,
-    }),
-  ].filter(Boolean),
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+    plugins: [
+      dyadComponentTagger(),
+      react(),
+      mode === 'development' && componentTagger(),
+      // Analisador de bundle sob demanda: `ANALYZE=1 bun run build`
+      // Gera dist/stats.html com treemap gzip/brotli para identificar
+      // chunks acima de 200KB e candidatos a code-splitting.
+      process.env.ANALYZE === '1' &&
+        visualizer({
+          filename: 'dist/stats.html',
+          gzipSize: true,
+          brotliSize: true,
+          template: 'treemap',
+          open: false,
+        }),
+    ].filter(Boolean),
+    resolve: {
+      alias: {
+        '@': path.resolve(import.meta.dirname, './src'),
+      },
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
     },
-    dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      target: 'es2020',
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        '@tanstack/react-query',
+        '@supabase/supabase-js',
+        'date-fns',
+        'framer-motion',
+      ],
     },
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      '@tanstack/react-query',
-      '@supabase/supabase-js',
-      'date-fns',
-      'framer-motion',
-    ],
-  },
-  esbuild: mode === 'production'
-    ? { drop: ['console', 'debugger'], legalComments: 'none' }
-    : undefined,
-  build: {
-    rollupOptions: {
-      output: {
-        // Vite 8/Rolldown aceita apenas a variante em função. A tabela mantém
-        // os mesmos agrupamentos estáveis usados para cache de fornecedores.
-        manualChunks(id) {
-          const chunks: Record<string, string[]> = {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'query-vendor': ['@tanstack/react-query'],
-            'ui-vendor': [
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-select',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-popover',
-              '@radix-ui/react-tooltip',
-            ],
-            'chart-vendor': ['recharts'],
-            'supabase-vendor': ['@supabase/supabase-js'],
-            'date-vendor': ['date-fns'],
-            'animation-vendor': ['framer-motion'],
-            'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
-            'pdf-vendor': ['jspdf', 'jspdf-autotable'],
-            'confetti-vendor': ['canvas-confetti'],
-          };
+    build: {
+      rolldownOptions: {
+        output: {
+          // Vite 8/Rolldown aceita apenas a variante em função. A tabela mantém
+          // os mesmos agrupamentos estáveis usados para cache de fornecedores.
+          manualChunks(id) {
+            const chunks: Record<string, string[]> = {
+              'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+              'query-vendor': ['@tanstack/react-query'],
+              'ui-vendor': [
+                '@radix-ui/react-dialog',
+                '@radix-ui/react-dropdown-menu',
+                '@radix-ui/react-select',
+                '@radix-ui/react-tabs',
+                '@radix-ui/react-popover',
+                '@radix-ui/react-tooltip',
+              ],
+              'chart-vendor': ['recharts'],
+              'supabase-vendor': ['@supabase/supabase-js'],
+              'date-vendor': ['date-fns'],
+              'animation-vendor': ['framer-motion'],
+              'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
+              'pdf-vendor': ['jspdf', 'jspdf-autotable'],
+              'confetti-vendor': ['canvas-confetti'],
+            };
 
-          for (const [chunk, packages] of Object.entries(chunks)) {
-            if (packages.some((pkg) => id.includes(`/node_modules/${pkg}/`))) {
-              return chunk;
+            for (const [chunk, packages] of Object.entries(chunks)) {
+              if (packages.some((pkg) => id.includes(`/node_modules/${pkg}/`))) {
+                return chunk;
+              }
             }
-          }
+          },
         },
       },
+      chunkSizeWarningLimit: 1200,
+      sourcemap: 'hidden',
+      minify: 'oxc',
+      target: 'es2020',
+      cssMinify: true,
+      cssCodeSplit: true,
+      assetsInlineLimit: 2048,
+      reportCompressedSize: false,
     },
-    chunkSizeWarningLimit: 1200,
-    sourcemap: 'hidden',
-    minify: 'esbuild',
-    target: 'es2020',
-    cssMinify: true,
-    cssCodeSplit: true,
-    assetsInlineLimit: 2048,
-    reportCompressedSize: false,
-  },
-  server: {
-    host: '::',
-    port: 8080,
-  },
+    server: {
+      host: '::',
+      port: 8080,
+    },
   };
 });
-
-

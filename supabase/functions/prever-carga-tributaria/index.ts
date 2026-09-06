@@ -6,6 +6,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
+import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 
 const ReqBodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -44,6 +45,9 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return respostaPreflight();
   if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
 
+  const guard = await exigirInternaOuUsuario(req);
+  if (!guard.ok) return guard.resposta;
+
   try {
     const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) return jsonComCors({ error: 'empresa_id ou meses_historico inválido' }, 400);
@@ -58,6 +62,16 @@ Deno.serve(async (req) => {
 
     if (SUPABASE_URL && SERVICE_KEY) {
       const supa = createClient(SUPABASE_URL, SERVICE_KEY);
+
+      if (guard.dados.origem === 'usuario') {
+        const { data: isAdmin } = await supa.rpc('has_role', { _user_id: guard.dados.userId, _role: 'admin' });
+        if (!isAdmin) {
+          const { data: vinculo } = await supa.from('user_empresas').select('id')
+            .eq('user_id', guard.dados.userId).eq('empresa_id', empresaId).eq('ativo', true).maybeSingle();
+          if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+        }
+      }
+
       const { data: fat } = await supa
         .from('faturamento_mensal')
         .select('receita_bruta')

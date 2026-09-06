@@ -85,6 +85,21 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE);
 
+    // Sem esta checagem, qualquer usuário autenticado do sistema (mesmo de
+    // outra empresa) podia convidar um "contador" com acesso read-only de
+    // 30 dias para QUALQUER empresa, bastando informar o empresa_id (IDOR).
+    const { data: vinculo } = await admin
+      .from('user_empresas')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('empresa_id', empresa_id)
+      .eq('ativo', true)
+      .maybeSingle();
+    if (!vinculo || !['admin', 'financeiro'].includes(vinculo.role)) {
+      log.warn('forbidden_empresa_access', { context: { empresa_id } });
+      return json({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
+    }
+
     // Gera token aleatório de 32 bytes (URL-safe)
     const rawBytes = new Uint8Array(32);
     crypto.getRandomValues(rawBytes);

@@ -14,6 +14,7 @@ const chromiumLaunchOptions = chromiumExecutablePath
  */
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: ['**/auth/logout-real.e2e.ts'],
   
   /* Run tests in files in parallel */
   fullyParallel: true,

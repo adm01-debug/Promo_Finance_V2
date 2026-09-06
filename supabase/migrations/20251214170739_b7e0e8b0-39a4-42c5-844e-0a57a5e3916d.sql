@@ -241,7 +241,10 @@ CREATE POLICY "Financeiro+ can manage centros_custo" ON public.centros_custo
 -- 8. FORNECEDORES
 -- ============================================
 
-CREATE TABLE public.fornecedores (
+-- `001_create_tables.sql` já cria esta tabela no replay completo. O IF NOT
+-- EXISTS evita recriação; as colunas evolutivas são conciliadas pelas
+-- migrations posteriores, sem apagar ou substituir o objeto existente.
+CREATE TABLE IF NOT EXISTS public.fornecedores (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   cnpj_cpf TEXT,
   razao_social TEXT NOT NULL,
@@ -269,7 +272,7 @@ CREATE POLICY "Operacional+ can manage fornecedores" ON public.fornecedores
 -- 9. CLIENTES
 -- ============================================
 
-CREATE TABLE public.clientes (
+CREATE TABLE IF NOT EXISTS public.clientes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   cnpj_cpf TEXT,
   razao_social TEXT NOT NULL,
@@ -300,7 +303,7 @@ CREATE POLICY "Operacional+ can manage clientes" ON public.clientes
 -- 10. CONTAS A PAGAR
 -- ============================================
 
-CREATE TABLE public.contas_pagar (
+CREATE TABLE IF NOT EXISTS public.contas_pagar (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID REFERENCES public.empresas(id) NOT NULL,
   conta_bancaria_id UUID REFERENCES public.contas_bancarias(id),
@@ -344,7 +347,7 @@ CREATE POLICY "Admin can delete contas_pagar" ON public.contas_pagar
 -- 11. CONTAS A RECEBER
 -- ============================================
 
-CREATE TABLE public.contas_receber (
+CREATE TABLE IF NOT EXISTS public.contas_receber (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID REFERENCES public.empresas(id) NOT NULL,
   conta_bancaria_id UUID REFERENCES public.contas_bancarias(id),
@@ -499,17 +502,36 @@ CREATE TRIGGER update_contas_bancarias_updated_at BEFORE UPDATE ON public.contas
 CREATE TRIGGER update_centros_custo_updated_at BEFORE UPDATE ON public.centros_custo
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
-CREATE TRIGGER update_fornecedores_updated_at BEFORE UPDATE ON public.fornecedores
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-CREATE TRIGGER update_clientes_updated_at BEFORE UPDATE ON public.clientes
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-CREATE TRIGGER update_contas_pagar_updated_at BEFORE UPDATE ON public.contas_pagar
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-CREATE TRIGGER update_contas_receber_updated_at BEFORE UPDATE ON public.contas_receber
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+-- Estes quatro triggers já podem existir por `001_create_tables.sql`. Preservar
+-- o objeto existente é suficiente porque a função acima foi atualizada com
+-- CREATE OR REPLACE; nenhum DROP é necessário no replay.
+DO $replay_updated_at_triggers$
+DECLARE
+  v_tabela text;
+  v_trigger text;
+BEGIN
+  FOREACH v_tabela IN ARRAY ARRAY[
+    'fornecedores', 'clientes', 'contas_pagar', 'contas_receber'
+  ]
+  LOOP
+    v_trigger := 'update_' || v_tabela || '_updated_at';
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_catalog.pg_trigger t
+      WHERE t.tgrelid = format('public.%I', v_tabela)::regclass
+        AND t.tgname = v_trigger
+        AND NOT t.tgisinternal
+    ) THEN
+      EXECUTE format(
+        'CREATE TRIGGER %I BEFORE UPDATE ON public.%I '
+        'FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column()',
+        v_trigger,
+        v_tabela
+      );
+    END IF;
+  END LOOP;
+END
+$replay_updated_at_triggers$;
 
 CREATE TRIGGER update_notas_fiscais_updated_at BEFORE UPDATE ON public.notas_fiscais
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
@@ -541,20 +563,54 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+DO $replay_auth_user_trigger$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_catalog.pg_trigger t
+    WHERE t.tgrelid = 'auth.users'::regclass
+      AND t.tgname = 'on_auth_user_created'
+      AND NOT t.tgisinternal
+  ) THEN
+    EXECUTE 'CREATE TRIGGER on_auth_user_created '
+         || 'AFTER INSERT ON auth.users '
+         || 'FOR EACH ROW EXECUTE FUNCTION public.handle_new_user()';
+  END IF;
+END
+$replay_auth_user_trigger$;
 
 -- 17. INDEXES FOR PERFORMANCE
 -- ============================================
 
 CREATE INDEX idx_contas_pagar_vencimento ON public.contas_pagar(data_vencimento);
-CREATE INDEX idx_contas_pagar_status ON public.contas_pagar(status);
-CREATE INDEX idx_contas_pagar_empresa ON public.contas_pagar(empresa_id);
+CREATE INDEX IF NOT EXISTS idx_contas_pagar_status ON public.contas_pagar(status);
+DO $replay_idx_contas_pagar_empresa$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_catalog.pg_attribute
+    WHERE attrelid = 'public.contas_pagar'::regclass
+      AND attname = 'empresa_id' AND attnum > 0 AND NOT attisdropped
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_contas_pagar_empresa
+      ON public.contas_pagar(empresa_id);
+  END IF;
+END
+$replay_idx_contas_pagar_empresa$;
 
 CREATE INDEX idx_contas_receber_vencimento ON public.contas_receber(data_vencimento);
-CREATE INDEX idx_contas_receber_status ON public.contas_receber(status);
-CREATE INDEX idx_contas_receber_empresa ON public.contas_receber(empresa_id);
+CREATE INDEX IF NOT EXISTS idx_contas_receber_status ON public.contas_receber(status);
+DO $replay_idx_contas_receber_empresa$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_catalog.pg_attribute
+    WHERE attrelid = 'public.contas_receber'::regclass
+      AND attname = 'empresa_id' AND attnum > 0 AND NOT attisdropped
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_contas_receber_empresa
+      ON public.contas_receber(empresa_id);
+  END IF;
+END
+$replay_idx_contas_receber_empresa$;
 
 CREATE INDEX idx_transacoes_data ON public.transacoes_bancarias(data);
 CREATE INDEX idx_transacoes_conta ON public.transacoes_bancarias(conta_bancaria_id);

@@ -45,6 +45,9 @@ verify_jwt = false
 [functions.analise-fluxo-ia]
 verify_jwt = false
 
+[functions.ci-security-gate-log]
+verify_jwt = false
+
 [functions.send-device-alert]
 verify_jwt = false
 
@@ -67,6 +70,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.external-data]
+verify_jwt = false
+
+[functions.n8n-callback]
 verify_jwt = false
 
 [functions.compare-schemas]
@@ -114,72 +120,76 @@ verify_jwt = false
 [functions.sefaz-dfe-dispatcher]
 verify_jwt = false
 
+[functions.notify-performance-alert]
+verify_jwt = false
+
 [functions.sefaz-dfe-puxar]
 verify_jwt = false
 
 # Cobertura explícita: toda Edge Function do repositório precisa declarar
-# `verify_jwt`. As entradas abaixo preservam a matriz operacional auditada da
-# origem; a autenticação permanece no handler quando aplicável.
+# `verify_jwt`. As entradas abaixo agora refletem o estado canônico
+# validado em 2026-08-31; apenas `mcp-query` permanece localmente em
+# `false` porque o deploy desta rodada troca JWT de gateway por x-mcp-secret.
 
 [functions.aceitar-convite]
-verify_jwt = false
+verify_jwt = true
 
 [functions.calcular-health-score-operacional]
-verify_jwt = false
+verify_jwt = true
 
 [functions.calcular-slo-metrics-diario]
-verify_jwt = false
+verify_jwt = true
 
 [functions.calculo-iva]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ci-security-gate-log]
-verify_jwt = false
+verify_jwt = true
 
 [functions.comparar-benchmark-setorial]
 verify_jwt = false
 
 [functions.conciliacao-proxy]
-verify_jwt = false
+verify_jwt = true
 
 [functions.consulta-tributaria]
-verify_jwt = false
+verify_jwt = true
 
 [functions.contabilizar-evento]
-verify_jwt = false
+verify_jwt = true
 
 [functions.convidar-contador]
-verify_jwt = false
+verify_jwt = true
 
 [functions.copilot-global]
-verify_jwt = false
+verify_jwt = true
 
 [functions.copilot-tributario]
-verify_jwt = false
+verify_jwt = true
 
 [functions.detectar-anomalias-financeiras]
-verify_jwt = false
+verify_jwt = true
 
 [functions.digest-silenciamentos-erro]
 verify_jwt = false
 
 [functions.enviar-convite-organizacao]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enviar-digest-conformidade]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enviar-relatorios-tributarios-agendados]
-verify_jwt = false
+verify_jwt = true
 
 [functions.executar-fechamento-tributario]
-verify_jwt = false
+verify_jwt = true
 
 [functions.exportar-sped-contribuicoes]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-acoes-recomendadas]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-alertas-dispatcher]
 verify_jwt = false
@@ -191,34 +201,34 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.gerar-pacote-evidencias]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-relatorio-anual]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-resumo-executivo-semanal]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-resumo-financeiro-diario]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-snapshots-conformidade]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-sped-ecd]
-verify_jwt = false
+verify_jwt = true
 
 [functions.gerar-sped-ecf]
-verify_jwt = false
+verify_jwt = true
 
 [functions.get-mapbox-token]
-verify_jwt = false
+verify_jwt = true
 
 [functions.health]
-verify_jwt = false
+verify_jwt = true
 
 [functions.log-sped-bitrix24]
-verify_jwt = false
+verify_jwt = true
 
 [functions.mcp-query]
 verify_jwt = false
@@ -227,73 +237,73 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.n8n-callback]
-verify_jwt = false
+verify_jwt = true
 
 [functions.n8n-dispatch]
-verify_jwt = false
+verify_jwt = true
 
 [functions.nfe-upload-certificado]
-verify_jwt = false
+verify_jwt = true
 
 [functions.nfe-vinculo-proxy]
-verify_jwt = false
+verify_jwt = true
 
 [functions.notify-performance-alert]
-verify_jwt = false
+verify_jwt = true
 
 [functions.notify-saved-filter]
-verify_jwt = false
+verify_jwt = true
 
 [functions.overlay-rejeicoes-auditoria]
-verify_jwt = false
+verify_jwt = true
 
 [functions.prever-carga-tributaria]
 verify_jwt = false
 
 [functions.processar-fila-cobrancas]
-verify_jwt = false
+verify_jwt = true
 
 [functions.processar-nf-ocr]
-verify_jwt = false
+verify_jwt = true
 
 [functions.processar-solicitacao-lgpd]
-verify_jwt = false
+verify_jwt = true
 
 [functions.projecao-reforma]
-verify_jwt = false
+verify_jwt = true
 
 [functions.relatorio-diario-anomalias]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sefaz-manifestar]
-verify_jwt = false
+verify_jwt = true
 
 [functions.simular-presumido]
-verify_jwt = false
+verify_jwt = true
 
 [functions.simular-real]
-verify_jwt = false
+verify_jwt = true
 
 [functions.simular-simples]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sincronizar-anomalia-bitrix24]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sso-generate-metadata]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sso-test-login]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sso-validate-config]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sync-profile-to-bitrix]
-verify_jwt = false
+verify_jwt = true
 
 [functions.verificar-conformidade-fiscal]
-verify_jwt = false
+verify_jwt = true
 
 [functions.webhook-replay]
 verify_jwt = false
@@ -302,13 +312,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.webhook-simulator]
-verify_jwt = false
+verify_jwt = true
 
 [functions.whatsapp-ai-analyzer]
-verify_jwt = false
+verify_jwt = true
 
 [functions.whatsapp-webhook]
-verify_jwt = false
-
-[functions.migrate-helper]
 verify_jwt = false

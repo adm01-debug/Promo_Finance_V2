@@ -4,11 +4,10 @@ import { test, expect, type Page } from '@playwright/test';
  * Suite focada em:
  *  1. /admin/* bloqueia usuários não autenticados (redirect /auth)
  *  2. Fluxo de login (validação + sucesso)
- *  3. Fluxo de logout
- *  4. Usuário autenticado SEM role admin é barrado em /admin/* (card "Acesso restrito")
+ *  3. Usuário autenticado SEM role admin é barrado em /admin/* (card "Acesso restrito")
  *
  * Variáveis de ambiente:
- *  - E2E_USER_EMAIL / E2E_USER_PASSWORD       → usuário admin (login/logout)
+ *  - E2E_USER_EMAIL / E2E_USER_PASSWORD       → usuário admin (login em cenários isolados)
  *  - E2E_NONADMIN_EMAIL / E2E_NONADMIN_PASSWORD → usuário sem perfil admin (RBAC negativo)
  *
  * Os blocos que dependem de credenciais usam test.skip() quando ausentes,
@@ -100,13 +99,11 @@ test.describe('Login › validação do formulário', () => {
 });
 
 // ============================================================================
-// 3) LOGIN + LOGOUT REAL (admin) → movido para e2e/auth/logout-real.e2e.ts
-//    (projeto chromium-destructive, estágio serial do CI). O logout revoga a
-//    sessão do usuário compartilhado e não pode rodar em paralelo com shards.
-// ============================================================================
 
 // ============================================================================
 // 4) RBAC NEGATIVO — usuário autenticado SEM admin é barrado em /admin/*
+=======
+// 3) RBAC NEGATIVO — usuário autenticado SEM admin é barrado em /admin/*
 // ============================================================================
 
 test.describe('RBAC › usuário autenticado sem perfil admin', () => {
