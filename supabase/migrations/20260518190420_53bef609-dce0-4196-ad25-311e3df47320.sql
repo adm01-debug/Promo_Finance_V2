@@ -58,17 +58,22 @@ $do_block$;
 -- Contrapartida do guard em 20260317001356: as duas views que dependem de
 -- plano_contas ficaram de fora lá (tabela não existia ainda); recriadas
 -- aqui agora que existe.
+-- Guard: 42P16 — drop first if column names changed on preview branch
+DROP VIEW IF EXISTS public.vw_contas_pagar_painel;
 CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
 SELECT cp.*, f.nome AS fornecedor_display, f.cnpj AS fornecedor_cnpj_display, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
 FROM contas_pagar cp LEFT JOIN fornecedores f ON f.id=cp.fornecedor_id LEFT JOIN contas_bancarias cb ON cb.id=cp.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cp.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cp.plano_conta_id
 WHERE cp.status IN ('pendente','vencido','parcial','atrasado');
 
+DROP VIEW IF EXISTS public.vw_contas_receber_painel;
 CREATE OR REPLACE VIEW public.vw_contas_receber_painel AS
 SELECT cr.*, c.razao_social AS cliente_display, c.cnpj_cpf AS cliente_cpf_cnpj_display, c.score AS cliente_score, cb.banco AS conta_banco, cc.nome AS centro_custo_nome, pc.descricao AS plano_conta_nome
 FROM contas_receber cr LEFT JOIN clientes c ON c.id=cr.cliente_id LEFT JOIN contas_bancarias cb ON cb.id=cr.conta_bancaria_id LEFT JOIN centros_custo cc ON cc.id=cr.centro_custo_id LEFT JOIN plano_contas pc ON pc.id=cr.plano_conta_id
 WHERE cr.status IN ('pendente','vencido','parcial','atrasado');
 
 -- 3. Fix RPC registrar_evento_receber
+-- Guard: 42P13 — drop first if return type changed on preview branch (uuid → void)
+DROP FUNCTION IF EXISTS public.registrar_evento_receber(uuid, text, jsonb);
 CREATE OR REPLACE FUNCTION public.registrar_evento_receber(
     p_conta_id UUID,
     p_evento TEXT DEFAULT NULL,
