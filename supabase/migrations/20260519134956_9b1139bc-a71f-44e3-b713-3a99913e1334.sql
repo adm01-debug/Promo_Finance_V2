@@ -84,4 +84,5 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Grant execution to public (the function handles the security/insertion)
-GRANT EXECUTE ON FUNCTION public.log_sso_onboarding_event TO anon, authenticated;
+-- Guard: 42725 — qualify with full signature to disambiguate multiple overloads on preview branch
+GRANT EXECUTE ON FUNCTION public.log_sso_onboarding_event(TEXT, TEXT, TEXT, JSONB, BOOLEAN, TEXT, TEXT) TO anon, authenticated;
