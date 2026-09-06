@@ -30,8 +30,8 @@ export default defineConfig({
     // construção). Testes que exercitam o backend devem mockar o cliente.
     env: {
       VITE_SUPABASE_URL: 'https://test.supabase.co',
-      VITE_SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
-      VITE_SUPABASE_PROJECT_ID: 'test-project',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test_key_1234567890',
+      VITE_SUPABASE_PROJECT_ID: 'test-project-fixture',
     },
     include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
     exclude: ['node_modules', 'dist', 'e2e'],

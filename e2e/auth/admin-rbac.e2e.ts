@@ -28,10 +28,7 @@ const ADMIN_ONLY_ROUTES = [
   '/admin/campos-customizados',
 ] as const;
 
-const ADMIN_OR_FINANCEIRO_ROUTES = [
-  '/admin/insights-ia',
-  '/admin/auditoria-ia',
-] as const;
+const ADMIN_OR_FINANCEIRO_ROUTES = ['/admin/insights-ia', '/admin/auditoria-ia'] as const;
 
 const ADMIN_ROUTES = [...ADMIN_ONLY_ROUTES, ...ADMIN_OR_FINANCEIRO_ROUTES] as const;
 
@@ -99,10 +96,6 @@ test.describe('Login › validação do formulário', () => {
 });
 
 // ============================================================================
-
-// ============================================================================
-// 4) RBAC NEGATIVO — usuário autenticado SEM admin é barrado em /admin/*
-=======
 // 3) RBAC NEGATIVO — usuário autenticado SEM admin é barrado em /admin/*
 // ============================================================================
 
