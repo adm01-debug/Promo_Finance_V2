@@ -36,6 +36,8 @@ FROM public.fila_cobrancas
 GROUP BY etapa, empresa_id;
 
 -- RPC: processar_regua_cobranca
+-- Guard: 42P13 — drop first if return type changed on preview branch
+DROP FUNCTION IF EXISTS public.processar_regua_cobranca(uuid, boolean);
 CREATE OR REPLACE FUNCTION public.processar_regua_cobranca(p_empresa_id UUID DEFAULT NULL, p_simulate BOOLEAN DEFAULT FALSE)
 RETURNS JSONB
 LANGUAGE plpgsql
