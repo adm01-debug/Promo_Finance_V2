@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS public.sso_providers (
 );
 
 -- 6. RPCs REQUIRED BY FRONTEND (STUBS FOR BUILD PASSING)
+-- Guard: 42P13 — drop first if return type changed on preview branch (TABLE→JSONB)
+DROP FUNCTION IF EXISTS public.get_asaas_payment_stats(UUID);
 CREATE OR REPLACE FUNCTION public.get_asaas_payment_stats(p_empresa_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
