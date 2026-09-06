@@ -38,7 +38,7 @@ BEGIN
           LEFT JOIN centros_custo cc ON cc.id = cp.centro_custo_id
           LEFT JOIN plano_contas pc ON pc.id = cp.plano_conta_id
           LEFT JOIN contatos_financeiros cf ON cf.id = cp.contato_id
-      WHERE cp.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento])
+      WHERE cp.status = ANY (ARRAY['pendente', 'vencido', 'parcial', 'atrasado'])
     $view$;
     EXECUTE $view$
       CREATE VIEW public.vw_contas_receber_painel AS
@@ -64,7 +64,7 @@ BEGIN
           LEFT JOIN centros_custo cc ON cc.id = cr.centro_custo_id
           LEFT JOIN plano_contas pc ON pc.id = cr.plano_conta_id
           LEFT JOIN contatos_financeiros cf ON cf.id = cr.contato_id
-      WHERE cr.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento])
+      WHERE cr.status = ANY (ARRAY['pendente', 'vencido', 'parcial', 'atrasado'])
     $view$;
   ELSE
     RAISE NOTICE '20260317125441: contas_pagar.conta_bancaria_id ou plano_contas.descricao ausente; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
@@ -155,7 +155,7 @@ BEGIN
     avg(CASE WHEN cr.data_vencimento < CURRENT_DATE THEN (CURRENT_DATE - cr.data_vencimento) ELSE 0 END) AS media_dias_atraso,
     count(*) FILTER (WHERE cr.etapa_cobranca IS NOT NULL) AS em_cobranca
 FROM contas_receber cr
-WHERE cr.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento])
+WHERE cr.status = ANY (ARRAY['pendente', 'vencido', 'parcial', 'atrasado'])
 GROUP BY cr.empresa_id, CASE WHEN cr.data_vencimento >= CURRENT_DATE THEN 'A Vencer' WHEN (CURRENT_DATE - cr.data_vencimento) <= 30 THEN '1-30 dias' WHEN (CURRENT_DATE - cr.data_vencimento) <= 60 THEN '31-60 dias' WHEN (CURRENT_DATE - cr.data_vencimento) <= 90 THEN '61-90 dias' ELSE '90+ dias' END
     $view$;
   ELSE
