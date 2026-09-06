@@ -3,11 +3,15 @@
 -- 20260518164611 (9 dias depois desta migration). Bare CREATE VIEW
 -- referenciando cp.conta_bancaria_id quebraria o replay do zero antes disso;
 -- 20260518190420/20260518190710 recriam a view de qualquer forma.
+-- Guard adicional: fornecedores.razao_social pode não existir no replay incremental.
 DO $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'conta_bancaria_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'fornecedores' AND column_name = 'razao_social'
   ) THEN
     EXECUTE 'DROP VIEW IF EXISTS public.vw_contas_pagar_painel';
     EXECUTE $view$
@@ -36,11 +40,15 @@ END
 $$;
 
 -- 2. Atualizar vw_contas_receber_painel com campos de empresa
+-- Guard adicional: clientes.razao_social pode não existir no replay incremental.
 DO $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'conta_bancaria_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'clientes' AND column_name = 'razao_social'
   ) THEN
     EXECUTE 'DROP VIEW IF EXISTS public.vw_contas_receber_painel';
     EXECUTE $view$
@@ -63,7 +71,7 @@ BEGIN
     $view$;
     EXECUTE 'ALTER VIEW public.vw_contas_receber_painel SET (security_invoker = true)';
   ELSE
-    RAISE NOTICE '20260509133338: contas_receber.conta_bancaria_id ausente; vw_contas_receber_painel recriada em 20260518190420.';
+    RAISE NOTICE '20260509133338: contas_receber.conta_bancaria_id ou clientes.razao_social ausente; vw_contas_receber_painel recriada em 20260518190420.';
   END IF;
 END
 $$;
