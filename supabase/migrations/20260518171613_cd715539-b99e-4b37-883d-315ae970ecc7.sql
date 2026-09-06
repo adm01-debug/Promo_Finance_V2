@@ -42,12 +42,16 @@ CREATE TABLE IF NOT EXISTS public.frontend_error_logs (
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.frontend_error_logs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Admins can view audit logs" ON public.audit_logs 
-    FOR SELECT TO authenticated 
+-- Guard: 42710 — policy may already exist from 20251214170739
+DROP POLICY IF EXISTS "Admins can view audit logs" ON public.audit_logs;
+CREATE POLICY "Admins can view audit logs" ON public.audit_logs
+    FOR SELECT TO authenticated
     USING (public.has_role(auth.uid(), 'admin'));
 
-CREATE POLICY "Users can insert their own error logs" ON public.frontend_error_logs 
-    FOR INSERT TO authenticated 
+-- Guard: 42710 — policy may already exist from 20260418004548
+DROP POLICY IF EXISTS "Users can insert their own error logs" ON public.frontend_error_logs;
+CREATE POLICY "Users can insert their own error logs" ON public.frontend_error_logs
+    FOR INSERT TO authenticated
     WITH CHECK (true);
 
 -- 6. Fix for asaas_reconciliation_suggestions view/relation issue
