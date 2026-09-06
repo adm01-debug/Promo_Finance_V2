@@ -20,6 +20,9 @@ DECLARE
   ];
 BEGIN
   FOREACH t IN ARRAY sensitive_tables LOOP
-    EXECUTE format('ALTER TABLE public.%I FORCE ROW LEVEL SECURITY', t);
+    BEGIN
+      EXECUTE format('ALTER TABLE public.%I FORCE ROW LEVEL SECURITY', t);
+    EXCEPTION WHEN undefined_table THEN NULL;
+    END;
   END LOOP;
 END $$;
