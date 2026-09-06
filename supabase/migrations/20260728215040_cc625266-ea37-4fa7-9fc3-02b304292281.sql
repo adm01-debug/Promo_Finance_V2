@@ -34,13 +34,20 @@ DO $$ BEGIN
     CREATE INDEX IF NOT EXISTS idx_drivers_empresa ON public.drivers(empresa_id);
   END IF;
 END $$;
-ALTER TABLE public.alerts              ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
-ALTER TABLE public.alert_configurations ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
-ALTER TABLE public.risk_rules          ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
-
-CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts(empresa_id);
-CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations(empresa_id);
-CREATE INDEX IF NOT EXISTS idx_risk_rules_empresa ON public.risk_rules(empresa_id);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
+    ALTER TABLE public.alerts ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
+    CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts(empresa_id);
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    ALTER TABLE public.alert_configurations ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
+    CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations(empresa_id);
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
+    ALTER TABLE public.risk_rules ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
+    CREATE INDEX IF NOT EXISTS idx_risk_rules_empresa ON public.risk_rules(empresa_id);
+  END IF;
+END $$;
 
 -- 4) Preenchimento automático da empresa do usuário
 CREATE OR REPLACE FUNCTION public.set_empresa_id_default()
