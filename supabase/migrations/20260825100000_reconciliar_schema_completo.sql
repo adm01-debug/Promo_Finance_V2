@@ -8522,7 +8522,11 @@ END $$;
 --
 
 -- FASE 6: Views ausentes/alteradas
-DROP VIEW IF EXISTS public.drivers_safe_view CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='drivers_safe_view') THEN
+    DROP VIEW public.drivers_safe_view CASCADE;
+  END IF;
+END $$;
 
 DO $drv_view_guard$ BEGIN
 EXECUTE $drv_view_guard_sql$
@@ -8570,7 +8574,11 @@ END $drv_view_guard$;
 
 --
 
-DROP VIEW IF EXISTS public.estrategias_elisao_catalogo CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='estrategias_elisao_catalogo') THEN
+    DROP VIEW public.estrategias_elisao_catalogo CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.estrategias_elisao_catalogo WITH (security_invoker='true') AS
  SELECT id,
@@ -8591,7 +8599,11 @@ CREATE VIEW public.estrategias_elisao_catalogo WITH (security_invoker='true') AS
 
 --
 
-DROP VIEW IF EXISTS public.extratos_bancarios_importados CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='extratos_bancarios_importados') THEN
+    DROP VIEW public.extratos_bancarios_importados CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.extratos_bancarios_importados WITH (security_invoker='true') AS
  SELECT id,
@@ -8617,7 +8629,11 @@ CREATE VIEW public.extratos_bancarios_importados WITH (security_invoker='true') 
 
 --
 
-DROP VIEW IF EXISTS public.mcp_probe CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='mcp_probe') THEN
+    DROP VIEW public.mcp_probe CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.mcp_probe AS
  SELECT 1 AS probe,
@@ -8626,7 +8642,11 @@ CREATE VIEW public.mcp_probe AS
 
 --
 
-DROP VIEW IF EXISTS public.mv_benchmark_setorial CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='mv_benchmark_setorial') THEN
+    DROP VIEW public.mv_benchmark_setorial CASCADE;
+  END IF;
+END $$;
 
 CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
  WITH carga AS (
@@ -8651,7 +8671,11 @@ CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
 
 --
 
-DROP VIEW IF EXISTS public.orders_operator_view CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='orders_operator_view') THEN
+    DROP VIEW public.orders_operator_view CASCADE;
+  END IF;
+END $$;
 
 DO $ord_op_view_guard$ BEGIN
 EXECUTE $ord_op_view_guard_sql$
@@ -8703,7 +8727,11 @@ END $ord_op_view_guard$;
 
 --
 
-DROP VIEW IF EXISTS public.orders_safe_view CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='orders_safe_view') THEN
+    DROP VIEW public.orders_safe_view CASCADE;
+  END IF;
+END $$;
 
 DO $ord_sf_view_guard$ BEGIN
 EXECUTE $ord_sf_view_guard_sql$
@@ -8755,7 +8783,11 @@ END $ord_sf_view_guard$;
 
 --
 
-DROP VIEW IF EXISTS public.v_sefaz_observability CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='v_sefaz_observability') THEN
+    DROP VIEW public.v_sefaz_observability CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.v_sefaz_observability WITH (security_invoker='true') AS
  SELECT c.cnpj,
@@ -8783,7 +8815,11 @@ CREATE VIEW public.v_sefaz_observability WITH (security_invoker='true') AS
 
 --
 
-DROP VIEW IF EXISTS public.v_table_bloat CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='v_table_bloat') THEN
+    DROP VIEW public.v_table_bloat CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.v_table_bloat WITH (security_invoker='true') AS
  SELECT schemaname,
@@ -8811,7 +8847,11 @@ CREATE VIEW public.v_table_bloat WITH (security_invoker='true') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_auditoria_tributaria_recente CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_auditoria_tributaria_recente') THEN
+    DROP VIEW public.vw_auditoria_tributaria_recente CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_auditoria_tributaria_recente WITH (security_invoker='true') AS
  SELECT a.id,
@@ -8835,7 +8875,11 @@ CREATE VIEW public.vw_auditoria_tributaria_recente WITH (security_invoker='true'
 
 --
 
-DROP VIEW IF EXISTS public.vw_contas_pagar_painel CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_contas_pagar_painel') THEN
+    DROP VIEW public.vw_contas_pagar_painel CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_contas_pagar_painel WITH (security_invoker='on') AS
  SELECT cp.id,
@@ -8883,7 +8927,11 @@ CREATE VIEW public.vw_contas_pagar_painel WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_contas_receber_painel CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_contas_receber_painel') THEN
+    DROP VIEW public.vw_contas_receber_painel CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_contas_receber_painel WITH (security_invoker='on') AS
  SELECT cr.id,
@@ -8937,7 +8985,11 @@ CREATE VIEW public.vw_contas_receber_painel WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_dre_mensal CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_dre_mensal') THEN
+    DROP VIEW public.vw_dre_mensal CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_dre_mensal WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
@@ -8953,7 +9005,11 @@ CREATE VIEW public.vw_dre_mensal WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_dso_aging CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_dso_aging') THEN
+    DROP VIEW public.vw_dso_aging CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_dso_aging WITH (security_invoker='on') AS
  SELECT id AS empresa_id,
@@ -8967,7 +9023,11 @@ CREATE VIEW public.vw_dso_aging WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_fluxo_caixa CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_fluxo_caixa') THEN
+    DROP VIEW public.vw_fluxo_caixa CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_fluxo_caixa WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
@@ -8981,7 +9041,11 @@ CREATE VIEW public.vw_fluxo_caixa WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_fluxo_caixa_diario CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_fluxo_caixa_diario') THEN
+    DROP VIEW public.vw_fluxo_caixa_diario CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_fluxo_caixa_diario WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
@@ -8995,7 +9059,11 @@ CREATE VIEW public.vw_fluxo_caixa_diario WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_gastos_centro_custo CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_gastos_centro_custo') THEN
+    DROP VIEW public.vw_gastos_centro_custo CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_gastos_centro_custo WITH (security_invoker='on') AS
  SELECT id AS centro_custo_id,
@@ -9007,7 +9075,11 @@ CREATE VIEW public.vw_gastos_centro_custo WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_metricas_cobranca CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_metricas_cobranca') THEN
+    DROP VIEW public.vw_metricas_cobranca CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_metricas_cobranca WITH (security_invoker='on') AS
  SELECT id AS empresa_id,
@@ -9019,7 +9091,11 @@ CREATE VIEW public.vw_metricas_cobranca WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_rpc_hotspots CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_rpc_hotspots') THEN
+    DROP VIEW public.vw_rpc_hotspots CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_rpc_hotspots WITH (security_invoker='true') AS
  SELECT function_name,
@@ -9038,7 +9114,11 @@ CREATE VIEW public.vw_rpc_hotspots WITH (security_invoker='true') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_rpc_slow_calls CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_rpc_slow_calls') THEN
+    DROP VIEW public.vw_rpc_slow_calls CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_rpc_slow_calls WITH (security_invoker='true') AS
  SELECT id,
@@ -9059,7 +9139,11 @@ CREATE VIEW public.vw_rpc_slow_calls WITH (security_invoker='true') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_saldos_contas CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_saldos_contas') THEN
+    DROP VIEW public.vw_saldos_contas CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_saldos_contas WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
@@ -9072,7 +9156,11 @@ CREATE VIEW public.vw_saldos_contas WITH (security_invoker='on') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_transferencias_painel CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_transferencias_painel') THEN
+    DROP VIEW public.vw_transferencias_painel CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_transferencias_painel WITH (security_invoker='true') AS
  SELECT t.id,
@@ -9095,7 +9183,11 @@ CREATE VIEW public.vw_transferencias_painel WITH (security_invoker='true') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_tributario_dashboard CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_tributario_dashboard') THEN
+    DROP VIEW public.vw_tributario_dashboard CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_tributario_dashboard WITH (security_invoker='true') AS
  SELECT e.id AS empresa_id,
@@ -9117,7 +9209,11 @@ CREATE VIEW public.vw_tributario_dashboard WITH (security_invoker='true') AS
 
 --
 
-DROP VIEW IF EXISTS public.vw_webhooks_recentes CASCADE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='vw_webhooks_recentes') THEN
+    DROP VIEW public.vw_webhooks_recentes CASCADE;
+  END IF;
+END $$;
 
 CREATE VIEW public.vw_webhooks_recentes WITH (security_invoker='true') AS
  SELECT id,
