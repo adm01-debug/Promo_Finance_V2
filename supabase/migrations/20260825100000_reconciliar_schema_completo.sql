@@ -79,7 +79,7 @@ END $$;
 
 GRANT ALL ON TABLE public.acessos_suspeitos TO authenticated;
 GRANT ALL ON TABLE public.acessos_suspeitos TO service_role;
-GRANT SELECT,INSERT ON TABLE public.acessos_suspeitos TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.acessos_suspeitos TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 GRANT SELECT ON TABLE public.acessos_suspeitos TO anon;
 
 
@@ -161,7 +161,7 @@ ALTER TABLE public.auditoria_tributaria ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.auditoria_tributaria TO authenticated;
 GRANT ALL ON TABLE public.auditoria_tributaria TO service_role;
-GRANT SELECT,INSERT ON TABLE public.auditoria_tributaria TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.auditoria_tributaria TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -256,7 +256,7 @@ ALTER TABLE public.benchmarks_setoriais ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.benchmarks_setoriais TO authenticated;
 GRANT ALL ON TABLE public.benchmarks_setoriais TO service_role;
-GRANT SELECT,INSERT ON TABLE public.benchmarks_setoriais TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.benchmarks_setoriais TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -318,7 +318,7 @@ END $$;
 
 
 GRANT ALL ON TABLE public.bitrix_oauth_tokens TO service_role;
-GRANT SELECT,INSERT ON TABLE public.bitrix_oauth_tokens TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.bitrix_oauth_tokens TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -398,7 +398,7 @@ END $$;
 
 GRANT ALL ON TABLE public.bling_sync_logs TO authenticated;
 GRANT ALL ON TABLE public.bling_sync_logs TO service_role;
-GRANT SELECT,INSERT ON TABLE public.bling_sync_logs TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.bling_sync_logs TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -460,7 +460,7 @@ END $$;
 
 
 GRANT ALL ON TABLE public.bling_tokens TO service_role;
-GRANT SELECT,INSERT ON TABLE public.bling_tokens TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.bling_tokens TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -531,7 +531,7 @@ END $$;
 
 GRANT ALL ON TABLE public.bling_webhook_events TO authenticated;
 GRANT ALL ON TABLE public.bling_webhook_events TO service_role;
-GRANT SELECT,INSERT ON TABLE public.bling_webhook_events TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.bling_webhook_events TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -605,7 +605,7 @@ ALTER TABLE public.catalogos_fiscais_cargas ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.catalogos_fiscais_cargas TO authenticated;
 GRANT ALL ON TABLE public.catalogos_fiscais_cargas TO service_role;
-GRANT SELECT,INSERT ON TABLE public.catalogos_fiscais_cargas TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.catalogos_fiscais_cargas TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -676,7 +676,7 @@ ALTER TABLE public.catalogos_tributarios_health_history ENABLE ROW LEVEL SECURIT
 
 GRANT ALL ON TABLE public.catalogos_tributarios_health_history TO authenticated;
 GRANT ALL ON TABLE public.catalogos_tributarios_health_history TO service_role;
-GRANT SELECT,INSERT ON TABLE public.catalogos_tributarios_health_history TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.catalogos_tributarios_health_history TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -741,7 +741,7 @@ END $$;
 
 GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.cnpja_cache TO authenticated;
 GRANT ALL ON TABLE public.cnpja_cache TO service_role;
-GRANT SELECT,INSERT ON TABLE public.cnpja_cache TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.cnpja_cache TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -847,7 +847,7 @@ END $$;
 
 GRANT ALL ON TABLE public.convites_contador TO authenticated;
 GRANT ALL ON TABLE public.convites_contador TO service_role;
-GRANT SELECT,INSERT ON TABLE public.convites_contador TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.convites_contador TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -924,7 +924,7 @@ ALTER TABLE public.elisao_simulacoes_regime ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.elisao_simulacoes_regime TO authenticated;
 GRANT ALL ON TABLE public.elisao_simulacoes_regime TO service_role;
-GRANT SELECT,INSERT ON TABLE public.elisao_simulacoes_regime TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.elisao_simulacoes_regime TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1014,7 +1014,7 @@ END $$;
 
 GRANT ALL ON TABLE public.estrategias_elisao TO authenticated;
 GRANT ALL ON TABLE public.estrategias_elisao TO service_role;
-GRANT SELECT,INSERT ON TABLE public.estrategias_elisao TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.estrategias_elisao TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1088,7 +1088,7 @@ ALTER TABLE public.eventos_contabilizacao_log ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.eventos_contabilizacao_log TO authenticated;
 GRANT ALL ON TABLE public.eventos_contabilizacao_log TO service_role;
-GRANT SELECT,INSERT ON TABLE public.eventos_contabilizacao_log TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.eventos_contabilizacao_log TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1155,7 +1155,7 @@ ALTER TABLE public.frontend_error_alert_state ENABLE ROW LEVEL SECURITY;
 
 
 GRANT ALL ON TABLE public.frontend_error_alert_state TO service_role;
-GRANT SELECT,INSERT ON TABLE public.frontend_error_alert_state TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.frontend_error_alert_state TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 GRANT SELECT ON TABLE public.frontend_error_alert_state TO authenticated;
 
 
@@ -1209,7 +1209,7 @@ ALTER TABLE public.frontend_error_silence_digest_log ENABLE ROW LEVEL SECURITY;
 
 GRANT SELECT,MAINTAIN ON TABLE public.frontend_error_silence_digest_log TO authenticated;
 GRANT ALL ON TABLE public.frontend_error_silence_digest_log TO service_role;
-GRANT SELECT,INSERT ON TABLE public.frontend_error_silence_digest_log TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.frontend_error_silence_digest_log TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1295,7 +1295,7 @@ ALTER TABLE public.glossario_tributario ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.glossario_tributario TO authenticated;
 GRANT ALL ON TABLE public.glossario_tributario TO service_role;
-GRANT SELECT,INSERT ON TABLE public.glossario_tributario TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.glossario_tributario TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1359,7 +1359,7 @@ ALTER TABLE public.index_usage_snapshots ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.index_usage_snapshots TO authenticated;
 GRANT ALL ON TABLE public.index_usage_snapshots TO service_role;
-GRANT SELECT,INSERT ON TABLE public.index_usage_snapshots TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.index_usage_snapshots TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1401,7 +1401,7 @@ ALTER TABLE public.indices_uso_excecoes ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.indices_uso_excecoes TO authenticated;
 GRANT ALL ON TABLE public.indices_uso_excecoes TO service_role;
-GRANT SELECT,INSERT ON TABLE public.indices_uso_excecoes TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.indices_uso_excecoes TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1496,7 +1496,7 @@ END $$;
 
 GRANT ALL ON TABLE public.operacoes_icms TO authenticated;
 GRANT ALL ON TABLE public.operacoes_icms TO service_role;
-GRANT SELECT,INSERT ON TABLE public.operacoes_icms TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.operacoes_icms TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1602,7 +1602,7 @@ ALTER TABLE public.overlay_rejeicoes_auditoria ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.overlay_rejeicoes_auditoria TO authenticated;
 GRANT ALL ON TABLE public.overlay_rejeicoes_auditoria TO service_role;
-GRANT SELECT,INSERT ON TABLE public.overlay_rejeicoes_auditoria TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.overlay_rejeicoes_auditoria TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1689,7 +1689,7 @@ END $$;
 
 GRANT ALL ON TABLE public.projecoes_reforma TO authenticated;
 GRANT ALL ON TABLE public.projecoes_reforma TO service_role;
-GRANT SELECT,INSERT ON TABLE public.projecoes_reforma TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.projecoes_reforma TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1811,7 +1811,7 @@ ALTER TABLE public.regras_contabilizacao_automatica ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.regras_contabilizacao_automatica TO authenticated;
 GRANT ALL ON TABLE public.regras_contabilizacao_automatica TO service_role;
-GRANT SELECT,INSERT ON TABLE public.regras_contabilizacao_automatica TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.regras_contabilizacao_automatica TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1881,7 +1881,7 @@ END $$;
 
 GRANT ALL ON TABLE public.retencao_politicas TO authenticated;
 GRANT ALL ON TABLE public.retencao_politicas TO service_role;
-GRANT SELECT,INSERT ON TABLE public.retencao_politicas TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.retencao_politicas TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -1962,7 +1962,7 @@ END $$;
 
 GRANT ALL ON TABLE public.saved_filter_subscriptions TO authenticated;
 GRANT ALL ON TABLE public.saved_filter_subscriptions TO service_role;
-GRANT SELECT,INSERT ON TABLE public.saved_filter_subscriptions TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.saved_filter_subscriptions TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2037,7 +2037,7 @@ END $$;
 
 GRANT ALL ON TABLE public.scim_operations_log TO authenticated;
 GRANT ALL ON TABLE public.scim_operations_log TO service_role;
-GRANT SELECT,INSERT ON TABLE public.scim_operations_log TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.scim_operations_log TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2110,7 +2110,7 @@ END $$;
 
 GRANT ALL ON TABLE public.security_alerts TO authenticated;
 GRANT ALL ON TABLE public.security_alerts TO service_role;
-GRANT SELECT,INSERT ON TABLE public.security_alerts TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.security_alerts TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2192,7 +2192,7 @@ ALTER TABLE public.simulacao_tributos_detalhados ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.simulacao_tributos_detalhados TO authenticated;
 GRANT ALL ON TABLE public.simulacao_tributos_detalhados TO service_role;
-GRANT SELECT,INSERT ON TABLE public.simulacao_tributos_detalhados TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.simulacao_tributos_detalhados TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2296,7 +2296,7 @@ END $$;
 
 GRANT ALL ON TABLE public.simulacoes TO authenticated;
 GRANT ALL ON TABLE public.simulacoes TO service_role;
-GRANT SELECT,INSERT ON TABLE public.simulacoes TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.simulacoes TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2350,7 +2350,7 @@ ALTER TABLE public.slo_metrics_diarias ENABLE ROW LEVEL SECURITY;
 
 GRANT ALL ON TABLE public.slo_metrics_diarias TO authenticated;
 GRANT ALL ON TABLE public.slo_metrics_diarias TO service_role;
-GRANT SELECT,INSERT ON TABLE public.slo_metrics_diarias TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.slo_metrics_diarias TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2435,7 +2435,7 @@ END $$;
 
 GRANT ALL ON TABLE public.sso_role_mappings TO authenticated;
 GRANT ALL ON TABLE public.sso_role_mappings TO service_role;
-GRANT SELECT,INSERT ON TABLE public.sso_role_mappings TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.sso_role_mappings TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2514,7 +2514,7 @@ END $$;
 
 GRANT ALL ON TABLE public.sso_sandbox_runs TO authenticated;
 GRANT ALL ON TABLE public.sso_sandbox_runs TO service_role;
-GRANT SELECT,INSERT ON TABLE public.sso_sandbox_runs TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.sso_sandbox_runs TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
@@ -2599,7 +2599,7 @@ END $$;
 
 GRANT ALL ON TABLE public.sso_user_groups TO authenticated;
 GRANT ALL ON TABLE public.sso_user_groups TO service_role;
-GRANT SELECT,INSERT ON TABLE public.sso_user_groups TO sandbox_exec;
+DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.sso_user_groups TO sandbox_exec; EXCEPTION WHEN undefined_object THEN NULL; END $$;
 
 
 --
