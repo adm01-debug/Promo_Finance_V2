@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/hooks/useAuth';
 import { Edit, Truck } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
 import { supabase } from '@/integrations/supabase/client';
@@ -81,6 +82,7 @@ const DEFAULT_VALUES: FornecedorFormData = {
 export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFormProps) {
   const queryClient = useQueryClient();
   const { customCelebration } = useConfetti();
+  const { currentEmpresaId } = useAuth();
   const isEditing = !!fornecedor;
 
   const form = useForm<FornecedorFormData>({
@@ -124,7 +126,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
 
   const createMutation = useMutation({
     mutationFn: async (data: FornecedorFormData) => {
-      const { error } = await supabase.from('fornecedores').insert(buildPayload(data));
+      const { error } = await supabase.from('fornecedores').insert({ ...buildPayload(data), empresa_id: currentEmpresaId });
       if (error) throw error;
     },
     onSuccess: () => {

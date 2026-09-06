@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
-import { exigirInternaOuUsuario, corsHeadersComSegredo } from '../_shared/auth-guard.ts';
+import { exigirChamadaInterna, exigirPapel, corsHeadersComSegredo } from '../_shared/auth-guard.ts';
 
 const corsHeaders = {
   ...corsHeadersComSegredo,
@@ -48,7 +48,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const guard = await exigirInternaOuUsuario(req, 'anomalias_financeiras_cron');
+  const interna = await exigirChamadaInterna(req, 'anomalias_financeiras_cron');
+  const guard = interna.ok ? interna : await exigirPapel(req, ['admin']);
   if (!guard.ok) return guard.resposta;
 
   const url = Deno.env.get('SUPABASE_URL')!;
