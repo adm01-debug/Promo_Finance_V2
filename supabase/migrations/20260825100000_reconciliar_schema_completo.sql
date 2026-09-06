@@ -8663,6 +8663,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cmv0$ BEGIN
+EXECUTE $cmv0q$
 CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
  WITH carga AS (
          SELECT vw_tributario_dashboard.regime_tributario AS regime,
@@ -8682,6 +8684,9 @@ CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
    FROM carga
   GROUP BY regime
   WITH NO DATA;
+$cmv0q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cmv0$;
 
 
 --
