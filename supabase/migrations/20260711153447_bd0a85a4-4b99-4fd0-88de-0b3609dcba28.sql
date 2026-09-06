@@ -10,9 +10,14 @@ CREATE INDEX IF NOT EXISTS idx_webhooks_log_next_retry
   ON public.webhooks_log (next_retry_at)
   WHERE status IN ('pending','retrying') AND next_retry_at IS NOT NULL;
 
-CREATE INDEX IF NOT EXISTS idx_webhooks_log_source_ext
-  ON public.webhooks_log (source, external_id)
-  WHERE external_id IS NOT NULL;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='webhooks_log' AND column_name='source') THEN
+    CREATE INDEX IF NOT EXISTS idx_webhooks_log_source_ext
+      ON public.webhooks_log (source, external_id)
+      WHERE external_id IS NOT NULL;
+  END IF;
+END $$;
 
 -- 2) DLQ
 CREATE TABLE IF NOT EXISTS public.webhook_dlq (
