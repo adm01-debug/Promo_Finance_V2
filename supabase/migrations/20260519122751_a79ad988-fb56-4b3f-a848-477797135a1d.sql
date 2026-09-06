@@ -48,5 +48,15 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 ALTER TABLE public.creditos_tributarios ADD COLUMN IF NOT EXISTS valor_credito NUMERIC(15,2);
 
 -- 3. Create view for extratos_bancarios_importados if missing (used in hooks)
-CREATE OR REPLACE VIEW public.extratos_bancarios_importados AS 
-SELECT * FROM public.extrato_bancario;
+-- Guard: 42809 — skip if it already exists as a BASE TABLE on preview branch
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public'
+        AND table_name = 'extratos_bancarios_importados'
+        AND table_type = 'BASE TABLE'
+    ) THEN
+        EXECUTE 'CREATE OR REPLACE VIEW public.extratos_bancarios_importados AS SELECT * FROM public.extrato_bancario';
+    END IF;
+END $$;
