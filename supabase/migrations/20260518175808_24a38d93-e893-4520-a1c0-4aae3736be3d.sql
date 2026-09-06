@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS public.sessoes_conciliacao (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.sessoes_conciliacao ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table may exist from earlier migration without user_id
+ALTER TABLE public.sessoes_conciliacao ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='sessoes_conciliacao' AND policyname='Owner manage sessoes') THEN
     CREATE POLICY "Owner manage sessoes" ON public.sessoes_conciliacao FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
@@ -63,6 +65,8 @@ CREATE TABLE IF NOT EXISTS public.lancamentos_contabeis (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.lancamentos_contabeis ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table may exist from earlier migration without user_id
+ALTER TABLE public.lancamentos_contabeis ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='lancamentos_contabeis' AND policyname='Owner manage lancamentos') THEN
     CREATE POLICY "Owner manage lancamentos" ON public.lancamentos_contabeis FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
