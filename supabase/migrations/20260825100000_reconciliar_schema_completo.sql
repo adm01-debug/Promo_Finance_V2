@@ -8580,6 +8580,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv0$ BEGIN
+EXECUTE $cv0q$
 CREATE VIEW public.estrategias_elisao_catalogo WITH (security_invoker='true') AS
  SELECT id,
     codigo,
@@ -8595,6 +8597,9 @@ CREATE VIEW public.estrategias_elisao_catalogo WITH (security_invoker='true') AS
     created_at,
     updated_at
    FROM public.estrategias_elisao;
+$cv0q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv0$;
 
 
 --
@@ -8605,6 +8610,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv1$ BEGIN
+EXECUTE $cv1q$
 CREATE VIEW public.extratos_bancarios_importados WITH (security_invoker='true') AS
  SELECT id,
     user_id,
@@ -8625,6 +8632,9 @@ CREATE VIEW public.extratos_bancarios_importados WITH (security_invoker='true') 
     conciliado,
     created_at
    FROM public.extrato_bancario;
+$cv1q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv1$;
 
 
 --
@@ -8635,9 +8645,14 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv2$ BEGIN
+EXECUTE $cv2q$
 CREATE VIEW public.mcp_probe AS
  SELECT 1 AS probe,
     CURRENT_TIMESTAMP AS ts;
+$cv2q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv2$;
 
 
 --
@@ -8789,6 +8804,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv3$ BEGIN
+EXECUTE $cv3q$
 CREATE VIEW public.v_sefaz_observability WITH (security_invoker='true') AS
  SELECT c.cnpj,
     c.ambiente,
@@ -8811,6 +8828,9 @@ CREATE VIEW public.v_sefaz_observability WITH (security_invoker='true') AS
      LEFT JOIN LATERAL ( SELECT count(*) AS open_alerts
            FROM public.integrity_alerts ia
           WHERE ((ia.domain = 'nfe_sefaz'::text) AND (ia.resolved_at IS NULL) AND ((ia.metadata ->> 'cnpj'::text) = c.cnpj))) a ON (true));
+$cv3q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv3$;
 
 
 --
@@ -8821,6 +8841,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv4$ BEGIN
+EXECUTE $cv4q$
 CREATE VIEW public.v_table_bloat WITH (security_invoker='true') AS
  SELECT schemaname,
     relname AS table_name,
@@ -8843,6 +8865,9 @@ CREATE VIEW public.v_table_bloat WITH (security_invoker='true') AS
     autoanalyze_count
    FROM pg_stat_user_tables
   WHERE (schemaname = 'public'::name);
+$cv4q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv4$;
 
 
 --
@@ -8853,6 +8878,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv5$ BEGIN
+EXECUTE $cv5q$
 CREATE VIEW public.vw_auditoria_tributaria_recente WITH (security_invoker='true') AS
  SELECT a.id,
     a.empresa_id,
@@ -8871,6 +8898,9 @@ CREATE VIEW public.vw_auditoria_tributaria_recente WITH (security_invoker='true'
      LEFT JOIN public.profiles p ON ((p.user_id = a.user_id)))
   ORDER BY a.criado_em DESC
  LIMIT 500;
+$cv5q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv5$;
 
 
 --
@@ -8881,6 +8911,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv6$ BEGIN
+EXECUTE $cv6q$
 CREATE VIEW public.vw_contas_pagar_painel WITH (security_invoker='on') AS
  SELECT cp.id,
     cp.descricao,
@@ -8923,6 +8955,9 @@ CREATE VIEW public.vw_contas_pagar_painel WITH (security_invoker='on') AS
      LEFT JOIN public.fornecedores f ON ((cp.fornecedor_id = f.id)))
      LEFT JOIN public.centros_custo cc ON ((cp.centro_custo_id = cc.id)))
      LEFT JOIN public.contas_bancarias cb ON ((cp.conta_bancaria_id = cb.id)));
+$cv6q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv6$;
 
 
 --
@@ -8933,6 +8968,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv7$ BEGIN
+EXECUTE $cv7q$
 CREATE VIEW public.vw_contas_receber_painel WITH (security_invoker='on') AS
  SELECT cr.id,
     cr.descricao,
@@ -8981,6 +9018,9 @@ CREATE VIEW public.vw_contas_receber_painel WITH (security_invoker='on') AS
      LEFT JOIN public.clientes cl ON ((cr.cliente_id = cl.id)))
      LEFT JOIN public.centros_custo cc ON ((cr.centro_custo_id = cc.id)))
      LEFT JOIN public.contas_bancarias cb ON ((cr.conta_bancaria_id = cb.id)));
+$cv7q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv7$;
 
 
 --
@@ -8991,6 +9031,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv8$ BEGIN
+EXECUTE $cv8q$
 CREATE VIEW public.vw_dre_mensal WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -9001,6 +9043,9 @@ CREATE VIEW public.vw_dre_mensal WITH (security_invoker='on') AS
     15000.00 AS despesas_operacionais,
     5000.00 AS ebitda
    FROM public.empresas;
+$cv8q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv8$;
 
 
 --
@@ -9011,6 +9056,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv9$ BEGIN
+EXECUTE $cv9q$
 CREATE VIEW public.vw_dso_aging WITH (security_invoker='on') AS
  SELECT id AS empresa_id,
     45 AS dso_atual,
@@ -9019,6 +9066,9 @@ CREATE VIEW public.vw_dso_aging WITH (security_invoker='on') AS
     1500.00 AS vencido_31_60,
     1000.00 AS vencido_61_plus
    FROM public.empresas;
+$cv9q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv9$;
 
 
 --
@@ -9029,6 +9079,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv10$ BEGIN
+EXECUTE $cv10q$
 CREATE VIEW public.vw_fluxo_caixa WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -9037,6 +9089,9 @@ CREATE VIEW public.vw_fluxo_caixa WITH (security_invoker='on') AS
     1500.00 AS saidas_previstas,
     500.00 AS saldo_projetado
    FROM public.empresas;
+$cv10q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv10$;
 
 
 --
@@ -9047,6 +9102,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv11$ BEGIN
+EXECUTE $cv11q$
 CREATE VIEW public.vw_fluxo_caixa_diario WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -9055,6 +9112,9 @@ CREATE VIEW public.vw_fluxo_caixa_diario WITH (security_invoker='on') AS
     1200.00 AS saidas_reais,
     1300.00 AS saldo_final
    FROM public.empresas;
+$cv11q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv11$;
 
 
 --
@@ -9065,12 +9125,17 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv12$ BEGIN
+EXECUTE $cv12q$
 CREATE VIEW public.vw_gastos_centro_custo WITH (security_invoker='on') AS
  SELECT id AS centro_custo_id,
     nome AS nome_centro_custo,
     empresa_id,
     0.0 AS total_gasto
    FROM public.centros_custo;
+$cv12q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv12$;
 
 
 --
@@ -9081,12 +9146,17 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv13$ BEGIN
+EXECUTE $cv13q$
 CREATE VIEW public.vw_metricas_cobranca WITH (security_invoker='on') AS
  SELECT id AS empresa_id,
     15.5 AS taxa_inadimplencia,
     120 AS ticket_medio,
     500 AS total_cobrancas_mes
    FROM public.empresas;
+$cv13q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv13$;
 
 
 --
@@ -9097,6 +9167,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv14$ BEGIN
+EXECUTE $cv14q$
 CREATE VIEW public.vw_rpc_hotspots WITH (security_invoker='true') AS
  SELECT function_name,
     date_trunc('hour'::text, called_at) AS bucket_hour,
@@ -9110,6 +9182,9 @@ CREATE VIEW public.vw_rpc_hotspots WITH (security_invoker='true') AS
    FROM public.rpc_observability_metrics
   WHERE (called_at >= (now() - '7 days'::interval))
   GROUP BY function_name, (date_trunc('hour'::text, called_at));
+$cv14q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv14$;
 
 
 --
@@ -9120,6 +9195,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv15$ BEGIN
+EXECUTE $cv15q$
 CREATE VIEW public.vw_rpc_slow_calls WITH (security_invoker='true') AS
  SELECT id,
     function_name,
@@ -9135,6 +9212,9 @@ CREATE VIEW public.vw_rpc_slow_calls WITH (security_invoker='true') AS
   WHERE (called_at >= (now() - '24:00:00'::interval))
   ORDER BY duration_ms DESC
  LIMIT 200;
+$cv15q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv15$;
 
 
 --
@@ -9145,6 +9225,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv16$ BEGIN
+EXECUTE $cv16q$
 CREATE VIEW public.vw_saldos_contas WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -9152,6 +9234,9 @@ CREATE VIEW public.vw_saldos_contas WITH (security_invoker='on') AS
     1000.00 AS saldo_atual,
     now() AS ultima_atualizacao
    FROM public.empresas;
+$cv16q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv16$;
 
 
 --
@@ -9162,6 +9247,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv17$ BEGIN
+EXECUTE $cv17q$
 CREATE VIEW public.vw_transferencias_painel WITH (security_invoker='true') AS
  SELECT t.id,
     t.empresa_id,
@@ -9179,6 +9266,9 @@ CREATE VIEW public.vw_transferencias_painel WITH (security_invoker='true') AS
     t.updated_at
    FROM (public.asaas_transfers t
      LEFT JOIN public.empresas e ON ((e.id = t.empresa_id)));
+$cv17q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv17$;
 
 
 --
@@ -9189,6 +9279,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv18$ BEGIN
+EXECUTE $cv18q$
 CREATE VIEW public.vw_tributario_dashboard WITH (security_invoker='true') AS
  SELECT e.id AS empresa_id,
     e.razao_social,
@@ -9205,6 +9297,9 @@ CREATE VIEW public.vw_tributario_dashboard WITH (security_invoker='true') AS
     at_.status AS status_apuracao
    FROM (public.empresas e
      JOIN public.apuracoes_tributarias at_ ON ((at_.empresa_id = e.id)));
+$cv18q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv18$;
 
 
 --
@@ -9215,6 +9310,8 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+DO $cv19$ BEGIN
+EXECUTE $cv19q$
 CREATE VIEW public.vw_webhooks_recentes WITH (security_invoker='true') AS
  SELECT id,
     source,
@@ -9227,6 +9324,9 @@ CREATE VIEW public.vw_webhooks_recentes WITH (security_invoker='true') AS
    FROM public.webhooks_log
   ORDER BY created_at DESC
  LIMIT 100;
+$cv19q$;
+EXCEPTION WHEN duplicate_table OR undefined_table OR undefined_column THEN NULL;
+END $cv19$;
 
 
 --
