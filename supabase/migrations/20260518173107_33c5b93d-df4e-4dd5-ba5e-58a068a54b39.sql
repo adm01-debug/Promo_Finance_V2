@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS public.extrato_bancario (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.extrato_bancario ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in 20260317000749 without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.extrato_bancario ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 CREATE POLICY "extrato_owner_all" ON public.extrato_bancario
   FOR ALL TO authenticated
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
@@ -42,6 +44,8 @@ CREATE TABLE IF NOT EXISTS public.conciliacoes (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.conciliacoes ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in 20260317000749 without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.conciliacoes ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 CREATE POLICY "conciliacoes_owner_all" ON public.conciliacoes
   FOR ALL TO authenticated
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
