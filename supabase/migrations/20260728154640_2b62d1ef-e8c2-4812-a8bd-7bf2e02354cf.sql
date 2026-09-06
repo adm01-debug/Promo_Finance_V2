@@ -42,7 +42,19 @@ CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- ===== Catálogo (view de leitura) =====
-CREATE OR REPLACE VIEW public.estrategias_elisao_catalogo
+-- Drop existing object of any type (table/view/matview) before recreating as view
+DO $$
+DECLARE v_kind "char";
+BEGIN
+  SELECT relkind INTO v_kind
+  FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'public' AND c.relname = 'estrategias_elisao_catalogo';
+  IF v_kind = 'r' THEN DROP TABLE public.estrategias_elisao_catalogo CASCADE;
+  ELSIF v_kind = 'v' THEN DROP VIEW public.estrategias_elisao_catalogo CASCADE;
+  ELSIF v_kind = 'm' THEN DROP MATERIALIZED VIEW public.estrategias_elisao_catalogo CASCADE;
+  END IF;
+END $$;
+CREATE VIEW public.estrategias_elisao_catalogo
   WITH (security_invoker = true) AS
   SELECT id, codigo, nome, categoria, descricao, regimes_aplicaveis,
          economia_estimada_percentual, risco, base_legal, requisitos, ativo,
