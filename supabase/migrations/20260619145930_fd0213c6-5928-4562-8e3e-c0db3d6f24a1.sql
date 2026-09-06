@@ -110,10 +110,16 @@ CREATE POLICY "protestos_empresa_select" ON public.protestos
   USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
 
 -- 17) AUDITORIA_FINANCEIRA — escopo por empresa
+-- Guard: 42703 — empresa_id may not exist on preview branch
 DROP POLICY IF EXISTS "auth read auditoria_financeira" ON public.auditoria_financeira;
-CREATE POLICY "auditoria_financeira_empresa_select" ON public.auditoria_financeira
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='auditoria_financeira' AND column_name='empresa_id') THEN
+    EXECUTE $sql$CREATE POLICY "auditoria_financeira_empresa_select" ON public.auditoria_financeira
   FOR SELECT TO authenticated
-  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
+  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true))$sql$;
+  END IF;
+END $$;
 
 -- 18) WEBHOOKS_LOG — só admin
 DROP POLICY IF EXISTS "auth read webhooks_log" ON public.webhooks_log;
