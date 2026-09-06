@@ -11,12 +11,20 @@ import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
  */
 function assertSupabaseEnv(mode: string, env: Record<string, string>) {
   if (mode !== 'production') return;
-  const required = [
-    'VITE_SUPABASE_URL',
-    'VITE_SUPABASE_PUBLISHABLE_KEY',
-    'VITE_SUPABASE_PROJECT_ID',
-  ] as const;
-  const missing = required.filter((k) => !env[k] || !env[k].trim());
+  // Lê as vars frontend obrigatórias do manifesto (env.manifest.json).
+  // Atualizar: node scripts/generate-env-manifest.mjs
+  const manifestVars: { name: string; scope: string; required: boolean }[] = (() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      return require('./env.manifest.json').vars;
+    } catch {
+      return [];
+    }
+  })();
+  const required = manifestVars
+    .filter((v) => v.scope === 'frontend' && v.required)
+    .map((v) => v.name as string);
+  const missing = required.filter((k) => !env[k as keyof typeof env] || !env[k as keyof typeof env].trim());
   if (missing.length > 0) {
     const msg = [
       '',

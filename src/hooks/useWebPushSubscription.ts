@@ -3,8 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const VAPID_PUBLIC_KEY = "BOaMVurXnKZYI6zlQDzQbSrDCMjA8nO-DqrQ7-zh3pVlKYx8b3iVnqEWXKYwNYUDCpJ2ISIR2_HHbXlh1Z-nCho";
-// ⚠️ Para produção real, substitua por VITE_VAPID_PUBLIC_KEY ou busque do backend.
+// Chave pública VAPID vem do ambiente (VITE_VAPID_PUBLIC_KEY → env.ts).
+// Par gerado em 2026-09-05; privada armazenada no vault do Supabase.
+// ESLint override: useWebPushSubscription.ts tem permissão explícita
+// para ler import.meta.env.VITE_VAPID_PUBLIC_KEY diretamente (ver eslint.config.js).
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY ?? "";
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -36,6 +39,10 @@ export function useWebPushSubscription() {
   }, []);
 
   const subscribe = useCallback(async () => {
+    if (!VAPID_PUBLIC_KEY) {
+      toast({ title: "Push indisponível", description: "Chave VAPID não configurada.", variant: "destructive" });
+      return;
+    }
     if (!supported) {
       toast({ title: "Não suportado", description: "Navegador sem suporte a push.", variant: "destructive" });
       return;
@@ -49,7 +56,6 @@ export function useWebPushSubscription() {
       }
       let reg = await navigator.serviceWorker.getRegistration();
       if (!reg) {
-        // registra um SW mínimo apenas para push (não interfere em PWA)
         reg = await navigator.serviceWorker.register("/sw-push.js").catch(() => null) ?? undefined;
       }
       if (!reg) {

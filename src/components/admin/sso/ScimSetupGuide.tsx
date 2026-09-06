@@ -14,8 +14,9 @@ import { useScimChecklist } from '@/hooks/useScimChecklist';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ScimUserJsonGenerator } from './ScimUserJsonGenerator';
+import { env } from '@/config/env';
 
-const SCIM_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
+const SCIM_BASE = `${env.SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
 
 const ATTR_MAPPINGS = [
   { scim: 'userName', source: 'user.userPrincipalName / user.email', required: true },

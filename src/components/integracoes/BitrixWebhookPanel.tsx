@@ -37,8 +37,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { env } from '@/config/env';
 
-const WEBHOOK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/bitrix24-webhook`;
+const WEBHOOK_URL = `${env.SUPABASE_URL}/functions/v1/bitrix24-webhook`;
 
 export const BitrixWebhookPanel = () => {
   const [showUrl, setShowUrl] = useState(false);

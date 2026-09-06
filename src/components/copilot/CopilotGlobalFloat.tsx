@@ -7,6 +7,7 @@ import { Bot, Send, Sparkles, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
+import { env } from '@/config/env';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -97,7 +98,7 @@ export function CopilotGlobalFloat() {
     abortRef.current = controller;
 
     try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/copilot-global`;
+      const url = `${env.SUPABASE_URL}/functions/v1/copilot-global`;
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
       if (!token) throw new Error('Sessão expirada — refaça login.');

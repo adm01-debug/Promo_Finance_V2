@@ -1,46 +1,40 @@
-# 🚀 Guia de Deploy - Promo Finance
+# Deployment Guide
 
-## Ambientes
+## Pré-requisitos
 
-### Development
-- **URL:** http://localhost:5173
-- **Branch:** develop
-- **Deploy:** Automático via Git hooks
+- Node.js 18+
+- Bun
+- Conta Vercel (time `juca1`)
+- Projeto Supabase: `bwwbeyolnnzppeuhgkcd`
 
-### Staging
-- **URL:** https://staging.promo-finance.app
-- **Branch:** staging
-- **Deploy:** Automático via GitHub Actions
+## Deploy Vercel (produção)
 
-### Production
-- **URL:** https://promo-finance.app
-- **Branch:** main
-- **Deploy:** Automático via GitHub Actions
+O projeto está linkado ao repositório `adm01-debug/Promo_Finance_V2`.
+Qualquer merge em `main` dispara deploy automático.
 
----
+### Variáveis de ambiente necessárias
 
-## Cloudflare Pages Deploy
+Apenas as listadas em `src/config/env.ts` entram no bundle.
+Configure no painel Vercel (Settings → Environment Variables):
 
-### Setup Inicial
+```
+VITE_SUPABASE_URL                  # obrigatória — valida com Zod no boot
+VITE_SUPABASE_PUBLISHABLE_KEY      # obrigatória — chave sb_publishable_…
+VITE_SUPABASE_PROJECT_ID           # obrigatória — ref 20 chars
+VITE_BLING_CLIENT_ID               # opcional — OAuth Bling
+VITE_VAPID_PUBLIC_KEY              # opcional — web push; privada vai no vault
+```
 
-1. **Criar projeto Cloudflare Pages**
+> **Não adicione variáveis de backend (SMTP, Bitrix24, etc.) na Vercel.**
+> Este é um SPA Vite estático — não existe runtime Node.js na Vercel.
+> Variáveis de edge functions vivem no vault do Supabase.
+
+### Deploy manual (emergencial)
+
 ```bash
-npx wrangler pages project create promo-finance
-```
-
-2. **Configurar variáveis de ambiente**
-```
-VITE_SUPABASE_URL
-VITE_SUPABASE_PUBLISHABLE_KEY
-VITE_SUPABASE_PROJECT_ID
-VITE_GA_ID
-VITE_SENTRY_DSN
-```
-
-3. **Deploy manual**
-```bash
-npm run build:prod
-npx wrangler pages deploy dist --project-name=promo-finance
+bun install --frozen-lockfile
+bun run build:prod
+# Upload dist/ para Vercel via CLI ou dashboard
 ```
 
 ### Deploy Automático
@@ -48,133 +42,19 @@ npx wrangler pages deploy dist --project-name=promo-finance
 Cada push em `main` dispara workflow:
 1. Run tests
 2. Build production
-3. Deploy to Cloudflare
-4. Create Sentry release
-5. Notify Slack
+3. Deploy Vercel via integração GitHub
 
----
+## Supabase Edge Functions
 
-## Checklist Pre-Deploy
+Secrets das edge functions vivem no vault:
+`supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd/settings/vault`
 
-### Code Quality
-- [ ] Todos os testes passando
-- [ ] Lint sem erros
-- [ ] Type check sem erros
-- [ ] Coverage ≥ 80%
+Inventory completo em `.env.example` (seção EDGE FUNCTIONS).
 
-### Build
-- [ ] Build local bem-sucedido
-- [ ] Bundle size dentro do limite
-- [ ] No console errors
+## GitHub Actions
 
-### Database
-- [ ] Migrations aplicadas
-- [ ] Seed data (se necessário)
-- [ ] Backups recentes
-
-### Monitoring
-- [ ] Sentry configurado
-- [ ] Analytics configurado
-- [ ] Health checks funcionando
-
----
-
-## Rollback
-
-### Via Cloudflare Dashboard
-1. Acessar Cloudflare Pages
-2. Selecionar deployment anterior
-3. Clicar em "Rollback to this deployment"
-
-### Via CLI
-```bash
-npx wrangler pages deployment list
-npx wrangler pages deployment rollback <deployment-id>
-```
-
-### Via Git
-```bash
-git revert <commit-hash>
-git push origin main
-```
-
----
-
-## Monitoring Pós-Deploy
-
-### Métricas a Observar (30 min)
-- Error rate (Sentry)
-- Response time (Cloudflare Analytics)
-- User reports
-- Server logs
-
-### Health Check
-```bash
-curl https://promo-finance.app/health
-```
-
-Expected: `200 OK`
-
----
-
-## Troubleshooting
-
-### Build Falha
-```bash
-# Limpar cache
-rm -rf node_modules dist
-npm ci
-npm run build:prod
-```
-
-### Deploy Falha
-1. Verificar logs no GitHub Actions
-2. Verificar variáveis de ambiente
-3. Verificar permissões Cloudflare
-
-### Rollback Emergencial
-```bash
-# Revert último commit
-git revert HEAD
-git push origin main
-
-# Ou rollback via Cloudflare
-npx wrangler pages deployment rollback
-```
-
----
-
-## Scripts Úteis
-
-```bash
-# Deploy staging
-npm run deploy:staging
-
-# Deploy production
-npm run deploy:prod
-
-# Rollback
-npm run rollback
-
-# Health check
-npm run health:check
-```
-
----
-
-## Changelog
-
-Sempre atualizar CHANGELOG.md:
-```markdown
-## [1.2.0] - 2025-01-15
-### Added
-- Nova funcionalidade X
-### Fixed
-- Bug Y corrigido
-### Changed
-- Melhoria Z
-```
-
----
-
-**Lembre-se:** Nunca faça deploy em sexta-feira! 😄
+Secrets necessários para o CI (`.github/workflows/README.md`):
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_ACCESS_TOKEN` (PAT sbp\_… para CLI)
+- `CI_GATE_LOG_SECRET` (par com vault do Supabase)
+- `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`
