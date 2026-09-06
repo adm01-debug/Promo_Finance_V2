@@ -35,6 +35,10 @@ CREATE TRIGGER trg_prevent_profile_privilege_escalation
 DROP POLICY IF EXISTS "Users can update own data" ON public.profiles;
 DROP POLICY IF EXISTS "Users can view own data" ON public.profiles;
 DROP POLICY IF EXISTS "users manage own profile" ON public.profiles;
+-- Guard: 42710 — policies may already exist from an earlier migration on preview branch
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can manage profiles" ON public.profiles;
 
 CREATE POLICY "Users can view own profile"
   ON public.profiles
