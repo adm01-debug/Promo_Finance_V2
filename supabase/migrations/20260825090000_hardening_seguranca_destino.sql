@@ -12,7 +12,12 @@ DROP FUNCTION IF EXISTS public._test_fn2(text);
 DROP FUNCTION IF EXISTS public._trig_fn();
 
 -- 2. Restringir exec_sql a service_role ------------------------------------
-REVOKE EXECUTE ON FUNCTION public.exec_sql(text) FROM PUBLIC, anon, authenticated;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+             WHERE n.nspname = 'public' AND p.proname = 'exec_sql') THEN
+    REVOKE EXECUTE ON FUNCTION public.exec_sql(text) FROM PUBLIC, anon, authenticated;
+  END IF;
+END $$;
 -- (mantido para uso pelo mcp-query; só service_role pode chamar)
 
 -- 3. REVOKE ALL em tabelas de anon (254 → 0) ------------------------------
@@ -25,32 +30,64 @@ REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC, anon;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC, anon;
 
 -- 4b. Re-conceder EXECUTE a authenticated onde origem permite ------------
-GRANT EXECUTE ON FUNCTION public.fn_norm_conta_codigo(p_codigo text) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_bloat_history(p_days integer) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_catalogos_tributarios_health() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_cron_jobs() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_cron_run_history(p_job_name text, p_limit integer) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_performance_alerts_weekly(p_weeks integer) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_retencoes_pendentes_count(p_empresa_id uuid) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_retention_history(p_days integer) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_table_bloat() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_user_permissions(user_id uuid) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_user_roles(user_id uuid) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.has_role(_user_id uuid, _role app_role) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.registrar_auditoria_config(_tipo_acao text, _empresa_id uuid, _detalhes jsonb) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.registrar_evento_pagar(p_conta_id uuid, p_tipo text, p_mensagem text, p_metadata jsonb) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb) TO authenticated;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.fn_norm_conta_codigo(p_codigo text) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_bloat_history(p_days integer) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_catalogos_tributarios_health() TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_cron_jobs() TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_cron_run_history(p_job_name text, p_limit integer) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_performance_alerts_weekly(p_weeks integer) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_retencoes_pendentes_count(p_empresa_id uuid) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_retention_history(p_days integer) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_table_bloat() TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_user_permissions(user_id uuid) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.get_user_roles(user_id uuid) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.has_role(_user_id uuid, _role app_role) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.registrar_auditoria_config(_tipo_acao text, _empresa_id uuid, _detalhes jsonb) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.registrar_evento_pagar(p_conta_id uuid, p_tipo text, p_mensagem text, p_metadata jsonb) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb) TO authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
 
 -- 4c. Re-conceder EXECUTE a anon nas 2 funções pré-login ----------------
-GRANT EXECUTE ON FUNCTION public.gerar_numero_acordo() TO anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.resolve_sso_providers_for_domain(p_domain text) TO anon, authenticated;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.gerar_numero_acordo() TO anon, authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
+DO $$ BEGIN GRANT EXECUTE ON FUNCTION public.resolve_sso_providers_for_domain(p_domain text) TO anon, authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
 
 -- 5. Corrigir SECURITY DEFINER sem search_path -----------------------------
-ALTER FUNCTION public.is_user_admin() SET search_path = public, pg_catalog;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+             WHERE n.nspname = 'public' AND p.proname = 'is_user_admin') THEN
+    ALTER FUNCTION public.is_user_admin() SET search_path = public, pg_catalog;
+  END IF;
+END $$;
 
 -- 6. Mover extensões de 'public' para 'extensions' -------------------------
-ALTER EXTENSION pg_stat_statements SET SCHEMA extensions;
-ALTER EXTENSION pg_trgm         SET SCHEMA extensions;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace
+             WHERE e.extname = 'pg_stat_statements' AND n.nspname = 'public') THEN
+    ALTER EXTENSION pg_stat_statements SET SCHEMA extensions;
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace
+             WHERE e.extname = 'pg_trgm' AND n.nspname = 'public') THEN
+    ALTER EXTENSION pg_trgm SET SCHEMA extensions;
+  END IF;
+END $$;
 DROP VIEW IF EXISTS public.pg_stat_statements;
 DROP VIEW IF EXISTS public.pg_stat_statements_info;
 
@@ -76,7 +113,12 @@ END
 $$;
 
 -- 8. Publicação Realtime: adicionar performance_alerts ----------------------
-ALTER PUBLICATION supabase_realtime ADD TABLE public.performance_alerts;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='performance_alerts')
+     AND EXISTS (SELECT 1 FROM pg_publication WHERE pubname='supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.performance_alerts;
+  END IF;
+END $$;
 
 -- 9. Enum tipo_cobranca (ausente no destino; usado por pagamentos_recorrentes)
 DO $$ BEGIN
