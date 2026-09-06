@@ -143,9 +143,6 @@ verify_jwt = true
 [functions.calculo-iva]
 verify_jwt = true
 
-[functions.ci-security-gate-log]
-verify_jwt = true
-
 [functions.comparar-benchmark-setorial]
 verify_jwt = false
 
