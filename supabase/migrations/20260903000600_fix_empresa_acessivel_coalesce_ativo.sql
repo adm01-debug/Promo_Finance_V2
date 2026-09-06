@@ -25,13 +25,3 @@ AS $$
 $$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000600',
-  'fix_empresa_acessivel_coalesce_ativo',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.empresa_acessivel(_empresa_id uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO ''public'' — substitui COALESCE(ue.ativo, true) por ue.ativo = true para fail-closed quando ativo é NULL'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

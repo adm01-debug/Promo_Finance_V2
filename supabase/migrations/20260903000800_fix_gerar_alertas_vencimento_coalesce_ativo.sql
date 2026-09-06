@@ -69,14 +69,3 @@ END;
 $_$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000800',
-  'fix_gerar_alertas_vencimento_coalesce_ativo',
-  ARRAY[
-    'DROP FUNCTION IF EXISTS public.gerar_alertas_vencimento() CASCADE',
-    'CREATE OR REPLACE FUNCTION public.gerar_alertas_vencimento() RETURNS integer — substitui COALESCE(ue.ativo, true) por ue.ativo = true no CTE destinos (alinha com empresa_acessivel)'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

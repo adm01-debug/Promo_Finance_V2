@@ -40,13 +40,3 @@ END;
 $$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000400',
-  'fix_certificado_get_password_idor',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.certificado_get_password(p_cert_id uuid, p_master_key text) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path TO ''public'', ''extensions'' — adds empresa_acessivel() check before decrypting certificate password'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

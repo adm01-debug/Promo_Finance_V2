@@ -31,14 +31,3 @@ $function$;
 GRANT EXECUTE ON FUNCTION public.is_user_locked(text) TO anon, authenticated;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903001300',
-  'add_is_user_locked_function',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.is_user_locked(_email text) RETURNS boolean SECURITY DEFINER — boolean wrapper sobre get_lockout_details; sem contadores/duração; concedido a anon',
-    'GRANT EXECUTE ON FUNCTION public.is_user_locked(text) TO anon, authenticated'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

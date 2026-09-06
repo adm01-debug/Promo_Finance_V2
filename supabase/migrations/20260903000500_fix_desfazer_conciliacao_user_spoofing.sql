@@ -53,13 +53,3 @@ END;
 $$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000500',
-  'fix_desfazer_conciliacao_user_spoofing',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.desfazer_conciliacao — adds auth.uid() ownership check and empresa_acessivel() guard before DELETE'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

@@ -177,8 +177,3 @@ SELECT cron.schedule('gerar-contas-recorrentes-diario','35 3 * * *',
 SELECT cron.schedule('processar-regua-cobranca-diario','0 9 * * *',
   'select public.processar_regua_cobranca(null, false);')
   WHERE NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='processar-regua-cobranca-diario');
-
--- Registro
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260825130000','fixes_phd_validation',ARRAY['fixes_phd_validation'])
-ON CONFLICT DO NOTHING;

@@ -72,7 +72,3 @@ $$;
 GRANT EXECUTE ON FUNCTION public.processar_regua_cobranca(uuid, boolean) TO authenticated;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902170000','fix_rpcs_security_definer_sem_escopo')
-ON CONFLICT (version) DO NOTHING;

@@ -14,13 +14,3 @@ CREATE POLICY "alertas_preditivos_select_empresa"
   USING (empresa_acessivel(empresa_id));
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000200',
-  'fix_alertas_preditivos_missing_select_policy',
-  ARRAY[
-    'CREATE POLICY "alertas_preditivos_select_empresa" ON public.alertas_preditivos AS PERMISSIVE FOR SELECT TO authenticated USING (empresa_acessivel(empresa_id))'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

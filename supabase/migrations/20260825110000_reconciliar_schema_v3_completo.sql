@@ -6908,8 +6908,6 @@ DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='us
 SELECT cron.unschedule('pgss_weekly_baseline') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname='pgss_weekly_baseline');
 SELECT cron.schedule('pgss_weekly_baseline', '0 3 * * 0', $CRON_CMD$| to_char(now(),'YYYY_MM_DD'));$CRON_CMD$);
 
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements) VALUES('20260825100000','reconciliar_schema_completo',ARRAY['reconciliar_schema_completo']) ON CONFLICT DO NOTHING;
-
 -- =====================================================
 -- FASE 7b: Fixes pós-v3 (2026-08-25 sessão 3)
 -- =====================================================
@@ -6981,6 +6979,3 @@ DO $do_block$ BEGIN
 END $do_block$;
 
 -- Registrar
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260825110000','reconciliar_schema_v3_completo',ARRAY['reconciliar_schema_v3_completo'])
-ON CONFLICT DO NOTHING;

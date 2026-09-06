@@ -176,5 +176,4 @@ BEGIN
     'duration_ms', (EXTRACT(EPOCH FROM (clock_timestamp() - v_start)) * 1000)::integer
   );
 END;
-$$;;-- Registro
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements) VALUES('20260825120001','fix_check_integrity_invariants',ARRAY['fix_check_integrity_invariants']) ON CONFLICT DO NOTHING;
+$$;;

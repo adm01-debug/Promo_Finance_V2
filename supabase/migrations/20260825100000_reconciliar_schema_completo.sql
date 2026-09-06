@@ -7603,8 +7603,4 @@ VALUES('nfe-xml','nfe-xml',false,52428800,'{application/xml,text/xml}',now(),now
 INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types,created_at,updated_at)
 VALUES('nfe-certificados','nfe-certificados',false,5242880,'{application/pkcs12,application/x-pkcs12,application/octet-stream}',now(),now()) ON CONFLICT(id) DO NOTHING;
 
--- FASE 9: Registro
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260825100000','reconciliar_schema_completo',ARRAY['reconciliar_schema_completo']) ON CONFLICT DO NOTHING;
-
 COMMIT;

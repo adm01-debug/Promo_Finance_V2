@@ -6,7 +6,3 @@ ALTER TABLE public.historico_conciliacao_ia
 
 CREATE INDEX IF NOT EXISTS idx_historico_conciliacao_ia_sessao
   ON public.historico_conciliacao_ia(sessao_id);
-
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260728214210','add_sessao_id_to_historico_conciliacao_ia',ARRAY['add_sessao_id_to_historico_conciliacao_ia'])
-ON CONFLICT DO NOTHING;

@@ -58,13 +58,3 @@ END;
 $$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000900',
-  'fix_export_asaas_audit_csv_idor',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.export_asaas_audit_csv(p_empresa_id uuid) RETURNS text — adiciona empresa_acessivel(p_empresa_id) após gate de admin para bloquear IDOR cross-tenant'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

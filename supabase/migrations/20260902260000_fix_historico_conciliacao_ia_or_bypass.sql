@@ -42,7 +42,3 @@ CREATE POLICY "Financeiro+ podem inserir historico_conciliacao_ia"
   );
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902260000','fix_historico_conciliacao_ia_or_bypass')
-ON CONFLICT (version) DO NOTHING;

@@ -103,7 +103,3 @@ CREATE POLICY "Usuários deletam suas NFs"
   USING (bucket_id = 'notas-fiscais-upload' AND auth.uid()::text = (storage.foldername(name))[1]);
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902270000','fix_orphan_policies_pos_pr55')
-ON CONFLICT (version) DO NOTHING;

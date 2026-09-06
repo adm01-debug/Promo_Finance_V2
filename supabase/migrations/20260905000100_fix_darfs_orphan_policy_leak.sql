@@ -20,7 +20,3 @@ BEGIN;
 DROP POLICY IF EXISTS "Users can manage their own darfs" ON public.darfs;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260905000100','fix_darfs_orphan_policy_leak')
-ON CONFLICT (version) DO NOTHING;
