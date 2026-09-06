@@ -1,4 +1,6 @@
 -- Create vw_contas_receber_painel
+-- Guard: 42P16 — drop first if column set changed on preview branch
+DROP VIEW IF EXISTS public.vw_contas_receber_painel;
 CREATE OR REPLACE VIEW public.vw_contas_receber_painel AS
 SELECT 
     cr.*,
@@ -11,6 +13,8 @@ LEFT JOIN public.centros_custo cc ON cr.centro_custo_id = cc.id
 LEFT JOIN public.contas_bancarias cb ON cr.conta_bancaria_id = cb.id;
 
 -- Create vw_contas_pagar_painel
+-- Guard: 42P16 — drop first if column set changed on preview branch
+DROP VIEW IF EXISTS public.vw_contas_pagar_painel;
 CREATE OR REPLACE VIEW public.vw_contas_pagar_painel AS
 SELECT 
     cp.*,

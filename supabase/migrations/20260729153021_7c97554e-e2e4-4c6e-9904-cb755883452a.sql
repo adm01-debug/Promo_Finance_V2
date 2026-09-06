@@ -47,6 +47,8 @@ WITH (security_invoker = true) AS
    FROM asaas_transfers t
      LEFT JOIN empresas e ON e.id = t.empresa_id;
 
+-- Guard: 42P16 — drop first if column set changed on preview branch
+DROP VIEW IF EXISTS public.vw_contas_receber_painel;
 CREATE OR REPLACE VIEW public.vw_contas_receber_painel
 WITH (security_invoker = on) AS
  SELECT cr.id, cr.descricao, cr.valor, cr.data_vencimento, cr.data_recebimento,
