@@ -14,10 +14,13 @@ CREATE TABLE IF NOT EXISTS public.user_action_audit (
 ALTER TABLE public.user_action_audit ENABLE ROW LEVEL SECURITY;
 
 -- Policies for user_action_audit
+-- Guard: 42710 — policies may already exist on preview branch
+DROP POLICY IF EXISTS "Users can view their own audit logs" ON public.user_action_audit;
 CREATE POLICY "Users can view their own audit logs"
     ON public.user_action_audit FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own audit logs" ON public.user_action_audit;
 CREATE POLICY "Users can insert their own audit logs"
     ON public.user_action_audit FOR INSERT
     WITH CHECK (auth.uid() = user_id);
@@ -39,6 +42,8 @@ CREATE TABLE IF NOT EXISTS public.sso_login_attempts (
 ALTER TABLE public.sso_login_attempts ENABLE ROW LEVEL SECURITY;
 
 -- Policies for sso_login_attempts (admin only or restricted)
+-- Guard: 42710 — policy may already exist on preview branch
+DROP POLICY IF EXISTS "Admins can view SSO login attempts" ON public.sso_login_attempts;
 CREATE POLICY "Admins can view SSO login attempts"
     ON public.sso_login_attempts FOR SELECT
     USING (EXISTS (
