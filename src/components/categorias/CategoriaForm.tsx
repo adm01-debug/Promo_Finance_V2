@@ -1,12 +1,39 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useCreateCategoria, useUpdateCategoria, CATEGORY_COLORS, CATEGORY_ICONS, type Categoria, type CategoriaInput } from '@/hooks/useCategorias';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  useCreateCategoria,
+  useUpdateCategoria,
+  CATEGORY_COLORS,
+  CATEGORY_ICONS,
+  type Categoria,
+  type CategoriaInput,
+} from '@/hooks/useCategorias';
+import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
 import * as Icons from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -27,7 +54,13 @@ interface CategoriaFormProps {
   defaultType?: 'receita' | 'despesa';
 }
 
-export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'despesa' }: CategoriaFormProps) {
+export function CategoriaForm({
+  open,
+  onOpenChange,
+  categoria,
+  defaultType = 'despesa',
+}: CategoriaFormProps) {
+  const { currentEmpresaId } = useAuth();
   const createMutation = useCreateCategoria();
   const updateMutation = useUpdateCategoria();
 
@@ -71,7 +104,7 @@ export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'de
     if (categoria) {
       await updateMutation.mutateAsync({ id: categoria.id, data: payload });
     } else {
-      await createMutation.mutateAsync(payload);
+      await createMutation.mutateAsync({ ...payload, empresa_id: currentEmpresaId ?? undefined });
     }
     onOpenChange(false);
   };
@@ -128,8 +161,10 @@ export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'de
                     key={color}
                     type="button"
                     className={cn(
-                      "w-8 h-8 rounded-full border-2 transition-all",
-                      form.watch('cor') === color ? "border-primary scale-110 shadow-md" : "border-transparent"
+                      'w-8 h-8 rounded-full border-2 transition-all',
+                      form.watch('cor') === color
+                        ? 'border-primary scale-110 shadow-md'
+                        : 'border-transparent'
                     )}
                     style={{ backgroundColor: color }}
                     onClick={() => form.setValue('cor', color)}
@@ -142,8 +177,12 @@ export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'de
               <FormLabel>Ícone</FormLabel>
               <div className="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1 border rounded-md">
                 {CATEGORY_ICONS.map((iconName) => {
-                  const pascalName = iconName.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
-                  const IconComponent = (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
+                  const pascalName = iconName
+                    .split('-')
+                    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+                    .join('');
+                  const IconComponent =
+                    (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
                   return (
                     <Button
                       key={iconName}

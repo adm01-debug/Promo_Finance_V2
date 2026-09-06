@@ -1,3 +1,6 @@
+# Claude Code: worktrees isolados de agentes em background
+.claude/worktrees/
+
 # Logs
 logs
 *.log

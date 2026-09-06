@@ -19,6 +19,7 @@ export interface CategoriaInput {
   tipo: 'despesa' | 'receita';
   cor?: string;
   icone?: string;
+  empresa_id?: string;
 }
 
 // HOOKS
@@ -32,11 +33,7 @@ export function useCategorias(tipo?: 'despesa' | 'receita') {
   } = useQuery({
     queryKey: ['categorias', tipo],
     queryFn: async () => {
-      let query = supabase
-        .from('categorias')
-        .select('*')
-        .eq('ativo', true)
-        .order('nome');
+      let query = supabase.from('categorias').select('*').eq('ativo', true).order('nome');
 
       if (tipo) {
         query = query.eq('tipo', tipo);
@@ -130,10 +127,7 @@ export function useDeleteCategoria() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('categorias')
-        .update({ ativo: false })
-        .eq('id', id);
+      const { error } = await supabase.from('categorias').update({ ativo: false }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -148,19 +142,52 @@ export function useDeleteCategoria() {
 
 // Predefined colors for categories
 export const CATEGORY_COLORS = [
-  '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16',
-  '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9',
-  '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7', '#D946EF',
-  '#EC4899', '#F43F5E', '#6B7280',
+  '#EF4444',
+  '#F97316',
+  '#F59E0B',
+  '#EAB308',
+  '#84CC16',
+  '#22C55E',
+  '#10B981',
+  '#14B8A6',
+  '#06B6D4',
+  '#0EA5E9',
+  '#3B82F6',
+  '#6366F1',
+  '#8B5CF6',
+  '#A855F7',
+  '#D946EF',
+  '#EC4899',
+  '#F43F5E',
+  '#6B7280',
 ];
 
 // Predefined icons for categories
 export const CATEGORY_ICONS = [
-  'home', 'droplet', 'zap', 'wifi', 'phone', 'users',
-  'truck', 'package', 'megaphone', 'file-text', 'wrench',
-  'car', 'utensils', 'monitor', 'shopping-cart', 'briefcase',
-  'credit-card', 'dollar-sign', 'percent', 'gift', 'heart',
-  'star', 'tag', 'folder',
+  'home',
+  'droplet',
+  'zap',
+  'wifi',
+  'phone',
+  'users',
+  'truck',
+  'package',
+  'megaphone',
+  'file-text',
+  'wrench',
+  'car',
+  'utensils',
+  'monitor',
+  'shopping-cart',
+  'briefcase',
+  'credit-card',
+  'dollar-sign',
+  'percent',
+  'gift',
+  'heart',
+  'star',
+  'tag',
+  'folder',
 ];
 
 export default useCategorias;

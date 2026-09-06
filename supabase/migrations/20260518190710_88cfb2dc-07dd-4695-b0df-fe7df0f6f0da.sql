@@ -22,5 +22,12 @@ LEFT JOIN public.fornecedores f ON cp.fornecedor_id = f.id
 LEFT JOIN public.centros_custo cc ON cp.centro_custo_id = cc.id
 LEFT JOIN public.contas_bancarias cb ON cp.conta_bancaria_id = cb.id;
 
+-- security_invoker só é setado unicamente em 20260522142604 (dias depois);
+-- fixa aqui na primeira recriação pós-coluna para não deixar a view rodando
+-- como owner (bypass de RLS) enquanto authenticated já tem SELECT concedido
+-- (achado do cubic na PR #63).
+ALTER VIEW public.vw_contas_receber_painel SET (security_invoker = true);
+ALTER VIEW public.vw_contas_pagar_painel SET (security_invoker = true);
+
 GRANT SELECT ON public.vw_contas_receber_painel TO authenticated;
 GRANT SELECT ON public.vw_contas_pagar_painel TO authenticated;

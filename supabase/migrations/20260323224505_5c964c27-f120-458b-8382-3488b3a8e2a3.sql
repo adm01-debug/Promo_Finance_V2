@@ -1,14 +1,32 @@
 -- 1. Revoke anon access from all financial views (security_invoker already set)
-REVOKE SELECT ON public.vw_contas_receber_painel FROM anon;
-REVOKE SELECT ON public.vw_contas_pagar_painel FROM anon;
+-- 5 destas views podem não existir aqui: guards de 20260317125441 pulam a
+-- criação quando as colunas de que dependem ainda não existem (só
+-- adicionadas entre 20260518164611 e 20260518190420). REVOKE sobre relação
+-- inexistente quebraria o replay do zero (achado do cubic na PR #63).
+DO $$
+BEGIN
+  IF to_regclass('public.vw_contas_receber_painel') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_contas_receber_painel FROM anon';
+  END IF;
+  IF to_regclass('public.vw_contas_pagar_painel') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_contas_pagar_painel FROM anon';
+  END IF;
+  IF to_regclass('public.vw_dre_mensal') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_dre_mensal FROM anon';
+  END IF;
+  IF to_regclass('public.vw_dso_aging') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_dso_aging FROM anon';
+  END IF;
+  IF to_regclass('public.vw_gastos_centro_custo') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_gastos_centro_custo FROM anon';
+  END IF;
+END
+$$;
 REVOKE SELECT ON public.vw_transferencias_painel FROM anon;
 REVOKE SELECT ON public.vw_saldos_contas FROM anon;
 REVOKE SELECT ON public.vw_fluxo_caixa FROM anon;
 REVOKE SELECT ON public.vw_fluxo_caixa_diario FROM anon;
-REVOKE SELECT ON public.vw_dre_mensal FROM anon;
-REVOKE SELECT ON public.vw_dso_aging FROM anon;
 REVOKE SELECT ON public.vw_metricas_cobranca FROM anon;
-REVOKE SELECT ON public.vw_gastos_centro_custo FROM anon;
 REVOKE SELECT ON public.vw_webhooks_recentes FROM anon;
 
 -- 2. Restrict ponto_funcionarios to admin only
