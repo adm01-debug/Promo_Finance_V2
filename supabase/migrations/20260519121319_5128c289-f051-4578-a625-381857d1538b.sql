@@ -47,6 +47,9 @@ CREATE TABLE IF NOT EXISTS public.bitrix_sync_logs (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Guard: table may already exist on preview branch without empresa_id column
+ALTER TABLE public.bitrix_sync_logs ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+
 -- 4. RLS
 ALTER TABLE public.bitrix_sync_logs ENABLE ROW LEVEL SECURITY;
 DO $$ 
