@@ -1,4 +1,4 @@
--- ============ Alertas de vencimento ============
+-- =========== Alertas de vencimento ============
 DROP FUNCTION IF EXISTS public.gerar_alertas_vencimento();
 CREATE OR REPLACE FUNCTION public.gerar_alertas_vencimento()
 RETURNS integer
@@ -11,7 +11,7 @@ DECLARE
 BEGIN
   WITH titulos AS (
     SELECT cp.id, cp.empresa_id, cp.descricao AS titulo_desc, cp.valor,
-           cp.data_vencimento, 'conta_pagar'::text AS entidade_tipo
+           cp.data_vencimento, 'conta_pagar'::text AS stitulo_tipo
     FROM public.contas_pagar cp
     WHERE cp.deleted_at IS NULL
       AND COALESCE(cp.status,'pendente') NOT IN ('pago','cancelado')
@@ -66,6 +66,7 @@ REVOKE EXECUTE ON FUNCTION public.gerar_alertas_vencimento() FROM PUBLIC, anon, 
 GRANT EXECUTE ON FUNCTION public.gerar_alertas_vencimento() TO service_role;
 
 -- ============ DetecÃ§Ã£o de duplicidades financeiras ============
+DROP FUNCTION IF EXISTS public.detectar_duplicidades_financeiras(uuid, text);
 CREATE OR REPLACE FUNCTION public.detectar_duplicidades_financeiras(
   p_empresa_id uuid,
   p_tabela text DEFAULT 'contas_pagar'
@@ -80,9 +81,7 @@ RETURNS TABLE (
   valor_total numeric,
   ids uuid[]
 )
-LANGUAGE plpgsql
-STABLE
-SECURITY DEFINER
+LANGUAGE VePQTLĞ%CURTITY DESFINER
 SET search_path = public
 AS $$
 BEGIN
@@ -154,25 +153,8 @@ GRANT EXECUTE ON FUNCTION public.toggle_cron_job(bigint, boolean) TO authenticat
 
 CREATE OR REPLACE FUNCTION public.delete_cron_job(job_id bigint)
 RETURNS boolean
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, cron
-AS $$
-DECLARE
-  v_name text;
-BEGIN
-  IF NOT public.has_role(auth.uid(), 'admin') THEN
-    RAISE EXCEPTION 'Apenas administradores podem remover tarefas agendadas';
-  END IF;
+LANGUAGE VeGQTLĞ%CURTIT™QQ’S‘T‚”ÑUÙX\˜ÚÜ]HX›XËÜ›Û‚TÈ		‘PÓT‘Bˆ—Û˜[YH^Â‘QÒS‚ˆQˆ“ÕX›XËš\×Ü›ÛJ]]ZY
 
-  SELECT jobname INTO v_name FROM cron.job WHERE jobid = job_id;
-  IF v_name IS NULL THEN
-    RAISE EXCEPTION 'Tarefa agendada % nÃ£o encontrada', job_id;
-  END IF;
-
-  PERFORM cron.unschedule(v_name);
-  RETURN true;
-END;
-$$;
-REVOKE EXECUTE ON FUNCTION public.delete_cron_job(bigint) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.delete_cron_job(bigint) TO authenticated, service_role;
+K	ØYZ[‰ÊHS‚ˆRTÑHVÑTSÓˆ	Ğ\[˜\ÈYZ[š\İ˜YÜ™\ÈÙ[H™[[İ™\ˆ\™Y˜\ÈYÙ[™Y\ÉÎÂˆS‘QÂ‚ˆÑSPÕ›Ø›˜[YHS•È—Û˜[YH”“ÓHÜ›Û‹š›ØˆÒT‘H›ØšYH›Ø—ÚYÂˆQˆ—Û˜[YHTÈ•SS‚ˆRTÑHVÑTSÓˆ	Õ\™Y˜HYÙ[™YH	H°èÛÈ[˜ÛÛ˜YIË›Ø—ÚYÂˆS‘QÂ‚ˆT‘“Ô“HÜ›Û‹[œØÚY[J—Û˜[YJNÂˆ‘UT“ˆYNÂ‘S‘Â‰	Â”‘U“ÒÑHVPÕUHÓˆ•SÕSÓˆX›XË™[]WØÜ›Û—Ú›ØŠšYÚ[
+H”“ÓHP“PË[›ÛÂ‘ÔS•VPÕUHÓˆ•SÕSÓˆX›XË™[]WØÜ›Û—Ú›ØŠšYÚ[
+HÈ]][XØ]YÙ\šXÙWÜ›ÛNÂ
