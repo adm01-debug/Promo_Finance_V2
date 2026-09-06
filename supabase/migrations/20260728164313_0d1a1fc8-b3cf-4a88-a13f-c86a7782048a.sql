@@ -18,6 +18,7 @@ GROUP BY l.function_name;
 GRANT SELECT ON public.vw_edge_health TO authenticated;
 GRANT SELECT ON public.vw_edge_health TO service_role;
 
+DROP VIEW IF EXISTS public.vw_transferencias_painel CASCADE;
 CREATE OR REPLACE VIEW public.vw_transferencias_painel
 WITH (security_invoker = true) AS
 SELECT
