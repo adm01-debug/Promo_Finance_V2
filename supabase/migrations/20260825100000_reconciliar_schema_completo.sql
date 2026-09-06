@@ -5555,7 +5555,7 @@ CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO
 
 CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
-  WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+  WHERE ((p.id = asaas_audit_trail.payment_id) AND public.empresa_acessivel(p.empresa_id))))));
 
 
 --
@@ -5587,9 +5587,9 @@ CREATE POLICY asaas_reconciliation_suggestions_tenant_rw ON public.asaas_reconci
 
 CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
-  WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
+  WHERE ((p.id = asaas_sync_queue.payment_id) AND public.empresa_acessivel(p.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
-  WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+  WHERE ((p.id = asaas_sync_queue.payment_id) AND public.empresa_acessivel(p.empresa_id))))));
 
 
 --

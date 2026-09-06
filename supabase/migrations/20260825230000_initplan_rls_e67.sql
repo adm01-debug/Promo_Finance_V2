@@ -72,7 +72,7 @@ DROP POLICY IF EXISTS apuracoes_tributarias_tenant_rw ON public.apuracoes_tribut
 DROP POLICY IF EXISTS asaas_audit_admin_all ON public.asaas_audit_trail; CREATE POLICY asaas_audit_admin_all ON public.asaas_audit_trail AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS asaas_audit_tenant_select ON public.asaas_audit_trail; CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1
    FROM asaas_payments p
-  WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND empresa_acessivel(p.empresa_id))))));
+  WHERE ((p.id = asaas_audit_trail.payment_id) AND empresa_acessivel(p.empresa_id))))));
 DROP POLICY IF EXISTS asaas_config_admin_all ON public.asaas_config; CREATE POLICY asaas_config_admin_all ON public.asaas_config AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS asaas_config_tenant_rw ON public.asaas_config; CREATE POLICY asaas_config_tenant_rw ON public.asaas_config AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
 DROP POLICY IF EXISTS asaas_customers_admin_all ON public.asaas_customers; CREATE POLICY asaas_customers_admin_all ON public.asaas_customers AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
@@ -93,9 +93,9 @@ DROP POLICY IF EXISTS asaas_reconciliation_suggestions_tenant_rw ON public.asaas
 DROP POLICY IF EXISTS asaas_sync_admin_all ON public.asaas_sync_queue; CREATE POLICY asaas_sync_admin_all ON public.asaas_sync_queue AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS asaas_sync_tenant_all ON public.asaas_sync_queue; CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1
    FROM asaas_payments p
-  WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND empresa_acessivel(p.empresa_id)))))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1
+  WHERE ((p.id = asaas_sync_queue.payment_id) AND empresa_acessivel(p.empresa_id)))))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1
    FROM asaas_payments p
-  WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND empresa_acessivel(p.empresa_id))))));
+  WHERE ((p.id = asaas_sync_queue.payment_id) AND empresa_acessivel(p.empresa_id))))));
 DROP POLICY IF EXISTS asaas_transfers_admin_all ON public.asaas_transfers; CREATE POLICY asaas_transfers_admin_all ON public.asaas_transfers AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS asaas_transfers_empresa_select ON public.asaas_transfers; CREATE POLICY asaas_transfers_empresa_select ON public.asaas_transfers AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM user_empresas

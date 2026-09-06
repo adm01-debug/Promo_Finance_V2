@@ -1381,14 +1381,14 @@ BEGIN
       to_char(a.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS created_at,
       COALESCE(a.action, '')                     AS action,
       COALESCE(a.actor::text, '')                AS actor,
-      COALESCE(a.asaas_payment_id::text, '')     AS payment_id,
+      COALESCE(a.payment_id::text, '')     AS payment_id,
       COALESCE(p.asaas_id, '')                   AS asaas_id,
       COALESCE(p.status, '')                     AS status,
       COALESCE(p.valor::text, '')                AS valor,
       -- Escape CSV (RFC 4180): duplica aspas e envolve em aspas
       '"' || replace(replace(COALESCE(a.details::text, '{}'), '"', '""'), E'\n', ' ') || '"' AS details
     FROM public.asaas_audit_trail a
-    LEFT JOIN public.asaas_payments p ON p.id = a.asaas_payment_id
+    LEFT JOIN public.asaas_payments p ON p.id = a.payment_id
     WHERE p.empresa_id = p_empresa_id OR p.empresa_id IS NULL
     ORDER BY a.created_at DESC
     LIMIT 50000
@@ -5100,7 +5100,7 @@ CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO
 DROP POLICY IF EXISTS "asaas_audit_trail asaas_audit_tenant_select" ON public.asaas_audit_trail;
 CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
-  WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+  WHERE ((p.id = asaas_audit_trail.payment_id) AND public.empresa_acessivel(p.empresa_id))))));
 
 DROP POLICY IF EXISTS "asaas_config asaas_config_tenant_rw" ON public.asaas_config;
 CREATE POLICY asaas_config_tenant_rw ON public.asaas_config TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
@@ -5137,9 +5137,9 @@ CREATE POLICY asaas_reconciliation_suggestions_tenant_rw ON public.asaas_reconci
 DROP POLICY IF EXISTS "asaas_sync_queue asaas_sync_tenant_all" ON public.asaas_sync_queue;
 CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
-  WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
+  WHERE ((p.id = asaas_sync_queue.payment_id) AND public.empresa_acessivel(p.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
-  WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+  WHERE ((p.id = asaas_sync_queue.payment_id) AND public.empresa_acessivel(p.empresa_id))))));
 
 DROP POLICY IF EXISTS "asaas_transfers asaas_transfers_empresa_select" ON public.asaas_transfers;
 CREATE POLICY asaas_transfers_empresa_select ON public.asaas_transfers FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
