@@ -36,11 +36,16 @@ const AUTHED_ROUTES: Array<{ path: string; name: string; heading?: RegExp }> = [
 ];
 
 const HAS_CREDS = !!(process.env.E2E_USER_EMAIL && process.env.E2E_USER_PASSWORD);
+const AUTHED_VISUAL_ENABLED = process.env.ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS === 'true';
 
 async function setThemeAndGoto(page: Page, path: string, theme: Theme) {
   await page.addInitScript((t) => {
     try {
       window.localStorage.setItem('theme', t);
+      // O bootstrap do index redefine a primeira visita como dark. Marcar a
+      // versão como aplicada preserva o tema explicitamente escolhido pelo
+      // cenário e testa o mesmo contrato usado por uma preferência real.
+      window.localStorage.setItem('theme_bootstrap_v1', '1');
       // Evita flash: aplica classe antes do bundle rodar (redundante com o
       // script inline em index.html, mas garante em navegações internas).
       const root = document.documentElement;
@@ -101,8 +106,10 @@ test.describe('Regressão visual — Login (sem autenticação)', () => {
 
 test.describe('Regressão visual — Telas autenticadas', () => {
   test.skip(
-    !HAS_CREDS,
-    'Defina E2E_USER_EMAIL e E2E_USER_PASSWORD para rodar snapshots autenticados.',
+    !HAS_CREDS || !AUTHED_VISUAL_ENABLED,
+    !HAS_CREDS
+      ? 'Defina E2E_USER_EMAIL e E2E_USER_PASSWORD para rodar snapshots autenticados.'
+      : 'Snapshots autenticados aguardam baselines aprovados; habilite explicitamente com ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS=true.',
   );
 
   for (const theme of THEMES) {

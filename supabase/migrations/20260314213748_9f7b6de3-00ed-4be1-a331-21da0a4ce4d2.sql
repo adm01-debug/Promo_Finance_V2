@@ -42,13 +42,28 @@ ON public.conciliacoes_parciais FOR INSERT TO authenticated
 WITH CHECK (public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]));
 
 -- 7) workflow_aprovacoes: restrict SELECT
-DROP POLICY IF EXISTS "Authenticated users can view workflow_aprovacoes" ON public.workflow_aprovacoes;
-CREATE POLICY "Aprovações visíveis ao solicitante ou financeiro+"
-ON public.workflow_aprovacoes FOR SELECT TO authenticated
-USING (
-  solicitante_id = auth.uid()
-  OR public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role])
-);
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'workflow_aprovacoes'
+  ) THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Authenticated users can view workflow_aprovacoes" ON public.workflow_aprovacoes';
+    EXECUTE $policy$
+      CREATE POLICY "Aprovações visíveis ao solicitante ou financeiro+"
+      ON public.workflow_aprovacoes FOR SELECT TO authenticated
+      USING (
+        solicitante_id = auth.uid()
+        OR public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role])
+      )
+    $policy$;
+  ELSE
+    RAISE NOTICE '20260314213748: workflow_aprovacoes ausente no schema atual; bloco ignorado.';
+  END IF;
+END
+$$;
 
 -- 8) solicitacoes_aprovacao: restrict SELECT
 DROP POLICY IF EXISTS "Authenticated users can view solicitacoes_aprovacao" ON public.solicitacoes_aprovacao;
@@ -60,10 +75,30 @@ USING (
 );
 
 -- 9) contratos: restrict SELECT to financeiro/admin
-DROP POLICY IF EXISTS "Authenticated users can view contratos" ON public.contratos;
-CREATE POLICY "Financeiro+ podem ver contratos"
-ON public.contratos FOR SELECT TO authenticated
-USING (public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]));
+-- Tabela só existe a partir de 20260518190304 — posterior a este arquivo
+-- (20260314213748). Sem guard, o replay em ambiente novo (Supabase Preview)
+-- falha com "relation public.contratos does not exist" antes de chegar na
+-- migration que a cria. Mesmo padrão já usado no item 7 (workflow_aprovacoes)
+-- neste arquivo.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'contratos'
+  ) THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Authenticated users can view contratos" ON public.contratos';
+    EXECUTE $policy$
+      CREATE POLICY "Financeiro+ podem ver contratos"
+      ON public.contratos FOR SELECT TO authenticated
+      USING (public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]))
+    $policy$;
+  ELSE
+    RAISE NOTICE '20260314213748: contratos ausente no schema atual; bloco ignorado.';
+  END IF;
+END
+$$;
 
 -- 10) parcelas_acordo: restrict SELECT to financeiro/admin
 DROP POLICY IF EXISTS "Authenticated users can view parcelas_acordo" ON public.parcelas_acordo;

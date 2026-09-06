@@ -66,7 +66,14 @@ ALTER ROLE service_role  SET statement_timeout = '60s';
 ALTER ROLE service_role  SET lock_timeout      = '10s';
 ALTER ROLE service_role  SET idle_in_transaction_session_timeout = '30s';
 ALTER ROLE supabase_admin SET statement_timeout = '0';
-ALTER DATABASE postgres  SET idle_in_transaction_session_timeout = '15min';
+DO $$
+BEGIN
+  EXECUTE 'ALTER DATABASE postgres SET idle_in_transaction_session_timeout = ''15min''';
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    RAISE NOTICE 'Sem privilégio para ALTER DATABASE postgres; timeout global mantido como está nesta réplica.';
+END
+$$;
 
 -- 8. Publicação Realtime: adicionar performance_alerts ----------------------
 ALTER PUBLICATION supabase_realtime ADD TABLE public.performance_alerts;

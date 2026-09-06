@@ -5,8 +5,10 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Enable Row Level Security
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
+-- OBS: `app.jwt_secret` é gerenciado pela plataforma e não deve ser definido
+-- por migration. A tentativa histórica de `ALTER DATABASE ... SET
+-- "app.jwt_secret"` falha em previews gerenciados do Supabase
+-- (`insufficient_privilege`) e não faz parte do replay seguro do schema.
 
 -- ============================================
 -- CLIENTES TABLE

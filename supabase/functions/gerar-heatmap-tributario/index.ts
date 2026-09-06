@@ -8,7 +8,12 @@ import { z } from '../_shared/zod.ts';
 
 const ReqBodySchema = z.object({
   empresa_id: z.string().uuid(),
-  ano: z.number().int().min(2000).max(2100).default(() => new Date().getFullYear()),
+  ano: z
+    .number()
+    .int()
+    .min(2000)
+    .max(2100)
+    .default(() => new Date().getFullYear()),
 });
 interface CelulaHeatmap {
   mes: number;
@@ -60,6 +65,24 @@ Deno.serve(async (req) => {
     let receitaPorMes: Record<number, number> = {};
     if (supabaseUrl && serviceKey) {
       const supa = createClient(supabaseUrl, serviceKey);
+
+      // service_role ignora RLS: valida o vínculo do usuário com a empresa
+      // antes de ler o faturamento (mesmo padrão de comparar-benchmark-setorial).
+      const { data: isAdmin } = await supa.rpc('has_role', {
+        _user_id: guard.dados.userId,
+        _role: 'admin',
+      });
+      if (!isAdmin) {
+        const { data: vinculo } = await supa
+          .from('user_empresas')
+          .select('id')
+          .eq('user_id', guard.dados.userId)
+          .eq('empresa_id', empresaId)
+          .eq('ativo', true)
+          .maybeSingle();
+        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+      }
+
       const { data: fat } = await supa
         .from('faturamento_mensal')
         .select('mes, receita_bruta')

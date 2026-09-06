@@ -27,10 +27,6 @@ export function useContasReceber(empresaId?: string) {
   });
 }
 
-
-
-
-
 export interface PaginatedContasReceberParams {
   page: number;
   pageSize: number;
@@ -59,9 +55,7 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
       contaBancariaId,
     ],
     queryFn: async () => {
-      let countQuery = supabase
-        .from('contas_receber')
-        .select('*', { count: 'exact', head: true });
+      let countQuery = supabase.from('contas_receber').select('*', { count: 'exact', head: true });
 
       let dataQuery = supabase
         .from('contas_receber')
@@ -71,7 +65,7 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
           centros_custo:centro_custo_id (nome, codigo),
           contas_bancarias:conta_bancaria_id (banco),
           clientes:cliente_id (razao_social, nome_fantasia, score)
-        `,
+        `
         )
         .order('data_vencimento', { ascending: true })
         .range(from, to);

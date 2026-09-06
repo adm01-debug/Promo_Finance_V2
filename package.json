@@ -82,7 +82,7 @@
     "i18next": "^26.0.10",
     "i18next-browser-languagedetector": "^8.2.1",
     "input-otp": "^1.4.2",
-    "jspdf": "^4.2.0",
+    "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "jszip": "^3.10.1",
     "lovable-tagger": "^1.1.13",

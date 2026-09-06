@@ -11,7 +11,12 @@ export interface LancamentoContabilInput {
   data_lancamento: string;
   historico: string;
   origem?: string;
-  partidas: Array<{ conta_id: string; tipo: 'D' | 'C'; valor: number; historico_complementar?: string }>;
+  partidas: Array<{
+    conta_id: string;
+    tipo: 'D' | 'C';
+    valor: number;
+    historico_complementar?: string;
+  }>;
 }
 
 export function useLancamentosContabeis(empresaId?: string, ano?: number) {
@@ -27,8 +32,7 @@ export function useLancamentosContabeis(empresaId?: string, ano?: number) {
         .eq('empresa_id', empresaId)
         .gte('data_lancamento', inicio)
         .lte('data_lancamento', fim)
-        .order('data_lancamento', { ascending: true })
-        .limit(10000);
+        .order('data_lancamento', { ascending: true });
       if (error) throw error;
       return data || [];
     },
@@ -40,12 +44,14 @@ export function useCriarLancamento() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: LancamentoContabilInput) => {
-      const totalD = input.partidas.filter(p => p.tipo === 'D').reduce((s, p) => s + p.valor, 0);
-      const totalC = input.partidas.filter(p => p.tipo === 'C').reduce((s, p) => s + p.valor, 0);
+      const totalD = input.partidas.filter((p) => p.tipo === 'D').reduce((s, p) => s + p.valor, 0);
+      const totalC = input.partidas.filter((p) => p.tipo === 'C').reduce((s, p) => s + p.valor, 0);
       if (Math.abs(totalD - totalC) > 0.01) {
         throw new Error(`Débitos (${totalD.toFixed(2)}) ≠ Créditos (${totalC.toFixed(2)})`);
       }
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const { data: lanc, error } = await supabase
         .from('lancamentos_contabeis')
         .insert({
@@ -60,9 +66,9 @@ export function useCriarLancamento() {
         .maybeSingle();
       if (error || !lanc) throw error || new Error('Falha ao criar lançamento');
 
-      const { error: errPart } = await supabase.from('partidas_contabeis').insert(
-        input.partidas.map(p => ({ ...p, lancamento_id: lanc.id })),
-      );
+      const { error: errPart } = await supabase
+        .from('partidas_contabeis')
+        .insert(input.partidas.map((p) => ({ ...p, lancamento_id: lanc.id })));
       if (errPart) throw errPart;
       return lanc;
     },
@@ -140,7 +146,9 @@ export function useImportLancamentosLote() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: ImportLoteInput): Promise<ImportLoteResult> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       // Checkpoint de retomada: filtra refs já confirmadas em execuções
       // anteriores. Itens pulados não geram requests, mas contam para o
@@ -161,7 +169,7 @@ export function useImportLancamentosLote() {
 
       const processarLancamento = async (
         l: ParsedLancamento,
-        ctx: { indiceGlobal: number; chunkIndex: number; chunkSize: number; posicaoNoChunk: number },
+        ctx: { indiceGlobal: number; chunkIndex: number; chunkSize: number; posicaoNoChunk: number }
       ) => {
         let lancId: string | null = null;
         try {
@@ -190,7 +198,7 @@ export function useImportLancamentosLote() {
               tipo: p.tipo,
               valor: p.valor,
               historico_complementar: p.historico_complementar,
-            })),
+            }))
           );
           if (errPart) throw errPart;
           result.sucesso++;
@@ -218,7 +226,7 @@ export function useImportLancamentosLote() {
       // loop), mas o paralelismo efetivo é controlado pelo semáforo.
       const concurrencyCeil = Math.min(
         CONCURRENCY_MAX,
-        Math.max(CONCURRENCY_MIN, input.concurrency ?? DEFAULT_CONCURRENCY),
+        Math.max(CONCURRENCY_MIN, input.concurrency ?? DEFAULT_CONCURRENCY)
       );
       const limiter = createConcurrencyLimiter(concurrencyCeil);
 
@@ -270,9 +278,9 @@ export function useImportLancamentosLote() {
                 chunkIndex,
                 chunkSize: chunk.length,
                 posicaoNoChunk: idxNoChunk + 1,
-              }),
-            ),
-          ),
+              })
+            )
+          )
         );
         const durationMs = performance.now() - t0;
         const failed = result.falhas.length - falhasAntes;
@@ -295,7 +303,9 @@ export function useImportLancamentosLote() {
       if (res.falhas.length === 0) {
         toast.success(`${res.sucesso} lançamento(s) importado(s) com sucesso${sufixoPulados}`);
       } else {
-        toast.warning(`Importação concluída: ${res.sucesso} sucesso(s), ${res.falhas.length} falha(s)${sufixoPulados}`);
+        toast.warning(
+          `Importação concluída: ${res.sucesso} sucesso(s), ${res.falhas.length} falha(s)${sufixoPulados}`
+        );
       }
     },
     onError: (e: Error) => toast.error(`Erro na importação: ${e.message}`),

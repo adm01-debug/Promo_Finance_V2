@@ -1,33 +1,45 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { EnviarAlertaEmailSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
+import {
+  corsHeaders as baseCorsHeaders,
+  createErrorResponse,
+  EnviarAlertaEmailSchema,
+  validatePayload,
+} from '../_shared/validation.ts';
 
+const corsHeaders = {
+  ...baseCorsHeaders,
+  'Access-Control-Allow-Headers': `${baseCorsHeaders['Access-Control-Allow-Headers']}, x-cron-secret, x-internal-secret`,
+};
 
-const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
+export const handler = async (req: Request): Promise<Response> => {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const auth = await exigirChamadaInterna(req, 'enviar_alerta_email');
+  if (!auth.ok) return auth.resposta;
+
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+
     const supabase = createClient(supabaseUrl, supabaseKey);
     const rawBody = await req.json();
-    const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, "enviar-alerta-email");
+    const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, 'enviar-alerta-email');
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details);
     }
     const { tipo, destinatario, dados } = validation.data;
 
-
     console.log(`Processando alerta do tipo: ${tipo} para ${destinatario}`);
 
     // Verificar se Resend está configurado
     if (!resendApiKey) {
-      console.log("RESEND_API_KEY não configurada - simulando envio");
-      
+      console.log('RESEND_API_KEY não configurada - simulando envio');
+
       // Registrar o alerta no banco mesmo sem enviar email
       await supabase.from('alertas').insert({
         tipo: tipo,
@@ -38,12 +50,12 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       return new Response(
-        JSON.stringify({ 
-          success: true, 
+        JSON.stringify({
+          success: true,
           simulated: true,
-          message: "Email simulado - configure RESEND_API_KEY para envio real" 
+          message: 'Email simulado - configure RESEND_API_KEY para envio real',
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -146,14 +158,14 @@ const handler = async (req: Request): Promise<Response> => {
     const template = templates[tipo] || templates.vencimento;
 
     // Enviar email via Resend
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: "Sistema Financeiro <alertas@resend.dev>",
+        from: 'Sistema Financeiro <alertas@resend.dev>',
         to: [destinatario],
         subject: template.subject,
         html: template.html,
@@ -161,10 +173,10 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const result = await response.json();
-    console.log("Resultado do envio:", result);
+    console.log('Resultado do envio:', result);
 
     if (!response.ok) {
-      throw new Error(result.message || "Erro ao enviar email");
+      throw new Error(result.message || 'Erro ao enviar email');
     }
 
     // Registrar o alerta no banco
@@ -176,18 +188,17 @@ const handler = async (req: Request): Promise<Response> => {
       acao_url: dados.urlAcao,
     });
 
-    return new Response(
-      JSON.stringify({ success: true, emailId: result.id }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ success: true, emailId: result.id }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error: unknown) {
-    console.error("Erro ao enviar alerta:", error);
-    const message = error instanceof Error ? error.message : "Erro desconhecido";
-    return new Response(
-      JSON.stringify({ error: message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    console.error('Erro ao enviar alerta:', error);
+    const message = error instanceof Error ? error.message : 'Erro desconhecido';
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 };
 
-serve(handler);
+if (import.meta.main) serve(handler);

@@ -3,6 +3,20 @@
 -- MIGRAÇÃO 1: Tabelas ausentes do módulo Core Financeiro
 -- =====================================================
 
+-- Bootstrap de plano_contas: a criação "oficial" (com o schema completo)
+-- só acontece em 20260518190420, mas categorias (logo abaixo) e vários
+-- outros arquivos entre março e maio já referenciam a tabela — achado do
+-- CI (Supabase Preview, replay do zero): "relation public.plano_contas
+-- does not exist" em cascata (contas_pagar/contas_receber, as views
+-- vw_contas_pagar_painel/vw_contas_receber_painel, ALTER TABLE direto em
+-- plano_contas em 20260317124844 e 20260421123700). Cria só o essencial
+-- aqui; os ADD COLUMN IF NOT EXISTS já existentes nesses arquivos (mais o
+-- bloco espelho em 20260518190420) completam o schema progressivamente,
+-- exatamente como já aconteceu na ordem real de deploy em prod.
+CREATE TABLE IF NOT EXISTS public.plano_contas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid()
+);
+
 -- Tabela: contatos_financeiros (20 cols)
 CREATE TABLE IF NOT EXISTS public.contatos_financeiros (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -36,7 +50,11 @@ CREATE TABLE IF NOT EXISTS public.categorias (
   icone TEXT,
   ativo BOOLEAN NOT NULL DEFAULT true,
   user_id UUID,
-  plano_conta_id UUID REFERENCES public.plano_contas(id),
+  -- plano_contas só é criada em 20260518190420 (posterior a este arquivo) —
+  -- mesmo achado de forward-reference do CI (Supabase Preview, replay do
+  -- zero) corrigido em 20260317000844/20260317001356. Sem FK inline aqui;
+  -- 20260519122302 já adiciona a constraint quando ausente.
+  plano_conta_id UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -240,6 +258,7 @@ CREATE POLICY "Auth users can read webhooks_log" ON public.webhooks_log FOR SELE
 
 -- updated_at triggers for new tables
 CREATE TRIGGER update_contatos_financeiros_updated_at BEFORE UPDATE ON public.contatos_financeiros FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_categorias_updated_at ON public.categorias;
 CREATE TRIGGER update_categorias_updated_at BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_formas_pagamento_updated_at BEFORE UPDATE ON public.formas_pagamento FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_movimentacoes_updated_at BEFORE UPDATE ON public.movimentacoes FOR EACH ROW EXECUTE FUNCTION update_updated_at();

@@ -7,8 +7,23 @@ export type { ExpertActionType, ExpertAction, ActionResult } from './expert-acti
 
 // Import action modules
 import { gerarRelatorio } from './expert-actions/report-actions';
-import { criarAlerta, listarAprovacoes, aprovarPagamento, criarContaPagar, criarContaReceber, agendarCobranca, atualizarScoreCliente, gerarBoleto } from './expert-actions/financial-actions';
-import { consultarSaldos, consultarCliente, consultarFornecedor, analisarFluxo, consultarVencimentos } from './expert-actions/query-actions';
+import {
+  criarAlerta,
+  listarAprovacoes,
+  aprovarPagamento,
+  criarContaPagar,
+  criarContaReceber,
+  agendarCobranca,
+  atualizarScoreCliente,
+  gerarBoleto,
+} from './expert-actions/financial-actions';
+import {
+  consultarSaldos,
+  consultarCliente,
+  consultarFornecedor,
+  analisarFluxo,
+  consultarVencimentos,
+} from './expert-actions/query-actions';
 import type { ExpertAction, ActionResult } from './expert-actions/types';
 
 export function useExpertActions() {
@@ -40,7 +55,7 @@ export function useExpertActions() {
         case 'consultar_fornecedor':
           return await consultarFornecedor(action.fornecedor_nome || '');
         case 'analisar_fluxo':
-          return await analisarFluxo(action.periodo || '30');
+          return await analisarFluxo(action.periodo || '30', action.empresa_id);
         case 'agendar_cobranca':
           return await agendarCobranca(action.id || '');
         case 'consultar_vencimentos':
@@ -54,7 +69,10 @@ export function useExpertActions() {
       }
     } catch (error: unknown) {
       logger.error('Erro ao executar ação:', error);
-      return { success: false, message: error instanceof Error ? error.message : 'Erro ao executar ação' };
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Erro ao executar ação',
+      };
     }
   };
 
@@ -63,7 +81,11 @@ export function useExpertActions() {
     const actionRegex = /\[ACTION\](.*?)\[\/ACTION\]/gs;
     let match;
     while ((match = actionRegex.exec(content)) !== null) {
-      try { actions.push(JSON.parse(match[1].trim())); } catch { /* ignore */ }
+      try {
+        actions.push(JSON.parse(match[1].trim()));
+      } catch {
+        /* ignore */
+      }
     }
     return actions;
   };

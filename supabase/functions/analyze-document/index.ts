@@ -1,12 +1,21 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { validatePayload, createErrorResponse, AnalyzeDocumentSchema, corsHeaders } from '../_shared/validation.ts';
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import {
+  validatePayload,
+  createErrorResponse,
+  AnalyzeDocumentSchema,
+  corsHeaders,
+} from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
+export const handler = async (req: Request): Promise<Response> => {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     // Rate limit: 20 req/min por IP (endpoint de IA com custo)
@@ -16,7 +25,10 @@ serve(async (req) => {
     if (supabaseUrl && serviceRoleKey) {
       const supa = createClient(supabaseUrl, serviceRoleKey);
       const rl = await checkRateLimit(supa, {
-        endpoint: 'analyze-document', ip, limit: 20, windowSeconds: 60,
+        endpoint: 'analyze-document',
+        ip,
+        limit: 20,
+        windowSeconds: 60,
         userAgent: req.headers.get('user-agent'),
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
@@ -24,17 +36,17 @@ serve(async (req) => {
 
     const body = await req.json();
     const validation = validatePayload(AnalyzeDocumentSchema, body);
-    
+
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details);
     }
 
     const { fileName, fileType, fileContent } = validation.data;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     console.log(`Analyzing document: ${fileName} (${fileType})`);
@@ -56,7 +68,7 @@ Tipo: ${fileType}
     if (isImage) {
       messages = [
         {
-          role: "system",
+          role: 'system',
           content: `Você é um analista financeiro especializado em extrair informações de documentos.
           
 Ao analisar documentos financeiros, extraia:
@@ -67,42 +79,42 @@ Ao analisar documentos financeiros, extraia:
 5. **Códigos e referências** (número do documento, código de barras, etc.)
 6. **Observações relevantes** para o departamento financeiro
 
-Formate a resposta de forma clara e estruturada em português brasileiro.`
+Formate a resposta de forma clara e estruturada em português brasileiro.`,
         },
         {
-          role: "user",
+          role: 'user',
           content: [
             {
-              type: "text",
-              text: `Analise esta imagem de documento financeiro: ${fileName}`
+              type: 'text',
+              text: `Analise esta imagem de documento financeiro: ${fileName}`,
             },
             {
-              type: "image_url",
+              type: 'image_url',
               image_url: {
-                url: `data:${fileType};base64,${fileContent}`
-              }
-            }
-          ]
-        }
+                url: `data:${fileType};base64,${fileContent}`,
+              },
+            },
+          ],
+        },
       ];
     } else {
       // For text-based files (CSV, TXT, etc.), decode and analyze
-      let textContent = "";
+      let textContent = '';
       try {
-        const bytes = Uint8Array.from(atob(fileContent), c => c.charCodeAt(0));
+        const bytes = Uint8Array.from(atob(fileContent), (c) => c.charCodeAt(0));
         textContent = new TextDecoder().decode(bytes);
         // Limit content size
         if (textContent.length > 10000) {
-          textContent = textContent.substring(0, 10000) + "\n\n[... conteúdo truncado ...]";
+          textContent = textContent.substring(0, 10000) + '\n\n[... conteúdo truncado ...]';
         }
       } catch (e: unknown) {
-        console.error("Erro ao decodificar arquivo:", e);
-        textContent = "[Não foi possível decodificar o conteúdo do arquivo]";
+        console.error('Erro ao decodificar arquivo:', e);
+        textContent = '[Não foi possível decodificar o conteúdo do arquivo]';
       }
 
       messages = [
         {
-          role: "system",
+          role: 'system',
           content: `Você é um analista financeiro especializado em extrair informações de documentos.
           
 Ao analisar documentos financeiros, extraia:
@@ -113,61 +125,65 @@ Ao analisar documentos financeiros, extraia:
 5. **Anomalias ou pontos de atenção**
 6. **Resumo executivo** com insights acionáveis
 
-Formate a resposta de forma clara e estruturada em português brasileiro.`
+Formate a resposta de forma clara e estruturada em português brasileiro.`,
         },
         {
-          role: "user",
+          role: 'user',
           content: `${analysisPrompt}
 
 Conteúdo do documento:
 \`\`\`
 ${textContent}
-\`\`\``
-        }
+\`\`\``,
+        },
       ];
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: isImage ? "google/gemini-2.5-flash" : "google/gemini-2.5-flash",
+        model: isImage ? 'google/gemini-2.5-flash' : 'google/gemini-2.5-flash',
         messages,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("Erro ao analisar documento");
+      console.error('AI gateway error:', response.status, errorText);
+      throw new Error('Erro ao analisar documento');
     }
 
     const data = await response.json();
-    const analysis = data.choices?.[0]?.message?.content || "Não foi possível analisar o documento.";
+    const analysis =
+      data.choices?.[0]?.message?.content || 'Não foi possível analisar o documento.';
 
-    console.log("Document analysis complete");
+    console.log('Document analysis complete');
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         analysis,
         fileName,
-        fileType 
+        fileType,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-
   } catch (error) {
-    console.error("Document analysis error:", error);
+    console.error('Document analysis error:', error);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Erro desconhecido",
-        success: false 
+      JSON.stringify({
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        success: false,
       }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
-});
+};
+
+if (import.meta.main) {
+  serve(handler);
+}

@@ -1,11 +1,8 @@
-
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogIn, UserPlus, Shield } from 'lucide-react';
-import {
-  AuthMobileHeader
-} from '@/components/auth/AuthBackground';
+import { AuthMobileHeader } from '@/components/auth/AuthBackground';
 import { AuroraBackground } from '@/components/effects/AuroraBackground';
 import { BlurText } from '@/components/effects/BlurText';
 import { LoginForm } from '@/components/auth/LoginForm';
@@ -85,13 +82,14 @@ export default function Auth() {
           <div className="h-16 w-16 bg-primary rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-primary/40">
             <Shield className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white drop-shadow-sm">Promo Finance</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-white drop-shadow-sm">
+            Promo Finance
+          </h2>
           <p className="text-white/70 text-lg font-medium leading-relaxed">
             Sua plataforma de inteligência financeira premium.
           </p>
         </div>
       </div>
-
 
       <div className="w-full lg:w-1/2 relative">
         <div className="absolute inset-0 bg-background/80 backdrop-blur-sm pointer-events-none" />
@@ -126,7 +124,6 @@ export default function Auth() {
                   </CardDescription>
                 </CardHeader>
 
-
                 <CardContent>
                   {sloFailure && (
                     <SloFailureBanner
@@ -135,11 +132,13 @@ export default function Auth() {
                     />
                   )}
                   <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted p-1 rounded-lg border border-border" variant="bordered">
+                    <TabsList
+                      className="grid w-full grid-cols-2 mb-8 bg-muted p-1 rounded-lg border border-border"
+                      variant="bordered"
+                    >
                       <TabsTrigger
                         value="login"
                         className="gap-2 rounded-md py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
-
                       >
                         <LogIn className="h-4 w-4" />
                         Acessar
@@ -157,7 +156,9 @@ export default function Auth() {
                       {accountLocked && (
                         <AccountLockoutBanner
                           locked={accountLocked}
-                          remainingMinutes={parseInt(lockoutMessage.match(/(\d+)\s*minuto/)?.[1] || '5')}
+                          remainingMinutes={parseInt(
+                            lockoutMessage.match(/(\d+)\s*minuto/)?.[1] ?? '0'
+                          )}
                         />
                       )}
                       <LoginForm
