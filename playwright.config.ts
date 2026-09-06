@@ -73,6 +73,21 @@ export default defineConfig({
         storageState: authStorageState,
       },
       dependencies: ['setup'],
+      // O fluxo destrutivo de login/logout real roda isolado no projeto
+      // dedicado abaixo (estágio serial do CI) — nunca misturado nos shards.
+      testIgnore: /auth\/logout-real\.e2e\.ts/,
+    },
+
+    // Projeto dedicado ao fluxo destrutivo serial (login/logout real).
+    // Revoga sessões do usuário de teste — deve rodar sozinho, após os shards.
+    {
+      name: 'chromium-destructive',
+      testMatch: /auth\/logout-real\.e2e\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        ...chromiumLaunchOptions,
+        storageState: { cookies: [], origins: [] },
+      },
     },
 
     {
