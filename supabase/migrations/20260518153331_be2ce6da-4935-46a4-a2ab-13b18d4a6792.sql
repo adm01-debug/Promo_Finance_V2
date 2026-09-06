@@ -3,6 +3,10 @@ ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'financeiro';
 ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'operacional';
 ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'visualizador';
 
+-- Guard: profiles.role must exist before the SQL function references it
+-- (LANGUAGE sql validates column refs at creation time, unlike plpgsql)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'visualizador';
+
 -- Update has_role to use the profiles table (matching Finance Hub logic)
 -- Using existing parameter names to avoid replacement issues
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role app_role)
