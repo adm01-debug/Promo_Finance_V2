@@ -31,7 +31,7 @@ CREATE POLICY notas_fiscais_tenant_delete ON public.notas_fiscais
   USING (
     public.empresa_membro_ativo(empresa_id)
     AND (public.has_role(auth.uid(), 'admin'::public.app_role)
-      OR public.has_role(auth.uid(), 'manager'::public.app_role))
+      OR public.has_role(auth.uid(), 'financeiro'::public.app_role))
   );
 
 -- F5: check_integrity_invariants — remover blocos que referenciam
