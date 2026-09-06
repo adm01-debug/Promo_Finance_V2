@@ -113,6 +113,10 @@ $$;
 
 -- Guard: contas_receber.empresa_id (20260518164611) e etapa_cobranca
 -- (20260518180000) só existem meses depois — mesmo motivo acima.
+-- valor_recebido já existe desde 20260317000928 (mesmo dia, bem antes desta
+-- migration), mas o guard duplo em 20260317001356 checa as 3 colunas juntas
+-- para esta mesma view — checagem defensiva equivalente aqui (achado do
+-- cubic na PR #63).
 DO $$
 BEGIN
   IF EXISTS (
@@ -121,6 +125,9 @@ BEGIN
   ) AND EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'etapa_cobranca'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'valor_recebido'
   ) THEN
     EXECUTE $view$
       CREATE VIEW public.vw_dso_aging AS
