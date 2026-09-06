@@ -12,8 +12,13 @@ CREATE TABLE IF NOT EXISTS public.glossario_tributario (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributario(categoria, termo);
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS sigla TEXT;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS categoria TEXT;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS base_legal TEXT;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS exemplo TEXT;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS ordem INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS ativo BOOLEAN NOT NULL DEFAULT TRUE;
+CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributario(categoria, termo);
 
 GRANT SELECT ON public.glossario_tributario TO authenticated;
 GRANT ALL ON public.glossario_tributario TO service_role;
