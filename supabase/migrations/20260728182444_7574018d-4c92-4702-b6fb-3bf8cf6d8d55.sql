@@ -9,10 +9,11 @@
 -- ============================================================================
 
 -- aprovacao_comentarios ------------------------------------------------------
+-- Nota: coluna é "usuario_id" (criada em 20260509163954), não "user_id".
 DROP POLICY IF EXISTS "Users can insert their own comments" ON public.aprovacao_comentarios;
 CREATE POLICY "Users can insert their own comments" ON public.aprovacao_comentarios
   FOR INSERT TO authenticated
-  WITH CHECK ((SELECT auth.uid()) = user_id);
+  WITH CHECK ((SELECT auth.uid()) = usuario_id);
 
 -- auth_logs ------------------------------------------------------------------
 DROP POLICY IF EXISTS "Users can view own auth logs" ON public.auth_logs;
@@ -79,11 +80,19 @@ CREATE POLICY "Users can manage their own consents" ON public.open_finance_conse
   WITH CHECK ((SELECT auth.uid()) = user_id);
 
 -- password_reset_tokens (duas políticas idênticas → consolidadas) -------------
-DROP POLICY IF EXISTS "Users can view own reset tokens" ON public.password_reset_tokens;
-DROP POLICY IF EXISTS "Users can select own reset tokens" ON public.password_reset_tokens;
-CREATE POLICY "Users can select own reset tokens" ON public.password_reset_tokens
-  FOR SELECT TO authenticated
-  USING ((SELECT auth.uid()) = user_id);
+-- Nota: tabela pode não existir em Preview (sem CREATE TABLE na history).
+DO $ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relname = 'password_reset_tokens'
+  ) THEN
+    DROP POLICY IF EXISTS "Users can view own reset tokens" ON public.password_reset_tokens;
+    DROP POLICY IF EXISTS "Users can select own reset tokens" ON public.password_reset_tokens;
+    EXECUTE $$CREATE POLICY "Users can select own reset tokens" ON public.password_reset_tokens
+      FOR SELECT TO authenticated
+      USING ((SELECT auth.uid()) = user_id)$$;
+  END IF;
+END $;
 
 -- permissions / role_permissions --------------------------------------------
 DROP POLICY IF EXISTS "Anyone authenticated can view permissions" ON public.permissions;
