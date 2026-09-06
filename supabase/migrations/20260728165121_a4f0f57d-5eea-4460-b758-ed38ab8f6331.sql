@@ -1,4 +1,5 @@
 -- ============ Alertas de vencimento ============
+DROP FUNCTION IF EXISTS public.gerar_alertas_vencimento();
 CREATE OR REPLACE FUNCTION public.gerar_alertas_vencimento()
 RETURNS integer
 LANGUAGE plpgsql
