@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: CRUD Faturamento + Folha mensal
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -70,12 +69,14 @@ export function useHistoricoFinanceiro(empresaId?: string) {
 
   const upsertFaturamento = useMutation({
     mutationFn: async (row: Omit<FaturamentoRow, 'id'>) => {
-      const { error } = await supabase
-        .from('faturamento_mensal')
-        .upsert(
-          { ...row, created_by: user?.id ?? null },
-          { onConflict: 'empresa_id,ano,mes' },
-        );
+      const { error } = await supabase.from('faturamento_mensal').upsert(
+        {
+          ...row,
+          mes_referencia: `${row.ano}-${String(row.mes).padStart(2, '0')}-01`,
+          created_by: user?.id ?? null,
+        },
+        { onConflict: 'empresa_id,ano,mes' }
+      );
       if (error) throw error;
     },
     onSuccess: () => {
@@ -88,12 +89,14 @@ export function useHistoricoFinanceiro(empresaId?: string) {
 
   const upsertFolha = useMutation({
     mutationFn: async (row: Omit<FolhaRow, 'id'>) => {
-      const { error } = await supabase
-        .from('folha_pagamento')
-        .upsert(
-          { ...row, created_by: user?.id ?? null },
-          { onConflict: 'empresa_id,ano,mes' },
-        );
+      const { error } = await supabase.from('folha_pagamento').upsert(
+        {
+          ...row,
+          mes_referencia: `${row.ano}-${String(row.mes).padStart(2, '0')}-01`,
+          created_by: user?.id ?? null,
+        },
+        { onConflict: 'empresa_id,ano,mes' }
+      );
       if (error) throw error;
     },
     onSuccess: () => {

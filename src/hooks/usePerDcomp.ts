@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 // HOOK: PER/DCOMP DIGITAL
 // Pedido de Restituição e Compensação
 
@@ -8,21 +7,17 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 export type TipoPedido = 'per' | 'dcomp';
-export type StatusPedido = 
-  | 'rascunho' 
-  | 'aguardando_transmissao' 
-  | 'transmitido' 
-  | 'em_analise' 
-  | 'deferido' 
-  | 'indeferido' 
+export type StatusPedido =
+  | 'rascunho'
+  | 'aguardando_transmissao'
+  | 'transmitido'
+  | 'em_analise'
+  | 'deferido'
+  | 'indeferido'
   | 'cancelado';
 
-export type TipoCreditoOrigem = 
-  | 'saldo_negativo' 
-  | 'pagamento_indevido' 
-  | 'retencao' 
-  | 'ressarcimento'
-  | 'exportacao';
+export type TipoCreditoOrigem =
+  'saldo_negativo' | 'pagamento_indevido' | 'retencao' | 'ressarcimento' | 'exportacao';
 
 export interface PerDcomp {
   id: string;
@@ -77,10 +72,7 @@ export function usePerDcomp(empresaId?: string) {
   const { data: pedidos = [], isLoading } = useQuery({
     queryKey: ['per-dcomp', empresaId],
     queryFn: async () => {
-      let query = supabase
-        .from('per_dcomp')
-        .select('*')
-        .order('created_at', { ascending: false });
+      let query = supabase.from('per_dcomp').select('*').order('created_at', { ascending: false });
 
       if (empresaId) {
         query = query.eq('empresa_id', empresaId);
@@ -94,7 +86,9 @@ export function usePerDcomp(empresaId?: string) {
 
   // Criar novo pedido
   const criarPedido = useMutation({
-    mutationFn: async (pedido: Omit<PerDcomp, 'id' | 'created_at' | 'numero_processo' | 'numero_recibo'>) => {
+    mutationFn: async (
+      pedido: Omit<PerDcomp, 'id' | 'created_at' | 'numero_processo' | 'numero_recibo'>
+    ) => {
       const { data, error } = await supabase
         .from('per_dcomp')
         .insert({
@@ -140,7 +134,7 @@ export function usePerDcomp(empresaId?: string) {
     mutationFn: async (pedidoId: string) => {
       // Gerar número de recibo simulado
       const numeroRecibo = `${format(new Date(), 'yyyyMMddHHmmss')}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      
+
       const { data, error } = await supabase
         .from('per_dcomp')
         .update({
@@ -159,10 +153,7 @@ export function usePerDcomp(empresaId?: string) {
       if (data.tipo === 'dcomp' && data.creditos_ids?.length) {
         await supabase
           .from('creditos_tributarios')
-          .update({ 
-            status: 'compensado',
-            competencia_utilizacao: data.competencia_destino,
-          })
+          .update({ status: 'compensado' })
           .in('id', data.creditos_ids);
       }
 
@@ -204,25 +195,25 @@ export function usePerDcomp(empresaId?: string) {
     const mesesDecorridos = Math.floor(
       (new Date().getTime() - dataOrigem.getTime()) / (1000 * 60 * 60 * 24 * 30)
     );
-    
+
     // Aproximação da SELIC mensal (0.9% ao mês)
     const taxaMensal = 0.009;
     const fatorCorrecao = Math.pow(1 + taxaMensal, mesesDecorridos);
-    
+
     return valorOriginal * fatorCorrecao;
   };
 
   // Estatísticas
   const estatisticas = {
     total: pedidos.length,
-    rascunhos: pedidos.filter(p => p.status === 'rascunho').length,
-    transmitidos: pedidos.filter(p => p.status === 'transmitido').length,
-    emAnalise: pedidos.filter(p => p.status === 'em_analise').length,
-    deferidos: pedidos.filter(p => p.status === 'deferido').length,
-    indeferidos: pedidos.filter(p => p.status === 'indeferido').length,
+    rascunhos: pedidos.filter((p) => p.status === 'rascunho').length,
+    transmitidos: pedidos.filter((p) => p.status === 'transmitido').length,
+    emAnalise: pedidos.filter((p) => p.status === 'em_analise').length,
+    deferidos: pedidos.filter((p) => p.status === 'deferido').length,
+    indeferidos: pedidos.filter((p) => p.status === 'indeferido').length,
     valorTotalOriginal: pedidos.reduce((sum, p) => sum + p.valor_original, 0),
     valorTotalCompensado: pedidos
-      .filter(p => p.tipo === 'dcomp' && p.status === 'deferido')
+      .filter((p) => p.tipo === 'dcomp' && p.status === 'deferido')
       .reduce((sum, p) => sum + (p.valor_compensado || p.valor_original), 0),
   };
 

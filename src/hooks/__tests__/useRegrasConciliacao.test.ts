@@ -58,6 +58,10 @@ describe('aprenderRegra', () => {
     await aprenderRegra('TED PAGAMENTO FORNECEDOR XPTO 999', 'XPTO', 'pagar', 'ent-1');
     expect(mocks.insert).toHaveBeenCalledOnce();
     const arg = mocks.insert.mock.calls[0][0] as Record<string, unknown>;
+    // nome é NOT NULL em regras_conciliacao (ver types.ts) — sem essa
+    // asserção, um insert faltando o campo passaria pelo mock silenciosamente
+    // e só quebraria em runtime contra o banco real.
+    expect(arg.nome).toBe('XPTO');
     expect(arg.entidade_nome).toBe('XPTO');
     expect(arg.lancamento_tipo).toBe('pagar');
     expect(arg.entidade_id).toBe('ent-1');
