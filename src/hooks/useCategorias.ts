@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface Categoria {
   id: string;
@@ -12,6 +13,7 @@ export interface Categoria {
   plano_conta_id: string | null;
   created_at: string;
   updated_at: string;
+  empresa_id: string | null;
 }
 
 export interface CategoriaInput {
@@ -24,18 +26,20 @@ export interface CategoriaInput {
 // HOOKS
 
 export function useCategorias(tipo?: 'despesa' | 'receita') {
+  const { currentEmpresaId } = useAuth();
   const {
     data: categorias = [],
     isLoading,
     error,
     refetch,
   } = useQuery({
-    queryKey: ['categorias', tipo],
+    queryKey: ['categorias', tipo, currentEmpresaId],
     queryFn: async () => {
       let query = supabase
         .from('categorias')
         .select('*')
         .eq('ativo', true)
+        .eq('empresa_id', currentEmpresaId!)
         .order('nome');
 
       if (tipo) {
@@ -46,6 +50,7 @@ export function useCategorias(tipo?: 'despesa' | 'receita') {
       if (error) throw error;
       return (data || []) as Categoria[];
     },
+    enabled: !!currentEmpresaId,
   });
 
   const categoriasDespesa = categorias.filter((c) => c.tipo === 'despesa');
@@ -80,12 +85,14 @@ export function useCategoria(id: string | undefined) {
 
 export function useCreateCategoria() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async (input: CategoriaInput) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
       const { data, error } = await supabase
         .from('categorias')
-        .insert({ ...input, ativo: true })
+        .insert({ ...input, ativo: true, empresa_id: currentEmpresaId })
         .select()
         .single();
       if (error) throw error;
@@ -103,6 +110,7 @@ export function useCreateCategoria() {
 
 export function useUpdateCategoria() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, data: input }: { id: string; data: Partial<CategoriaInput> }) => {
@@ -110,6 +118,7 @@ export function useUpdateCategoria() {
         .from('categorias')
         .update(input)
         .eq('id', id)
+        .eq('empresa_id', currentEmpresaId!)
         .select()
         .single();
       if (error) throw error;
@@ -127,13 +136,15 @@ export function useUpdateCategoria() {
 
 export function useDeleteCategoria() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('categorias')
         .update({ ativo: false })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('empresa_id', currentEmpresaId!);
       if (error) throw error;
     },
     onSuccess: () => {

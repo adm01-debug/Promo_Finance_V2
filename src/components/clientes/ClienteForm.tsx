@@ -9,6 +9,7 @@ import { ClienteFormFields } from './ClienteFormFields';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
+import { useAuth } from '@/hooks/useAuth';
 import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
 import {
@@ -71,6 +72,7 @@ interface ClienteFormProps {
 export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const queryClient = useQueryClient();
   const { customCelebration } = useConfetti();
+  const { currentEmpresaId } = useAuth();
   const isEditing = !!cliente;
 
   const form = useForm<ClienteFormData>({
@@ -144,6 +146,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
         ramo_atividade: data.ramo_atividade || null,
         observacoes: data.observacoes || null,
         ativo: data.ativo,
+        empresa_id: currentEmpresaId,
       });
 
       if (error) throw error;

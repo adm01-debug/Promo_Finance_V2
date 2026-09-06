@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
+import { useAuth } from '@/hooks/useAuth';
 
 export type CentroCusto = Tables<'centros_custo'>;
 export type CentroCustoInsert = TablesInsert<'centros_custo'>;
@@ -70,6 +71,7 @@ export function useCriarCentroCusto() {
 
 export function useAtualizarCentroCusto() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: CentroCustoUpdate }) => {
@@ -77,6 +79,7 @@ export function useAtualizarCentroCusto() {
         .from('centros_custo')
         .update(data)
         .eq('id', id)
+        .eq('empresa_id', currentEmpresaId!)
         .select()
         .single();
 
