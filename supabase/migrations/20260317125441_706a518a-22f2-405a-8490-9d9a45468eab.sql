@@ -79,24 +79,52 @@ DROP VIEW IF EXISTS public.vw_metricas_cobranca;
 DROP VIEW IF EXISTS public.vw_transferencias_painel;
 DROP VIEW IF EXISTS public.vw_webhooks_recentes;
 
-CREATE VIEW public.vw_dre_mensal AS
-SELECT date_trunc('month', m.data_movimentacao::timestamp with time zone) AS mes,
-    m.empresa_id,
-    sum(CASE WHEN m.tipo = 'entrada' THEN m.valor ELSE 0 END) AS receitas,
-    sum(CASE WHEN m.tipo = 'saida' THEN m.valor ELSE 0 END) AS despesas,
-    sum(CASE WHEN m.tipo = 'entrada' THEN m.valor ELSE -m.valor END) AS resultado,
-    pc.tipo AS tipo_conta, cat.nome AS categoria,
-    sum(m.valor) AS total_bruto,
-    sum(COALESCE(m.valor_liquido, m.valor)) AS total_liquido,
-    sum(COALESCE(m.taxa_gateway, 0)) AS total_taxas
-FROM movimentacoes m
-    LEFT JOIN plano_contas pc ON pc.id = m.plano_conta_id
-    LEFT JOIN categorias cat ON cat.id = m.categoria_id
-WHERE m.deleted_at IS NULL
-GROUP BY date_trunc('month', m.data_movimentacao::timestamp with time zone), m.empresa_id, pc.tipo, cat.nome;
+-- Guard: pc.tipo (plano_contas.tipo) só existe a partir de 20260518190420 —
+-- bare CREATE VIEW aqui quebraria o replay do zero (mesma classe de bug de
+-- vw_contas_pagar_painel acima; achado na auditoria da PR #63).
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'plano_contas' AND column_name = 'tipo'
+  ) THEN
+    EXECUTE $view$
+      CREATE VIEW public.vw_dre_mensal AS
+      SELECT date_trunc('month', m.data_movimentacao::timestamp with time zone) AS mes,
+          m.empresa_id,
+          sum(CASE WHEN m.tipo = 'entrada' THEN m.valor ELSE 0 END) AS receitas,
+          sum(CASE WHEN m.tipo = 'saida' THEN m.valor ELSE 0 END) AS despesas,
+          sum(CASE WHEN m.tipo = 'entrada' THEN m.valor ELSE -m.valor END) AS resultado,
+          pc.tipo AS tipo_conta, cat.nome AS categoria,
+          sum(m.valor) AS total_bruto,
+          sum(COALESCE(m.valor_liquido, m.valor)) AS total_liquido,
+          sum(COALESCE(m.taxa_gateway, 0)) AS total_taxas
+      FROM movimentacoes m
+          LEFT JOIN plano_contas pc ON pc.id = m.plano_conta_id
+          LEFT JOIN categorias cat ON cat.id = m.categoria_id
+      WHERE m.deleted_at IS NULL
+      GROUP BY date_trunc('month', m.data_movimentacao::timestamp with time zone), m.empresa_id, pc.tipo, cat.nome
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317125441: plano_contas.tipo ausente; vw_dre_mensal recriada em 20260519120619/20260519160631.';
+  END IF;
+END
+$$;
 
-CREATE VIEW public.vw_dso_aging AS
-SELECT cr.empresa_id,
+-- Guard: contas_receber.empresa_id (20260518164611) e etapa_cobranca
+-- (20260518180000) só existem meses depois — mesmo motivo acima.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'empresa_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_receber' AND column_name = 'etapa_cobranca'
+  ) THEN
+    EXECUTE $view$
+      CREATE VIEW public.vw_dso_aging AS
+      SELECT cr.empresa_id,
     count(*) AS total_titulos, sum(cr.valor) AS valor_total,
     sum(cr.valor - COALESCE(cr.valor_recebido, 0)) AS saldo_aberto,
     sum(CASE WHEN cr.data_vencimento >= CURRENT_DATE THEN cr.valor - COALESCE(cr.valor_recebido, 0) ELSE 0 END) AS a_vencer,
@@ -118,7 +146,13 @@ SELECT cr.empresa_id,
     count(*) FILTER (WHERE cr.etapa_cobranca IS NOT NULL) AS em_cobranca
 FROM contas_receber cr
 WHERE cr.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento])
-GROUP BY cr.empresa_id, CASE WHEN cr.data_vencimento >= CURRENT_DATE THEN 'A Vencer' WHEN (CURRENT_DATE - cr.data_vencimento) <= 30 THEN '1-30 dias' WHEN (CURRENT_DATE - cr.data_vencimento) <= 60 THEN '31-60 dias' WHEN (CURRENT_DATE - cr.data_vencimento) <= 90 THEN '61-90 dias' ELSE '90+ dias' END;
+GROUP BY cr.empresa_id, CASE WHEN cr.data_vencimento >= CURRENT_DATE THEN 'A Vencer' WHEN (CURRENT_DATE - cr.data_vencimento) <= 30 THEN '1-30 dias' WHEN (CURRENT_DATE - cr.data_vencimento) <= 60 THEN '31-60 dias' WHEN (CURRENT_DATE - cr.data_vencimento) <= 90 THEN '61-90 dias' ELSE '90+ dias' END
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317125441: contas_receber.empresa_id/etapa_cobranca ausente; vw_dso_aging recriada em 20260519120619/20260519160631.';
+  END IF;
+END
+$$;
 
 CREATE VIEW public.vw_saldos_contas AS
 SELECT cb.id, cb.banco, cb.agencia, cb.conta, cb.tipo_conta, cb.saldo_atual, cb.cor, cb.ativo,
@@ -150,13 +184,28 @@ SELECT m.data_movimentacao AS dia, m.data_movimentacao AS data, m.empresa_id,
     sum(COALESCE(m.taxa_gateway, 0)) AS total_taxas
 FROM movimentacoes m WHERE m.deleted_at IS NULL GROUP BY m.data_movimentacao, m.empresa_id;
 
-CREATE VIEW public.vw_gastos_centro_custo AS
-SELECT cc.id AS centro_custo_id, cc.nome, cc.nome AS centro_custo, cc.codigo, cc.orcamento_previsto,
-    COALESCE(sum(cp.valor), 0) AS total_gasto,
-    CASE WHEN cc.orcamento_previsto > 0 THEN round((COALESCE(sum(cp.valor), 0) / cc.orcamento_previsto) * 100, 2) ELSE 0 END AS percentual_utilizado,
-    cc.tipo, (cc.orcamento_previsto - COALESCE(sum(cp.valor), 0)) AS saldo_orcamento, cc.bitrix_deal_id
-FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id = cc.id AND cp.status = 'pago'::status_pagamento
-GROUP BY cc.id, cc.nome, cc.codigo, cc.orcamento_previsto, cc.tipo, cc.bitrix_deal_id;
+-- Guard: contas_pagar.centro_custo_id só existe a partir de 20260518164611 —
+-- mesmo motivo acima.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'centro_custo_id'
+  ) THEN
+    EXECUTE $view$
+      CREATE VIEW public.vw_gastos_centro_custo AS
+      SELECT cc.id AS centro_custo_id, cc.nome, cc.nome AS centro_custo, cc.codigo, cc.orcamento_previsto,
+          COALESCE(sum(cp.valor), 0) AS total_gasto,
+          CASE WHEN cc.orcamento_previsto > 0 THEN round((COALESCE(sum(cp.valor), 0) / cc.orcamento_previsto) * 100, 2) ELSE 0 END AS percentual_utilizado,
+          cc.tipo, (cc.orcamento_previsto - COALESCE(sum(cp.valor), 0)) AS saldo_orcamento, cc.bitrix_deal_id
+      FROM centros_custo cc LEFT JOIN contas_pagar cp ON cp.centro_custo_id = cc.id AND cp.status = 'pago'::status_pagamento
+      GROUP BY cc.id, cc.nome, cc.codigo, cc.orcamento_previsto, cc.tipo, cc.bitrix_deal_id
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317125441: contas_pagar.centro_custo_id ausente; vw_gastos_centro_custo recriada em 20260519160631.';
+  END IF;
+END
+$$;
 
 CREATE VIEW public.vw_metricas_cobranca AS
 SELECT ec.etapa, ec.etapa AS etapa_nome, ec.canal, ec.empresa_id,
