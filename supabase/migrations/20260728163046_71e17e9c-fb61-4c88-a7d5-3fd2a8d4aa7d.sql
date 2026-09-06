@@ -29,18 +29,26 @@ GRANT SELECT, INSERT, UPDATE ON public.fechamentos_tributarios TO authenticated;
 GRANT ALL ON public.fechamentos_tributarios TO service_role;
 ALTER TABLE public.fechamentos_tributarios ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "fechamentos_select" ON public.fechamentos_tributarios
-  FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
-CREATE POLICY "fechamentos_insert" ON public.fechamentos_tributarios
-  FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
-CREATE POLICY "fechamentos_update" ON public.fechamentos_tributarios
-  FOR UPDATE TO authenticated
-  USING (public.empresa_acessivel(empresa_id))
-  WITH CHECK (public.empresa_acessivel(empresa_id));
+DO $$ BEGIN
+  CREATE POLICY "fechamentos_select" ON public.fechamentos_tributarios
+    FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  CREATE POLICY "fechamentos_insert" ON public.fechamentos_tributarios
+    FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  CREATE POLICY "fechamentos_update" ON public.fechamentos_tributarios
+    FOR UPDATE TO authenticated
+    USING (public.empresa_acessivel(empresa_id))
+    WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE TRIGGER trg_fechamentos_updated_at
-  BEFORE UPDATE ON public.fechamentos_tributarios
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_fechamentos_updated_at
+    BEFORE UPDATE ON public.fechamentos_tributarios
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============ 2) Auditoria tributária ============
 CREATE TABLE IF NOT EXISTS public.auditoria_tributaria (
@@ -63,8 +71,10 @@ GRANT SELECT ON public.auditoria_tributaria TO authenticated;
 GRANT ALL ON public.auditoria_tributaria TO service_role;
 ALTER TABLE public.auditoria_tributaria ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "auditoria_trib_select_admin" ON public.auditoria_tributaria
-  FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+DO $$ BEGIN
+  CREATE POLICY "auditoria_trib_select_admin" ON public.auditoria_tributaria
+    FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE OR REPLACE VIEW public.vw_auditoria_tributaria_recente
 WITH (security_invoker = true) AS
@@ -110,9 +120,11 @@ GRANT SELECT ON public.tax_audit_trail TO authenticated;
 GRANT ALL ON public.tax_audit_trail TO service_role;
 ALTER TABLE public.tax_audit_trail ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "tax_audit_select" ON public.tax_audit_trail
-  FOR SELECT TO authenticated
-  USING (public.has_role(auth.uid(), 'admin') OR (empresa_id IS NOT NULL AND public.empresa_acessivel(empresa_id)));
+DO $$ BEGIN
+  CREATE POLICY "tax_audit_select" ON public.tax_audit_trail
+    FOR SELECT TO authenticated
+    USING (public.has_role(auth.uid(), 'admin') OR (empresa_id IS NOT NULL AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS public.regime_decision_cache (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -132,12 +144,16 @@ GRANT SELECT ON public.regime_decision_cache TO authenticated;
 GRANT ALL ON public.regime_decision_cache TO service_role;
 ALTER TABLE public.regime_decision_cache ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "regime_cache_select" ON public.regime_decision_cache
-  FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+DO $$ BEGIN
+  CREATE POLICY "regime_cache_select" ON public.regime_decision_cache
+    FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE TRIGGER trg_regime_cache_updated_at
-  BEFORE UPDATE ON public.regime_decision_cache
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_regime_cache_updated_at
+    BEFORE UPDATE ON public.regime_decision_cache
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============ 4) Relatórios tributários agendados ============
 CREATE TABLE IF NOT EXISTS public.relatorios_tributarios_agendados (
@@ -162,14 +178,18 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.relatorios_tributarios_agendados 
 GRANT ALL ON public.relatorios_tributarios_agendados TO service_role;
 ALTER TABLE public.relatorios_tributarios_agendados ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "rel_trib_agend_all" ON public.relatorios_tributarios_agendados
-  FOR ALL TO authenticated
-  USING (public.empresa_acessivel(empresa_id))
-  WITH CHECK (public.empresa_acessivel(empresa_id));
+DO $$ BEGIN
+  CREATE POLICY "rel_trib_agend_all" ON public.relatorios_tributarios_agendados
+    FOR ALL TO authenticated
+    USING (public.empresa_acessivel(empresa_id))
+    WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE TRIGGER trg_rel_trib_agend_updated_at
-  BEFORE UPDATE ON public.relatorios_tributarios_agendados
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_rel_trib_agend_updated_at
+    BEFORE UPDATE ON public.relatorios_tributarios_agendados
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============ 5) Painel tributário + benchmark setorial ============
 CREATE OR REPLACE VIEW public.vw_tributario_dashboard
