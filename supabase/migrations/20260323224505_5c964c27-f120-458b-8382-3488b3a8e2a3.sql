@@ -1,5 +1,5 @@
 -- 1. Revoke anon access from all financial views (security_invoker already set)
--- 5 destas views podem não existir aqui: guards de 20260317125441 pulam a
+-- 6 destas views podem não existir aqui: guards de 20260317125441 pulam a
 -- criação quando as colunas de que dependem ainda não existem (só
 -- adicionadas entre 20260518164611 e 20260518190420). REVOKE sobre relação
 -- inexistente quebraria o replay do zero (achado do cubic na PR #63).
@@ -20,11 +20,13 @@ BEGIN
   IF to_regclass('public.vw_gastos_centro_custo') IS NOT NULL THEN
     EXECUTE 'REVOKE SELECT ON public.vw_gastos_centro_custo FROM anon';
   END IF;
+  IF to_regclass('public.vw_fluxo_caixa') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_fluxo_caixa FROM anon';
+  END IF;
 END
 $$;
 REVOKE SELECT ON public.vw_transferencias_painel FROM anon;
 REVOKE SELECT ON public.vw_saldos_contas FROM anon;
-REVOKE SELECT ON public.vw_fluxo_caixa FROM anon;
 REVOKE SELECT ON public.vw_fluxo_caixa_diario FROM anon;
 REVOKE SELECT ON public.vw_metricas_cobranca FROM anon;
 REVOKE SELECT ON public.vw_webhooks_recentes FROM anon;
