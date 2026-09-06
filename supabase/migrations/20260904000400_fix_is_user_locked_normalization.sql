@@ -27,13 +27,3 @@ END;
 $function$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260904000400',
-  'fix_is_user_locked_normalization',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.is_user_locked — normaliza email com lower(btrim) antes de chamar get_lockout_details'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

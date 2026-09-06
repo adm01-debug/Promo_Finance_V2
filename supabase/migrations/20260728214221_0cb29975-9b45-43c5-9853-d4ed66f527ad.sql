@@ -6,7 +6,7 @@ CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail
   USING (
     public.has_role((SELECT auth.uid()), 'admin'::app_role)
     AND EXISTS (SELECT 1 FROM public.asaas_payments p
-                WHERE p.id = asaas_audit_trail.asaas_payment_id
+                WHERE p.id = asaas_audit_trail.payment_id
                   AND public.empresa_acessivel(p.empresa_id))
   );
 
@@ -17,13 +17,13 @@ CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue
   USING (
     public.has_role((SELECT auth.uid()), 'admin'::app_role)
     AND EXISTS (SELECT 1 FROM public.asaas_payments p
-                WHERE p.id = asaas_sync_queue.asaas_payment_id
+                WHERE p.id = asaas_sync_queue.payment_id
                   AND public.empresa_acessivel(p.empresa_id))
   )
   WITH CHECK (
     public.has_role((SELECT auth.uid()), 'admin'::app_role)
     AND EXISTS (SELECT 1 FROM public.asaas_payments p
-                WHERE p.id = asaas_sync_queue.asaas_payment_id
+                WHERE p.id = asaas_sync_queue.payment_id
                   AND public.empresa_acessivel(p.empresa_id))
   );
 

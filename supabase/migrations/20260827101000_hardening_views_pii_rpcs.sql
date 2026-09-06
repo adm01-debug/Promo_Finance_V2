@@ -57,6 +57,8 @@ BEGIN
 END;
 $do$;
 
+-- Guard: 42P16 — drop first if column set changed on preview branch
+DROP VIEW IF EXISTS public.vw_contas_receber_painel;
 CREATE OR REPLACE VIEW public.vw_contas_receber_painel
 WITH (security_invoker = true) AS
 SELECT

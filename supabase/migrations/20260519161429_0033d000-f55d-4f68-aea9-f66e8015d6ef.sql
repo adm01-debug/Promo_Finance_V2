@@ -28,35 +28,45 @@ CREATE TABLE IF NOT EXISTS public.split_payment_transacoes (
 ALTER TABLE public.split_payment_transacoes ENABLE ROW LEVEL SECURITY;
 
 -- Create policies
-CREATE POLICY "Users can view split transactions of their companies" 
-ON public.split_payment_transacoes 
-FOR SELECT 
+-- Guard: 42710 — policies may already exist on preview branch
+DROP POLICY IF EXISTS "Users can view split transactions of their companies" ON public.split_payment_transacoes;
+CREATE POLICY "Users can view split transactions of their companies"
+ON public.split_payment_transacoes
+FOR SELECT
 USING (EXISTS (
-    SELECT 1 FROM public.profiles p 
-    WHERE p.user_id = auth.uid() 
+    SELECT 1 FROM public.profiles p
+    WHERE p.user_id = auth.uid()
 ));
 
-CREATE POLICY "Users can insert split transactions" 
-ON public.split_payment_transacoes 
-FOR INSERT 
+DROP POLICY IF EXISTS "Users can insert split transactions" ON public.split_payment_transacoes;
+CREATE POLICY "Users can insert split transactions"
+ON public.split_payment_transacoes
+FOR INSERT
 WITH CHECK (EXISTS (
-    SELECT 1 FROM public.profiles p 
-    WHERE p.user_id = auth.uid() 
+    SELECT 1 FROM public.profiles p
+    WHERE p.user_id = auth.uid()
 ));
 
-CREATE POLICY "Users can update split transactions" 
-ON public.split_payment_transacoes 
-FOR UPDATE 
+DROP POLICY IF EXISTS "Users can update split transactions" ON public.split_payment_transacoes;
+CREATE POLICY "Users can update split transactions"
+ON public.split_payment_transacoes
+FOR UPDATE
 USING (EXISTS (
-    SELECT 1 FROM public.profiles p 
-    WHERE p.user_id = auth.uid() 
+    SELECT 1 FROM public.profiles p
+    WHERE p.user_id = auth.uid()
 ));
 
 -- Create trigger for updated_at
-CREATE TRIGGER update_split_payment_transacoes_updated_at
-BEFORE UPDATE ON public.split_payment_transacoes
-FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();
+-- Guard: 42710 — trigger may already exist on preview branch
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_split_payment_transacoes_updated_at') THEN
+        CREATE TRIGGER update_split_payment_transacoes_updated_at
+        BEFORE UPDATE ON public.split_payment_transacoes
+        FOR EACH ROW
+        EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+END $$;
 
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_split_payment_empresa ON public.split_payment_transacoes(empresa_id);

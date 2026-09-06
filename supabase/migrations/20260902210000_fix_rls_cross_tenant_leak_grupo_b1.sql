@@ -293,7 +293,3 @@ CREATE POLICY "rel_trib_agend_admin_delete" ON public.relatorios_tributarios_age
   USING (public.has_role(auth.uid(), 'admin') AND empresa_acessivel(empresa_id));
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902210000','fix_rls_cross_tenant_leak_grupo_b1')
-ON CONFLICT (version) DO NOTHING;

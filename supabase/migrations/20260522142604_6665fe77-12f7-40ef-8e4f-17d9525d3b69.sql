@@ -1,11 +1,28 @@
 -- Fix Security Definer Views (change to SECURITY INVOKER)
-ALTER VIEW public.vw_contas_pagar_painel SET (security_invoker = on);
-ALTER VIEW public.vw_contas_receber_painel SET (security_invoker = on);
-ALTER VIEW public.vw_dre_mensal SET (security_invoker = on);
-ALTER VIEW public.vw_dso_aging SET (security_invoker = on);
-ALTER VIEW public.vw_fluxo_caixa SET (security_invoker = on);
+-- Views condicionalmente criadas em 20260317125441 precisam de guarda to_regclass.
+DO $$
+BEGIN
+  IF to_regclass('public.vw_contas_pagar_painel') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_contas_pagar_painel SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_contas_receber_painel') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_contas_receber_painel SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_dre_mensal') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_dre_mensal SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_dso_aging') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_dso_aging SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_fluxo_caixa') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_fluxo_caixa SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_gastos_centro_custo') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_gastos_centro_custo SET (security_invoker = on)';
+  END IF;
+END
+$$;
 ALTER VIEW public.vw_fluxo_caixa_diario SET (security_invoker = on);
-ALTER VIEW public.vw_gastos_centro_custo SET (security_invoker = on);
 ALTER VIEW public.vw_metricas_cobranca SET (security_invoker = on);
 ALTER VIEW public.vw_saldos_contas SET (security_invoker = on);
 

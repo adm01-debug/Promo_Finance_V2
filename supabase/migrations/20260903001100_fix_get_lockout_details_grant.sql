@@ -10,13 +10,3 @@ BEGIN;
 GRANT EXECUTE ON FUNCTION public.get_lockout_details(text) TO anon, authenticated;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903001100',
-  'fix_get_lockout_details_grant',
-  ARRAY[
-    'GRANT EXECUTE ON FUNCTION public.get_lockout_details(text) TO anon, authenticated'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

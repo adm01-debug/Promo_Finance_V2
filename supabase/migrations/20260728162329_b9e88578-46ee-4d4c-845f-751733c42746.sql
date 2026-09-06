@@ -13,18 +13,29 @@ ALTER TABLE public.pix_templates
   ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
 
 -- Campos legados deixam de ser obrigatórios (preenchidos por trigger)
+DO $$ BEGIN
+  ALTER TABLE public.pix_templates
+    ALTER COLUMN beneficiario_nome DROP NOT NULL,
+    ALTER COLUMN cidade DROP NOT NULL,
+    ALTER COLUMN tipo_chave DROP NOT NULL;
+EXCEPTION WHEN undefined_column THEN NULL;
+END $$;
+
 ALTER TABLE public.pix_templates
-  ALTER COLUMN beneficiario_nome DROP NOT NULL,
-  ALTER COLUMN cidade DROP NOT NULL,
-  ALTER COLUMN tipo_chave DROP NOT NULL,
   ALTER COLUMN created_at SET NOT NULL;
 
-UPDATE public.pix_templates
-   SET favorecido_nome = COALESCE(favorecido_nome, beneficiario_nome),
-       tipo_chave_pix = COALESCE(tipo_chave_pix, tipo_chave);
+DO $$ BEGIN
+  UPDATE public.pix_templates
+     SET favorecido_nome = COALESCE(favorecido_nome, beneficiario_nome),
+         tipo_chave_pix = COALESCE(tipo_chave_pix, tipo_chave);
+EXCEPTION WHEN undefined_column THEN NULL;
+END $$;
 
-ALTER TABLE public.pix_templates
-  ADD CONSTRAINT pix_templates_valor_padrao_nao_negativo CHECK (valor_padrao >= 0);
+DO $$ BEGIN
+  ALTER TABLE public.pix_templates
+    ADD CONSTRAINT pix_templates_valor_padrao_nao_negativo CHECK (valor_padrao >= 0);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE OR REPLACE FUNCTION public.pix_template_sync_legacy()
 RETURNS TRIGGER
@@ -43,12 +54,18 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER trg_pix_template_sync_legacy
-  BEFORE INSERT OR UPDATE ON public.pix_templates
-  FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
+DO $$ BEGIN
+  CREATE TRIGGER trg_pix_template_sync_legacy
+    BEFORE INSERT OR UPDATE ON public.pix_templates
+    FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TRIGGER trg_pix_templates_updated_at
-  BEFORE UPDATE ON public.pix_templates
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_pix_templates_updated_at
+    BEFORE UPDATE ON public.pix_templates
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_pix_templates_uso ON public.pix_templates (ativo, uso_count DESC);

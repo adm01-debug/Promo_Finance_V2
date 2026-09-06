@@ -22,6 +22,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
 import { useCriarCentroCusto, useAtualizarCentroCusto, type CentroCusto } from '@/hooks/useCentrosCusto';
+import { useAuth } from '@/hooks/useAuth';
 import { logger } from '@/lib/logger';
 
 const formSchema = z.object({
@@ -47,6 +48,7 @@ interface CentroCustoFormProps {
 export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, onSuccess, onCancel }: CentroCustoFormProps) {
   const criarCentroCusto = useCriarCentroCusto();
   const atualizarCentroCusto = useAtualizarCentroCusto();
+  const { currentEmpresaId } = useAuth();
   const isEditing = !!centroCusto;
 
   // Filter out the current centro and its children to prevent circular references
@@ -81,6 +83,7 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
         responsavel: values.responsavel || null,
         orcamento_previsto: values.orcamento_previsto,
         ativo: values.ativo,
+        empresa_id: currentEmpresaId,
       };
 
       if (isEditing && centroCusto) {

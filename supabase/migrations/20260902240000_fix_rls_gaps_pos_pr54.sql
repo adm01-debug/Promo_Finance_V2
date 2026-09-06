@@ -152,7 +152,3 @@ CREATE POLICY "Financeiro+ podem atualizar pagamentos_recorrentes"
   WITH CHECK (has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id));
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902240000','fix_rls_gaps_pos_pr54')
-ON CONFLICT (version) DO NOTHING;

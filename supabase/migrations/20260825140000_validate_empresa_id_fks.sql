@@ -16,7 +16,3 @@ ALTER TABLE public.solicitacoes_lgpd    VALIDATE CONSTRAINT solicitacoes_lgpd_em
 -- NOTA: frontend_error_logs tem anon=INSERT intencional
 -- (browser sem auth deve poder reportar erros JS)
 -- não é uma vulnerabilidade — teste V1 atualizado para excluir este grant
-
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260825140000','validate_empresa_id_fks',ARRAY['validate_empresa_id_fks'])
-ON CONFLICT DO NOTHING;

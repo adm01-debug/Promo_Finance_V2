@@ -90,7 +90,3 @@ CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log AS 
   USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902220000','fix_rls_cross_tenant_leak_sensiveis')
-ON CONFLICT (version) DO NOTHING;

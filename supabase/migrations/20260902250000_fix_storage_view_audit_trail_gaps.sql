@@ -118,7 +118,3 @@ CREATE POLICY asaas_audit_admin_all ON public.asaas_audit_trail AS PERMISSIVE FO
   );
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902250000','fix_storage_view_audit_trail_gaps')
-ON CONFLICT (version) DO NOTHING;

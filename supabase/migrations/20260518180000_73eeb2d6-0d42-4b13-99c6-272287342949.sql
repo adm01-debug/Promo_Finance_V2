@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS public.empresas (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.empresas ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='empresas' AND policyname='Owner manage empresas') THEN
     CREATE POLICY "Owner manage empresas" ON public.empresas FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);
@@ -26,6 +28,8 @@ CREATE TABLE IF NOT EXISTS public.solicitacoes_aprovacao (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.solicitacoes_aprovacao ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.solicitacoes_aprovacao ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='solicitacoes_aprovacao' AND policyname='Owner manage aprovacoes') THEN
     CREATE POLICY "Owner manage aprovacoes" ON public.solicitacoes_aprovacao FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);
@@ -46,6 +50,8 @@ CREATE TABLE IF NOT EXISTS public.alertas (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.alertas ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.alertas ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='alertas' AND policyname='Owner manage alertas') THEN
     CREATE POLICY "Owner manage alertas" ON public.alertas FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);
@@ -62,6 +68,8 @@ CREATE TABLE IF NOT EXISTS public.logs_baixa_automatica (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.logs_baixa_automatica ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.logs_baixa_automatica ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='logs_baixa_automatica' AND policyname='Owner manage logs_baixa') THEN
     CREATE POLICY "Owner manage logs_baixa" ON public.logs_baixa_automatica FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);
@@ -81,6 +89,8 @@ CREATE TABLE IF NOT EXISTS public.anexos_financeiros (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.anexos_financeiros ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.anexos_financeiros ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='anexos_financeiros' AND policyname='Owner manage anexos') THEN
     CREATE POLICY "Owner manage anexos" ON public.anexos_financeiros FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);
@@ -99,6 +109,8 @@ CREATE TABLE IF NOT EXISTS public.execucoes_cobranca (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.execucoes_cobranca ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.execucoes_cobranca ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='execucoes_cobranca' AND policyname='Owner manage execucoes') THEN
     CREATE POLICY "Owner manage execucoes" ON public.execucoes_cobranca FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);
@@ -116,6 +128,8 @@ CREATE TABLE IF NOT EXISTS public.acordos_parcelamento (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.acordos_parcelamento ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.acordos_parcelamento ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='acordos_parcelamento' AND policyname='Owner manage acordos') THEN
     CREATE POLICY "Owner manage acordos" ON public.acordos_parcelamento FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);
@@ -137,6 +151,8 @@ CREATE TABLE IF NOT EXISTS public.boletos (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.boletos ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in earlier migration without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.boletos ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='boletos' AND policyname='Owner manage boletos') THEN
     CREATE POLICY "Owner manage boletos" ON public.boletos FOR ALL TO authenticated USING (auth.uid()=user_id) WITH CHECK (auth.uid()=user_id);

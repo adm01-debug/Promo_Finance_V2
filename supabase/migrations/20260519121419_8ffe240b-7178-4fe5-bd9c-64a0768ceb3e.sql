@@ -61,6 +61,10 @@ CREATE TABLE IF NOT EXISTS public.budgets (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Guard: tables may already exist on preview branch without empresa_id column
+ALTER TABLE public.bitrix_field_mappings ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+ALTER TABLE public.budgets ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+
 -- 6. RLS
 ALTER TABLE public.bitrix_field_mappings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.budgets ENABLE ROW LEVEL SECURITY;

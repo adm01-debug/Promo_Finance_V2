@@ -61,18 +61,20 @@ CREATE POLICY "Admins can manage contas receber" ON public.contas_receber
 
 
 -- 4. Restrict SECURITY DEFINER functions
-DO $$ 
-DECLARE 
-    func_record RECORD;
-BEGIN 
-    FOR func_record IN 
-        SELECT routine_name 
-        FROM information_schema.routines 
-        WHERE routine_schema = 'public' 
-        AND security_type = 'DEFINER'
-    LOOP 
-        EXECUTE format('REVOKE ALL ON FUNCTION public.%I FROM public, anon', func_record.routine_name);
-        EXECUTE format('GRANT EXECUTE ON FUNCTION public.%I TO authenticated, service_role', func_record.routine_name);
+-- Use oid::regprocedure for full signature (avoids SQLSTATE 42725 when overloads exist)
+DO $$
+DECLARE
+    func_sig text;
+BEGIN
+    FOR func_sig IN
+        SELECT p.oid::regprocedure::text
+        FROM pg_proc p
+        JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+          AND p.prosecdef = true
+    LOOP
+        EXECUTE format('REVOKE ALL ON FUNCTION %s FROM public, anon', func_sig);
+        EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated, service_role', func_sig);
     END LOOP;
 END $$;
 
@@ -126,6 +128,9 @@ END;
 $$;
 
 -- Implement get_cron_run_history
+-- Guard: 42P13 fires when get_cron_run_history(text,integer) exists with TABLE return type
+-- (defined in 20260417194817). DROP first to allow return type change to jsonb.
+DROP FUNCTION IF EXISTS public.get_cron_run_history(text, integer);
 CREATE OR REPLACE FUNCTION public.get_cron_run_history(p_job_name text DEFAULT NULL, p_limit int DEFAULT 100)
 RETURNS jsonb
 LANGUAGE plpgsql

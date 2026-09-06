@@ -56,7 +56,3 @@ END;
 $$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902160000','fix_bypass_views_matviews_legadas')
-ON CONFLICT (version) DO NOTHING;

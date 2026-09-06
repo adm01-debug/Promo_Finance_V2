@@ -11,13 +11,3 @@ BEGIN;
 GRANT EXECUTE ON FUNCTION public.increment_failed_attempts(text) TO anon;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260904000200',
-  'grant_anon_increment_failed_attempts',
-  ARRAY[
-    'GRANT EXECUTE ON FUNCTION public.increment_failed_attempts(text) TO anon'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

@@ -31,7 +31,7 @@ CREATE POLICY notas_fiscais_tenant_delete ON public.notas_fiscais
   USING (
     public.empresa_membro_ativo(empresa_id)
     AND (public.has_role(auth.uid(), 'admin'::public.app_role)
-      OR public.has_role(auth.uid(), 'manager'::public.app_role))
+      OR public.has_role(auth.uid(), 'financeiro'::public.app_role))
   );
 
 -- F5: check_integrity_invariants — remover blocos que referenciam
@@ -177,8 +177,3 @@ SELECT cron.schedule('gerar-contas-recorrentes-diario','35 3 * * *',
 SELECT cron.schedule('processar-regua-cobranca-diario','0 9 * * *',
   'select public.processar_regua_cobranca(null, false);')
   WHERE NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='processar-regua-cobranca-diario');
-
--- Registro
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260825130000','fixes_phd_validation',ARRAY['fixes_phd_validation'])
-ON CONFLICT DO NOTHING;

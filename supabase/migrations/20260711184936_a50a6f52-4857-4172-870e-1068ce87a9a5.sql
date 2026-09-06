@@ -62,8 +62,12 @@ BEGIN
   END LOOP;
 END $$;
 
-ANALYZE public.webhooks_log;
-ANALYZE public.query_telemetry;
-ANALYZE public.login_attempts;
-ANALYZE public.auth_logs;
-ANALYZE public.runtime_error_logs;
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['webhooks_log','query_telemetry','login_attempts','auth_logs','runtime_error_logs'] LOOP
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=t) THEN
+      EXECUTE format('ANALYZE public.%I', t);
+    END IF;
+  END LOOP;
+END $$;

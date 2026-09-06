@@ -47,13 +47,3 @@ $function$;
 GRANT EXECUTE ON FUNCTION public.reset_failed_attempts(text) TO authenticated;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260904000500',
-  'fix_reset_failed_attempts_authcheck',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.reset_failed_attempts(_email text) — adiciona verificacao auth.email() para impedir reset do counter de outro usuario'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

@@ -33,14 +33,3 @@ $function$;
 GRANT EXECUTE ON FUNCTION public.reset_failed_attempts(text) TO authenticated;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260904000300',
-  'fix_reset_failed_attempts',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.reset_failed_attempts(_email text) — normaliza com lower(btrim) para consistência com increment_failed_attempts',
-    'GRANT EXECUTE ON FUNCTION public.reset_failed_attempts(text) TO authenticated'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

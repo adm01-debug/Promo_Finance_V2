@@ -42,6 +42,18 @@ CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- ===== Catálogo (view de leitura) =====
+-- Drop existing object of any type (table/view/matview) before recreating as view
+DO $$
+DECLARE v_kind "char";
+BEGIN
+  SELECT relkind INTO v_kind
+  FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'public' AND c.relname = 'estrategias_elisao_catalogo';
+  IF v_kind = 'r' THEN DROP TABLE public.estrategias_elisao_catalogo CASCADE;
+  ELSIF v_kind = 'v' THEN DROP VIEW public.estrategias_elisao_catalogo CASCADE;
+  ELSIF v_kind = 'm' THEN DROP MATERIALIZED VIEW public.estrategias_elisao_catalogo CASCADE;
+  END IF;
+END $$;
 CREATE VIEW public.estrategias_elisao_catalogo
   WITH (security_invoker = true) AS
   SELECT id, codigo, nome, categoria, descricao, regimes_aplicaveis,
@@ -52,7 +64,7 @@ GRANT SELECT ON public.estrategias_elisao_catalogo TO authenticated;
 GRANT SELECT ON public.estrategias_elisao_catalogo TO service_role;
 
 -- ===== Notas fiscais processadas por OCR =====
-CREATE TABLE public.notas_fiscais_ocr (
+CREATE TABLE IF NOT EXISTS public.notas_fiscais_ocr (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   arquivo_nome TEXT,
@@ -71,17 +83,26 @@ CREATE TABLE public.notas_fiscais_ocr (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_nf_ocr_empresa ON public.notas_fiscais_ocr(empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_nf_ocr_empresa ON public.notas_fiscais_ocr(empresa_id, created_at DESC);
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.notas_fiscais_ocr TO authenticated;
 GRANT ALL ON public.notas_fiscais_ocr TO service_role;
 ALTER TABLE public.notas_fiscais_ocr ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "notas_fiscais_ocr_acesso" ON public.notas_fiscais_ocr FOR ALL TO authenticated
-  USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
-CREATE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "notas_fiscais_ocr_acesso" ON public.notas_fiscais_ocr;
+  CREATE POLICY "notas_fiscais_ocr_acesso" ON public.notas_fiscais_ocr FOR ALL TO authenticated
+    USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$
+BEGIN
+  CREATE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ===== Regras de recuperação de crédito =====
-CREATE TABLE public.elisao_regras_creditos (
+CREATE TABLE IF NOT EXISTS public.elisao_regras_creditos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   codigo TEXT NOT NULL UNIQUE,
   tipo_credito TEXT NOT NULL,
@@ -98,14 +119,28 @@ CREATE TABLE public.elisao_regras_creditos (
 GRANT SELECT ON public.elisao_regras_creditos TO authenticated;
 GRANT ALL ON public.elisao_regras_creditos TO service_role;
 ALTER TABLE public.elisao_regras_creditos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "regras_creditos_leitura" ON public.elisao_regras_creditos FOR SELECT TO authenticated USING (true);
-CREATE POLICY "regras_creditos_admin" ON public.elisao_regras_creditos FOR ALL TO authenticated
-  USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
-CREATE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "regras_creditos_leitura" ON public.elisao_regras_creditos;
+  CREATE POLICY "regras_creditos_leitura" ON public.elisao_regras_creditos FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "regras_creditos_admin" ON public.elisao_regras_creditos;
+  CREATE POLICY "regras_creditos_admin" ON public.elisao_regras_creditos FOR ALL TO authenticated
+    USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
+EXCEPTION WHEN invalid_text_representation OR undefined_function OR undefined_object THEN NULL;
+END $$;
+DO $$
+BEGIN
+  CREATE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ===== Créditos auditados =====
-CREATE TABLE public.elisao_creditos_auditoria (
+CREATE TABLE IF NOT EXISTS public.elisao_creditos_auditoria (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   nota_id UUID REFERENCES public.notas_fiscais_ocr(id) ON DELETE SET NULL,
@@ -126,18 +161,27 @@ CREATE TABLE public.elisao_creditos_auditoria (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_cred_aud_empresa ON public.elisao_creditos_auditoria(empresa_id, created_at DESC);
-CREATE INDEX idx_cred_aud_status ON public.elisao_creditos_auditoria(empresa_id, status_aprovacao);
+CREATE INDEX IF NOT EXISTS idx_cred_aud_empresa ON public.elisao_creditos_auditoria(empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_cred_aud_status ON public.elisao_creditos_auditoria(empresa_id, status_aprovacao);
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.elisao_creditos_auditoria TO authenticated;
 GRANT ALL ON public.elisao_creditos_auditoria TO service_role;
 ALTER TABLE public.elisao_creditos_auditoria ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "creditos_auditoria_acesso" ON public.elisao_creditos_auditoria FOR ALL TO authenticated
-  USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
-CREATE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "creditos_auditoria_acesso" ON public.elisao_creditos_auditoria;
+  CREATE POLICY "creditos_auditoria_acesso" ON public.elisao_creditos_auditoria FOR ALL TO authenticated
+    USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$
+BEGIN
+  CREATE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ===== Tarefas acionáveis =====
-CREATE TABLE public.elisao_tarefas_acionaveis (
+CREATE TABLE IF NOT EXISTS public.elisao_tarefas_acionaveis (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   titulo TEXT NOT NULL,
@@ -156,17 +200,26 @@ CREATE TABLE public.elisao_tarefas_acionaveis (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_tarefas_elisao_empresa ON public.elisao_tarefas_acionaveis(empresa_id, prazo);
+CREATE INDEX IF NOT EXISTS idx_tarefas_elisao_empresa ON public.elisao_tarefas_acionaveis(empresa_id, prazo);
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.elisao_tarefas_acionaveis TO authenticated;
 GRANT ALL ON public.elisao_tarefas_acionaveis TO service_role;
 ALTER TABLE public.elisao_tarefas_acionaveis ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "tarefas_elisao_acesso" ON public.elisao_tarefas_acionaveis FOR ALL TO authenticated
-  USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
-CREATE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "tarefas_elisao_acesso" ON public.elisao_tarefas_acionaveis;
+  CREATE POLICY "tarefas_elisao_acesso" ON public.elisao_tarefas_acionaveis FOR ALL TO authenticated
+    USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$
+BEGIN
+  CREATE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ===== Alertas do módulo =====
-CREATE TABLE public.elisao_alertas (
+CREATE TABLE IF NOT EXISTS public.elisao_alertas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   tipo_divergencia TEXT NOT NULL,
@@ -181,17 +234,26 @@ CREATE TABLE public.elisao_alertas (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_elisao_alertas_empresa ON public.elisao_alertas(empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_elisao_alertas_empresa ON public.elisao_alertas(empresa_id, created_at DESC);
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.elisao_alertas TO authenticated;
 GRANT ALL ON public.elisao_alertas TO service_role;
 ALTER TABLE public.elisao_alertas ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "elisao_alertas_acesso" ON public.elisao_alertas FOR ALL TO authenticated
-  USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
-CREATE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "elisao_alertas_acesso" ON public.elisao_alertas;
+  CREATE POLICY "elisao_alertas_acesso" ON public.elisao_alertas FOR ALL TO authenticated
+    USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$
+BEGIN
+  CREATE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ===== Simulações de regime do módulo de elisão =====
-CREATE TABLE public.elisao_simulacoes_regime (
+CREATE TABLE IF NOT EXISTS public.elisao_simulacoes_regime (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   regime_atual TEXT NOT NULL,
@@ -204,16 +266,26 @@ CREATE TABLE public.elisao_simulacoes_regime (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_elisao_sim_empresa ON public.elisao_simulacoes_regime(empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_elisao_sim_empresa ON public.elisao_simulacoes_regime(empresa_id, created_at DESC);
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.elisao_simulacoes_regime TO authenticated;
 GRANT ALL ON public.elisao_simulacoes_regime TO service_role;
 ALTER TABLE public.elisao_simulacoes_regime ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "elisao_sim_regime_acesso" ON public.elisao_simulacoes_regime FOR ALL TO authenticated
-  USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
-CREATE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "elisao_sim_regime_acesso" ON public.elisao_simulacoes_regime;
+  CREATE POLICY "elisao_sim_regime_acesso" ON public.elisao_simulacoes_regime FOR ALL TO authenticated
+    USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$
+BEGIN
+  CREATE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ===== RPC: potencial de elisão consolidado =====
+DROP FUNCTION IF EXISTS public.calcular_potencial_elisao(UUID);
 CREATE OR REPLACE FUNCTION public.calcular_potencial_elisao(p_empresa_id UUID)
 RETURNS TABLE (
   tipo_oportunidade TEXT,

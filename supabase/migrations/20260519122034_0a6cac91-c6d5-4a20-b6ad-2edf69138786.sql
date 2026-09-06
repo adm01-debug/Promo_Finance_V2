@@ -1,11 +1,23 @@
+-- Guard: budgets may exist on preview without these columns (CREATE TABLE IF NOT EXISTS was a no-op)
+ALTER TABLE public.budgets ADD COLUMN IF NOT EXISTS nome TEXT;
+ALTER TABLE public.budgets ADD COLUMN IF NOT EXISTS periodo_inicio DATE;
+ALTER TABLE public.budgets ADD COLUMN IF NOT EXISTS periodo_fim DATE;
+ALTER TABLE public.budgets ADD COLUMN IF NOT EXISTS valor_total NUMERIC;
+
 -- 1. Fix budgets: make legacy columns optional (already done in previous attempt, but repeating to be safe)
 ALTER TABLE public.budgets ALTER COLUMN nome DROP NOT NULL;
 ALTER TABLE public.budgets ALTER COLUMN periodo_inicio DROP NOT NULL;
 ALTER TABLE public.budgets ALTER COLUMN periodo_fim DROP NOT NULL;
 ALTER TABLE public.budgets ALTER COLUMN valor_total DROP NOT NULL;
 
+-- Guard: contas_bancarias.nome may not exist on preview branch
+ALTER TABLE public.contas_bancarias ADD COLUMN IF NOT EXISTS nome TEXT;
+
 -- 2. Fix contas_bancarias: make nome optional
 ALTER TABLE public.contas_bancarias ALTER COLUMN nome DROP NOT NULL;
+
+-- Guard: solicitacoes_aprovacao.entidade_tipo may not exist on preview branch
+ALTER TABLE public.solicitacoes_aprovacao ADD COLUMN IF NOT EXISTS entidade_tipo TEXT;
 
 -- 3. Fix solicitacoes_aprovacao
 ALTER TABLE public.solicitacoes_aprovacao ALTER COLUMN entidade_tipo DROP NOT NULL;

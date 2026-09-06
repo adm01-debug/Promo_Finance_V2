@@ -40,6 +40,8 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 4. has_permission
+-- Guard: 42P13 — existing function may have different parameter name; drop first
+DROP FUNCTION IF EXISTS public.has_permission(uuid, text);
 CREATE OR REPLACE FUNCTION public.has_permission(_user_id uuid, _permission_name text)
 RETURNS boolean AS $$
 BEGIN

@@ -44,7 +44,3 @@ DROP POLICY IF EXISTS "Sistema insere anomalias" ON public.anomalias_detectadas;
 DROP POLICY IF EXISTS "Financeiro+ podem gerenciar parcelas" ON public.parcelas_acordo;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902150000','fix_rls_cross_tenant_leak_financeiro_parte3')
-ON CONFLICT (version) DO NOTHING;

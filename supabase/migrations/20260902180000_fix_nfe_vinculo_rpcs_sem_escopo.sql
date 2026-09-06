@@ -245,7 +245,3 @@ END;
 $$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902180000','fix_nfe_vinculo_rpcs_sem_escopo')
-ON CONFLICT (version) DO NOTHING;

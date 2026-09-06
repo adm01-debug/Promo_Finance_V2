@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS public.protestos (
 -- 3. Views
 
 -- vw_webhooks_recentes
+-- Guard: 42P16 fires when existing view has more columns than the replacement.
+-- DROP first so CREATE OR REPLACE can change the column list freely.
+DROP VIEW IF EXISTS public.vw_webhooks_recentes;
 CREATE OR REPLACE VIEW public.vw_webhooks_recentes AS
 SELECT 
     event_type,
@@ -41,6 +44,8 @@ FROM public.webhooks_log
 GROUP BY event_type, status;
 
 -- vw_metricas_cobranca
+-- Guard: 42P16 — earlier definition has more columns (etapa, empresa_id, etc.)
+DROP VIEW IF EXISTS public.vw_metricas_cobranca;
 CREATE OR REPLACE VIEW public.vw_metricas_cobranca AS
 SELECT 
     status,
@@ -51,6 +56,8 @@ FROM public.fila_cobrancas
 GROUP BY status, canal;
 
 -- vw_fluxo_caixa_diario
+-- Guard: 42P16 — earlier definition has different columns (dia, empresa_id, entradas, saidas, saldo)
+DROP VIEW IF EXISTS public.vw_fluxo_caixa_diario;
 CREATE OR REPLACE VIEW public.vw_fluxo_caixa_diario AS
 SELECT 
     data_vencimento as data,
@@ -67,6 +74,8 @@ FROM public.contas_pagar
 GROUP BY data_vencimento;
 
 -- vw_saldos_contas
+-- Guard: 42P16 — earlier definition has more columns (id, tipo_conta, cor, ativo, empresa_id, empresa_nome)
+DROP VIEW IF EXISTS public.vw_saldos_contas;
 CREATE OR REPLACE VIEW public.vw_saldos_contas AS
 SELECT 
     'Mock Bank' as banco,

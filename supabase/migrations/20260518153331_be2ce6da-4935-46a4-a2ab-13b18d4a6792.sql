@@ -3,6 +3,10 @@ ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'financeiro';
 ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'operacional';
 ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'visualizador';
 
+-- Guard: profiles.role must exist before the SQL function references it
+-- (LANGUAGE sql validates column refs at creation time, unlike plpgsql)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'visualizador';
+
 -- Update has_role to use the profiles table (matching Finance Hub logic)
 -- Using existing parameter names to avoid replacement issues
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role app_role)
@@ -67,14 +71,17 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE public.profiles ALTER COLUMN role SET DEFAULT 'visualizador';
 
 -- RPCs for automation
+-- DROP first: 42P13 fires when get_cron_jobs() already exists with a different return type
+-- get_cron_run_history is NOT stubbed here: 20260417194817 defines the 2-arg version, and
+-- 20260518170823 replaces it. Creating a 0-arg overload here would cause SQLSTATE 42725
+-- (ambiguous function) in the REVOKE loop of 20260518170823.
+-- Drop stale 0-arg stub: old version of this migration created get_cron_run_history()
+-- (SECURITY DEFINER). Supabase Preview incremental apply does not revert old DB objects,
+-- so the stale 0-arg coexists with the 2-arg TABLE version from 20260417194817 and causes
+-- 42725 in the bare-name REVOKE loop of 20260518170823.
+DROP FUNCTION IF EXISTS public.get_cron_run_history();
+DROP FUNCTION IF EXISTS public.get_cron_jobs();
 CREATE OR REPLACE FUNCTION public.get_cron_jobs()
-RETURNS JSONB AS $$
-BEGIN
-    RETURN '[]'::jsonb;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE OR REPLACE FUNCTION public.get_cron_run_history()
 RETURNS JSONB AS $$
 BEGIN
     RETURN '[]'::jsonb;

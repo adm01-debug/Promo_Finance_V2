@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS public.logs_conciliacao_retroativa (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.logs_conciliacao_retroativa ENABLE ROW LEVEL SECURITY;
+-- Guard: 42703 — table created in 20260508115859 without user_id; CREATE TABLE IF NOT EXISTS was no-op
+ALTER TABLE public.logs_conciliacao_retroativa ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
 CREATE POLICY "logs_retro_owner_all" ON public.logs_conciliacao_retroativa
   FOR ALL TO authenticated
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);

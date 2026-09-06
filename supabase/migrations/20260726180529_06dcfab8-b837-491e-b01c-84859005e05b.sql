@@ -1,4 +1,8 @@
-SELECT cron.unschedule('enviar-digest-conformidade-diario');
+DO $$
+BEGIN
+  PERFORM cron.unschedule('enviar-digest-conformidade-diario');
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
 
 SELECT cron.schedule(
   'enviar-digest-conformidade-horario',

@@ -38,6 +38,7 @@ REVOKE ALL ON FUNCTION public.get_cron_run_history(text, integer) FROM PUBLIC, a
 GRANT EXECUTE ON FUNCTION public.get_cron_run_history(text, integer) TO authenticated, service_role;
 
 -- get_cron_jobs: deixar de mascarar falhas em lista vazia
+DROP FUNCTION IF EXISTS public.get_cron_jobs();
 CREATE OR REPLACE FUNCTION public.get_cron_jobs()
 RETURNS TABLE(
   jobid bigint, schedule text, command text, nodename text, nodeport integer,

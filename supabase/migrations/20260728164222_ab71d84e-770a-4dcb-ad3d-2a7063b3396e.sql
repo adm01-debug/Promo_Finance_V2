@@ -22,22 +22,28 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.regras_contabilizacao_automatica 
 GRANT ALL ON public.regras_contabilizacao_automatica TO service_role;
 ALTER TABLE public.regras_contabilizacao_automatica ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "regras_contab_select" ON public.regras_contabilizacao_automatica
-  FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
-CREATE POLICY "regras_contab_write" ON public.regras_contabilizacao_automatica
-  FOR ALL TO authenticated
-  USING (
-    public.empresa_acessivel(empresa_id)
-    AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') OR public.has_role(auth.uid(), 'contador'))
-  )
-  WITH CHECK (
-    public.empresa_acessivel(empresa_id)
-    AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') OR public.has_role(auth.uid(), 'contador'))
-  );
+DO $$ BEGIN
+  CREATE POLICY "regras_contab_select" ON public.regras_contabilizacao_automatica
+    FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  CREATE POLICY "regras_contab_write" ON public.regras_contabilizacao_automatica
+    FOR ALL TO authenticated
+    USING (
+      public.empresa_acessivel(empresa_id)
+      AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') OR public.has_role(auth.uid(), 'contador'))
+    )
+    WITH CHECK (
+      public.empresa_acessivel(empresa_id)
+      AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') OR public.has_role(auth.uid(), 'contador'))
+    );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE TRIGGER trg_regras_contab_updated_at
-  BEFORE UPDATE ON public.regras_contabilizacao_automatica
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_regras_contab_updated_at
+    BEFORE UPDATE ON public.regras_contabilizacao_automatica
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ===== Log de eventos contabilizados =====
 CREATE TABLE IF NOT EXISTS public.eventos_contabilizacao_log (
@@ -62,5 +68,7 @@ GRANT SELECT ON public.eventos_contabilizacao_log TO authenticated;
 GRANT ALL ON public.eventos_contabilizacao_log TO service_role;
 ALTER TABLE public.eventos_contabilizacao_log ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "eventos_contab_select" ON public.eventos_contabilizacao_log
-  FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+DO $$ BEGIN
+  CREATE POLICY "eventos_contab_select" ON public.eventos_contabilizacao_log
+    FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

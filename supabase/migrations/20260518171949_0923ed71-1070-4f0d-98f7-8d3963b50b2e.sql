@@ -38,5 +38,8 @@ CREATE TABLE IF NOT EXISTS public.feedback_conciliacao_ia (
 ALTER TABLE public.regras_conciliacao ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.feedback_conciliacao_ia ENABLE ROW LEVEL SECURITY;
 
+-- Guard: 42703 — table created in 20251220014622 without user_id; LANGUAGE sql validates col refs at creation time
+ALTER TABLE public.feedback_conciliacao_ia ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+
 CREATE POLICY "Users can view rules" ON public.regras_conciliacao FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Users can manage feedback" ON public.feedback_conciliacao_ia FOR ALL TO authenticated USING (auth.uid() = user_id);

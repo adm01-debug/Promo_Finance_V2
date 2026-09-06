@@ -4,6 +4,10 @@ DO $$ BEGIN ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'operacional'; EX
 DO $$ BEGIN ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'visualizador'; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'contador'; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+-- Guard: is_active and expires_at must exist before LANGUAGE sql function references them
+ALTER TABLE public.user_roles ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+ALTER TABLE public.user_roles ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
+
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role app_role)
 RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT EXISTS (

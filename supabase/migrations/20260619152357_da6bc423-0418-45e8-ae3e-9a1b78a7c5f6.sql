@@ -108,7 +108,11 @@ CREATE INDEX IF NOT EXISTS idx_lancamentos_contabeis_empresa_user ON public.lanc
 -- 5) Compliance evidence packages: scope through company-scoped verification parent.
 DROP POLICY IF EXISTS "Access by verification_id" ON public.evidencias_pacotes;
 
-CREATE POLICY "Evidencias scoped by verificacao"
+-- Guard: 42703(verificacao_id) — column added by a later migration, may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='evidencias_pacotes' AND column_name='verificacao_id') THEN
+    EXECUTE $sql$CREATE POLICY "Evidencias scoped by verificacao"
   ON public.evidencias_pacotes
   FOR ALL
   TO authenticated
@@ -143,7 +147,21 @@ CREATE POLICY "Evidencias scoped by verificacao"
           )
         )
     )
-  );
+  )$sql$;
+  END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_evidencias_pacotes_verificacao_id ON public.evidencias_pacotes(verificacao_id);
-CREATE INDEX IF NOT EXISTS idx_verificacoes_conformidade_empresa ON public.verificacoes_conformidade(empresa_id);
+-- Guard: 42703(verificacao_id) — column added by a later migration, may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='evidencias_pacotes' AND column_name='verificacao_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_evidencias_pacotes_verificacao_id ON public.evidencias_pacotes(verificacao_id)';
+  END IF;
+END $$;
+-- Guard: 42703(empresa_id) — column may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='verificacoes_conformidade' AND column_name='empresa_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_verificacoes_conformidade_empresa ON public.verificacoes_conformidade(empresa_id)';
+  END IF;
+END $$;

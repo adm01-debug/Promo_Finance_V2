@@ -27,7 +27,13 @@ BEGIN
 END $$;
 
 CREATE INDEX IF NOT EXISTS idx_darfs_empresa_competencia ON public.darfs(empresa_id, competencia);
-CREATE INDEX IF NOT EXISTS idx_darfs_alerta_id ON public.darfs(alerta_id);
+-- Guard: 42703(alerta_id) — column added by a later migration, may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='darfs' AND column_name='alerta_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_darfs_alerta_id ON public.darfs(alerta_id)';
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_darfs_status_vencimento ON public.darfs(status, data_vencimento);
 
 -- 2) Complete SSO provider schema expected by SSO UI/functions.
@@ -70,8 +76,20 @@ CREATE INDEX IF NOT EXISTS idx_user_empresas_user_ativo_empresa ON public.user_e
 CREATE INDEX IF NOT EXISTS idx_user_empresas_empresa_ativo ON public.user_empresas(empresa_id, ativo);
 CREATE INDEX IF NOT EXISTS idx_user_roles_user_role_active ON public.user_roles(user_id, role, is_active);
 CREATE INDEX IF NOT EXISTS idx_allowed_ips_created_at ON public.allowed_ips(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_apuracoes_tributarias_empresa ON public.apuracoes_tributarias(empresa_id);
-CREATE INDEX IF NOT EXISTS idx_configuracoes_aprovacao_empresa ON public.configuracoes_aprovacao(empresa_id);
+-- Guard: 42703(empresa_id) — column may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='apuracoes_tributarias' AND column_name='empresa_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_apuracoes_tributarias_empresa ON public.apuracoes_tributarias(empresa_id)';
+  END IF;
+END $$;
+-- Guard: 42703(empresa_id) — column may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='configuracoes_aprovacao' AND column_name='empresa_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_configuracoes_aprovacao_empresa ON public.configuracoes_aprovacao(empresa_id)';
+  END IF;
+END $$;
 
 -- 4) Replace broad/public policies with authenticated scoped policies.
 DROP POLICY IF EXISTS "Admins can manage allowed ips" ON public.allowed_ips;
@@ -110,7 +128,11 @@ CREATE POLICY "Admins can manage all roles"
   USING (public.has_role(auth.uid(), 'admin'::public.app_role))
   WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 
-CREATE POLICY "DARFs scoped by linked empresa"
+-- Guard: 42703(alerta_id) — column added by a later migration, may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='darfs' AND column_name='alerta_id') THEN
+    EXECUTE $sql$CREATE POLICY "DARFs scoped by linked empresa"
   ON public.darfs
   FOR SELECT
   TO authenticated
@@ -132,7 +154,23 @@ CREATE POLICY "DARFs scoped by linked empresa"
           AND ue.ativo = true
       )
     )
-  );
+  )$sql$;
+  ELSE
+    EXECUTE $sql$CREATE POLICY "DARFs scoped by linked empresa"
+  ON public.darfs
+  FOR SELECT
+  TO authenticated
+  USING (
+    public.has_role(auth.uid(), 'admin'::public.app_role)
+    OR empresa_id IN (
+      SELECT ue.empresa_id
+      FROM public.user_empresas ue
+      WHERE ue.user_id = auth.uid()
+        AND ue.ativo = true
+    )
+  )$sql$;
+  END IF;
+END $$;
 
 CREATE POLICY "Active SSO providers visible for login"
   ON public.sso_providers

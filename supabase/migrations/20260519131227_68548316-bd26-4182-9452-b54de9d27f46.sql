@@ -1,9 +1,22 @@
 -- Align Expert System with Frontend Types
-ALTER TABLE public.expert_conversations RENAME COLUMN title TO titulo;
-ALTER TABLE public.expert_conversations RENAME COLUMN context_summary TO resumo;
+-- Guard: 42703 — columns may not exist on preview branch if table was created without them
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='expert_conversations' AND column_name='title') THEN
+        ALTER TABLE public.expert_conversations RENAME COLUMN title TO titulo;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='expert_conversations' AND column_name='context_summary') THEN
+        ALTER TABLE public.expert_conversations RENAME COLUMN context_summary TO resumo;
+    END IF;
+END $$;
 
-ALTER TABLE public.expert_messages DROP COLUMN actions_executed;
-ALTER TABLE public.expert_messages ADD COLUMN actions_executed BOOLEAN DEFAULT false;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='expert_messages' AND column_name='actions_executed') THEN
+        ALTER TABLE public.expert_messages DROP COLUMN actions_executed;
+    END IF;
+    ALTER TABLE public.expert_messages ADD COLUMN IF NOT EXISTS actions_executed BOOLEAN DEFAULT false;
+END $$;
 
 -- Missing Tables for Filters and Routing
 CREATE TABLE IF NOT EXISTS public.user_filter_presets (

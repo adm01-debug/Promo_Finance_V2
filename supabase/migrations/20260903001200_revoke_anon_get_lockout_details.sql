@@ -13,13 +13,3 @@ BEGIN;
 REVOKE EXECUTE ON FUNCTION public.get_lockout_details(text) FROM anon;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903001200',
-  'revoke_anon_get_lockout_details',
-  ARRAY[
-    'REVOKE EXECUTE ON FUNCTION public.get_lockout_details(text) FROM anon'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

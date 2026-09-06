@@ -29,7 +29,11 @@ BEGIN
   END LOOP;
 END $$;
 
-COMMENT ON FUNCTION public.get_active_uapi_token() IS
-  'CRÍTICO: retorna tokens Lalamove UAPI. EXECUTE restrito a service_role. Item 19.';
-COMMENT ON FUNCTION public.get_cron_jobs() IS
-  'Admin-only via Edge Function com verificação de role. EXECUTE restrito a service_role. Item 19.';
+DO $$ BEGIN
+  COMMENT ON FUNCTION public.get_active_uapi_token() IS
+    'CRÍTICO: retorna tokens Lalamove UAPI. EXECUTE restrito a service_role. Item 19.';
+EXCEPTION WHEN undefined_function OR undefined_object THEN NULL; END $$;
+DO $$ BEGIN
+  COMMENT ON FUNCTION public.get_cron_jobs() IS
+    'Admin-only via Edge Function com verificação de role. EXECUTE restrito a service_role. Item 19.';
+EXCEPTION WHEN undefined_function OR undefined_object THEN NULL; END $$;

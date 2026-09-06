@@ -165,13 +165,3 @@ END;
 $$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903000700',
-  'fix_auditar_cross_tenant_coalesce_ativo',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.auditar_acessos_cross_tenant(_horas integer DEFAULT 1) RETURNS jsonb — substitui COALESCE(ue.ativo, true) por ue.ativo = true no CTE viol (alinha com empresa_acessivel)'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

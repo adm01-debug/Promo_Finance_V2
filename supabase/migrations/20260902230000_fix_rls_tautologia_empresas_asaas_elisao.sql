@@ -110,7 +110,3 @@ CREATE POLICY "Users can manage company action tasks" ON public.elisao_tarefas_a
   FOR ALL USING (empresa_acessivel(empresa_id));
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902230000','fix_rls_tautologia_empresas_asaas_elisao')
-ON CONFLICT (version) DO NOTHING;

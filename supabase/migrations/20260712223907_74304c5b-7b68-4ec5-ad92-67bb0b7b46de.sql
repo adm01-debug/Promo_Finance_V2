@@ -26,10 +26,16 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.n8n_workflow_configs TO authentic
 GRANT ALL ON public.n8n_workflow_configs TO service_role;
 ALTER TABLE public.n8n_workflow_configs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Admins e managers gerenciam configs n8n"
-  ON public.n8n_workflow_configs FOR ALL TO authenticated
-  USING (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'manager'))
-  WITH CHECK (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'manager'));
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs;
+  CREATE POLICY "Admins e managers gerenciam configs n8n"
+    ON public.n8n_workflow_configs FOR ALL TO authenticated
+    USING (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'manager'))
+    WITH CHECK (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'manager'));
+EXCEPTION WHEN invalid_text_representation OR undefined_function OR undefined_object THEN
+  NULL;
+END $$;
 
 -- Auditoria de disparos
 CREATE TABLE IF NOT EXISTS public.n8n_dispatch_logs (
@@ -54,11 +60,22 @@ GRANT SELECT ON public.n8n_dispatch_logs TO authenticated;
 GRANT ALL ON public.n8n_dispatch_logs TO service_role;
 ALTER TABLE public.n8n_dispatch_logs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Admins e managers visualizam logs n8n"
-  ON public.n8n_dispatch_logs FOR SELECT TO authenticated
-  USING (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'manager'));
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs;
+  CREATE POLICY "Admins e managers visualizam logs n8n"
+    ON public.n8n_dispatch_logs FOR SELECT TO authenticated
+    USING (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'manager'));
+EXCEPTION WHEN invalid_text_representation OR undefined_function OR undefined_object THEN
+  NULL;
+END $$;
 
 -- updated_at trigger
-CREATE TRIGGER trg_n8n_cfg_updated
-  BEFORE UPDATE ON public.n8n_workflow_configs
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $$
+BEGIN
+  CREATE TRIGGER trg_n8n_cfg_updated
+    BEFORE UPDATE ON public.n8n_workflow_configs
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN
+  NULL;
+END $$;

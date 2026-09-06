@@ -40,6 +40,8 @@ BEGIN
 END;
 $$;
 
+-- Guard: 42P13 — drop first if param name changed on preview branch (_country→p_country_code)
+DROP FUNCTION IF EXISTS public.is_country_allowed_for_login(TEXT);
 CREATE OR REPLACE FUNCTION public.is_country_allowed_for_login(p_country_code TEXT)
 RETURNS BOOLEAN
 LANGUAGE plpgsql

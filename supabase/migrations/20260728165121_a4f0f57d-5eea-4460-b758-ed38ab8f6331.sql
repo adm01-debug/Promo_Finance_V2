@@ -1,4 +1,5 @@
 -- ============ Alertas de vencimento ============
+DROP FUNCTION IF EXISTS public.gerar_alertas_vencimento();
 CREATE OR REPLACE FUNCTION public.gerar_alertas_vencimento()
 RETURNS integer
 LANGUAGE plpgsql
@@ -65,6 +66,7 @@ REVOKE EXECUTE ON FUNCTION public.gerar_alertas_vencimento() FROM PUBLIC, anon, 
 GRANT EXECUTE ON FUNCTION public.gerar_alertas_vencimento() TO service_role;
 
 -- ============ Detecção de duplicidades financeiras ============
+DROP FUNCTION IF EXISTS public.detectar_duplicidades_financeiras(uuid, text);
 CREATE OR REPLACE FUNCTION public.detectar_duplicidades_financeiras(
   p_empresa_id uuid,
   p_tabela text DEFAULT 'contas_pagar'
@@ -126,6 +128,7 @@ REVOKE EXECUTE ON FUNCTION public.detectar_duplicidades_financeiras(uuid, text) 
 GRANT EXECUTE ON FUNCTION public.detectar_duplicidades_financeiras(uuid, text) TO authenticated, service_role;
 
 -- ============ Gestão de cron jobs (admin) ============
+DROP FUNCTION IF EXISTS public.toggle_cron_job(bigint, boolean);
 CREATE OR REPLACE FUNCTION public.toggle_cron_job(job_id bigint, is_active boolean)
 RETURNS boolean
 LANGUAGE plpgsql
@@ -151,6 +154,7 @@ $$;
 REVOKE EXECUTE ON FUNCTION public.toggle_cron_job(bigint, boolean) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.toggle_cron_job(bigint, boolean) TO authenticated, service_role;
 
+DROP FUNCTION IF EXISTS public.delete_cron_job(bigint);
 CREATE OR REPLACE FUNCTION public.delete_cron_job(job_id bigint)
 RETURNS boolean
 LANGUAGE plpgsql

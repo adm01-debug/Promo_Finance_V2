@@ -35,13 +35,3 @@ END;
 $function$;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
-VALUES (
-  '20260903001000',
-  'fix_set_empresa_id_default_coalesce_ativo',
-  ARRAY[
-    'CREATE OR REPLACE FUNCTION public.set_empresa_id_default() RETURNS trigger — substitui COALESCE(ue.ativo, true) por ue.ativo = true; afeta lalamove_orders, drivers, alerts, alert_configurations, risk_rules'
-  ]
-)
-ON CONFLICT (version) DO NOTHING;

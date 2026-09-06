@@ -64,7 +64,3 @@ CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos AS PER
 DROP POLICY IF EXISTS sped_contabil_update ON public.sped_contabil_arquivos;
 
 COMMIT;
-
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902200000','fix_rls_cross_tenant_leak_grupo_c')
-ON CONFLICT (version) DO NOTHING;
