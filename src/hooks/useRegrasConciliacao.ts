@@ -1,4 +1,3 @@
-// @ts-nocheck — tabelas ausentes em integrations/supabase/types.ts (gerado desatualizado); remover após regenerar os types.
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -9,7 +8,7 @@ export async function aprenderRegra(
   descricaoExtrato: string,
   entidadeNome: string,
   lancamentoTipo: 'pagar' | 'receber',
-  entidadeId?: string,
+  entidadeId?: string
 ) {
   // Normalize pattern
   const padrao = descricaoExtrato
@@ -37,6 +36,7 @@ export async function aprenderRegra(
   } else {
     const user = (await supabase.auth.getUser()).data.user;
     await supabase.from('regras_conciliacao').insert({
+      nome: entidadeNome,
       padrao_descricao: padrao,
       entidade_nome: entidadeNome,
       lancamento_tipo: lancamentoTipo,

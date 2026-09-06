@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Bot, Send, Sparkles, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { env } from '@/config/env';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -89,7 +90,7 @@ export function CopilotTributarioFloat({ empresaId }: Props) {
     abortRef.current = controller;
 
     try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/copilot-tributario`;
+      const url = `${env.SUPABASE_URL}/functions/v1/copilot-tributario`;
       const session = (await import('@/integrations/supabase/client')).supabase.auth;
       const { data: sessionData } = await session.getSession();
       const token = sessionData.session?.access_token;

@@ -69,10 +69,7 @@ export function MFASettings() {
 
   if (showSetup) {
     return (
-      <TwoFactorSetup
-        onComplete={() => setShowSetup(false)}
-        onSkip={() => setShowSetup(false)}
-      />
+      <TwoFactorSetup onComplete={() => setShowSetup(false)} onSkip={() => setShowSetup(false)} />
     );
   }
 
@@ -103,7 +100,9 @@ export function MFASettings() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${isEnabled ? 'bg-success/10' : 'bg-warning/10'}`}>
+                  <div
+                    className={`p-2 rounded-lg ${isEnabled ? 'bg-success/10' : 'bg-warning/10'}`}
+                  >
                     {isEnabled ? (
                       <ShieldCheck className="h-6 w-6 text-success" />
                     ) : (
@@ -136,7 +135,8 @@ export function MFASettings() {
                     <div>
                       <p className="font-medium">Recomendação de Segurança</p>
                       <p className="text-sm text-muted-foreground">
-                        A autenticação de dois fatores protege sua conta mesmo que sua senha seja comprometida.
+                        A autenticação de dois fatores protege sua conta mesmo que sua senha seja
+                        comprometida.
                       </p>
                     </div>
                   </div>
@@ -147,35 +147,40 @@ export function MFASettings() {
                 </motion.div>
               ) : (
                 <div className="space-y-4">
-                  {factors.filter(f => f.status === 'verified').map((factor) => (
-                    <div
-                      key={factor.id}
-                      className="flex items-center justify-between p-4 bg-muted/30 rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Smartphone className="h-5 w-5 text-primary" />
-                        <div>
-                          <p className="font-medium">
-                            {factor.friendly_name || 'Authenticator App'}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Adicionado em {format(new Date(factor.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => {
-                          setDisableFactorId(factor.id);
-                          setShowDisableDialog(true);
-                        }}
+                  {factors
+                    .filter((f) => f.status === 'verified')
+                    .map((factor) => (
+                      <div
+                        key={factor.id}
+                        className="flex items-center justify-between p-4 bg-muted/30 rounded-lg"
                       >
-                        Remover
-                      </Button>
-                    </div>
-                  ))}
+                        <div className="flex items-center gap-3">
+                          <Smartphone className="h-5 w-5 text-primary" />
+                          <div>
+                            <p className="font-medium">
+                              {factor.friendly_name || 'Authenticator App'}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Adicionado em{' '}
+                              {format(new Date(factor.created_at), "dd/MM/yyyy 'às' HH:mm", {
+                                locale: ptBR,
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => {
+                            setDisableFactorId(factor.id);
+                            setShowDisableDialog(true);
+                          }}
+                        >
+                          Remover
+                        </Button>
+                      </div>
+                    ))}
                 </div>
               )}
             </CardContent>
@@ -188,9 +193,7 @@ export function MFASettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>Sessões Ativas</CardTitle>
-                  <CardDescription>
-                    Gerencie os dispositivos conectados à sua conta
-                  </CardDescription>
+                  <CardDescription>Gerencie os dispositivos conectados à sua conta</CardDescription>
                 </div>
                 <div className="flex items-center gap-3">
                   <IpMaskToggle />
@@ -249,7 +252,7 @@ export function MFASettings() {
                             )}
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {formatDistanceToNow(new Date(session.last_activity), {
+                              {formatDistanceToNow(new Date(session.last_active), {
                                 addSuffix: true,
                                 locale: ptBR,
                               })}
@@ -281,8 +284,8 @@ export function MFASettings() {
           <AlertDialogHeader>
             <AlertDialogTitle>Desativar Autenticação 2FA?</AlertDialogTitle>
             <AlertDialogDescription>
-              Ao desativar a autenticação de dois fatores, sua conta ficará menos protegida.
-              Você precisará configurar novamente se quiser reativar.
+              Ao desativar a autenticação de dois fatores, sua conta ficará menos protegida. Você
+              precisará configurar novamente se quiser reativar.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

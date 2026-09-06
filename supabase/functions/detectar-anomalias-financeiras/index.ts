@@ -48,6 +48,10 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // exigirInternaOuUsuario aceitava qualquer usuário autenticado (sem checar
+  // role) para disparar um scan full-service-role de TODAS as empresas — achado
+  // P1 de auditoria. Cron/automação interna segue liberado; chamada de usuário
+  // agora exige o papel admin, alinhado com o botão manual ficar em admin/AutomacoesTab.
   const interna = await exigirChamadaInterna(req, 'anomalias_financeiras_cron');
   const guard = interna.ok ? interna : await exigirPapel(req, ['admin']);
   if (!guard.ok) return guard.resposta;

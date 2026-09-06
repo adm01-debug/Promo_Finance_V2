@@ -15,8 +15,9 @@ import { useEmpresas } from '@/hooks/useFinancialData';
 import { useScimTokens, useCreateScimToken, useRevokeScimToken, type ScimDefaultRole } from '@/hooks/useScimTokens';
 import { ScimSetupGuide } from './ScimSetupGuide';
 import { toast } from 'sonner';
+import { env } from '@/config/env';
 
-const SCIM_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
+const SCIM_BASE = `${env.SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
 
 export function ScimTokensTab() {
   const { data: empresas = [] } = useEmpresas();

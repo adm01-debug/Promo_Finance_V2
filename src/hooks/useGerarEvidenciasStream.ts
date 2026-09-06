@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EvidenciaPacote } from './useEvidenciasPack';
+import { env } from '@/config/env';
 
 export interface ProgressEvent {
   step: string;
@@ -30,7 +31,7 @@ export interface GerarInput {
   empresa_id?: string;
 }
 
-const PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID as string;
+const PROJECT_ID = env.SUPABASE_PROJECT_ID;
 const FUNCTION_URL = `https://${PROJECT_ID}.supabase.co/functions/v1/gerar-pacote-evidencias?stream=1`;
 
 const STORAGE_KEY = 'compliance:last-evidence-pack';
@@ -156,7 +157,7 @@ export function useGerarEvidenciasStream() {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+            apikey: env.SUPABASE_PUBLISHABLE_KEY,
           },
           body: JSON.stringify(input),
           signal: ctrl.signal,

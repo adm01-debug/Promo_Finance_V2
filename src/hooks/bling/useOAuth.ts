@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { blingAction } from './client';
+import { env } from '@/config/env';
 
 export function useBlingOAuth() {
   const queryClient = useQueryClient();
 
   const getAuthUrl = () => {
-    const clientId = import.meta.env.VITE_BLING_CLIENT_ID || '';
+    const clientId = env.BLING_CLIENT_ID || '';
     const redirectUri = `${window.location.origin}/bling`;
     return `https://www.bling.com.br/Api/v3/oauth/authorize?response_type=code&client_id=${clientId}&state=bling_auth&redirect_uri=${encodeURIComponent(redirectUri)}`;
   };

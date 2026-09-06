@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { env } from '@/config/env';
 
 interface WebhookLog {
   id: string;
@@ -27,7 +28,7 @@ interface WebhookLog {
 }
 
 export function WebhookConfigPanel() {
-  const [webhookUrl] = useState(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-financeiro?id=project_alpha`);
+  const [webhookUrl] = useState(`${env.SUPABASE_URL}/functions/v1/webhook-financeiro?id=project_alpha`);
   const [copied, setCopied] = useState(false);
   const [logs, setLogs] = useState<WebhookLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);

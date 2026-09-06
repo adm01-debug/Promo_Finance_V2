@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { env } from '@/config/env';
 import type { ExternalListResponse } from './types';
 
 const EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES = new Set([
@@ -29,7 +30,7 @@ export async function fetchExternalData<T>(params: {
   } = await supabase.auth.getSession();
   if (!session) throw new Error('Não autenticado');
 
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const projectId = env.SUPABASE_PROJECT_ID;
   const queryParams = new URLSearchParams({
     tabela: params.tabela,
     limit: String(params.limit),
@@ -42,7 +43,7 @@ export async function fetchExternalData<T>(params: {
     {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        apikey: env.SUPABASE_PUBLISHABLE_KEY,
       },
     },
   );

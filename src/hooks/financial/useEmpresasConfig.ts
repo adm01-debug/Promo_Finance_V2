@@ -9,6 +9,7 @@ import type {
   Empresa,
   RegraRoteamento,
 } from './types';
+import { env } from '@/config/env';
 
 export function useEmpresas() {
   return useQuery({
@@ -67,13 +68,13 @@ export function useContasBancarias(empresaId?: string) {
         queryParams.append('empresa_id', `eq.${empresaId}`);
       }
 
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const projectId = env.SUPABASE_PROJECT_ID;
       const response = await fetch(
         `https://${projectId}.supabase.co/rest/v1/contas_bancarias?${queryParams}`,
         {
           headers: {
             Authorization: `Bearer ${session.access_token}`,
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            apikey: env.SUPABASE_PUBLISHABLE_KEY,
           },
         },
       );

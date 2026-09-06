@@ -11,6 +11,13 @@ CREATE TABLE IF NOT EXISTS public.categorias (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
+-- Guard: categorias já existe desde 001_create_tables.sql (sem empresa_id,
+-- só user_id) — o CREATE TABLE IF NOT EXISTS acima é no-op num replay do
+-- zero, e as duas CREATE POLICY abaixo referenciam empresa_id diretamente.
+-- Sem esta linha, esta própria migration quebra com
+-- "column empresa_id does not exist" (achado na auditoria da PR #63).
+ALTER TABLE public.categorias ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+
 -- Enable RLS
 ALTER TABLE public.categorias ENABLE ROW LEVEL SECURITY;
 

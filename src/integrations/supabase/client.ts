@@ -1,41 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { addBreadcrumb } from '@/lib/telemetry';
 import { getCorrelationId } from '@/lib/correlation-id';
+import { env } from '@/config/env';
 import type { Database } from './types';
 
-/**
- * Variáveis de ambiente obrigatórias. Sem fallback hardcoded:
- * builds sem injeção falham cedo com mensagem clara em vez de
- * silenciosamente apontar para um projeto Supabase antigo.
- */
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
-  | string
-  | undefined;
-const SUPABASE_PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID as
-  | string
-  | undefined;
+const storageKey = `sb-${env.SUPABASE_PROJECT_ID}-auth-token`;
 
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY || !SUPABASE_PROJECT_ID) {
-  const missing = [
-    !SUPABASE_URL && 'VITE_SUPABASE_URL',
-    !SUPABASE_PUBLISHABLE_KEY && 'VITE_SUPABASE_PUBLISHABLE_KEY',
-    !SUPABASE_PROJECT_ID && 'VITE_SUPABASE_PROJECT_ID',
-  ]
-    .filter(Boolean)
-    .join(', ');
-  const msg =
-    `[promo-finance] Configuração Supabase ausente: ${missing}. ` +
-    `Defina essas variáveis no ambiente de build (.env ou Build Secrets) ` +
-    `antes de publicar. Veja .env.example.`;
-  // Falha explícita — melhor um erro de boot legível do que um bundle
-  // apontando para credenciais erradas.
-  throw new Error(msg);
-}
-
-const storageKey = `sb-${SUPABASE_PROJECT_ID}-auth-token`;
-
-const supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+const supabaseInstance = createClient<Database>(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,
     storageKey,
@@ -111,9 +82,9 @@ export async function verifySupabaseHealth(
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/health`, {
+    const res = await fetch(`${env.SUPABASE_URL}/auth/v1/health`, {
       method: 'GET',
-      headers: { apikey: SUPABASE_PUBLISHABLE_KEY as string },
+      headers: { apikey: env.SUPABASE_PUBLISHABLE_KEY },
       signal: controller.signal,
     });
     // GoTrue responde 200 quando saudável. Qualquer 2xx/3xx = ok.
@@ -125,4 +96,3 @@ export async function verifySupabaseHealth(
     clearTimeout(timer);
   }
 }
-

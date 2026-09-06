@@ -37,6 +37,18 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
 
+      // ─── Fonte única de configuração ───────────────────────────────────────────────────────────────────────────────────────
+      // Nenhum arquivo pode ler `import.meta.env.VITE_*` diretamente.
+      // Toda configuração passa por src/config/env.ts (validada com Zod).
+      // Excepções explícitas: env.ts (fonte) e useWebPushSubscription.ts (VAPID).
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "MemberExpression[object.object.name='meta'][object.property.name='env'][property.name=/^VITE_/]",
+          "message": "Leia variáveis de ambiente via import { env } from '@/config/env' — não use import.meta.env.VITE_* diretamente. Veja src/config/env.ts."
+        }
+      ],
+
       "no-debugger": "error",
       "no-console": ["warn", { allow: ["warn", "error"] }],
 
@@ -88,6 +100,15 @@ export default tseslint.config(
       ],
     },
   },
+  // env.ts é a única fonte legítima para leitura direta de VITE_*
+  // useWebPushSubscription.ts lê VITE_VAPID_PUBLIC_KEY diretamente
+  // (VAPID não está centralizado no env.ts por ser uma feature-flag opcional)
+  {
+    files: ["src/config/env.ts", "src/hooks/useWebPushSubscription.ts"],
+    rules: {
+      "no-restricted-syntax": "off",
+    },
+  },
   {
     // Arquivos gerados ou de configuração — sem limite de tamanho
     files: [
@@ -104,6 +125,7 @@ export default tseslint.config(
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "no-console": "off",
+      "no-restricted-syntax": "off",
     },
   },
   {
@@ -135,6 +157,7 @@ export default tseslint.config(
       "src/lib/format-filter-value.ts",
       "src/lib/persisted-ui-state.ts",
       "src/lib/pdf-layout.ts",
+      "src/config/env.ts",
       "supabase/functions/_shared/**/*.ts",
       "supabase/functions/gerar-alertas-dispatcher/**/*.ts",
       "supabase/functions/validate-ip-geo/**/*.ts",
@@ -145,4 +168,3 @@ export default tseslint.config(
     },
   },
 );
-
