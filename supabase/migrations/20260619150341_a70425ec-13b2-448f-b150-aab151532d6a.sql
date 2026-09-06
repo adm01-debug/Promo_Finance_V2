@@ -149,10 +149,11 @@ BEGIN
 END $$;
 
 -- 12) historico_cobrancas_boletos — sem empresa_id direto, usa conta_receber
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703(conta_receber_id) — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='historico_cobrancas_boletos') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='historico_cobrancas_boletos')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='historico_cobrancas_boletos' AND column_name='conta_receber_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "auth select historico_cobrancas_boletos" ON public.historico_cobrancas_boletos$sql$;
     EXECUTE $sql$CREATE POLICY "historico_cobrancas_boletos_empresa_select" ON public.historico_cobrancas_boletos
   FOR SELECT TO authenticated
@@ -164,10 +165,11 @@ BEGIN
 END $$;
 
 -- 13) itens_pedido_compra — via pedido pai
--- Guard: 42P01 — table may not exist on preview branch
+-- Guard: 42P01 + 42703(pedido_id) — table/column may not exist on preview branch
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='itens_pedido_compra') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='itens_pedido_compra')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='itens_pedido_compra' AND column_name='pedido_id') THEN
     EXECUTE $sql$DROP POLICY IF EXISTS "Users can view items" ON public.itens_pedido_compra$sql$;
     EXECUTE $sql$CREATE POLICY "itens_pedido_compra_empresa_select" ON public.itens_pedido_compra
   FOR SELECT TO authenticated
