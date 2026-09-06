@@ -2631,15 +2631,25 @@ DO $$ BEGIN GRANT SELECT,INSERT ON TABLE public.sso_user_groups TO sandbox_exec;
 
 -- FASE 3: Colunas faltando em tabelas comuns
 -- COLS alert_configurations
+DO $$ BEGIN
 ALTER TABLE public.alert_configurations ADD COLUMN IF NOT EXISTS empresa_id uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS alertas
+DO $$ BEGIN
 ALTER TABLE public.alertas ADD COLUMN IF NOT EXISTS empresa_id uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS alerts
+DO $$ BEGIN
 ALTER TABLE public.alerts ADD COLUMN IF NOT EXISTS empresa_id uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS api_keys
+DO $$ BEGIN
 ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS created_by uuid;
 ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS expires_at timestamp with time zone;
 ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS key_hash text NOT NULL;
@@ -2648,8 +2658,11 @@ ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS last_used_at timestamp with
 ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS name text NOT NULL;
 ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS revoked_at timestamp with time zone;
 ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS apuracoes_irpj_csll
+DO $$ BEGIN
 ALTER TABLE public.apuracoes_irpj_csll ADD COLUMN IF NOT EXISTS csll_a_pagar numeric DEFAULT 0 NOT NULL;
 ALTER TABLE public.apuracoes_irpj_csll ADD COLUMN IF NOT EXISTS csll_base numeric DEFAULT 0 NOT NULL;
 ALTER TABLE public.apuracoes_irpj_csll ADD COLUMN IF NOT EXISTS csll_total numeric DEFAULT 0 NOT NULL;
@@ -2667,34 +2680,55 @@ ALTER TABLE public.apuracoes_irpj_csll ADD COLUMN IF NOT EXISTS saldo_negativo_i
 ALTER TABLE public.apuracoes_irpj_csll ADD COLUMN IF NOT EXISTS total_tributos numeric DEFAULT 0 NOT NULL;
 ALTER TABLE public.apuracoes_irpj_csll ADD COLUMN IF NOT EXISTS trimestre integer;
 ALTER TABLE public.apuracoes_irpj_csll ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS bitrix24_stage_mappings
+DO $$ BEGIN
 ALTER TABLE public.bitrix24_stage_mappings ADD COLUMN IF NOT EXISTS lalamove_status text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS blocked_ips
+DO $$ BEGIN
 ALTER TABLE public.blocked_ips ADD COLUMN IF NOT EXISTS blocked_until timestamp with time zone;
 ALTER TABLE public.blocked_ips ADD COLUMN IF NOT EXISTS permanent boolean DEFAULT false NOT NULL;
 ALTER TABLE public.blocked_ips ADD COLUMN IF NOT EXISTS unblocked_at timestamp with time zone;
 ALTER TABLE public.blocked_ips ADD COLUMN IF NOT EXISTS unblocked_by uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS centros_custo
+DO $$ BEGIN
 ALTER TABLE public.centros_custo ADD COLUMN IF NOT EXISTS tipo text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS contas_receber
+DO $$ BEGIN
 ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS bitrix_deal_id text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS divergencias_conciliacao
+DO $$ BEGIN
 ALTER TABLE public.divergencias_conciliacao ADD COLUMN IF NOT EXISTS resolvida boolean DEFAULT false;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS elisao_alertas
+DO $$ BEGIN
 ALTER TABLE public.elisao_alertas ADD COLUMN IF NOT EXISTS descricao text NOT NULL;
 ALTER TABLE public.elisao_alertas ADD COLUMN IF NOT EXISTS lido boolean DEFAULT false NOT NULL;
 ALTER TABLE public.elisao_alertas ADD COLUMN IF NOT EXISTS referencia_id uuid;
 ALTER TABLE public.elisao_alertas ADD COLUMN IF NOT EXISTS resolvido_em timestamp with time zone;
 ALTER TABLE public.elisao_alertas ADD COLUMN IF NOT EXISTS tipo_divergencia text NOT NULL;
 ALTER TABLE public.elisao_alertas ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS elisao_creditos_auditoria
+DO $$ BEGIN
 ALTER TABLE public.elisao_creditos_auditoria ADD COLUMN IF NOT EXISTS aprovador_id uuid;
 ALTER TABLE public.elisao_creditos_auditoria ADD COLUMN IF NOT EXISTS cst_csosn text;
 ALTER TABLE public.elisao_creditos_auditoria ADD COLUMN IF NOT EXISTS data_aprovacao timestamp with time zone;
@@ -2704,26 +2738,38 @@ ALTER TABLE public.elisao_creditos_auditoria ADD COLUMN IF NOT EXISTS metodologi
 ALTER TABLE public.elisao_creditos_auditoria ADD COLUMN IF NOT EXISTS motivo_rejeicao text;
 ALTER TABLE public.elisao_creditos_auditoria ADD COLUMN IF NOT EXISTS nota_id uuid;
 ALTER TABLE public.elisao_creditos_auditoria ADD COLUMN IF NOT EXISTS score_confianca integer;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS elisao_regras_creditos
+DO $$ BEGIN
 ALTER TABLE public.elisao_regras_creditos ADD COLUMN IF NOT EXISTS base_legal text;
 ALTER TABLE public.elisao_regras_creditos ADD COLUMN IF NOT EXISTS ncm_prefixo text;
 ALTER TABLE public.elisao_regras_creditos ADD COLUMN IF NOT EXISTS tipo_credito text NOT NULL;
 ALTER TABLE public.elisao_regras_creditos ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS elisao_tarefas_acionaveis
+DO $$ BEGIN
 ALTER TABLE public.elisao_tarefas_acionaveis ADD COLUMN IF NOT EXISTS bitrix_sync_erro text;
 ALTER TABLE public.elisao_tarefas_acionaveis ADD COLUMN IF NOT EXISTS prazo date;
 ALTER TABLE public.elisao_tarefas_acionaveis ADD COLUMN IF NOT EXISTS sincronizado_em timestamp with time zone;
 ALTER TABLE public.elisao_tarefas_acionaveis ADD COLUMN IF NOT EXISTS tipo_oportunidade text DEFAULT 'credito_tributario'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS empresas
+DO $$ BEGIN
 ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS cnae_principal text;
 ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS codigo_fpas text;
 ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS is_padrao boolean DEFAULT false NOT NULL;
 ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS regime_tributario text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS evidencias_pacotes
+DO $$ BEGIN
 ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS escopos text[] DEFAULT '{}'::text[] NOT NULL;
 ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS gerado_por_email text;
 ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS manifest jsonb DEFAULT '{}'::jsonb NOT NULL;
@@ -2731,21 +2777,33 @@ ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS periodo_fim date;
 ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS periodo_inicio date;
 ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS storage_path text;
 ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS tamanho_bytes bigint;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS faturamento_mensal
+DO $$ BEGIN
 ALTER TABLE public.faturamento_mensal ADD COLUMN IF NOT EXISTS observacoes text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS fechamentos_tributarios
+DO $$ BEGIN
 ALTER TABLE public.fechamentos_tributarios ADD COLUMN IF NOT EXISTS checklist jsonb DEFAULT '[]'::jsonb NOT NULL;
 ALTER TABLE public.fechamentos_tributarios ADD COLUMN IF NOT EXISTS created_by uuid;
 ALTER TABLE public.fechamentos_tributarios ADD COLUMN IF NOT EXISTS forcado boolean DEFAULT false NOT NULL;
 ALTER TABLE public.fechamentos_tributarios ADD COLUMN IF NOT EXISTS justificativa_forcado text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS folha_pagamento
+DO $$ BEGIN
 ALTER TABLE public.folha_pagamento ADD COLUMN IF NOT EXISTS numero_funcionarios integer;
 ALTER TABLE public.folha_pagamento ADD COLUMN IF NOT EXISTS observacoes text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS fornecedores
+DO $$ BEGIN
 ALTER TABLE public.fornecedores ADD COLUMN IF NOT EXISTS ativo boolean DEFAULT true NOT NULL;
 ALTER TABLE public.fornecedores ADD COLUMN IF NOT EXISTS cidade text;
 ALTER TABLE public.fornecedores ADD COLUMN IF NOT EXISTS cnpj_cpf text;
@@ -2759,72 +2817,123 @@ ALTER TABLE public.fornecedores ADD COLUMN IF NOT EXISTS observacoes text;
 ALTER TABLE public.fornecedores ADD COLUMN IF NOT EXISTS ramo_atividade text;
 ALTER TABLE public.fornecedores ADD COLUMN IF NOT EXISTS score numeric;
 ALTER TABLE public.fornecedores ADD COLUMN IF NOT EXISTS telefone text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs_2026_05
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs_2026_05 ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs_2026_06
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs_2026_06 ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs_2026_07
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs_2026_07 ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs_2026_08
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs_2026_08 ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs_2026_09
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs_2026_09 ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs_2026_10
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs_2026_10 ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS frontend_error_logs_default
+DO $$ BEGIN
 ALTER TABLE public.frontend_error_logs_default ADD COLUMN IF NOT EXISTS severity text DEFAULT 'error'::text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS incentivos_fiscais
+DO $$ BEGIN
 ALTER TABLE public.incentivos_fiscais ADD COLUMN IF NOT EXISTS created_by uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS integration_secrets
+DO $$ BEGIN
 ALTER TABLE public.integration_secrets ADD COLUMN IF NOT EXISTS chave text NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS integrity_alerts
+DO $$ BEGIN
 ALTER TABLE public.integrity_alerts ADD COLUMN IF NOT EXISTS resolved_reason text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS kpis_operacionais
+DO $$ BEGIN
 ALTER TABLE public.kpis_operacionais ADD COLUMN IF NOT EXISTS categoria text;
 ALTER TABLE public.kpis_operacionais ADD COLUMN IF NOT EXISTS meta numeric DEFAULT 0 NOT NULL;
 ALTER TABLE public.kpis_operacionais ADD COLUMN IF NOT EXISTS tendencia text;
 ALTER TABLE public.kpis_operacionais ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
 ALTER TABLE public.kpis_operacionais ADD COLUMN IF NOT EXISTS user_id uuid NOT NULL;
 ALTER TABLE public.kpis_operacionais ADD COLUMN IF NOT EXISTS valor_atual numeric DEFAULT 0 NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS lancamentos_contabeis
+DO $$ BEGIN
 ALTER TABLE public.lancamentos_contabeis ADD COLUMN IF NOT EXISTS competencia date;
 ALTER TABLE public.lancamentos_contabeis ADD COLUMN IF NOT EXISTS created_by uuid DEFAULT auth.uid();
 ALTER TABLE public.lancamentos_contabeis ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS notas_fiscais
+DO $$ BEGIN
 ALTER TABLE public.notas_fiscais ADD COLUMN IF NOT EXISTS cliente_cnpj text;
 ALTER TABLE public.notas_fiscais ADD COLUMN IF NOT EXISTS cliente_nome text;
 ALTER TABLE public.notas_fiscais ADD COLUMN IF NOT EXISTS valor_desconto numeric DEFAULT 0 NOT NULL;
 ALTER TABLE public.notas_fiscais ADD COLUMN IF NOT EXISTS valor_frete numeric DEFAULT 0 NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS notas_fiscais_ocr
+DO $$ BEGIN
 ALTER TABLE public.notas_fiscais_ocr ADD COLUMN IF NOT EXISTS arquivo_nome text;
 ALTER TABLE public.notas_fiscais_ocr ADD COLUMN IF NOT EXISTS arquivo_url text;
 ALTER TABLE public.notas_fiscais_ocr ADD COLUMN IF NOT EXISTS dados_extraidos jsonb DEFAULT '{}'::jsonb NOT NULL;
 ALTER TABLE public.notas_fiscais_ocr ADD COLUMN IF NOT EXISTS emitente_cnpj text;
 ALTER TABLE public.notas_fiscais_ocr ADD COLUMN IF NOT EXISTS emitente_nome text;
 ALTER TABLE public.notas_fiscais_ocr ADD COLUMN IF NOT EXISTS erro_mensagem text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS operacoes_tributaveis
+DO $$ BEGIN
 ALTER TABLE public.operacoes_tributaveis ADD COLUMN IF NOT EXISTS documento_chave text;
 ALTER TABLE public.operacoes_tributaveis ADD COLUMN IF NOT EXISTS erro_mensagem text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS oportunidades_elisao
+DO $$ BEGIN
 ALTER TABLE public.oportunidades_elisao ADD COLUMN IF NOT EXISTS aplicavel boolean DEFAULT true NOT NULL;
 ALTER TABLE public.oportunidades_elisao ADD COLUMN IF NOT EXISTS base_legal text;
 ALTER TABLE public.oportunidades_elisao ADD COLUMN IF NOT EXISTS categoria text;
@@ -2838,8 +2947,11 @@ ALTER TABLE public.oportunidades_elisao ADD COLUMN IF NOT EXISTS observacoes tex
 ALTER TABLE public.oportunidades_elisao ADD COLUMN IF NOT EXISTS risco text;
 ALTER TABLE public.oportunidades_elisao ADD COLUMN IF NOT EXISTS status_alterado_em timestamp with time zone;
 ALTER TABLE public.oportunidades_elisao ADD COLUMN IF NOT EXISTS status_alterado_por uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS pagamentos_recorrentes
+DO $$ BEGIN
 ALTER TABLE public.pagamentos_recorrentes ADD COLUMN IF NOT EXISTS ativo boolean DEFAULT true NOT NULL;
 ALTER TABLE public.pagamentos_recorrentes ADD COLUMN IF NOT EXISTS centro_custo_id uuid;
 ALTER TABLE public.pagamentos_recorrentes ADD COLUMN IF NOT EXISTS conta_bancaria_id uuid;
@@ -2853,20 +2965,32 @@ ALTER TABLE public.pagamentos_recorrentes ADD COLUMN IF NOT EXISTS proxima_gerac
 ALTER TABLE public.pagamentos_recorrentes ADD COLUMN IF NOT EXISTS tipo_cobranca public.tipo_cobranca DEFAULT 'transferencia'::public.tipo_cobranca NOT NULL;
 ALTER TABLE public.pagamentos_recorrentes ADD COLUMN IF NOT EXISTS total_gerado integer DEFAULT 0 NOT NULL;
 ALTER TABLE public.pagamentos_recorrentes ADD COLUMN IF NOT EXISTS ultima_geracao date;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS partidas_contabeis
+DO $$ BEGIN
 ALTER TABLE public.partidas_contabeis ADD COLUMN IF NOT EXISTS conta_id uuid;
 ALTER TABLE public.partidas_contabeis ADD COLUMN IF NOT EXISTS historico_complementar text;
 ALTER TABLE public.partidas_contabeis ADD COLUMN IF NOT EXISTS ordem integer;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS per_dcomp
+DO $$ BEGIN
 ALTER TABLE public.per_dcomp ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS performance_alerts
+DO $$ BEGIN
 ALTER TABLE public.performance_alerts ADD COLUMN IF NOT EXISTS resolved_at timestamp with time zone;
 ALTER TABLE public.performance_alerts ADD COLUMN IF NOT EXISTS resolved_reason text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS pix_templates
+DO $$ BEGIN
 ALTER TABLE public.pix_templates ADD COLUMN IF NOT EXISTS categoria text;
 ALTER TABLE public.pix_templates ADD COLUMN IF NOT EXISTS centro_custo_id uuid;
 ALTER TABLE public.pix_templates ADD COLUMN IF NOT EXISTS created_by uuid;
@@ -2879,46 +3003,76 @@ ALTER TABLE public.pix_templates ADD COLUMN IF NOT EXISTS ultimo_uso timestamp w
 ALTER TABLE public.pix_templates ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
 ALTER TABLE public.pix_templates ADD COLUMN IF NOT EXISTS uso_count integer DEFAULT 0 NOT NULL;
 ALTER TABLE public.pix_templates ADD COLUMN IF NOT EXISTS valor_fixo boolean DEFAULT false NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS plano_contas
+DO $$ BEGIN
 ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS aceita_lancamento boolean DEFAULT true NOT NULL;
 ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS codigo_referencial text;
 ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS nivel integer DEFAULT 1 NOT NULL;
 ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS parent_id uuid;
 ALTER TABLE public.plano_contas ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS prejuizos_fiscais
+DO $$ BEGIN
 ALTER TABLE public.prejuizos_fiscais ADD COLUMN IF NOT EXISTS trimestre_origem integer;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS regimes_simulados
+DO $$ BEGIN
 ALTER TABLE public.regimes_simulados ADD COLUMN IF NOT EXISTS ajustes_aplicados jsonb DEFAULT '[]'::jsonb NOT NULL;
 ALTER TABLE public.regimes_simulados ADD COLUMN IF NOT EXISTS versao_motor text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS regras_conciliacao
+DO $$ BEGIN
 ALTER TABLE public.regras_conciliacao ADD COLUMN IF NOT EXISTS entidade_id uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS regras_roteamento_financeiro
+DO $$ BEGIN
 ALTER TABLE public.regras_roteamento_financeiro ADD COLUMN IF NOT EXISTS ativa boolean DEFAULT true;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS relatorios_tributarios_agendados
+DO $$ BEGIN
 ALTER TABLE public.relatorios_tributarios_agendados ADD COLUMN IF NOT EXISTS created_by uuid;
 ALTER TABLE public.relatorios_tributarios_agendados ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS risk_rules
+DO $$ BEGIN
 ALTER TABLE public.risk_rules ADD COLUMN IF NOT EXISTS empresa_id uuid;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS scim_setup_checklist
+DO $$ BEGIN
 ALTER TABLE public.scim_setup_checklist ADD COLUMN IF NOT EXISTS confirmed boolean DEFAULT false NOT NULL;
 ALTER TABLE public.scim_setup_checklist ADD COLUMN IF NOT EXISTS confirmed_at timestamp with time zone;
 ALTER TABLE public.scim_setup_checklist ADD COLUMN IF NOT EXISTS item_key text NOT NULL;
 ALTER TABLE public.scim_setup_checklist ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
 ALTER TABLE public.scim_setup_checklist ADD COLUMN IF NOT EXISTS user_id uuid NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS solicitacoes_lgpd
+DO $$ BEGIN
 ALTER TABLE public.solicitacoes_lgpd ADD COLUMN IF NOT EXISTS empresa_id uuid;
 ALTER TABLE public.solicitacoes_lgpd ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS sped_contabil_arquivos
+DO $$ BEGIN
 ALTER TABLE public.sped_contabil_arquivos ADD COLUMN IF NOT EXISTS ano_calendario integer NOT NULL;
 ALTER TABLE public.sped_contabil_arquivos ADD COLUMN IF NOT EXISTS created_at timestamp with time zone DEFAULT now() NOT NULL;
 ALTER TABLE public.sped_contabil_arquivos ADD COLUMN IF NOT EXISTS gerado_por uuid;
@@ -2928,15 +3082,23 @@ ALTER TABLE public.sped_contabil_arquivos ADD COLUMN IF NOT EXISTS storage_path 
 ALTER TABLE public.sped_contabil_arquivos ADD COLUMN IF NOT EXISTS total_lancamentos integer DEFAULT 0 NOT NULL;
 ALTER TABLE public.sped_contabil_arquivos ADD COLUMN IF NOT EXISTS total_linhas integer DEFAULT 0 NOT NULL;
 ALTER TABLE public.sped_contabil_arquivos ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS user_sessions
+DO $$ BEGIN
 ALTER TABLE public.user_sessions ADD COLUMN IF NOT EXISTS device_info text;
 ALTER TABLE public.user_sessions ADD COLUMN IF NOT EXISTS is_current boolean DEFAULT false NOT NULL;
 ALTER TABLE public.user_sessions ADD COLUMN IF NOT EXISTS last_active timestamp with time zone DEFAULT now();
 ALTER TABLE public.user_sessions ADD COLUMN IF NOT EXISTS revoked_at timestamp with time zone;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- COLS vendedores
+DO $$ BEGIN
 ALTER TABLE public.vendedores ADD COLUMN IF NOT EXISTS telefone text;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- FASE 4: Funcoes ausentes
 
