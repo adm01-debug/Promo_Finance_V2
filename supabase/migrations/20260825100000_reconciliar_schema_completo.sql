@@ -4581,20 +4581,26 @@ $$;
 --
 
 
-CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)
-    LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
-    AS $$
-  SELECT 
-    s.access_token,
-    s.refresh_token,
-    s.user_fid,
-    EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 AS token_age_hours,
-    EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 > 20 AS needs_refresh
-  FROM public.lalamove_uapi_sessions s
-  WHERE s.is_active = true
-  LIMIT 1;
-$$;
+DO $lala_fn_guard$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'lalamove_uapi_sessions') THEN
+    EXECUTE $lala_fn_sql$
+      CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)
+          LANGUAGE sql STABLE SECURITY DEFINER
+          SET search_path TO 'public', 'pg_catalog'
+          AS $lala_fn_body$
+        SELECT 
+          s.access_token,
+          s.refresh_token,
+          s.user_fid,
+          EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 AS token_age_hours,
+          EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 > 20 AS needs_refresh
+        FROM public.lalamove_uapi_sessions s
+        WHERE s.is_active = true
+        LIMIT 1;
+      $lala_fn_body$
+    $lala_fn_sql$;
+  END IF;
+END $lala_fn_guard$;
 
 
 --
@@ -6388,7 +6394,7 @@ DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
-EXCEPTION WHEN duplicate_object THEN NULL;
+EXCEPTION WHEN duplicate_object OR undefined_table THEN NULL;
 END $$;
 
 
@@ -6399,7 +6405,7 @@ DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
-EXCEPTION WHEN duplicate_object THEN NULL;
+EXCEPTION WHEN duplicate_object OR undefined_table THEN NULL;
 END $$;
 
 
@@ -6410,7 +6416,7 @@ DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
-EXCEPTION WHEN duplicate_object THEN NULL;
+EXCEPTION WHEN duplicate_object OR undefined_table THEN NULL;
 END $$;
 
 
@@ -6423,7 +6429,7 @@ CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FO
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
-EXCEPTION WHEN duplicate_object THEN NULL;
+EXCEPTION WHEN duplicate_object OR undefined_table THEN NULL;
 END $$;
 
 
@@ -8122,6 +8128,8 @@ END $$;
 -- FASE 6: Views ausentes/alteradas
 DROP VIEW IF EXISTS public.drivers_safe_view CASCADE;
 
+DO $drv_view_guard$ BEGIN
+EXECUTE $drv_view_guard_sql$
 CREATE VIEW public.drivers_safe_view WITH (security_invoker='on') AS
  SELECT id,
     name,
@@ -8159,6 +8167,9 @@ CREATE VIEW public.drivers_safe_view WITH (security_invoker='on') AS
             ELSE '***RESTRITO***'::text
         END AS phone
    FROM public.drivers;
+$drv_view_guard_sql$;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $drv_view_guard$;
 
 
 --
@@ -8246,6 +8257,8 @@ CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
 
 DROP VIEW IF EXISTS public.orders_operator_view CASCADE;
 
+DO $ord_op_view_guard$ BEGIN
+EXECUTE $ord_op_view_guard_sql$
 CREATE VIEW public.orders_operator_view WITH (security_invoker='on') AS
  SELECT id,
     lalamove_id,
@@ -8287,12 +8300,17 @@ CREATE VIEW public.orders_operator_view WITH (security_invoker='on') AS
     created_at,
     updated_at
    FROM public.lalamove_orders;
+$ord_op_view_guard_sql$;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $ord_op_view_guard$;
 
 
 --
 
 DROP VIEW IF EXISTS public.orders_safe_view CASCADE;
 
+DO $ord_sf_view_guard$ BEGIN
+EXECUTE $ord_sf_view_guard_sql$
 CREATE VIEW public.orders_safe_view WITH (security_invoker='on') AS
  SELECT id,
     lalamove_id,
@@ -8334,6 +8352,9 @@ CREATE VIEW public.orders_safe_view WITH (security_invoker='on') AS
     created_at,
     updated_at
    FROM public.lalamove_orders;
+$ord_sf_view_guard_sql$;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $ord_sf_view_guard$;
 
 
 --
