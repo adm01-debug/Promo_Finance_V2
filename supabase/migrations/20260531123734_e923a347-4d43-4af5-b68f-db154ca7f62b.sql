@@ -83,10 +83,16 @@ BEGIN
 END $$;
 
 -- Special policy for evidencias_pacotes (linked to verificacoes_conformidade)
-DROP POLICY IF EXISTS "Access by verification_id" ON public.evidencias_pacotes;
-CREATE POLICY "Access by verification_id" ON public.evidencias_pacotes FOR ALL TO authenticated USING (
+-- Guard: 42703 — verificacao_id column may not exist on preview branch
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='evidencias_pacotes' AND column_name='verificacao_id') THEN
+        DROP POLICY IF EXISTS "Access by verification_id" ON public.evidencias_pacotes;
+        EXECUTE $sql$CREATE POLICY "Access by verification_id" ON public.evidencias_pacotes FOR ALL TO authenticated USING (
   verificacao_id IN (SELECT id FROM public.verificacoes_conformidade)
-);
+)$sql$;
+    END IF;
+END $$;
 
 -- 4) Harden all SECURITY DEFINER functions with search_path
 DO $$
