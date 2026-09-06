@@ -4950,16 +4950,16 @@ DROP POLICY IF EXISTS "acordos_parcelamento Owner manage acordos" ON public.acor
 CREATE POLICY "Owner manage acordos" ON public.acordos_parcelamento TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_delete" ON public.alert_configurations;
-CREATE POLICY alert_configurations_tenant_delete ON public.alert_configurations FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+CREATE POLICY alert_configurations_tenant_delete ON public.alert_configurations FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 
 DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_insert" ON public.alert_configurations;
-CREATE POLICY alert_configurations_tenant_insert ON public.alert_configurations FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
+CREATE POLICY alert_configurations_tenant_insert ON public.alert_configurations FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));
 
 DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_select" ON public.alert_configurations;
 CREATE POLICY alert_configurations_tenant_select ON public.alert_configurations FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
 
 DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_update" ON public.alert_configurations;
-CREATE POLICY alert_configurations_tenant_update ON public.alert_configurations FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+CREATE POLICY alert_configurations_tenant_update ON public.alert_configurations FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 
 DROP POLICY IF EXISTS "alertas alertas_owner_delete" ON public.alertas;
 CREATE POLICY alertas_owner_delete ON public.alertas FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
@@ -4986,21 +4986,21 @@ CREATE POLICY "Empresa-based access" ON public.alertas_tributarios TO authentica
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "alerts alerts_tenant_delete" ON public.alerts;
-CREATE POLICY alerts_tenant_delete ON public.alerts FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+CREATE POLICY alerts_tenant_delete ON public.alerts FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 
 DROP POLICY IF EXISTS "alerts alerts_tenant_insert" ON public.alerts;
-CREATE POLICY alerts_tenant_insert ON public.alerts FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
+CREATE POLICY alerts_tenant_insert ON public.alerts FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));
 
 DROP POLICY IF EXISTS "alerts alerts_tenant_select" ON public.alerts;
 CREATE POLICY alerts_tenant_select ON public.alerts FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
 
 DROP POLICY IF EXISTS "alerts alerts_tenant_update" ON public.alerts;
-CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 
 DROP POLICY IF EXISTS "alerts_sent alerts_sent_tenant_delete" ON public.alerts_sent;
 CREATE POLICY alerts_sent_tenant_delete ON public.alerts_sent FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.alerts a
-  WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+  WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 
 DROP POLICY IF EXISTS "alerts_sent alerts_sent_tenant_insert" ON public.alerts_sent;
 CREATE POLICY alerts_sent_tenant_insert ON public.alerts_sent FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
@@ -5170,7 +5170,7 @@ DROP POLICY IF EXISTS "auth_logs Admins can view all auth logs" ON public.auth_l
 CREATE POLICY "Admins can view all auth logs" ON public.auth_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "auth_logs Authenticated can insert auth logs" ON public.auth_logs;
-CREATE POLICY "Authenticated can insert auth logs" ON public.auth_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'viewer'::public.app_role)));
+CREATE POLICY "Authenticated can insert auth logs" ON public.auth_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'visualizador'::public.app_role)));
 
 DROP POLICY IF EXISTS "auth_logs Users can view own auth logs" ON public.auth_logs;
 CREATE POLICY "Users can view own auth logs" ON public.auth_logs FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
@@ -5190,7 +5190,7 @@ CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticat
 DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_delete" ON public.bitrix24_activities;
 CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
-  WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+  WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 
 DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_insert" ON public.bitrix24_activities;
 CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
@@ -5213,13 +5213,13 @@ DROP POLICY IF EXISTS "bitrix24_stage_mappings Admins can delete stage mappings"
 CREATE POLICY "Admins can delete stage mappings" ON public.bitrix24_stage_mappings FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings;
-CREATE POLICY "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role)));
+CREATE POLICY "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role)));
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Managers can insert stage mappings" ON public.bitrix24_stage_mappings;
-CREATE POLICY "Managers can insert stage mappings" ON public.bitrix24_stage_mappings FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Managers can insert stage mappings" ON public.bitrix24_stage_mappings FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Managers can update stage mappings" ON public.bitrix24_stage_mappings;
-CREATE POLICY "Managers can update stage mappings" ON public.bitrix24_stage_mappings FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Managers can update stage mappings" ON public.bitrix24_stage_mappings FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "bitrix24_tokens Admins can delete tokens" ON public.bitrix24_tokens;
 CREATE POLICY "Admins can delete tokens" ON public.bitrix24_tokens FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
@@ -5270,7 +5270,7 @@ DROP POLICY IF EXISTS "blocked_ips Admins can manage blocked IPs" ON public.bloc
 CREATE POLICY "Admins can manage blocked IPs" ON public.blocked_ips TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "blocked_ips Managers can view blocked IPs" ON public.blocked_ips;
-CREATE POLICY "Managers can view blocked IPs" ON public.blocked_ips FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
+CREATE POLICY "Managers can view blocked IPs" ON public.blocked_ips FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));
 
 DROP POLICY IF EXISTS "bloqueios_duplicidade Empresa-based access" ON public.bloqueios_duplicidade;
 CREATE POLICY "Empresa-based access" ON public.bloqueios_duplicidade TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
@@ -5717,7 +5717,7 @@ DROP POLICY IF EXISTS "geo_blocks Admins can update geo blocks" ON public.geo_bl
 CREATE POLICY "Admins can update geo blocks" ON public.geo_blocks FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "geo_blocks Managers can view geo blocks" ON public.geo_blocks;
-CREATE POLICY "Managers can view geo blocks" ON public.geo_blocks FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
+CREATE POLICY "Managers can view geo blocks" ON public.geo_blocks FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));
 
 DROP POLICY IF EXISTS "glossario_tributario glossario_admin" ON public.glossario_tributario;
 CREATE POLICY glossario_admin ON public.glossario_tributario TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
@@ -5812,7 +5812,7 @@ DROP POLICY IF EXISTS "ip_whitelist Admins can update whitelist" ON public.ip_wh
 CREATE POLICY "Admins can update whitelist" ON public.ip_whitelist FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "ip_whitelist Managers can view IP whitelist" ON public.ip_whitelist;
-CREATE POLICY "Managers can view IP whitelist" ON public.ip_whitelist FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
+CREATE POLICY "Managers can view IP whitelist" ON public.ip_whitelist FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));
 
 DROP POLICY IF EXISTS "itens_lista_iss itens_iss_select_authenticated" ON public.itens_lista_iss;
 CREATE POLICY itens_iss_select_authenticated ON public.itens_lista_iss FOR SELECT TO authenticated USING (true);
@@ -5841,7 +5841,7 @@ DROP POLICY IF EXISTS "login_attempts Admins can delete login attempts" ON publi
 CREATE POLICY "Admins can delete login attempts" ON public.login_attempts FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "login_attempts Admins can insert login attempts" ON public.login_attempts;
-CREATE POLICY "Admins can insert login attempts" ON public.login_attempts FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Admins can insert login attempts" ON public.login_attempts FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "login_attempts Admins can update login attempts" ON public.login_attempts;
 CREATE POLICY "Admins can update login attempts" ON public.login_attempts FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
@@ -5888,10 +5888,10 @@ CREATE POLICY "Access by empresa_id" ON public.movimentacoes TO authenticated US
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "n8n_dispatch_logs Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs;
-CREATE POLICY "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "n8n_workflow_configs Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs;
-CREATE POLICY "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "ncms ncms_select_authenticated" ON public.ncms;
 CREATE POLICY ncms_select_authenticated ON public.ncms FOR SELECT TO authenticated USING (true);
@@ -5979,16 +5979,16 @@ DROP POLICY IF EXISTS "organizacoes organizacoes_update_responsavel" ON public.o
 CREATE POLICY organizacoes_update_responsavel ON public.organizacoes FOR UPDATE TO authenticated USING (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))) WITH CHECK (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
-CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
-CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
-CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
-CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "pagamentos_recorrentes pagamentos_recorrentes_acesso" ON public.pagamentos_recorrentes;
 CREATE POLICY pagamentos_recorrentes_acesso ON public.pagamentos_recorrentes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
@@ -6019,7 +6019,7 @@ CREATE POLICY "Partidas scoped by lancamento" ON public.partidas_contabeis TO au
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))))));
 
 DROP POLICY IF EXISTS "password_reset_requests Admins and managers can view reset requests" ON public.password_reset_requests;
-CREATE POLICY "Admins and managers can view reset requests" ON public.password_reset_requests FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Admins and managers can view reset requests" ON public.password_reset_requests FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "password_reset_requests Admins can update reset requests" ON public.password_reset_requests;
 CREATE POLICY "Admins can update reset requests" ON public.password_reset_requests FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
@@ -6144,16 +6144,16 @@ DROP POLICY IF EXISTS "query_telemetry Admins can manage telemetry" ON public.qu
 CREATE POLICY "Admins can manage telemetry" ON public.query_telemetry TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "query_telemetry Managers can view telemetry" ON public.query_telemetry;
-CREATE POLICY "Managers can view telemetry" ON public.query_telemetry FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
+CREATE POLICY "Managers can view telemetry" ON public.query_telemetry FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));
 
 DROP POLICY IF EXISTS "query_telemetry System can insert telemetry" ON public.query_telemetry;
-CREATE POLICY "System can insert telemetry" ON public.query_telemetry FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role)));
+CREATE POLICY "System can insert telemetry" ON public.query_telemetry FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role)));
 
 DROP POLICY IF EXISTS "rate_limit_logs Admins can view rate limit logs" ON public.rate_limit_logs;
-CREATE POLICY "Admins can view rate limit logs" ON public.rate_limit_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Admins can view rate limit logs" ON public.rate_limit_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "rate_limit_logs Authenticated can insert rate limit logs" ON public.rate_limit_logs;
-CREATE POLICY "Authenticated can insert rate limit logs" ON public.rate_limit_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'viewer'::public.app_role)));
+CREATE POLICY "Authenticated can insert rate limit logs" ON public.rate_limit_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'visualizador'::public.app_role)));
 
 DROP POLICY IF EXISTS "recomendacoes_metas_ia recomendacoes_metas_ia_empresa_select" ON public.recomendacoes_metas_ia;
 CREATE POLICY recomendacoes_metas_ia_empresa_select ON public.recomendacoes_metas_ia FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
@@ -6267,16 +6267,16 @@ CREATE POLICY "Empresa-based access" ON public.retencoes_fonte TO authenticated 
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_delete" ON public.risk_rules;
-CREATE POLICY risk_rules_tenant_delete ON public.risk_rules FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+CREATE POLICY risk_rules_tenant_delete ON public.risk_rules FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 
 DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_insert" ON public.risk_rules;
-CREATE POLICY risk_rules_tenant_insert ON public.risk_rules FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
+CREATE POLICY risk_rules_tenant_insert ON public.risk_rules FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));
 
 DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_select" ON public.risk_rules;
 CREATE POLICY risk_rules_tenant_select ON public.risk_rules FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
 
 DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_update" ON public.risk_rules;
-CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 
 DROP POLICY IF EXISTS "role_permissions Admins can delete role permissions" ON public.role_permissions;
 CREATE POLICY "Admins can delete role permissions" ON public.role_permissions FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
@@ -6300,10 +6300,10 @@ DROP POLICY IF EXISTS "runtime_error_logs Admins can delete error logs" ON publi
 CREATE POLICY "Admins can delete error logs" ON public.runtime_error_logs FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "runtime_error_logs Admins can update error logs" ON public.runtime_error_logs;
-CREATE POLICY "Admins can update error logs" ON public.runtime_error_logs FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Admins can update error logs" ON public.runtime_error_logs FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "runtime_error_logs Admins managers can view error logs" ON public.runtime_error_logs;
-CREATE POLICY "Admins managers can view error logs" ON public.runtime_error_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Admins managers can view error logs" ON public.runtime_error_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "runtime_error_logs Authenticated can insert error logs" ON public.runtime_error_logs;
 CREATE POLICY "Authenticated can insert error logs" ON public.runtime_error_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));
@@ -6589,19 +6589,19 @@ DROP POLICY IF EXISTS "webhook_events Admins can delete events" ON public.webhoo
 CREATE POLICY "Admins can delete events" ON public.webhook_events FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "webhook_events Authorized roles can view webhook events" ON public.webhook_events;
-CREATE POLICY "Authorized roles can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Authorized roles can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Authorized roles can view webhooks" ON public.webhook_events;
-CREATE POLICY "Authorized roles can view webhooks" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Authorized roles can view webhooks" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Managers can update events" ON public.webhook_events;
-CREATE POLICY "Managers can update events" ON public.webhook_events FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+CREATE POLICY "Managers can update events" ON public.webhook_events FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Operators can insert events" ON public.webhook_events;
-CREATE POLICY "Operators can insert events" ON public.webhook_events FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role)));
+CREATE POLICY "Operators can insert events" ON public.webhook_events FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Viewers can view webhook events" ON public.webhook_events;
-CREATE POLICY "Viewers can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'viewer'::public.app_role));
+CREATE POLICY "Viewers can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'visualizador'::public.app_role));
 
 DROP POLICY IF EXISTS "webhook_simulation_results Users can view simulation results" ON public.webhook_simulation_results;
 CREATE POLICY "Users can view simulation results" ON public.webhook_simulation_results FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
