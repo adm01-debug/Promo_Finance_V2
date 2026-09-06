@@ -61,18 +61,20 @@ CREATE POLICY "Admins can manage contas receber" ON public.contas_receber
 
 
 -- 4. Restrict SECURITY DEFINER functions
-DO $$ 
-DECLARE 
-    func_record RECORD;
-BEGIN 
-    FOR func_record IN 
-        SELECT routine_name 
-        FROM information_schema.routines 
-        WHERE routine_schema = 'public' 
-        AND security_type = 'DEFINER'
-    LOOP 
-        EXECUTE format('REVOKE ALL ON FUNCTION public.%I FROM public, anon', func_record.routine_name);
-        EXECUTE format('GRANT EXECUTE ON FUNCTION public.%I TO authenticated, service_role', func_record.routine_name);
+-- Use oid::regprocedure for full signature (avoids SQLSTATE 42725 when overloads exist)
+DO $$
+DECLARE
+    func_sig text;
+BEGIN
+    FOR func_sig IN
+        SELECT p.oid::regprocedure::text
+        FROM pg_proc p
+        JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+          AND p.prosecdef = true
+    LOOP
+        EXECUTE format('REVOKE ALL ON FUNCTION %s FROM public, anon', func_sig);
+        EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated, service_role', func_sig);
     END LOOP;
 END $$;
 
