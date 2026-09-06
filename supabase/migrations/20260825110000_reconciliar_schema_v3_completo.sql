@@ -5187,27 +5187,30 @@ CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR S
 DROP POLICY IF EXISTS "beneficios_fiscais beneficios_write_admin" ON public.beneficios_fiscais;
 CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
-DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_delete" ON public.bitrix24_activities;
-CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
-   FROM public.lalamove_orders o
-  WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
-
-DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_insert" ON public.bitrix24_activities;
-CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
-   FROM public.lalamove_orders o
-  WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
-
-DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_select" ON public.bitrix24_activities;
-CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
-   FROM public.lalamove_orders o
-  WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
-
-DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_update" ON public.bitrix24_activities;
-CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
-   FROM public.lalamove_orders o
-  WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
-   FROM public.lalamove_orders o
-  WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+-- bitrix24_activities policies skipped if lalamove_orders is decommissioned
+DO $bitrix_act_pol$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lalamove_orders') THEN
+    RETURN;
+  END IF;
+  DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_delete" ON public.bitrix24_activities;
+  EXECUTE $p$CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
+     FROM public.lalamove_orders o
+    WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))))$p$;
+  DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_insert" ON public.bitrix24_activities;
+  EXECUTE $p$CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
+     FROM public.lalamove_orders o
+    WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))))$p$;
+  DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_select" ON public.bitrix24_activities;
+  EXECUTE $p$CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
+     FROM public.lalamove_orders o
+    WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))))$p$;
+  DROP POLICY IF EXISTS "bitrix24_activities bitrix24_activities_tenant_update" ON public.bitrix24_activities;
+  EXECUTE $p$CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+     FROM public.lalamove_orders o
+    WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
+     FROM public.lalamove_orders o
+    WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))))$p$;
+END $bitrix_act_pol$;
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Admins can delete stage mappings" ON public.bitrix24_stage_mappings;
 CREATE POLICY "Admins can delete stage mappings" ON public.bitrix24_stage_mappings FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));

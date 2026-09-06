@@ -23,14 +23,21 @@ AS $function$
 $function$;
 
 -- 3) Coluna empresa_id nas tabelas raiz do domínio operacional
-ALTER TABLE public.lalamove_orders     ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
-ALTER TABLE public.drivers             ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
+-- Guard: skip decommissioned tables (lalamove_orders, drivers removed 2026-08-25)
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lalamove_orders') THEN
+    ALTER TABLE public.lalamove_orders ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
+    CREATE INDEX IF NOT EXISTS idx_lalamove_orders_empresa ON public.lalamove_orders(empresa_id);
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='drivers') THEN
+    ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
+    CREATE INDEX IF NOT EXISTS idx_drivers_empresa ON public.drivers(empresa_id);
+  END IF;
+END $$;
 ALTER TABLE public.alerts              ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
 ALTER TABLE public.alert_configurations ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
 ALTER TABLE public.risk_rules          ADD COLUMN IF NOT EXISTS empresa_id uuid REFERENCES public.empresas(id) ON DELETE RESTRICT;
 
-CREATE INDEX IF NOT EXISTS idx_lalamove_orders_empresa ON public.lalamove_orders(empresa_id);
-CREATE INDEX IF NOT EXISTS idx_drivers_empresa ON public.drivers(empresa_id);
 CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts(empresa_id);
 CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations(empresa_id);
 CREATE INDEX IF NOT EXISTS idx_risk_rules_empresa ON public.risk_rules(empresa_id);
@@ -67,6 +74,9 @@ DO $$
 DECLARE t text;
 BEGIN
   FOREACH t IN ARRAY ARRAY['lalamove_orders','drivers','alerts','alert_configurations','risk_rules'] LOOP
+    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename=t) THEN
+      CONTINUE;
+    END IF;
     EXECUTE format('DROP TRIGGER IF EXISTS trg_%I_set_empresa ON public.%I', t, t);
     EXECUTE format('CREATE TRIGGER trg_%I_set_empresa BEFORE INSERT ON public.%I FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default()', t, t);
     EXECUTE format('UPDATE public.%I SET empresa_id = (SELECT id FROM public.empresas ORDER BY created_at LIMIT 1) WHERE empresa_id IS NULL AND (SELECT count(*) FROM public.empresas) = 1', t);
@@ -83,6 +93,9 @@ BEGIN
     'driver_incidents','driver_evaluations','driver_approval_queue','tracking_events',
     'alerts_sent','bitrix24_sync'
   ] LOOP
+    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename=t) THEN
+      CONTINUE;
+    END IF;
     FOR r IN SELECT policyname FROM pg_policies WHERE schemaname='public' AND tablename=t LOOP
       EXECUTE format('DROP POLICY %I ON public.%I', r.policyname, t);
     END LOOP;
@@ -95,6 +108,9 @@ DO $$
 DECLARE t text;
 BEGIN
   FOREACH t IN ARRAY ARRAY['lalamove_orders','drivers','alerts','alert_configurations','risk_rules'] LOOP
+    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename=t) THEN
+      CONTINUE;
+    END IF;
     EXECUTE format($f$
       CREATE POLICY %1$s_tenant_select ON public.%1$I FOR SELECT TO authenticated
         USING (public.empresa_membro_ativo(empresa_id));
@@ -130,6 +146,9 @@ DECLARE
   i int;
 BEGIN
   FOR i IN 1 .. array_length(spec,1) LOOP
+    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename=spec[i][1]) THEN
+      CONTINUE;
+    END IF;
     EXECUTE format($f$
       CREATE POLICY %1$s_tenant_select ON public.%1$I FOR SELECT TO authenticated USING (%2$s);
       CREATE POLICY %1$s_tenant_insert ON public.%1$I FOR INSERT TO authenticated WITH CHECK (%2$s);
