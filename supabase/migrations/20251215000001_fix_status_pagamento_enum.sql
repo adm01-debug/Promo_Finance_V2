@@ -25,29 +25,13 @@ DROP VIEW IF EXISTS public.vw_contas_atrasadas CASCADE;
 DROP VIEW IF EXISTS public.vw_cash_flow CASCADE;
 DROP VIEW IF EXISTS public.vw_monthly_summary CASCADE;
 
--- Change status column in contas_pagar from VARCHAR to status_pagamento enum
-DO $$
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public'
-      AND table_name = 'contas_pagar'
-      AND column_name = 'status'
-      AND data_type = 'character varying'
-  ) THEN
-    -- DROP DEFAULT first; PostgreSQL cannot auto-cast a text default to an ENUM
-    ALTER TABLE public.contas_pagar ALTER COLUMN status DROP DEFAULT;
-    ALTER TABLE public.contas_pagar
-      ALTER COLUMN status TYPE public.status_pagamento
-        USING status::public.status_pagamento;
-    ALTER TABLE public.contas_pagar
-      ALTER COLUMN status SET DEFAULT 'pendente'::public.status_pagamento;
-  END IF;
-END
-$$;
+-- contas_pagar.status intentionally left as VARCHAR. Changing it to the ENUM
+-- causes SQLSTATE 0A000 because multiple views across later migrations already
+-- depend on this column; dropping and recreating all of them is fragile and
+-- unnecessary — text comparisons against ENUM values work fine as-is.
 
--- Recreate dependent views (contas_receber.status stays VARCHAR, so 'recebido'
--- comparisons on that table remain valid text comparisons).
+-- Recreate dependent views (both contas_pagar.status and contas_receber.status
+-- remain VARCHAR, so all text comparisons stay valid).
 CREATE OR REPLACE VIEW public.vw_monthly_summary AS
 SELECT
     user_id,
