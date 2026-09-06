@@ -30,6 +30,17 @@ BEGIN
       ('prejuizos_fiscais','prejuizos_fiscais_admin_write','adm')
     ) AS v(tbl, pol, kind)
   LOOP
+    -- Skip tables that don't exist
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relname = r.tbl
+    ) THEN CONTINUE; END IF;
+    -- Skip tables that lack empresa_id
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = r.tbl AND column_name = 'empresa_id'
+    ) THEN CONTINUE; END IF;
+
     rolexpr := CASE WHEN r.kind = 'fin'
       THEN '(public.has_role((SELECT auth.uid()), ''admin''::app_role) OR public.has_role((SELECT auth.uid()), ''financeiro''::app_role))'
       ELSE 'public.has_role((SELECT auth.uid()), ''admin''::app_role)' END;
@@ -42,7 +53,14 @@ BEGIN
   END LOOP;
 END $$;
 
-DROP POLICY IF EXISTS auditoria_trib_select_admin ON public.auditoria_tributaria;
-CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria
-  FOR SELECT TO authenticated
-  USING (public.has_role((SELECT auth.uid()), 'admin'::app_role) AND public.empresa_acessivel(empresa_id));
+DO $$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relname = 'auditoria_tributaria'
+  ) THEN
+    EXECUTE $pol$DROP POLICY IF EXISTS auditoria_trib_select_admin ON public.auditoria_tributaria$pol$;
+    EXECUTE $pol$CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria
+      FOR SELECT TO authenticated
+      USING (public.has_role((SELECT auth.uid()), 'admin'::app_role) AND public.empresa_acessivel(empresa_id))$pol$;
+  END IF;
+END $$;
