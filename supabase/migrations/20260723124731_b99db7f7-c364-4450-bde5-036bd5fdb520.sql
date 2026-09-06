@@ -100,10 +100,11 @@ CREATE OR REPLACE FUNCTION public.webhook_mark_success(
   p_id UUID,
   p_response JSONB DEFAULT NULL
 ) RETURNS VOID
-LANGUAGE sql
+LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+BEGIN
   UPDATE public.webhooks_log
      SET status        = 'success',
          processed_at  = now(),
@@ -111,6 +112,7 @@ AS $$
          error_message = NULL,
          next_retry_at = NULL
    WHERE id = p_id;
+END;
 $$;
 REVOKE EXECUTE ON FUNCTION public.webhook_mark_success(UUID,JSONB) FROM PUBLIC, anon, authenticated;
 GRANT  EXECUTE ON FUNCTION public.webhook_mark_success(UUID,JSONB) TO service_role;
