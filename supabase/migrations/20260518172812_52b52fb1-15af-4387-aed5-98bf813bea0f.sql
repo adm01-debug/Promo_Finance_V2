@@ -81,11 +81,28 @@ BEGIN
   END LOOP;
 END $$;
 
-REVOKE EXECUTE ON FUNCTION public.get_cron_run_history(text,integer) FROM authenticated, anon, PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.cleanup_expired_tokens() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.cleanup_old_cron_logs() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.cleanup_old_login_attempts() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup_with_logging() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.get_active_uapi_token() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.clear_login_attempts(text) FROM authenticated;
+-- Guard: 42883 — functions may not exist on preview branch; use to_regprocedure to check before revoking
+DO $$
+DECLARE
+  no_arg_funcs text[] := ARRAY[
+    'cleanup_expired_tokens',
+    'cleanup_old_cron_logs',
+    'cleanup_old_login_attempts',
+    'run_daily_cleanup',
+    'run_daily_cleanup_with_logging',
+    'get_active_uapi_token'
+  ];
+  fname text;
+BEGIN
+  IF to_regprocedure('public.get_cron_run_history(text,integer)') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.get_cron_run_history(text,integer) FROM authenticated, anon, public';
+  END IF;
+  IF to_regprocedure('public.clear_login_attempts(text)') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.clear_login_attempts(text) FROM authenticated';
+  END IF;
+  FOREACH fname IN ARRAY no_arg_funcs LOOP
+    IF to_regprocedure('public.' || fname || '()') IS NOT NULL THEN
+      EXECUTE format('REVOKE EXECUTE ON FUNCTION public.%I() FROM authenticated', fname);
+    END IF;
+  END LOOP;
+END $$;
