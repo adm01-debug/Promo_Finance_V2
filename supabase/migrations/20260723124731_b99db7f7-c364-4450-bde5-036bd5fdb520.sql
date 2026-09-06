@@ -8,9 +8,19 @@ ALTER TABLE public.webhooks_log
 
 -- 2) Índice único (source, external_id) — idempotência atômica
 --    Só quando external_id não é nulo (webhooks sem ID não podem ser deduplicados).
-CREATE UNIQUE INDEX IF NOT EXISTS ux_webhooks_log_source_external
-  ON public.webhooks_log (source, external_id)
-  WHERE external_id IS NOT NULL;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'webhooks_log'
+      AND column_name = 'source'
+  ) THEN
+    CREATE UNIQUE INDEX IF NOT EXISTS ux_webhooks_log_source_external
+      ON public.webhooks_log (source, external_id)
+      WHERE external_id IS NOT NULL;
+  END IF;
+END $$;
 
 -- 3) Reserva atômica (claim). Se já existir (source, external_id):
 --    - devolve linha existente + already_processed=true quando status='success'
