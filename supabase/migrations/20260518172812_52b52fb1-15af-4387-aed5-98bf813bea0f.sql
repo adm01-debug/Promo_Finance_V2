@@ -9,6 +9,9 @@ CREATE POLICY "clientes_owner_insert" ON public.clientes FOR INSERT TO authentic
 CREATE POLICY "clientes_owner_update" ON public.clientes FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "clientes_owner_delete" ON public.clientes FOR DELETE TO authenticated USING (auth.uid() = user_id);
 
+-- Guard: 42703 — table created in 20251220134032 without user_id; CREATE TABLE IF NOT EXISTS in 20260518164611 was no-op
+ALTER TABLE public.historico_analises_preditivas ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+
 DROP POLICY IF EXISTS "Authenticated insert hap" ON public.historico_analises_preditivas;
 CREATE POLICY "hap_user_insert" ON public.historico_analises_preditivas FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 
@@ -36,6 +39,9 @@ CREATE POLICY "asaas_recon_admin_all" ON public.asaas_reconciliation_suggestions
 
 DROP POLICY IF EXISTS "auth modify asaas_sync_queue" ON public.asaas_sync_queue;
 CREATE POLICY "asaas_sync_admin_all" ON public.asaas_sync_queue FOR ALL TO authenticated USING (public.has_role(auth.uid(),'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(),'admin'::public.app_role));
+
+-- Guard: 42703 — table created in 20260509114452 without user_id; CREATE TABLE IF NOT EXISTS in 20260518165422 was no-op
+ALTER TABLE public.historico_cobrancas_boletos ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
 
 DROP POLICY IF EXISTS "auth modify historico_cobrancas_boletos" ON public.historico_cobrancas_boletos;
 CREATE POLICY "historico_cobrancas_user_all" ON public.historico_cobrancas_boletos FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
