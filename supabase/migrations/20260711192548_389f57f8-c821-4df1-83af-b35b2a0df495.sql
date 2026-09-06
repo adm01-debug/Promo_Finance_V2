@@ -37,16 +37,21 @@ BEGIN
     END;
   END LOOP;
 
-  INSERT INTO public.audit_logs (table_name, action, details, created_at)
-  VALUES ('pg_index', 'create_missing_fk_indexes',
-          format('Item 25: criados %s índices em FKs sem cobertura', v_count),
-          now());
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='audit_logs') THEN
+    INSERT INTO public.audit_logs (table_name, action, details, created_at)
+    VALUES ('pg_index', 'create_missing_fk_indexes',
+            format('Item 25: criados %s índices em FKs sem cobertura', v_count),
+            now());
+  END IF;
 END $$;
 
 -- Atualiza estatísticas nas tabelas mais afetadas
-ANALYZE public.contas_pagar;
-ANALYZE public.contas_receber;
-ANALYZE public.transacoes_bancarias;
-ANALYZE public.boletos;
-ANALYZE public.fila_cobrancas;
-ANALYZE public.transferencias;
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['contas_pagar','contas_receber','transacoes_bancarias','boletos','fila_cobrancas','transferencias'] LOOP
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=t) THEN
+      EXECUTE format('ANALYZE public.%I', t);
+    END IF;
+  END LOOP;
+END $$;

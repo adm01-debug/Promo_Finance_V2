@@ -72,15 +72,24 @@ BEGIN
   END LOOP;
 END $$;
 
-ANALYZE public.webhooks_log;
-ANALYZE public.query_telemetry;
-ANALYZE public.runtime_error_logs;
-ANALYZE public.auth_logs;
-ANALYZE public.login_attempts;
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['webhooks_log','query_telemetry','runtime_error_logs','auth_logs','login_attempts'] LOOP
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=t) THEN
+      EXECUTE format('ANALYZE public.%I', t);
+    END IF;
+  END LOOP;
+END $$;
 
-INSERT INTO public.audit_logs (action, table_name, details)
-VALUES (
-  'autovacuum_tuning_applied',
-  'log_tables_and_partitions',
-  'Item 27: autovacuum ajustado em tabelas simples de log + partições filhas de audit_logs/frontend_error_logs'
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='audit_logs') THEN
+    INSERT INTO public.audit_logs (action, table_name, details)
+    VALUES (
+      'autovacuum_tuning_applied',
+      'log_tables_and_partitions',
+      'Item 27: autovacuum ajustado em tabelas simples de log + partições filhas de audit_logs/frontend_error_logs'
+    );
+  END IF;
+END $$;
