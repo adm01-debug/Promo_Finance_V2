@@ -128,7 +128,11 @@ CREATE POLICY "Admins can manage all roles"
   USING (public.has_role(auth.uid(), 'admin'::public.app_role))
   WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 
-CREATE POLICY "DARFs scoped by linked empresa"
+-- Guard: 42703(alerta_id) — column added by a later migration, may not exist on preview branch
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='darfs' AND column_name='alerta_id') THEN
+    EXECUTE $sql$CREATE POLICY "DARFs scoped by linked empresa"
   ON public.darfs
   FOR SELECT
   TO authenticated
@@ -150,7 +154,23 @@ CREATE POLICY "DARFs scoped by linked empresa"
           AND ue.ativo = true
       )
     )
-  );
+  )$sql$;
+  ELSE
+    EXECUTE $sql$CREATE POLICY "DARFs scoped by linked empresa"
+  ON public.darfs
+  FOR SELECT
+  TO authenticated
+  USING (
+    public.has_role(auth.uid(), 'admin'::public.app_role)
+    OR empresa_id IN (
+      SELECT ue.empresa_id
+      FROM public.user_empresas ue
+      WHERE ue.user_id = auth.uid()
+        AND ue.ativo = true
+    )
+  )$sql$;
+  END IF;
+END $$;
 
 CREATE POLICY "Active SSO providers visible for login"
   ON public.sso_providers
