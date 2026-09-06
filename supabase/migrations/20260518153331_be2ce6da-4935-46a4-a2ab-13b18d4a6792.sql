@@ -71,6 +71,8 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE public.profiles ALTER COLUMN role SET DEFAULT 'visualizador';
 
 -- RPCs for automation
+-- DROP first: 42P13 fires when an existing version has a different return type
+DROP FUNCTION IF EXISTS public.get_cron_jobs();
 CREATE OR REPLACE FUNCTION public.get_cron_jobs()
 RETURNS JSONB AS $$
 BEGIN
@@ -78,6 +80,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP FUNCTION IF EXISTS public.get_cron_run_history();
 CREATE OR REPLACE FUNCTION public.get_cron_run_history()
 RETURNS JSONB AS $$
 BEGIN
