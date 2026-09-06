@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.glossario_tributario (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributario(categoria, termo);
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS ativo BOOLEAN NOT NULL DEFAULT TRUE;
 
 GRANT SELECT ON public.glossario_tributario TO authenticated;
 GRANT ALL ON public.glossario_tributario TO service_role;
