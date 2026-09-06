@@ -592,7 +592,10 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -663,7 +666,10 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history FOR SELECT TO authenticated USING (( SELECT public.has_role(auth.uid(), 'admin'::public.app_role) AS has_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1346,7 +1352,10 @@ CREATE INDEX IF NOT EXISTS idx_index_usage_snapshots_idx_date ON public.index_us
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Somente admins leem snapshots de índices" ON public.index_usage_snapshots FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1388,7 +1397,10 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1571,25 +1583,37 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -6360,7 +6384,10 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.digest_envios_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -6596,11 +6623,14 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))) WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7003,19 +7033,28 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Admins visualizam preferencias de digest" ON public.user_digest_preferences FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Users can update their challenges" ON public.webauthn_challenges FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
