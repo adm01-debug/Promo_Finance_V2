@@ -60,13 +60,17 @@ SELECT
 FROM public.empresas;
 
 -- Fixed this view by using centos_custo as base and static 0 for total_gasto if transacoes is missing
-CREATE VIEW public.vw_gastos_centro_custo AS
-SELECT 
-  id as centro_custo_id,
-  nome as nome_centro_custo,
-  empresa_id,
-  0.0 as total_gasto
-FROM public.centros_custo;
+-- Guard: 42703 — empresa_id may not exist in centros_custo on preview branch
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='centros_custo' AND column_name='empresa_id') THEN
+        EXECUTE 'CREATE VIEW public.vw_gastos_centro_custo AS SELECT id as centro_custo_id, nome as nome_centro_custo, empresa_id, 0.0 as total_gasto FROM public.centros_custo';
+    ELSIF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='centros_custo') THEN
+        EXECUTE 'CREATE VIEW public.vw_gastos_centro_custo AS SELECT id as centro_custo_id, nome as nome_centro_custo, NULL::uuid as empresa_id, 0.0 as total_gasto FROM public.centros_custo';
+    ELSE
+        EXECUTE 'CREATE VIEW public.vw_gastos_centro_custo AS SELECT NULL::uuid as centro_custo_id, NULL::text as nome_centro_custo, NULL::uuid as empresa_id, 0.0 as total_gasto WHERE false';
+    END IF;
+END $$;
 
 CREATE VIEW public.vw_metricas_cobranca AS
 SELECT 
