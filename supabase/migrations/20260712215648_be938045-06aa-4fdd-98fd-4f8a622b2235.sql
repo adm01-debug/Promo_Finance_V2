@@ -42,7 +42,7 @@ BEGIN
 END $$;
 
 -- Auditoria da mudança
--- Guard: 42P01/42703 — table or columns may not exist yet on preview branch
+-- Guard: 42P01/42703/22P02 — table, columns, or enum value may not exist yet on preview branch
 DO $$
 BEGIN
   INSERT INTO public.audit_logs (
@@ -58,5 +58,5 @@ BEGIN
     ),
     now()
   );
-EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_column OR invalid_text_representation THEN NULL;
 END $$;

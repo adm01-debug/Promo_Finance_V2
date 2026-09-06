@@ -29,10 +29,10 @@ BEGIN
 END $$;
 
 -- Log de conformidade
--- Guard: 42P01 — table may not exist yet on preview branch
+-- Guard: 42P01/42703/22P02 — table, columns, or enum value may not exist yet on preview branch
 DO $$
 BEGIN
   INSERT INTO public.audit_logs (table_name, action, details, created_at)
   VALUES ('pg_proc', 'revoke_execute_anon', 'Menor privilégio: revogado EXECUTE de anon em 20 funções admin/cleanup', now());
-EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_column OR invalid_text_representation THEN NULL;
 END $$;
