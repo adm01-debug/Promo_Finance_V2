@@ -31,13 +31,13 @@ BEGIN
       to_char(a.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS created_at,
       COALESCE(a.action, '')                     AS action,
       COALESCE(a.actor::text, '')                AS actor,
-      COALESCE(a.asaas_payment_id::text, '')     AS payment_id,
+      COALESCE(a.payment_id::text, '')     AS payment_id,
       COALESCE(p.asaas_id, '')                   AS asaas_id,
       COALESCE(p.status, '')                     AS status,
       COALESCE(p.valor::text, '')                AS valor,
       '"' || replace(replace(COALESCE(a.details::text, '{}'), '"', '""'), E'\n', ' ') || '"' AS details
     FROM public.asaas_audit_trail a
-    LEFT JOIN public.asaas_payments p ON p.id = a.asaas_payment_id
+    LEFT JOIN public.asaas_payments p ON p.id = a.payment_id
     WHERE p.empresa_id = p_empresa_id OR p.empresa_id IS NULL
     ORDER BY a.created_at DESC
     LIMIT 50000
