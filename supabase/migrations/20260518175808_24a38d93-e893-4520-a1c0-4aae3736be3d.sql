@@ -11,7 +11,12 @@ DO $$ BEGIN
   END IF;
 END $$;
 
-UPDATE public.contas_bancarias SET conta = numero_conta WHERE conta IS NULL AND numero_conta IS NOT NULL;
+-- Guard: 42703 — numero_conta may not exist on preview branch
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='contas_bancarias' AND column_name='numero_conta') THEN
+    UPDATE public.contas_bancarias SET conta = numero_conta WHERE conta IS NULL AND numero_conta IS NOT NULL;
+  END IF;
+END $$;
 
 -- fila_cobrancas
 ALTER TABLE public.fila_cobrancas
@@ -69,4 +74,9 @@ ALTER TABLE public.login_attempts
   ADD COLUMN IF NOT EXISTS user_email text,
   ADD COLUMN IF NOT EXISTS success boolean DEFAULT false,
   ADD COLUMN IF NOT EXISTS blocked_reason text;
-UPDATE public.login_attempts SET user_email = email WHERE user_email IS NULL AND email IS NOT NULL;
+-- Guard: 42703 — email column may not exist on login_attempts on preview branch
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='login_attempts' AND column_name='email') THEN
+    UPDATE public.login_attempts SET user_email = email WHERE user_email IS NULL AND email IS NOT NULL;
+  END IF;
+END $$;
