@@ -1,4 +1,6 @@
 -- 1. Fix RPCs for Conciliacao to match frontend parameters
+-- Guard: 42P13 — drop first if param name changed on preview branch
+DROP FUNCTION IF EXISTS public.confirmar_conciliacao(UUID, UUID, UUID);
 CREATE OR REPLACE FUNCTION public.confirmar_conciliacao(
     p_conciliacao_id UUID,
     p_user_id UUID,
@@ -22,6 +24,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Guard: 42P13 — drop first if param name changed on preview branch
+DROP FUNCTION IF EXISTS public.desfazer_conciliacao(UUID, UUID);
 CREATE OR REPLACE FUNCTION public.desfazer_conciliacao(
     p_conciliacao_id UUID,
     p_transacao_id UUID DEFAULT NULL
