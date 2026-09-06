@@ -42,7 +42,7 @@ CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- ===== Catálogo (view de leitura) =====
-CREATE VIEW public.estrategias_elisao_catalogo
+CREATE OR REPLACE VIEW public.estrategias_elisao_catalogo
   WITH (security_invoker = true) AS
   SELECT id, codigo, nome, categoria, descricao, regimes_aplicaveis,
          economia_estimada_percentual, risco, base_legal, requisitos, ativo,
