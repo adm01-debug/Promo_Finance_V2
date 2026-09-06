@@ -1,6 +1,74 @@
 
-DROP VIEW IF EXISTS public.vw_contas_pagar_painel;
-DROP VIEW IF EXISTS public.vw_contas_receber_painel;
+-- vw_contas_pagar_painel/vw_contas_receber_painel abaixo referenciam
+-- cp.conta_bancaria_id/cr.conta_bancaria_id — coluna só adicionada 2 meses
+-- depois, em 20260518164611. Bare CREATE VIEW sem guard quebra o replay do
+-- zero aqui ("column conta_bancaria_id does not exist", achado direto do CI
+-- Supabase Preview). Mesmo padrão de guard de 20260317001356: pula a
+-- recriação aqui se a coluna ainda não existe; 20260518190420 recria as
+-- duas views (CREATE OR REPLACE) depois que a coluna existe.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'conta_bancaria_id'
+  ) THEN
+    DROP VIEW IF EXISTS public.vw_contas_pagar_painel;
+    DROP VIEW IF EXISTS public.vw_contas_receber_painel;
+    EXECUTE $view$
+      CREATE VIEW public.vw_contas_pagar_painel AS
+      SELECT cp.id, cp.empresa_id, cp.conta_bancaria_id, cp.centro_custo_id, cp.fornecedor_id, cp.fornecedor_nome,
+          cp.descricao, cp.valor, cp.valor_pago, cp.data_emissao, cp.data_vencimento, cp.data_pagamento, cp.status,
+          cp.tipo_cobranca, cp.numero_documento, cp.codigo_barras, cp.observacoes, cp.recorrente, cp.bitrix_deal_id,
+          cp.aprovado_por, cp.aprovado_em, cp.created_by, cp.created_at, cp.updated_at, cp.valor_original,
+          cp.valor_desconto, cp.valor_juros, cp.valor_multa, cp.numero_parcela_atual, cp.total_parcelas, cp.categoria,
+          cp.forma_pagamento, cp.forma_pagamento_id, cp.plano_conta_id, cp.contato_id, cp.frequencia_recorrencia,
+          cp.user_id, cp.vencimento, cp.parcela_atual, cp.valor_final,
+          (cp.valor - COALESCE(cp.valor_pago, 0)) AS saldo_devedor,
+          (cp.data_vencimento - CURRENT_DATE) AS dias_para_vencer,
+          f.nome AS fornecedor, f.cnpj AS fornecedor_cnpj,
+          cf.nome AS contato_nome, cc.nome AS centro_custo, cb.banco AS conta_bancaria,
+          cp.asaas_bill_id, cp.asaas_status, cp.tags,
+          pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
+      FROM contas_pagar cp
+          LEFT JOIN fornecedores f ON f.id = cp.fornecedor_id
+          LEFT JOIN contas_bancarias cb ON cb.id = cp.conta_bancaria_id
+          LEFT JOIN centros_custo cc ON cc.id = cp.centro_custo_id
+          LEFT JOIN plano_contas pc ON pc.id = cp.plano_conta_id
+          LEFT JOIN contatos_financeiros cf ON cf.id = cp.contato_id
+      WHERE cp.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento])
+    $view$;
+    EXECUTE $view$
+      CREATE VIEW public.vw_contas_receber_painel AS
+      SELECT cr.id, cr.empresa_id, cr.conta_bancaria_id, cr.centro_custo_id, cr.cliente_id, cr.cliente_nome,
+          cr.descricao, cr.valor, cr.valor_recebido, cr.data_emissao, cr.data_vencimento, cr.data_recebimento,
+          cr.status, cr.tipo_cobranca, cr.numero_documento, cr.codigo_barras, cr.chave_pix, cr.link_boleto,
+          cr.observacoes, cr.etapa_cobranca, cr.bitrix_deal_id, cr.created_by, cr.created_at, cr.updated_at,
+          cr.vendedor_id, cr.valor_original, cr.valor_desconto, cr.valor_juros, cr.valor_multa,
+          cr.numero_parcela_atual, cr.total_parcelas, cr.categoria, cr.forma_recebimento, cr.forma_pagamento_id,
+          cr.plano_conta_id, cr.contato_id, cr.frequencia_recorrencia, cr.recorrente, cr.user_id, cr.vencimento,
+          cr.parcela_atual, cr.valor_pago, cr.valor_final,
+          (cr.valor - COALESCE(cr.valor_recebido, 0)) AS saldo_a_receber,
+          (cr.data_vencimento - CURRENT_DATE) AS dias_para_vencer,
+          c.razao_social AS cliente, c.cnpj_cpf AS cliente_cpf_cnpj,
+          cf.nome AS contato_nome, cc.nome AS centro_custo,
+          cr.numero_nf, cr.asaas_payment_id, cr.asaas_billing_type, cr.asaas_status,
+          cr.data_credito, cr.valor_liquido, cr.taxa_gateway, cr.tags,
+          c.score AS cliente_score, cb.banco AS conta_banco, cc.nome AS centro_custo_nome,
+          pc.descricao AS plano_conta_nome
+      FROM contas_receber cr
+          LEFT JOIN clientes c ON c.id = cr.cliente_id
+          LEFT JOIN contas_bancarias cb ON cb.id = cr.conta_bancaria_id
+          LEFT JOIN centros_custo cc ON cc.id = cr.centro_custo_id
+          LEFT JOIN plano_contas pc ON pc.id = cr.plano_conta_id
+          LEFT JOIN contatos_financeiros cf ON cf.id = cr.contato_id
+      WHERE cr.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento])
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317125441: contas_pagar.conta_bancaria_id ausente; vw_contas_pagar_painel/vw_contas_receber_painel recriadas em 20260518190420.';
+  END IF;
+END
+$$;
+
 DROP VIEW IF EXISTS public.vw_dre_mensal;
 DROP VIEW IF EXISTS public.vw_dso_aging;
 DROP VIEW IF EXISTS public.vw_saldos_contas;
@@ -10,53 +78,6 @@ DROP VIEW IF EXISTS public.vw_gastos_centro_custo;
 DROP VIEW IF EXISTS public.vw_metricas_cobranca;
 DROP VIEW IF EXISTS public.vw_transferencias_painel;
 DROP VIEW IF EXISTS public.vw_webhooks_recentes;
-
-CREATE VIEW public.vw_contas_pagar_painel AS
-SELECT cp.id, cp.empresa_id, cp.conta_bancaria_id, cp.centro_custo_id, cp.fornecedor_id, cp.fornecedor_nome,
-    cp.descricao, cp.valor, cp.valor_pago, cp.data_emissao, cp.data_vencimento, cp.data_pagamento, cp.status,
-    cp.tipo_cobranca, cp.numero_documento, cp.codigo_barras, cp.observacoes, cp.recorrente, cp.bitrix_deal_id,
-    cp.aprovado_por, cp.aprovado_em, cp.created_by, cp.created_at, cp.updated_at, cp.valor_original,
-    cp.valor_desconto, cp.valor_juros, cp.valor_multa, cp.numero_parcela_atual, cp.total_parcelas, cp.categoria,
-    cp.forma_pagamento, cp.forma_pagamento_id, cp.plano_conta_id, cp.contato_id, cp.frequencia_recorrencia,
-    cp.user_id, cp.vencimento, cp.parcela_atual, cp.valor_final,
-    (cp.valor - COALESCE(cp.valor_pago, 0)) AS saldo_devedor,
-    (cp.data_vencimento - CURRENT_DATE) AS dias_para_vencer,
-    f.nome AS fornecedor, f.cnpj AS fornecedor_cnpj,
-    cf.nome AS contato_nome, cc.nome AS centro_custo, cb.banco AS conta_bancaria,
-    cp.asaas_bill_id, cp.asaas_status, cp.tags,
-    pc.descricao AS plano_conta_nome, pc.codigo AS plano_conta_codigo
-FROM contas_pagar cp
-    LEFT JOIN fornecedores f ON f.id = cp.fornecedor_id
-    LEFT JOIN contas_bancarias cb ON cb.id = cp.conta_bancaria_id
-    LEFT JOIN centros_custo cc ON cc.id = cp.centro_custo_id
-    LEFT JOIN plano_contas pc ON pc.id = cp.plano_conta_id
-    LEFT JOIN contatos_financeiros cf ON cf.id = cp.contato_id
-WHERE cp.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento]);
-
-CREATE VIEW public.vw_contas_receber_painel AS
-SELECT cr.id, cr.empresa_id, cr.conta_bancaria_id, cr.centro_custo_id, cr.cliente_id, cr.cliente_nome,
-    cr.descricao, cr.valor, cr.valor_recebido, cr.data_emissao, cr.data_vencimento, cr.data_recebimento,
-    cr.status, cr.tipo_cobranca, cr.numero_documento, cr.codigo_barras, cr.chave_pix, cr.link_boleto,
-    cr.observacoes, cr.etapa_cobranca, cr.bitrix_deal_id, cr.created_by, cr.created_at, cr.updated_at,
-    cr.vendedor_id, cr.valor_original, cr.valor_desconto, cr.valor_juros, cr.valor_multa,
-    cr.numero_parcela_atual, cr.total_parcelas, cr.categoria, cr.forma_recebimento, cr.forma_pagamento_id,
-    cr.plano_conta_id, cr.contato_id, cr.frequencia_recorrencia, cr.recorrente, cr.user_id, cr.vencimento,
-    cr.parcela_atual, cr.valor_pago, cr.valor_final,
-    (cr.valor - COALESCE(cr.valor_recebido, 0)) AS saldo_a_receber,
-    (cr.data_vencimento - CURRENT_DATE) AS dias_para_vencer,
-    c.razao_social AS cliente, c.cnpj_cpf AS cliente_cpf_cnpj,
-    cf.nome AS contato_nome, cc.nome AS centro_custo,
-    cr.numero_nf, cr.asaas_payment_id, cr.asaas_billing_type, cr.asaas_status,
-    cr.data_credito, cr.valor_liquido, cr.taxa_gateway, cr.tags,
-    c.score AS cliente_score, cb.banco AS conta_banco, cc.nome AS centro_custo_nome,
-    pc.descricao AS plano_conta_nome
-FROM contas_receber cr
-    LEFT JOIN clientes c ON c.id = cr.cliente_id
-    LEFT JOIN contas_bancarias cb ON cb.id = cr.conta_bancaria_id
-    LEFT JOIN centros_custo cc ON cc.id = cr.centro_custo_id
-    LEFT JOIN plano_contas pc ON pc.id = cr.plano_conta_id
-    LEFT JOIN contatos_financeiros cf ON cf.id = cr.contato_id
-WHERE cr.status = ANY (ARRAY['pendente'::status_pagamento, 'vencido'::status_pagamento, 'parcial'::status_pagamento, 'atrasado'::status_pagamento]);
 
 CREATE VIEW public.vw_dre_mensal AS
 SELECT date_trunc('month', m.data_movimentacao::timestamp with time zone) AS mes,
