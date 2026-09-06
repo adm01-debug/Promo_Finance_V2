@@ -68,9 +68,15 @@ END $$;
 
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='historico_cobranca') THEN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='historico_cobranca' AND column_name='status') THEN
     CREATE INDEX IF NOT EXISTS idx_historico_cobranca_empresa_status_created
       ON public.historico_cobranca (empresa_id, status, created_at DESC);
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='historico_cobranca' AND column_name='conta_receber_id') THEN
     CREATE INDEX IF NOT EXISTS idx_historico_cobranca_conta_receber
       ON public.historico_cobranca (conta_receber_id);
   END IF;
