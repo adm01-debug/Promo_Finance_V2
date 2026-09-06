@@ -1,4 +1,4 @@
-CREATE TABLE public.overlay_rejeicoes_auditoria (
+CREATE TABLE IF NOT EXISTS public.overlay_rejeicoes_auditoria (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   catalogo TEXT NOT NULL CHECK (catalogo IN ('icms','iss','ncm','monofasico')),
   identificador TEXT NOT NULL,
@@ -24,25 +24,54 @@ GRANT ALL ON public.overlay_rejeicoes_auditoria TO service_role;
 
 ALTER TABLE public.overlay_rejeicoes_auditoria ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Autenticados leem auditoria de overlay"
-  ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING (true);
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Autenticados leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+  CREATE POLICY "Autenticados leem auditoria de overlay"
+    ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN invalid_text_representation OR undefined_function OR undefined_object THEN
+  NULL;
+END $$;
 
-CREATE POLICY "Gestores inserem auditoria de overlay"
-  ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated
-  WITH CHECK (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'));
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+  CREATE POLICY "Gestores inserem auditoria de overlay"
+    ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated
+    WITH CHECK (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'));
+EXCEPTION WHEN invalid_text_representation OR undefined_function OR undefined_object THEN
+  NULL;
+END $$;
 
-CREATE POLICY "Gestores atualizam auditoria de overlay"
-  ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated
-  USING (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'))
-  WITH CHECK (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'));
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+  CREATE POLICY "Gestores atualizam auditoria de overlay"
+    ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated
+    USING (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'))
+    WITH CHECK (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'));
+EXCEPTION WHEN invalid_text_representation OR undefined_function OR undefined_object THEN
+  NULL;
+END $$;
 
-CREATE POLICY "Gestores removem auditoria de overlay"
-  ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated
-  USING (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'));
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+  CREATE POLICY "Gestores removem auditoria de overlay"
+    ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated
+    USING (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'manager'));
+EXCEPTION WHEN invalid_text_representation OR undefined_function OR undefined_object THEN
+  NULL;
+END $$;
 
-CREATE INDEX idx_overlay_rejeicoes_catalogo ON public.overlay_rejeicoes_auditoria (catalogo, referencia DESC);
-CREATE INDEX idx_overlay_rejeicoes_abertas ON public.overlay_rejeicoes_auditoria (resolvido_em) WHERE resolvido_em IS NULL;
+CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_catalogo ON public.overlay_rejeicoes_auditoria (catalogo, referencia DESC);
+CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_abertas ON public.overlay_rejeicoes_auditoria (resolvido_em) WHERE resolvido_em IS NULL;
 
-CREATE TRIGGER trg_overlay_rejeicoes_updated_at
-  BEFORE UPDATE ON public.overlay_rejeicoes_auditoria
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$
+BEGIN
+  CREATE TRIGGER trg_overlay_rejeicoes_updated_at
+    BEFORE UPDATE ON public.overlay_rejeicoes_auditoria
+    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN
+  NULL;
+END $$;
