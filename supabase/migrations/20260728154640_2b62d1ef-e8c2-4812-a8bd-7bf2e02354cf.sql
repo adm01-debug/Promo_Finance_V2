@@ -285,6 +285,7 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 -- ===== RPC: potencial de elisão consolidado =====
+DROP FUNCTION IF EXISTS public.calcular_potencial_elisao(UUID);
 CREATE OR REPLACE FUNCTION public.calcular_potencial_elisao(p_empresa_id UUID)
 RETURNS TABLE (
   tipo_oportunidade TEXT,
