@@ -136,22 +136,40 @@ CREATE POLICY "health_scores_empresa_select" ON public.health_scores_operacionai
   USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
 
 -- 20) HISTORICO_SCORE_SAUDE — escopo por empresa
+-- Guard: 42703 — empresa_id may not exist on preview branch
 DROP POLICY IF EXISTS "Everyone can view score history" ON public.historico_score_saude;
-CREATE POLICY "historico_score_saude_empresa_select" ON public.historico_score_saude
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='historico_score_saude' AND column_name='empresa_id') THEN
+    EXECUTE $sql$CREATE POLICY "historico_score_saude_empresa_select" ON public.historico_score_saude
   FOR SELECT TO authenticated
-  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
+  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true))$sql$;
+  END IF;
+END $$;
 
 -- 21) RECOMENDACOES_METAS_IA — escopo por empresa
+-- Guard: 42703 — empresa_id may not exist on preview branch
 DROP POLICY IF EXISTS "Everyone can view recommendations" ON public.recomendacoes_metas_ia;
-CREATE POLICY "recomendacoes_metas_ia_empresa_select" ON public.recomendacoes_metas_ia
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='recomendacoes_metas_ia' AND column_name='empresa_id') THEN
+    EXECUTE $sql$CREATE POLICY "recomendacoes_metas_ia_empresa_select" ON public.recomendacoes_metas_ia
   FOR SELECT TO authenticated
-  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
+  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true))$sql$;
+  END IF;
+END $$;
 
 -- 22) ALERTAS_PREDITIVOS — escopo por empresa
+-- Guard: 42703 — empresa_id may not exist on preview branch
 DROP POLICY IF EXISTS "Alertas preditivos visualizáveis por todos da empresa" ON public.alertas_preditivos;
-CREATE POLICY "alertas_preditivos_empresa_select" ON public.alertas_preditivos
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='alertas_preditivos' AND column_name='empresa_id') THEN
+    EXECUTE $sql$CREATE POLICY "alertas_preditivos_empresa_select" ON public.alertas_preditivos
   FOR SELECT TO authenticated
-  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
+  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true))$sql$;
+  END IF;
+END $$;
 
 -- 23) HISTORICO_CONCILIACAO_IA — só admin/financeiro
 DROP POLICY IF EXISTS "Users see IA history" ON public.historico_conciliacao_ia;
@@ -160,16 +178,28 @@ CREATE POLICY "historico_conciliacao_ia_role_select" ON public.historico_concili
   USING (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role));
 
 -- 24) ANOMALIAS_DETECTADAS — escopo por empresa
+-- Guard: 42703 — empresa_id may not exist on preview branch
 DROP POLICY IF EXISTS "Users can view anomalias" ON public.anomalias_detectadas;
-CREATE POLICY "anomalias_detectadas_empresa_select" ON public.anomalias_detectadas
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='anomalias_detectadas' AND column_name='empresa_id') THEN
+    EXECUTE $sql$CREATE POLICY "anomalias_detectadas_empresa_select" ON public.anomalias_detectadas
   FOR SELECT TO authenticated
-  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
+  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true))$sql$;
+  END IF;
+END $$;
 
 -- 25) PREJUIZOS_FISCAIS — sobrescrever policy mal nomeada
+-- Guard: 42703 — empresa_id may not exist on preview branch
 DROP POLICY IF EXISTS "Empresa access for prejuizos" ON public.prejuizos_fiscais;
-CREATE POLICY "prejuizos_fiscais_empresa_select" ON public.prejuizos_fiscais
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='prejuizos_fiscais' AND column_name='empresa_id') THEN
+    EXECUTE $sql$CREATE POLICY "prejuizos_fiscais_empresa_select" ON public.prejuizos_fiscais
   FOR SELECT TO authenticated
-  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true));
+  USING (empresa_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid() AND ativo = true))$sql$;
+  END IF;
+END $$;
 CREATE POLICY "prejuizos_fiscais_admin_write" ON public.prejuizos_fiscais
   FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin'::public.app_role))
