@@ -75,6 +75,11 @@ ALTER TABLE public.profiles ALTER COLUMN role SET DEFAULT 'visualizador';
 -- get_cron_run_history is NOT stubbed here: 20260417194817 defines the 2-arg version, and
 -- 20260518170823 replaces it. Creating a 0-arg overload here would cause SQLSTATE 42725
 -- (ambiguous function) in the REVOKE loop of 20260518170823.
+-- Drop stale 0-arg stub: old version of this migration created get_cron_run_history()
+-- (SECURITY DEFINER). Supabase Preview incremental apply does not revert old DB objects,
+-- so the stale 0-arg coexists with the 2-arg TABLE version from 20260417194817 and causes
+-- 42725 in the bare-name REVOKE loop of 20260518170823.
+DROP FUNCTION IF EXISTS public.get_cron_run_history();
 DROP FUNCTION IF EXISTS public.get_cron_jobs();
 CREATE OR REPLACE FUNCTION public.get_cron_jobs()
 RETURNS JSONB AS $$
