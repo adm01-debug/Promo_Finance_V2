@@ -6,7 +6,6 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT public.has_role(auth.uid(), 'admin'::app_role)
-      OR public.has_role(auth.uid(), 'manager'::app_role)
       OR public.has_role(auth.uid(), 'financeiro'::app_role);
 $$;
 
@@ -47,7 +46,7 @@ WITH (security_invoker = true) AS
    FROM asaas_transfers t
      LEFT JOIN empresas e ON e.id = t.empresa_id;
 
--- Guard: 42P16 — drop first if column set changed on preview branch
+-- Guard: 42P16 -- drop first if column set changed on preview branch
 DROP VIEW IF EXISTS public.vw_contas_receber_painel;
 CREATE OR REPLACE VIEW public.vw_contas_receber_painel
 WITH (security_invoker = on) AS
