@@ -15,7 +15,7 @@ CREATE POLICY "cnpja_cache_service_role_only"
   USING (true) WITH CHECK (true);
 
 -- 2) overlay_rejeicoes_auditoria: trilha operacional interna (valores recebidos brutos
---    de catálogos externos). Escrita já é restrita a admin/manager, mas a LEITURA era
+--    de catálogos externos). Escrita já é restrita a admin/financeiro, mas a LEITURA era
 --    aberta a todo authenticated. Alinhar leitura ao mesmo predicado de papel.
 DROP POLICY IF EXISTS "Autenticados leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
 
@@ -24,7 +24,7 @@ CREATE POLICY "Gestores leem auditoria de overlay"
   TO authenticated
   USING (
     has_role((SELECT auth.uid()), 'admin'::app_role)
-    OR has_role((SELECT auth.uid()), 'manager'::app_role)
+    OR has_role((SELECT auth.uid()), 'financeiro'::app_role)
   );
 
 REVOKE ALL ON public.overlay_rejeicoes_auditoria FROM anon;
