@@ -140,40 +140,72 @@ END;
 $$;
 
 -- F6: bloqueios_duplicidade — delete orphan FK + validate constraint
-DELETE FROM public.bloqueios_duplicidade
-  WHERE transacao_id NOT IN (SELECT id FROM public.transacoes_bancarias)
-    AND transacao_id IS NOT NULL;
-ALTER TABLE public.bloqueios_duplicidade
-  VALIDATE CONSTRAINT bloqueios_duplicidade_transacao_id_fkey;
+DO $f6_bloquios$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='bloqueios_duplicidade' AND column_name='transacao_id'
+  ) THEN
+    DELETE FROM public.bloqueios_duplicidade
+      WHERE transacao_id NOT IN (SELECT id FROM public.transacoes_bancarias)
+        AND transacao_id IS NOT NULL;
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid=c.conrelid
+    JOIN pg_namespace n ON n.oid=t.relnamespace
+    WHERE n.nspname='public' AND t.relname='bloqueios_duplicidade'
+      AND c.conname='bloqueios_duplicidade_transacao_id_fkey'
+      AND NOT c.convalidated
+  ) THEN
+    ALTER TABLE public.bloqueios_duplicidade
+      VALIDATE CONSTRAINT bloqueios_duplicidade_transacao_id_fkey;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR undefined_object THEN NULL;
+END $f6_bloquios$;
 
 -- F7: cron jobs com SQL inválido corrigidos
--- pgss_weekly_baseline: comando truncado → replace com função correta
-SELECT cron.unschedule('pgss_weekly_baseline')
-  WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname='pgss_weekly_baseline');
-SELECT cron.unschedule('pgss-weekly-baseline')
-  WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname='pgss-weekly-baseline');
-SELECT cron.schedule('pgss-weekly-baseline','0 4 * * 0',
-  'SELECT public.compare_pg_stat_baseline();');
-
--- cron-failure-watch: watch_cron_failures() ambíguo → chamar com args
-SELECT cron.unschedule('cron-failure-watch')
-  WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname='cron-failure-watch');
-SELECT cron.schedule('cron-failure-watch','10 * * * *',
-  'SELECT public.watch_cron_failures(90,36);');
-
--- daily-log-retention: purge_old_rows() sem args inexiste → cleanup_log_tables()
-SELECT cron.unschedule('daily-log-retention')
-  WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname='daily-log-retention');
-SELECT cron.schedule('daily-log-retention','0 3 * * *',
-  'SELECT public.cleanup_log_tables();');
+DO $f7_cron$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname='pg_cron') THEN
+    -- pgss_weekly_baseline
+    IF EXISTS (SELECT 1 FROM cron.job WHERE jobname='pgss_weekly_baseline') THEN
+      PERFORM cron.unschedule('pgss_weekly_baseline');
+    END IF;
+    IF EXISTS (SELECT 1 FROM cron.job WHERE jobname='pgss-weekly-baseline') THEN
+      PERFORM cron.unschedule('pgss-weekly-baseline');
+    END IF;
+    PERFORM cron.schedule('pgss-weekly-baseline','0 4 * * 0',
+      'SELECT public.compare_pg_stat_baseline();');
+    -- cron-failure-watch
+    IF EXISTS (SELECT 1 FROM cron.job WHERE jobname='cron-failure-watch') THEN
+      PERFORM cron.unschedule('cron-failure-watch');
+    END IF;
+    PERFORM cron.schedule('cron-failure-watch','10 * * * *',
+      'SELECT public.watch_cron_failures(90,36);');
+    -- daily-log-retention
+    IF EXISTS (SELECT 1 FROM cron.job WHERE jobname='daily-log-retention') THEN
+      PERFORM cron.unschedule('daily-log-retention');
+    END IF;
+    PERFORM cron.schedule('daily-log-retention','0 3 * * *',
+      'SELECT public.cleanup_log_tables();');
+  END IF;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $f7_cron$;
 
 -- F8: 3 cron jobs ausentes (processar/gerar — já adicionados em 120000, apenas segurança)
-SELECT cron.schedule('gerar-alertas-vencimento-diario','0 8 * * *',
-  'select public.gerar_alertas_vencimento();')
-  WHERE NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='gerar-alertas-vencimento-diario');
-SELECT cron.schedule('gerar-contas-recorrentes-diario','35 3 * * *',
-  'select public.gerar_contas_recorrentes();')
-  WHERE NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='gerar-contas-recorrentes-diario');
-SELECT cron.schedule('processar-regua-cobranca-diario','0 9 * * *',
-  'select public.processar_regua_cobranca(null, false);')
-  WHERE NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='processar-regua-cobranca-diario');
+DO $f8_cron$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname='pg_cron') THEN
+    IF NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='gerar-alertas-vencimento-diario') THEN
+      PERFORM cron.schedule('gerar-alertas-vencimento-diario','0 8 * * *',
+        'select public.gerar_alertas_vencimento();');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='gerar-contas-recorrentes-diario') THEN
+      PERFORM cron.schedule('gerar-contas-recorrentes-diario','35 3 * * *',
+        'select public.gerar_contas_recorrentes();');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname='processar-regua-cobranca-diario') THEN
+      PERFORM cron.schedule('processar-regua-cobranca-diario','0 9 * * *',
+        'select public.processar_regua_cobranca(null, false);');
+    END IF;
+  END IF;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $f8_cron$;
