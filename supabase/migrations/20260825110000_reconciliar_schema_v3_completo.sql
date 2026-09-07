@@ -2820,6 +2820,9 @@ CREATE OR REPLACE FUNCTION public.is_org_responsavel(_org_id uuid, _user_id uuid
     );
 $$;
 
+DO $prt_fn1$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_tokens') THEN
+    EXECUTE $prt_fn1q$
 CREATE OR REPLACE FUNCTION public.is_token_valid(p_token_hash text) RETURNS TABLE(is_valid boolean, user_id uuid, expires_in_seconds integer)
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -2833,18 +2836,21 @@ BEGIN
     AND expires_at > now()
     AND used_at IS NULL
   LIMIT 1;
-  
+
   IF v_record IS NULL THEN
     RETURN QUERY SELECT false, NULL::uuid, 0;
     RETURN;
   END IF;
-  
-  RETURN QUERY SELECT 
+
+  RETURN QUERY SELECT
     true,
     v_record.user_id,
     EXTRACT(EPOCH FROM (v_record.expires_at - now()))::integer;
 END;
-$$;
+$$
+$prt_fn1q$;
+  END IF;
+END $prt_fn1$;
 
 CREATE OR REPLACE FUNCTION public.log_audit(p_table_name text, p_record_id uuid, p_action text, p_details text DEFAULT NULL::text, p_old_data jsonb DEFAULT NULL::jsonb, p_new_data jsonb DEFAULT NULL::jsonb) RETURNS uuid
     LANGUAGE plpgsql SECURITY DEFINER
@@ -4308,6 +4314,9 @@ BEGIN
 END;
 $$;
 
+DO $prt_fn2$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_tokens') THEN
+    EXECUTE $prt_fn2q$
 CREATE OR REPLACE FUNCTION public.use_reset_token(p_token_hash text, p_ip_address inet DEFAULT NULL::inet) RETURNS boolean
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -4316,18 +4325,21 @@ DECLARE
   v_updated integer;
 BEGIN
   UPDATE password_reset_tokens
-  SET 
+  SET
     used_at = now(),
     ip_address = COALESCE(p_ip_address, password_reset_tokens.ip_address)
   WHERE token_hash = p_token_hash
     AND expires_at > now()
     AND used_at IS NULL;
-  
+
   GET DIAGNOSTICS v_updated = ROW_COUNT;
-  
+
   RETURN v_updated > 0;
 END;
-$$;
+$$
+$prt_fn2q$;
+  END IF;
+END $prt_fn2$;
 
 CREATE OR REPLACE FUNCTION public.watch_cron_failures(p_lookback_minutes integer DEFAULT 90, p_stale_hours integer DEFAULT 36) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
@@ -4833,9 +4845,12 @@ CREATE OR REPLACE TRIGGER trg_normalizar_tipo_partida BEFORE INSERT OR UPDATE ON
 
 CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();
 
-CREATE OR REPLACE TRIGGER trg_invalidate_old_tokens AFTER INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.invalidate_old_tokens();
-
-CREATE OR REPLACE TRIGGER trg_set_token_expiration BEFORE INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.set_token_expiration();
+DO $prt_trg$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_tokens') THEN
+    EXECUTE $$CREATE OR REPLACE TRIGGER trg_invalidate_old_tokens AFTER INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.invalidate_old_tokens()$$;
+    EXECUTE $$CREATE OR REPLACE TRIGGER trg_set_token_expiration BEFORE INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.set_token_expiration()$$;
+  END IF;
+END $prt_trg$;
 
 CREATE OR REPLACE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
@@ -5834,16 +5849,16 @@ CREATE POLICY integrity_alerts_service_all ON public.integrity_alerts TO service
 
 DO $ipwl_pol$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ip_whitelist') THEN
-    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can delete whitelist" ON public.ip_whitelist$;
-    EXECUTE $CREATE POLICY "Admins can delete whitelist" ON public.ip_whitelist FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
-    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can insert whitelist" ON public.ip_whitelist$;
-    EXECUTE $CREATE POLICY "Admins can insert whitelist" ON public.ip_whitelist FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
-    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can manage IP whitelist" ON public.ip_whitelist$;
-    EXECUTE $CREATE POLICY "Admins can manage IP whitelist" ON public.ip_whitelist TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
-    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can update whitelist" ON public.ip_whitelist$;
-    EXECUTE $CREATE POLICY "Admins can update whitelist" ON public.ip_whitelist FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
-    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Managers can view IP whitelist" ON public.ip_whitelist$;
-    EXECUTE $CREATE POLICY "Managers can view IP whitelist" ON public.ip_whitelist FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))$;
+    EXECUTE $$DROP POLICY IF EXISTS "ip_whitelist Admins can delete whitelist" ON public.ip_whitelist$$;
+    EXECUTE $$CREATE POLICY "Admins can delete whitelist" ON public.ip_whitelist FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "ip_whitelist Admins can insert whitelist" ON public.ip_whitelist$$;
+    EXECUTE $$CREATE POLICY "Admins can insert whitelist" ON public.ip_whitelist FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "ip_whitelist Admins can manage IP whitelist" ON public.ip_whitelist$$;
+    EXECUTE $$CREATE POLICY "Admins can manage IP whitelist" ON public.ip_whitelist TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "ip_whitelist Admins can update whitelist" ON public.ip_whitelist$$;
+    EXECUTE $$CREATE POLICY "Admins can update whitelist" ON public.ip_whitelist FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "ip_whitelist Managers can view IP whitelist" ON public.ip_whitelist$$;
+    EXECUTE $$CREATE POLICY "Managers can view IP whitelist" ON public.ip_whitelist FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))$$;
   END IF;
 END $ipwl_pol$;
 
@@ -6062,14 +6077,16 @@ CREATE POLICY "Users can request own password reset" ON public.password_reset_re
    FROM auth.users
   WHERE (users.id = ( SELECT auth.uid() AS uid))))::text));
 
-DROP POLICY IF EXISTS "password_reset_tokens Admins can delete reset tokens" ON public.password_reset_tokens;
-CREATE POLICY "Admins can delete reset tokens" ON public.password_reset_tokens FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "password_reset_tokens Authenticated can insert own reset tokens" ON public.password_reset_tokens;
-CREATE POLICY "Authenticated can insert own reset tokens" ON public.password_reset_tokens FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
-
-DROP POLICY IF EXISTS "password_reset_tokens Users can select own reset tokens" ON public.password_reset_tokens;
-CREATE POLICY "Users can select own reset tokens" ON public.password_reset_tokens FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+DO $prt_pol$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_tokens') THEN
+    EXECUTE $$DROP POLICY IF EXISTS "password_reset_tokens Admins can delete reset tokens" ON public.password_reset_tokens$$;
+    EXECUTE $$CREATE POLICY "Admins can delete reset tokens" ON public.password_reset_tokens FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "password_reset_tokens Authenticated can insert own reset tokens" ON public.password_reset_tokens$$;
+    EXECUTE $$CREATE POLICY "Authenticated can insert own reset tokens" ON public.password_reset_tokens FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "password_reset_tokens Users can select own reset tokens" ON public.password_reset_tokens$$;
+    EXECUTE $$CREATE POLICY "Users can select own reset tokens" ON public.password_reset_tokens FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id))$$;
+  END IF;
+END $prt_pol$;
 
 DROP POLICY IF EXISTS "pedidos_compra pedidos_compra_empresa_select" ON public.pedidos_compra;
 CREATE POLICY pedidos_compra_empresa_select ON public.pedidos_compra FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
@@ -6504,16 +6521,16 @@ CREATE POLICY "Users can manage their own preferences" ON public.user_demonstrat
 
 DO $udev_pol$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_devices') THEN
-    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can delete their devices" ON public.user_devices$;
-    EXECUTE $CREATE POLICY "Users can delete their devices" ON public.user_devices FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)))$;
-    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can insert their devices" ON public.user_devices$;
-    EXECUTE $CREATE POLICY "Users can insert their devices" ON public.user_devices FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id))$;
-    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can manage own devices" ON public.user_devices$;
-    EXECUTE $CREATE POLICY "Users can manage own devices" ON public.user_devices TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id))$;
-    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can update their devices" ON public.user_devices$;
-    EXECUTE $CREATE POLICY "Users can update their devices" ON public.user_devices FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)))$;
-    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can view own devices" ON public.user_devices$;
-    EXECUTE $CREATE POLICY "Users can view own devices" ON public.user_devices FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id))$;
+    EXECUTE $$DROP POLICY IF EXISTS "user_devices Users can delete their devices" ON public.user_devices$$;
+    EXECUTE $$CREATE POLICY "Users can delete their devices" ON public.user_devices FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "user_devices Users can insert their devices" ON public.user_devices$$;
+    EXECUTE $$CREATE POLICY "Users can insert their devices" ON public.user_devices FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "user_devices Users can manage own devices" ON public.user_devices$$;
+    EXECUTE $$CREATE POLICY "Users can manage own devices" ON public.user_devices TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "user_devices Users can update their devices" ON public.user_devices$$;
+    EXECUTE $$CREATE POLICY "Users can update their devices" ON public.user_devices FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "user_devices Users can view own devices" ON public.user_devices$$;
+    EXECUTE $$CREATE POLICY "Users can view own devices" ON public.user_devices FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id))$$;
   END IF;
 END $udev_pol$;
 
