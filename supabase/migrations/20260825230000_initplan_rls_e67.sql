@@ -50,9 +50,18 @@ END $acpol5$;
 DROP POLICY IF EXISTS "Owner manage alertas" ON public.alertas; CREATE POLICY "Owner manage alertas" ON public.alertas AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS alertas_owner_delete ON public.alertas; CREATE POLICY alertas_owner_delete ON public.alertas AS PERMISSIVE FOR DELETE TO authenticated USING ((( SELECT (SELECT auth.uid()) AS uid) = user_id));
 DROP POLICY IF EXISTS alertas_owner_select ON public.alertas; CREATE POLICY alertas_owner_select ON public.alertas AS PERMISSIVE FOR SELECT TO authenticated USING ((( SELECT (SELECT auth.uid()) AS uid) = user_id));
-DROP POLICY IF EXISTS alertas_preditivos_empresa_select ON public.alertas_preditivos; CREATE POLICY alertas_preditivos_empresa_select ON public.alertas_preditivos AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $aptag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='alertas_preditivos' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS alertas_preditivos_empresa_select ON public.alertas_preditivos;
+    CREATE POLICY alertas_preditivos_empresa_select ON public.alertas_preditivos AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $aptag$;
 DROP POLICY IF EXISTS "Empresa-based access" ON public.alertas_tributarios; CREATE POLICY "Empresa-based access" ON public.alertas_tributarios AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM user_empresas
   WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -435,9 +444,18 @@ DROP POLICY IF EXISTS health_scores_empresa_select ON public.health_scores_opera
    FROM user_empresas
   WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
 DROP POLICY IF EXISTS hap_user_insert ON public.historico_analises_preditivas; CREATE POLICY hap_user_insert ON public.historico_analises_preditivas AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS historico_analises_preditivas_empresa_select ON public.historico_analises_preditivas; CREATE POLICY historico_analises_preditivas_empresa_select ON public.historico_analises_preditivas AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $haptag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='historico_analises_preditivas' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS historico_analises_preditivas_empresa_select ON public.historico_analises_preditivas;
+    CREATE POLICY historico_analises_preditivas_empresa_select ON public.historico_analises_preditivas AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $haptag$;
 DROP POLICY IF EXISTS historico_cobranca_empresa_all ON public.historico_cobranca; CREATE POLICY historico_cobranca_empresa_all ON public.historico_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM user_empresas
   WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
