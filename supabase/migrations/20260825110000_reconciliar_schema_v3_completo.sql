@@ -12496,93 +12496,303 @@ CREATE UNIQUE INDEX IF NOT EXISTS aliq_iss_mun_geral_unq ON public.aliquotas_iss
 
 CREATE UNIQUE INDEX IF NOT EXISTS catalogos_fiscais_cargas_checksum_key ON public.catalogos_fiscais_cargas USING btree (checksum);
 
-CREATE INDEX IF NOT EXISTS catalogos_fiscais_cargas_last_updated_idx ON public.catalogos_fiscais_cargas USING btree (last_updated DESC);
+DO $cidx0$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='catalogos_fiscais_cargas') THEN
+    EXECUTE $cidx0q$CREATE INDEX IF NOT EXISTS catalogos_fiscais_cargas_last_updated_idx ON public.catalogos_fiscais_cargas USING btree (last_updated DESC);$cidx0q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx0$;
 
-CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations USING btree (empresa_id);
+DO $cidx1$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    EXECUTE $cidx1q$CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations USING btree (empresa_id);$cidx1q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx1$;
 
-CREATE INDEX IF NOT EXISTS idx_alertas_empresa_id ON public.alertas USING btree (empresa_id, created_at DESC);
+DO $cidx2$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas') THEN
+    EXECUTE $cidx2q$CREATE INDEX IF NOT EXISTS idx_alertas_empresa_id ON public.alertas USING btree (empresa_id, created_at DESC);$cidx2q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx2$;
 
-CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts USING btree (empresa_id);
+DO $cidx3$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
+    EXECUTE $cidx3q$CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts USING btree (empresa_id);$cidx3q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx3$;
 
-CREATE INDEX IF NOT EXISTS idx_auditoria_trib_criado ON public.auditoria_tributaria USING btree (criado_em DESC);
+DO $cidx4$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auditoria_tributaria') THEN
+    EXECUTE $cidx4q$CREATE INDEX IF NOT EXISTS idx_auditoria_trib_criado ON public.auditoria_tributaria USING btree (criado_em DESC);$cidx4q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx4$;
 
-CREATE INDEX IF NOT EXISTS idx_auditoria_trib_entidade ON public.auditoria_tributaria USING btree (entidade_tipo, entidade_id);
+DO $cidx5$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auditoria_tributaria') THEN
+    EXECUTE $cidx5q$CREATE INDEX IF NOT EXISTS idx_auditoria_trib_entidade ON public.auditoria_tributaria USING btree (entidade_tipo, entidade_id);$cidx5q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx5$;
 
-CREATE INDEX IF NOT EXISTS idx_benchmarks_lookup ON public.benchmarks_setoriais USING btree (regime, cnae_prefix);
+DO $cidx6$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='benchmarks_setoriais') THEN
+    EXECUTE $cidx6q$CREATE INDEX IF NOT EXISTS idx_benchmarks_lookup ON public.benchmarks_setoriais USING btree (regime, cnae_prefix);$cidx6q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx6$;
 
-CREATE INDEX IF NOT EXISTS idx_bling_sync_logs_modulo ON public.bling_sync_logs USING btree (modulo);
+DO $cidx7$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_sync_logs') THEN
+    EXECUTE $cidx7q$CREATE INDEX IF NOT EXISTS idx_bling_sync_logs_modulo ON public.bling_sync_logs USING btree (modulo);$cidx7q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx7$;
 
-CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_resource ON public.bling_webhook_events USING btree (module, resource_id);
+DO $cidx8$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_webhook_events') THEN
+    EXECUTE $cidx8q$CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_resource ON public.bling_webhook_events USING btree (module, resource_id);$cidx8q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx8$;
 
-CREATE INDEX IF NOT EXISTS idx_contas_receber_bitrix_deal ON public.contas_receber USING btree (bitrix_deal_id) WHERE (bitrix_deal_id IS NOT NULL);
+DO $cidx9$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_receber') THEN
+    EXECUTE $cidx9q$CREATE INDEX IF NOT EXISTS idx_contas_receber_bitrix_deal ON public.contas_receber USING btree (bitrix_deal_id) WHERE (bitrix_deal_id IS NOT NULL);$cidx9q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx9$;
 
-CREATE INDEX IF NOT EXISTS idx_fe_alert_state_ultimo ON public.frontend_error_alert_state USING btree (ultimo_alerta_em DESC);
+DO $cidx10$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_alert_state') THEN
+    EXECUTE $cidx10q$CREATE INDEX IF NOT EXISTS idx_fe_alert_state_ultimo ON public.frontend_error_alert_state USING btree (ultimo_alerta_em DESC);$cidx10q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx10$;
 
-CREATE INDEX IF NOT EXISTS idx_fe_silence_digest_executado ON public.frontend_error_silence_digest_log USING btree (executado_em DESC);
+DO $cidx11$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_silence_digest_log') THEN
+    EXECUTE $cidx11q$CREATE INDEX IF NOT EXISTS idx_fe_silence_digest_executado ON public.frontend_error_silence_digest_log USING btree (executado_em DESC);$cidx11q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx11$;
 
 CREATE INDEX IF NOT EXISTS idx_frontend_error_logs_sev_created ON ONLY public.frontend_error_logs USING btree (severity, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_index_usage_snapshots_idx_date ON public.index_usage_snapshots USING btree (index_name, snapshot_date DESC);
+DO $cidx12$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='index_usage_snapshots') THEN
+    EXECUTE $cidx12q$CREATE INDEX IF NOT EXISTS idx_index_usage_snapshots_idx_date ON public.index_usage_snapshots USING btree (index_name, snapshot_date DESC);$cidx12q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx12$;
 
-CREATE INDEX IF NOT EXISTS idx_op_icms_empresa ON public.operacoes_icms USING btree (empresa_id, data_operacao DESC);
+DO $cidx13$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='operacoes_icms') THEN
+    EXECUTE $cidx13q$CREATE INDEX IF NOT EXISTS idx_op_icms_empresa ON public.operacoes_icms USING btree (empresa_id, data_operacao DESC);$cidx13q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx13$;
 
-CREATE INDEX IF NOT EXISTS idx_oport_empresa ON public.oportunidades_elisao USING btree (empresa_id, aplicavel);
+DO $cidx14$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='oportunidades_elisao') THEN
+    EXECUTE $cidx14q$CREATE INDEX IF NOT EXISTS idx_oport_empresa ON public.oportunidades_elisao USING btree (empresa_id, aplicavel);$cidx14q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx14$;
 
-CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_abertas ON public.overlay_rejeicoes_auditoria USING btree (resolvido_em) WHERE (resolvido_em IS NULL);
+DO $cidx15$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
+    EXECUTE $cidx15q$CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_abertas ON public.overlay_rejeicoes_auditoria USING btree (resolvido_em) WHERE (resolvido_em IS NULL);$cidx15q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx15$;
 
-CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_catalogo ON public.overlay_rejeicoes_auditoria USING btree (catalogo, referencia DESC);
+DO $cidx16$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
+    EXECUTE $cidx16q$CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_catalogo ON public.overlay_rejeicoes_auditoria USING btree (catalogo, referencia DESC);$cidx16q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx16$;
 
-CREATE INDEX IF NOT EXISTS idx_pag_recorr_empresa ON public.pagamentos_recorrentes USING btree (empresa_id, ativo);
+DO $cidx17$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pagamentos_recorrentes') THEN
+    EXECUTE $cidx17q$CREATE INDEX IF NOT EXISTS idx_pag_recorr_empresa ON public.pagamentos_recorrentes USING btree (empresa_id, ativo);$cidx17q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx17$;
 
-CREATE INDEX IF NOT EXISTS idx_pag_recorr_proxima ON public.pagamentos_recorrentes USING btree (proxima_geracao) WHERE ativo;
+DO $cidx18$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pagamentos_recorrentes') THEN
+    EXECUTE $cidx18q$CREATE INDEX IF NOT EXISTS idx_pag_recorr_proxima ON public.pagamentos_recorrentes USING btree (proxima_geracao) WHERE ativo;$cidx18q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx18$;
 
-CREATE INDEX IF NOT EXISTS idx_perf_alerts_open ON public.performance_alerts USING btree (created_at DESC) WHERE (resolved_at IS NULL);
+DO $cidx19$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='performance_alerts') THEN
+    EXECUTE $cidx19q$CREATE INDEX IF NOT EXISTS idx_perf_alerts_open ON public.performance_alerts USING btree (created_at DESC) WHERE (resolved_at IS NULL);$cidx19q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx19$;
 
-CREATE INDEX IF NOT EXISTS idx_perf_alerts_resolved_created ON public.performance_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);
+DO $cidx20$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='performance_alerts') THEN
+    EXECUTE $cidx20q$CREATE INDEX IF NOT EXISTS idx_perf_alerts_resolved_created ON public.performance_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);$cidx20q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx20$;
 
-CREATE INDEX IF NOT EXISTS idx_pix_templates_uso ON public.pix_templates USING btree (ativo, uso_count DESC);
+DO $cidx21$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pix_templates') THEN
+    EXECUTE $cidx21q$CREATE INDEX IF NOT EXISTS idx_pix_templates_uso ON public.pix_templates USING btree (ativo, uso_count DESC);$cidx21q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx21$;
 
-CREATE INDEX IF NOT EXISTS idx_regimes_simulados_ajustes_aplicados ON public.regimes_simulados USING gin (ajustes_aplicados);
+DO $cidx22$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_simulados') THEN
+    EXECUTE $cidx22q$CREATE INDEX IF NOT EXISTS idx_regimes_simulados_ajustes_aplicados ON public.regimes_simulados USING gin (ajustes_aplicados);$cidx22q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx22$;
 
-CREATE INDEX IF NOT EXISTS idx_regras_contab_lookup ON public.regras_contabilizacao_automatica USING btree (empresa_id, tipo_evento, ativo, prioridade);
+DO $cidx23$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_contabilizacao_automatica') THEN
+    EXECUTE $cidx23q$CREATE INDEX IF NOT EXISTS idx_regras_contab_lookup ON public.regras_contabilizacao_automatica USING btree (empresa_id, tipo_evento, ativo, prioridade);$cidx23q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx23$;
 
-CREATE INDEX IF NOT EXISTS idx_risk_rules_empresa ON public.risk_rules USING btree (empresa_id);
+DO $cidx24$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
+    EXECUTE $cidx24q$CREATE INDEX IF NOT EXISTS idx_risk_rules_empresa ON public.risk_rules USING btree (empresa_id);$cidx24q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx24$;
 
-CREATE INDEX IF NOT EXISTS idx_scim_operations_log_empresa_id ON public.scim_operations_log USING btree (empresa_id);
+DO $cidx25$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_operations_log') THEN
+    EXECUTE $cidx25q$CREATE INDEX IF NOT EXISTS idx_scim_operations_log_empresa_id ON public.scim_operations_log USING btree (empresa_id);$cidx25q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx25$;
 
-CREATE INDEX IF NOT EXISTS idx_scim_ops_token ON public.scim_operations_log USING btree (token_id, created_at DESC);
+DO $cidx26$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_operations_log') THEN
+    EXECUTE $cidx26q$CREATE INDEX IF NOT EXISTS idx_scim_ops_token ON public.scim_operations_log USING btree (token_id, created_at DESC);$cidx26q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx26$;
 
-CREATE INDEX IF NOT EXISTS idx_security_alerts_resolved ON public.security_alerts USING btree (resolved) WHERE (resolved = false);
+DO $cidx27$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_alerts') THEN
+    EXECUTE $cidx27q$CREATE INDEX IF NOT EXISTS idx_security_alerts_resolved ON public.security_alerts USING btree (resolved) WHERE (resolved = false);$cidx27q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx27$;
 
-CREATE INDEX IF NOT EXISTS idx_security_alerts_type ON public.security_alerts USING btree (type);
+DO $cidx28$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_alerts') THEN
+    EXECUTE $cidx28q$CREATE INDEX IF NOT EXISTS idx_security_alerts_type ON public.security_alerts USING btree (type);$cidx28q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx28$;
 
-CREATE INDEX IF NOT EXISTS idx_sim_hash ON public.simulacoes USING btree (hash_inputs);
+DO $cidx29$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='simulacoes') THEN
+    EXECUTE $cidx29q$CREATE INDEX IF NOT EXISTS idx_sim_hash ON public.simulacoes USING btree (hash_inputs);$cidx29q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx29$;
 
-CREATE INDEX IF NOT EXISTS idx_sim_trib_regime ON public.simulacao_tributos_detalhados USING btree (simulacao_id, regime);
+DO $cidx30$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='simulacao_tributos_detalhados') THEN
+    EXECUTE $cidx30q$CREATE INDEX IF NOT EXISTS idx_sim_trib_regime ON public.simulacao_tributos_detalhados USING btree (simulacao_id, regime);$cidx30q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx30$;
 
-CREATE INDEX IF NOT EXISTS idx_sim_trib_sim ON public.simulacao_tributos_detalhados USING btree (simulacao_id);
+DO $cidx31$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='simulacao_tributos_detalhados') THEN
+    EXECUTE $cidx31q$CREATE INDEX IF NOT EXISTS idx_sim_trib_sim ON public.simulacao_tributos_detalhados USING btree (simulacao_id);$cidx31q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx31$;
 
-CREATE INDEX IF NOT EXISTS idx_solicitacoes_lgpd_empresa_id ON public.solicitacoes_lgpd USING btree (empresa_id, created_at DESC);
+DO $cidx32$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
+    EXECUTE $cidx32q$CREATE INDEX IF NOT EXISTS idx_solicitacoes_lgpd_empresa_id ON public.solicitacoes_lgpd USING btree (empresa_id, created_at DESC);$cidx32q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx32$;
 
-CREATE INDEX IF NOT EXISTS idx_sped_arq_empresa_tipo_ano ON public.sped_contabil_arquivos USING btree (empresa_id, tipo, ano_calendario, created_at DESC);
+DO $cidx33$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sped_contabil_arquivos') THEN
+    EXECUTE $cidx33q$CREATE INDEX IF NOT EXISTS idx_sped_arq_empresa_tipo_ano ON public.sped_contabil_arquivos USING btree (empresa_id, tipo, ano_calendario, created_at DESC);$cidx33q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx33$;
 
-CREATE INDEX IF NOT EXISTS idx_sso_role_mappings_provider ON public.sso_role_mappings USING btree (provider_id, ordem);
+DO $cidx34$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_role_mappings') THEN
+    EXECUTE $cidx34q$CREATE INDEX IF NOT EXISTS idx_sso_role_mappings_provider ON public.sso_role_mappings USING btree (provider_id, ordem);$cidx34q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx34$;
 
-CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_batch ON public.sso_sandbox_runs USING btree (batch_id);
+DO $cidx35$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_sandbox_runs') THEN
+    EXECUTE $cidx35q$CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_batch ON public.sso_sandbox_runs USING btree (batch_id);$cidx35q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx35$;
 
-CREATE INDEX IF NOT EXISTS idx_tarefas_elisao_empresa ON public.elisao_tarefas_acionaveis USING btree (empresa_id, prazo);
+DO $cidx36$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_tarefas_acionaveis') THEN
+    EXECUTE $cidx36q$CREATE INDEX IF NOT EXISTS idx_tarefas_elisao_empresa ON public.elisao_tarefas_acionaveis USING btree (empresa_id, prazo);$cidx36q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx36$;
 
-CREATE INDEX IF NOT EXISTS lancamentos_contabeis_empresa_comp_idx ON public.lancamentos_contabeis USING btree (empresa_id, competencia);
+DO $cidx37$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lancamentos_contabeis') THEN
+    EXECUTE $cidx37q$CREATE INDEX IF NOT EXISTS lancamentos_contabeis_empresa_comp_idx ON public.lancamentos_contabeis USING btree (empresa_id, competencia);$cidx37q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx37$;
 
-CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_idx ON public.partidas_contabeis USING btree (conta_id);
+DO $cidx38$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='partidas_contabeis') THEN
+    EXECUTE $cidx38q$CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_idx ON public.partidas_contabeis USING btree (conta_id);$cidx38q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx38$;
 
-CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_lanc_idx ON public.partidas_contabeis USING btree (conta_id, lancamento_id) INCLUDE (tipo, valor);
+DO $cidx39$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='partidas_contabeis') THEN
+    EXECUTE $cidx39q$CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_lanc_idx ON public.partidas_contabeis USING btree (conta_id, lancamento_id) INCLUDE (tipo, valor);$cidx39q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx39$;
 
-CREATE INDEX IF NOT EXISTS plano_contas_codigo_referencial_idx ON public.plano_contas USING btree (empresa_id, codigo_referencial);
+DO $cidx40$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='plano_contas') THEN
+    EXECUTE $cidx40q$CREATE INDEX IF NOT EXISTS plano_contas_codigo_referencial_idx ON public.plano_contas USING btree (empresa_id, codigo_referencial);$cidx40q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx40$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS plano_contas_empresa_codigo_uidx ON public.plano_contas USING btree (empresa_id, codigo) WHERE (empresa_id IS NOT NULL);
 
-CREATE INDEX IF NOT EXISTS plano_contas_parent_idx ON public.plano_contas USING btree (parent_id);
+DO $cidx41$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='plano_contas') THEN
+    EXECUTE $cidx41q$CREATE INDEX IF NOT EXISTS plano_contas_parent_idx ON public.plano_contas USING btree (parent_id);$cidx41q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_column OR duplicate_table THEN NULL;
+END $cidx41$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS uq_acessos_suspeitos_janela ON public.acessos_suspeitos USING btree (tipo, janela_inicio, COALESCE(user_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(empresa_id, '00000000-0000-0000-0000-000000000000'::uuid), COALESCE(table_name, ''::text));
 
