@@ -297,10 +297,15 @@ DROP POLICY IF EXISTS "Categorias scoped by empresa" ON public.categorias; CREAT
    FROM user_empresas ue
   WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true))))));
 DROP POLICY IF EXISTS "Admins can manage centros de custo" ON public.centros_custo; CREATE POLICY "Admins can manage centros de custo" ON public.centros_custo AS PERMISSIVE FOR ALL TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS centros_custo_empresa_select ON public.centros_custo; CREATE POLICY centros_custo_empresa_select ON public.centros_custo AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS centros_custo_tenant_rw ON public.centros_custo; CREATE POLICY centros_custo_tenant_rw ON public.centros_custo AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
+DO $ccustoetag$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='centros_custo' AND column_name='empresa_id') THEN
+    DROP POLICY IF EXISTS centros_custo_empresa_select ON public.centros_custo; CREATE POLICY centros_custo_empresa_select ON public.centros_custo AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS centros_custo_tenant_rw ON public.centros_custo; CREATE POLICY centros_custo_tenant_rw ON public.centros_custo AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $ccustoetag$;
 DROP POLICY IF EXISTS "Admins can view CI security gate events" ON public.ci_security_gate_events; CREATE POLICY "Admins can view CI security gate events" ON public.ci_security_gate_events AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS clientes_grupo_select ON public.clientes; CREATE POLICY clientes_grupo_select ON public.clientes AS PERMISSIVE FOR SELECT TO authenticated USING (((empresa_id IS NOT NULL) AND (empresa_id IN ( SELECT user_empresas.empresa_id
    FROM user_empresas
