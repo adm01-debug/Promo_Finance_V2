@@ -2749,29 +2749,41 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.is_ip_whitelisted(_ip_address inet) RETURNS boolean
-    LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
-    AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.ip_whitelist
-        WHERE is_active = true
-          AND (ip_address = _ip_address OR _ip_address << cidr_range::inet)
-    )
-$$;
+DO $ipwl_fn_guard$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'ip_whitelist') THEN
+    EXECUTE $ipwl_fn_sql$
+      CREATE OR REPLACE FUNCTION public.is_ip_whitelisted(_ip_address inet) RETURNS boolean
+          LANGUAGE sql STABLE SECURITY DEFINER
+          SET search_path TO 'public', 'pg_catalog'
+          AS $ipwl_fn_body$
+          SELECT EXISTS (
+              SELECT 1
+              FROM public.ip_whitelist
+              WHERE is_active = true
+                AND (ip_address = _ip_address OR _ip_address << cidr_range::inet)
+          )
+      $ipwl_fn_body$;
+    $ipwl_fn_sql$;
+  END IF;
+END $ipwl_fn_guard$;
 
-CREATE OR REPLACE FUNCTION public.is_known_device(_user_id uuid, _fingerprint text) RETURNS boolean
-    LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
-    AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.user_devices
-        WHERE user_id = _user_id
-          AND device_fingerprint = _fingerprint
-    )
-$$;
+DO $kdev_fn_guard$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'user_devices') THEN
+    EXECUTE $kdev_fn_sql$
+      CREATE OR REPLACE FUNCTION public.is_known_device(_user_id uuid, _fingerprint text) RETURNS boolean
+          LANGUAGE sql STABLE SECURITY DEFINER
+          SET search_path TO 'public', 'pg_catalog'
+          AS $kdev_fn_body$
+          SELECT EXISTS (
+              SELECT 1
+              FROM public.user_devices
+              WHERE user_id = _user_id
+                AND device_fingerprint = _fingerprint
+          )
+      $kdev_fn_body$;
+    $kdev_fn_sql$;
+  END IF;
+END $kdev_fn_guard$;
 
 CREATE OR REPLACE FUNCTION public.is_org_membro(_org_id uuid, _user_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
@@ -4759,9 +4771,12 @@ CREATE OR REPLACE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.
 
 CREATE OR REPLACE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();
 
-CREATE OR REPLACE TRIGGER trg_audit_geo_blocks AFTER INSERT OR DELETE OR UPDATE ON public.geo_blocks FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
-
-CREATE OR REPLACE TRIGGER update_geo_blocks_updated_at BEFORE UPDATE ON public.geo_blocks FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $geo_trg$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='geo_blocks') THEN
+    EXECUTE $$CREATE OR REPLACE TRIGGER trg_audit_geo_blocks AFTER INSERT OR DELETE OR UPDATE ON public.geo_blocks FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic()$$;
+    EXECUTE $$CREATE OR REPLACE TRIGGER update_geo_blocks_updated_at BEFORE UPDATE ON public.geo_blocks FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column()$$;
+  END IF;
+END $geo_trg$;
 
 CREATE OR REPLACE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
@@ -4771,9 +4786,12 @@ CREATE OR REPLACE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON pu
 
 CREATE OR REPLACE TRIGGER trg_integrity_alerts_updated_at BEFORE UPDATE ON public.integrity_alerts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
-CREATE OR REPLACE TRIGGER trg_audit_ip_whitelist AFTER INSERT OR DELETE OR UPDATE ON public.ip_whitelist FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
-
-CREATE OR REPLACE TRIGGER update_ip_whitelist_updated_at BEFORE UPDATE ON public.ip_whitelist FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $ipwl_trg$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ip_whitelist') THEN
+    EXECUTE $$CREATE OR REPLACE TRIGGER trg_audit_ip_whitelist AFTER INSERT OR DELETE OR UPDATE ON public.ip_whitelist FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic()$$;
+    EXECUTE $$CREATE OR REPLACE TRIGGER update_ip_whitelist_updated_at BEFORE UPDATE ON public.ip_whitelist FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column()$$;
+  END IF;
+END $ipwl_trg$;
 
 CREATE OR REPLACE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
@@ -5719,20 +5737,20 @@ CREATE POLICY "Admins can view performance logs" ON public.frontend_performance_
 DROP POLICY IF EXISTS "frontend_performance_logs Authenticated users can insert performance logs" ON public.frontend_performance_logs;
 CREATE POLICY "Authenticated users can insert performance logs" ON public.frontend_performance_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));
 
-DROP POLICY IF EXISTS "geo_blocks Admins can delete geo blocks" ON public.geo_blocks;
-CREATE POLICY "Admins can delete geo blocks" ON public.geo_blocks FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "geo_blocks Admins can insert geo blocks" ON public.geo_blocks;
-CREATE POLICY "Admins can insert geo blocks" ON public.geo_blocks FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "geo_blocks Admins can manage geo blocks" ON public.geo_blocks;
-CREATE POLICY "Admins can manage geo blocks" ON public.geo_blocks TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "geo_blocks Admins can update geo blocks" ON public.geo_blocks;
-CREATE POLICY "Admins can update geo blocks" ON public.geo_blocks FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "geo_blocks Managers can view geo blocks" ON public.geo_blocks;
-CREATE POLICY "Managers can view geo blocks" ON public.geo_blocks FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));
+DO $geo_pol$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='geo_blocks') THEN
+    EXECUTE $$DROP POLICY IF EXISTS "geo_blocks Admins can delete geo blocks" ON public.geo_blocks$$;
+    EXECUTE $$CREATE POLICY "Admins can delete geo blocks" ON public.geo_blocks FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "geo_blocks Admins can insert geo blocks" ON public.geo_blocks$$;
+    EXECUTE $$CREATE POLICY "Admins can insert geo blocks" ON public.geo_blocks FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "geo_blocks Admins can manage geo blocks" ON public.geo_blocks$$;
+    EXECUTE $$CREATE POLICY "Admins can manage geo blocks" ON public.geo_blocks TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "geo_blocks Admins can update geo blocks" ON public.geo_blocks$$;
+    EXECUTE $$CREATE POLICY "Admins can update geo blocks" ON public.geo_blocks FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$$;
+    EXECUTE $$DROP POLICY IF EXISTS "geo_blocks Managers can view geo blocks" ON public.geo_blocks$$;
+    EXECUTE $$CREATE POLICY "Managers can view geo blocks" ON public.geo_blocks FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))$$;
+  END IF;
+END $geo_pol$;
 
 DROP POLICY IF EXISTS "glossario_tributario glossario_admin" ON public.glossario_tributario;
 CREATE POLICY glossario_admin ON public.glossario_tributario TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
@@ -5814,20 +5832,20 @@ CREATE POLICY integrity_alerts_admin_read ON public.integrity_alerts FOR SELECT 
 DROP POLICY IF EXISTS "integrity_alerts integrity_alerts_service_all" ON public.integrity_alerts;
 CREATE POLICY integrity_alerts_service_all ON public.integrity_alerts TO service_role USING (true) WITH CHECK (true);
 
-DROP POLICY IF EXISTS "ip_whitelist Admins can delete whitelist" ON public.ip_whitelist;
-CREATE POLICY "Admins can delete whitelist" ON public.ip_whitelist FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "ip_whitelist Admins can insert whitelist" ON public.ip_whitelist;
-CREATE POLICY "Admins can insert whitelist" ON public.ip_whitelist FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "ip_whitelist Admins can manage IP whitelist" ON public.ip_whitelist;
-CREATE POLICY "Admins can manage IP whitelist" ON public.ip_whitelist TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "ip_whitelist Admins can update whitelist" ON public.ip_whitelist;
-CREATE POLICY "Admins can update whitelist" ON public.ip_whitelist FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
-
-DROP POLICY IF EXISTS "ip_whitelist Managers can view IP whitelist" ON public.ip_whitelist;
-CREATE POLICY "Managers can view IP whitelist" ON public.ip_whitelist FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));
+DO $ipwl_pol$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ip_whitelist') THEN
+    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can delete whitelist" ON public.ip_whitelist$;
+    EXECUTE $CREATE POLICY "Admins can delete whitelist" ON public.ip_whitelist FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
+    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can insert whitelist" ON public.ip_whitelist$;
+    EXECUTE $CREATE POLICY "Admins can insert whitelist" ON public.ip_whitelist FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
+    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can manage IP whitelist" ON public.ip_whitelist$;
+    EXECUTE $CREATE POLICY "Admins can manage IP whitelist" ON public.ip_whitelist TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
+    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Admins can update whitelist" ON public.ip_whitelist$;
+    EXECUTE $CREATE POLICY "Admins can update whitelist" ON public.ip_whitelist FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))$;
+    EXECUTE $DROP POLICY IF EXISTS "ip_whitelist Managers can view IP whitelist" ON public.ip_whitelist$;
+    EXECUTE $CREATE POLICY "Managers can view IP whitelist" ON public.ip_whitelist FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))$;
+  END IF;
+END $ipwl_pol$;
 
 DROP POLICY IF EXISTS "itens_lista_iss itens_iss_select_authenticated" ON public.itens_lista_iss;
 CREATE POLICY itens_iss_select_authenticated ON public.itens_lista_iss FOR SELECT TO authenticated USING (true);
@@ -6484,20 +6502,20 @@ CREATE POLICY "Users can manage their own preferences" ON public.user_anomalia_p
 DROP POLICY IF EXISTS "user_demonstrativo_preferences Users can manage their own preferences" ON public.user_demonstrativo_preferences;
 CREATE POLICY "Users can manage their own preferences" ON public.user_demonstrativo_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
-DROP POLICY IF EXISTS "user_devices Users can delete their devices" ON public.user_devices;
-CREATE POLICY "Users can delete their devices" ON public.user_devices FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
-
-DROP POLICY IF EXISTS "user_devices Users can insert their devices" ON public.user_devices;
-CREATE POLICY "Users can insert their devices" ON public.user_devices FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
-
-DROP POLICY IF EXISTS "user_devices Users can manage own devices" ON public.user_devices;
-CREATE POLICY "Users can manage own devices" ON public.user_devices TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
-
-DROP POLICY IF EXISTS "user_devices Users can update their devices" ON public.user_devices;
-CREATE POLICY "Users can update their devices" ON public.user_devices FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
-
-DROP POLICY IF EXISTS "user_devices Users can view own devices" ON public.user_devices;
-CREATE POLICY "Users can view own devices" ON public.user_devices FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+DO $udev_pol$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_devices') THEN
+    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can delete their devices" ON public.user_devices$;
+    EXECUTE $CREATE POLICY "Users can delete their devices" ON public.user_devices FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)))$;
+    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can insert their devices" ON public.user_devices$;
+    EXECUTE $CREATE POLICY "Users can insert their devices" ON public.user_devices FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id))$;
+    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can manage own devices" ON public.user_devices$;
+    EXECUTE $CREATE POLICY "Users can manage own devices" ON public.user_devices TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id))$;
+    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can update their devices" ON public.user_devices$;
+    EXECUTE $CREATE POLICY "Users can update their devices" ON public.user_devices FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)))$;
+    EXECUTE $DROP POLICY IF EXISTS "user_devices Users can view own devices" ON public.user_devices$;
+    EXECUTE $CREATE POLICY "Users can view own devices" ON public.user_devices FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id))$;
+  END IF;
+END $udev_pol$;
 
 DROP POLICY IF EXISTS "user_digest_preferences Admins visualizam preferencias de digest" ON public.user_digest_preferences;
 CREATE POLICY "Admins visualizam preferencias de digest" ON public.user_digest_preferences FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
