@@ -82,12 +82,17 @@ DROP POLICY IF EXISTS "Users can insert own or elevated alertas_tributarios" ON 
 DROP POLICY IF EXISTS "Users can update own or elevated alertas_tributarios" ON public.alertas_tributarios;
 DROP POLICY IF EXISTS "Users can delete own or elevated alertas_tributarios" ON public.alertas_tributarios;
 
--- alerts (5)
-DROP POLICY IF EXISTS "Authorized roles can view alerts" ON public.alerts;
-DROP POLICY IF EXISTS "Managers can delete alerts" ON public.alerts;
-DROP POLICY IF EXISTS "Operators can insert alerts" ON public.alerts;
-DROP POLICY IF EXISTS "Operators can update alerts" ON public.alerts;
-DROP POLICY IF EXISTS "Viewers can view alerts" ON public.alerts;
+-- alerts (5) — wrapped: table absent in clean preview DB
+DO $alr2tag$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
+    DROP POLICY IF EXISTS "Authorized roles can view alerts" ON public.alerts;
+    DROP POLICY IF EXISTS "Managers can delete alerts" ON public.alerts;
+    DROP POLICY IF EXISTS "Operators can insert alerts" ON public.alerts;
+    DROP POLICY IF EXISTS "Operators can update alerts" ON public.alerts;
+    DROP POLICY IF EXISTS "Viewers can view alerts" ON public.alerts;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $alr2tag$;
 
 -- apuracoes_tributarias (1)
 DROP POLICY IF EXISTS "apuracoes_tributarias_admin_all" ON public.apuracoes_tributarias;

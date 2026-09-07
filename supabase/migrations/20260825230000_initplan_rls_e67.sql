@@ -67,15 +67,34 @@ DROP POLICY IF EXISTS "Empresa-based access" ON public.alertas_tributarios; CREA
   WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
    FROM user_roles
   WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS "Authorized roles can view alerts" ON public.alerts; CREATE POLICY "Authorized roles can view alerts" ON public.alerts AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
-DROP POLICY IF EXISTS "Managers can delete alerts" ON public.alerts; CREATE POLICY "Managers can delete alerts" ON public.alerts AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Operators can insert alerts" ON public.alerts; CREATE POLICY "Operators can insert alerts" ON public.alerts AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
-DROP POLICY IF EXISTS "Operators can update alerts" ON public.alerts; CREATE POLICY "Operators can update alerts" ON public.alerts AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
-DROP POLICY IF EXISTS "Viewers can view alerts" ON public.alerts; CREATE POLICY "Viewers can view alerts" ON public.alerts AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'visualizador'::app_role));
-DROP POLICY IF EXISTS "Admins can delete alerts sent" ON public.alerts_sent; CREATE POLICY "Admins can delete alerts sent" ON public.alerts_sent AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Authorized roles can view alerts sent" ON public.alerts_sent; CREATE POLICY "Authorized roles can view alerts sent" ON public.alerts_sent AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
-DROP POLICY IF EXISTS "Managers can update alerts sent" ON public.alerts_sent; CREATE POLICY "Managers can update alerts sent" ON public.alerts_sent AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "System can insert alerts sent" ON public.alerts_sent; CREATE POLICY "System can insert alerts sent" ON public.alerts_sent AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
+DO $alrtag$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
+    DROP POLICY IF EXISTS "Authorized roles can view alerts" ON public.alerts;
+    CREATE POLICY "Authorized roles can view alerts" ON public.alerts AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
+    DROP POLICY IF EXISTS "Managers can delete alerts" ON public.alerts;
+    CREATE POLICY "Managers can delete alerts" ON public.alerts AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+    DROP POLICY IF EXISTS "Operators can insert alerts" ON public.alerts;
+    CREATE POLICY "Operators can insert alerts" ON public.alerts AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
+    DROP POLICY IF EXISTS "Operators can update alerts" ON public.alerts;
+    CREATE POLICY "Operators can update alerts" ON public.alerts AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
+    DROP POLICY IF EXISTS "Viewers can view alerts" ON public.alerts;
+    CREATE POLICY "Viewers can view alerts" ON public.alerts AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'visualizador'::app_role));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR duplicate_object THEN NULL;
+END $alrtag$;
+DO $alrsnttag$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts_sent') THEN
+    DROP POLICY IF EXISTS "Admins can delete alerts sent" ON public.alerts_sent;
+    CREATE POLICY "Admins can delete alerts sent" ON public.alerts_sent AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Authorized roles can view alerts sent" ON public.alerts_sent;
+    CREATE POLICY "Authorized roles can view alerts sent" ON public.alerts_sent AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
+    DROP POLICY IF EXISTS "Managers can update alerts sent" ON public.alerts_sent;
+    CREATE POLICY "Managers can update alerts sent" ON public.alerts_sent AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+    DROP POLICY IF EXISTS "System can insert alerts sent" ON public.alerts_sent;
+    CREATE POLICY "System can insert alerts sent" ON public.alerts_sent AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR duplicate_object THEN NULL;
+END $alrsnttag$;
 DROP POLICY IF EXISTS aliq_inter_write_admin ON public.aliquotas_interestaduais; CREATE POLICY aliq_inter_write_admin ON public.aliquotas_interestaduais AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS aliq_internas_write_admin ON public.aliquotas_internas_uf; CREATE POLICY aliq_internas_write_admin ON public.aliquotas_internas_uf AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS aliq_iss_write_admin ON public.aliquotas_iss_municipal; CREATE POLICY aliq_iss_write_admin ON public.aliquotas_iss_municipal AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
