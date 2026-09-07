@@ -4670,427 +4670,427 @@ DO $tr0$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='acordos_parcelamento') THEN
     EXECUTE $tr0q$CREATE OR REPLACE TRIGGER set_updated_at_d9c737e24ed42de7266f BEFORE UPDATE ON public.acordos_parcelamento FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr0q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr0$;
 
 DO $tr1$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
     EXECUTE $tr1q$CREATE OR REPLACE TRIGGER trg_alert_configurations_set_empresa BEFORE INSERT ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();$tr1q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr1$;
 
 DO $tr2$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
     EXECUTE $tr2q$CREATE OR REPLACE TRIGGER trg_audit_alert_configurations AFTER INSERT OR DELETE OR UPDATE ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr2q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr2$;
 
 DO $tr3$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
     EXECUTE $tr3q$CREATE OR REPLACE TRIGGER update_alert_config_updated_at BEFORE UPDATE ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr3q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr3$;
 
 DO $tr4$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas') THEN
     EXECUTE $tr4q$CREATE OR REPLACE TRIGGER trg_alertas_set_empresa BEFORE INSERT ON public.alertas FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();$tr4q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr4$;
 
 DO $tr5$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas_preditivos') THEN
     EXECUTE $tr5q$CREATE OR REPLACE TRIGGER set_updated_at_fb6d54b516a66b2b99f3 BEFORE UPDATE ON public.alertas_preditivos FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr5q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr5$;
 
 DO $tr6$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
     EXECUTE $tr6q$CREATE OR REPLACE TRIGGER trg_alerts_set_empresa BEFORE INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();$tr6q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr6$;
 
 DO $tr7$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_interestaduais') THEN
     EXECUTE $tr7q$CREATE OR REPLACE TRIGGER trg_aliq_inter_updated_at BEFORE UPDATE ON public.aliquotas_interestaduais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr7q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr7$;
 
 DO $tr8$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_internas_uf') THEN
     EXECUTE $tr8q$CREATE OR REPLACE TRIGGER trg_aliq_internas_updated_at BEFORE UPDATE ON public.aliquotas_internas_uf FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr8q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr8$;
 
 DO $tr9$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_iss_municipal') THEN
     EXECUTE $tr9q$CREATE OR REPLACE TRIGGER trg_aliq_iss_updated_at BEFORE UPDATE ON public.aliquotas_iss_municipal FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr9q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr9$;
 
 DO $tr10$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='allowed_countries') THEN
     EXECUTE $tr10q$CREATE OR REPLACE TRIGGER trg_audit_allowed_countries AFTER INSERT OR DELETE OR UPDATE ON public.allowed_countries FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr10q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr10$;
 
 DO $tr11$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='allowed_ips') THEN
     EXECUTE $tr11q$CREATE OR REPLACE TRIGGER trg_audit_allowed_ips AFTER INSERT OR DELETE OR UPDATE ON public.allowed_ips FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr11q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr11$;
 
 DO $tr12$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anomalias_detectadas') THEN
     EXECUTE $tr12q$CREATE OR REPLACE TRIGGER set_updated_at_f7bd4a317caf2651584f BEFORE UPDATE ON public.anomalias_detectadas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr12q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr12$;
 
 DO $tr13$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='api_keys') THEN
     EXECUTE $tr13q$CREATE OR REPLACE TRIGGER trg_api_keys_updated_at BEFORE UPDATE ON public.api_keys FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr13q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr13$;
 
 DO $tr14$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='apuracoes_tributarias') THEN
     EXECUTE $tr14q$CREATE OR REPLACE TRIGGER set_updated_at_414e25aed7d9071a4748 BEFORE UPDATE ON public.apuracoes_tributarias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr14q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr14$;
 
 DO $tr15$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_config') THEN
     EXECUTE $tr15q$CREATE OR REPLACE TRIGGER set_updated_at_c9b96759e48801387f71 BEFORE UPDATE ON public.asaas_config FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr15q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr15$;
 
 DO $tr16$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_customers') THEN
     EXECUTE $tr16q$CREATE OR REPLACE TRIGGER set_updated_at_9d8cee55d8b7c2070327 BEFORE UPDATE ON public.asaas_customers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr16q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr16$;
 
 DO $tr17$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_payments') THEN
     EXECUTE $tr17q$CREATE OR REPLACE TRIGGER set_updated_at_60e90ad3dec9516f2ca9 BEFORE UPDATE ON public.asaas_payments FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr17q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr17$;
 
 DO $tr18$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_reconciliation_suggestions') THEN
     EXECUTE $tr18q$CREATE OR REPLACE TRIGGER set_updated_at_4efff01553ff16302e45 BEFORE UPDATE ON public.asaas_reconciliation_suggestions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr18q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr18$;
 
 DO $tr19$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_sync_queue') THEN
     EXECUTE $tr19q$CREATE OR REPLACE TRIGGER set_updated_at_358c32867d1f3b611c3b BEFORE UPDATE ON public.asaas_sync_queue FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr19q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr19$;
 
 DO $tr20$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_transfers') THEN
     EXECUTE $tr20q$CREATE OR REPLACE TRIGGER set_updated_at_750f942dec954ad99332 BEFORE UPDATE ON public.asaas_transfers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr20q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr20$;
 
 DO $tr21$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auth_logs') THEN
     EXECUTE $tr21q$CREATE OR REPLACE TRIGGER sanitize_auth_log_metadata_trigger BEFORE INSERT ON public.auth_logs FOR EACH ROW EXECUTE FUNCTION public.sanitize_auth_log_metadata();$tr21q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr21$;
 
 DO $tr22$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='benchmarks_setoriais') THEN
     EXECUTE $tr22q$CREATE OR REPLACE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr22q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr22$;
 
 DO $tr23$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='beneficios_fiscais') THEN
     EXECUTE $tr23q$CREATE OR REPLACE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr23q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr23$;
 
 DO $tr24$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_tokens') THEN
     EXECUTE $tr24q$CREATE OR REPLACE TRIGGER update_bitrix24_tokens_updated_at BEFORE UPDATE ON public.bitrix24_tokens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr24q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr24$;
 
 DO $tr25$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix_oauth_tokens') THEN
     EXECUTE $tr25q$CREATE OR REPLACE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr25q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr25$;
 
 DO $tr26$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_tokens') THEN
     EXECUTE $tr26q$CREATE OR REPLACE TRIGGER trg_bling_tokens_updated_at BEFORE UPDATE ON public.bling_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr26q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr26$;
 
 DO $tr27$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='boletos') THEN
     EXECUTE $tr27q$CREATE OR REPLACE TRIGGER set_updated_at_6ccc02b67895ed316b66 BEFORE UPDATE ON public.boletos FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr27q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr27$;
 
 DO $tr28$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='budgets') THEN
     EXECUTE $tr28q$CREATE OR REPLACE TRIGGER set_updated_at_b7d9e68ed31698bcfe97 BEFORE UPDATE ON public.budgets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr28q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr28$;
 
 DO $tr29$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='catalogos_fiscais_cargas') THEN
     EXECUTE $tr29q$CREATE OR REPLACE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.catalogos_fiscais_cargas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr29q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr29$;
 
 DO $tr30$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='catalogos_tributarios_health_history') THEN
     EXECUTE $tr30q$CREATE OR REPLACE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.catalogos_tributarios_health_history FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr30q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr30$;
 
 DO $tr31$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='categorias') THEN
     EXECUTE $tr31q$CREATE OR REPLACE TRIGGER set_updated_at_18e8b04fb0e329ecb61f BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr31q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr31$;
 
 DO $tr32$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='centros_custo') THEN
     EXECUTE $tr32q$CREATE OR REPLACE TRIGGER set_updated_at_0d5cf71cba5e923b906a BEFORE UPDATE ON public.centros_custo FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr32q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr32$;
 
 DO $tr33$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
     EXECUTE $tr33q$CREATE OR REPLACE TRIGGER set_updated_at_0670acdde4e1e38b5669 BEFORE UPDATE ON public.clientes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr33q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr33$;
 
 DO $tr34$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cnaes') THEN
     EXECUTE $tr34q$CREATE OR REPLACE TRIGGER trg_cnaes_updated_at BEFORE UPDATE ON public.cnaes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr34q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr34$;
 
 DO $tr35$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cnpja_cache') THEN
     EXECUTE $tr35q$CREATE OR REPLACE TRIGGER trg_cnpja_cache_updated_at BEFORE UPDATE ON public.cnpja_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr35q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr35$;
 
 DO $tr36$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='configuracoes_aprovacao') THEN
     EXECUTE $tr36q$CREATE OR REPLACE TRIGGER set_updated_at_3a25b26abdf52bd44121 BEFORE UPDATE ON public.configuracoes_aprovacao FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr36q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr36$;
 
 DO $tr37$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conformidade_snapshots') THEN
     EXECUTE $tr37q$CREATE OR REPLACE TRIGGER trg_conformidade_snapshots_updated_at BEFORE UPDATE ON public.conformidade_snapshots FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr37q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr37$;
 
 DO $tr38$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_bancarias') THEN
     EXECUTE $tr38q$CREATE OR REPLACE TRIGGER set_updated_at_e4fd639d8315ad49b4d1 BEFORE UPDATE ON public.contas_bancarias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr38q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr38$;
 
 DO $tr39$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_pagar') THEN
     EXECUTE $tr39q$CREATE OR REPLACE TRIGGER set_updated_at_891eba3b06036ba9ea7e BEFORE UPDATE ON public.contas_pagar FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr39q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr39$;
 
 DO $tr40$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_receber') THEN
     EXECUTE $tr40q$CREATE OR REPLACE TRIGGER set_updated_at_f4f31d38308fe5dff30a BEFORE UPDATE ON public.contas_receber FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr40q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr40$;
 
 DO $tr41$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='convites_contador') THEN
     EXECUTE $tr41q$CREATE OR REPLACE TRIGGER trg_convites_contador_updated_at BEFORE UPDATE ON public.convites_contador FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr41q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr41$;
 
 DO $tr42$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='custom_field_definitions') THEN
     EXECUTE $tr42q$CREATE OR REPLACE TRIGGER set_updated_at_0c7ce82e1f5cca97d953 BEFORE UPDATE ON public.custom_field_definitions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr42q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr42$;
 
 DO $tr43$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='custom_field_values') THEN
     EXECUTE $tr43q$CREATE OR REPLACE TRIGGER set_updated_at_fb9bfe686d34f4bee9a0 BEFORE UPDATE ON public.custom_field_values FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr43q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr43$;
 
 DO $tr44$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='darfs') THEN
     EXECUTE $tr44q$CREATE OR REPLACE TRIGGER set_updated_at_408bdc8fafbc18b00290 BEFORE UPDATE ON public.darfs FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr44q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr44$;
 
 DO $tr45$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_alertas') THEN
     EXECUTE $tr45q$CREATE OR REPLACE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr45q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr45$;
 
 DO $tr46$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_creditos_auditoria') THEN
     EXECUTE $tr46q$CREATE OR REPLACE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr46q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr46$;
 
 DO $tr47$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_regras_creditos') THEN
     EXECUTE $tr47q$CREATE OR REPLACE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr47q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr47$;
 
 DO $tr48$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_simulacoes_regime') THEN
     EXECUTE $tr48q$CREATE OR REPLACE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr48q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr48$;
 
 DO $tr49$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_tarefas_acionaveis') THEN
     EXECUTE $tr49q$CREATE OR REPLACE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr49q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr49$;
 
 DO $tr50$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas') THEN
     EXECUTE $tr50q$CREATE OR REPLACE TRIGGER trg_empresas_unica_padrao BEFORE INSERT OR UPDATE OF is_padrao, ativo ON public.empresas FOR EACH ROW EXECUTE FUNCTION public.empresas_unica_padrao();$tr50q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr50$;
 
 DO $tr51$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas_certificados') THEN
     EXECUTE $tr51q$CREATE OR REPLACE TRIGGER trg_emp_cert_updated BEFORE UPDATE ON public.empresas_certificados FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();$tr51q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr51$;
 
 DO $tr52$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='entregas_obrigacoes') THEN
     EXECUTE $tr52q$CREATE OR REPLACE TRIGGER trg_entregas_obrigacoes_updated_at BEFORE UPDATE ON public.entregas_obrigacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr52q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr52$;
 
 DO $tr53$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='estrategias_elisao') THEN
     EXECUTE $tr53q$CREATE OR REPLACE TRIGGER trg_estrategias_updated_at BEFORE UPDATE ON public.estrategias_elisao FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr53q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr53$;
 
 DO $tr54$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='expert_conversations') THEN
     EXECUTE $tr54q$CREATE OR REPLACE TRIGGER set_updated_at_a78c869af115da2c0dbe BEFORE UPDATE ON public.expert_conversations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr54q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr54$;
 
 DO $tr55$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='faixas_simples_nacional') THEN
     EXECUTE $tr55q$CREATE OR REPLACE TRIGGER trg_faixas_simples_updated_at BEFORE UPDATE ON public.faixas_simples_nacional FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr55q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr55$;
 
 DO $tr56$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fechamentos_tributarios') THEN
     EXECUTE $tr56q$CREATE OR REPLACE TRIGGER trg_fechamentos_updated_at BEFORE UPDATE ON public.fechamentos_tributarios FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr56q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr56$;
 
 DO $tr57$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fila_cobrancas') THEN
     EXECUTE $tr57q$CREATE OR REPLACE TRIGGER set_updated_at_24d30bafb2eecf05024f BEFORE UPDATE ON public.fila_cobrancas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr57q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr57$;
 
 DO $tr58$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fornecedores') THEN
     EXECUTE $tr58q$CREATE OR REPLACE TRIGGER set_updated_at_d05a1e8f4af4f67d1bb5 BEFORE UPDATE ON public.fornecedores FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr58q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr58$;
 
 DO $tr59$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_alert_state') THEN
     EXECUTE $tr59q$CREATE OR REPLACE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr59q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr59$;
 
 DO $tr60$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_logs') THEN
     EXECUTE $tr60q$CREATE OR REPLACE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();$tr60q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr60$;
 
 DO $geo_trg$ BEGIN
@@ -5104,28 +5104,28 @@ DO $tr61$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='glossario_tributario') THEN
     EXECUTE $tr61q$CREATE OR REPLACE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr61q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr61$;
 
 DO $tr62$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='incentivos_fiscais') THEN
     EXECUTE $tr62q$CREATE OR REPLACE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr62q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr62$;
 
 DO $tr63$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='integration_secrets') THEN
     EXECUTE $tr63q$CREATE OR REPLACE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON public.integration_secrets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr63q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr63$;
 
 DO $tr64$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='integrity_alerts') THEN
     EXECUTE $tr64q$CREATE OR REPLACE TRIGGER trg_integrity_alerts_updated_at BEFORE UPDATE ON public.integrity_alerts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr64q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr64$;
 
 DO $ipwl_trg$ BEGIN
@@ -5139,133 +5139,133 @@ DO $tr65$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='itens_lista_iss') THEN
     EXECUTE $tr65q$CREATE OR REPLACE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr65q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr65$;
 
 DO $tr66$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='kpis_operacionais') THEN
     EXECUTE $tr66q$CREATE OR REPLACE TRIGGER trg_kpis_operacionais_updated_at BEFORE UPDATE ON public.kpis_operacionais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr66q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr66$;
 
 DO $tr67$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lancamentos_contabeis') THEN
     EXECUTE $tr67q$CREATE OR REPLACE TRIGGER trg_lancamento_contabil_before_insert BEFORE INSERT ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_insert();$tr67q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr67$;
 
 DO $tr68$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lancamentos_contabeis') THEN
     EXECUTE $tr68q$CREATE OR REPLACE TRIGGER trg_lancamento_contabil_before_update BEFORE UPDATE ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_update();$tr68q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr68$;
 
 DO $tr69$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='logs_conciliacao_retroativa') THEN
     EXECUTE $tr69q$CREATE OR REPLACE TRIGGER set_updated_at_d7d66ed0673bb8a6cd90 BEFORE UPDATE ON public.logs_conciliacao_retroativa FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr69q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr69$;
 
 DO $tr70$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='metas_financeiras') THEN
     EXECUTE $tr70q$CREATE OR REPLACE TRIGGER set_updated_at_metas BEFORE UPDATE ON public.metas_financeiras FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr70q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr70$;
 
 DO $tr71$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='n8n_workflow_configs') THEN
     EXECUTE $tr71q$CREATE OR REPLACE TRIGGER trg_n8n_cfg_updated BEFORE UPDATE ON public.n8n_workflow_configs FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr71q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr71$;
 
 DO $tr72$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ncms') THEN
     EXECUTE $tr72q$CREATE OR REPLACE TRIGGER trg_ncms_updated_at BEFORE UPDATE ON public.ncms FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr72q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr72$;
 
 DO $tr73$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='nfe_recebidas') THEN
     EXECUTE $tr73q$CREATE OR REPLACE TRIGGER trg_nfe_rec_updated BEFORE UPDATE ON public.nfe_recebidas FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();$tr73q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr73$;
 
 DO $tr74$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='nfe_recebidas') THEN
     EXECUTE $tr74q$CREATE OR REPLACE TRIGGER trg_nfe_recebidas_updated_at BEFORE UPDATE ON public.nfe_recebidas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr74q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr74$;
 
 DO $tr75$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='notas_fiscais_ocr') THEN
     EXECUTE $tr75q$CREATE OR REPLACE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr75q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr75$;
 
 DO $tr76$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='open_finance_consents') THEN
     EXECUTE $tr76q$CREATE OR REPLACE TRIGGER set_updated_at_open_finance BEFORE UPDATE ON public.open_finance_consents FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr76q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr76$;
 
 DO $tr77$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='operacoes_icms') THEN
     EXECUTE $tr77q$CREATE OR REPLACE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_icms FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr77q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr77$;
 
 DO $tr78$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='oportunidades_elisao') THEN
     EXECUTE $tr78q$CREATE OR REPLACE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr78q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr78$;
 
 DO $tr79$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacao_membros') THEN
     EXECUTE $tr79q$CREATE OR REPLACE TRIGGER trg_org_membros_updated_at BEFORE UPDATE ON public.organizacao_membros FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr79q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr79$;
 
 DO $tr80$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacoes') THEN
     EXECUTE $tr80q$CREATE OR REPLACE TRIGGER trg_organizacoes_updated_at BEFORE UPDATE ON public.organizacoes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr80q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr80$;
 
 DO $tr81$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
     EXECUTE $tr81q$CREATE OR REPLACE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_rejeicoes_auditoria FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr81q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr81$;
 
 DO $tr82$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pagamentos_recorrentes') THEN
     EXECUTE $tr82q$CREATE OR REPLACE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.pagamentos_recorrentes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr82q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr82$;
 
 DO $tr83$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='partidas_contabeis') THEN
     EXECUTE $tr83q$CREATE OR REPLACE TRIGGER trg_normalizar_tipo_partida BEFORE INSERT OR UPDATE ON public.partidas_contabeis FOR EACH ROW EXECUTE FUNCTION public.normalizar_tipo_partida();$tr83q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr83$;
 
 DO $ctr0$ BEGIN
@@ -5279,7 +5279,7 @@ DO $ctr0$ BEGIN
       EXECUTE $ctr0q$CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();$ctr0q$;
     END IF;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $ctr0$;
 
 DO $prt_trg$ BEGIN
@@ -5293,420 +5293,420 @@ DO $tr84$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='per_dcomp') THEN
     EXECUTE $tr84q$CREATE OR REPLACE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr84q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr84$;
 
 DO $tr85$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='performance_alerts') THEN
     EXECUTE $tr85q$CREATE OR REPLACE TRIGGER performance_alerts_notify_trigger AFTER INSERT ON public.performance_alerts FOR EACH ROW EXECUTE FUNCTION public.notify_performance_alert_trigger();$tr85q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr85$;
 
 DO $tr86$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='permissions') THEN
     EXECUTE $tr86q$CREATE OR REPLACE TRIGGER trg_audit_permissions AFTER INSERT OR DELETE OR UPDATE ON public.permissions FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr86q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr86$;
 
 DO $tr87$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pix_templates') THEN
     EXECUTE $tr87q$CREATE OR REPLACE TRIGGER trg_pix_template_sync_legacy BEFORE INSERT OR UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();$tr87q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr87$;
 
 DO $tr88$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pix_templates') THEN
     EXECUTE $tr88q$CREATE OR REPLACE TRIGGER trg_pix_templates_updated_at BEFORE UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr88q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr88$;
 
 DO $tr89$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='planos_acao') THEN
     EXECUTE $tr89q$CREATE OR REPLACE TRIGGER trg_planos_acao_updated_at BEFORE UPDATE ON public.planos_acao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr89q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr89$;
 
 DO $tr90$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='portal_cliente_tokens') THEN
     EXECUTE $tr90q$CREATE OR REPLACE TRIGGER set_updated_at_a3e34a0da7a4b2d1563e BEFORE UPDATE ON public.portal_cliente_tokens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr90q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr90$;
 
 DO $tr91$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
     EXECUTE $tr91q$CREATE OR REPLACE TRIGGER set_updated_at_d970728376beb1370578 BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr91q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr91$;
 
 DO $tr92$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
     EXECUTE $tr92q$CREATE OR REPLACE TRIGGER trg_prevent_profile_privilege_escalation BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.prevent_profile_privilege_escalation();$tr92q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr92$;
 
 DO $tr93$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='projecoes_reforma') THEN
     EXECUTE $tr93q$CREATE OR REPLACE TRIGGER trg_proj_reforma_updated_at BEFORE UPDATE ON public.projecoes_reforma FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr93q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr93$;
 
 DO $tr94$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st') THEN
     EXECUTE $tr94q$CREATE OR REPLACE TRIGGER trg_protocolos_st_updated_at BEFORE UPDATE ON public.protocolos_st FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr94q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr94$;
 
 DO $tr95$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ncms') THEN
     EXECUTE $tr95q$CREATE OR REPLACE TRIGGER trg_protocolo_st_ncm_autolink BEFORE INSERT OR UPDATE OF ncm_codigo ON public.protocolos_st_ncms FOR EACH ROW EXECUTE FUNCTION public.protocolo_st_ncm_autolink();$tr95q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr95$;
 
 DO $tr96$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ncms') THEN
     EXECUTE $tr96q$CREATE OR REPLACE TRIGGER trg_protocolos_st_ncms_updated_at BEFORE UPDATE ON public.protocolos_st_ncms FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr96q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr96$;
 
 DO $tr97$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ufs') THEN
     EXECUTE $tr97q$CREATE OR REPLACE TRIGGER trg_protocolos_st_ufs_updated_at BEFORE UPDATE ON public.protocolos_st_ufs FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr97q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr97$;
 
 DO $tr98$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='push_subscriptions') THEN
     EXECUTE $tr98q$CREATE OR REPLACE TRIGGER trg_push_subscriptions_updated_at BEFORE UPDATE ON public.push_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr98q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr98$;
 
 DO $tr99$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regime_decision_cache') THEN
     EXECUTE $tr99q$CREATE OR REPLACE TRIGGER trg_regime_cache_updated_at BEFORE UPDATE ON public.regime_decision_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr99q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr99$;
 
 DO $tr100$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_simulados') THEN
     EXECUTE $tr100q$CREATE OR REPLACE TRIGGER set_updated_at_3f1eaae3a0a07aa516a5 BEFORE UPDATE ON public.regimes_simulados FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr100q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr100$;
 
 DO $tr101$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_tributarios') THEN
     EXECUTE $tr101q$CREATE OR REPLACE TRIGGER trg_sync_regime_empresa AFTER INSERT OR UPDATE ON public.regimes_tributarios FOR EACH ROW EXECUTE FUNCTION public.sync_regime_tributario_empresa();$tr101q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr101$;
 
 DO $tr102$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_contabilizacao_automatica') THEN
     EXECUTE $tr102q$CREATE OR REPLACE TRIGGER trg_regras_contab_updated_at BEFORE UPDATE ON public.regras_contabilizacao_automatica FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr102q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr102$;
 
 DO $tr103$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_roteamento_financeiro') THEN
     EXECUTE $tr103q$CREATE OR REPLACE TRIGGER set_updated_at_411e7594aa600ded799f BEFORE UPDATE ON public.regras_roteamento_financeiro FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr103q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr103$;
 
 DO $tr104$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_roteamento_financeiro') THEN
     EXECUTE $tr104q$CREATE OR REPLACE TRIGGER trg_audit_regras_roteamento_financeiro AFTER INSERT OR DELETE OR UPDATE ON public.regras_roteamento_financeiro FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr104q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr104$;
 
 DO $tr105$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca') THEN
     EXECUTE $tr105q$CREATE OR REPLACE TRIGGER set_updated_at_d109c735b0fcf7754280 BEFORE UPDATE ON public.regua_cobranca FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr105q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr105$;
 
 DO $tr106$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca_status') THEN
     EXECUTE $tr106q$CREATE OR REPLACE TRIGGER set_updated_at_7895f3de16aa8553d228 BEFORE UPDATE ON public.regua_cobranca_status FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr106q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr106$;
 
 DO $tr107$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='relatorios_agendados') THEN
     EXECUTE $tr107q$CREATE OR REPLACE TRIGGER trg_relat_agend_updated_at BEFORE UPDATE ON public.relatorios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr107q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr107$;
 
 DO $tr108$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='relatorios_tributarios_agendados') THEN
     EXECUTE $tr108q$CREATE OR REPLACE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr108q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr108$;
 
 DO $tr109$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='retencao_politicas') THEN
     EXECUTE $tr109q$CREATE OR REPLACE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr109q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr109$;
 
 DO $tr110$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
     EXECUTE $tr110q$CREATE OR REPLACE TRIGGER trg_audit_risk_rules AFTER INSERT OR DELETE OR UPDATE ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr110q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr110$;
 
 DO $tr111$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
     EXECUTE $tr111q$CREATE OR REPLACE TRIGGER trg_risk_rules_set_empresa BEFORE INSERT ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();$tr111q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr111$;
 
 DO $tr112$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
     EXECUTE $tr112q$CREATE OR REPLACE TRIGGER update_risk_rules_updated_at BEFORE UPDATE ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr112q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr112$;
 
 DO $tr113$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='role_permissions') THEN
     EXECUTE $tr113q$CREATE OR REPLACE TRIGGER trg_audit_role_permissions AFTER INSERT OR DELETE OR UPDATE ON public.role_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr113q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr113$;
 
 DO $tr114$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='saved_filter_subscriptions') THEN
     EXECUTE $tr114q$CREATE OR REPLACE TRIGGER trg_saved_filter_subs_updated_at BEFORE UPDATE ON public.saved_filter_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr114q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr114$;
 
 DO $tr115$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='saved_filters') THEN
     EXECUTE $tr115q$CREATE OR REPLACE TRIGGER trg_saved_filters_updated_at BEFORE UPDATE ON public.saved_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr115q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr115$;
 
 DO $tr116$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_setup_checklist') THEN
     EXECUTE $tr116q$CREATE OR REPLACE TRIGGER trg_scim_checklist_updated_at BEFORE UPDATE ON public.scim_setup_checklist FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr116q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr116$;
 
 DO $tr117$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_settings') THEN
     EXECUTE $tr117q$CREATE OR REPLACE TRIGGER set_updated_at_e04cfc68ebaf2388af42 BEFORE UPDATE ON public.security_settings FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr117q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr117$;
 
 DO $tr118$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_settings') THEN
     EXECUTE $tr118q$CREATE OR REPLACE TRIGGER trg_audit_security_settings AFTER INSERT OR DELETE OR UPDATE ON public.security_settings FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr118q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr118$;
 
 DO $tr119$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sefaz_dfe_cursor') THEN
     EXECUTE $tr119q$CREATE OR REPLACE TRIGGER trg_dfe_cursor_updated BEFORE UPDATE ON public.sefaz_dfe_cursor FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();$tr119q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr119$;
 
 DO $tr120$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='simulacoes') THEN
     EXECUTE $tr120q$CREATE OR REPLACE TRIGGER trg_simulacoes_updated_at BEFORE UPDATE ON public.simulacoes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr120q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr120$;
 
 DO $tr121$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
     EXECUTE $tr121q$CREATE OR REPLACE TRIGGER trg_solicitacoes_lgpd_set_empresa BEFORE INSERT ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();$tr121q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr121$;
 
 DO $tr122$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
     EXECUTE $tr122q$CREATE OR REPLACE TRIGGER trg_solicitacoes_lgpd_updated_at BEFORE UPDATE ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr122q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr122$;
 
 DO $tr123$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sped_contabil_arquivos') THEN
     EXECUTE $tr123q$CREATE OR REPLACE TRIGGER trg_sped_arquivos_updated_at BEFORE UPDATE ON public.sped_contabil_arquivos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr123q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr123$;
 
 DO $tr124$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='split_payment_transacoes') THEN
     EXECUTE $tr124q$CREATE OR REPLACE TRIGGER update_split_payment_transacoes_updated_at BEFORE UPDATE ON public.split_payment_transacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr124q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr124$;
 
 DO $tr125$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_providers') THEN
     EXECUTE $tr125q$CREATE OR REPLACE TRIGGER set_updated_at_cf7fd5d83c82e171dad1 BEFORE UPDATE ON public.sso_providers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr125q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr125$;
 
 DO $tr126$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_providers') THEN
     EXECUTE $tr126q$CREATE OR REPLACE TRIGGER trg_audit_sso_providers AFTER INSERT OR DELETE OR UPDATE ON public.sso_providers FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr126q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr126$;
 
 DO $tr127$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_role_mappings') THEN
     EXECUTE $tr127q$CREATE OR REPLACE TRIGGER trg_sso_role_mappings_updated_at BEFORE UPDATE ON public.sso_role_mappings FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr127q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr127$;
 
 DO $tr128$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_user_groups') THEN
     EXECUTE $tr128q$CREATE OR REPLACE TRIGGER trg_sso_user_groups_updated_at BEFORE UPDATE ON public.sso_user_groups FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr128q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr128$;
 
 DO $tr129$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='templates_cobranca') THEN
     EXECUTE $tr129q$CREATE OR REPLACE TRIGGER set_updated_at_3e8011f6fa0d13424163 BEFORE UPDATE ON public.templates_cobranca FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr129q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr129$;
 
 DO $tr130$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ufs') THEN
     EXECUTE $tr130q$CREATE OR REPLACE TRIGGER trg_ufs_updated_at BEFORE UPDATE ON public.ufs FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr130q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr130$;
 
 DO $tr131$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_active_filters') THEN
     EXECUTE $tr131q$CREATE OR REPLACE TRIGGER trg_user_active_filters_updated_at BEFORE UPDATE ON public.user_active_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr131q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr131$;
 
 DO $tr132$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_anomalia_preferences') THEN
     EXECUTE $tr132q$CREATE OR REPLACE TRIGGER set_updated_at_7c3e342523c10fdce4a8 BEFORE UPDATE ON public.user_anomalia_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr132q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr132$;
 
 DO $tr133$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_anomalia_preferences') THEN
     EXECUTE $tr133q$CREATE OR REPLACE TRIGGER tr_user_anomalia_preferences_updated_at BEFORE UPDATE ON public.user_anomalia_preferences FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr133q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr133$;
 
 DO $tr134$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_demonstrativo_preferences') THEN
     EXECUTE $tr134q$CREATE OR REPLACE TRIGGER update_user_demonstrativo_preferences_updated_at BEFORE UPDATE ON public.user_demonstrativo_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr134q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr134$;
 
 DO $tr135$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_digest_preferences') THEN
     EXECUTE $tr135q$CREATE OR REPLACE TRIGGER tr_user_digest_preferences_updated_at BEFORE UPDATE ON public.user_digest_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr135q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr135$;
 
 DO $tr136$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_empresas') THEN
     EXECUTE $tr136q$CREATE OR REPLACE TRIGGER set_updated_at_09910d2394bcdefb9694 BEFORE UPDATE ON public.user_empresas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr136q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr136$;
 
 DO $tr137$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_filter_presets') THEN
     EXECUTE $tr137q$CREATE OR REPLACE TRIGGER set_updated_at_94b77f57a764fd8b2a8c BEFORE UPDATE ON public.user_filter_presets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr137q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr137$;
 
 DO $tr138$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_onboarding_progress') THEN
     EXECUTE $tr138q$CREATE OR REPLACE TRIGGER set_updated_at_843738dbe839129b260e BEFORE UPDATE ON public.user_onboarding_progress FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr138q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr138$;
 
 DO $tr139$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_onboarding_progress') THEN
     EXECUTE $tr139q$CREATE OR REPLACE TRIGGER tr_user_onboarding_progress_updated_at BEFORE UPDATE ON public.user_onboarding_progress FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr139q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr139$;
 
 DO $tr140$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     EXECUTE $tr140q$CREATE OR REPLACE TRIGGER trg_audit_user_roles AFTER INSERT OR DELETE OR UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr140q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr140$;
 
 DO $tr141$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     EXECUTE $tr141q$CREATE OR REPLACE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.auto_vincular_empresa_padrao();$tr141q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr141$;
 
 DO $tr142$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     EXECUTE $tr142q$CREATE OR REPLACE TRIGGER update_user_roles_updated_at BEFORE UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr142q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr142$;
 
 DO $tr143$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_dlq') THEN
     EXECUTE $tr143q$CREATE OR REPLACE TRIGGER trg_webhook_dlq_updated BEFORE UPDATE ON public.webhook_dlq FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr143q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_column THEN NULL;
 END $tr143$;
 
 -- SECAO 3: Policies ausentes (445)
@@ -5715,7 +5715,7 @@ DO $dpol0$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='acessos_suspeitos') THEN
     DROP POLICY IF EXISTS "acessos_suspeitos acessos_suspeitos_tenant_select" ON public.acessos_suspeitos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol0$;
 DO $pol0$ BEGIN
   IF NOT EXISTS (
@@ -5723,14 +5723,14 @@ DO $pol0$ BEGIN
   ) THEN
     EXECUTE $pol0q$CREATE POLICY acessos_suspeitos_tenant_select ON public.acessos_suspeitos FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));$pol0q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol0$;
 
 DO $dpol1$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='acoes_recomendadas') THEN
     DROP POLICY IF EXISTS "acoes_recomendadas Empresa-based access" ON public.acoes_recomendadas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol1$;
 DO $pq0$ BEGIN
   IF NOT EXISTS (
@@ -5742,14 +5742,14 @@ DO $pq0$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq0q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq0$;
 
 DO $dpol2$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='acordos_parcelamento') THEN
     DROP POLICY IF EXISTS "acordos_parcelamento Empresa-based access" ON public.acordos_parcelamento;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol2$;
 DO $pq1$ BEGIN
   IF NOT EXISTS (
@@ -5761,14 +5761,14 @@ DO $pq1$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq1q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq1$;
 
 DO $dpol3$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='acordos_parcelamento') THEN
     DROP POLICY IF EXISTS "acordos_parcelamento Owner manage acordos" ON public.acordos_parcelamento;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol3$;
 DO $pq2$ BEGIN
   IF NOT EXISTS (
@@ -5776,14 +5776,14 @@ DO $pq2$ BEGIN
   ) THEN
     EXECUTE $pq2q$CREATE POLICY "Owner manage acordos" ON public.acordos_parcelamento TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq2q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq2$;
 
 DO $dpol4$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
     DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_delete" ON public.alert_configurations;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol4$;
 DO $pol1$ BEGIN
   IF NOT EXISTS (
@@ -5791,14 +5791,14 @@ DO $pol1$ BEGIN
   ) THEN
     EXECUTE $pol1q$CREATE POLICY alert_configurations_tenant_delete ON public.alert_configurations FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));$pol1q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol1$;
 
 DO $dpol5$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
     DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_insert" ON public.alert_configurations;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol5$;
 DO $pol2$ BEGIN
   IF NOT EXISTS (
@@ -5806,14 +5806,14 @@ DO $pol2$ BEGIN
   ) THEN
     EXECUTE $pol2q$CREATE POLICY alert_configurations_tenant_insert ON public.alert_configurations FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));$pol2q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol2$;
 
 DO $dpol6$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
     DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_select" ON public.alert_configurations;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol6$;
 DO $pol3$ BEGIN
   IF NOT EXISTS (
@@ -5821,14 +5821,14 @@ DO $pol3$ BEGIN
   ) THEN
     EXECUTE $pol3q$CREATE POLICY alert_configurations_tenant_select ON public.alert_configurations FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));$pol3q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol3$;
 
 DO $dpol7$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
     DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_update" ON public.alert_configurations;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol7$;
 DO $pol4$ BEGIN
   IF NOT EXISTS (
@@ -5836,14 +5836,14 @@ DO $pol4$ BEGIN
   ) THEN
     EXECUTE $pol4q$CREATE POLICY alert_configurations_tenant_update ON public.alert_configurations FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));$pol4q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol4$;
 
 DO $dpol8$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas') THEN
     DROP POLICY IF EXISTS "alertas alertas_owner_delete" ON public.alertas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol8$;
 DO $pol5$ BEGIN
   IF NOT EXISTS (
@@ -5851,14 +5851,14 @@ DO $pol5$ BEGIN
   ) THEN
     EXECUTE $pol5q$CREATE POLICY alertas_owner_delete ON public.alertas FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol5q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol5$;
 
 DO $dpol9$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas') THEN
     DROP POLICY IF EXISTS "alertas alertas_owner_insert" ON public.alertas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol9$;
 DO $pol6$ BEGIN
   IF NOT EXISTS (
@@ -5866,14 +5866,14 @@ DO $pol6$ BEGIN
   ) THEN
     EXECUTE $pol6q$CREATE POLICY alertas_owner_insert ON public.alertas FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));$pol6q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol6$;
 
 DO $dpol10$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas') THEN
     DROP POLICY IF EXISTS "alertas alertas_owner_select" ON public.alertas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol10$;
 DO $pol7$ BEGIN
   IF NOT EXISTS (
@@ -5881,14 +5881,14 @@ DO $pol7$ BEGIN
   ) THEN
     EXECUTE $pol7q$CREATE POLICY alertas_owner_select ON public.alertas FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol7q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol7$;
 
 DO $dpol11$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas') THEN
     DROP POLICY IF EXISTS "alertas alertas_owner_update" ON public.alertas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol11$;
 DO $pol8$ BEGIN
   IF NOT EXISTS (
@@ -5896,14 +5896,14 @@ DO $pol8$ BEGIN
   ) THEN
     EXECUTE $pol8q$CREATE POLICY alertas_owner_update ON public.alertas FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));$pol8q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol8$;
 
 DO $dpol12$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas_preditivos') THEN
     DROP POLICY IF EXISTS "alertas_preditivos alertas_preditivos_empresa_select" ON public.alertas_preditivos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol12$;
 DO $pol9$ BEGIN
   IF NOT EXISTS (
@@ -5913,14 +5913,14 @@ DO $pol9$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol9q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol9$;
 
 DO $dpol13$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas_tributarios') THEN
     DROP POLICY IF EXISTS "alertas_tributarios Empresa-based access" ON public.alertas_tributarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol13$;
 DO $pq3$ BEGIN
   IF NOT EXISTS (
@@ -5932,14 +5932,14 @@ DO $pq3$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq3q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq3$;
 
 DO $dpol14$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
     DROP POLICY IF EXISTS "alerts alerts_tenant_delete" ON public.alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol14$;
 DO $pol10$ BEGIN
   IF NOT EXISTS (
@@ -5947,14 +5947,14 @@ DO $pol10$ BEGIN
   ) THEN
     EXECUTE $pol10q$CREATE POLICY alerts_tenant_delete ON public.alerts FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));$pol10q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol10$;
 
 DO $dpol15$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
     DROP POLICY IF EXISTS "alerts alerts_tenant_insert" ON public.alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol15$;
 DO $pol11$ BEGIN
   IF NOT EXISTS (
@@ -5962,14 +5962,14 @@ DO $pol11$ BEGIN
   ) THEN
     EXECUTE $pol11q$CREATE POLICY alerts_tenant_insert ON public.alerts FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));$pol11q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol11$;
 
 DO $dpol16$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
     DROP POLICY IF EXISTS "alerts alerts_tenant_select" ON public.alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol16$;
 DO $pol12$ BEGIN
   IF NOT EXISTS (
@@ -5977,14 +5977,14 @@ DO $pol12$ BEGIN
   ) THEN
     EXECUTE $pol12q$CREATE POLICY alerts_tenant_select ON public.alerts FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));$pol12q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol12$;
 
 DO $dpol17$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
     DROP POLICY IF EXISTS "alerts alerts_tenant_update" ON public.alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol17$;
 DO $pol13$ BEGIN
   IF NOT EXISTS (
@@ -5992,14 +5992,14 @@ DO $pol13$ BEGIN
   ) THEN
     EXECUTE $pol13q$CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));$pol13q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol13$;
 
 DO $dpol18$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts_sent') THEN
     DROP POLICY IF EXISTS "alerts_sent alerts_sent_tenant_delete" ON public.alerts_sent;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol18$;
 DO $pol14$ BEGIN
   IF NOT EXISTS (
@@ -6009,14 +6009,14 @@ DO $pol14$ BEGIN
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));$pol14q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol14$;
 
 DO $dpol19$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts_sent') THEN
     DROP POLICY IF EXISTS "alerts_sent alerts_sent_tenant_insert" ON public.alerts_sent;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol19$;
 DO $pol15$ BEGIN
   IF NOT EXISTS (
@@ -6026,14 +6026,14 @@ DO $pol15$ BEGIN
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));$pol15q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol15$;
 
 DO $dpol20$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts_sent') THEN
     DROP POLICY IF EXISTS "alerts_sent alerts_sent_tenant_select" ON public.alerts_sent;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol20$;
 DO $pol16$ BEGIN
   IF NOT EXISTS (
@@ -6043,14 +6043,14 @@ DO $pol16$ BEGIN
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));$pol16q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol16$;
 
 DO $dpol21$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts_sent') THEN
     DROP POLICY IF EXISTS "alerts_sent alerts_sent_tenant_update" ON public.alerts_sent;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol21$;
 DO $pol17$ BEGIN
   IF NOT EXISTS (
@@ -6062,14 +6062,14 @@ DO $pol17$ BEGIN
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));$pol17q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol17$;
 
 DO $dpol22$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_interestaduais') THEN
     DROP POLICY IF EXISTS "aliquotas_interestaduais aliq_inter_select_authenticated" ON public.aliquotas_interestaduais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol22$;
 DO $pol18$ BEGIN
   IF NOT EXISTS (
@@ -6077,14 +6077,14 @@ DO $pol18$ BEGIN
   ) THEN
     EXECUTE $pol18q$CREATE POLICY aliq_inter_select_authenticated ON public.aliquotas_interestaduais FOR SELECT TO authenticated USING (true);$pol18q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol18$;
 
 DO $dpol23$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_interestaduais') THEN
     DROP POLICY IF EXISTS "aliquotas_interestaduais aliq_inter_write_admin" ON public.aliquotas_interestaduais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol23$;
 DO $pol19$ BEGIN
   IF NOT EXISTS (
@@ -6092,14 +6092,14 @@ DO $pol19$ BEGIN
   ) THEN
     EXECUTE $pol19q$CREATE POLICY aliq_inter_write_admin ON public.aliquotas_interestaduais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol19q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol19$;
 
 DO $dpol24$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_internas_uf') THEN
     DROP POLICY IF EXISTS "aliquotas_internas_uf aliq_internas_select_authenticated" ON public.aliquotas_internas_uf;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol24$;
 DO $pol20$ BEGIN
   IF NOT EXISTS (
@@ -6107,14 +6107,14 @@ DO $pol20$ BEGIN
   ) THEN
     EXECUTE $pol20q$CREATE POLICY aliq_internas_select_authenticated ON public.aliquotas_internas_uf FOR SELECT TO authenticated USING (true);$pol20q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol20$;
 
 DO $dpol25$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_internas_uf') THEN
     DROP POLICY IF EXISTS "aliquotas_internas_uf aliq_internas_write_admin" ON public.aliquotas_internas_uf;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol25$;
 DO $pol21$ BEGIN
   IF NOT EXISTS (
@@ -6122,14 +6122,14 @@ DO $pol21$ BEGIN
   ) THEN
     EXECUTE $pol21q$CREATE POLICY aliq_internas_write_admin ON public.aliquotas_internas_uf TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol21q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol21$;
 
 DO $dpol26$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_iss_municipal') THEN
     DROP POLICY IF EXISTS "aliquotas_iss_municipal aliq_iss_select_authenticated" ON public.aliquotas_iss_municipal;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol26$;
 DO $pol22$ BEGIN
   IF NOT EXISTS (
@@ -6137,14 +6137,14 @@ DO $pol22$ BEGIN
   ) THEN
     EXECUTE $pol22q$CREATE POLICY aliq_iss_select_authenticated ON public.aliquotas_iss_municipal FOR SELECT TO authenticated USING (true);$pol22q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol22$;
 
 DO $dpol27$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_iss_municipal') THEN
     DROP POLICY IF EXISTS "aliquotas_iss_municipal aliq_iss_write_admin" ON public.aliquotas_iss_municipal;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol27$;
 DO $pol23$ BEGIN
   IF NOT EXISTS (
@@ -6152,14 +6152,14 @@ DO $pol23$ BEGIN
   ) THEN
     EXECUTE $pol23q$CREATE POLICY aliq_iss_write_admin ON public.aliquotas_iss_municipal TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol23q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol23$;
 
 DO $dpol28$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='allowed_countries') THEN
     DROP POLICY IF EXISTS "allowed_countries Admin manage" ON public.allowed_countries;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol28$;
 DO $pq4$ BEGIN
   IF NOT EXISTS (
@@ -6169,14 +6169,14 @@ DO $pq4$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role)))));$pq4q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq4$;
 
 DO $dpol29$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='allowed_countries') THEN
     DROP POLICY IF EXISTS "allowed_countries Public read" ON public.allowed_countries;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol29$;
 DO $pq5$ BEGIN
   IF NOT EXISTS (
@@ -6184,14 +6184,14 @@ DO $pq5$ BEGIN
   ) THEN
     EXECUTE $pq5q$CREATE POLICY "Public read" ON public.allowed_countries FOR SELECT TO authenticated USING (true);$pq5q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq5$;
 
 DO $dpol30$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='allowed_ips') THEN
     DROP POLICY IF EXISTS "allowed_ips allowed_ips_admin_all" ON public.allowed_ips;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol30$;
 DO $pol24$ BEGIN
   IF NOT EXISTS (
@@ -6199,14 +6199,14 @@ DO $pol24$ BEGIN
   ) THEN
     EXECUTE $pol24q$CREATE POLICY allowed_ips_admin_all ON public.allowed_ips TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol24q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol24$;
 
 DO $dpol31$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anexos_financeiros') THEN
     DROP POLICY IF EXISTS "anexos_financeiros Owner manage anexos" ON public.anexos_financeiros;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol31$;
 DO $pq6$ BEGIN
   IF NOT EXISTS (
@@ -6214,14 +6214,14 @@ DO $pq6$ BEGIN
   ) THEN
     EXECUTE $pq6q$CREATE POLICY "Owner manage anexos" ON public.anexos_financeiros TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq6q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq6$;
 
 DO $dpol32$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anomalia_detection_runs') THEN
     DROP POLICY IF EXISTS "anomalia_detection_runs anomalia_runs_owner_or_admin_select" ON public.anomalia_detection_runs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol32$;
 DO $pol25$ BEGIN
   IF NOT EXISTS (
@@ -6229,14 +6229,14 @@ DO $pol25$ BEGIN
   ) THEN
     EXECUTE $pol25q$CREATE POLICY anomalia_runs_owner_or_admin_select ON public.anomalia_detection_runs FOR SELECT TO authenticated USING (((triggered_by = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pol25q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol25$;
 
 DO $dpol33$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anomalia_toast_eventos') THEN
     DROP POLICY IF EXISTS "anomalia_toast_eventos Users can insert toast events" ON public.anomalia_toast_eventos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol33$;
 DO $pq7$ BEGIN
   IF NOT EXISTS (
@@ -6244,14 +6244,14 @@ DO $pq7$ BEGIN
   ) THEN
     EXECUTE $pq7q$CREATE POLICY "Users can insert toast events" ON public.anomalia_toast_eventos FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq7q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq7$;
 
 DO $dpol34$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anomalia_toast_eventos') THEN
     DROP POLICY IF EXISTS "anomalia_toast_eventos Users can view their own toast events" ON public.anomalia_toast_eventos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol34$;
 DO $pq8$ BEGIN
   IF NOT EXISTS (
@@ -6259,14 +6259,14 @@ DO $pq8$ BEGIN
   ) THEN
     EXECUTE $pq8q$CREATE POLICY "Users can view their own toast events" ON public.anomalia_toast_eventos FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq8q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq8$;
 
 DO $dpol35$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anomalias_detectadas') THEN
     DROP POLICY IF EXISTS "anomalias_detectadas anomalias_detectadas_empresa_select" ON public.anomalias_detectadas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol35$;
 DO $pol26$ BEGIN
   IF NOT EXISTS (
@@ -6276,14 +6276,14 @@ DO $pol26$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol26q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol26$;
 
 DO $dpol36$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anomalias_detectadas') THEN
     DROP POLICY IF EXISTS "anomalias_detectadas anomalias_detectadas_tenant_rw" ON public.anomalias_detectadas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol36$;
 DO $pol27$ BEGIN
   IF NOT EXISTS (
@@ -6291,14 +6291,14 @@ DO $pol27$ BEGIN
   ) THEN
     EXECUTE $pol27q$CREATE POLICY anomalias_detectadas_tenant_rw ON public.anomalias_detectadas TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));$pol27q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol27$;
 
 DO $dpol37$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='api_keys') THEN
     DROP POLICY IF EXISTS "api_keys api_keys_delete" ON public.api_keys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol37$;
 DO $pol28$ BEGIN
   IF NOT EXISTS (
@@ -6306,14 +6306,14 @@ DO $pol28$ BEGIN
   ) THEN
     EXECUTE $pol28q$CREATE POLICY api_keys_delete ON public.api_keys FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol28q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol28$;
 
 DO $dpol38$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='api_keys') THEN
     DROP POLICY IF EXISTS "api_keys api_keys_select" ON public.api_keys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol38$;
 DO $pol29$ BEGIN
   IF NOT EXISTS (
@@ -6321,14 +6321,14 @@ DO $pol29$ BEGIN
   ) THEN
     EXECUTE $pol29q$CREATE POLICY api_keys_select ON public.api_keys FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol29q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol29$;
 
 DO $dpol39$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aprovacao_comentarios') THEN
     DROP POLICY IF EXISTS "aprovacao_comentarios Users can insert their own comments" ON public.aprovacao_comentarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol39$;
 DO $pq9$ BEGIN
   IF NOT EXISTS (
@@ -6336,14 +6336,14 @@ DO $pq9$ BEGIN
   ) THEN
     EXECUTE $pq9q$CREATE POLICY "Users can insert their own comments" ON public.aprovacao_comentarios FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq9q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq9$;
 
 DO $dpol40$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aprovacao_comentarios') THEN
     DROP POLICY IF EXISTS "aprovacao_comentarios aprovacao_comentarios_owner_select" ON public.aprovacao_comentarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol40$;
 DO $pol30$ BEGIN
   IF NOT EXISTS (
@@ -6353,14 +6353,14 @@ DO $pol30$ BEGIN
    FROM public.solicitacoes_aprovacao
   WHERE ((solicitacoes_aprovacao.solicitado_por = ( SELECT auth.uid() AS uid)) OR (solicitacoes_aprovacao.aprovado_por = ( SELECT auth.uid() AS uid))))) OR (user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pol30q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol30$;
 
 DO $dpol41$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='apuracoes_irpj_csll') THEN
     DROP POLICY IF EXISTS "apuracoes_irpj_csll Empresa-based access" ON public.apuracoes_irpj_csll;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol41$;
 DO $pq10$ BEGIN
   IF NOT EXISTS (
@@ -6372,14 +6372,14 @@ DO $pq10$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq10q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq10$;
 
 DO $dpol42$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='apuracoes_tributarias') THEN
     DROP POLICY IF EXISTS "apuracoes_tributarias apuracoes_tributarias_empresa_select" ON public.apuracoes_tributarias;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol42$;
 DO $pol31$ BEGIN
   IF NOT EXISTS (
@@ -6389,14 +6389,14 @@ DO $pol31$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol31q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol31$;
 
 DO $dpol43$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='apuracoes_tributarias') THEN
     DROP POLICY IF EXISTS "apuracoes_tributarias apuracoes_tributarias_tenant_rw" ON public.apuracoes_tributarias;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol43$;
 DO $pol32$ BEGIN
   IF NOT EXISTS (
@@ -6404,14 +6404,14 @@ DO $pol32$ BEGIN
   ) THEN
     EXECUTE $pol32q$CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol32q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol32$;
 
 DO $dpol44$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_audit_trail') THEN
     DROP POLICY IF EXISTS "asaas_audit_trail asaas_audit_tenant_select" ON public.asaas_audit_trail;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol44$;
 DO $pol33$ BEGIN
   IF NOT EXISTS (
@@ -6421,14 +6421,14 @@ DO $pol33$ BEGIN
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_audit_trail.payment_id) AND public.empresa_acessivel(p.empresa_id))))));$pol33q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol33$;
 
 DO $dpol45$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_config') THEN
     DROP POLICY IF EXISTS "asaas_config asaas_config_tenant_rw" ON public.asaas_config;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol45$;
 DO $pol34$ BEGIN
   IF NOT EXISTS (
@@ -6436,14 +6436,14 @@ DO $pol34$ BEGIN
   ) THEN
     EXECUTE $pol34q$CREATE POLICY asaas_config_tenant_rw ON public.asaas_config TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol34q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol34$;
 
 DO $dpol46$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_credit_risk_analysis') THEN
     DROP POLICY IF EXISTS "asaas_credit_risk_analysis credit_risk_select" ON public.asaas_credit_risk_analysis;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol46$;
 DO $pol35$ BEGIN
   IF NOT EXISTS (
@@ -6453,14 +6453,14 @@ DO $pol35$ BEGIN
    FROM public.clientes c
   WHERE ((c.id = asaas_credit_risk_analysis.cliente_id) AND public.empresa_acessivel(c.empresa_id)))));$pol35q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol35$;
 
 DO $dpol47$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_customers') THEN
     DROP POLICY IF EXISTS "asaas_customers asaas_customers_empresa_select" ON public.asaas_customers;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol47$;
 DO $pol36$ BEGIN
   IF NOT EXISTS (
@@ -6470,14 +6470,14 @@ DO $pol36$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol36q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol36$;
 
 DO $dpol48$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_customers') THEN
     DROP POLICY IF EXISTS "asaas_customers asaas_customers_tenant_rw" ON public.asaas_customers;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol48$;
 DO $pol37$ BEGIN
   IF NOT EXISTS (
@@ -6485,14 +6485,14 @@ DO $pol37$ BEGIN
   ) THEN
     EXECUTE $pol37q$CREATE POLICY asaas_customers_tenant_rw ON public.asaas_customers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol37q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol37$;
 
 DO $dpol49$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_payments') THEN
     DROP POLICY IF EXISTS "asaas_payments asaas_payments_empresa_select" ON public.asaas_payments;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol49$;
 DO $pol38$ BEGIN
   IF NOT EXISTS (
@@ -6502,14 +6502,14 @@ DO $pol38$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol38q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol38$;
 
 DO $dpol50$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_payments') THEN
     DROP POLICY IF EXISTS "asaas_payments asaas_payments_tenant_rw" ON public.asaas_payments;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol50$;
 DO $pol39$ BEGIN
   IF NOT EXISTS (
@@ -6517,14 +6517,14 @@ DO $pol39$ BEGIN
   ) THEN
     EXECUTE $pol39q$CREATE POLICY asaas_payments_tenant_rw ON public.asaas_payments TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol39q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol39$;
 
 DO $dpol51$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_reconciliation_suggestions') THEN
     DROP POLICY IF EXISTS "asaas_reconciliation_suggestions asaas_recon_empresa_select" ON public.asaas_reconciliation_suggestions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol51$;
 DO $pol40$ BEGIN
   IF NOT EXISTS (
@@ -6534,14 +6534,14 @@ DO $pol40$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol40q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol40$;
 
 DO $dpol52$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_reconciliation_suggestions') THEN
     DROP POLICY IF EXISTS "asaas_reconciliation_suggestions asaas_reconciliation_suggestions_tenant_rw" ON public.asaas_reconciliation_suggestions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol52$;
 DO $pol41$ BEGIN
   IF NOT EXISTS (
@@ -6549,14 +6549,14 @@ DO $pol41$ BEGIN
   ) THEN
     EXECUTE $pol41q$CREATE POLICY asaas_reconciliation_suggestions_tenant_rw ON public.asaas_reconciliation_suggestions TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol41q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol41$;
 
 DO $dpol53$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_sync_queue') THEN
     DROP POLICY IF EXISTS "asaas_sync_queue asaas_sync_tenant_all" ON public.asaas_sync_queue;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol53$;
 DO $pol42$ BEGIN
   IF NOT EXISTS (
@@ -6568,14 +6568,14 @@ DO $pol42$ BEGIN
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_sync_queue.payment_id) AND public.empresa_acessivel(p.empresa_id))))));$pol42q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol42$;
 
 DO $dpol54$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_transfers') THEN
     DROP POLICY IF EXISTS "asaas_transfers asaas_transfers_empresa_select" ON public.asaas_transfers;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol54$;
 DO $pol43$ BEGIN
   IF NOT EXISTS (
@@ -6585,14 +6585,14 @@ DO $pol43$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol43q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol43$;
 
 DO $dpol55$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_transfers') THEN
     DROP POLICY IF EXISTS "asaas_transfers asaas_transfers_tenant_rw" ON public.asaas_transfers;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol55$;
 DO $pol44$ BEGIN
   IF NOT EXISTS (
@@ -6600,14 +6600,14 @@ DO $pol44$ BEGIN
   ) THEN
     EXECUTE $pol44q$CREATE POLICY asaas_transfers_tenant_rw ON public.asaas_transfers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol44q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol44$;
 
 DO $dpol56$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='audit_logs') THEN
     DROP POLICY IF EXISTS "audit_logs Admins can view audit logs" ON public.audit_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol56$;
 DO $pq11$ BEGIN
   IF NOT EXISTS (
@@ -6615,14 +6615,14 @@ DO $pq11$ BEGIN
   ) THEN
     EXECUTE $pq11q$CREATE POLICY "Admins can view audit logs" ON public.audit_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq11q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq11$;
 
 DO $dpol57$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='audit_logs') THEN
     DROP POLICY IF EXISTS "audit_logs audit_logs_insert_self_attributed" ON public.audit_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol57$;
 DO $pol45$ BEGIN
   IF NOT EXISTS (
@@ -6630,14 +6630,14 @@ DO $pol45$ BEGIN
   ) THEN
     EXECUTE $pol45q$CREATE POLICY audit_logs_insert_self_attributed ON public.audit_logs FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email'::text))))));$pol45q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol45$;
 
 DO $dpol58$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auditoria_financeira') THEN
     DROP POLICY IF EXISTS "auditoria_financeira auditoria_financeira_empresa_select" ON public.auditoria_financeira;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol58$;
 DO $pol46$ BEGIN
   IF NOT EXISTS (
@@ -6647,14 +6647,14 @@ DO $pol46$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol46q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol46$;
 
 DO $dpol59$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auditoria_financeira') THEN
     DROP POLICY IF EXISTS "auditoria_financeira auditoria_user_insert" ON public.auditoria_financeira;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol59$;
 DO $pol47$ BEGIN
   IF NOT EXISTS (
@@ -6662,14 +6662,14 @@ DO $pol47$ BEGIN
   ) THEN
     EXECUTE $pol47q$CREATE POLICY auditoria_user_insert ON public.auditoria_financeira FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol47q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol47$;
 
 DO $dpol60$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auditoria_tributaria') THEN
     DROP POLICY IF EXISTS "auditoria_tributaria auditoria_trib_select_tenant" ON public.auditoria_tributaria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol60$;
 DO $pol48$ BEGIN
   IF NOT EXISTS (
@@ -6677,14 +6677,14 @@ DO $pol48$ BEGIN
   ) THEN
     EXECUTE $pol48q$CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol48q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol48$;
 
 DO $dpol61$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auth_logs') THEN
     DROP POLICY IF EXISTS "auth_logs Admins can view all auth logs" ON public.auth_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol61$;
 DO $pq12$ BEGIN
   IF NOT EXISTS (
@@ -6692,14 +6692,14 @@ DO $pq12$ BEGIN
   ) THEN
     EXECUTE $pq12q$CREATE POLICY "Admins can view all auth logs" ON public.auth_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq12q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq12$;
 
 DO $dpol62$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auth_logs') THEN
     DROP POLICY IF EXISTS "auth_logs Authenticated can insert auth logs" ON public.auth_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol62$;
 DO $pq13$ BEGIN
   IF NOT EXISTS (
@@ -6707,14 +6707,14 @@ DO $pq13$ BEGIN
   ) THEN
     EXECUTE $pq13q$CREATE POLICY "Authenticated can insert auth logs" ON public.auth_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'visualizador'::public.app_role)));$pq13q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq13$;
 
 DO $dpol63$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auth_logs') THEN
     DROP POLICY IF EXISTS "auth_logs Users can view own auth logs" ON public.auth_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol63$;
 DO $pq14$ BEGIN
   IF NOT EXISTS (
@@ -6722,14 +6722,14 @@ DO $pq14$ BEGIN
   ) THEN
     EXECUTE $pq14q$CREATE POLICY "Users can view own auth logs" ON public.auth_logs FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq14q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq14$;
 
 DO $dpol64$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='benchmarks_setoriais') THEN
     DROP POLICY IF EXISTS "benchmarks_setoriais benchmarks_admin_write" ON public.benchmarks_setoriais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol64$;
 DO $pol49$ BEGIN
   IF NOT EXISTS (
@@ -6737,14 +6737,14 @@ DO $pol49$ BEGIN
   ) THEN
     EXECUTE $pol49q$CREATE POLICY benchmarks_admin_write ON public.benchmarks_setoriais TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));$pol49q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol49$;
 
 DO $dpol65$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='benchmarks_setoriais') THEN
     DROP POLICY IF EXISTS "benchmarks_setoriais benchmarks_select" ON public.benchmarks_setoriais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol65$;
 DO $pol50$ BEGIN
   IF NOT EXISTS (
@@ -6752,14 +6752,14 @@ DO $pol50$ BEGIN
   ) THEN
     EXECUTE $pol50q$CREATE POLICY benchmarks_select ON public.benchmarks_setoriais FOR SELECT TO authenticated USING (true);$pol50q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol50$;
 
 DO $dpol66$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='beneficios_fiscais') THEN
     DROP POLICY IF EXISTS "beneficios_fiscais beneficios_select_authenticated" ON public.beneficios_fiscais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol66$;
 DO $pol51$ BEGIN
   IF NOT EXISTS (
@@ -6767,14 +6767,14 @@ DO $pol51$ BEGIN
   ) THEN
     EXECUTE $pol51q$CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR SELECT TO authenticated USING (true);$pol51q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol51$;
 
 DO $dpol67$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='beneficios_fiscais') THEN
     DROP POLICY IF EXISTS "beneficios_fiscais beneficios_write_admin" ON public.beneficios_fiscais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol67$;
 DO $pol52$ BEGIN
   IF NOT EXISTS (
@@ -6782,7 +6782,7 @@ DO $pol52$ BEGIN
   ) THEN
     EXECUTE $pol52q$CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol52q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol52$;
 
 -- bitrix24_activities policies skipped if lalamove_orders is decommissioned
@@ -6814,7 +6814,7 @@ DO $dpol68$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_stage_mappings') THEN
     DROP POLICY IF EXISTS "bitrix24_stage_mappings Admins can delete stage mappings" ON public.bitrix24_stage_mappings;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol68$;
 DO $pq15$ BEGIN
   IF NOT EXISTS (
@@ -6822,14 +6822,14 @@ DO $pq15$ BEGIN
   ) THEN
     EXECUTE $pq15q$CREATE POLICY "Admins can delete stage mappings" ON public.bitrix24_stage_mappings FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq15q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq15$;
 
 DO $dpol69$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_stage_mappings') THEN
     DROP POLICY IF EXISTS "bitrix24_stage_mappings Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol69$;
 DO $pq16$ BEGIN
   IF NOT EXISTS (
@@ -6837,14 +6837,14 @@ DO $pq16$ BEGIN
   ) THEN
     EXECUTE $pq16q$CREATE POLICY "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role)));$pq16q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq16$;
 
 DO $dpol70$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_stage_mappings') THEN
     DROP POLICY IF EXISTS "bitrix24_stage_mappings Managers can insert stage mappings" ON public.bitrix24_stage_mappings;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol70$;
 DO $pq17$ BEGIN
   IF NOT EXISTS (
@@ -6852,14 +6852,14 @@ DO $pq17$ BEGIN
   ) THEN
     EXECUTE $pq17q$CREATE POLICY "Managers can insert stage mappings" ON public.bitrix24_stage_mappings FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq17q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq17$;
 
 DO $dpol71$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_stage_mappings') THEN
     DROP POLICY IF EXISTS "bitrix24_stage_mappings Managers can update stage mappings" ON public.bitrix24_stage_mappings;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol71$;
 DO $pq18$ BEGIN
   IF NOT EXISTS (
@@ -6867,14 +6867,14 @@ DO $pq18$ BEGIN
   ) THEN
     EXECUTE $pq18q$CREATE POLICY "Managers can update stage mappings" ON public.bitrix24_stage_mappings FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq18q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq18$;
 
 DO $dpol72$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_tokens') THEN
     DROP POLICY IF EXISTS "bitrix24_tokens Admins can delete tokens" ON public.bitrix24_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol72$;
 DO $pq19$ BEGIN
   IF NOT EXISTS (
@@ -6882,14 +6882,14 @@ DO $pq19$ BEGIN
   ) THEN
     EXECUTE $pq19q$CREATE POLICY "Admins can delete tokens" ON public.bitrix24_tokens FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq19q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq19$;
 
 DO $dpol73$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_tokens') THEN
     DROP POLICY IF EXISTS "bitrix24_tokens Admins can insert tokens" ON public.bitrix24_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol73$;
 DO $pq20$ BEGIN
   IF NOT EXISTS (
@@ -6897,14 +6897,14 @@ DO $pq20$ BEGIN
   ) THEN
     EXECUTE $pq20q$CREATE POLICY "Admins can insert tokens" ON public.bitrix24_tokens FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq20q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq20$;
 
 DO $dpol74$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_tokens') THEN
     DROP POLICY IF EXISTS "bitrix24_tokens Admins can update tokens" ON public.bitrix24_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol74$;
 DO $pq21$ BEGIN
   IF NOT EXISTS (
@@ -6912,14 +6912,14 @@ DO $pq21$ BEGIN
   ) THEN
     EXECUTE $pq21q$CREATE POLICY "Admins can update tokens" ON public.bitrix24_tokens FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq21q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq21$;
 
 DO $dpol75$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_tokens') THEN
     DROP POLICY IF EXISTS "bitrix24_tokens Only admins can view tokens" ON public.bitrix24_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol75$;
 DO $pq22$ BEGIN
   IF NOT EXISTS (
@@ -6927,14 +6927,14 @@ DO $pq22$ BEGIN
   ) THEN
     EXECUTE $pq22q$CREATE POLICY "Only admins can view tokens" ON public.bitrix24_tokens FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq22q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq22$;
 
 DO $dpol76$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix_field_mappings') THEN
     DROP POLICY IF EXISTS "bitrix_field_mappings bitrix_field_mappings_empresa_select" ON public.bitrix_field_mappings;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol76$;
 DO $pol53$ BEGIN
   IF NOT EXISTS (
@@ -6944,14 +6944,14 @@ DO $pol53$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol53q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol53$;
 
 DO $dpol77$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix_oauth_tokens') THEN
     DROP POLICY IF EXISTS "bitrix_oauth_tokens bitrix_oauth_tokens_service_role_only" ON public.bitrix_oauth_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol77$;
 DO $pol54$ BEGIN
   IF NOT EXISTS (
@@ -6959,14 +6959,14 @@ DO $pol54$ BEGIN
   ) THEN
     EXECUTE $pol54q$CREATE POLICY bitrix_oauth_tokens_service_role_only ON public.bitrix_oauth_tokens TO service_role USING (true) WITH CHECK (true);$pol54q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol54$;
 
 DO $dpol78$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix_sync_logs') THEN
     DROP POLICY IF EXISTS "bitrix_sync_logs bitrix_sync_logs_empresa_select" ON public.bitrix_sync_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol78$;
 DO $pol55$ BEGIN
   IF NOT EXISTS (
@@ -6976,14 +6976,14 @@ DO $pol55$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol55q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol55$;
 
 DO $dpol79$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix_webhook_events') THEN
     DROP POLICY IF EXISTS "bitrix_webhook_events Admin only manage" ON public.bitrix_webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol79$;
 DO $pq23$ BEGIN
   IF NOT EXISTS (
@@ -6993,14 +6993,14 @@ DO $pq23$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role)))));$pq23q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq23$;
 
 DO $dpol80$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_sync_logs') THEN
     DROP POLICY IF EXISTS "bling_sync_logs bling_sync_logs_insert" ON public.bling_sync_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol80$;
 DO $pol56$ BEGIN
   IF NOT EXISTS (
@@ -7008,14 +7008,14 @@ DO $pol56$ BEGIN
   ) THEN
     EXECUTE $pol56q$CREATE POLICY bling_sync_logs_insert ON public.bling_sync_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)));$pol56q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol56$;
 
 DO $dpol81$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_sync_logs') THEN
     DROP POLICY IF EXISTS "bling_sync_logs bling_sync_logs_select" ON public.bling_sync_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol81$;
 DO $pol57$ BEGIN
   IF NOT EXISTS (
@@ -7023,14 +7023,14 @@ DO $pol57$ BEGIN
   ) THEN
     EXECUTE $pol57q$CREATE POLICY bling_sync_logs_select ON public.bling_sync_logs FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)));$pol57q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol57$;
 
 DO $dpol82$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_tokens') THEN
     DROP POLICY IF EXISTS "bling_tokens bling_tokens_service_role_only" ON public.bling_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol82$;
 DO $pol58$ BEGIN
   IF NOT EXISTS (
@@ -7038,14 +7038,14 @@ DO $pol58$ BEGIN
   ) THEN
     EXECUTE $pol58q$CREATE POLICY bling_tokens_service_role_only ON public.bling_tokens TO service_role USING (true) WITH CHECK (true);$pol58q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol58$;
 
 DO $dpol83$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_webhook_events') THEN
     DROP POLICY IF EXISTS "bling_webhook_events bling_webhook_events_admin_select" ON public.bling_webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol83$;
 DO $pol59$ BEGIN
   IF NOT EXISTS (
@@ -7053,14 +7053,14 @@ DO $pol59$ BEGIN
   ) THEN
     EXECUTE $pol59q$CREATE POLICY bling_webhook_events_admin_select ON public.bling_webhook_events FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pol59q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol59$;
 
 DO $dpol84$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bloat_snapshots') THEN
     DROP POLICY IF EXISTS "bloat_snapshots Admins podem consultar snapshots de bloat" ON public.bloat_snapshots;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol84$;
 DO $pq24$ BEGIN
   IF NOT EXISTS (
@@ -7068,14 +7068,14 @@ DO $pq24$ BEGIN
   ) THEN
     EXECUTE $pq24q$CREATE POLICY "Admins podem consultar snapshots de bloat" ON public.bloat_snapshots FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq24q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq24$;
 
 DO $dpol85$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='blocked_ips') THEN
     DROP POLICY IF EXISTS "blocked_ips Admins can manage blocked IPs" ON public.blocked_ips;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol85$;
 DO $pq25$ BEGIN
   IF NOT EXISTS (
@@ -7083,14 +7083,14 @@ DO $pq25$ BEGIN
   ) THEN
     EXECUTE $pq25q$CREATE POLICY "Admins can manage blocked IPs" ON public.blocked_ips TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq25q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq25$;
 
 DO $dpol86$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='blocked_ips') THEN
     DROP POLICY IF EXISTS "blocked_ips Managers can view blocked IPs" ON public.blocked_ips;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol86$;
 DO $pq26$ BEGIN
   IF NOT EXISTS (
@@ -7098,14 +7098,14 @@ DO $pq26$ BEGIN
   ) THEN
     EXECUTE $pq26q$CREATE POLICY "Managers can view blocked IPs" ON public.blocked_ips FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));$pq26q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq26$;
 
 DO $dpol87$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bloqueios_duplicidade') THEN
     DROP POLICY IF EXISTS "bloqueios_duplicidade Empresa-based access" ON public.bloqueios_duplicidade;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol87$;
 DO $pq27$ BEGIN
   IF NOT EXISTS (
@@ -7117,14 +7117,14 @@ DO $pq27$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq27q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq27$;
 
 DO $dpol88$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='boletos') THEN
     DROP POLICY IF EXISTS "boletos Owner manage boletos" ON public.boletos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol88$;
 DO $pq28$ BEGIN
   IF NOT EXISTS (
@@ -7132,14 +7132,14 @@ DO $pq28$ BEGIN
   ) THEN
     EXECUTE $pq28q$CREATE POLICY "Owner manage boletos" ON public.boletos TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq28q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq28$;
 
 DO $dpol89$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='boletos') THEN
     DROP POLICY IF EXISTS "boletos boletos_grupo_select" ON public.boletos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol89$;
 DO $pol60$ BEGIN
   IF NOT EXISTS (
@@ -7149,14 +7149,14 @@ DO $pol60$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true))))));$pol60q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol60$;
 
 DO $dpol90$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='budgets') THEN
     DROP POLICY IF EXISTS "budgets Budgets scoped by owner or empresa" ON public.budgets;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol90$;
 DO $pq29$ BEGIN
   IF NOT EXISTS (
@@ -7168,14 +7168,14 @@ DO $pq29$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));$pq29q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq29$;
 
 DO $dpol91$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='catalogos_fiscais_cargas') THEN
     DROP POLICY IF EXISTS "catalogos_fiscais_cargas Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol91$;
 DO $pq30$ BEGIN
   IF NOT EXISTS (
@@ -7183,14 +7183,14 @@ DO $pq30$ BEGIN
   ) THEN
     EXECUTE $pq30q$CREATE POLICY "Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pq30q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq30$;
 
 DO $dpol92$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='catalogos_tributarios_health_history') THEN
     DROP POLICY IF EXISTS "catalogos_tributarios_health_history admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol92$;
 DO $pq31$ BEGIN
   IF NOT EXISTS (
@@ -7198,14 +7198,14 @@ DO $pq31$ BEGIN
   ) THEN
     EXECUTE $pq31q$CREATE POLICY "admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history FOR SELECT TO authenticated USING (( SELECT public.has_role(auth.uid(), 'admin'::public.app_role) AS has_role));$pq31q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq31$;
 
 DO $dpol93$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='categorias') THEN
     DROP POLICY IF EXISTS "categorias Categorias scoped by empresa" ON public.categorias;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol93$;
 DO $pq32$ BEGIN
   IF NOT EXISTS (
@@ -7217,14 +7217,14 @@ DO $pq32$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));$pq32q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq32$;
 
 DO $dpol94$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='centros_custo') THEN
     DROP POLICY IF EXISTS "centros_custo centros_custo_empresa_select" ON public.centros_custo;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol94$;
 DO $pol61$ BEGIN
   IF NOT EXISTS (
@@ -7234,14 +7234,14 @@ DO $pol61$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol61q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol61$;
 
 DO $dpol95$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='centros_custo') THEN
     DROP POLICY IF EXISTS "centros_custo centros_custo_tenant_rw" ON public.centros_custo;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol95$;
 DO $pol62$ BEGIN
   IF NOT EXISTS (
@@ -7249,14 +7249,14 @@ DO $pol62$ BEGIN
   ) THEN
     EXECUTE $pol62q$CREATE POLICY centros_custo_tenant_rw ON public.centros_custo TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));$pol62q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol62$;
 
 DO $dpol96$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ci_security_gate_events') THEN
     DROP POLICY IF EXISTS "ci_security_gate_events Admins can view CI security gate events" ON public.ci_security_gate_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol96$;
 DO $pq33$ BEGIN
   IF NOT EXISTS (
@@ -7264,14 +7264,14 @@ DO $pq33$ BEGIN
   ) THEN
     EXECUTE $pq33q$CREATE POLICY "Admins can view CI security gate events" ON public.ci_security_gate_events FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq33q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq33$;
 
 DO $dpol97$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ci_security_gate_events') THEN
     DROP POLICY IF EXISTS "ci_security_gate_events Service role manages CI security gate events" ON public.ci_security_gate_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol97$;
 DO $pq34$ BEGIN
   IF NOT EXISTS (
@@ -7279,14 +7279,14 @@ DO $pq34$ BEGIN
   ) THEN
     EXECUTE $pq34q$CREATE POLICY "Service role manages CI security gate events" ON public.ci_security_gate_events TO service_role USING (true) WITH CHECK (true);$pq34q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq34$;
 
 DO $dpol98$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
     DROP POLICY IF EXISTS "clientes clientes_grupo_select" ON public.clientes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol98$;
 DO $pol63$ BEGIN
   IF NOT EXISTS (
@@ -7296,14 +7296,14 @@ DO $pol63$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true))))));$pol63q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol63$;
 
 DO $dpol99$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
     DROP POLICY IF EXISTS "clientes clientes_grupo_update" ON public.clientes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol99$;
 DO $pol64$ BEGIN
   IF NOT EXISTS (
@@ -7311,14 +7311,14 @@ DO $pol64$ BEGIN
   ) THEN
     EXECUTE $pol64q$CREATE POLICY clientes_grupo_update ON public.clientes FOR UPDATE TO authenticated USING (public.empresa_membro_ativo(empresa_id)) WITH CHECK (public.empresa_membro_ativo(empresa_id));$pol64q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol64$;
 
 DO $dpol100$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
     DROP POLICY IF EXISTS "clientes clientes_owner_delete" ON public.clientes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol100$;
 DO $pol65$ BEGIN
   IF NOT EXISTS (
@@ -7326,14 +7326,14 @@ DO $pol65$ BEGIN
   ) THEN
     EXECUTE $pol65q$CREATE POLICY clientes_owner_delete ON public.clientes FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol65q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol65$;
 
 DO $dpol101$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
     DROP POLICY IF EXISTS "clientes clientes_owner_insert" ON public.clientes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol101$;
 DO $pol66$ BEGIN
   IF NOT EXISTS (
@@ -7341,14 +7341,14 @@ DO $pol66$ BEGIN
   ) THEN
     EXECUTE $pol66q$CREATE POLICY clientes_owner_insert ON public.clientes FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_membro_ativo(empresa_id))));$pol66q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol66$;
 
 DO $dpol102$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
     DROP POLICY IF EXISTS "clientes clientes_owner_select" ON public.clientes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol102$;
 DO $pol67$ BEGIN
   IF NOT EXISTS (
@@ -7356,14 +7356,14 @@ DO $pol67$ BEGIN
   ) THEN
     EXECUTE $pol67q$CREATE POLICY clientes_owner_select ON public.clientes FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol67q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol67$;
 
 DO $dpol103$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
     DROP POLICY IF EXISTS "clientes clientes_owner_update" ON public.clientes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol103$;
 DO $pol68$ BEGIN
   IF NOT EXISTS (
@@ -7371,14 +7371,14 @@ DO $pol68$ BEGIN
   ) THEN
     EXECUTE $pol68q$CREATE POLICY clientes_owner_update ON public.clientes FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_membro_ativo(empresa_id))));$pol68q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol68$;
 
 DO $dpol104$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cnaes') THEN
     DROP POLICY IF EXISTS "cnaes cnaes_select_authenticated" ON public.cnaes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol104$;
 DO $pol69$ BEGIN
   IF NOT EXISTS (
@@ -7386,14 +7386,14 @@ DO $pol69$ BEGIN
   ) THEN
     EXECUTE $pol69q$CREATE POLICY cnaes_select_authenticated ON public.cnaes FOR SELECT TO authenticated USING (true);$pol69q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol69$;
 
 DO $dpol105$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cnaes') THEN
     DROP POLICY IF EXISTS "cnaes cnaes_write_admin" ON public.cnaes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol105$;
 DO $pol70$ BEGIN
   IF NOT EXISTS (
@@ -7401,14 +7401,14 @@ DO $pol70$ BEGIN
   ) THEN
     EXECUTE $pol70q$CREATE POLICY cnaes_write_admin ON public.cnaes TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol70q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol70$;
 
 DO $dpol106$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cnpja_cache') THEN
     DROP POLICY IF EXISTS "cnpja_cache cnpja_cache_service_role_only" ON public.cnpja_cache;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol106$;
 DO $pol71$ BEGIN
   IF NOT EXISTS (
@@ -7416,14 +7416,14 @@ DO $pol71$ BEGIN
   ) THEN
     EXECUTE $pol71q$CREATE POLICY cnpja_cache_service_role_only ON public.cnpja_cache TO service_role USING (true) WITH CHECK (true);$pol71q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol71$;
 
 DO $dpol107$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conciliacoes') THEN
     DROP POLICY IF EXISTS "conciliacoes conciliacoes_owner_all" ON public.conciliacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol107$;
 DO $pol72$ BEGIN
   IF NOT EXISTS (
@@ -7431,14 +7431,14 @@ DO $pol72$ BEGIN
   ) THEN
     EXECUTE $pol72q$CREATE POLICY conciliacoes_owner_all ON public.conciliacoes TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol72q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol72$;
 
 DO $dpol108$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conciliacoes_parciais') THEN
     DROP POLICY IF EXISTS "conciliacoes_parciais concil_parciais_owner_all" ON public.conciliacoes_parciais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol108$;
 DO $pol73$ BEGIN
   IF NOT EXISTS (
@@ -7446,14 +7446,14 @@ DO $pol73$ BEGIN
   ) THEN
     EXECUTE $pol73q$CREATE POLICY concil_parciais_owner_all ON public.conciliacoes_parciais TO authenticated USING ((( SELECT auth.uid() AS uid) = created_by)) WITH CHECK ((( SELECT auth.uid() AS uid) = created_by));$pol73q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol73$;
 
 DO $dpol109$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='configuracoes_aprovacao') THEN
     DROP POLICY IF EXISTS "configuracoes_aprovacao configuracoes_aprovacao_empresa_select" ON public.configuracoes_aprovacao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol109$;
 DO $pol74$ BEGIN
   IF NOT EXISTS (
@@ -7463,14 +7463,14 @@ DO $pol74$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol74q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol74$;
 
 DO $dpol110$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='configuracoes_aprovacao') THEN
     DROP POLICY IF EXISTS "configuracoes_aprovacao configuracoes_aprovacao_tenant_rw" ON public.configuracoes_aprovacao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol110$;
 DO $pol75$ BEGIN
   IF NOT EXISTS (
@@ -7478,14 +7478,14 @@ DO $pol75$ BEGIN
   ) THEN
     EXECUTE $pol75q$CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol75q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol75$;
 
 DO $dpol111$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='configuracoes_duplicidade') THEN
     DROP POLICY IF EXISTS "configuracoes_duplicidade Empresa-based access" ON public.configuracoes_duplicidade;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol111$;
 DO $pq35$ BEGIN
   IF NOT EXISTS (
@@ -7497,14 +7497,14 @@ DO $pq35$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq35q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq35$;
 
 DO $dpol112$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='configuracoes_duplicidade') THEN
     DROP POLICY IF EXISTS "configuracoes_duplicidade configuracoes_duplicidade_tenant_rw" ON public.configuracoes_duplicidade;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol112$;
 DO $pol76$ BEGIN
   IF NOT EXISTS (
@@ -7512,14 +7512,14 @@ DO $pol76$ BEGIN
   ) THEN
     EXECUTE $pol76q$CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol76q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol76$;
 
 DO $dpol113$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conformidade_snapshots') THEN
     DROP POLICY IF EXISTS "conformidade_snapshots conformidade_snapshots_empresa_insert" ON public.conformidade_snapshots;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol113$;
 DO $pol77$ BEGIN
   IF NOT EXISTS (
@@ -7529,14 +7529,14 @@ DO $pol77$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));$pol77q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol77$;
 
 DO $dpol114$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conformidade_snapshots') THEN
     DROP POLICY IF EXISTS "conformidade_snapshots conformidade_snapshots_empresa_select" ON public.conformidade_snapshots;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol114$;
 DO $pol78$ BEGIN
   IF NOT EXISTS (
@@ -7546,14 +7546,14 @@ DO $pol78$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));$pol78q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol78$;
 
 DO $dpol115$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conformidade_snapshots') THEN
     DROP POLICY IF EXISTS "conformidade_snapshots conformidade_snapshots_empresa_update" ON public.conformidade_snapshots;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol115$;
 DO $pol79$ BEGIN
   IF NOT EXISTS (
@@ -7565,14 +7565,14 @@ DO $pol79$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));$pol79q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol79$;
 
 DO $dpol116$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conformidade_snapshots') THEN
     DROP POLICY IF EXISTS "conformidade_snapshots conformidade_snapshots_tenant_rw" ON public.conformidade_snapshots;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol116$;
 DO $pol80$ BEGIN
   IF NOT EXISTS (
@@ -7580,14 +7580,14 @@ DO $pol80$ BEGIN
   ) THEN
     EXECUTE $pol80q$CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol80q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol80$;
 
 DO $dpol117$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_bancarias') THEN
     DROP POLICY IF EXISTS "contas_bancarias contas_bancarias_empresa_select" ON public.contas_bancarias;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol117$;
 DO $pol81$ BEGIN
   IF NOT EXISTS (
@@ -7597,14 +7597,14 @@ DO $pol81$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol81q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol81$;
 
 DO $dpol118$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_pagar') THEN
     DROP POLICY IF EXISTS "contas_pagar contas_pagar_empresa_select" ON public.contas_pagar;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol118$;
 DO $pol82$ BEGIN
   IF NOT EXISTS (
@@ -7614,14 +7614,14 @@ DO $pol82$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol82q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol82$;
 
 DO $dpol119$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_pagar') THEN
     DROP POLICY IF EXISTS "contas_pagar contas_pagar_tenant_rw" ON public.contas_pagar;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol119$;
 DO $pol83$ BEGIN
   IF NOT EXISTS (
@@ -7629,14 +7629,14 @@ DO $pol83$ BEGIN
   ) THEN
     EXECUTE $pol83q$CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));$pol83q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol83$;
 
 DO $dpol120$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_receber') THEN
     DROP POLICY IF EXISTS "contas_receber contas_receber_empresa_select" ON public.contas_receber;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol120$;
 DO $pol84$ BEGIN
   IF NOT EXISTS (
@@ -7646,14 +7646,14 @@ DO $pol84$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol84q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol84$;
 
 DO $dpol121$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_receber') THEN
     DROP POLICY IF EXISTS "contas_receber contas_receber_tenant_rw" ON public.contas_receber;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol121$;
 DO $pol85$ BEGIN
   IF NOT EXISTS (
@@ -7661,14 +7661,14 @@ DO $pol85$ BEGIN
   ) THEN
     EXECUTE $pol85q$CREATE POLICY contas_receber_tenant_rw ON public.contas_receber TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));$pol85q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol85$;
 
 DO $dpol122$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contratos') THEN
     DROP POLICY IF EXISTS "contratos Empresa-based access" ON public.contratos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol122$;
 DO $pq36$ BEGIN
   IF NOT EXISTS (
@@ -7680,14 +7680,14 @@ DO $pq36$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq36q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq36$;
 
 DO $dpol123$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='convites') THEN
     DROP POLICY IF EXISTS "convites convites_manage_responsavel" ON public.convites;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol123$;
 DO $pol86$ BEGIN
   IF NOT EXISTS (
@@ -7695,14 +7695,14 @@ DO $pol86$ BEGIN
   ) THEN
     EXECUTE $pol86q$CREATE POLICY convites_manage_responsavel ON public.convites TO authenticated USING ((public.is_org_responsavel(organizacao_id, ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))) WITH CHECK (((convidado_por = ( SELECT auth.uid() AS uid)) AND (public.is_org_responsavel(organizacao_id, ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))));$pol86q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol86$;
 
 DO $dpol124$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='convites_contador') THEN
     DROP POLICY IF EXISTS "convites_contador convites_contador_revogar" ON public.convites_contador;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol124$;
 DO $pol87$ BEGIN
   IF NOT EXISTS (
@@ -7710,14 +7710,14 @@ DO $pol87$ BEGIN
   ) THEN
     EXECUTE $pol87q$CREATE POLICY convites_contador_revogar ON public.convites_contador FOR UPDATE TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));$pol87q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol87$;
 
 DO $dpol125$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='convites_contador') THEN
     DROP POLICY IF EXISTS "convites_contador convites_contador_select" ON public.convites_contador;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol125$;
 DO $pol88$ BEGIN
   IF NOT EXISTS (
@@ -7725,14 +7725,14 @@ DO $pol88$ BEGIN
   ) THEN
     EXECUTE $pol88q$CREATE POLICY convites_contador_select ON public.convites_contador FOR SELECT TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));$pol88q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol88$;
 
 DO $dpol126$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='creditos_tributarios') THEN
     DROP POLICY IF EXISTS "creditos_tributarios Access by empresa_id" ON public.creditos_tributarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol126$;
 DO $pq37$ BEGIN
   IF NOT EXISTS (
@@ -7744,14 +7744,14 @@ DO $pq37$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq37q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq37$;
 
 DO $dpol127$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cron_job_logs') THEN
     DROP POLICY IF EXISTS "cron_job_logs Admins can view cron logs" ON public.cron_job_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol127$;
 DO $pq38$ BEGIN
   IF NOT EXISTS (
@@ -7759,14 +7759,14 @@ DO $pq38$ BEGIN
   ) THEN
     EXECUTE $pq38q$CREATE POLICY "Admins can view cron logs" ON public.cron_job_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq38q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq38$;
 
 DO $dpol128$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='custom_field_definitions') THEN
     DROP POLICY IF EXISTS "custom_field_definitions Custom field definitions scoped by empresa" ON public.custom_field_definitions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol128$;
 DO $pq39$ BEGIN
   IF NOT EXISTS (
@@ -7778,14 +7778,14 @@ DO $pq39$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));$pq39q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq39$;
 
 DO $dpol129$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='custom_field_values') THEN
     DROP POLICY IF EXISTS "custom_field_values Custom field values scoped by definition empresa" ON public.custom_field_values;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol129$;
 DO $pq40$ BEGIN
   IF NOT EXISTS (
@@ -7801,14 +7801,14 @@ DO $pq40$ BEGIN
            FROM public.user_empresas ue
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))))));$pq40q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq40$;
 
 DO $dpol130$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='darfs') THEN
     DROP POLICY IF EXISTS "darfs DARFs scoped by linked empresa" ON public.darfs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol130$;
 DO $pq41$ BEGIN
   IF NOT EXISTS (
@@ -7822,14 +7822,14 @@ DO $pq41$ BEGIN
            FROM public.user_empresas ue
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))))));$pq41q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq41$;
 
 DO $dpol131$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='darfs') THEN
     DROP POLICY IF EXISTS "darfs darfs_tenant_rw" ON public.darfs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol131$;
 DO $pol89$ BEGIN
   IF NOT EXISTS (
@@ -7837,14 +7837,14 @@ DO $pol89$ BEGIN
   ) THEN
     EXECUTE $pol89q$CREATE POLICY darfs_tenant_rw ON public.darfs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol89q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol89$;
 
 DO $dpol132$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='digest_envios_log') THEN
     DROP POLICY IF EXISTS "digest_envios_log Admins podem consultar o log de envios do digest" ON public.digest_envios_log;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol132$;
 DO $pq42$ BEGIN
   IF NOT EXISTS (
@@ -7852,14 +7852,14 @@ DO $pq42$ BEGIN
   ) THEN
     EXECUTE $pq42q$CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.digest_envios_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq42q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq42$;
 
 DO $dpol133$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='dispositivos_conhecidos') THEN
     DROP POLICY IF EXISTS "dispositivos_conhecidos User-based access" ON public.dispositivos_conhecidos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol133$;
 DO $pq43$ BEGIN
   IF NOT EXISTS (
@@ -7869,14 +7869,14 @@ DO $pq43$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq43q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq43$;
 
 DO $dpol134$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='divergencias_conciliacao') THEN
     DROP POLICY IF EXISTS "divergencias_conciliacao Empresa-based access" ON public.divergencias_conciliacao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol134$;
 DO $pq44$ BEGIN
   IF NOT EXISTS (
@@ -7888,14 +7888,14 @@ DO $pq44$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq44q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq44$;
 
 DO $dpol135$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='edge_function_logs') THEN
     DROP POLICY IF EXISTS "edge_function_logs edge_function_logs_admin_select" ON public.edge_function_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol135$;
 DO $pol90$ BEGIN
   IF NOT EXISTS (
@@ -7903,14 +7903,14 @@ DO $pol90$ BEGIN
   ) THEN
     EXECUTE $pol90q$CREATE POLICY edge_function_logs_admin_select ON public.edge_function_logs FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pol90q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol90$;
 
 DO $dpol136$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_alertas') THEN
     DROP POLICY IF EXISTS "elisao_alertas elisao_alertas_acesso" ON public.elisao_alertas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol136$;
 DO $pol91$ BEGIN
   IF NOT EXISTS (
@@ -7918,14 +7918,14 @@ DO $pol91$ BEGIN
   ) THEN
     EXECUTE $pol91q$CREATE POLICY elisao_alertas_acesso ON public.elisao_alertas TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol91q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol91$;
 
 DO $dpol137$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_creditos_auditoria') THEN
     DROP POLICY IF EXISTS "elisao_creditos_auditoria creditos_auditoria_delete_admin" ON public.elisao_creditos_auditoria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol137$;
 DO $pol92$ BEGIN
   IF NOT EXISTS (
@@ -7933,14 +7933,14 @@ DO $pol92$ BEGIN
   ) THEN
     EXECUTE $pol92q$CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol92q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol92$;
 
 DO $dpol138$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_creditos_auditoria') THEN
     DROP POLICY IF EXISTS "elisao_creditos_auditoria creditos_auditoria_insert" ON public.elisao_creditos_auditoria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol138$;
 DO $pol93$ BEGIN
   IF NOT EXISTS (
@@ -7948,14 +7948,14 @@ DO $pol93$ BEGIN
   ) THEN
     EXECUTE $pol93q$CREATE POLICY creditos_auditoria_insert ON public.elisao_creditos_auditoria FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));$pol93q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol93$;
 
 DO $dpol139$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_creditos_auditoria') THEN
     DROP POLICY IF EXISTS "elisao_creditos_auditoria creditos_auditoria_select" ON public.elisao_creditos_auditoria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol139$;
 DO $pol94$ BEGIN
   IF NOT EXISTS (
@@ -7963,14 +7963,14 @@ DO $pol94$ BEGIN
   ) THEN
     EXECUTE $pol94q$CREATE POLICY creditos_auditoria_select ON public.elisao_creditos_auditoria FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));$pol94q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol94$;
 
 DO $dpol140$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_regras_creditos') THEN
     DROP POLICY IF EXISTS "elisao_regras_creditos regras_creditos_admin" ON public.elisao_regras_creditos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol140$;
 DO $pol95$ BEGIN
   IF NOT EXISTS (
@@ -7978,14 +7978,14 @@ DO $pol95$ BEGIN
   ) THEN
     EXECUTE $pol95q$CREATE POLICY regras_creditos_admin ON public.elisao_regras_creditos TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));$pol95q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol95$;
 
 DO $dpol141$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_regras_creditos') THEN
     DROP POLICY IF EXISTS "elisao_regras_creditos regras_creditos_leitura" ON public.elisao_regras_creditos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol141$;
 DO $pol96$ BEGIN
   IF NOT EXISTS (
@@ -7993,14 +7993,14 @@ DO $pol96$ BEGIN
   ) THEN
     EXECUTE $pol96q$CREATE POLICY regras_creditos_leitura ON public.elisao_regras_creditos FOR SELECT TO authenticated USING (true);$pol96q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol96$;
 
 DO $dpol142$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_simulacoes_regime') THEN
     DROP POLICY IF EXISTS "elisao_simulacoes_regime elisao_sim_regime_acesso" ON public.elisao_simulacoes_regime;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol142$;
 DO $pol97$ BEGIN
   IF NOT EXISTS (
@@ -8008,14 +8008,14 @@ DO $pol97$ BEGIN
   ) THEN
     EXECUTE $pol97q$CREATE POLICY elisao_sim_regime_acesso ON public.elisao_simulacoes_regime TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol97q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol97$;
 
 DO $dpol143$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_tarefas_acionaveis') THEN
     DROP POLICY IF EXISTS "elisao_tarefas_acionaveis tarefas_elisao_acesso" ON public.elisao_tarefas_acionaveis;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol143$;
 DO $pol98$ BEGIN
   IF NOT EXISTS (
@@ -8023,14 +8023,14 @@ DO $pol98$ BEGIN
   ) THEN
     EXECUTE $pol98q$CREATE POLICY tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol98q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol98$;
 
 DO $dpol144$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='email_verifications') THEN
     DROP POLICY IF EXISTS "email_verifications Admins can delete verifications" ON public.email_verifications;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol144$;
 DO $pq45$ BEGIN
   IF NOT EXISTS (
@@ -8038,14 +8038,14 @@ DO $pq45$ BEGIN
   ) THEN
     EXECUTE $pq45q$CREATE POLICY "Admins can delete verifications" ON public.email_verifications FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq45q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq45$;
 
 DO $dpol145$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='email_verifications') THEN
     DROP POLICY IF EXISTS "email_verifications Users can insert own verifications" ON public.email_verifications;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol145$;
 DO $pq46$ BEGIN
   IF NOT EXISTS (
@@ -8053,14 +8053,14 @@ DO $pq46$ BEGIN
   ) THEN
     EXECUTE $pq46q$CREATE POLICY "Users can insert own verifications" ON public.email_verifications FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq46q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq46$;
 
 DO $dpol146$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='email_verifications') THEN
     DROP POLICY IF EXISTS "email_verifications Users can update their verifications" ON public.email_verifications;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol146$;
 DO $pq47$ BEGIN
   IF NOT EXISTS (
@@ -8068,14 +8068,14 @@ DO $pq47$ BEGIN
   ) THEN
     EXECUTE $pq47q$CREATE POLICY "Users can update their verifications" ON public.email_verifications FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq47q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq47$;
 
 DO $dpol147$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='email_verifications') THEN
     DROP POLICY IF EXISTS "email_verifications Users can view own verifications" ON public.email_verifications;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol147$;
 DO $pq48$ BEGIN
   IF NOT EXISTS (
@@ -8083,14 +8083,14 @@ DO $pq48$ BEGIN
   ) THEN
     EXECUTE $pq48q$CREATE POLICY "Users can view own verifications" ON public.email_verifications FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq48q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq48$;
 
 DO $dpol148$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas') THEN
     DROP POLICY IF EXISTS "empresas Owner manage empresas" ON public.empresas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol148$;
 DO $pq49$ BEGIN
   IF NOT EXISTS (
@@ -8098,14 +8098,14 @@ DO $pq49$ BEGIN
   ) THEN
     EXECUTE $pq49q$CREATE POLICY "Owner manage empresas" ON public.empresas TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq49q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq49$;
 
 DO $dpol149$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas_certificados') THEN
     DROP POLICY IF EXISTS "empresas_certificados cert_empresa_read" ON public.empresas_certificados;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol149$;
 DO $pol99$ BEGIN
   IF NOT EXISTS (
@@ -8115,14 +8115,14 @@ DO $pol99$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = empresas_certificados.empresa_id)))));$pol99q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol99$;
 
 DO $dpol150$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas_certificados') THEN
     DROP POLICY IF EXISTS "empresas_certificados empresas_certificados_tenant_rw" ON public.empresas_certificados;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol150$;
 DO $pol100$ BEGIN
   IF NOT EXISTS (
@@ -8130,14 +8130,14 @@ DO $pol100$ BEGIN
   ) THEN
     EXECUTE $pol100q$CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol100q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol100$;
 
 DO $dpol151$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='entregas_obrigacoes') THEN
     DROP POLICY IF EXISTS "entregas_obrigacoes entregas_obrigacoes_empresa_insert" ON public.entregas_obrigacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol151$;
 DO $pol101$ BEGIN
   IF NOT EXISTS (
@@ -8147,14 +8147,14 @@ DO $pol101$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));$pol101q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol101$;
 
 DO $dpol152$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='entregas_obrigacoes') THEN
     DROP POLICY IF EXISTS "entregas_obrigacoes entregas_obrigacoes_empresa_select" ON public.entregas_obrigacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol152$;
 DO $pol102$ BEGIN
   IF NOT EXISTS (
@@ -8164,14 +8164,14 @@ DO $pol102$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));$pol102q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol102$;
 
 DO $dpol153$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='entregas_obrigacoes') THEN
     DROP POLICY IF EXISTS "entregas_obrigacoes entregas_obrigacoes_empresa_update" ON public.entregas_obrigacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol153$;
 DO $pol103$ BEGIN
   IF NOT EXISTS (
@@ -8183,14 +8183,14 @@ DO $pol103$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));$pol103q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol103$;
 
 DO $dpol154$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='entregas_obrigacoes') THEN
     DROP POLICY IF EXISTS "entregas_obrigacoes entregas_obrigacoes_tenant_rw" ON public.entregas_obrigacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol154$;
 DO $pol104$ BEGIN
   IF NOT EXISTS (
@@ -8198,14 +8198,14 @@ DO $pol104$ BEGIN
   ) THEN
     EXECUTE $pol104q$CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol104q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol104$;
 
 DO $dpol155$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='estrategias_elisao') THEN
     DROP POLICY IF EXISTS "estrategias_elisao estrategias_select_authenticated" ON public.estrategias_elisao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol155$;
 DO $pol105$ BEGIN
   IF NOT EXISTS (
@@ -8213,14 +8213,14 @@ DO $pol105$ BEGIN
   ) THEN
     EXECUTE $pol105q$CREATE POLICY estrategias_select_authenticated ON public.estrategias_elisao FOR SELECT TO authenticated USING (true);$pol105q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol105$;
 
 DO $dpol156$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='estrategias_elisao') THEN
     DROP POLICY IF EXISTS "estrategias_elisao estrategias_write_admin" ON public.estrategias_elisao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol156$;
 DO $pol106$ BEGIN
   IF NOT EXISTS (
@@ -8228,14 +8228,14 @@ DO $pol106$ BEGIN
   ) THEN
     EXECUTE $pol106q$CREATE POLICY estrategias_write_admin ON public.estrategias_elisao TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol106q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol106$;
 
 DO $dpol157$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='eventos_contabilizacao_log') THEN
     DROP POLICY IF EXISTS "eventos_contabilizacao_log eventos_contab_select" ON public.eventos_contabilizacao_log;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol157$;
 DO $pol107$ BEGIN
   IF NOT EXISTS (
@@ -8243,14 +8243,14 @@ DO $pol107$ BEGIN
   ) THEN
     EXECUTE $pol107q$CREATE POLICY eventos_contab_select ON public.eventos_contabilizacao_log FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));$pol107q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol107$;
 
 DO $dpol158$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='evidencias_pacotes') THEN
     DROP POLICY IF EXISTS "evidencias_pacotes Evidencias scoped by verificacao" ON public.evidencias_pacotes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol158$;
 DO $pq50$ BEGIN
   IF NOT EXISTS (
@@ -8266,14 +8266,14 @@ DO $pq50$ BEGIN
            FROM public.user_empresas ue
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))))));$pq50q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq50$;
 
 DO $dpol159$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='execucoes_cobranca') THEN
     DROP POLICY IF EXISTS "execucoes_cobranca Owner manage execucoes" ON public.execucoes_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol159$;
 DO $pq51$ BEGIN
   IF NOT EXISTS (
@@ -8281,14 +8281,14 @@ DO $pq51$ BEGIN
   ) THEN
     EXECUTE $pq51q$CREATE POLICY "Owner manage execucoes" ON public.execucoes_cobranca TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq51q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq51$;
 
 DO $dpol160$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='execucoes_cobranca') THEN
     DROP POLICY IF EXISTS "execucoes_cobranca execucoes_cobranca_empresa_all" ON public.execucoes_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol160$;
 DO $pol108$ BEGIN
   IF NOT EXISTS (
@@ -8300,14 +8300,14 @@ DO $pol108$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol108q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol108$;
 
 DO $dpol161$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='execucoes_regua_cobranca') THEN
     DROP POLICY IF EXISTS "execucoes_regua_cobranca execucoes_regua_select" ON public.execucoes_regua_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol161$;
 DO $pol109$ BEGIN
   IF NOT EXISTS (
@@ -8315,14 +8315,14 @@ DO $pol109$ BEGIN
   ) THEN
     EXECUTE $pol109q$CREATE POLICY execucoes_regua_select ON public.execucoes_regua_cobranca FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));$pol109q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol109$;
 
 DO $dpol162$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='expert_conversations') THEN
     DROP POLICY IF EXISTS "expert_conversations Users can manage their own conversations" ON public.expert_conversations;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol162$;
 DO $pq52$ BEGIN
   IF NOT EXISTS (
@@ -8330,14 +8330,14 @@ DO $pq52$ BEGIN
   ) THEN
     EXECUTE $pq52q$CREATE POLICY "Users can manage their own conversations" ON public.expert_conversations TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq52q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq52$;
 
 DO $dpol163$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='expert_messages') THEN
     DROP POLICY IF EXISTS "expert_messages Users can insert messages to their conversations" ON public.expert_messages;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol163$;
 DO $pq53$ BEGIN
   IF NOT EXISTS (
@@ -8347,14 +8347,14 @@ DO $pq53$ BEGIN
    FROM public.expert_conversations c
   WHERE ((c.id = expert_messages.conversation_id) AND (c.user_id = ( SELECT auth.uid() AS uid))))));$pq53q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq53$;
 
 DO $dpol164$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='expert_messages') THEN
     DROP POLICY IF EXISTS "expert_messages Users can view messages from their conversations" ON public.expert_messages;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol164$;
 DO $pq54$ BEGIN
   IF NOT EXISTS (
@@ -8364,14 +8364,14 @@ DO $pq54$ BEGIN
    FROM public.expert_conversations c
   WHERE ((c.id = expert_messages.conversation_id) AND (c.user_id = ( SELECT auth.uid() AS uid))))));$pq54q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq54$;
 
 DO $dpol165$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='expert_messages') THEN
     DROP POLICY IF EXISTS "expert_messages Usuários veem mensagens de suas conversas" ON public.expert_messages;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol165$;
 DO $pq55$ BEGIN
   IF NOT EXISTS (
@@ -8383,14 +8383,14 @@ DO $pq55$ BEGIN
    FROM public.expert_conversations c
   WHERE ((c.id = expert_messages.conversation_id) AND (c.user_id = ( SELECT auth.uid() AS uid))))));$pq55q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq55$;
 
 DO $dpol166$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='extrato_bancario') THEN
     DROP POLICY IF EXISTS "extrato_bancario Users can manage their own extrato_bancario" ON public.extrato_bancario;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol166$;
 DO $pq56$ BEGIN
   IF NOT EXISTS (
@@ -8398,14 +8398,14 @@ DO $pq56$ BEGIN
   ) THEN
     EXECUTE $pq56q$CREATE POLICY "Users can manage their own extrato_bancario" ON public.extrato_bancario TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq56q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq56$;
 
 DO $dpol167$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='extrato_bancario') THEN
     DROP POLICY IF EXISTS "extrato_bancario extrato_owner_all" ON public.extrato_bancario;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol167$;
 DO $pol110$ BEGIN
   IF NOT EXISTS (
@@ -8413,14 +8413,14 @@ DO $pol110$ BEGIN
   ) THEN
     EXECUTE $pol110q$CREATE POLICY extrato_owner_all ON public.extrato_bancario TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol110q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol110$;
 
 DO $dpol168$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='faixas_simples_nacional') THEN
     DROP POLICY IF EXISTS "faixas_simples_nacional faixas_simples_select_authenticated" ON public.faixas_simples_nacional;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol168$;
 DO $pol111$ BEGIN
   IF NOT EXISTS (
@@ -8428,14 +8428,14 @@ DO $pol111$ BEGIN
   ) THEN
     EXECUTE $pol111q$CREATE POLICY faixas_simples_select_authenticated ON public.faixas_simples_nacional FOR SELECT TO authenticated USING (true);$pol111q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol111$;
 
 DO $dpol169$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='faixas_simples_nacional') THEN
     DROP POLICY IF EXISTS "faixas_simples_nacional faixas_simples_write_admin" ON public.faixas_simples_nacional;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol169$;
 DO $pol112$ BEGIN
   IF NOT EXISTS (
@@ -8443,14 +8443,14 @@ DO $pol112$ BEGIN
   ) THEN
     EXECUTE $pol112q$CREATE POLICY faixas_simples_write_admin ON public.faixas_simples_nacional TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol112q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol112$;
 
 DO $dpol170$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='faturamento_mensal') THEN
     DROP POLICY IF EXISTS "faturamento_mensal Empresa-based access" ON public.faturamento_mensal;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol170$;
 DO $pq57$ BEGIN
   IF NOT EXISTS (
@@ -8462,14 +8462,14 @@ DO $pq57$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq57q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq57$;
 
 DO $dpol171$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fechamentos_tributarios') THEN
     DROP POLICY IF EXISTS "fechamentos_tributarios fechamentos_insert" ON public.fechamentos_tributarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol171$;
 DO $pol113$ BEGIN
   IF NOT EXISTS (
@@ -8477,14 +8477,14 @@ DO $pol113$ BEGIN
   ) THEN
     EXECUTE $pol113q$CREATE POLICY fechamentos_insert ON public.fechamentos_tributarios FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));$pol113q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol113$;
 
 DO $dpol172$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fechamentos_tributarios') THEN
     DROP POLICY IF EXISTS "fechamentos_tributarios fechamentos_select" ON public.fechamentos_tributarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol172$;
 DO $pol114$ BEGIN
   IF NOT EXISTS (
@@ -8492,14 +8492,14 @@ DO $pol114$ BEGIN
   ) THEN
     EXECUTE $pol114q$CREATE POLICY fechamentos_select ON public.fechamentos_tributarios FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));$pol114q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol114$;
 
 DO $dpol173$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fechamentos_tributarios') THEN
     DROP POLICY IF EXISTS "fechamentos_tributarios fechamentos_update" ON public.fechamentos_tributarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol173$;
 DO $pol115$ BEGIN
   IF NOT EXISTS (
@@ -8507,14 +8507,14 @@ DO $pol115$ BEGIN
   ) THEN
     EXECUTE $pol115q$CREATE POLICY fechamentos_update ON public.fechamentos_tributarios FOR UPDATE TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol115q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol115$;
 
 DO $dpol174$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='feedback_conciliacao_ia') THEN
     DROP POLICY IF EXISTS "feedback_conciliacao_ia User-based access" ON public.feedback_conciliacao_ia;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol174$;
 DO $pq58$ BEGIN
   IF NOT EXISTS (
@@ -8524,14 +8524,14 @@ DO $pq58$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq58q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq58$;
 
 DO $dpol175$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='feedback_conciliacao_ia') THEN
     DROP POLICY IF EXISTS "feedback_conciliacao_ia Users can manage feedback" ON public.feedback_conciliacao_ia;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol175$;
 DO $pq59$ BEGIN
   IF NOT EXISTS (
@@ -8539,14 +8539,14 @@ DO $pq59$ BEGIN
   ) THEN
     EXECUTE $pq59q$CREATE POLICY "Users can manage feedback" ON public.feedback_conciliacao_ia TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq59q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq59$;
 
 DO $dpol176$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fila_cobrancas') THEN
     DROP POLICY IF EXISTS "fila_cobrancas fila_cobrancas_empresa_select" ON public.fila_cobrancas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol176$;
 DO $pol116$ BEGIN
   IF NOT EXISTS (
@@ -8556,14 +8556,14 @@ DO $pol116$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol116q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol116$;
 
 DO $dpol177$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fila_cobrancas') THEN
     DROP POLICY IF EXISTS "fila_cobrancas fila_cobrancas_tenant_rw" ON public.fila_cobrancas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol177$;
 DO $pol117$ BEGIN
   IF NOT EXISTS (
@@ -8571,14 +8571,14 @@ DO $pol117$ BEGIN
   ) THEN
     EXECUTE $pol117q$CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol117q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol117$;
 
 DO $dpol178$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fluxos_aprovacao_niveis') THEN
     DROP POLICY IF EXISTS "fluxos_aprovacao_niveis Access by empresa_id" ON public.fluxos_aprovacao_niveis;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol178$;
 DO $pq60$ BEGIN
   IF NOT EXISTS (
@@ -8590,14 +8590,14 @@ DO $pq60$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq60q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq60$;
 
 DO $dpol179$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='folha_pagamento') THEN
     DROP POLICY IF EXISTS "folha_pagamento Empresa-based access" ON public.folha_pagamento;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol179$;
 DO $pq61$ BEGIN
   IF NOT EXISTS (
@@ -8609,14 +8609,14 @@ DO $pq61$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq61q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq61$;
 
 DO $dpol180$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='formas_pagamento') THEN
     DROP POLICY IF EXISTS "formas_pagamento Empresa-based access" ON public.formas_pagamento;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol180$;
 DO $pq62$ BEGIN
   IF NOT EXISTS (
@@ -8628,14 +8628,14 @@ DO $pq62$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq62q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq62$;
 
 DO $dpol181$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fornecedores') THEN
     DROP POLICY IF EXISTS "fornecedores fornecedores_owner_delete" ON public.fornecedores;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol181$;
 DO $pol118$ BEGIN
   IF NOT EXISTS (
@@ -8643,14 +8643,14 @@ DO $pol118$ BEGIN
   ) THEN
     EXECUTE $pol118q$CREATE POLICY fornecedores_owner_delete ON public.fornecedores FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol118q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol118$;
 
 DO $dpol182$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fornecedores') THEN
     DROP POLICY IF EXISTS "fornecedores fornecedores_owner_insert" ON public.fornecedores;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol182$;
 DO $pol119$ BEGIN
   IF NOT EXISTS (
@@ -8658,14 +8658,14 @@ DO $pol119$ BEGIN
   ) THEN
     EXECUTE $pol119q$CREATE POLICY fornecedores_owner_insert ON public.fornecedores FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol119q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol119$;
 
 DO $dpol183$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fornecedores') THEN
     DROP POLICY IF EXISTS "fornecedores fornecedores_owner_select" ON public.fornecedores;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol183$;
 DO $pol120$ BEGIN
   IF NOT EXISTS (
@@ -8673,14 +8673,14 @@ DO $pol120$ BEGIN
   ) THEN
     EXECUTE $pol120q$CREATE POLICY fornecedores_owner_select ON public.fornecedores FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol120q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol120$;
 
 DO $dpol184$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fornecedores') THEN
     DROP POLICY IF EXISTS "fornecedores fornecedores_owner_update" ON public.fornecedores;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol184$;
 DO $pol121$ BEGIN
   IF NOT EXISTS (
@@ -8688,14 +8688,14 @@ DO $pol121$ BEGIN
   ) THEN
     EXECUTE $pol121q$CREATE POLICY fornecedores_owner_update ON public.fornecedores FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol121q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol121$;
 
 DO $dpol185$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_alert_state') THEN
     DROP POLICY IF EXISTS "frontend_error_alert_state fe_alert_state_admin_select" ON public.frontend_error_alert_state;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol185$;
 DO $pol122$ BEGIN
   IF NOT EXISTS (
@@ -8703,14 +8703,14 @@ DO $pol122$ BEGIN
   ) THEN
     EXECUTE $pol122q$CREATE POLICY fe_alert_state_admin_select ON public.frontend_error_alert_state FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol122q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol122$;
 
 DO $dpol186$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_logs') THEN
     DROP POLICY IF EXISTS "frontend_error_logs Admins can view frontend errors" ON public.frontend_error_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol186$;
 DO $pq63$ BEGIN
   IF NOT EXISTS (
@@ -8718,14 +8718,14 @@ DO $pq63$ BEGIN
   ) THEN
     EXECUTE $pq63q$CREATE POLICY "Admins can view frontend errors" ON public.frontend_error_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq63q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq63$;
 
 DO $dpol187$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_logs') THEN
     DROP POLICY IF EXISTS "frontend_error_logs frontend_error_user_insert" ON public.frontend_error_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol187$;
 DO $pol123$ BEGIN
   IF NOT EXISTS (
@@ -8733,14 +8733,14 @@ DO $pol123$ BEGIN
   ) THEN
     EXECUTE $pol123q$CREATE POLICY frontend_error_user_insert ON public.frontend_error_logs FOR INSERT TO authenticated, anon WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) OR (user_id IS NULL)));$pol123q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol123$;
 
 DO $dpol188$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_silence_digest_log') THEN
     DROP POLICY IF EXISTS "frontend_error_silence_digest_log fe_silence_digest_admin_select" ON public.frontend_error_silence_digest_log;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol188$;
 DO $pol124$ BEGIN
   IF NOT EXISTS (
@@ -8748,14 +8748,14 @@ DO $pol124$ BEGIN
   ) THEN
     EXECUTE $pol124q$CREATE POLICY fe_silence_digest_admin_select ON public.frontend_error_silence_digest_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol124q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol124$;
 
 DO $dpol189$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_performance_logs') THEN
     DROP POLICY IF EXISTS "frontend_performance_logs Admins can view performance logs" ON public.frontend_performance_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol189$;
 DO $pq64$ BEGIN
   IF NOT EXISTS (
@@ -8763,14 +8763,14 @@ DO $pq64$ BEGIN
   ) THEN
     EXECUTE $pq64q$CREATE POLICY "Admins can view performance logs" ON public.frontend_performance_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq64q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq64$;
 
 DO $dpol190$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_performance_logs') THEN
     DROP POLICY IF EXISTS "frontend_performance_logs Authenticated users can insert performance logs" ON public.frontend_performance_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol190$;
 DO $pq65$ BEGIN
   IF NOT EXISTS (
@@ -8778,7 +8778,7 @@ DO $pq65$ BEGIN
   ) THEN
     EXECUTE $pq65q$CREATE POLICY "Authenticated users can insert performance logs" ON public.frontend_performance_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));$pq65q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq65$;
 
 DO $geo_pol$ BEGIN
@@ -8800,7 +8800,7 @@ DO $dpol191$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='glossario_tributario') THEN
     DROP POLICY IF EXISTS "glossario_tributario glossario_admin" ON public.glossario_tributario;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol191$;
 DO $pol125$ BEGIN
   IF NOT EXISTS (
@@ -8808,14 +8808,14 @@ DO $pol125$ BEGIN
   ) THEN
     EXECUTE $pol125q$CREATE POLICY glossario_admin ON public.glossario_tributario TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));$pol125q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol125$;
 
 DO $dpol192$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='glossario_tributario') THEN
     DROP POLICY IF EXISTS "glossario_tributario glossario_leitura" ON public.glossario_tributario;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol192$;
 DO $pol126$ BEGIN
   IF NOT EXISTS (
@@ -8823,14 +8823,14 @@ DO $pol126$ BEGIN
   ) THEN
     EXECUTE $pol126q$CREATE POLICY glossario_leitura ON public.glossario_tributario FOR SELECT TO authenticated USING (ativo);$pol126q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol126$;
 
 DO $dpol193$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='health_scores_operacionais') THEN
     DROP POLICY IF EXISTS "health_scores_operacionais health_scores_empresa_select" ON public.health_scores_operacionais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol193$;
 DO $pol127$ BEGIN
   IF NOT EXISTS (
@@ -8840,14 +8840,14 @@ DO $pol127$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol127q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol127$;
 
 DO $dpol194$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_analises_preditivas') THEN
     DROP POLICY IF EXISTS "historico_analises_preditivas hap_user_insert" ON public.historico_analises_preditivas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol194$;
 DO $pol128$ BEGIN
   IF NOT EXISTS (
@@ -8855,14 +8855,14 @@ DO $pol128$ BEGIN
   ) THEN
     EXECUTE $pol128q$CREATE POLICY hap_user_insert ON public.historico_analises_preditivas FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol128q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol128$;
 
 DO $dpol195$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_analises_preditivas') THEN
     DROP POLICY IF EXISTS "historico_analises_preditivas historico_analises_preditivas_empresa_select" ON public.historico_analises_preditivas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol195$;
 DO $pol129$ BEGIN
   IF NOT EXISTS (
@@ -8872,14 +8872,14 @@ DO $pol129$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol129q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol129$;
 
 DO $dpol196$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_cobranca') THEN
     DROP POLICY IF EXISTS "historico_cobranca historico_cobranca_empresa_all" ON public.historico_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol196$;
 DO $pol130$ BEGIN
   IF NOT EXISTS (
@@ -8891,14 +8891,14 @@ DO $pol130$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol130q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol130$;
 
 DO $dpol197$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_cobranca_whatsapp') THEN
     DROP POLICY IF EXISTS "historico_cobranca_whatsapp Empresa-based access" ON public.historico_cobranca_whatsapp;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol197$;
 DO $pq66$ BEGIN
   IF NOT EXISTS (
@@ -8910,14 +8910,14 @@ DO $pq66$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq66q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq66$;
 
 DO $dpol198$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_cobrancas_boletos') THEN
     DROP POLICY IF EXISTS "historico_cobrancas_boletos historico_cobrancas_boletos_empresa_select" ON public.historico_cobrancas_boletos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol198$;
 DO $pol131$ BEGIN
   IF NOT EXISTS (
@@ -8929,14 +8929,14 @@ DO $pol131$ BEGIN
            FROM public.user_empresas
           WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))))));$pol131q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol131$;
 
 DO $dpol199$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_cobrancas_boletos') THEN
     DROP POLICY IF EXISTS "historico_cobrancas_boletos historico_cobrancas_user_all" ON public.historico_cobrancas_boletos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol199$;
 DO $pol132$ BEGIN
   IF NOT EXISTS (
@@ -8944,14 +8944,14 @@ DO $pol132$ BEGIN
   ) THEN
     EXECUTE $pol132q$CREATE POLICY historico_cobrancas_user_all ON public.historico_cobrancas_boletos TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol132q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol132$;
 
 DO $dpol200$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_conciliacao_ia') THEN
     DROP POLICY IF EXISTS "historico_conciliacao_ia historico_conciliacao_ia_tenant_select" ON public.historico_conciliacao_ia;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol200$;
 DO $pol133$ BEGIN
   IF NOT EXISTS (
@@ -8965,14 +8965,14 @@ DO $pol133$ BEGIN
    FROM public.sessoes_conciliacao s
   WHERE ((s.id = historico_conciliacao_ia.sessao_id) AND ((s.user_id = ( SELECT auth.uid() AS uid)) OR public.empresa_acessivel(s.empresa_id))))))));$pol133q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol133$;
 
 DO $dpol201$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_relatorios') THEN
     DROP POLICY IF EXISTS "historico_relatorios historico_relatorios_leitura" ON public.historico_relatorios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol201$;
 DO $pol134$ BEGIN
   IF NOT EXISTS (
@@ -8982,14 +8982,14 @@ DO $pol134$ BEGIN
    FROM public.relatorios_agendados r
   WHERE ((r.id = historico_relatorios.relatorio_agendado_id) AND ((r.created_by = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role))))));$pol134q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol134$;
 
 DO $dpol202$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_score_saude') THEN
     DROP POLICY IF EXISTS "historico_score_saude historico_score_saude_empresa_select" ON public.historico_score_saude;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol202$;
 DO $pol135$ BEGIN
   IF NOT EXISTS (
@@ -8999,14 +8999,14 @@ DO $pol135$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol135q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol135$;
 
 DO $dpol203$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='incentivos_fiscais') THEN
     DROP POLICY IF EXISTS "incentivos_fiscais incentivos_fiscais_acesso" ON public.incentivos_fiscais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol203$;
 DO $pol136$ BEGIN
   IF NOT EXISTS (
@@ -9014,14 +9014,14 @@ DO $pol136$ BEGIN
   ) THEN
     EXECUTE $pol136q$CREATE POLICY incentivos_fiscais_acesso ON public.incentivos_fiscais TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol136q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol136$;
 
 DO $dpol204$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='index_usage_snapshots') THEN
     DROP POLICY IF EXISTS "index_usage_snapshots Somente admins leem snapshots de índices" ON public.index_usage_snapshots;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol204$;
 DO $pq67$ BEGIN
   IF NOT EXISTS (
@@ -9029,14 +9029,14 @@ DO $pq67$ BEGIN
   ) THEN
     EXECUTE $pq67q$CREATE POLICY "Somente admins leem snapshots de índices" ON public.index_usage_snapshots FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pq67q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq67$;
 
 DO $dpol205$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='indices_uso_excecoes') THEN
     DROP POLICY IF EXISTS "indices_uso_excecoes Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol205$;
 DO $pq68$ BEGIN
   IF NOT EXISTS (
@@ -9044,14 +9044,14 @@ DO $pq68$ BEGIN
   ) THEN
     EXECUTE $pq68q$CREATE POLICY "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pq68q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq68$;
 
 DO $dpol206$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='integration_secrets') THEN
     DROP POLICY IF EXISTS "integration_secrets integration_secrets_no_client_access" ON public.integration_secrets;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol206$;
 DO $pol137$ BEGIN
   IF NOT EXISTS (
@@ -9059,14 +9059,14 @@ DO $pol137$ BEGIN
   ) THEN
     EXECUTE $pol137q$CREATE POLICY integration_secrets_no_client_access ON public.integration_secrets AS RESTRICTIVE TO authenticated, anon USING (false) WITH CHECK (false);$pol137q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol137$;
 
 DO $dpol207$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='integrity_alerts') THEN
     DROP POLICY IF EXISTS "integrity_alerts integrity_alerts_admin_read" ON public.integrity_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol207$;
 DO $pol138$ BEGIN
   IF NOT EXISTS (
@@ -9074,14 +9074,14 @@ DO $pol138$ BEGIN
   ) THEN
     EXECUTE $pol138q$CREATE POLICY integrity_alerts_admin_read ON public.integrity_alerts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol138q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol138$;
 
 DO $dpol208$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='integrity_alerts') THEN
     DROP POLICY IF EXISTS "integrity_alerts integrity_alerts_service_all" ON public.integrity_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol208$;
 DO $pol139$ BEGIN
   IF NOT EXISTS (
@@ -9089,7 +9089,7 @@ DO $pol139$ BEGIN
   ) THEN
     EXECUTE $pol139q$CREATE POLICY integrity_alerts_service_all ON public.integrity_alerts TO service_role USING (true) WITH CHECK (true);$pol139q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol139$;
 
 DO $ipwl_pol$ BEGIN
@@ -9111,7 +9111,7 @@ DO $dpol209$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='itens_lista_iss') THEN
     DROP POLICY IF EXISTS "itens_lista_iss itens_iss_select_authenticated" ON public.itens_lista_iss;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol209$;
 DO $pol140$ BEGIN
   IF NOT EXISTS (
@@ -9119,14 +9119,14 @@ DO $pol140$ BEGIN
   ) THEN
     EXECUTE $pol140q$CREATE POLICY itens_iss_select_authenticated ON public.itens_lista_iss FOR SELECT TO authenticated USING (true);$pol140q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol140$;
 
 DO $dpol210$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='itens_lista_iss') THEN
     DROP POLICY IF EXISTS "itens_lista_iss itens_iss_write_admin" ON public.itens_lista_iss;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol210$;
 DO $pol141$ BEGIN
   IF NOT EXISTS (
@@ -9134,14 +9134,14 @@ DO $pol141$ BEGIN
   ) THEN
     EXECUTE $pol141q$CREATE POLICY itens_iss_write_admin ON public.itens_lista_iss TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol141q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol141$;
 
 DO $dpol211$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='itens_pedido_compra') THEN
     DROP POLICY IF EXISTS "itens_pedido_compra itens_pedido_compra_empresa_select" ON public.itens_pedido_compra;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol211$;
 DO $pol142$ BEGIN
   IF NOT EXISTS (
@@ -9153,14 +9153,14 @@ DO $pol142$ BEGIN
            FROM public.user_empresas
           WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))))));$pol142q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol142$;
 
 DO $dpol212$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='kpis_operacionais') THEN
     DROP POLICY IF EXISTS "kpis_operacionais kpis_operacionais_owner" ON public.kpis_operacionais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol212$;
 DO $pol143$ BEGIN
   IF NOT EXISTS (
@@ -9168,14 +9168,14 @@ DO $pol143$ BEGIN
   ) THEN
     EXECUTE $pol143q$CREATE POLICY kpis_operacionais_owner ON public.kpis_operacionais TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol143q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol143$;
 
 DO $dpol213$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lancamentos_contabeis') THEN
     DROP POLICY IF EXISTS "lancamentos_contabeis Lancamentos scoped by empresa" ON public.lancamentos_contabeis;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol213$;
 DO $pq69$ BEGIN
   IF NOT EXISTS (
@@ -9187,14 +9187,14 @@ DO $pq69$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));$pq69q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq69$;
 
 DO $dpol214$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='login_attempts') THEN
     DROP POLICY IF EXISTS "login_attempts Admins can delete login attempts" ON public.login_attempts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol214$;
 DO $pq70$ BEGIN
   IF NOT EXISTS (
@@ -9202,14 +9202,14 @@ DO $pq70$ BEGIN
   ) THEN
     EXECUTE $pq70q$CREATE POLICY "Admins can delete login attempts" ON public.login_attempts FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq70q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq70$;
 
 DO $dpol215$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='login_attempts') THEN
     DROP POLICY IF EXISTS "login_attempts Admins can insert login attempts" ON public.login_attempts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol215$;
 DO $pq71$ BEGIN
   IF NOT EXISTS (
@@ -9217,14 +9217,14 @@ DO $pq71$ BEGIN
   ) THEN
     EXECUTE $pq71q$CREATE POLICY "Admins can insert login attempts" ON public.login_attempts FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq71q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq71$;
 
 DO $dpol216$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='login_attempts') THEN
     DROP POLICY IF EXISTS "login_attempts Admins can update login attempts" ON public.login_attempts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol216$;
 DO $pq72$ BEGIN
   IF NOT EXISTS (
@@ -9232,14 +9232,14 @@ DO $pq72$ BEGIN
   ) THEN
     EXECUTE $pq72q$CREATE POLICY "Admins can update login attempts" ON public.login_attempts FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq72q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq72$;
 
 DO $dpol217$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='login_attempts') THEN
     DROP POLICY IF EXISTS "login_attempts Admins can view login attempts" ON public.login_attempts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol217$;
 DO $pq73$ BEGIN
   IF NOT EXISTS (
@@ -9247,14 +9247,14 @@ DO $pq73$ BEGIN
   ) THEN
     EXECUTE $pq73q$CREATE POLICY "Admins can view login attempts" ON public.login_attempts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq73q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq73$;
 
 DO $dpol218$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='logs_baixa_automatica') THEN
     DROP POLICY IF EXISTS "logs_baixa_automatica logs_baixa_insert_owner" ON public.logs_baixa_automatica;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol218$;
 DO $pol144$ BEGIN
   IF NOT EXISTS (
@@ -9262,14 +9262,14 @@ DO $pol144$ BEGIN
   ) THEN
     EXECUTE $pol144q$CREATE POLICY logs_baixa_insert_owner ON public.logs_baixa_automatica FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol144q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol144$;
 
 DO $dpol219$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='logs_baixa_automatica') THEN
     DROP POLICY IF EXISTS "logs_baixa_automatica logs_baixa_select_owner" ON public.logs_baixa_automatica;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol219$;
 DO $pol145$ BEGIN
   IF NOT EXISTS (
@@ -9277,14 +9277,14 @@ DO $pol145$ BEGIN
   ) THEN
     EXECUTE $pol145q$CREATE POLICY logs_baixa_select_owner ON public.logs_baixa_automatica FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol145q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol145$;
 
 DO $dpol220$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='logs_conciliacao_retroativa') THEN
     DROP POLICY IF EXISTS "logs_conciliacao_retroativa logs_retro_insert_owner" ON public.logs_conciliacao_retroativa;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol220$;
 DO $pol146$ BEGIN
   IF NOT EXISTS (
@@ -9292,14 +9292,14 @@ DO $pol146$ BEGIN
   ) THEN
     EXECUTE $pol146q$CREATE POLICY logs_retro_insert_owner ON public.logs_conciliacao_retroativa FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pol146q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol146$;
 
 DO $dpol221$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='logs_conciliacao_retroativa') THEN
     DROP POLICY IF EXISTS "logs_conciliacao_retroativa logs_retro_select_owner" ON public.logs_conciliacao_retroativa;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol221$;
 DO $pol147$ BEGIN
   IF NOT EXISTS (
@@ -9307,14 +9307,14 @@ DO $pol147$ BEGIN
   ) THEN
     EXECUTE $pol147q$CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pol147q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol147$;
 
 DO $dpol222$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='metas_financeiras') THEN
     DROP POLICY IF EXISTS "metas_financeiras Empresa-based access" ON public.metas_financeiras;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol222$;
 DO $pq74$ BEGIN
   IF NOT EXISTS (
@@ -9326,14 +9326,14 @@ DO $pq74$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq74q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq74$;
 
 DO $dpol223$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='mfa_sessions') THEN
     DROP POLICY IF EXISTS "mfa_sessions Users can delete their MFA sessions" ON public.mfa_sessions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol223$;
 DO $pq75$ BEGIN
   IF NOT EXISTS (
@@ -9341,14 +9341,14 @@ DO $pq75$ BEGIN
   ) THEN
     EXECUTE $pq75q$CREATE POLICY "Users can delete their MFA sessions" ON public.mfa_sessions FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq75q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq75$;
 
 DO $dpol224$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='mfa_sessions') THEN
     DROP POLICY IF EXISTS "mfa_sessions Users can insert their MFA sessions" ON public.mfa_sessions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol224$;
 DO $pq76$ BEGIN
   IF NOT EXISTS (
@@ -9356,14 +9356,14 @@ DO $pq76$ BEGIN
   ) THEN
     EXECUTE $pq76q$CREATE POLICY "Users can insert their MFA sessions" ON public.mfa_sessions FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq76q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq76$;
 
 DO $dpol225$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='mfa_sessions') THEN
     DROP POLICY IF EXISTS "mfa_sessions Users can manage own MFA sessions" ON public.mfa_sessions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol225$;
 DO $pq77$ BEGIN
   IF NOT EXISTS (
@@ -9371,14 +9371,14 @@ DO $pq77$ BEGIN
   ) THEN
     EXECUTE $pq77q$CREATE POLICY "Users can manage own MFA sessions" ON public.mfa_sessions TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq77q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq77$;
 
 DO $dpol226$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='mfa_sessions') THEN
     DROP POLICY IF EXISTS "mfa_sessions Users can update their MFA sessions" ON public.mfa_sessions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol226$;
 DO $pq78$ BEGIN
   IF NOT EXISTS (
@@ -9386,14 +9386,14 @@ DO $pq78$ BEGIN
   ) THEN
     EXECUTE $pq78q$CREATE POLICY "Users can update their MFA sessions" ON public.mfa_sessions FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq78q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq78$;
 
 DO $dpol227$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='movimentacoes') THEN
     DROP POLICY IF EXISTS "movimentacoes Access by empresa_id" ON public.movimentacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol227$;
 DO $pq79$ BEGIN
   IF NOT EXISTS (
@@ -9405,14 +9405,14 @@ DO $pq79$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq79q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq79$;
 
 DO $dpol228$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='n8n_dispatch_logs') THEN
     DROP POLICY IF EXISTS "n8n_dispatch_logs Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol228$;
 DO $pq80$ BEGIN
   IF NOT EXISTS (
@@ -9420,14 +9420,14 @@ DO $pq80$ BEGIN
   ) THEN
     EXECUTE $pq80q$CREATE POLICY "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq80q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq80$;
 
 DO $dpol229$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='n8n_workflow_configs') THEN
     DROP POLICY IF EXISTS "n8n_workflow_configs Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol229$;
 DO $pq81$ BEGIN
   IF NOT EXISTS (
@@ -9435,14 +9435,14 @@ DO $pq81$ BEGIN
   ) THEN
     EXECUTE $pq81q$CREATE POLICY "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq81q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq81$;
 
 DO $dpol230$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ncms') THEN
     DROP POLICY IF EXISTS "ncms ncms_select_authenticated" ON public.ncms;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol230$;
 DO $pol148$ BEGIN
   IF NOT EXISTS (
@@ -9450,14 +9450,14 @@ DO $pol148$ BEGIN
   ) THEN
     EXECUTE $pol148q$CREATE POLICY ncms_select_authenticated ON public.ncms FOR SELECT TO authenticated USING (true);$pol148q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol148$;
 
 DO $dpol231$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ncms') THEN
     DROP POLICY IF EXISTS "ncms ncms_write_admin" ON public.ncms;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol231$;
 DO $pol149$ BEGIN
   IF NOT EXISTS (
@@ -9465,14 +9465,14 @@ DO $pol149$ BEGIN
   ) THEN
     EXECUTE $pol149q$CREATE POLICY ncms_write_admin ON public.ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol149q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol149$;
 
 DO $dpol232$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='negativacoes') THEN
     DROP POLICY IF EXISTS "negativacoes negativacoes_empresa_select" ON public.negativacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol232$;
 DO $pol150$ BEGIN
   IF NOT EXISTS (
@@ -9482,14 +9482,14 @@ DO $pol150$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol150q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol150$;
 
 DO $dpol233$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='negativacoes') THEN
     DROP POLICY IF EXISTS "negativacoes negativacoes_tenant_rw" ON public.negativacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol233$;
 DO $pol151$ BEGIN
   IF NOT EXISTS (
@@ -9497,14 +9497,14 @@ DO $pol151$ BEGIN
   ) THEN
     EXECUTE $pol151q$CREATE POLICY negativacoes_tenant_rw ON public.negativacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol151q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol151$;
 
 DO $dpol234$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='new_device_alerts') THEN
     DROP POLICY IF EXISTS "new_device_alerts Users can delete their device alerts" ON public.new_device_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol234$;
 DO $pq82$ BEGIN
   IF NOT EXISTS (
@@ -9512,14 +9512,14 @@ DO $pq82$ BEGIN
   ) THEN
     EXECUTE $pq82q$CREATE POLICY "Users can delete their device alerts" ON public.new_device_alerts FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq82q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq82$;
 
 DO $dpol235$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='new_device_alerts') THEN
     DROP POLICY IF EXISTS "new_device_alerts Users can insert their device alerts" ON public.new_device_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol235$;
 DO $pq83$ BEGIN
   IF NOT EXISTS (
@@ -9527,14 +9527,14 @@ DO $pq83$ BEGIN
   ) THEN
     EXECUTE $pq83q$CREATE POLICY "Users can insert their device alerts" ON public.new_device_alerts FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq83q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq83$;
 
 DO $dpol236$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='new_device_alerts') THEN
     DROP POLICY IF EXISTS "new_device_alerts Users can update their device alerts" ON public.new_device_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol236$;
 DO $pq84$ BEGIN
   IF NOT EXISTS (
@@ -9542,14 +9542,14 @@ DO $pq84$ BEGIN
   ) THEN
     EXECUTE $pq84q$CREATE POLICY "Users can update their device alerts" ON public.new_device_alerts FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq84q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq84$;
 
 DO $dpol237$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='new_device_alerts') THEN
     DROP POLICY IF EXISTS "new_device_alerts Users can view own device alerts" ON public.new_device_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol237$;
 DO $pq85$ BEGIN
   IF NOT EXISTS (
@@ -9557,14 +9557,14 @@ DO $pq85$ BEGIN
   ) THEN
     EXECUTE $pq85q$CREATE POLICY "Users can view own device alerts" ON public.new_device_alerts FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq85q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq85$;
 
 DO $dpol238$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='nfe_eventos') THEN
     DROP POLICY IF EXISTS "nfe_eventos nfe_ev_read_via_nfe" ON public.nfe_eventos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol238$;
 DO $pol152$ BEGIN
   IF NOT EXISTS (
@@ -9575,14 +9575,14 @@ DO $pol152$ BEGIN
      JOIN public.user_empresas ue ON ((ue.empresa_id = r.empresa_id)))
   WHERE ((r.chave_acesso = nfe_eventos.chave_acesso) AND (ue.user_id = ( SELECT auth.uid() AS uid)))))));$pol152q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol152$;
 
 DO $dpol239$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='nfe_recebidas') THEN
     DROP POLICY IF EXISTS "nfe_recebidas nfe_rec_empresa_read" ON public.nfe_recebidas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol239$;
 DO $pol153$ BEGIN
   IF NOT EXISTS (
@@ -9592,14 +9592,14 @@ DO $pol153$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = nfe_recebidas.empresa_id)))))));$pol153q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol153$;
 
 DO $dpol240$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='nfe_recebidas') THEN
     DROP POLICY IF EXISTS "nfe_recebidas nfe_rec_empresa_update" ON public.nfe_recebidas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol240$;
 DO $pol154$ BEGIN
   IF NOT EXISTS (
@@ -9609,14 +9609,14 @@ DO $pol154$ BEGIN
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = nfe_recebidas.empresa_id)))))));$pol154q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol154$;
 
 DO $dpol241$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='notas_fiscais') THEN
     DROP POLICY IF EXISTS "notas_fiscais notas_fiscais_empresa_select" ON public.notas_fiscais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol241$;
 DO $pol155$ BEGIN
   IF NOT EXISTS (
@@ -9626,14 +9626,14 @@ DO $pol155$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol155q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol155$;
 
 DO $dpol242$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='notas_fiscais_ocr') THEN
     DROP POLICY IF EXISTS "notas_fiscais_ocr notas_fiscais_ocr_acesso" ON public.notas_fiscais_ocr;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol242$;
 DO $pol156$ BEGIN
   IF NOT EXISTS (
@@ -9641,14 +9641,14 @@ DO $pol156$ BEGIN
   ) THEN
     EXECUTE $pol156q$CREATE POLICY notas_fiscais_ocr_acesso ON public.notas_fiscais_ocr TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol156q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol156$;
 
 DO $dpol243$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='notification_history') THEN
     DROP POLICY IF EXISTS "notification_history notification_history_owner" ON public.notification_history;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol243$;
 DO $pol157$ BEGIN
   IF NOT EXISTS (
@@ -9656,14 +9656,14 @@ DO $pol157$ BEGIN
   ) THEN
     EXECUTE $pol157q$CREATE POLICY notification_history_owner ON public.notification_history TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol157q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol157$;
 
 DO $dpol244$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='open_finance_consents') THEN
     DROP POLICY IF EXISTS "open_finance_consents Users can manage their own consents" ON public.open_finance_consents;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol244$;
 DO $pq86$ BEGIN
   IF NOT EXISTS (
@@ -9671,14 +9671,14 @@ DO $pq86$ BEGIN
   ) THEN
     EXECUTE $pq86q$CREATE POLICY "Users can manage their own consents" ON public.open_finance_consents TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq86q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq86$;
 
 DO $dpol245$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='operacoes_icms') THEN
     DROP POLICY IF EXISTS "operacoes_icms operacoes_icms_acesso" ON public.operacoes_icms;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol245$;
 DO $pol158$ BEGIN
   IF NOT EXISTS (
@@ -9686,14 +9686,14 @@ DO $pol158$ BEGIN
   ) THEN
     EXECUTE $pol158q$CREATE POLICY operacoes_icms_acesso ON public.operacoes_icms TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol158q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol158$;
 
 DO $dpol246$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='operacoes_tributaveis') THEN
     DROP POLICY IF EXISTS "operacoes_tributaveis operacoes_tributaveis_empresa_select" ON public.operacoes_tributaveis;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol246$;
 DO $pol159$ BEGIN
   IF NOT EXISTS (
@@ -9703,14 +9703,14 @@ DO $pol159$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol159q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol159$;
 
 DO $dpol247$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='oportunidades_elisao') THEN
     DROP POLICY IF EXISTS "oportunidades_elisao oportunidades_elisao_acesso" ON public.oportunidades_elisao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol247$;
 DO $pol160$ BEGIN
   IF NOT EXISTS (
@@ -9718,14 +9718,14 @@ DO $pol160$ BEGIN
   ) THEN
     EXECUTE $pol160q$CREATE POLICY oportunidades_elisao_acesso ON public.oportunidades_elisao TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol160q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol160$;
 
 DO $dpol248$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacao_membros') THEN
     DROP POLICY IF EXISTS "organizacao_membros org_membros_manage_responsavel" ON public.organizacao_membros;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol248$;
 DO $pol161$ BEGIN
   IF NOT EXISTS (
@@ -9733,14 +9733,14 @@ DO $pol161$ BEGIN
   ) THEN
     EXECUTE $pol161q$CREATE POLICY org_membros_manage_responsavel ON public.organizacao_membros TO authenticated USING ((public.is_org_responsavel(organizacao_id, ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))) WITH CHECK ((public.is_org_responsavel(organizacao_id, ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pol161q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol161$;
 
 DO $dpol249$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacao_membros') THEN
     DROP POLICY IF EXISTS "organizacao_membros org_membros_select" ON public.organizacao_membros;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol249$;
 DO $pol162$ BEGIN
   IF NOT EXISTS (
@@ -9748,14 +9748,14 @@ DO $pol162$ BEGIN
   ) THEN
     EXECUTE $pol162q$CREATE POLICY org_membros_select ON public.organizacao_membros FOR SELECT TO authenticated USING (((usuario_id = ( SELECT auth.uid() AS uid)) OR public.is_org_membro(organizacao_id, ( SELECT auth.uid() AS uid)) OR public.is_org_responsavel(organizacao_id, ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pol162q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol162$;
 
 DO $dpol250$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacoes') THEN
     DROP POLICY IF EXISTS "organizacoes organizacoes_delete_responsavel" ON public.organizacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol250$;
 DO $pol163$ BEGIN
   IF NOT EXISTS (
@@ -9763,14 +9763,14 @@ DO $pol163$ BEGIN
   ) THEN
     EXECUTE $pol163q$CREATE POLICY organizacoes_delete_responsavel ON public.organizacoes FOR DELETE TO authenticated USING (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pol163q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol163$;
 
 DO $dpol251$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacoes') THEN
     DROP POLICY IF EXISTS "organizacoes organizacoes_insert_proprio" ON public.organizacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol251$;
 DO $pol164$ BEGIN
   IF NOT EXISTS (
@@ -9778,14 +9778,14 @@ DO $pol164$ BEGIN
   ) THEN
     EXECUTE $pol164q$CREATE POLICY organizacoes_insert_proprio ON public.organizacoes FOR INSERT TO authenticated WITH CHECK ((responsavel_id = ( SELECT auth.uid() AS uid)));$pol164q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol164$;
 
 DO $dpol252$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacoes') THEN
     DROP POLICY IF EXISTS "organizacoes organizacoes_select_membro_ou_admin" ON public.organizacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol252$;
 DO $pol165$ BEGIN
   IF NOT EXISTS (
@@ -9793,14 +9793,14 @@ DO $pol165$ BEGIN
   ) THEN
     EXECUTE $pol165q$CREATE POLICY organizacoes_select_membro_ou_admin ON public.organizacoes FOR SELECT TO authenticated USING (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.is_org_membro(id, ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pol165q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol165$;
 
 DO $dpol253$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacoes') THEN
     DROP POLICY IF EXISTS "organizacoes organizacoes_update_responsavel" ON public.organizacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol253$;
 DO $pol166$ BEGIN
   IF NOT EXISTS (
@@ -9808,14 +9808,14 @@ DO $pol166$ BEGIN
   ) THEN
     EXECUTE $pol166q$CREATE POLICY organizacoes_update_responsavel ON public.organizacoes FOR UPDATE TO authenticated USING (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))) WITH CHECK (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pol166q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol166$;
 
 DO $dpol254$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
     DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol254$;
 DO $pq87$ BEGIN
   IF NOT EXISTS (
@@ -9823,14 +9823,14 @@ DO $pq87$ BEGIN
   ) THEN
     EXECUTE $pq87q$CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq87q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq87$;
 
 DO $dpol255$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
     DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol255$;
 DO $pq88$ BEGIN
   IF NOT EXISTS (
@@ -9838,14 +9838,14 @@ DO $pq88$ BEGIN
   ) THEN
     EXECUTE $pq88q$CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq88q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq88$;
 
 DO $dpol256$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
     DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol256$;
 DO $pq89$ BEGIN
   IF NOT EXISTS (
@@ -9853,14 +9853,14 @@ DO $pq89$ BEGIN
   ) THEN
     EXECUTE $pq89q$CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq89q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq89$;
 
 DO $dpol257$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
     DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol257$;
 DO $pq90$ BEGIN
   IF NOT EXISTS (
@@ -9868,14 +9868,14 @@ DO $pq90$ BEGIN
   ) THEN
     EXECUTE $pq90q$CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq90q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq90$;
 
 DO $dpol258$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pagamentos_recorrentes') THEN
     DROP POLICY IF EXISTS "pagamentos_recorrentes pagamentos_recorrentes_acesso" ON public.pagamentos_recorrentes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol258$;
 DO $pol167$ BEGIN
   IF NOT EXISTS (
@@ -9883,14 +9883,14 @@ DO $pol167$ BEGIN
   ) THEN
     EXECUTE $pol167q$CREATE POLICY pagamentos_recorrentes_acesso ON public.pagamentos_recorrentes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol167q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol167$;
 
 DO $dpol259$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='parcelas_acordo') THEN
     DROP POLICY IF EXISTS "parcelas_acordo parcelas_acordo_empresa_select" ON public.parcelas_acordo;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol259$;
 DO $pol168$ BEGIN
   IF NOT EXISTS (
@@ -9902,14 +9902,14 @@ DO $pol168$ BEGIN
            FROM public.user_empresas
           WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))))));$pol168q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol168$;
 
 DO $dpol260$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='parcelas_acordo') THEN
     DROP POLICY IF EXISTS "parcelas_acordo parcelas_acordo_tenant_write" ON public.parcelas_acordo;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol260$;
 DO $pol169$ BEGIN
   IF NOT EXISTS (
@@ -9921,14 +9921,14 @@ DO $pol169$ BEGIN
    FROM public.acordos_parcelamento a
   WHERE ((a.id = parcelas_acordo.acordo_id) AND public.empresa_acessivel(a.empresa_id))))));$pol169q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol169$;
 
 DO $dpol261$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='partidas_contabeis') THEN
     DROP POLICY IF EXISTS "partidas_contabeis Partidas scoped by lancamento" ON public.partidas_contabeis;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol261$;
 DO $pq91$ BEGIN
   IF NOT EXISTS (
@@ -9944,14 +9944,14 @@ DO $pq91$ BEGIN
            FROM public.user_empresas ue
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))))));$pq91q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq91$;
 
 DO $dpol262$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_requests') THEN
     DROP POLICY IF EXISTS "password_reset_requests Admins and managers can view reset requests" ON public.password_reset_requests;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol262$;
 DO $pq92$ BEGIN
   IF NOT EXISTS (
@@ -9959,14 +9959,14 @@ DO $pq92$ BEGIN
   ) THEN
     EXECUTE $pq92q$CREATE POLICY "Admins and managers can view reset requests" ON public.password_reset_requests FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq92q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq92$;
 
 DO $dpol263$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_requests') THEN
     DROP POLICY IF EXISTS "password_reset_requests Admins can update reset requests" ON public.password_reset_requests;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol263$;
 DO $pq93$ BEGIN
   IF NOT EXISTS (
@@ -9974,14 +9974,14 @@ DO $pq93$ BEGIN
   ) THEN
     EXECUTE $pq93q$CREATE POLICY "Admins can update reset requests" ON public.password_reset_requests FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq93q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq93$;
 
 DO $dpol264$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_requests') THEN
     DROP POLICY IF EXISTS "password_reset_requests Users can request own password reset" ON public.password_reset_requests;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol264$;
 DO $pq94$ BEGIN
   IF NOT EXISTS (
@@ -9991,7 +9991,7 @@ DO $pq94$ BEGIN
    FROM auth.users
   WHERE (users.id = ( SELECT auth.uid() AS uid))))::text));$pq94q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq94$;
 
 DO $prt_pol$ BEGIN
@@ -10009,7 +10009,7 @@ DO $dpol265$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pedidos_compra') THEN
     DROP POLICY IF EXISTS "pedidos_compra pedidos_compra_empresa_select" ON public.pedidos_compra;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol265$;
 DO $pol170$ BEGIN
   IF NOT EXISTS (
@@ -10019,14 +10019,14 @@ DO $pol170$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol170q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol170$;
 
 DO $dpol266$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='per_dcomp') THEN
     DROP POLICY IF EXISTS "per_dcomp per_dcomp_acesso" ON public.per_dcomp;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol266$;
 DO $pol171$ BEGIN
   IF NOT EXISTS (
@@ -10034,14 +10034,14 @@ DO $pol171$ BEGIN
   ) THEN
     EXECUTE $pol171q$CREATE POLICY per_dcomp_acesso ON public.per_dcomp TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol171q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol171$;
 
 DO $dpol267$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='performance_alerts') THEN
     DROP POLICY IF EXISTS "performance_alerts Admins podem ler alertas de performance" ON public.performance_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol267$;
 DO $pq95$ BEGIN
   IF NOT EXISTS (
@@ -10049,14 +10049,14 @@ DO $pq95$ BEGIN
   ) THEN
     EXECUTE $pq95q$CREATE POLICY "Admins podem ler alertas de performance" ON public.performance_alerts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq95q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq95$;
 
 DO $dpol268$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='permissions') THEN
     DROP POLICY IF EXISTS "permissions Admins can delete permissions" ON public.permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol268$;
 DO $pq96$ BEGIN
   IF NOT EXISTS (
@@ -10064,14 +10064,14 @@ DO $pq96$ BEGIN
   ) THEN
     EXECUTE $pq96q$CREATE POLICY "Admins can delete permissions" ON public.permissions FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq96q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq96$;
 
 DO $dpol269$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='permissions') THEN
     DROP POLICY IF EXISTS "permissions Admins can insert permissions" ON public.permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol269$;
 DO $pq97$ BEGIN
   IF NOT EXISTS (
@@ -10079,14 +10079,14 @@ DO $pq97$ BEGIN
   ) THEN
     EXECUTE $pq97q$CREATE POLICY "Admins can insert permissions" ON public.permissions FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq97q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq97$;
 
 DO $dpol270$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='permissions') THEN
     DROP POLICY IF EXISTS "permissions Admins can update permissions" ON public.permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol270$;
 DO $pq98$ BEGIN
   IF NOT EXISTS (
@@ -10094,14 +10094,14 @@ DO $pq98$ BEGIN
   ) THEN
     EXECUTE $pq98q$CREATE POLICY "Admins can update permissions" ON public.permissions FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq98q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq98$;
 
 DO $dpol271$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='permissions') THEN
     DROP POLICY IF EXISTS "permissions Anyone authenticated can view permissions" ON public.permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol271$;
 DO $pq99$ BEGIN
   IF NOT EXISTS (
@@ -10109,14 +10109,14 @@ DO $pq99$ BEGIN
   ) THEN
     EXECUTE $pq99q$CREATE POLICY "Anyone authenticated can view permissions" ON public.permissions FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) IS NOT NULL));$pq99q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq99$;
 
 DO $dpol272$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pg_stat_statements_baseline') THEN
     DROP POLICY IF EXISTS "pg_stat_statements_baseline Admins can view baselines" ON public.pg_stat_statements_baseline;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol272$;
 DO $pq100$ BEGIN
   IF NOT EXISTS (
@@ -10124,14 +10124,14 @@ DO $pq100$ BEGIN
   ) THEN
     EXECUTE $pq100q$CREATE POLICY "Admins can view baselines" ON public.pg_stat_statements_baseline FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq100q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq100$;
 
 DO $dpol273$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pix_templates') THEN
     DROP POLICY IF EXISTS "pix_templates pix_templates_empresa_select" ON public.pix_templates;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol273$;
 DO $pol172$ BEGIN
   IF NOT EXISTS (
@@ -10141,14 +10141,14 @@ DO $pol172$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol172q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol172$;
 
 DO $dpol274$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pix_templates') THEN
     DROP POLICY IF EXISTS "pix_templates pix_templates_tenant_rw" ON public.pix_templates;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol274$;
 DO $pol173$ BEGIN
   IF NOT EXISTS (
@@ -10156,14 +10156,14 @@ DO $pol173$ BEGIN
   ) THEN
     EXECUTE $pol173q$CREATE POLICY pix_templates_tenant_rw ON public.pix_templates TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol173q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol173$;
 
 DO $dpol275$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='plano_contas') THEN
     DROP POLICY IF EXISTS "plano_contas Empresa-based access" ON public.plano_contas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol275$;
 DO $pq101$ BEGIN
   IF NOT EXISTS (
@@ -10175,14 +10175,14 @@ DO $pq101$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq101q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq101$;
 
 DO $dpol276$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='planos_acao') THEN
     DROP POLICY IF EXISTS "planos_acao planos_acao_owner" ON public.planos_acao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol276$;
 DO $pol174$ BEGIN
   IF NOT EXISTS (
@@ -10190,14 +10190,14 @@ DO $pol174$ BEGIN
   ) THEN
     EXECUTE $pol174q$CREATE POLICY planos_acao_owner ON public.planos_acao TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol174q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol174$;
 
 DO $dpol277$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='portal_cliente_acessos') THEN
     DROP POLICY IF EXISTS "portal_cliente_acessos portal_acessos_admin_insert" ON public.portal_cliente_acessos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol277$;
 DO $pol175$ BEGIN
   IF NOT EXISTS (
@@ -10205,14 +10205,14 @@ DO $pol175$ BEGIN
   ) THEN
     EXECUTE $pol175q$CREATE POLICY portal_acessos_admin_insert ON public.portal_cliente_acessos FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol175q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol175$;
 
 DO $dpol278$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='portal_cliente_acessos') THEN
     DROP POLICY IF EXISTS "portal_cliente_acessos portal_acessos_admin_select" ON public.portal_cliente_acessos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol278$;
 DO $pol176$ BEGIN
   IF NOT EXISTS (
@@ -10220,14 +10220,14 @@ DO $pol176$ BEGIN
   ) THEN
     EXECUTE $pol176q$CREATE POLICY portal_acessos_admin_select ON public.portal_cliente_acessos FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol176q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol176$;
 
 DO $dpol279$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='portal_cliente_tokens') THEN
     DROP POLICY IF EXISTS "portal_cliente_tokens portal_tokens_admin_all" ON public.portal_cliente_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol279$;
 DO $pol177$ BEGIN
   IF NOT EXISTS (
@@ -10235,14 +10235,14 @@ DO $pol177$ BEGIN
   ) THEN
     EXECUTE $pol177q$CREATE POLICY portal_tokens_admin_all ON public.portal_cliente_tokens TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol177q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol177$;
 
 DO $dpol280$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='prejuizos_fiscais') THEN
     DROP POLICY IF EXISTS "prejuizos_fiscais prejuizos_fiscais_empresa_select" ON public.prejuizos_fiscais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol280$;
 DO $pol178$ BEGIN
   IF NOT EXISTS (
@@ -10252,14 +10252,14 @@ DO $pol178$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol178q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol178$;
 
 DO $dpol281$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='prejuizos_fiscais') THEN
     DROP POLICY IF EXISTS "prejuizos_fiscais prejuizos_fiscais_tenant_rw" ON public.prejuizos_fiscais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol281$;
 DO $pol179$ BEGIN
   IF NOT EXISTS (
@@ -10267,14 +10267,14 @@ DO $pol179$ BEGIN
   ) THEN
     EXECUTE $pol179q$CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol179q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol179$;
 
 DO $dpol282$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
     DROP POLICY IF EXISTS "profiles Admins can manage profiles" ON public.profiles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol282$;
 DO $pq102$ BEGIN
   IF NOT EXISTS (
@@ -10282,14 +10282,14 @@ DO $pq102$ BEGIN
   ) THEN
     EXECUTE $pq102q$CREATE POLICY "Admins can manage profiles" ON public.profiles TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq102q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq102$;
 
 DO $dpol283$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
     DROP POLICY IF EXISTS "profiles Users can update own profile" ON public.profiles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol283$;
 DO $pq103$ BEGIN
   IF NOT EXISTS (
@@ -10297,14 +10297,14 @@ DO $pq103$ BEGIN
   ) THEN
     EXECUTE $pq103q$CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id))) WITH CHECK ((((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id)) AND public.profile_sensitive_fields_unchanged(id, user_id, role, empresa_id)));$pq103q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq103$;
 
 DO $dpol284$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
     DROP POLICY IF EXISTS "profiles Users can view own profile" ON public.profiles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol284$;
 DO $pq104$ BEGIN
   IF NOT EXISTS (
@@ -10312,14 +10312,14 @@ DO $pq104$ BEGIN
   ) THEN
     EXECUTE $pq104q$CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq104q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq104$;
 
 DO $dpol285$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='projecoes_reforma') THEN
     DROP POLICY IF EXISTS "projecoes_reforma projecoes_reforma_acesso" ON public.projecoes_reforma;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol285$;
 DO $pol180$ BEGIN
   IF NOT EXISTS (
@@ -10327,14 +10327,14 @@ DO $pol180$ BEGIN
   ) THEN
     EXECUTE $pol180q$CREATE POLICY projecoes_reforma_acesso ON public.projecoes_reforma TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol180q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol180$;
 
 DO $dpol286$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protestos') THEN
     DROP POLICY IF EXISTS "protestos protestos_empresa_select" ON public.protestos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol286$;
 DO $pol181$ BEGIN
   IF NOT EXISTS (
@@ -10344,14 +10344,14 @@ DO $pol181$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol181q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol181$;
 
 DO $dpol287$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protestos') THEN
     DROP POLICY IF EXISTS "protestos protestos_tenant_rw" ON public.protestos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol287$;
 DO $pol182$ BEGIN
   IF NOT EXISTS (
@@ -10359,14 +10359,14 @@ DO $pol182$ BEGIN
   ) THEN
     EXECUTE $pol182q$CREATE POLICY protestos_tenant_rw ON public.protestos TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol182q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol182$;
 
 DO $dpol288$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st') THEN
     DROP POLICY IF EXISTS "protocolos_st protocolos_st_select_authenticated" ON public.protocolos_st;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol288$;
 DO $pol183$ BEGIN
   IF NOT EXISTS (
@@ -10374,14 +10374,14 @@ DO $pol183$ BEGIN
   ) THEN
     EXECUTE $pol183q$CREATE POLICY protocolos_st_select_authenticated ON public.protocolos_st FOR SELECT TO authenticated USING (true);$pol183q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol183$;
 
 DO $dpol289$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st') THEN
     DROP POLICY IF EXISTS "protocolos_st protocolos_st_write_admin" ON public.protocolos_st;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol289$;
 DO $pol184$ BEGIN
   IF NOT EXISTS (
@@ -10389,14 +10389,14 @@ DO $pol184$ BEGIN
   ) THEN
     EXECUTE $pol184q$CREATE POLICY protocolos_st_write_admin ON public.protocolos_st TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol184q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol184$;
 
 DO $dpol290$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ncms') THEN
     DROP POLICY IF EXISTS "protocolos_st_ncms protocolos_st_ncms_select_authenticated" ON public.protocolos_st_ncms;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol290$;
 DO $pol185$ BEGIN
   IF NOT EXISTS (
@@ -10404,14 +10404,14 @@ DO $pol185$ BEGIN
   ) THEN
     EXECUTE $pol185q$CREATE POLICY protocolos_st_ncms_select_authenticated ON public.protocolos_st_ncms FOR SELECT TO authenticated USING (true);$pol185q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol185$;
 
 DO $dpol291$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ncms') THEN
     DROP POLICY IF EXISTS "protocolos_st_ncms protocolos_st_ncms_write_admin" ON public.protocolos_st_ncms;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol291$;
 DO $pol186$ BEGIN
   IF NOT EXISTS (
@@ -10419,14 +10419,14 @@ DO $pol186$ BEGIN
   ) THEN
     EXECUTE $pol186q$CREATE POLICY protocolos_st_ncms_write_admin ON public.protocolos_st_ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol186q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol186$;
 
 DO $dpol292$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ufs') THEN
     DROP POLICY IF EXISTS "protocolos_st_ufs protocolos_st_ufs_select_authenticated" ON public.protocolos_st_ufs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol292$;
 DO $pol187$ BEGIN
   IF NOT EXISTS (
@@ -10434,14 +10434,14 @@ DO $pol187$ BEGIN
   ) THEN
     EXECUTE $pol187q$CREATE POLICY protocolos_st_ufs_select_authenticated ON public.protocolos_st_ufs FOR SELECT TO authenticated USING (true);$pol187q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol187$;
 
 DO $dpol293$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ufs') THEN
     DROP POLICY IF EXISTS "protocolos_st_ufs protocolos_st_ufs_write_admin" ON public.protocolos_st_ufs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol293$;
 DO $pol188$ BEGIN
   IF NOT EXISTS (
@@ -10449,14 +10449,14 @@ DO $pol188$ BEGIN
   ) THEN
     EXECUTE $pol188q$CREATE POLICY protocolos_st_ufs_write_admin ON public.protocolos_st_ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol188q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol188$;
 
 DO $dpol294$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='push_subscriptions') THEN
     DROP POLICY IF EXISTS "push_subscriptions push_subscriptions_owner" ON public.push_subscriptions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol294$;
 DO $pol189$ BEGIN
   IF NOT EXISTS (
@@ -10464,14 +10464,14 @@ DO $pol189$ BEGIN
   ) THEN
     EXECUTE $pol189q$CREATE POLICY push_subscriptions_owner ON public.push_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol189q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol189$;
 
 DO $dpol295$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='query_telemetry') THEN
     DROP POLICY IF EXISTS "query_telemetry Admins can manage telemetry" ON public.query_telemetry;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol295$;
 DO $pq105$ BEGIN
   IF NOT EXISTS (
@@ -10479,14 +10479,14 @@ DO $pq105$ BEGIN
   ) THEN
     EXECUTE $pq105q$CREATE POLICY "Admins can manage telemetry" ON public.query_telemetry TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq105q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq105$;
 
 DO $dpol296$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='query_telemetry') THEN
     DROP POLICY IF EXISTS "query_telemetry Managers can view telemetry" ON public.query_telemetry;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol296$;
 DO $pq106$ BEGIN
   IF NOT EXISTS (
@@ -10494,14 +10494,14 @@ DO $pq106$ BEGIN
   ) THEN
     EXECUTE $pq106q$CREATE POLICY "Managers can view telemetry" ON public.query_telemetry FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role));$pq106q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq106$;
 
 DO $dpol297$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='query_telemetry') THEN
     DROP POLICY IF EXISTS "query_telemetry System can insert telemetry" ON public.query_telemetry;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol297$;
 DO $pq107$ BEGIN
   IF NOT EXISTS (
@@ -10509,14 +10509,14 @@ DO $pq107$ BEGIN
   ) THEN
     EXECUTE $pq107q$CREATE POLICY "System can insert telemetry" ON public.query_telemetry FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role)));$pq107q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq107$;
 
 DO $dpol298$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='rate_limit_logs') THEN
     DROP POLICY IF EXISTS "rate_limit_logs Admins can view rate limit logs" ON public.rate_limit_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol298$;
 DO $pq108$ BEGIN
   IF NOT EXISTS (
@@ -10524,14 +10524,14 @@ DO $pq108$ BEGIN
   ) THEN
     EXECUTE $pq108q$CREATE POLICY "Admins can view rate limit logs" ON public.rate_limit_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq108q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq108$;
 
 DO $dpol299$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='rate_limit_logs') THEN
     DROP POLICY IF EXISTS "rate_limit_logs Authenticated can insert rate limit logs" ON public.rate_limit_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol299$;
 DO $pq109$ BEGIN
   IF NOT EXISTS (
@@ -10539,14 +10539,14 @@ DO $pq109$ BEGIN
   ) THEN
     EXECUTE $pq109q$CREATE POLICY "Authenticated can insert rate limit logs" ON public.rate_limit_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'visualizador'::public.app_role)));$pq109q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq109$;
 
 DO $dpol300$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='recomendacoes_metas_ia') THEN
     DROP POLICY IF EXISTS "recomendacoes_metas_ia recomendacoes_metas_ia_empresa_select" ON public.recomendacoes_metas_ia;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol300$;
 DO $pol190$ BEGIN
   IF NOT EXISTS (
@@ -10556,14 +10556,14 @@ DO $pol190$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol190q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol190$;
 
 DO $dpol301$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regime_decision_cache') THEN
     DROP POLICY IF EXISTS "regime_decision_cache regime_cache_select" ON public.regime_decision_cache;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol301$;
 DO $pol191$ BEGIN
   IF NOT EXISTS (
@@ -10571,14 +10571,14 @@ DO $pol191$ BEGIN
   ) THEN
     EXECUTE $pol191q$CREATE POLICY regime_cache_select ON public.regime_decision_cache FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));$pol191q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol191$;
 
 DO $dpol302$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_especiais_empresa') THEN
     DROP POLICY IF EXISTS "regimes_especiais_empresa Access by empresa_id" ON public.regimes_especiais_empresa;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol302$;
 DO $pq110$ BEGIN
   IF NOT EXISTS (
@@ -10590,14 +10590,14 @@ DO $pq110$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq110q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq110$;
 
 DO $dpol303$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_simulados') THEN
     DROP POLICY IF EXISTS "regimes_simulados regimes_simulados_empresa_insert" ON public.regimes_simulados;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol303$;
 DO $pol192$ BEGIN
   IF NOT EXISTS (
@@ -10607,14 +10607,14 @@ DO $pol192$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol192q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol192$;
 
 DO $dpol304$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_simulados') THEN
     DROP POLICY IF EXISTS "regimes_simulados regimes_simulados_empresa_select" ON public.regimes_simulados;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol304$;
 DO $pol193$ BEGIN
   IF NOT EXISTS (
@@ -10624,14 +10624,14 @@ DO $pol193$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol193q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol193$;
 
 DO $dpol305$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_tributarios') THEN
     DROP POLICY IF EXISTS "regimes_tributarios Empresa-based access" ON public.regimes_tributarios;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol305$;
 DO $pq111$ BEGIN
   IF NOT EXISTS (
@@ -10643,14 +10643,14 @@ DO $pq111$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq111q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq111$;
 
 DO $dpol306$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_conciliacao') THEN
     DROP POLICY IF EXISTS "regras_conciliacao Empresa-based access" ON public.regras_conciliacao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol306$;
 DO $pq112$ BEGIN
   IF NOT EXISTS (
@@ -10662,14 +10662,14 @@ DO $pq112$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq112q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq112$;
 
 DO $dpol307$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_contabilizacao_automatica') THEN
     DROP POLICY IF EXISTS "regras_contabilizacao_automatica regras_contab_select" ON public.regras_contabilizacao_automatica;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol307$;
 DO $pol194$ BEGIN
   IF NOT EXISTS (
@@ -10677,14 +10677,14 @@ DO $pol194$ BEGIN
   ) THEN
     EXECUTE $pol194q$CREATE POLICY regras_contab_select ON public.regras_contabilizacao_automatica FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));$pol194q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol194$;
 
 DO $dpol308$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_contabilizacao_automatica') THEN
     DROP POLICY IF EXISTS "regras_contabilizacao_automatica regras_contab_write" ON public.regras_contabilizacao_automatica;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol308$;
 DO $pol195$ BEGIN
   IF NOT EXISTS (
@@ -10692,14 +10692,14 @@ DO $pol195$ BEGIN
   ) THEN
     EXECUTE $pol195q$CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role))));$pol195q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol195$;
 
 DO $dpol309$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_duplicidade') THEN
     DROP POLICY IF EXISTS "regras_duplicidade Empresa-based access" ON public.regras_duplicidade;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol309$;
 DO $pq113$ BEGIN
   IF NOT EXISTS (
@@ -10711,14 +10711,14 @@ DO $pq113$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq113q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq113$;
 
 DO $dpol310$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_roteamento_financeiro') THEN
     DROP POLICY IF EXISTS "regras_roteamento_financeiro Empresa-based access" ON public.regras_roteamento_financeiro;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol310$;
 DO $pq114$ BEGIN
   IF NOT EXISTS (
@@ -10730,14 +10730,14 @@ DO $pq114$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq114q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq114$;
 
 DO $dpol311$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca') THEN
     DROP POLICY IF EXISTS "regua_cobranca regua_cobranca_empresa_select" ON public.regua_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol311$;
 DO $pol196$ BEGIN
   IF NOT EXISTS (
@@ -10747,14 +10747,14 @@ DO $pol196$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol196q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol196$;
 
 DO $dpol312$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca') THEN
     DROP POLICY IF EXISTS "regua_cobranca regua_cobranca_tenant_rw" ON public.regua_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol312$;
 DO $pol197$ BEGIN
   IF NOT EXISTS (
@@ -10762,14 +10762,14 @@ DO $pol197$ BEGIN
   ) THEN
     EXECUTE $pol197q$CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol197q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol197$;
 
 DO $dpol313$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca_etapas') THEN
     DROP POLICY IF EXISTS "regua_cobranca_etapas regua_cobranca_etapas_empresa_select" ON public.regua_cobranca_etapas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol313$;
 DO $pol198$ BEGIN
   IF NOT EXISTS (
@@ -10781,14 +10781,14 @@ DO $pol198$ BEGIN
            FROM public.user_empresas
           WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))))));$pol198q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol198$;
 
 DO $dpol314$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca_etapas') THEN
     DROP POLICY IF EXISTS "regua_cobranca_etapas regua_cobranca_etapas_tenant_write" ON public.regua_cobranca_etapas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol314$;
 DO $pol199$ BEGIN
   IF NOT EXISTS (
@@ -10800,14 +10800,14 @@ DO $pol199$ BEGIN
    FROM public.regua_cobranca r
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND public.empresa_acessivel(r.empresa_id))))));$pol199q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol199$;
 
 DO $dpol315$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca_status') THEN
     DROP POLICY IF EXISTS "regua_cobranca_status Access by empresa_id" ON public.regua_cobranca_status;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol315$;
 DO $pq115$ BEGIN
   IF NOT EXISTS (
@@ -10819,14 +10819,14 @@ DO $pq115$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq115q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq115$;
 
 DO $dpol316$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='relatorios_agendados') THEN
     DROP POLICY IF EXISTS "relatorios_agendados relatorios_agendados_proprios" ON public.relatorios_agendados;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol316$;
 DO $pol200$ BEGIN
   IF NOT EXISTS (
@@ -10834,14 +10834,14 @@ DO $pol200$ BEGIN
   ) THEN
     EXECUTE $pol200q$CREATE POLICY relatorios_agendados_proprios ON public.relatorios_agendados TO authenticated USING (((created_by = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role))) WITH CHECK (((created_by = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));$pol200q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol200$;
 
 DO $dpol317$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='relatorios_tributarios_agendados') THEN
     DROP POLICY IF EXISTS "relatorios_tributarios_agendados rel_trib_agend_all" ON public.relatorios_tributarios_agendados;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol317$;
 DO $pol201$ BEGIN
   IF NOT EXISTS (
@@ -10849,14 +10849,14 @@ DO $pol201$ BEGIN
   ) THEN
     EXECUTE $pol201q$CREATE POLICY rel_trib_agend_all ON public.relatorios_tributarios_agendados TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol201q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol201$;
 
 DO $dpol318$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='resumos_executivos_semanais') THEN
     DROP POLICY IF EXISTS "resumos_executivos_semanais Empresa-based access" ON public.resumos_executivos_semanais;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol318$;
 DO $pq116$ BEGIN
   IF NOT EXISTS (
@@ -10868,14 +10868,14 @@ DO $pq116$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq116q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq116$;
 
 DO $dpol319$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='retencao_politicas') THEN
     DROP POLICY IF EXISTS "retencao_politicas retencao_politicas_admin_select" ON public.retencao_politicas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol319$;
 DO $pol202$ BEGIN
   IF NOT EXISTS (
@@ -10883,14 +10883,14 @@ DO $pol202$ BEGIN
   ) THEN
     EXECUTE $pol202q$CREATE POLICY retencao_politicas_admin_select ON public.retencao_politicas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pol202q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol202$;
 
 DO $dpol320$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='retencoes_fonte') THEN
     DROP POLICY IF EXISTS "retencoes_fonte Empresa-based access" ON public.retencoes_fonte;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol320$;
 DO $pq117$ BEGIN
   IF NOT EXISTS (
@@ -10902,14 +10902,14 @@ DO $pq117$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq117q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq117$;
 
 DO $dpol321$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
     DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_delete" ON public.risk_rules;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol321$;
 DO $pol203$ BEGIN
   IF NOT EXISTS (
@@ -10917,14 +10917,14 @@ DO $pol203$ BEGIN
   ) THEN
     EXECUTE $pol203q$CREATE POLICY risk_rules_tenant_delete ON public.risk_rules FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));$pol203q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol203$;
 
 DO $dpol322$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
     DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_insert" ON public.risk_rules;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol322$;
 DO $pol204$ BEGIN
   IF NOT EXISTS (
@@ -10932,14 +10932,14 @@ DO $pol204$ BEGIN
   ) THEN
     EXECUTE $pol204q$CREATE POLICY risk_rules_tenant_insert ON public.risk_rules FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role))));$pol204q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol204$;
 
 DO $dpol323$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
     DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_select" ON public.risk_rules;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol323$;
 DO $pol205$ BEGIN
   IF NOT EXISTS (
@@ -10947,14 +10947,14 @@ DO $pol205$ BEGIN
   ) THEN
     EXECUTE $pol205q$CREATE POLICY risk_rules_tenant_select ON public.risk_rules FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));$pol205q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol205$;
 
 DO $dpol324$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
     DROP POLICY IF EXISTS "risk_rules risk_rules_tenant_update" ON public.risk_rules;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol324$;
 DO $pol206$ BEGIN
   IF NOT EXISTS (
@@ -10962,14 +10962,14 @@ DO $pol206$ BEGIN
   ) THEN
     EXECUTE $pol206q$CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));$pol206q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol206$;
 
 DO $dpol325$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='role_permissions') THEN
     DROP POLICY IF EXISTS "role_permissions Admins can delete role permissions" ON public.role_permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol325$;
 DO $pq118$ BEGIN
   IF NOT EXISTS (
@@ -10977,14 +10977,14 @@ DO $pq118$ BEGIN
   ) THEN
     EXECUTE $pq118q$CREATE POLICY "Admins can delete role permissions" ON public.role_permissions FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq118q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq118$;
 
 DO $dpol326$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='role_permissions') THEN
     DROP POLICY IF EXISTS "role_permissions Admins can insert role permissions" ON public.role_permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol326$;
 DO $pq119$ BEGIN
   IF NOT EXISTS (
@@ -10992,14 +10992,14 @@ DO $pq119$ BEGIN
   ) THEN
     EXECUTE $pq119q$CREATE POLICY "Admins can insert role permissions" ON public.role_permissions FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq119q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq119$;
 
 DO $dpol327$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='role_permissions') THEN
     DROP POLICY IF EXISTS "role_permissions Admins can manage role_permissions" ON public.role_permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol327$;
 DO $pq120$ BEGIN
   IF NOT EXISTS (
@@ -11007,14 +11007,14 @@ DO $pq120$ BEGIN
   ) THEN
     EXECUTE $pq120q$CREATE POLICY "Admins can manage role_permissions" ON public.role_permissions TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq120q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq120$;
 
 DO $dpol328$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='role_permissions') THEN
     DROP POLICY IF EXISTS "role_permissions Admins can update role permissions" ON public.role_permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol328$;
 DO $pq121$ BEGIN
   IF NOT EXISTS (
@@ -11022,14 +11022,14 @@ DO $pq121$ BEGIN
   ) THEN
     EXECUTE $pq121q$CREATE POLICY "Admins can update role permissions" ON public.role_permissions FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq121q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq121$;
 
 DO $dpol329$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='role_permissions') THEN
     DROP POLICY IF EXISTS "role_permissions Anyone authenticated can view role_permissions" ON public.role_permissions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol329$;
 DO $pq122$ BEGIN
   IF NOT EXISTS (
@@ -11037,14 +11037,14 @@ DO $pq122$ BEGIN
   ) THEN
     EXECUTE $pq122q$CREATE POLICY "Anyone authenticated can view role_permissions" ON public.role_permissions FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) IS NOT NULL));$pq122q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq122$;
 
 DO $dpol330$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='rpc_observability_metrics') THEN
     DROP POLICY IF EXISTS "rpc_observability_metrics admin_read_rpc_metrics" ON public.rpc_observability_metrics;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol330$;
 DO $pol207$ BEGIN
   IF NOT EXISTS (
@@ -11052,14 +11052,14 @@ DO $pol207$ BEGIN
   ) THEN
     EXECUTE $pol207q$CREATE POLICY admin_read_rpc_metrics ON public.rpc_observability_metrics FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol207q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol207$;
 
 DO $dpol331$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='runtime_error_logs') THEN
     DROP POLICY IF EXISTS "runtime_error_logs Admins can delete error logs" ON public.runtime_error_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol331$;
 DO $pq123$ BEGIN
   IF NOT EXISTS (
@@ -11067,14 +11067,14 @@ DO $pq123$ BEGIN
   ) THEN
     EXECUTE $pq123q$CREATE POLICY "Admins can delete error logs" ON public.runtime_error_logs FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq123q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq123$;
 
 DO $dpol332$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='runtime_error_logs') THEN
     DROP POLICY IF EXISTS "runtime_error_logs Admins can update error logs" ON public.runtime_error_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol332$;
 DO $pq124$ BEGIN
   IF NOT EXISTS (
@@ -11082,14 +11082,14 @@ DO $pq124$ BEGIN
   ) THEN
     EXECUTE $pq124q$CREATE POLICY "Admins can update error logs" ON public.runtime_error_logs FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq124q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq124$;
 
 DO $dpol333$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='runtime_error_logs') THEN
     DROP POLICY IF EXISTS "runtime_error_logs Admins managers can view error logs" ON public.runtime_error_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol333$;
 DO $pq125$ BEGIN
   IF NOT EXISTS (
@@ -11097,14 +11097,14 @@ DO $pq125$ BEGIN
   ) THEN
     EXECUTE $pq125q$CREATE POLICY "Admins managers can view error logs" ON public.runtime_error_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq125q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq125$;
 
 DO $dpol334$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='runtime_error_logs') THEN
     DROP POLICY IF EXISTS "runtime_error_logs Authenticated can insert error logs" ON public.runtime_error_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol334$;
 DO $pq126$ BEGIN
   IF NOT EXISTS (
@@ -11112,14 +11112,14 @@ DO $pq126$ BEGIN
   ) THEN
     EXECUTE $pq126q$CREATE POLICY "Authenticated can insert error logs" ON public.runtime_error_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));$pq126q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq126$;
 
 DO $dpol335$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='saved_filter_subscriptions') THEN
     DROP POLICY IF EXISTS "saved_filter_subscriptions saved_filter_subscriptions_owner" ON public.saved_filter_subscriptions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol335$;
 DO $pol208$ BEGIN
   IF NOT EXISTS (
@@ -11127,14 +11127,14 @@ DO $pol208$ BEGIN
   ) THEN
     EXECUTE $pol208q$CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol208q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol208$;
 
 DO $dpol336$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='saved_filters') THEN
     DROP POLICY IF EXISTS "saved_filters saved_filters_owner_write" ON public.saved_filters;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol336$;
 DO $pol209$ BEGIN
   IF NOT EXISTS (
@@ -11142,14 +11142,14 @@ DO $pol209$ BEGIN
   ) THEN
     EXECUTE $pol209q$CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol209q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol209$;
 
 DO $dpol337$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='saved_filters') THEN
     DROP POLICY IF EXISTS "saved_filters saved_filters_select" ON public.saved_filters;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol337$;
 DO $pol210$ BEGIN
   IF NOT EXISTS (
@@ -11159,14 +11159,14 @@ DO $pol210$ BEGIN
    FROM public.user_roles ur
   WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));$pol210q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol210$;
 
 DO $dpol338$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_operations_log') THEN
     DROP POLICY IF EXISTS "scim_operations_log scim_operations_log_admin_select" ON public.scim_operations_log;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol338$;
 DO $pol211$ BEGIN
   IF NOT EXISTS (
@@ -11174,14 +11174,14 @@ DO $pol211$ BEGIN
   ) THEN
     EXECUTE $pol211q$CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pol211q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol211$;
 
 DO $dpol339$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_setup_checklist') THEN
     DROP POLICY IF EXISTS "scim_setup_checklist scim_checklist_own" ON public.scim_setup_checklist;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol339$;
 DO $pol212$ BEGIN
   IF NOT EXISTS (
@@ -11189,14 +11189,14 @@ DO $pol212$ BEGIN
   ) THEN
     EXECUTE $pol212q$CREATE POLICY scim_checklist_own ON public.scim_setup_checklist TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol212q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol212$;
 
 DO $dpol340$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_tokens') THEN
     DROP POLICY IF EXISTS "scim_tokens Admins manage scim_tokens" ON public.scim_tokens;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol340$;
 DO $pq127$ BEGIN
   IF NOT EXISTS (
@@ -11206,14 +11206,14 @@ DO $pq127$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role)))));$pq127q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq127$;
 
 DO $dpol341$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_alerts') THEN
     DROP POLICY IF EXISTS "security_alerts security_alerts_admin_all" ON public.security_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol341$;
 DO $pol213$ BEGIN
   IF NOT EXISTS (
@@ -11221,14 +11221,14 @@ DO $pol213$ BEGIN
   ) THEN
     EXECUTE $pol213q$CREATE POLICY security_alerts_admin_all ON public.security_alerts TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));$pol213q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol213$;
 
 DO $dpol342$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_audit_logs') THEN
     DROP POLICY IF EXISTS "security_audit_logs Authenticated users can insert security logs" ON public.security_audit_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol342$;
 DO $pq128$ BEGIN
   IF NOT EXISTS (
@@ -11236,14 +11236,14 @@ DO $pq128$ BEGIN
   ) THEN
     EXECUTE $pq128q$CREATE POLICY "Authenticated users can insert security logs" ON public.security_audit_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));$pq128q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq128$;
 
 DO $dpol343$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_audit_logs') THEN
     DROP POLICY IF EXISTS "security_audit_logs Only admins can view security logs" ON public.security_audit_logs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol343$;
 DO $pq129$ BEGIN
   IF NOT EXISTS (
@@ -11251,14 +11251,14 @@ DO $pq129$ BEGIN
   ) THEN
     EXECUTE $pq129q$CREATE POLICY "Only admins can view security logs" ON public.security_audit_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq129q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq129$;
 
 DO $dpol344$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_settings') THEN
     DROP POLICY IF EXISTS "security_settings sec_settings_admin_all" ON public.security_settings;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol344$;
 DO $pol214$ BEGIN
   IF NOT EXISTS (
@@ -11266,14 +11266,14 @@ DO $pol214$ BEGIN
   ) THEN
     EXECUTE $pol214q$CREATE POLICY sec_settings_admin_all ON public.security_settings TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol214q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol214$;
 
 DO $dpol345$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sefaz_dfe_cursor') THEN
     DROP POLICY IF EXISTS "sefaz_dfe_cursor cursor_admin_read" ON public.sefaz_dfe_cursor;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol345$;
 DO $pol215$ BEGIN
   IF NOT EXISTS (
@@ -11281,14 +11281,14 @@ DO $pol215$ BEGIN
   ) THEN
     EXECUTE $pol215q$CREATE POLICY cursor_admin_read ON public.sefaz_dfe_cursor FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol215q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol215$;
 
 DO $dpol346$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sessoes_conciliacao') THEN
     DROP POLICY IF EXISTS "sessoes_conciliacao Owner manage sessoes" ON public.sessoes_conciliacao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol346$;
 DO $pq130$ BEGIN
   IF NOT EXISTS (
@@ -11296,14 +11296,14 @@ DO $pq130$ BEGIN
   ) THEN
     EXECUTE $pq130q$CREATE POLICY "Owner manage sessoes" ON public.sessoes_conciliacao TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq130q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq130$;
 
 DO $dpol347$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sessoes_conciliacao') THEN
     DROP POLICY IF EXISTS "sessoes_conciliacao Users can manage their own sessoes_conciliacao" ON public.sessoes_conciliacao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol347$;
 DO $pq131$ BEGIN
   IF NOT EXISTS (
@@ -11311,14 +11311,14 @@ DO $pq131$ BEGIN
   ) THEN
     EXECUTE $pq131q$CREATE POLICY "Users can manage their own sessoes_conciliacao" ON public.sessoes_conciliacao TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq131q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq131$;
 
 DO $dpol348$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='simulacao_tributos_detalhados') THEN
     DROP POLICY IF EXISTS "simulacao_tributos_detalhados sim_trib_acesso" ON public.simulacao_tributos_detalhados;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol348$;
 DO $pol216$ BEGIN
   IF NOT EXISTS (
@@ -11330,14 +11330,14 @@ DO $pol216$ BEGIN
    FROM public.simulacoes s
   WHERE ((s.id = simulacao_tributos_detalhados.simulacao_id) AND public.empresa_acessivel(s.empresa_id)))));$pol216q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol216$;
 
 DO $dpol349$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='simulacoes') THEN
     DROP POLICY IF EXISTS "simulacoes simulacoes_acesso" ON public.simulacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol349$;
 DO $pol217$ BEGIN
   IF NOT EXISTS (
@@ -11345,14 +11345,14 @@ DO $pol217$ BEGIN
   ) THEN
     EXECUTE $pol217q$CREATE POLICY simulacoes_acesso ON public.simulacoes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));$pol217q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol217$;
 
 DO $dpol350$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='slo_metrics_diarias') THEN
     DROP POLICY IF EXISTS "slo_metrics_diarias slo_metrics_admin_select" ON public.slo_metrics_diarias;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol350$;
 DO $pol218$ BEGIN
   IF NOT EXISTS (
@@ -11360,14 +11360,14 @@ DO $pol218$ BEGIN
   ) THEN
     EXECUTE $pol218q$CREATE POLICY slo_metrics_admin_select ON public.slo_metrics_diarias FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));$pol218q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol218$;
 
 DO $dpol351$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='slow_query_alerts') THEN
     DROP POLICY IF EXISTS "slow_query_alerts Admins podem visualizar slow_query_alerts" ON public.slow_query_alerts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol351$;
 DO $pq132$ BEGIN
   IF NOT EXISTS (
@@ -11375,14 +11375,14 @@ DO $pq132$ BEGIN
   ) THEN
     EXECUTE $pq132q$CREATE POLICY "Admins podem visualizar slow_query_alerts" ON public.slow_query_alerts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq132q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq132$;
 
 DO $dpol352$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_aprovacao') THEN
     DROP POLICY IF EXISTS "solicitacoes_aprovacao Owner manage aprovacoes" ON public.solicitacoes_aprovacao;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol352$;
 DO $pq133$ BEGIN
   IF NOT EXISTS (
@@ -11390,14 +11390,14 @@ DO $pq133$ BEGIN
   ) THEN
     EXECUTE $pq133q$CREATE POLICY "Owner manage aprovacoes" ON public.solicitacoes_aprovacao TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq133q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq133$;
 
 DO $dpol353$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
     DROP POLICY IF EXISTS "solicitacoes_lgpd lgpd_owner_insert" ON public.solicitacoes_lgpd;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol353$;
 DO $pol219$ BEGIN
   IF NOT EXISTS (
@@ -11405,14 +11405,14 @@ DO $pol219$ BEGIN
   ) THEN
     EXECUTE $pol219q$CREATE POLICY lgpd_owner_insert ON public.solicitacoes_lgpd FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));$pol219q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol219$;
 
 DO $dpol354$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
     DROP POLICY IF EXISTS "solicitacoes_lgpd lgpd_scoped_select" ON public.solicitacoes_lgpd;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol354$;
 DO $pol220$ BEGIN
   IF NOT EXISTS (
@@ -11420,14 +11420,14 @@ DO $pol220$ BEGIN
   ) THEN
     EXECUTE $pol220q$CREATE POLICY lgpd_scoped_select ON public.solicitacoes_lgpd FOR SELECT TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))));$pol220q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol220$;
 
 DO $dpol355$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
     DROP POLICY IF EXISTS "solicitacoes_lgpd lgpd_scoped_update" ON public.solicitacoes_lgpd;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol355$;
 DO $pol221$ BEGIN
   IF NOT EXISTS (
@@ -11435,14 +11435,14 @@ DO $pol221$ BEGIN
   ) THEN
     EXECUTE $pol221q$CREATE POLICY lgpd_scoped_update ON public.solicitacoes_lgpd FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)));$pol221q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol221$;
 
 DO $dpol356$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sped_contabil_arquivos') THEN
     DROP POLICY IF EXISTS "sped_contabil_arquivos sped_arquivos_delete_admin" ON public.sped_contabil_arquivos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol356$;
 DO $pol222$ BEGIN
   IF NOT EXISTS (
@@ -11450,14 +11450,14 @@ DO $pol222$ BEGIN
   ) THEN
     EXECUTE $pol222q$CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol222q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol222$;
 
 DO $dpol357$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sped_contabil_arquivos') THEN
     DROP POLICY IF EXISTS "sped_contabil_arquivos sped_arquivos_insert" ON public.sped_contabil_arquivos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol357$;
 DO $pol223$ BEGIN
   IF NOT EXISTS (
@@ -11465,14 +11465,14 @@ DO $pol223$ BEGIN
   ) THEN
     EXECUTE $pol223q$CREATE POLICY sped_arquivos_insert ON public.sped_contabil_arquivos FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));$pol223q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol223$;
 
 DO $dpol358$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sped_contabil_arquivos') THEN
     DROP POLICY IF EXISTS "sped_contabil_arquivos sped_arquivos_select" ON public.sped_contabil_arquivos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol358$;
 DO $pol224$ BEGIN
   IF NOT EXISTS (
@@ -11480,14 +11480,14 @@ DO $pol224$ BEGIN
   ) THEN
     EXECUTE $pol224q$CREATE POLICY sped_arquivos_select ON public.sped_contabil_arquivos FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));$pol224q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol224$;
 
 DO $dpol359$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sped_contabil_arquivos') THEN
     DROP POLICY IF EXISTS "sped_contabil_arquivos sped_arquivos_update_admin" ON public.sped_contabil_arquivos;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol359$;
 DO $pol225$ BEGIN
   IF NOT EXISTS (
@@ -11495,14 +11495,14 @@ DO $pol225$ BEGIN
   ) THEN
     EXECUTE $pol225q$CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos FOR UPDATE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol225q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol225$;
 
 DO $dpol360$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='split_payment_transacoes') THEN
     DROP POLICY IF EXISTS "split_payment_transacoes split_payment_empresa_insert" ON public.split_payment_transacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol360$;
 DO $pol226$ BEGIN
   IF NOT EXISTS (
@@ -11512,14 +11512,14 @@ DO $pol226$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol226q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol226$;
 
 DO $dpol361$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='split_payment_transacoes') THEN
     DROP POLICY IF EXISTS "split_payment_transacoes split_payment_empresa_select" ON public.split_payment_transacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol361$;
 DO $pol227$ BEGIN
   IF NOT EXISTS (
@@ -11529,14 +11529,14 @@ DO $pol227$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol227q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol227$;
 
 DO $dpol362$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='split_payment_transacoes') THEN
     DROP POLICY IF EXISTS "split_payment_transacoes split_payment_empresa_update" ON public.split_payment_transacoes;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol362$;
 DO $pol228$ BEGIN
   IF NOT EXISTS (
@@ -11548,14 +11548,14 @@ DO $pol228$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol228q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol228$;
 
 DO $dpol363$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_login_attempts') THEN
     DROP POLICY IF EXISTS "sso_login_attempts Admins can view SSO login attempts" ON public.sso_login_attempts;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol363$;
 DO $pq134$ BEGIN
   IF NOT EXISTS (
@@ -11563,14 +11563,14 @@ DO $pq134$ BEGIN
   ) THEN
     EXECUTE $pq134q$CREATE POLICY "Admins can view SSO login attempts" ON public.sso_login_attempts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq134q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq134$;
 
 DO $dpol364$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_providers') THEN
     DROP POLICY IF EXISTS "sso_providers Admins manage sso providers" ON public.sso_providers;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol364$;
 DO $pq135$ BEGIN
   IF NOT EXISTS (
@@ -11578,14 +11578,14 @@ DO $pq135$ BEGIN
   ) THEN
     EXECUTE $pq135q$CREATE POLICY "Admins manage sso providers" ON public.sso_providers TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq135q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq135$;
 
 DO $dpol365$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_role_mappings') THEN
     DROP POLICY IF EXISTS "sso_role_mappings sso_role_mappings_admin" ON public.sso_role_mappings;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol365$;
 DO $pol229$ BEGIN
   IF NOT EXISTS (
@@ -11593,14 +11593,14 @@ DO $pol229$ BEGIN
   ) THEN
     EXECUTE $pol229q$CREATE POLICY sso_role_mappings_admin ON public.sso_role_mappings TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));$pol229q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol229$;
 
 DO $dpol366$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_sandbox_runs') THEN
     DROP POLICY IF EXISTS "sso_sandbox_runs sso_sandbox_runs_admin" ON public.sso_sandbox_runs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol366$;
 DO $pol230$ BEGIN
   IF NOT EXISTS (
@@ -11608,14 +11608,14 @@ DO $pol230$ BEGIN
   ) THEN
     EXECUTE $pol230q$CREATE POLICY sso_sandbox_runs_admin ON public.sso_sandbox_runs TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND (created_by = auth.uid())));$pol230q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol230$;
 
 DO $dpol367$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_user_groups') THEN
     DROP POLICY IF EXISTS "sso_user_groups sso_user_groups_select" ON public.sso_user_groups;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol367$;
 DO $pol231$ BEGIN
   IF NOT EXISTS (
@@ -11623,14 +11623,14 @@ DO $pol231$ BEGIN
   ) THEN
     EXECUTE $pol231q$CREATE POLICY sso_user_groups_select ON public.sso_user_groups FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));$pol231q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol231$;
 
 DO $dpol368$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='tax_audit_trail') THEN
     DROP POLICY IF EXISTS "tax_audit_trail tax_audit_select" ON public.tax_audit_trail;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol368$;
 DO $pol232$ BEGIN
   IF NOT EXISTS (
@@ -11638,14 +11638,14 @@ DO $pol232$ BEGIN
   ) THEN
     EXECUTE $pol232q$CREATE POLICY tax_audit_select ON public.tax_audit_trail FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR ((empresa_id IS NOT NULL) AND public.empresa_acessivel(empresa_id))));$pol232q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol232$;
 
 DO $dpol369$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='templates_cobranca') THEN
     DROP POLICY IF EXISTS "templates_cobranca templates_cobranca_empresa_select" ON public.templates_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol369$;
 DO $pol233$ BEGIN
   IF NOT EXISTS (
@@ -11655,14 +11655,14 @@ DO $pol233$ BEGIN
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));$pol233q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol233$;
 
 DO $dpol370$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='templates_cobranca') THEN
     DROP POLICY IF EXISTS "templates_cobranca templates_cobranca_tenant_rw" ON public.templates_cobranca;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol370$;
 DO $pol234$ BEGIN
   IF NOT EXISTS (
@@ -11670,14 +11670,14 @@ DO $pol234$ BEGIN
   ) THEN
     EXECUTE $pol234q$CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));$pol234q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol234$;
 
 DO $dpol371$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='transacoes_bancarias') THEN
     DROP POLICY IF EXISTS "transacoes_bancarias transacoes_bancarias_empresa_select" ON public.transacoes_bancarias;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol371$;
 DO $pol235$ BEGIN
   IF NOT EXISTS (
@@ -11689,14 +11689,14 @@ DO $pol235$ BEGIN
            FROM public.user_empresas
           WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))))));$pol235q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol235$;
 
 DO $dpol372$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='transferencias') THEN
     DROP POLICY IF EXISTS "transferencias Empresa-based access" ON public.transferencias;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol372$;
 DO $pq136$ BEGIN
   IF NOT EXISTS (
@@ -11708,14 +11708,14 @@ DO $pq136$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq136q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq136$;
 
 DO $dpol373$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ufs') THEN
     DROP POLICY IF EXISTS "ufs ufs_select_authenticated" ON public.ufs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol373$;
 DO $pol236$ BEGIN
   IF NOT EXISTS (
@@ -11723,14 +11723,14 @@ DO $pol236$ BEGIN
   ) THEN
     EXECUTE $pol236q$CREATE POLICY ufs_select_authenticated ON public.ufs FOR SELECT TO authenticated USING (true);$pol236q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol236$;
 
 DO $dpol374$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ufs') THEN
     DROP POLICY IF EXISTS "ufs ufs_write_admin" ON public.ufs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol374$;
 DO $pol237$ BEGIN
   IF NOT EXISTS (
@@ -11738,14 +11738,14 @@ DO $pol237$ BEGIN
   ) THEN
     EXECUTE $pol237q$CREATE POLICY ufs_write_admin ON public.ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol237q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol237$;
 
 DO $dpol375$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_action_audit') THEN
     DROP POLICY IF EXISTS "user_action_audit Users can insert their own audit logs" ON public.user_action_audit;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol375$;
 DO $pq137$ BEGIN
   IF NOT EXISTS (
@@ -11753,14 +11753,14 @@ DO $pq137$ BEGIN
   ) THEN
     EXECUTE $pq137q$CREATE POLICY "Users can insert their own audit logs" ON public.user_action_audit FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq137q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq137$;
 
 DO $dpol376$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_action_audit') THEN
     DROP POLICY IF EXISTS "user_action_audit Users can view their own audit logs" ON public.user_action_audit;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol376$;
 DO $pq138$ BEGIN
   IF NOT EXISTS (
@@ -11768,14 +11768,14 @@ DO $pq138$ BEGIN
   ) THEN
     EXECUTE $pq138q$CREATE POLICY "Users can view their own audit logs" ON public.user_action_audit FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq138q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq138$;
 
 DO $dpol377$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_active_filters') THEN
     DROP POLICY IF EXISTS "user_active_filters user_active_filters_owner" ON public.user_active_filters;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol377$;
 DO $pol238$ BEGIN
   IF NOT EXISTS (
@@ -11783,14 +11783,14 @@ DO $pol238$ BEGIN
   ) THEN
     EXECUTE $pol238q$CREATE POLICY user_active_filters_owner ON public.user_active_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));$pol238q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol238$;
 
 DO $dpol378$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_anomalia_preferences') THEN
     DROP POLICY IF EXISTS "user_anomalia_preferences Users can manage their own preferences" ON public.user_anomalia_preferences;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol378$;
 DO $pq139$ BEGIN
   IF NOT EXISTS (
@@ -11798,14 +11798,14 @@ DO $pq139$ BEGIN
   ) THEN
     EXECUTE $pq139q$CREATE POLICY "Users can manage their own preferences" ON public.user_anomalia_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq139q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq139$;
 
 DO $dpol379$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_demonstrativo_preferences') THEN
     DROP POLICY IF EXISTS "user_demonstrativo_preferences Users can manage their own preferences" ON public.user_demonstrativo_preferences;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol379$;
 DO $pq140$ BEGIN
   IF NOT EXISTS (
@@ -11813,7 +11813,7 @@ DO $pq140$ BEGIN
   ) THEN
     EXECUTE $pq140q$CREATE POLICY "Users can manage their own preferences" ON public.user_demonstrativo_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq140q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq140$;
 
 DO $udev_pol$ BEGIN
@@ -11835,7 +11835,7 @@ DO $dpol380$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_digest_preferences') THEN
     DROP POLICY IF EXISTS "user_digest_preferences Admins visualizam preferencias de digest" ON public.user_digest_preferences;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol380$;
 DO $pq141$ BEGIN
   IF NOT EXISTS (
@@ -11843,14 +11843,14 @@ DO $pq141$ BEGIN
   ) THEN
     EXECUTE $pq141q$CREATE POLICY "Admins visualizam preferencias de digest" ON public.user_digest_preferences FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq141q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq141$;
 
 DO $dpol381$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_digest_preferences') THEN
     DROP POLICY IF EXISTS "user_digest_preferences Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol381$;
 DO $pq142$ BEGIN
   IF NOT EXISTS (
@@ -11858,14 +11858,14 @@ DO $pq142$ BEGIN
   ) THEN
     EXECUTE $pq142q$CREATE POLICY "Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq142q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq142$;
 
 DO $dpol382$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_empresas') THEN
     DROP POLICY IF EXISTS "user_empresas Admins manage user_empresas" ON public.user_empresas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol382$;
 DO $pq143$ BEGIN
   IF NOT EXISTS (
@@ -11873,14 +11873,14 @@ DO $pq143$ BEGIN
   ) THEN
     EXECUTE $pq143q$CREATE POLICY "Admins manage user_empresas" ON public.user_empresas TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq143q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq143$;
 
 DO $dpol383$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_empresas') THEN
     DROP POLICY IF EXISTS "user_empresas Users view own empresa links" ON public.user_empresas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol383$;
 DO $pq144$ BEGIN
   IF NOT EXISTS (
@@ -11888,14 +11888,14 @@ DO $pq144$ BEGIN
   ) THEN
     EXECUTE $pq144q$CREATE POLICY "Users view own empresa links" ON public.user_empresas FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq144q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq144$;
 
 DO $dpol384$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_filter_presets') THEN
     DROP POLICY IF EXISTS "user_filter_presets Users can manage their presets" ON public.user_filter_presets;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol384$;
 DO $pq145$ BEGIN
   IF NOT EXISTS (
@@ -11903,14 +11903,14 @@ DO $pq145$ BEGIN
   ) THEN
     EXECUTE $pq145q$CREATE POLICY "Users can manage their presets" ON public.user_filter_presets TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq145q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq145$;
 
 DO $dpol385$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_onboarding_progress') THEN
     DROP POLICY IF EXISTS "user_onboarding_progress Users can insert their own onboarding progress" ON public.user_onboarding_progress;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol385$;
 DO $pq146$ BEGIN
   IF NOT EXISTS (
@@ -11918,14 +11918,14 @@ DO $pq146$ BEGIN
   ) THEN
     EXECUTE $pq146q$CREATE POLICY "Users can insert their own onboarding progress" ON public.user_onboarding_progress FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq146q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq146$;
 
 DO $dpol386$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_onboarding_progress') THEN
     DROP POLICY IF EXISTS "user_onboarding_progress Users can update their own onboarding progress" ON public.user_onboarding_progress;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol386$;
 DO $pq147$ BEGIN
   IF NOT EXISTS (
@@ -11933,14 +11933,14 @@ DO $pq147$ BEGIN
   ) THEN
     EXECUTE $pq147q$CREATE POLICY "Users can update their own onboarding progress" ON public.user_onboarding_progress FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq147q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq147$;
 
 DO $dpol387$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_onboarding_progress') THEN
     DROP POLICY IF EXISTS "user_onboarding_progress Users can view their own onboarding progress" ON public.user_onboarding_progress;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol387$;
 DO $pq148$ BEGIN
   IF NOT EXISTS (
@@ -11948,14 +11948,14 @@ DO $pq148$ BEGIN
   ) THEN
     EXECUTE $pq148q$CREATE POLICY "Users can view their own onboarding progress" ON public.user_onboarding_progress FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq148q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq148$;
 
 DO $dpol388$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_passkeys') THEN
     DROP POLICY IF EXISTS "user_passkeys Users can delete own passkeys" ON public.user_passkeys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol388$;
 DO $pq149$ BEGIN
   IF NOT EXISTS (
@@ -11963,14 +11963,14 @@ DO $pq149$ BEGIN
   ) THEN
     EXECUTE $pq149q$CREATE POLICY "Users can delete own passkeys" ON public.user_passkeys FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq149q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq149$;
 
 DO $dpol389$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_passkeys') THEN
     DROP POLICY IF EXISTS "user_passkeys Users can delete their passkeys" ON public.user_passkeys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol389$;
 DO $pq150$ BEGIN
   IF NOT EXISTS (
@@ -11978,14 +11978,14 @@ DO $pq150$ BEGIN
   ) THEN
     EXECUTE $pq150q$CREATE POLICY "Users can delete their passkeys" ON public.user_passkeys FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq150q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq150$;
 
 DO $dpol390$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_passkeys') THEN
     DROP POLICY IF EXISTS "user_passkeys Users can insert own passkeys" ON public.user_passkeys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol390$;
 DO $pq151$ BEGIN
   IF NOT EXISTS (
@@ -11993,14 +11993,14 @@ DO $pq151$ BEGIN
   ) THEN
     EXECUTE $pq151q$CREATE POLICY "Users can insert own passkeys" ON public.user_passkeys FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq151q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq151$;
 
 DO $dpol391$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_passkeys') THEN
     DROP POLICY IF EXISTS "user_passkeys Users can insert their passkeys" ON public.user_passkeys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol391$;
 DO $pq152$ BEGIN
   IF NOT EXISTS (
@@ -12008,14 +12008,14 @@ DO $pq152$ BEGIN
   ) THEN
     EXECUTE $pq152q$CREATE POLICY "Users can insert their passkeys" ON public.user_passkeys FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq152q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq152$;
 
 DO $dpol392$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_passkeys') THEN
     DROP POLICY IF EXISTS "user_passkeys Users can update own passkeys" ON public.user_passkeys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol392$;
 DO $pq153$ BEGIN
   IF NOT EXISTS (
@@ -12023,14 +12023,14 @@ DO $pq153$ BEGIN
   ) THEN
     EXECUTE $pq153q$CREATE POLICY "Users can update own passkeys" ON public.user_passkeys FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq153q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq153$;
 
 DO $dpol393$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_passkeys') THEN
     DROP POLICY IF EXISTS "user_passkeys Users can update their passkeys" ON public.user_passkeys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol393$;
 DO $pq154$ BEGIN
   IF NOT EXISTS (
@@ -12038,14 +12038,14 @@ DO $pq154$ BEGIN
   ) THEN
     EXECUTE $pq154q$CREATE POLICY "Users can update their passkeys" ON public.user_passkeys FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq154q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq154$;
 
 DO $dpol394$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_passkeys') THEN
     DROP POLICY IF EXISTS "user_passkeys Users can view own passkeys" ON public.user_passkeys;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol394$;
 DO $pq155$ BEGIN
   IF NOT EXISTS (
@@ -12053,14 +12053,14 @@ DO $pq155$ BEGIN
   ) THEN
     EXECUTE $pq155q$CREATE POLICY "Users can view own passkeys" ON public.user_passkeys FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq155q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq155$;
 
 DO $dpol395$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     DROP POLICY IF EXISTS "user_roles Admins can delete user roles" ON public.user_roles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol395$;
 DO $pq156$ BEGIN
   IF NOT EXISTS (
@@ -12068,14 +12068,14 @@ DO $pq156$ BEGIN
   ) THEN
     EXECUTE $pq156q$CREATE POLICY "Admins can delete user roles" ON public.user_roles FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq156q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq156$;
 
 DO $dpol396$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     DROP POLICY IF EXISTS "user_roles Admins can insert user roles" ON public.user_roles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol396$;
 DO $pq157$ BEGIN
   IF NOT EXISTS (
@@ -12083,14 +12083,14 @@ DO $pq157$ BEGIN
   ) THEN
     EXECUTE $pq157q$CREATE POLICY "Admins can insert user roles" ON public.user_roles FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq157q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq157$;
 
 DO $dpol397$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     DROP POLICY IF EXISTS "user_roles Admins can manage all roles" ON public.user_roles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol397$;
 DO $pq158$ BEGIN
   IF NOT EXISTS (
@@ -12098,14 +12098,14 @@ DO $pq158$ BEGIN
   ) THEN
     EXECUTE $pq158q$CREATE POLICY "Admins can manage all roles" ON public.user_roles TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq158q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq158$;
 
 DO $dpol398$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     DROP POLICY IF EXISTS "user_roles Admins can update user roles" ON public.user_roles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol398$;
 DO $pq159$ BEGIN
   IF NOT EXISTS (
@@ -12113,14 +12113,14 @@ DO $pq159$ BEGIN
   ) THEN
     EXECUTE $pq159q$CREATE POLICY "Admins can update user roles" ON public.user_roles FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq159q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq159$;
 
 DO $dpol399$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
     DROP POLICY IF EXISTS "user_roles Users can view own roles" ON public.user_roles;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol399$;
 DO $pq160$ BEGIN
   IF NOT EXISTS (
@@ -12128,14 +12128,14 @@ DO $pq160$ BEGIN
   ) THEN
     EXECUTE $pq160q$CREATE POLICY "Users can view own roles" ON public.user_roles FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq160q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq160$;
 
 DO $dpol400$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_sessions') THEN
     DROP POLICY IF EXISTS "user_sessions Users see own sessions" ON public.user_sessions;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol400$;
 DO $pq161$ BEGIN
   IF NOT EXISTS (
@@ -12143,14 +12143,14 @@ DO $pq161$ BEGIN
   ) THEN
     EXECUTE $pq161q$CREATE POLICY "Users see own sessions" ON public.user_sessions FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq161q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq161$;
 
 DO $dpol401$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='vendedores') THEN
     DROP POLICY IF EXISTS "vendedores Empresa-based access" ON public.vendedores;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol401$;
 DO $pq162$ BEGIN
   IF NOT EXISTS (
@@ -12162,14 +12162,14 @@ DO $pq162$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq162q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq162$;
 
 DO $dpol402$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='verificacoes_conformidade') THEN
     DROP POLICY IF EXISTS "verificacoes_conformidade Access by empresa_id" ON public.verificacoes_conformidade;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol402$;
 DO $pq163$ BEGIN
   IF NOT EXISTS (
@@ -12181,14 +12181,14 @@ DO $pq163$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq163q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq163$;
 
 DO $dpol403$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webauthn_challenges') THEN
     DROP POLICY IF EXISTS "webauthn_challenges Authenticated can create challenges" ON public.webauthn_challenges;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol403$;
 DO $pq164$ BEGIN
   IF NOT EXISTS (
@@ -12196,14 +12196,14 @@ DO $pq164$ BEGIN
   ) THEN
     EXECUTE $pq164q$CREATE POLICY "Authenticated can create challenges" ON public.webauthn_challenges FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq164q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq164$;
 
 DO $dpol404$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webauthn_challenges') THEN
     DROP POLICY IF EXISTS "webauthn_challenges Authenticated can read own challenges" ON public.webauthn_challenges;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol404$;
 DO $pq165$ BEGIN
   IF NOT EXISTS (
@@ -12211,14 +12211,14 @@ DO $pq165$ BEGIN
   ) THEN
     EXECUTE $pq165q$CREATE POLICY "Authenticated can read own challenges" ON public.webauthn_challenges FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq165q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq165$;
 
 DO $dpol405$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webauthn_challenges') THEN
     DROP POLICY IF EXISTS "webauthn_challenges Users can delete their challenges" ON public.webauthn_challenges;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol405$;
 DO $pq166$ BEGIN
   IF NOT EXISTS (
@@ -12226,14 +12226,14 @@ DO $pq166$ BEGIN
   ) THEN
     EXECUTE $pq166q$CREATE POLICY "Users can delete their challenges" ON public.webauthn_challenges FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));$pq166q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq166$;
 
 DO $dpol406$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webauthn_challenges') THEN
     DROP POLICY IF EXISTS "webauthn_challenges Users can insert their challenges" ON public.webauthn_challenges;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol406$;
 DO $pq167$ BEGIN
   IF NOT EXISTS (
@@ -12241,14 +12241,14 @@ DO $pq167$ BEGIN
   ) THEN
     EXECUTE $pq167q$CREATE POLICY "Users can insert their challenges" ON public.webauthn_challenges FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq167q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq167$;
 
 DO $dpol407$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webauthn_challenges') THEN
     DROP POLICY IF EXISTS "webauthn_challenges Users can update their challenges" ON public.webauthn_challenges;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol407$;
 DO $pq168$ BEGIN
   IF NOT EXISTS (
@@ -12256,14 +12256,14 @@ DO $pq168$ BEGIN
   ) THEN
     EXECUTE $pq168q$CREATE POLICY "Users can update their challenges" ON public.webauthn_challenges FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));$pq168q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq168$;
 
 DO $dpol408$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webauthn_credentials') THEN
     DROP POLICY IF EXISTS "webauthn_credentials users manage own webauthn" ON public.webauthn_credentials;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol408$;
 DO $pq169$ BEGIN
   IF NOT EXISTS (
@@ -12271,14 +12271,14 @@ DO $pq169$ BEGIN
   ) THEN
     EXECUTE $pq169q$CREATE POLICY "users manage own webauthn" ON public.webauthn_credentials TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));$pq169q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq169$;
 
 DO $dpol409$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_dlq') THEN
     DROP POLICY IF EXISTS "webhook_dlq Admins podem atualizar DLQ" ON public.webhook_dlq;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol409$;
 DO $pq170$ BEGIN
   IF NOT EXISTS (
@@ -12286,14 +12286,14 @@ DO $pq170$ BEGIN
   ) THEN
     EXECUTE $pq170q$CREATE POLICY "Admins podem atualizar DLQ" ON public.webhook_dlq FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq170q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq170$;
 
 DO $dpol410$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_dlq') THEN
     DROP POLICY IF EXISTS "webhook_dlq Admins podem visualizar DLQ" ON public.webhook_dlq;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol410$;
 DO $pq171$ BEGIN
   IF NOT EXISTS (
@@ -12301,14 +12301,14 @@ DO $pq171$ BEGIN
   ) THEN
     EXECUTE $pq171q$CREATE POLICY "Admins podem visualizar DLQ" ON public.webhook_dlq FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq171q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq171$;
 
 DO $dpol411$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_events') THEN
     DROP POLICY IF EXISTS "webhook_events Admins can delete events" ON public.webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol411$;
 DO $pq172$ BEGIN
   IF NOT EXISTS (
@@ -12316,14 +12316,14 @@ DO $pq172$ BEGIN
   ) THEN
     EXECUTE $pq172q$CREATE POLICY "Admins can delete events" ON public.webhook_events FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pq172q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq172$;
 
 DO $dpol412$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_events') THEN
     DROP POLICY IF EXISTS "webhook_events Authorized roles can view webhook events" ON public.webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol412$;
 DO $pq173$ BEGIN
   IF NOT EXISTS (
@@ -12331,14 +12331,14 @@ DO $pq173$ BEGIN
   ) THEN
     EXECUTE $pq173q$CREATE POLICY "Authorized roles can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq173q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq173$;
 
 DO $dpol413$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_events') THEN
     DROP POLICY IF EXISTS "webhook_events Authorized roles can view webhooks" ON public.webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol413$;
 DO $pq174$ BEGIN
   IF NOT EXISTS (
@@ -12346,14 +12346,14 @@ DO $pq174$ BEGIN
   ) THEN
     EXECUTE $pq174q$CREATE POLICY "Authorized roles can view webhooks" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq174q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq174$;
 
 DO $dpol414$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_events') THEN
     DROP POLICY IF EXISTS "webhook_events Managers can update events" ON public.webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol414$;
 DO $pq175$ BEGIN
   IF NOT EXISTS (
@@ -12361,14 +12361,14 @@ DO $pq175$ BEGIN
   ) THEN
     EXECUTE $pq175q$CREATE POLICY "Managers can update events" ON public.webhook_events FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)));$pq175q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq175$;
 
 DO $dpol415$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_events') THEN
     DROP POLICY IF EXISTS "webhook_events Operators can insert events" ON public.webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol415$;
 DO $pq176$ BEGIN
   IF NOT EXISTS (
@@ -12376,14 +12376,14 @@ DO $pq176$ BEGIN
   ) THEN
     EXECUTE $pq176q$CREATE POLICY "Operators can insert events" ON public.webhook_events FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operacional'::public.app_role)));$pq176q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq176$;
 
 DO $dpol416$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_events') THEN
     DROP POLICY IF EXISTS "webhook_events Viewers can view webhook events" ON public.webhook_events;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol416$;
 DO $pq177$ BEGIN
   IF NOT EXISTS (
@@ -12391,14 +12391,14 @@ DO $pq177$ BEGIN
   ) THEN
     EXECUTE $pq177q$CREATE POLICY "Viewers can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'visualizador'::public.app_role));$pq177q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq177$;
 
 DO $dpol417$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_simulation_results') THEN
     DROP POLICY IF EXISTS "webhook_simulation_results Users can view simulation results" ON public.webhook_simulation_results;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol417$;
 DO $pq178$ BEGIN
   IF NOT EXISTS (
@@ -12408,14 +12408,14 @@ DO $pq178$ BEGIN
    FROM public.webhook_simulation_runs r
   WHERE ((r.id = webhook_simulation_results.run_id) AND (r.created_by = ( SELECT auth.uid() AS uid))))));$pq178q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq178$;
 
 DO $dpol418$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_simulation_runs') THEN
     DROP POLICY IF EXISTS "webhook_simulation_runs Users can insert simulation runs" ON public.webhook_simulation_runs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol418$;
 DO $pq179$ BEGIN
   IF NOT EXISTS (
@@ -12423,14 +12423,14 @@ DO $pq179$ BEGIN
   ) THEN
     EXECUTE $pq179q$CREATE POLICY "Users can insert simulation runs" ON public.webhook_simulation_runs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = created_by));$pq179q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq179$;
 
 DO $dpol419$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_simulation_runs') THEN
     DROP POLICY IF EXISTS "webhook_simulation_runs Users can view simulation runs" ON public.webhook_simulation_runs;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol419$;
 DO $pq180$ BEGIN
   IF NOT EXISTS (
@@ -12438,14 +12438,14 @@ DO $pq180$ BEGIN
   ) THEN
     EXECUTE $pq180q$CREATE POLICY "Users can view simulation runs" ON public.webhook_simulation_runs FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = created_by));$pq180q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq180$;
 
 DO $dpol420$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhooks_log') THEN
     DROP POLICY IF EXISTS "webhooks_log webhooks_log_admin_insert" ON public.webhooks_log;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol420$;
 DO $pol239$ BEGIN
   IF NOT EXISTS (
@@ -12453,14 +12453,14 @@ DO $pol239$ BEGIN
   ) THEN
     EXECUTE $pol239q$CREATE POLICY webhooks_log_admin_insert ON public.webhooks_log FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol239q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol239$;
 
 DO $dpol421$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhooks_log') THEN
     DROP POLICY IF EXISTS "webhooks_log webhooks_log_admin_select" ON public.webhooks_log;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol421$;
 DO $pol240$ BEGIN
   IF NOT EXISTS (
@@ -12468,14 +12468,14 @@ DO $pol240$ BEGIN
   ) THEN
     EXECUTE $pol240q$CREATE POLICY webhooks_log_admin_select ON public.webhooks_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));$pol240q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pol240$;
 
 DO $dpol422$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='whatsapp_conversas') THEN
     DROP POLICY IF EXISTS "whatsapp_conversas Empresa-based access" ON public.whatsapp_conversas;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $dpol422$;
 DO $pq181$ BEGIN
   IF NOT EXISTS (
@@ -12487,7 +12487,7 @@ DO $pq181$ BEGIN
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));$pq181q$;
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_function OR undefined_object OR undefined_column THEN NULL;
 END $pq181$;
 
 -- SECAO 4: Indices ausentes (49)
