@@ -95,7 +95,7 @@ DO $aptag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $aptag$;
 DO $batchfix008$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas_tributarios') THEN
@@ -230,7 +230,7 @@ DO $aprcmttag$ BEGIN
    FROM solicitacoes_aprovacao
   WHERE ((solicitacoes_aprovacao.solicitado_por = (SELECT auth.uid())) OR (solicitacoes_aprovacao.aprovado_por = (SELECT auth.uid()))))) OR (user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $aprcmttag$;
 DO $batchfix023$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='apuracoes_irpj_csll') THEN
@@ -439,19 +439,19 @@ DO $audfinemprtag$ BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='auditoria_financeira' AND column_name='empresa_id') THEN
     DROP POLICY IF EXISTS auditoria_financeira_empresa_select ON public.auditoria_financeira; CREATE POLICY auditoria_financeira_empresa_select ON public.auditoria_financeira AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $audfinemprtag$;
 DO $audfinusrtag$ BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='auditoria_financeira' AND column_name='user_id') THEN
     DROP POLICY IF EXISTS auditoria_user_insert ON public.auditoria_financeira; CREATE POLICY auditoria_user_insert ON public.auditoria_financeira AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $audfinusrtag$;
 DO $audtribemprtag$ BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='auditoria_tributaria' AND column_name='empresa_id') THEN
     DROP POLICY IF EXISTS auditoria_trib_select_tenant ON public.auditoria_tributaria; CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $audtribemprtag$;
 DO $authlogstag$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auth_logs') THEN
@@ -629,7 +629,7 @@ DO $ccustoetag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS centros_custo_tenant_rw ON public.centros_custo; CREATE POLICY centros_custo_tenant_rw ON public.centros_custo AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $ccustoetag$;
 DO $batchfix066$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ci_security_gate_events') THEN
@@ -703,7 +703,7 @@ DO $cfgaprvtag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao; CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cfgaprvtag$;
 DO $cfgduptag$ BEGIN
   IF EXISTS (
@@ -716,7 +716,7 @@ DO $cfgduptag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cfgduptag$;
 DO $batchfix076$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='configuracoes_duplicidade') THEN
@@ -731,7 +731,7 @@ DO $cfgduprwtag$ BEGIN
   ) THEN
     DROP POLICY IF EXISTS configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade; CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cfgduprwtag$;
 DO $cfgsnaptag$ BEGIN
   IF EXISTS (
@@ -751,7 +751,7 @@ DO $cfgsnaptag$ BEGIN
       WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
     DROP POLICY IF EXISTS conformidade_snapshots_tenant_rw ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cfgsnaptag$;
 DO $cntabantag$ BEGIN
   IF EXISTS (
@@ -762,7 +762,7 @@ DO $cntabantag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cntabantag$;
 DO $batchfix077$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_pagar') THEN
@@ -780,7 +780,7 @@ DO $cntapgtag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS contas_pagar_tenant_rw ON public.contas_pagar; CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cntapgtag$;
 DO $batchfix078$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_receber') THEN
@@ -798,7 +798,7 @@ DO $cntarectag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS contas_receber_tenant_rw ON public.contas_receber; CREATE POLICY contas_receber_tenant_rw ON public.contas_receber AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cntarectag$;
 DO $contrtag$ BEGIN
   IF EXISTS (
@@ -811,7 +811,7 @@ DO $contrtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $contrtag$;
 DO $batchfix079$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='convites') THEN
@@ -827,7 +827,7 @@ DO $convctag$ BEGIN
     DROP POLICY IF EXISTS convites_contador_revogar ON public.convites_contador; CREATE POLICY convites_contador_revogar ON public.convites_contador AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)))) WITH CHECK ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
     DROP POLICY IF EXISTS convites_contador_select ON public.convites_contador; CREATE POLICY convites_contador_select ON public.convites_contador AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $convctag$;
 DO $credibtag$ BEGIN
   IF EXISTS (
@@ -840,7 +840,7 @@ DO $credibtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $credibtag$;
 DO $cronlogtag$ BEGIN
   IF EXISTS (
@@ -849,7 +849,7 @@ DO $cronlogtag$ BEGIN
     DROP POLICY IF EXISTS "Admins can view cron logs" ON public.cron_job_logs;
     CREATE POLICY "Admins can view cron logs" ON public.cron_job_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cronlogtag$;
 DO $cfdeftag$ BEGIN
   IF EXISTS (
@@ -862,7 +862,7 @@ DO $cfdeftag$ BEGIN
        FROM user_empresas ue
       WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $cfdeftag$;
 DO $batchfix080$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='custom_field_values') THEN
@@ -898,7 +898,7 @@ DO $darftag$ BEGIN
               WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true))))))));
     DROP POLICY IF EXISTS darfs_tenant_rw ON public.darfs; CREATE POLICY darfs_tenant_rw ON public.darfs AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $darftag$;
 DO $batchfix082$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='digest_envios_log') THEN
@@ -925,7 +925,7 @@ DO $divconctag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $divconctag$;
 DO $batchfix084$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='edge_function_logs') THEN
@@ -940,7 +940,7 @@ DO $eliscredtag$ BEGIN
   ) THEN
     DROP POLICY IF EXISTS creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria; CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $eliscredtag$;
 DO $batchfix085$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_regras_creditos') THEN
@@ -971,7 +971,7 @@ DO $emailvertag$ BEGIN
     DROP POLICY IF EXISTS "Users can view own verifications" ON public.email_verifications;
     CREATE POLICY "Users can view own verifications" ON public.email_verifications AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $emailvertag$;
 DO $batchfix087$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas') THEN
@@ -1001,7 +1001,7 @@ DO $empcerttag$ BEGIN
       WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.empresa_id = empresas_certificados.empresa_id)))));
     DROP POLICY IF EXISTS empresas_certificados_tenant_rw ON public.empresas_certificados; CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $empcerttag$;
 DO $batchfix090$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='entregas_obrigacoes') THEN
@@ -1029,7 +1029,7 @@ DO $entreobrtag$ BEGIN
       WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
     DROP POLICY IF EXISTS entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $entreobrtag$;
 DO $batchfix091$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='estrategias_elisao') THEN
@@ -1068,7 +1068,7 @@ DO $execcobrtag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $execcobrtag$;
 DO $batchfix094$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='expert_conversations') THEN
@@ -1135,7 +1135,7 @@ DO $fatmenstag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $fatmenstag$;
 DO $batchfix102$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fechamentos_tributarios') THEN
@@ -1187,7 +1187,7 @@ DO $filacobtag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS fila_cobrancas_tenant_rw ON public.fila_cobrancas; CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $filacobtag$;
 DO $fluxapvtag$ BEGIN
   IF EXISTS (
@@ -1200,7 +1200,7 @@ DO $fluxapvtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $fluxapvtag$;
 DO $folhapgtag$ BEGIN
   IF EXISTS (
@@ -1213,7 +1213,7 @@ DO $folhapgtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $folhapgtag$;
 DO $formapgtag$ BEGIN
   IF EXISTS (
@@ -1226,7 +1226,7 @@ DO $formapgtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $formapgtag$;
 DO $batchfix107$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fornecedores') THEN
@@ -1399,7 +1399,7 @@ DO $healthsctag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $healthsctag$;
 DO $batchfix134$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_analises_preditivas') THEN
@@ -1417,7 +1417,7 @@ DO $haptag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $haptag$;
 DO $histcobtag$ BEGIN
   IF EXISTS (
@@ -1430,7 +1430,7 @@ DO $histcobtag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $histcobtag$;
 DO $histcobwatag$ BEGIN
   IF EXISTS (
@@ -1443,7 +1443,7 @@ DO $histcobwatag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $histcobwatag$;
 DO $batchfix135$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='historico_cobrancas_boletos') THEN
@@ -1496,7 +1496,7 @@ DO $histsctag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $histsctag$;
 DO $batchfix140$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='incentivos_fiscais') THEN
@@ -1587,7 +1587,7 @@ DO $lancconttag$ BEGIN
        FROM user_empresas ue
       WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $lancconttag$;
 DO $batchfix152$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lancamentos_contabeis') THEN
@@ -1666,7 +1666,7 @@ DO $metasfintag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $metasfintag$;
 DO $batchfix163$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='mfa_sessions') THEN
@@ -1703,7 +1703,7 @@ DO $movimtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $movimtag$;
 DO $batchfix167$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='n8n_dispatch_logs') THEN
@@ -1739,7 +1739,7 @@ DO $negativtag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS negativacoes_tenant_rw ON public.negativacoes; CREATE POLICY negativacoes_tenant_rw ON public.negativacoes AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $negativtag$;
 DO $batchfix171$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='new_device_alerts') THEN
@@ -1800,7 +1800,7 @@ DO $notafistag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS notas_fiscais_tenant_delete ON public.notas_fiscais; CREATE POLICY notas_fiscais_tenant_delete ON public.notas_fiscais AS PERMISSIVE FOR DELETE TO authenticated USING ((empresa_membro_ativo(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $notafistag$;
 DO $batchfix178$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='notas_fiscais_ocr') THEN
@@ -1823,7 +1823,7 @@ DO $notaocrtag$ BEGIN
        FROM profiles
       WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $notaocrtag$;
 DO $batchfix179$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='notification_history') THEN
@@ -1846,7 +1846,7 @@ DO $opttribtag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $opttribtag$;
 DO $batchfix181$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacao_membros') THEN
@@ -2001,7 +2001,7 @@ DO $pedcomprtag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $pedcomprtag$;
 DO $batchfix202$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='per_dcomp') THEN
@@ -2063,7 +2063,7 @@ DO $pixtmpltag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS pix_templates_tenant_rw ON public.pix_templates; CREATE POLICY pix_templates_tenant_rw ON public.pix_templates AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $pixtmpltag$;
 DO $planconttag$ BEGIN
   IF EXISTS (
@@ -2076,7 +2076,7 @@ DO $planconttag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $planconttag$;
 DO $batchfix210$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='planos_acao') THEN
@@ -2118,7 +2118,7 @@ DO $prejfistag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais; CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $prejfistag$;
 DO $batchfix215$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
@@ -2154,7 +2154,7 @@ DO $protesttag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS protestos_tenant_rw ON public.protestos; CREATE POLICY protestos_tenant_rw ON public.protestos AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $protesttag$;
 DO $batchfix219$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st') THEN
@@ -2219,7 +2219,7 @@ DO $recometag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $recometag$;
 DO $regimeepetag$ BEGIN
   IF EXISTS (
@@ -2232,7 +2232,7 @@ DO $regimeepetag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $regimeepetag$;
 DO $regimesimtag$ BEGIN
   IF EXISTS (
@@ -2246,7 +2246,7 @@ DO $regimesimtag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $regimesimtag$;
 DO $regimetribtag$ BEGIN
   IF EXISTS (
@@ -2259,7 +2259,7 @@ DO $regimetribtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $regimetribtag$;
 DO $regrasconctag$ BEGIN
   IF EXISTS (
@@ -2272,7 +2272,7 @@ DO $regrasconctag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $regrasconctag$;
 DO $regrascontatag$ BEGIN
   IF EXISTS (
@@ -2281,7 +2281,7 @@ DO $regrascontatag$ BEGIN
   ) THEN
     DROP POLICY IF EXISTS regras_contab_write ON public.regras_contabilizacao_automatica; CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'contador'::app_role)))) WITH CHECK ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'contador'::app_role))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $regrascontatag$;
 DO $regrasduptag$ BEGIN
   IF EXISTS (
@@ -2294,7 +2294,7 @@ DO $regrasduptag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $regrasduptag$;
 DO $regrasrotetag$ BEGIN
   IF EXISTS (
@@ -2312,7 +2312,7 @@ DO $regrasrotetag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $regrasrotetag$;
 DO $batchfix228$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca') THEN
@@ -2330,7 +2330,7 @@ DO $reguacobtag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS regua_cobranca_tenant_rw ON public.regua_cobranca; CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $reguacobtag$;
 DO $batchfix229$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca_etapas') THEN
@@ -2369,7 +2369,7 @@ DO $reguacobstattag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $reguacobstattag$;
 DO $batchfix232$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='relatorios_agendados') THEN
@@ -2398,7 +2398,7 @@ DO $reltribselecttag$ BEGIN
        FROM profiles
       WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $reltribselecttag$;
 DO $resumoexetag$ BEGIN
   IF EXISTS (
@@ -2411,7 +2411,7 @@ DO $resumoexetag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $resumoexetag$;
 DO $batchfix234$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='retencao_politicas') THEN
@@ -2430,7 +2430,7 @@ DO $retenfonttag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $retenfonttag$;
 DO $batchfix235$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
@@ -2557,7 +2557,7 @@ DO $savedfilttag$ BEGIN
        FROM user_roles ur
       WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $savedfilttag$;
 DO $batchfix254$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_operations_log') THEN
@@ -2661,7 +2661,7 @@ DO $spedconttag$ BEGIN
     DROP POLICY IF EXISTS sped_arquivos_delete_admin ON public.sped_contabil_arquivos; CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
     DROP POLICY IF EXISTS sped_arquivos_update_admin ON public.sped_contabil_arquivos; CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $spedconttag$;
 DO $splitpaytag$ BEGIN
   IF EXISTS (
@@ -2680,7 +2680,7 @@ DO $splitpaytag$ BEGIN
        FROM user_empresas
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $splitpaytag$;
 DO $batchfix269$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_login_attempts') THEN
@@ -2713,7 +2713,7 @@ DO $taxaudittag$ BEGIN
   ) THEN
     DROP POLICY IF EXISTS tax_audit_select ON public.tax_audit_trail; CREATE POLICY tax_audit_select ON public.tax_audit_trail AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR ((empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $taxaudittag$;
 DO $batchfix273$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='templates_cobranca') THEN
@@ -2731,7 +2731,7 @@ DO $tmplcobtag$ BEGIN
       WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
     DROP POLICY IF EXISTS templates_cobranca_tenant_rw ON public.templates_cobranca; CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $tmplcobtag$;
 DO $batchfix274$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='transacoes_bancarias') THEN
@@ -2754,7 +2754,7 @@ DO $transfertag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $transfertag$;
 DO $batchfix275$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ufs') THEN
@@ -2993,7 +2993,7 @@ DO $vendedtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $vendedtag$;
 DO $verifconftag$ BEGIN
   IF EXISTS (
@@ -3006,7 +3006,7 @@ DO $verifconftag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $verifconftag$;
 DO $batchfix312$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webauthn_challenges') THEN
@@ -3135,5 +3135,5 @@ DO $whatconvtag$ BEGIN
        FROM user_roles
       WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
   END IF;
-EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column OR undefined_function THEN NULL;
 END $whatconvtag$;
