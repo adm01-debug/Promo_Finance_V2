@@ -2,22 +2,22 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { parseJsonBody } from "../_shared/validation.ts";
+import { corsHeadersComSegredo, exigirChamadaInterna } from "../_shared/auth-guard.ts";
 
 const _GerarAlertasSchema = z.object({
   incluirMetas: z.boolean().optional(),
   userId: z.string().uuid().nullable().optional(),
 }).partial();
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeadersComSegredo });
   }
+
+  const guard = await exigirChamadaInterna(req);
+  if (!guard.ok) return guard.resposta;
 
   try {
     console.log('[gerar-alertas] Iniciando geração de alertas automáticos...');
@@ -29,13 +29,18 @@ serve(async (req) => {
 
     // Parse request body para opções
     let options = { incluirMetas: true, userId: null };
-    try {
-      const _raw = await req.json();
-      const _v = await validateContract(_GerarAlertasSchema, _raw);
-      if (!_v.success) return _v.response;
-      options = { ...options, ..._v.data } as typeof options;
-    } catch {
-      // Sem body, usar padrões
+    const contentLength = Number(req.headers.get('content-length') ?? '0');
+    if (contentLength > 0) {
+      const parsedBody = await parseJsonBody(req, corsHeadersComSegredo, 'gerar-alertas');
+      if (!parsedBody.success) return parsedBody.response;
+      try {
+        const _raw = parsedBody.data;
+        const _v = await validateContract(_GerarAlertasSchema, _raw);
+        if (!_v.success) return _v.response;
+        options = { ...options, ..._v.data } as typeof options;
+      } catch {
+        // Sem body válido de opções, manter padrões
+      }
     }
 
     // Chamar a função do banco para gerar alertas de vencimento
@@ -69,7 +74,7 @@ serve(async (req) => {
         alertas_metas: alertasMetasCriados
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
         status: 200 
       }
     );
@@ -78,7 +83,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
         status: 500 
       }
     );

@@ -1,11 +1,12 @@
-import { useState, ReactNode } from 'react';
+import { useEffect, useMemo, useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, ShieldCheck, ShieldAlert, FileText, Download } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useDashboardConfig, DashboardWidget } from '@/hooks/useDashboardConfig';
-import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
+import { resolveDashboardEmpresaIds, useDashboardMetrics } from '@/hooks/useDashboardMetrics';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import { PrevisaoIA } from './PrevisaoIA';
 import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
 import { MetasFinanceirasPanel } from './MetasFinanceirasPanel';
@@ -60,7 +61,9 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
 
 export const DashboardExecutivo = () => {
   const { currentEmpresaId } = useAuth();
-  const [empresaFilter, setEmpresaFilter] = useState<string>(currentEmpresaId || 'all');
+  const { ids: scopedEmpresaIds } = useEmpresaScope();
+  const defaultEmpresaFilter = scopedEmpresaIds.length > 1 ? 'all' : (scopedEmpresaIds[0] ?? currentEmpresaId ?? 'all');
+  const [empresaFilter, setEmpresaFilter] = useState<string>(defaultEmpresaFilter);
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
@@ -75,21 +78,41 @@ export const DashboardExecutivo = () => {
     centroCustoFilter,
     periodoFluxo,
   });
-  
+
+  useEffect(() => {
+    setEmpresaFilter((current) => {
+      if (current === 'all') return current;
+      if (scopedEmpresaIds.length === 0) return current || defaultEmpresaFilter;
+      return scopedEmpresaIds.includes(current) ? current : defaultEmpresaFilter;
+    });
+  }, [defaultEmpresaFilter, scopedEmpresaIds]);
+
+  const duplicateStatsEmpresaIds = useMemo(
+    () => resolveDashboardEmpresaIds(empresaFilter, metrics.empresaIdsAtivos, currentEmpresaId),
+    [empresaFilter, metrics.empresaIdsAtivos, currentEmpresaId],
+  );
+
   const { data: duplicateStats } = useQuery({
-    queryKey: ['bloqueios-duplicidade-stats'],
+    queryKey: ['bloqueios-duplicidade-stats', duplicateStatsEmpresaIds],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('bloqueios_duplicidade')
-        .select('valor_bloqueado')
+        .select('empresa_id, valor_bloqueado')
         .order('created_at', { ascending: false });
-      
+
+      if (duplicateStatsEmpresaIds.length > 0) {
+        query = query.in('empresa_id', duplicateStatsEmpresaIds);
+      }
+
+      const { data, error } = await query;
+
       if (error) throw error;
       return {
         count: data?.length || 0,
         totalValue: data?.reduce((acc, curr) => acc + (Number(curr.valor_bloqueado) || 0), 0) || 0
       };
-    }
+    },
+    enabled: !metrics.isLoading,
   });
 
   if (metrics.isLoading) {

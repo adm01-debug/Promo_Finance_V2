@@ -96,11 +96,11 @@ export const handler = async (req: Request) => {
       throw new Error('Integração ASAAS indisponível')
     }
 
-    const rawBody = await req.json()
+    const rawBody = await req.json().catch(() => null)
     const validation = validatePayload(AsaasProxySchema, rawBody, "asaas-proxy")
-    
+
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details)
+      return createErrorResponse(validation.error, 422, validation.details)
     }
 
     const { action, data } = validation.data

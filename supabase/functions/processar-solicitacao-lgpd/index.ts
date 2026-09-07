@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, parseJsonBody, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
@@ -38,15 +38,11 @@ serve(async (req) => {
     }
     const userId = userData.user.id;
 
-    const body = (await req.json()) as Payload;
-    const __contract = validatePayload(z.object({ solicitacao_id: z.string().uuid() }), (typeof body === 'object' ? body : {}) as unknown, 'processar-solicitacao-lgpd');
+    const parsedBody = await parseJsonBody(req, corsHeaders, 'processar-solicitacao-lgpd');
+    if (!parsedBody.success) return parsedBody.response;
+    const __contract = validatePayload(z.object({ solicitacao_id: z.string().uuid() }), parsedBody.data, 'processar-solicitacao-lgpd');
     if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
-    if (!body?.solicitacao_id) {
-      return new Response(JSON.stringify({ error: "solicitacao_id required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const body = __contract.data as Payload;
 
     const { data: sol, error: solErr } = await adminClient
       .from("solicitacoes_lgpd")

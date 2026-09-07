@@ -6,9 +6,9 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const raw = await req.json();
+    const raw = await req.json().catch(() => null);
     const parsed = validatePayload(SimularSimplesRpcSchema, raw, 'simular-simples');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const { faturamentoAnual, rbt12, folha12m, percentualServicos } = parsed.data;
     const hoje = new Date();
     const result = simularSimples({

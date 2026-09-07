@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect } from 'react';
 import { VisualValidator } from '@/components/ui/ux-validator';
 
 const itemVariants = {
@@ -53,17 +52,11 @@ export function DashboardFiltersHeader({
   setCentroCustoFilter,
   onOpenConfig,
 }: DashboardFiltersHeaderProps) {
-  const { currentEmpresaId, profile, user } = useAuth();
+  const { profile, user } = useAuth();
   const greeting = getGreeting();
   const GreetingIcon = greeting.icon;
   const dateStr = formatDate();
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Gestor';
-
-  useEffect(() => {
-    if (currentEmpresaId && empresaFilter !== currentEmpresaId && empresaFilter === 'all') {
-      setEmpresaFilter(currentEmpresaId);
-    }
-  }, [currentEmpresaId, empresaFilter, setEmpresaFilter]);
 
   return (
     <motion.div variants={itemVariants} className="space-y-8">
@@ -106,7 +99,10 @@ export function DashboardFiltersHeader({
         <div className="flex items-center gap-2 flex-1 w-full px-2">
           <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
-            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-accent transition-all font-medium text-xs focus:ring-0">
+            <SelectTrigger
+              aria-label="Filtro de empresa do dashboard"
+              className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-accent transition-all font-medium text-xs focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
               <SelectValue placeholder="Empresa" />
             </SelectTrigger>
             <SelectContent>
@@ -125,7 +121,10 @@ export function DashboardFiltersHeader({
         <div className="flex items-center gap-2 flex-1 w-full px-2">
           <Target className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
-            <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-muted/50 transition-all font-bold text-xs focus:ring-0">
+            <SelectTrigger
+              aria-label="Filtro de centro de custo do dashboard"
+              className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-muted/50 transition-all font-bold text-xs focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
               <SelectValue placeholder="Centro de Custos" />
             </SelectTrigger>
             <SelectContent>

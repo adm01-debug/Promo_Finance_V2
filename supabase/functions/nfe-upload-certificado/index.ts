@@ -87,7 +87,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const rawBody = await req.json();
+    const { parseJsonBody } = await import('../_shared/validation.ts');
+    const parsedBody = await parseJsonBody(req, corsHeaders, 'nfe-upload-certificado');
+    if (!parsedBody.success) return parsedBody.response;
+    const rawBody = parsedBody.data;
     const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
       return createValidationErrorResponse(parsed.error, corsHeaders);

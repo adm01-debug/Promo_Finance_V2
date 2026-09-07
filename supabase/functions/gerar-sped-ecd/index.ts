@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, parseJsonBody, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
@@ -45,9 +45,11 @@ Deno.serve(async (req) => {
     const allowed = (roles || []).some((r: { role: string }) => ['admin', 'financeiro'].includes(r.role));
     if (!allowed) return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    const body = await req.json();
-    const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), ano_calendario: z.number().int().min(2000).max(2100), mode: z.enum(['validate','generate']).optional() }), (typeof body === 'object' ? body : {}) as unknown, 'gerar-sped-ecd');
+    const parsedBody = await parseJsonBody(req, corsHeaders, 'gerar-sped-ecd');
+    if (!parsedBody.success) return parsedBody.response;
+    const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), ano_calendario: z.number().int().min(2000).max(2100), mode: z.enum(['validate','generate']).optional() }), parsedBody.data, 'gerar-sped-ecd');
     if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    const body = __contract.data as { empresa_id: string; ano_calendario: number; mode?: 'validate' | 'generate' };
 
     const empresa_id: string = body.empresa_id;
     const ano_calendario: number = body.ano_calendario;

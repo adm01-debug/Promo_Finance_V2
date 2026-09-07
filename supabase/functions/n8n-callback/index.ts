@@ -38,15 +38,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    const raw = await req.json().catch(() => null);
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const { validatePayload, createErrorResponse, parseJsonBody } = await import('../_shared/validation.ts');
+    const rawBody = await parseJsonBody(req, corsHeaders, 'n8n-callback');
+    if (!rawBody.success) return rawBody.response;
+    const raw = rawBody.data;
     const Schema = z.object({
       action: z.enum(['create_task', 'create_alert', 'log']),
       payload: z.record(z.any()),
     }).passthrough();
-    const parsed = validatePayload(Schema, raw ?? {}, 'n8n-callback');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    const parsed = validatePayload(Schema, raw, 'n8n-callback');
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const body = parsed.data as CallbackBody;
     if (!body?.action || !body?.payload || typeof body.payload !== "object") {
       return new Response(JSON.stringify({ error: "action e payload são obrigatórios" }), {

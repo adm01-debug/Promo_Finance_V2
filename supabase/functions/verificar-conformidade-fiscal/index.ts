@@ -2,6 +2,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
 import { validateContract } from "../_shared/contract-validator.ts";
+import { parseJsonBody } from "../_shared/validation.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const _ConfFiscalSchema = z.object({
@@ -63,8 +64,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const _raw = await req.json().catch(() => ({}));
-    const _v = await validateContract(_ConfFiscalSchema, _raw);
+    const parsedBody = await parseJsonBody(req, corsHeaders, 'verificar-conformidade-fiscal');
+    if (!parsedBody.success) return parsedBody.response;
+    const _v = await validateContract(_ConfFiscalSchema, parsedBody.data);
     if (!_v.success) return _v.response;
     const body = _v.data;
     const empresa_id = body.empresa_id as string | undefined;

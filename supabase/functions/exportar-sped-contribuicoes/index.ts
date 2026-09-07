@@ -1,6 +1,6 @@
 // Edge: exportar-sped-contribuicoes — gera TXT EFD-Contribuições preliminar
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, parseJsonBody, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 
@@ -62,11 +62,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json().catch(() => ({}));
-    const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), periodo: z.string().regex(/^\d{4}-\d{2}$/) }), (typeof body === 'object' ? body : {}) as unknown, 'exportar-sped-contribuicoes');
+    const parsedBody = await parseJsonBody(req, corsHeaders, 'exportar-sped-contribuicoes');
+    if (!parsedBody.success) return parsedBody.response;
+    const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), periodo: z.string().regex(/^\d{4}-\d{2}$/) }), parsedBody.data, 'exportar-sped-contribuicoes');
     if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
-    const empresa_id = body.empresa_id as string | undefined;
-    const periodo = body.periodo as string | undefined; // YYYY-MM
+    const body = __contract.data as { empresa_id: string; periodo: string };
+    const empresa_id = body.empresa_id;
+    const periodo = body.periodo; // YYYY-MM
 
     if (!empresa_id || !periodo || !/^\d{4}-\d{2}$/.test(periodo)) {
       await logger.flush();

@@ -2,11 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { parseJsonBody } from "../_shared/validation.ts";
+import { corsHeadersComSegredo, exigirInternaOuPapel } from "../_shared/auth-guard.ts";
 
 const AcoesRecomendadasBodySchema = z.object({
   empresa_id: z.string().uuid().optional(),
@@ -23,7 +20,12 @@ interface AcaoIA {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeadersComSegredo });
+  }
+
+  const guard = await exigirInternaOuPapel(req, ["admin", "financeiro"]);
+  if (!guard.ok) return guard.resposta;
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
@@ -32,7 +34,17 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const rawBody = await req.json().catch(() => ({}));
+    let rawBody: unknown = {};
+    const contentLength = Number(req.headers.get("content-length") ?? "0");
+    if (contentLength > 0) {
+      const parsedBody = await parseJsonBody(
+        req,
+        corsHeadersComSegredo,
+        "gerar-acoes-recomendadas",
+      );
+      if (!parsedBody.success) return parsedBody.response;
+      rawBody = parsedBody.data;
+    }
     const validation = await validateContract(AcoesRecomendadasBodySchema, rawBody);
     if (!validation.success) return validation.response;
     const empresaIdFilter: string | undefined = validation.data.empresa_id;
@@ -160,12 +172,12 @@ Máximo 5 ações, ordenadas por urgência. Se nenhum sinal relevante, retorne a
       success: true,
       total_empresas: empresas?.length ?? 0,
       resultados,
-    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }), { headers: { ...corsHeadersComSegredo, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("gerar-acoes-recomendadas error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "erro" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeadersComSegredo, "Content-Type": "application/json" },
     });
   }
 });

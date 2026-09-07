@@ -41,6 +41,18 @@ test.describe('Dashboard', () => {
     await expect(page.getByText('Personalizar Dashboard', { exact: true })).toBeVisible();
   });
 
+  test('mantém o filtro "Todas as Empresas" com nome acessível', async ({ page }) => {
+    const filtroEmpresa = page.getByRole('combobox', { name: /filtro de empresa do dashboard/i });
+    await expect(filtroEmpresa).toBeVisible();
+
+    await filtroEmpresa.click();
+    await page.getByRole('option', { name: /todas as empresas/i }).click();
+
+    await expect(filtroEmpresa).toContainText(/todas as empresas/i);
+    await expect(page.getByRole('combobox', { name: /filtro de centro de custo do dashboard/i })).toBeVisible();
+    await expect(page.getByText('Saldo Consolidado', { exact: true })).toBeVisible();
+  });
+
   test('alertas apresentam conteúdo ou estado vazio explícito', async ({ page }) => {
     const painel = page.locator('#alertas-preditivos');
     await expect(painel).toBeVisible();

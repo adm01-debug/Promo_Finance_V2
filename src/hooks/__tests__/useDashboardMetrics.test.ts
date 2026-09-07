@@ -15,6 +15,7 @@ const mockClientes = vi.fn();
 const mockAprovacoes = vi.fn();
 const mockDivergencias = vi.fn();
 const mockUseAuth = vi.fn();
+const mockUseEmpresaScope = vi.fn();
 
 vi.mock('@/hooks/useFinancialData', () => ({
   useEmpresas: () => mockEmpresas(),
@@ -34,6 +35,10 @@ vi.mock('@/hooks/useAprovacoesPendentesCount', () => ({
 // "all" incluir todas as linhas (ver useDashboardMetrics linhas 46/55/63).
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => mockUseAuth(),
+}));
+
+vi.mock('@/contexts/useEmpresaScope', () => ({
+  useEmpresaScope: () => mockUseEmpresaScope(),
 }));
 
 vi.mock('@/hooks/useDivergenciasConciliacao', () => ({
@@ -56,12 +61,13 @@ describe('useDashboardMetrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseAuth.mockReturnValue({ currentEmpresaId: null });
+    mockUseEmpresaScope.mockReturnValue({ ids: [] });
     mockEmpresas.mockReturnValue({ data: [{ id: 'e1' }], isLoading: false });
     mockCC.mockReturnValue({ data: [], isLoading: false });
     mockBancos.mockReturnValue({
       data: [
         { id: 'b1', empresa_id: 'e1', saldo_atual: 10000 },
-        { id: 'b2', empresa_id: 'e1', saldo_atual: 5000 },
+        { id: 'b2', empresa_id: 'e2', saldo_atual: 5000 },
       ],
       isLoading: false,
     });
@@ -126,10 +132,12 @@ describe('useDashboardMetrics', () => {
 
   it('normaliza sentinelas sem expandir a autorização da empresa corrente', () => {
     mockUseAuth.mockReturnValue({ currentEmpresaId: 'e1' });
+    mockUseEmpresaScope.mockReturnValue({ ids: ['e1', 'e2'] });
     mockBancos.mockReturnValue({
       data: [
         { id: 'b1', empresa_id: 'e1', saldo_atual: 10000 },
         { id: 'b2', empresa_id: 'e2', saldo_atual: 5000 },
+        { id: 'b3', empresa_id: 'e3', saldo_atual: 7000 },
       ],
       isLoading: false,
     });
@@ -138,7 +146,17 @@ describe('useDashboardMetrics', () => {
       useDashboardMetrics({ ...FILTERS_ALL, empresaFilter: 'default', centroCustoFilter: 'todas' }),
     );
 
-    expect(result.current.saldoTotal).toBe(10000);
+    expect(result.current.saldoTotal).toBe(15000);
+  });
+
+  it('usa o escopo consolidado ao selecionar "Todas as Empresas"', () => {
+    mockUseAuth.mockReturnValue({ currentEmpresaId: 'e1' });
+    mockUseEmpresaScope.mockReturnValue({ ids: ['e1', 'e2'] });
+
+    const { result } = renderHook(() => useDashboardMetrics(FILTERS_ALL));
+
+    expect(result.current.saldoTotal).toBe(15000);
+    expect(result.current.empresaIdsAtivos).toEqual(['e1', 'e2']);
   });
 
   it('conta divergências pela conta bancária vinculada à empresa filtrada', () => {

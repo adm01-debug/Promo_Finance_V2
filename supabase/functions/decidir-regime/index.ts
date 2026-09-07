@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const raw = await req.json().catch(() => ({}));
+    const raw = await req.json().catch(() => null);
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
     const DecidirBodySchema = z.object({
@@ -144,7 +144,7 @@ Deno.serve(async (req) => {
       persist: z.boolean().optional(),
     }).passthrough();
     const parsed = validatePayload(DecidirBodySchema, raw, 'decidir-regime');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const { empresaId, anoReferencia, mesReferencia, parametrosOverride, regimeAtual, persist = true } = parsed.data as Record<string, any>;
 
     // Autorização multi-tenant: a leitura passa pelo RLS do próprio usuário.

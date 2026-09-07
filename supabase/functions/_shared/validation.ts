@@ -74,6 +74,27 @@ export function createErrorResponse(message: string, status = 400, details?: unk
   );
 }
 
+export async function parseJsonBody(
+  req: Request,
+  headers: Record<string, string> = corsHeaders,
+  functionName = "unknown",
+): Promise<{ success: true; data: unknown } | { success: false; response: Response }> {
+  try {
+    return { success: true, data: await req.json() };
+  } catch (error) {
+    logger.warn(`Malformed JSON in ${functionName}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return {
+      success: false,
+      response: createValidationErrorResponse(
+        [{ path: "$", message: "JSON malformado", code: "invalid_json" }],
+        headers,
+      ),
+    };
+  }
+}
+
 
 
 /**

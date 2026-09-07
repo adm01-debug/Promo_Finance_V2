@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, parseJsonBody, validatePayload } from '../_shared/validation.ts';
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
@@ -60,7 +60,9 @@ serve(async (req) => {
       });
     }
 
-    const rawJson = await req.json().catch(() => ({}));
+    const rawBody = await parseJsonBody(req, corsHeaders, 'processar-nf-ocr');
+    if (!rawBody.success) return rawBody.response;
+    const rawJson = rawBody.data;
     const OcrSchema = z.object({
       arquivo_url: z.string().optional(),
       arquivo_base64: z.string().optional(),
@@ -69,7 +71,7 @@ serve(async (req) => {
       empresa_id: z.string().uuid().optional(),
     }).refine((d) => !!(d.arquivo_base64 || d.arquivo_url), { message: "arquivo_base64 ou arquivo_url é obrigatório" });
     const __c = validatePayload(OcrSchema, rawJson, 'processar-nf-ocr');
-    if (!__c.success) return new Response(JSON.stringify({ error: __c.error, details: __c.details }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!__c.success) return createErrorResponse(__c.error, 422, __c.details);
     const { arquivo_url, arquivo_base64, arquivo_tipo, arquivo_nome, empresa_id } = __c.data;
 
     // Cria registro inicial em status processando

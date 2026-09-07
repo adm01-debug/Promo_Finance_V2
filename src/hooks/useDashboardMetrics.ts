@@ -5,6 +5,7 @@ import { useDivergenciasConciliacao } from '@/hooks/useDivergenciasConciliacao';
 import { useBoletos } from '@/hooks/useBoletos';
 import { useCobrancaKPIs } from '@/hooks/useCobrancas';
 import { useAuth } from '@/hooks/useAuth';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import { toISOLocal } from '@/lib/formatters';
 
 
@@ -23,10 +24,26 @@ function normalizeFilterSentinel(value: string | null | undefined): string | und
   return value;
 }
 
+export function resolveDashboardEmpresaIds(
+  empresaFilter: string | null | undefined,
+  scopedEmpresaIds: string[],
+  currentEmpresaId: string | null | undefined,
+): string[] {
+  const empresaSelecionada = normalizeFilterSentinel(empresaFilter);
+  if (empresaSelecionada) return [empresaSelecionada];
+  if (scopedEmpresaIds.length > 0) return Array.from(new Set(scopedEmpresaIds));
+  if (currentEmpresaId) return [currentEmpresaId];
+  return [];
+}
+
 export function useDashboardMetrics(filters: DashboardFilters) {
   const { empresaFilter, centroCustoFilter, periodoFluxo } = filters;
   const { currentEmpresaId } = useAuth();
-  const empresaSelecionada = normalizeFilterSentinel(empresaFilter);
+  const { ids: scopedEmpresaIds } = useEmpresaScope();
+  const empresaIdsAtivos = useMemo(
+    () => resolveDashboardEmpresaIds(empresaFilter, scopedEmpresaIds, currentEmpresaId),
+    [empresaFilter, scopedEmpresaIds, currentEmpresaId],
+  );
   const centroCustoSelecionado = normalizeFilterSentinel(centroCustoFilter);
 
   
@@ -46,11 +63,9 @@ export function useDashboardMetrics(filters: DashboardFilters) {
 
   const contasBancariasFiltradas = useMemo(() => {
     return (contasBancarias || []).filter(c => {
-      return empresaSelecionada
-        ? c.empresa_id === empresaSelecionada
-        : (c.empresa_id === currentEmpresaId || !currentEmpresaId);
+      return empresaIdsAtivos.length === 0 || empresaIdsAtivos.includes(c.empresa_id);
     });
-  }, [contasBancarias, empresaSelecionada, currentEmpresaId]);
+  }, [contasBancarias, empresaIdsAtivos]);
 
   const contaBancariaIdsFiltradas = useMemo(
     () => new Set(contasBancariasFiltradas.map((conta) => conta.id)),
@@ -67,23 +82,19 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   // Filtrar dados por empresa e centro de custo
   const contasPagarFiltradas = useMemo(() => {
     return (contasPagar || []).filter(c => {
-      const matchEmpresa = empresaSelecionada
-        ? c.empresa_id === empresaSelecionada
-        : (c.empresa_id === currentEmpresaId || !currentEmpresaId);
+      const matchEmpresa = empresaIdsAtivos.length === 0 || empresaIdsAtivos.includes(c.empresa_id);
       const matchCC = !centroCustoSelecionado || c.centro_custo_id === centroCustoSelecionado;
       return matchEmpresa && matchCC;
     });
-  }, [contasPagar, empresaSelecionada, centroCustoSelecionado, currentEmpresaId]);
+  }, [contasPagar, empresaIdsAtivos, centroCustoSelecionado]);
 
   const contasReceberFiltradas = useMemo(() => {
     return (contasReceber || []).filter(c => {
-      const matchEmpresa = empresaSelecionada
-        ? c.empresa_id === empresaSelecionada
-        : (c.empresa_id === currentEmpresaId || !currentEmpresaId);
+      const matchEmpresa = empresaIdsAtivos.length === 0 || empresaIdsAtivos.includes(c.empresa_id);
       const matchCC = !centroCustoSelecionado || c.centro_custo_id === centroCustoSelecionado;
       return matchEmpresa && matchCC;
     });
-  }, [contasReceber, empresaSelecionada, centroCustoSelecionado, currentEmpresaId]);
+  }, [contasReceber, empresaIdsAtivos, centroCustoSelecionado]);
 
   // Cálculos de KPIs
   const hoje = useMemo(() => {
@@ -305,5 +316,6 @@ export function useDashboardMetrics(filters: DashboardFilters) {
     totalDivergencias,
     boletosStats,
     cobrancaKpis,
+    empresaIdsAtivos,
   };
 }

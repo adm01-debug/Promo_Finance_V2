@@ -25,22 +25,19 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
-    const AlertShape = z.record(z.any());
+    const { validatePayload, createErrorResponse, parseJsonBody } = await import('../_shared/validation.ts');
+    const rawBody = await parseJsonBody(req, corsHeaders, 'notify-performance-alert');
+    if (!rawBody.success) return rawBody.response;
+    const raw = rawBody.data;
+    const AlertShape = z.object({
+      severity: z.string().min(1),
+    }).passthrough();
     const Schema = z.union([z.object({ alert: AlertShape }).passthrough(), AlertShape]);
     const parsed = validatePayload(Schema, raw, 'notify-performance-alert');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const body = parsed.data as { alert?: AlertPayload } | AlertPayload;
     const alert: AlertPayload = (body as { alert?: AlertPayload })?.alert ?? (body as AlertPayload);
-
-    if (!alert || !alert.severity) {
-      return new Response(JSON.stringify({ error: "payload inválido" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     // Só notifica crítico/warning
     if (alert.severity !== "critical" && alert.severity !== "warning") {
