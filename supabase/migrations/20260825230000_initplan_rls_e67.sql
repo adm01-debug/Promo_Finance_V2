@@ -233,18 +233,33 @@ EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
 END $authlogstag$;
 DROP POLICY IF EXISTS benchmarks_admin_write ON public.benchmarks_setoriais; CREATE POLICY benchmarks_admin_write ON public.benchmarks_setoriais AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS beneficios_write_admin ON public.beneficios_fiscais; CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
-DROP POLICY IF EXISTS "Admins can delete activities" ON public.bitrix24_activities; CREATE POLICY "Admins can delete activities" ON public.bitrix24_activities AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Authorized roles can view activities" ON public.bitrix24_activities; CREATE POLICY "Authorized roles can view activities" ON public.bitrix24_activities AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Managers can insert activities" ON public.bitrix24_activities; CREATE POLICY "Managers can insert activities" ON public.bitrix24_activities AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Managers can update activities" ON public.bitrix24_activities; CREATE POLICY "Managers can update activities" ON public.bitrix24_activities AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Admins can delete stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Admins can delete stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
-DROP POLICY IF EXISTS "Managers can insert stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Managers can insert stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Managers can update stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Managers can update stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Admins can delete tokens" ON public.bitrix24_tokens; CREATE POLICY "Admins can delete tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Admins can insert tokens" ON public.bitrix24_tokens; CREATE POLICY "Admins can insert tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Admins can update tokens" ON public.bitrix24_tokens; CREATE POLICY "Admins can update tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR UPDATE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Only admins can view tokens" ON public.bitrix24_tokens; CREATE POLICY "Only admins can view tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+DO $bitrix24acttag$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_activities') THEN
+    DROP POLICY IF EXISTS "Admins can delete activities" ON public.bitrix24_activities; CREATE POLICY "Admins can delete activities" ON public.bitrix24_activities AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Authorized roles can view activities" ON public.bitrix24_activities; CREATE POLICY "Authorized roles can view activities" ON public.bitrix24_activities AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+    DROP POLICY IF EXISTS "Managers can insert activities" ON public.bitrix24_activities; CREATE POLICY "Managers can insert activities" ON public.bitrix24_activities AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+    DROP POLICY IF EXISTS "Managers can update activities" ON public.bitrix24_activities; CREATE POLICY "Managers can update activities" ON public.bitrix24_activities AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $bitrix24acttag$;
+DO $bitrix24stagmaptag$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_stage_mappings') THEN
+    DROP POLICY IF EXISTS "Admins can delete stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Admins can delete stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
+    DROP POLICY IF EXISTS "Managers can insert stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Managers can insert stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+    DROP POLICY IF EXISTS "Managers can update stage mappings" ON public.bitrix24_stage_mappings; CREATE POLICY "Managers can update stage mappings" ON public.bitrix24_stage_mappings AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $bitrix24stagmaptag$;
+DO $bitrix24toktag$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_tokens') THEN
+    DROP POLICY IF EXISTS "Admins can delete tokens" ON public.bitrix24_tokens; CREATE POLICY "Admins can delete tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Admins can insert tokens" ON public.bitrix24_tokens; CREATE POLICY "Admins can insert tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Admins can update tokens" ON public.bitrix24_tokens; CREATE POLICY "Admins can update tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR UPDATE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Only admins can view tokens" ON public.bitrix24_tokens; CREATE POLICY "Only admins can view tokens" ON public.bitrix24_tokens AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $bitrix24toktag$;
 DROP POLICY IF EXISTS bitrix_field_mappings_empresa_select ON public.bitrix_field_mappings; CREATE POLICY bitrix_field_mappings_empresa_select ON public.bitrix_field_mappings AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM user_empresas
   WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
