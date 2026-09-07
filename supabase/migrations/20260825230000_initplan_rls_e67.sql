@@ -113,10 +113,15 @@ DROP POLICY IF EXISTS anomalias_detectadas_empresa_select ON public.anomalias_de
 DROP POLICY IF EXISTS anomalias_detectadas_tenant_rw ON public.anomalias_detectadas; CREATE POLICY anomalias_detectadas_tenant_rw ON public.anomalias_detectadas AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
 DROP POLICY IF EXISTS api_keys_delete ON public.api_keys; CREATE POLICY api_keys_delete ON public.api_keys AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
 DROP POLICY IF EXISTS api_keys_select ON public.api_keys; CREATE POLICY api_keys_select ON public.api_keys AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS "Users can insert their own comments" ON public.aprovacao_comentarios; CREATE POLICY "Users can insert their own comments" ON public.aprovacao_comentarios AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS aprovacao_comentarios_owner_select ON public.aprovacao_comentarios; CREATE POLICY aprovacao_comentarios_owner_select ON public.aprovacao_comentarios AS PERMISSIVE FOR SELECT TO authenticated USING (((solicitacao_id IN ( SELECT solicitacoes_aprovacao.id
+DO $aprcmttag$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='aprovacao_comentarios' AND column_name='user_id') THEN
+    DROP POLICY IF EXISTS "Users can insert their own comments" ON public.aprovacao_comentarios; CREATE POLICY "Users can insert their own comments" ON public.aprovacao_comentarios AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
+    DROP POLICY IF EXISTS aprovacao_comentarios_owner_select ON public.aprovacao_comentarios; CREATE POLICY aprovacao_comentarios_owner_select ON public.aprovacao_comentarios AS PERMISSIVE FOR SELECT TO authenticated USING (((solicitacao_id IN ( SELECT solicitacoes_aprovacao.id
    FROM solicitacoes_aprovacao
   WHERE ((solicitacoes_aprovacao.solicitado_por = (SELECT auth.uid())) OR (solicitacoes_aprovacao.aprovado_por = (SELECT auth.uid()))))) OR (user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $aprcmttag$;
 DROP POLICY IF EXISTS "Empresa-based access" ON public.apuracoes_irpj_csll; CREATE POLICY "Empresa-based access" ON public.apuracoes_irpj_csll AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM user_empresas
   WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
