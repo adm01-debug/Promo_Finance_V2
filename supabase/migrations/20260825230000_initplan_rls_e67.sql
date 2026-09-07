@@ -205,11 +205,24 @@ DO $audlogsdfttag$ BEGIN
   END IF;
 EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
 END $audlogsdfttag$;
-DROP POLICY IF EXISTS auditoria_financeira_empresa_select ON public.auditoria_financeira; CREATE POLICY auditoria_financeira_empresa_select ON public.auditoria_financeira AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS auditoria_user_insert ON public.auditoria_financeira; CREATE POLICY auditoria_user_insert ON public.auditoria_financeira AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS auditoria_trib_select_tenant ON public.auditoria_tributaria; CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $audfinemprtag$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='auditoria_financeira' AND column_name='empresa_id') THEN
+    DROP POLICY IF EXISTS auditoria_financeira_empresa_select ON public.auditoria_financeira; CREATE POLICY auditoria_financeira_empresa_select ON public.auditoria_financeira AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $audfinemprtag$;
+DO $audfinusrtag$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='auditoria_financeira' AND column_name='user_id') THEN
+    DROP POLICY IF EXISTS auditoria_user_insert ON public.auditoria_financeira; CREATE POLICY auditoria_user_insert ON public.auditoria_financeira AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $audfinusrtag$;
+DO $audtribemprtag$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='auditoria_tributaria' AND column_name='empresa_id') THEN
+    DROP POLICY IF EXISTS auditoria_trib_select_tenant ON public.auditoria_tributaria; CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $audtribemprtag$;
 DROP POLICY IF EXISTS "Admins can view all auth logs" ON public.auth_logs; CREATE POLICY "Admins can view all auth logs" ON public.auth_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Authenticated can insert auth logs" ON public.auth_logs; CREATE POLICY "Authenticated can insert auth logs" ON public.auth_logs AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role) OR has_role((SELECT auth.uid()), 'visualizador'::app_role)));
 DROP POLICY IF EXISTS "Users can view own auth logs" ON public.auth_logs; CREATE POLICY "Users can view own auth logs" ON public.auth_logs AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
