@@ -5268,7 +5268,19 @@ DO $tr83$ BEGIN
 EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
 END $tr83$;
 
-CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();
+DO $ctr0$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='partidas_contabeis') THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_trigger t
+      JOIN pg_class c ON c.oid = t.tgrelid
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relname = 'partidas_contabeis' AND t.tgname = 'trg_validar_partidas_dobradas'
+    ) THEN
+      EXECUTE $ctr0q$CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();$ctr0q$;
+    END IF;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $ctr0$;
 
 DO $prt_trg$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='password_reset_tokens') THEN
