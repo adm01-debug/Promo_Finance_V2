@@ -14,6 +14,7 @@ END $c1cnae$;
 -- ── C2: faixas_simples — corrigir função + add NOT VALID ─────────────
 -- Bug fn: chaves UPPERCASE + soma esperada 1.00; dados têm lowercase+100.00
 -- Dois formatos históricos coexistem; 14 linhas UPPERCASE genuinamente inválidas
+DROP FUNCTION IF EXISTS public.faixa_simples_reparticao_valida(jsonb);
 CREATE OR REPLACE FUNCTION public.faixa_simples_reparticao_valida(p_reparticao jsonb)
 RETURNS boolean LANGUAGE sql IMMUTABLE
 SECURITY INVOKER SET search_path = public, pg_catalog
