@@ -18,7 +18,7 @@ export function StartupDiagnostic({ children }: { children: ReactNode }) {
       {children}
       <aside
         aria-live="polite"
-        className="fixed bottom-4 right-4 z-50 max-w-sm rounded-lg border border-destructive/30 bg-background/95 p-4 shadow-lg backdrop-blur"
+        className="pointer-events-none fixed right-4 top-4 z-50 max-w-sm rounded-lg border border-destructive/30 bg-background/95 p-4 shadow-lg backdrop-blur"
       >
         <div className="flex items-start gap-3">
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
@@ -27,7 +27,7 @@ export function StartupDiagnostic({ children }: { children: ReactNode }) {
             <p className="text-xs text-muted-foreground">
               O sistema continua disponível. Algumas verificações serão repetidas em segundo plano.
             </p>
-            <Button variant="outline" size="sm" onClick={retry}>
+            <Button className="pointer-events-auto" variant="outline" size="sm" onClick={retry}>
               <RefreshCcw className="mr-2 h-3.5 w-3.5" />
               Tentar novamente
             </Button>

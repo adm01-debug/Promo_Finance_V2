@@ -12,9 +12,10 @@ import { readSloFailure, type SloFailureSnapshot } from '@/lib/sso-slo-state';
 
 // Validation schemas
 const emailSchema = z.string().email('Email inválido');
-const passwordSchema = z
+const loginPasswordSchema = z
   .string()
-  .min(8, 'Senha deve ter no mínimo 8 caracteres')
+  .min(8, 'Senha deve ter no mínimo 8 caracteres');
+const registrationPasswordSchema = loginPasswordSchema
   .regex(/[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/~`]/, 'Senha deve conter caractere especial');
 
 const containerVariants = {
@@ -150,7 +151,7 @@ export function useAuthPage() {
       }
 
       try {
-        passwordSchema.parse(password);
+        (isSignUp ? registrationPasswordSchema : loginPasswordSchema).parse(password);
       } catch (error: unknown) {
         if (error instanceof z.ZodError) {
           newErrors.password = error.errors[0].message;

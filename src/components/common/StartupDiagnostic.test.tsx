@@ -20,7 +20,11 @@ describe('StartupDiagnostic', () => {
     render(<StartupDiagnostic><main>Login disponível</main></StartupDiagnostic>);
 
     expect(screen.getByText('Login disponível')).toBeInTheDocument();
-    expect(screen.getByText('Diagnóstico indisponível')).toBeInTheDocument();
+    const aviso = screen.getByText('Diagnóstico indisponível').closest('aside');
+    expect(aviso).toHaveClass('pointer-events-none');
+    expect(screen.getByRole('button', { name: 'Tentar novamente' })).toHaveClass(
+      'pointer-events-auto'
+    );
   });
 
   it('mantém a tela da aplicação disponível durante a verificação', () => {
