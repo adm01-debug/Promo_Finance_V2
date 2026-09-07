@@ -63,8 +63,6 @@ BEGIN
     ('contas_receber', 'valor_recebido', 'numeric'),
     ('contas_receber', 'transacao_conciliada_id', 'uuid'),
     ('contas_receber', 'updated_at', 'timestamptz'),
-    ('cron_job_logs', 'success', 'bool'),
-    ('cron_job_logs', 'created_at', 'timestamptz'),
     ('frontend_error_alert_state', 'assinatura', 'text'),
     ('index_usage_snapshots', 'snapshot_date', 'date'),
     ('index_usage_snapshots', 'schema_name', 'text'),
