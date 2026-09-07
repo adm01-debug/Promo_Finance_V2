@@ -4666,127 +4666,432 @@ $$;
 
 -- SECAO 2: Triggers ausentes (151)
 
-CREATE OR REPLACE TRIGGER set_updated_at_d9c737e24ed42de7266f BEFORE UPDATE ON public.acordos_parcelamento FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr0$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='acordos_parcelamento') THEN
+    EXECUTE $tr0q$CREATE OR REPLACE TRIGGER set_updated_at_d9c737e24ed42de7266f BEFORE UPDATE ON public.acordos_parcelamento FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr0q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr0$;
 
-CREATE OR REPLACE TRIGGER trg_alert_configurations_set_empresa BEFORE INSERT ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+DO $tr1$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    EXECUTE $tr1q$CREATE OR REPLACE TRIGGER trg_alert_configurations_set_empresa BEFORE INSERT ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();$tr1q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr1$;
 
-CREATE OR REPLACE TRIGGER trg_audit_alert_configurations AFTER INSERT OR DELETE OR UPDATE ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr2$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    EXECUTE $tr2q$CREATE OR REPLACE TRIGGER trg_audit_alert_configurations AFTER INSERT OR DELETE OR UPDATE ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr2q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr2$;
 
-CREATE OR REPLACE TRIGGER update_alert_config_updated_at BEFORE UPDATE ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr3$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    EXECUTE $tr3q$CREATE OR REPLACE TRIGGER update_alert_config_updated_at BEFORE UPDATE ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr3q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr3$;
 
-CREATE OR REPLACE TRIGGER trg_alertas_set_empresa BEFORE INSERT ON public.alertas FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+DO $tr4$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas') THEN
+    EXECUTE $tr4q$CREATE OR REPLACE TRIGGER trg_alertas_set_empresa BEFORE INSERT ON public.alertas FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();$tr4q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr4$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_fb6d54b516a66b2b99f3 BEFORE UPDATE ON public.alertas_preditivos FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr5$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alertas_preditivos') THEN
+    EXECUTE $tr5q$CREATE OR REPLACE TRIGGER set_updated_at_fb6d54b516a66b2b99f3 BEFORE UPDATE ON public.alertas_preditivos FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr5q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr5$;
 
-CREATE OR REPLACE TRIGGER trg_alerts_set_empresa BEFORE INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+DO $tr6$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alerts') THEN
+    EXECUTE $tr6q$CREATE OR REPLACE TRIGGER trg_alerts_set_empresa BEFORE INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();$tr6q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr6$;
 
-CREATE OR REPLACE TRIGGER trg_aliq_inter_updated_at BEFORE UPDATE ON public.aliquotas_interestaduais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr7$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_interestaduais') THEN
+    EXECUTE $tr7q$CREATE OR REPLACE TRIGGER trg_aliq_inter_updated_at BEFORE UPDATE ON public.aliquotas_interestaduais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr7q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr7$;
 
-CREATE OR REPLACE TRIGGER trg_aliq_internas_updated_at BEFORE UPDATE ON public.aliquotas_internas_uf FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr8$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_internas_uf') THEN
+    EXECUTE $tr8q$CREATE OR REPLACE TRIGGER trg_aliq_internas_updated_at BEFORE UPDATE ON public.aliquotas_internas_uf FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr8q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr8$;
 
-CREATE OR REPLACE TRIGGER trg_aliq_iss_updated_at BEFORE UPDATE ON public.aliquotas_iss_municipal FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr9$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='aliquotas_iss_municipal') THEN
+    EXECUTE $tr9q$CREATE OR REPLACE TRIGGER trg_aliq_iss_updated_at BEFORE UPDATE ON public.aliquotas_iss_municipal FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr9q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr9$;
 
-CREATE OR REPLACE TRIGGER trg_audit_allowed_countries AFTER INSERT OR DELETE OR UPDATE ON public.allowed_countries FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr10$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='allowed_countries') THEN
+    EXECUTE $tr10q$CREATE OR REPLACE TRIGGER trg_audit_allowed_countries AFTER INSERT OR DELETE OR UPDATE ON public.allowed_countries FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr10q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr10$;
 
-CREATE OR REPLACE TRIGGER trg_audit_allowed_ips AFTER INSERT OR DELETE OR UPDATE ON public.allowed_ips FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr11$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='allowed_ips') THEN
+    EXECUTE $tr11q$CREATE OR REPLACE TRIGGER trg_audit_allowed_ips AFTER INSERT OR DELETE OR UPDATE ON public.allowed_ips FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr11q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr11$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_f7bd4a317caf2651584f BEFORE UPDATE ON public.anomalias_detectadas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr12$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='anomalias_detectadas') THEN
+    EXECUTE $tr12q$CREATE OR REPLACE TRIGGER set_updated_at_f7bd4a317caf2651584f BEFORE UPDATE ON public.anomalias_detectadas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr12q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr12$;
 
-CREATE OR REPLACE TRIGGER trg_api_keys_updated_at BEFORE UPDATE ON public.api_keys FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr13$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='api_keys') THEN
+    EXECUTE $tr13q$CREATE OR REPLACE TRIGGER trg_api_keys_updated_at BEFORE UPDATE ON public.api_keys FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr13q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr13$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_414e25aed7d9071a4748 BEFORE UPDATE ON public.apuracoes_tributarias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr14$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='apuracoes_tributarias') THEN
+    EXECUTE $tr14q$CREATE OR REPLACE TRIGGER set_updated_at_414e25aed7d9071a4748 BEFORE UPDATE ON public.apuracoes_tributarias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr14q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr14$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_c9b96759e48801387f71 BEFORE UPDATE ON public.asaas_config FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr15$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_config') THEN
+    EXECUTE $tr15q$CREATE OR REPLACE TRIGGER set_updated_at_c9b96759e48801387f71 BEFORE UPDATE ON public.asaas_config FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr15q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr15$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_9d8cee55d8b7c2070327 BEFORE UPDATE ON public.asaas_customers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr16$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_customers') THEN
+    EXECUTE $tr16q$CREATE OR REPLACE TRIGGER set_updated_at_9d8cee55d8b7c2070327 BEFORE UPDATE ON public.asaas_customers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr16q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr16$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_60e90ad3dec9516f2ca9 BEFORE UPDATE ON public.asaas_payments FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr17$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_payments') THEN
+    EXECUTE $tr17q$CREATE OR REPLACE TRIGGER set_updated_at_60e90ad3dec9516f2ca9 BEFORE UPDATE ON public.asaas_payments FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr17q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr17$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_4efff01553ff16302e45 BEFORE UPDATE ON public.asaas_reconciliation_suggestions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr18$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_reconciliation_suggestions') THEN
+    EXECUTE $tr18q$CREATE OR REPLACE TRIGGER set_updated_at_4efff01553ff16302e45 BEFORE UPDATE ON public.asaas_reconciliation_suggestions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr18q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr18$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_358c32867d1f3b611c3b BEFORE UPDATE ON public.asaas_sync_queue FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr19$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_sync_queue') THEN
+    EXECUTE $tr19q$CREATE OR REPLACE TRIGGER set_updated_at_358c32867d1f3b611c3b BEFORE UPDATE ON public.asaas_sync_queue FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr19q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr19$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_750f942dec954ad99332 BEFORE UPDATE ON public.asaas_transfers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr20$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='asaas_transfers') THEN
+    EXECUTE $tr20q$CREATE OR REPLACE TRIGGER set_updated_at_750f942dec954ad99332 BEFORE UPDATE ON public.asaas_transfers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr20q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr20$;
 
-CREATE OR REPLACE TRIGGER sanitize_auth_log_metadata_trigger BEFORE INSERT ON public.auth_logs FOR EACH ROW EXECUTE FUNCTION public.sanitize_auth_log_metadata();
+DO $tr21$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auth_logs') THEN
+    EXECUTE $tr21q$CREATE OR REPLACE TRIGGER sanitize_auth_log_metadata_trigger BEFORE INSERT ON public.auth_logs FOR EACH ROW EXECUTE FUNCTION public.sanitize_auth_log_metadata();$tr21q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr21$;
 
-CREATE OR REPLACE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr22$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='benchmarks_setoriais') THEN
+    EXECUTE $tr22q$CREATE OR REPLACE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr22q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr22$;
 
-CREATE OR REPLACE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr23$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='beneficios_fiscais') THEN
+    EXECUTE $tr23q$CREATE OR REPLACE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr23q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr23$;
 
-CREATE OR REPLACE TRIGGER update_bitrix24_tokens_updated_at BEFORE UPDATE ON public.bitrix24_tokens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr24$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix24_tokens') THEN
+    EXECUTE $tr24q$CREATE OR REPLACE TRIGGER update_bitrix24_tokens_updated_at BEFORE UPDATE ON public.bitrix24_tokens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr24q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr24$;
 
-CREATE OR REPLACE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr25$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bitrix_oauth_tokens') THEN
+    EXECUTE $tr25q$CREATE OR REPLACE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr25q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr25$;
 
-CREATE OR REPLACE TRIGGER trg_bling_tokens_updated_at BEFORE UPDATE ON public.bling_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr26$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='bling_tokens') THEN
+    EXECUTE $tr26q$CREATE OR REPLACE TRIGGER trg_bling_tokens_updated_at BEFORE UPDATE ON public.bling_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr26q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr26$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_6ccc02b67895ed316b66 BEFORE UPDATE ON public.boletos FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr27$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='boletos') THEN
+    EXECUTE $tr27q$CREATE OR REPLACE TRIGGER set_updated_at_6ccc02b67895ed316b66 BEFORE UPDATE ON public.boletos FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr27q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr27$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_b7d9e68ed31698bcfe97 BEFORE UPDATE ON public.budgets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr28$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='budgets') THEN
+    EXECUTE $tr28q$CREATE OR REPLACE TRIGGER set_updated_at_b7d9e68ed31698bcfe97 BEFORE UPDATE ON public.budgets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr28q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr28$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.catalogos_fiscais_cargas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr29$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='catalogos_fiscais_cargas') THEN
+    EXECUTE $tr29q$CREATE OR REPLACE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.catalogos_fiscais_cargas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr29q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr29$;
 
-CREATE OR REPLACE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.catalogos_tributarios_health_history FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr30$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='catalogos_tributarios_health_history') THEN
+    EXECUTE $tr30q$CREATE OR REPLACE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.catalogos_tributarios_health_history FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr30q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr30$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_18e8b04fb0e329ecb61f BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr31$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='categorias') THEN
+    EXECUTE $tr31q$CREATE OR REPLACE TRIGGER set_updated_at_18e8b04fb0e329ecb61f BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr31q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr31$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_0d5cf71cba5e923b906a BEFORE UPDATE ON public.centros_custo FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr32$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='centros_custo') THEN
+    EXECUTE $tr32q$CREATE OR REPLACE TRIGGER set_updated_at_0d5cf71cba5e923b906a BEFORE UPDATE ON public.centros_custo FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr32q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr32$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_0670acdde4e1e38b5669 BEFORE UPDATE ON public.clientes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr33$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='clientes') THEN
+    EXECUTE $tr33q$CREATE OR REPLACE TRIGGER set_updated_at_0670acdde4e1e38b5669 BEFORE UPDATE ON public.clientes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr33q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr33$;
 
-CREATE OR REPLACE TRIGGER trg_cnaes_updated_at BEFORE UPDATE ON public.cnaes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr34$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cnaes') THEN
+    EXECUTE $tr34q$CREATE OR REPLACE TRIGGER trg_cnaes_updated_at BEFORE UPDATE ON public.cnaes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr34q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr34$;
 
-CREATE OR REPLACE TRIGGER trg_cnpja_cache_updated_at BEFORE UPDATE ON public.cnpja_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr35$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cnpja_cache') THEN
+    EXECUTE $tr35q$CREATE OR REPLACE TRIGGER trg_cnpja_cache_updated_at BEFORE UPDATE ON public.cnpja_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr35q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr35$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_3a25b26abdf52bd44121 BEFORE UPDATE ON public.configuracoes_aprovacao FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr36$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='configuracoes_aprovacao') THEN
+    EXECUTE $tr36q$CREATE OR REPLACE TRIGGER set_updated_at_3a25b26abdf52bd44121 BEFORE UPDATE ON public.configuracoes_aprovacao FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr36q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr36$;
 
-CREATE OR REPLACE TRIGGER trg_conformidade_snapshots_updated_at BEFORE UPDATE ON public.conformidade_snapshots FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr37$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='conformidade_snapshots') THEN
+    EXECUTE $tr37q$CREATE OR REPLACE TRIGGER trg_conformidade_snapshots_updated_at BEFORE UPDATE ON public.conformidade_snapshots FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr37q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr37$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_e4fd639d8315ad49b4d1 BEFORE UPDATE ON public.contas_bancarias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr38$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_bancarias') THEN
+    EXECUTE $tr38q$CREATE OR REPLACE TRIGGER set_updated_at_e4fd639d8315ad49b4d1 BEFORE UPDATE ON public.contas_bancarias FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr38q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr38$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_891eba3b06036ba9ea7e BEFORE UPDATE ON public.contas_pagar FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr39$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_pagar') THEN
+    EXECUTE $tr39q$CREATE OR REPLACE TRIGGER set_updated_at_891eba3b06036ba9ea7e BEFORE UPDATE ON public.contas_pagar FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr39q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr39$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_f4f31d38308fe5dff30a BEFORE UPDATE ON public.contas_receber FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr40$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='contas_receber') THEN
+    EXECUTE $tr40q$CREATE OR REPLACE TRIGGER set_updated_at_f4f31d38308fe5dff30a BEFORE UPDATE ON public.contas_receber FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr40q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr40$;
 
-CREATE OR REPLACE TRIGGER trg_convites_contador_updated_at BEFORE UPDATE ON public.convites_contador FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr41$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='convites_contador') THEN
+    EXECUTE $tr41q$CREATE OR REPLACE TRIGGER trg_convites_contador_updated_at BEFORE UPDATE ON public.convites_contador FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr41q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr41$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_0c7ce82e1f5cca97d953 BEFORE UPDATE ON public.custom_field_definitions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr42$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='custom_field_definitions') THEN
+    EXECUTE $tr42q$CREATE OR REPLACE TRIGGER set_updated_at_0c7ce82e1f5cca97d953 BEFORE UPDATE ON public.custom_field_definitions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr42q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr42$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_fb9bfe686d34f4bee9a0 BEFORE UPDATE ON public.custom_field_values FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr43$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='custom_field_values') THEN
+    EXECUTE $tr43q$CREATE OR REPLACE TRIGGER set_updated_at_fb9bfe686d34f4bee9a0 BEFORE UPDATE ON public.custom_field_values FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr43q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr43$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_408bdc8fafbc18b00290 BEFORE UPDATE ON public.darfs FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr44$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='darfs') THEN
+    EXECUTE $tr44q$CREATE OR REPLACE TRIGGER set_updated_at_408bdc8fafbc18b00290 BEFORE UPDATE ON public.darfs FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr44q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr44$;
 
-CREATE OR REPLACE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr45$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_alertas') THEN
+    EXECUTE $tr45q$CREATE OR REPLACE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr45q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr45$;
 
-CREATE OR REPLACE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr46$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_creditos_auditoria') THEN
+    EXECUTE $tr46q$CREATE OR REPLACE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr46q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr46$;
 
-CREATE OR REPLACE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr47$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_regras_creditos') THEN
+    EXECUTE $tr47q$CREATE OR REPLACE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr47q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr47$;
 
-CREATE OR REPLACE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr48$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_simulacoes_regime') THEN
+    EXECUTE $tr48q$CREATE OR REPLACE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr48q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr48$;
 
-CREATE OR REPLACE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr49$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='elisao_tarefas_acionaveis') THEN
+    EXECUTE $tr49q$CREATE OR REPLACE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr49q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr49$;
 
-CREATE OR REPLACE TRIGGER trg_empresas_unica_padrao BEFORE INSERT OR UPDATE OF is_padrao, ativo ON public.empresas FOR EACH ROW EXECUTE FUNCTION public.empresas_unica_padrao();
+DO $tr50$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas') THEN
+    EXECUTE $tr50q$CREATE OR REPLACE TRIGGER trg_empresas_unica_padrao BEFORE INSERT OR UPDATE OF is_padrao, ativo ON public.empresas FOR EACH ROW EXECUTE FUNCTION public.empresas_unica_padrao();$tr50q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr50$;
 
-CREATE OR REPLACE TRIGGER trg_emp_cert_updated BEFORE UPDATE ON public.empresas_certificados FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();
+DO $tr51$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='empresas_certificados') THEN
+    EXECUTE $tr51q$CREATE OR REPLACE TRIGGER trg_emp_cert_updated BEFORE UPDATE ON public.empresas_certificados FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();$tr51q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr51$;
 
-CREATE OR REPLACE TRIGGER trg_entregas_obrigacoes_updated_at BEFORE UPDATE ON public.entregas_obrigacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr52$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='entregas_obrigacoes') THEN
+    EXECUTE $tr52q$CREATE OR REPLACE TRIGGER trg_entregas_obrigacoes_updated_at BEFORE UPDATE ON public.entregas_obrigacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr52q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr52$;
 
-CREATE OR REPLACE TRIGGER trg_estrategias_updated_at BEFORE UPDATE ON public.estrategias_elisao FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr53$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='estrategias_elisao') THEN
+    EXECUTE $tr53q$CREATE OR REPLACE TRIGGER trg_estrategias_updated_at BEFORE UPDATE ON public.estrategias_elisao FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr53q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr53$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_a78c869af115da2c0dbe BEFORE UPDATE ON public.expert_conversations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr54$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='expert_conversations') THEN
+    EXECUTE $tr54q$CREATE OR REPLACE TRIGGER set_updated_at_a78c869af115da2c0dbe BEFORE UPDATE ON public.expert_conversations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr54q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr54$;
 
-CREATE OR REPLACE TRIGGER trg_faixas_simples_updated_at BEFORE UPDATE ON public.faixas_simples_nacional FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr55$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='faixas_simples_nacional') THEN
+    EXECUTE $tr55q$CREATE OR REPLACE TRIGGER trg_faixas_simples_updated_at BEFORE UPDATE ON public.faixas_simples_nacional FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr55q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr55$;
 
-CREATE OR REPLACE TRIGGER trg_fechamentos_updated_at BEFORE UPDATE ON public.fechamentos_tributarios FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr56$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fechamentos_tributarios') THEN
+    EXECUTE $tr56q$CREATE OR REPLACE TRIGGER trg_fechamentos_updated_at BEFORE UPDATE ON public.fechamentos_tributarios FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr56q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr56$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_24d30bafb2eecf05024f BEFORE UPDATE ON public.fila_cobrancas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr57$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fila_cobrancas') THEN
+    EXECUTE $tr57q$CREATE OR REPLACE TRIGGER set_updated_at_24d30bafb2eecf05024f BEFORE UPDATE ON public.fila_cobrancas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr57q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr57$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_d05a1e8f4af4f67d1bb5 BEFORE UPDATE ON public.fornecedores FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr58$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='fornecedores') THEN
+    EXECUTE $tr58q$CREATE OR REPLACE TRIGGER set_updated_at_d05a1e8f4af4f67d1bb5 BEFORE UPDATE ON public.fornecedores FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr58q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr58$;
 
-CREATE OR REPLACE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr59$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_alert_state') THEN
+    EXECUTE $tr59q$CREATE OR REPLACE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr59q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr59$;
 
-CREATE OR REPLACE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();
+DO $tr60$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='frontend_error_logs') THEN
+    EXECUTE $tr60q$CREATE OR REPLACE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();$tr60q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr60$;
 
 DO $geo_trg$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='geo_blocks') THEN
@@ -4795,13 +5100,33 @@ DO $geo_trg$ BEGIN
   END IF;
 END $geo_trg$;
 
-CREATE OR REPLACE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr61$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='glossario_tributario') THEN
+    EXECUTE $tr61q$CREATE OR REPLACE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr61q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr61$;
 
-CREATE OR REPLACE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr62$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='incentivos_fiscais') THEN
+    EXECUTE $tr62q$CREATE OR REPLACE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr62q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr62$;
 
-CREATE OR REPLACE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON public.integration_secrets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr63$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='integration_secrets') THEN
+    EXECUTE $tr63q$CREATE OR REPLACE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON public.integration_secrets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr63q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr63$;
 
-CREATE OR REPLACE TRIGGER trg_integrity_alerts_updated_at BEFORE UPDATE ON public.integrity_alerts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr64$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='integrity_alerts') THEN
+    EXECUTE $tr64q$CREATE OR REPLACE TRIGGER trg_integrity_alerts_updated_at BEFORE UPDATE ON public.integrity_alerts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr64q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr64$;
 
 DO $ipwl_trg$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ip_whitelist') THEN
@@ -4810,43 +5135,138 @@ DO $ipwl_trg$ BEGIN
   END IF;
 END $ipwl_trg$;
 
-CREATE OR REPLACE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr65$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='itens_lista_iss') THEN
+    EXECUTE $tr65q$CREATE OR REPLACE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr65q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr65$;
 
-CREATE OR REPLACE TRIGGER trg_kpis_operacionais_updated_at BEFORE UPDATE ON public.kpis_operacionais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr66$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='kpis_operacionais') THEN
+    EXECUTE $tr66q$CREATE OR REPLACE TRIGGER trg_kpis_operacionais_updated_at BEFORE UPDATE ON public.kpis_operacionais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr66q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr66$;
 
-CREATE OR REPLACE TRIGGER trg_lancamento_contabil_before_insert BEFORE INSERT ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_insert();
+DO $tr67$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lancamentos_contabeis') THEN
+    EXECUTE $tr67q$CREATE OR REPLACE TRIGGER trg_lancamento_contabil_before_insert BEFORE INSERT ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_insert();$tr67q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr67$;
 
-CREATE OR REPLACE TRIGGER trg_lancamento_contabil_before_update BEFORE UPDATE ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_update();
+DO $tr68$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='lancamentos_contabeis') THEN
+    EXECUTE $tr68q$CREATE OR REPLACE TRIGGER trg_lancamento_contabil_before_update BEFORE UPDATE ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_update();$tr68q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr68$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_d7d66ed0673bb8a6cd90 BEFORE UPDATE ON public.logs_conciliacao_retroativa FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr69$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='logs_conciliacao_retroativa') THEN
+    EXECUTE $tr69q$CREATE OR REPLACE TRIGGER set_updated_at_d7d66ed0673bb8a6cd90 BEFORE UPDATE ON public.logs_conciliacao_retroativa FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr69q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr69$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_metas BEFORE UPDATE ON public.metas_financeiras FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr70$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='metas_financeiras') THEN
+    EXECUTE $tr70q$CREATE OR REPLACE TRIGGER set_updated_at_metas BEFORE UPDATE ON public.metas_financeiras FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr70q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr70$;
 
-CREATE OR REPLACE TRIGGER trg_n8n_cfg_updated BEFORE UPDATE ON public.n8n_workflow_configs FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr71$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='n8n_workflow_configs') THEN
+    EXECUTE $tr71q$CREATE OR REPLACE TRIGGER trg_n8n_cfg_updated BEFORE UPDATE ON public.n8n_workflow_configs FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr71q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr71$;
 
-CREATE OR REPLACE TRIGGER trg_ncms_updated_at BEFORE UPDATE ON public.ncms FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr72$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ncms') THEN
+    EXECUTE $tr72q$CREATE OR REPLACE TRIGGER trg_ncms_updated_at BEFORE UPDATE ON public.ncms FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr72q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr72$;
 
-CREATE OR REPLACE TRIGGER trg_nfe_rec_updated BEFORE UPDATE ON public.nfe_recebidas FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();
+DO $tr73$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='nfe_recebidas') THEN
+    EXECUTE $tr73q$CREATE OR REPLACE TRIGGER trg_nfe_rec_updated BEFORE UPDATE ON public.nfe_recebidas FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();$tr73q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr73$;
 
-CREATE OR REPLACE TRIGGER trg_nfe_recebidas_updated_at BEFORE UPDATE ON public.nfe_recebidas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr74$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='nfe_recebidas') THEN
+    EXECUTE $tr74q$CREATE OR REPLACE TRIGGER trg_nfe_recebidas_updated_at BEFORE UPDATE ON public.nfe_recebidas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr74q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr74$;
 
-CREATE OR REPLACE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr75$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='notas_fiscais_ocr') THEN
+    EXECUTE $tr75q$CREATE OR REPLACE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr75q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr75$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_open_finance BEFORE UPDATE ON public.open_finance_consents FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr76$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='open_finance_consents') THEN
+    EXECUTE $tr76q$CREATE OR REPLACE TRIGGER set_updated_at_open_finance BEFORE UPDATE ON public.open_finance_consents FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr76q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr76$;
 
-CREATE OR REPLACE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_icms FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr77$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='operacoes_icms') THEN
+    EXECUTE $tr77q$CREATE OR REPLACE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_icms FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr77q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr77$;
 
-CREATE OR REPLACE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr78$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='oportunidades_elisao') THEN
+    EXECUTE $tr78q$CREATE OR REPLACE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr78q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr78$;
 
-CREATE OR REPLACE TRIGGER trg_org_membros_updated_at BEFORE UPDATE ON public.organizacao_membros FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr79$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacao_membros') THEN
+    EXECUTE $tr79q$CREATE OR REPLACE TRIGGER trg_org_membros_updated_at BEFORE UPDATE ON public.organizacao_membros FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr79q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr79$;
 
-CREATE OR REPLACE TRIGGER trg_organizacoes_updated_at BEFORE UPDATE ON public.organizacoes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr80$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='organizacoes') THEN
+    EXECUTE $tr80q$CREATE OR REPLACE TRIGGER trg_organizacoes_updated_at BEFORE UPDATE ON public.organizacoes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr80q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr80$;
 
-CREATE OR REPLACE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_rejeicoes_auditoria FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr81$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='overlay_rejeicoes_auditoria') THEN
+    EXECUTE $tr81q$CREATE OR REPLACE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_rejeicoes_auditoria FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr81q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr81$;
 
-CREATE OR REPLACE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.pagamentos_recorrentes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr82$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pagamentos_recorrentes') THEN
+    EXECUTE $tr82q$CREATE OR REPLACE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.pagamentos_recorrentes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr82q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr82$;
 
-CREATE OR REPLACE TRIGGER trg_normalizar_tipo_partida BEFORE INSERT OR UPDATE ON public.partidas_contabeis FOR EACH ROW EXECUTE FUNCTION public.normalizar_tipo_partida();
+DO $tr83$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='partidas_contabeis') THEN
+    EXECUTE $tr83q$CREATE OR REPLACE TRIGGER trg_normalizar_tipo_partida BEFORE INSERT OR UPDATE ON public.partidas_contabeis FOR EACH ROW EXECUTE FUNCTION public.normalizar_tipo_partida();$tr83q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr83$;
 
 CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();
 
@@ -4857,125 +5277,425 @@ DO $prt_trg$ BEGIN
   END IF;
 END $prt_trg$;
 
-CREATE OR REPLACE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr84$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='per_dcomp') THEN
+    EXECUTE $tr84q$CREATE OR REPLACE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr84q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr84$;
 
-CREATE OR REPLACE TRIGGER performance_alerts_notify_trigger AFTER INSERT ON public.performance_alerts FOR EACH ROW EXECUTE FUNCTION public.notify_performance_alert_trigger();
+DO $tr85$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='performance_alerts') THEN
+    EXECUTE $tr85q$CREATE OR REPLACE TRIGGER performance_alerts_notify_trigger AFTER INSERT ON public.performance_alerts FOR EACH ROW EXECUTE FUNCTION public.notify_performance_alert_trigger();$tr85q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr85$;
 
-CREATE OR REPLACE TRIGGER trg_audit_permissions AFTER INSERT OR DELETE OR UPDATE ON public.permissions FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr86$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='permissions') THEN
+    EXECUTE $tr86q$CREATE OR REPLACE TRIGGER trg_audit_permissions AFTER INSERT OR DELETE OR UPDATE ON public.permissions FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr86q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr86$;
 
-CREATE OR REPLACE TRIGGER trg_pix_template_sync_legacy BEFORE INSERT OR UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
+DO $tr87$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pix_templates') THEN
+    EXECUTE $tr87q$CREATE OR REPLACE TRIGGER trg_pix_template_sync_legacy BEFORE INSERT OR UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();$tr87q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr87$;
 
-CREATE OR REPLACE TRIGGER trg_pix_templates_updated_at BEFORE UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr88$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='pix_templates') THEN
+    EXECUTE $tr88q$CREATE OR REPLACE TRIGGER trg_pix_templates_updated_at BEFORE UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr88q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr88$;
 
-CREATE OR REPLACE TRIGGER trg_planos_acao_updated_at BEFORE UPDATE ON public.planos_acao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr89$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='planos_acao') THEN
+    EXECUTE $tr89q$CREATE OR REPLACE TRIGGER trg_planos_acao_updated_at BEFORE UPDATE ON public.planos_acao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr89q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr89$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_a3e34a0da7a4b2d1563e BEFORE UPDATE ON public.portal_cliente_tokens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr90$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='portal_cliente_tokens') THEN
+    EXECUTE $tr90q$CREATE OR REPLACE TRIGGER set_updated_at_a3e34a0da7a4b2d1563e BEFORE UPDATE ON public.portal_cliente_tokens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr90q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr90$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_d970728376beb1370578 BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr91$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
+    EXECUTE $tr91q$CREATE OR REPLACE TRIGGER set_updated_at_d970728376beb1370578 BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr91q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr91$;
 
-CREATE OR REPLACE TRIGGER trg_prevent_profile_privilege_escalation BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.prevent_profile_privilege_escalation();
+DO $tr92$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='profiles') THEN
+    EXECUTE $tr92q$CREATE OR REPLACE TRIGGER trg_prevent_profile_privilege_escalation BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.prevent_profile_privilege_escalation();$tr92q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr92$;
 
-CREATE OR REPLACE TRIGGER trg_proj_reforma_updated_at BEFORE UPDATE ON public.projecoes_reforma FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr93$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='projecoes_reforma') THEN
+    EXECUTE $tr93q$CREATE OR REPLACE TRIGGER trg_proj_reforma_updated_at BEFORE UPDATE ON public.projecoes_reforma FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr93q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr93$;
 
-CREATE OR REPLACE TRIGGER trg_protocolos_st_updated_at BEFORE UPDATE ON public.protocolos_st FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr94$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st') THEN
+    EXECUTE $tr94q$CREATE OR REPLACE TRIGGER trg_protocolos_st_updated_at BEFORE UPDATE ON public.protocolos_st FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr94q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr94$;
 
-CREATE OR REPLACE TRIGGER trg_protocolo_st_ncm_autolink BEFORE INSERT OR UPDATE OF ncm_codigo ON public.protocolos_st_ncms FOR EACH ROW EXECUTE FUNCTION public.protocolo_st_ncm_autolink();
+DO $tr95$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ncms') THEN
+    EXECUTE $tr95q$CREATE OR REPLACE TRIGGER trg_protocolo_st_ncm_autolink BEFORE INSERT OR UPDATE OF ncm_codigo ON public.protocolos_st_ncms FOR EACH ROW EXECUTE FUNCTION public.protocolo_st_ncm_autolink();$tr95q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr95$;
 
-CREATE OR REPLACE TRIGGER trg_protocolos_st_ncms_updated_at BEFORE UPDATE ON public.protocolos_st_ncms FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr96$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ncms') THEN
+    EXECUTE $tr96q$CREATE OR REPLACE TRIGGER trg_protocolos_st_ncms_updated_at BEFORE UPDATE ON public.protocolos_st_ncms FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr96q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr96$;
 
-CREATE OR REPLACE TRIGGER trg_protocolos_st_ufs_updated_at BEFORE UPDATE ON public.protocolos_st_ufs FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr97$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='protocolos_st_ufs') THEN
+    EXECUTE $tr97q$CREATE OR REPLACE TRIGGER trg_protocolos_st_ufs_updated_at BEFORE UPDATE ON public.protocolos_st_ufs FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr97q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr97$;
 
-CREATE OR REPLACE TRIGGER trg_push_subscriptions_updated_at BEFORE UPDATE ON public.push_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr98$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='push_subscriptions') THEN
+    EXECUTE $tr98q$CREATE OR REPLACE TRIGGER trg_push_subscriptions_updated_at BEFORE UPDATE ON public.push_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr98q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr98$;
 
-CREATE OR REPLACE TRIGGER trg_regime_cache_updated_at BEFORE UPDATE ON public.regime_decision_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr99$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regime_decision_cache') THEN
+    EXECUTE $tr99q$CREATE OR REPLACE TRIGGER trg_regime_cache_updated_at BEFORE UPDATE ON public.regime_decision_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr99q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr99$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_3f1eaae3a0a07aa516a5 BEFORE UPDATE ON public.regimes_simulados FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr100$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_simulados') THEN
+    EXECUTE $tr100q$CREATE OR REPLACE TRIGGER set_updated_at_3f1eaae3a0a07aa516a5 BEFORE UPDATE ON public.regimes_simulados FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr100q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr100$;
 
-CREATE OR REPLACE TRIGGER trg_sync_regime_empresa AFTER INSERT OR UPDATE ON public.regimes_tributarios FOR EACH ROW EXECUTE FUNCTION public.sync_regime_tributario_empresa();
+DO $tr101$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regimes_tributarios') THEN
+    EXECUTE $tr101q$CREATE OR REPLACE TRIGGER trg_sync_regime_empresa AFTER INSERT OR UPDATE ON public.regimes_tributarios FOR EACH ROW EXECUTE FUNCTION public.sync_regime_tributario_empresa();$tr101q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr101$;
 
-CREATE OR REPLACE TRIGGER trg_regras_contab_updated_at BEFORE UPDATE ON public.regras_contabilizacao_automatica FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr102$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_contabilizacao_automatica') THEN
+    EXECUTE $tr102q$CREATE OR REPLACE TRIGGER trg_regras_contab_updated_at BEFORE UPDATE ON public.regras_contabilizacao_automatica FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr102q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr102$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_411e7594aa600ded799f BEFORE UPDATE ON public.regras_roteamento_financeiro FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr103$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_roteamento_financeiro') THEN
+    EXECUTE $tr103q$CREATE OR REPLACE TRIGGER set_updated_at_411e7594aa600ded799f BEFORE UPDATE ON public.regras_roteamento_financeiro FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr103q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr103$;
 
-CREATE OR REPLACE TRIGGER trg_audit_regras_roteamento_financeiro AFTER INSERT OR DELETE OR UPDATE ON public.regras_roteamento_financeiro FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr104$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regras_roteamento_financeiro') THEN
+    EXECUTE $tr104q$CREATE OR REPLACE TRIGGER trg_audit_regras_roteamento_financeiro AFTER INSERT OR DELETE OR UPDATE ON public.regras_roteamento_financeiro FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr104q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr104$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_d109c735b0fcf7754280 BEFORE UPDATE ON public.regua_cobranca FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr105$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca') THEN
+    EXECUTE $tr105q$CREATE OR REPLACE TRIGGER set_updated_at_d109c735b0fcf7754280 BEFORE UPDATE ON public.regua_cobranca FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr105q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr105$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_7895f3de16aa8553d228 BEFORE UPDATE ON public.regua_cobranca_status FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr106$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='regua_cobranca_status') THEN
+    EXECUTE $tr106q$CREATE OR REPLACE TRIGGER set_updated_at_7895f3de16aa8553d228 BEFORE UPDATE ON public.regua_cobranca_status FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr106q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr106$;
 
-CREATE OR REPLACE TRIGGER trg_relat_agend_updated_at BEFORE UPDATE ON public.relatorios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr107$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='relatorios_agendados') THEN
+    EXECUTE $tr107q$CREATE OR REPLACE TRIGGER trg_relat_agend_updated_at BEFORE UPDATE ON public.relatorios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr107q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr107$;
 
-CREATE OR REPLACE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr108$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='relatorios_tributarios_agendados') THEN
+    EXECUTE $tr108q$CREATE OR REPLACE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr108q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr108$;
 
-CREATE OR REPLACE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr109$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='retencao_politicas') THEN
+    EXECUTE $tr109q$CREATE OR REPLACE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr109q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr109$;
 
-CREATE OR REPLACE TRIGGER trg_audit_risk_rules AFTER INSERT OR DELETE OR UPDATE ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr110$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
+    EXECUTE $tr110q$CREATE OR REPLACE TRIGGER trg_audit_risk_rules AFTER INSERT OR DELETE OR UPDATE ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr110q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr110$;
 
-CREATE OR REPLACE TRIGGER trg_risk_rules_set_empresa BEFORE INSERT ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+DO $tr111$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
+    EXECUTE $tr111q$CREATE OR REPLACE TRIGGER trg_risk_rules_set_empresa BEFORE INSERT ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();$tr111q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr111$;
 
-CREATE OR REPLACE TRIGGER update_risk_rules_updated_at BEFORE UPDATE ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr112$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
+    EXECUTE $tr112q$CREATE OR REPLACE TRIGGER update_risk_rules_updated_at BEFORE UPDATE ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr112q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr112$;
 
-CREATE OR REPLACE TRIGGER trg_audit_role_permissions AFTER INSERT OR DELETE OR UPDATE ON public.role_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr113$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='role_permissions') THEN
+    EXECUTE $tr113q$CREATE OR REPLACE TRIGGER trg_audit_role_permissions AFTER INSERT OR DELETE OR UPDATE ON public.role_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr113q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr113$;
 
-CREATE OR REPLACE TRIGGER trg_saved_filter_subs_updated_at BEFORE UPDATE ON public.saved_filter_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr114$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='saved_filter_subscriptions') THEN
+    EXECUTE $tr114q$CREATE OR REPLACE TRIGGER trg_saved_filter_subs_updated_at BEFORE UPDATE ON public.saved_filter_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr114q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr114$;
 
-CREATE OR REPLACE TRIGGER trg_saved_filters_updated_at BEFORE UPDATE ON public.saved_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr115$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='saved_filters') THEN
+    EXECUTE $tr115q$CREATE OR REPLACE TRIGGER trg_saved_filters_updated_at BEFORE UPDATE ON public.saved_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr115q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr115$;
 
-CREATE OR REPLACE TRIGGER trg_scim_checklist_updated_at BEFORE UPDATE ON public.scim_setup_checklist FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr116$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='scim_setup_checklist') THEN
+    EXECUTE $tr116q$CREATE OR REPLACE TRIGGER trg_scim_checklist_updated_at BEFORE UPDATE ON public.scim_setup_checklist FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr116q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr116$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_e04cfc68ebaf2388af42 BEFORE UPDATE ON public.security_settings FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr117$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_settings') THEN
+    EXECUTE $tr117q$CREATE OR REPLACE TRIGGER set_updated_at_e04cfc68ebaf2388af42 BEFORE UPDATE ON public.security_settings FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr117q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr117$;
 
-CREATE OR REPLACE TRIGGER trg_audit_security_settings AFTER INSERT OR DELETE OR UPDATE ON public.security_settings FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr118$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='security_settings') THEN
+    EXECUTE $tr118q$CREATE OR REPLACE TRIGGER trg_audit_security_settings AFTER INSERT OR DELETE OR UPDATE ON public.security_settings FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr118q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr118$;
 
-CREATE OR REPLACE TRIGGER trg_dfe_cursor_updated BEFORE UPDATE ON public.sefaz_dfe_cursor FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();
+DO $tr119$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sefaz_dfe_cursor') THEN
+    EXECUTE $tr119q$CREATE OR REPLACE TRIGGER trg_dfe_cursor_updated BEFORE UPDATE ON public.sefaz_dfe_cursor FOR EACH ROW EXECUTE FUNCTION public.tg_touch_updated_at();$tr119q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr119$;
 
-CREATE OR REPLACE TRIGGER trg_simulacoes_updated_at BEFORE UPDATE ON public.simulacoes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr120$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='simulacoes') THEN
+    EXECUTE $tr120q$CREATE OR REPLACE TRIGGER trg_simulacoes_updated_at BEFORE UPDATE ON public.simulacoes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr120q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr120$;
 
-CREATE OR REPLACE TRIGGER trg_solicitacoes_lgpd_set_empresa BEFORE INSERT ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+DO $tr121$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
+    EXECUTE $tr121q$CREATE OR REPLACE TRIGGER trg_solicitacoes_lgpd_set_empresa BEFORE INSERT ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();$tr121q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr121$;
 
-CREATE OR REPLACE TRIGGER trg_solicitacoes_lgpd_updated_at BEFORE UPDATE ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr122$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='solicitacoes_lgpd') THEN
+    EXECUTE $tr122q$CREATE OR REPLACE TRIGGER trg_solicitacoes_lgpd_updated_at BEFORE UPDATE ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr122q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr122$;
 
-CREATE OR REPLACE TRIGGER trg_sped_arquivos_updated_at BEFORE UPDATE ON public.sped_contabil_arquivos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr123$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sped_contabil_arquivos') THEN
+    EXECUTE $tr123q$CREATE OR REPLACE TRIGGER trg_sped_arquivos_updated_at BEFORE UPDATE ON public.sped_contabil_arquivos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr123q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr123$;
 
-CREATE OR REPLACE TRIGGER update_split_payment_transacoes_updated_at BEFORE UPDATE ON public.split_payment_transacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr124$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='split_payment_transacoes') THEN
+    EXECUTE $tr124q$CREATE OR REPLACE TRIGGER update_split_payment_transacoes_updated_at BEFORE UPDATE ON public.split_payment_transacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr124q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr124$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_cf7fd5d83c82e171dad1 BEFORE UPDATE ON public.sso_providers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr125$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_providers') THEN
+    EXECUTE $tr125q$CREATE OR REPLACE TRIGGER set_updated_at_cf7fd5d83c82e171dad1 BEFORE UPDATE ON public.sso_providers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr125q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr125$;
 
-CREATE OR REPLACE TRIGGER trg_audit_sso_providers AFTER INSERT OR DELETE OR UPDATE ON public.sso_providers FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr126$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_providers') THEN
+    EXECUTE $tr126q$CREATE OR REPLACE TRIGGER trg_audit_sso_providers AFTER INSERT OR DELETE OR UPDATE ON public.sso_providers FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr126q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr126$;
 
-CREATE OR REPLACE TRIGGER trg_sso_role_mappings_updated_at BEFORE UPDATE ON public.sso_role_mappings FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr127$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_role_mappings') THEN
+    EXECUTE $tr127q$CREATE OR REPLACE TRIGGER trg_sso_role_mappings_updated_at BEFORE UPDATE ON public.sso_role_mappings FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr127q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr127$;
 
-CREATE OR REPLACE TRIGGER trg_sso_user_groups_updated_at BEFORE UPDATE ON public.sso_user_groups FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr128$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='sso_user_groups') THEN
+    EXECUTE $tr128q$CREATE OR REPLACE TRIGGER trg_sso_user_groups_updated_at BEFORE UPDATE ON public.sso_user_groups FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr128q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr128$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_3e8011f6fa0d13424163 BEFORE UPDATE ON public.templates_cobranca FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr129$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='templates_cobranca') THEN
+    EXECUTE $tr129q$CREATE OR REPLACE TRIGGER set_updated_at_3e8011f6fa0d13424163 BEFORE UPDATE ON public.templates_cobranca FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr129q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr129$;
 
-CREATE OR REPLACE TRIGGER trg_ufs_updated_at BEFORE UPDATE ON public.ufs FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $tr130$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='ufs') THEN
+    EXECUTE $tr130q$CREATE OR REPLACE TRIGGER trg_ufs_updated_at BEFORE UPDATE ON public.ufs FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();$tr130q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr130$;
 
-CREATE OR REPLACE TRIGGER trg_user_active_filters_updated_at BEFORE UPDATE ON public.user_active_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr131$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_active_filters') THEN
+    EXECUTE $tr131q$CREATE OR REPLACE TRIGGER trg_user_active_filters_updated_at BEFORE UPDATE ON public.user_active_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr131q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr131$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_7c3e342523c10fdce4a8 BEFORE UPDATE ON public.user_anomalia_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr132$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_anomalia_preferences') THEN
+    EXECUTE $tr132q$CREATE OR REPLACE TRIGGER set_updated_at_7c3e342523c10fdce4a8 BEFORE UPDATE ON public.user_anomalia_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr132q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr132$;
 
-CREATE OR REPLACE TRIGGER tr_user_anomalia_preferences_updated_at BEFORE UPDATE ON public.user_anomalia_preferences FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr133$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_anomalia_preferences') THEN
+    EXECUTE $tr133q$CREATE OR REPLACE TRIGGER tr_user_anomalia_preferences_updated_at BEFORE UPDATE ON public.user_anomalia_preferences FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr133q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr133$;
 
-CREATE OR REPLACE TRIGGER update_user_demonstrativo_preferences_updated_at BEFORE UPDATE ON public.user_demonstrativo_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr134$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_demonstrativo_preferences') THEN
+    EXECUTE $tr134q$CREATE OR REPLACE TRIGGER update_user_demonstrativo_preferences_updated_at BEFORE UPDATE ON public.user_demonstrativo_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr134q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr134$;
 
-CREATE OR REPLACE TRIGGER tr_user_digest_preferences_updated_at BEFORE UPDATE ON public.user_digest_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr135$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_digest_preferences') THEN
+    EXECUTE $tr135q$CREATE OR REPLACE TRIGGER tr_user_digest_preferences_updated_at BEFORE UPDATE ON public.user_digest_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr135q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr135$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_09910d2394bcdefb9694 BEFORE UPDATE ON public.user_empresas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr136$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_empresas') THEN
+    EXECUTE $tr136q$CREATE OR REPLACE TRIGGER set_updated_at_09910d2394bcdefb9694 BEFORE UPDATE ON public.user_empresas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr136q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr136$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_94b77f57a764fd8b2a8c BEFORE UPDATE ON public.user_filter_presets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr137$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_filter_presets') THEN
+    EXECUTE $tr137q$CREATE OR REPLACE TRIGGER set_updated_at_94b77f57a764fd8b2a8c BEFORE UPDATE ON public.user_filter_presets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr137q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr137$;
 
-CREATE OR REPLACE TRIGGER set_updated_at_843738dbe839129b260e BEFORE UPDATE ON public.user_onboarding_progress FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr138$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_onboarding_progress') THEN
+    EXECUTE $tr138q$CREATE OR REPLACE TRIGGER set_updated_at_843738dbe839129b260e BEFORE UPDATE ON public.user_onboarding_progress FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr138q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr138$;
 
-CREATE OR REPLACE TRIGGER tr_user_onboarding_progress_updated_at BEFORE UPDATE ON public.user_onboarding_progress FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $tr139$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_onboarding_progress') THEN
+    EXECUTE $tr139q$CREATE OR REPLACE TRIGGER tr_user_onboarding_progress_updated_at BEFORE UPDATE ON public.user_onboarding_progress FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();$tr139q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr139$;
 
-CREATE OR REPLACE TRIGGER trg_audit_user_roles AFTER INSERT OR DELETE OR UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
+DO $tr140$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
+    EXECUTE $tr140q$CREATE OR REPLACE TRIGGER trg_audit_user_roles AFTER INSERT OR DELETE OR UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();$tr140q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr140$;
 
-CREATE OR REPLACE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.auto_vincular_empresa_padrao();
+DO $tr141$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
+    EXECUTE $tr141q$CREATE OR REPLACE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.auto_vincular_empresa_padrao();$tr141q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr141$;
 
-CREATE OR REPLACE TRIGGER update_user_roles_updated_at BEFORE UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr142$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
+    EXECUTE $tr142q$CREATE OR REPLACE TRIGGER update_user_roles_updated_at BEFORE UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr142q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr142$;
 
-CREATE OR REPLACE TRIGGER trg_webhook_dlq_updated BEFORE UPDATE ON public.webhook_dlq FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $tr143$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='webhook_dlq') THEN
+    EXECUTE $tr143q$CREATE OR REPLACE TRIGGER trg_webhook_dlq_updated BEFORE UPDATE ON public.webhook_dlq FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();$tr143q$;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_function THEN NULL;
+END $tr143$;
 
 -- SECAO 3: Policies ausentes (445)
 
