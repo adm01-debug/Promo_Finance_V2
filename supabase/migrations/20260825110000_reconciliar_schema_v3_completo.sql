@@ -4608,10 +4608,12 @@ BEGIN
 END;
 $$;
 
+DO $whl_ms$ BEGIN
+  EXECUTE $whl_msq$
 CREATE OR REPLACE FUNCTION public.webhook_mark_success(p_id uuid, p_response jsonb DEFAULT NULL::jsonb) RETURNS void
     LANGUAGE sql SECURITY DEFINER
     SET search_path TO 'public'
-    AS $$
+    AS $fn$
   UPDATE public.webhooks_log
      SET status        = 'success',
          processed_at  = now(),
@@ -4619,7 +4621,10 @@ CREATE OR REPLACE FUNCTION public.webhook_mark_success(p_id uuid, p_response jso
          error_message = NULL,
          next_retry_at = NULL
    WHERE id = p_id;
-$$;
+$fn$;
+  $whl_msq$;
+EXCEPTION WHEN undefined_column OR undefined_table THEN NULL;
+END $whl_ms$;
 
 CREATE OR REPLACE FUNCTION public.webhook_replay(p_id uuid) RETURNS public.webhooks_log
     LANGUAGE plpgsql SECURITY DEFINER
