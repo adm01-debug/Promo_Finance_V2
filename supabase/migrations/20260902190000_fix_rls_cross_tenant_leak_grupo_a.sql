@@ -261,12 +261,17 @@ DROP POLICY IF EXISTS "rel_trib_agend_admin_fin_select" ON public.relatorios_tri
 DROP POLICY IF EXISTS "Admins gerenciam resumos executivos" ON public.resumos_executivos_semanais;
 DROP POLICY IF EXISTS "Admin/financeiro visualiza resumos executivos" ON public.resumos_executivos_semanais;
 
--- risk_rules (5)
-DROP POLICY IF EXISTS "Admins can delete risk rules" ON public.risk_rules;
-DROP POLICY IF EXISTS "Authorized roles can view risk rules" ON public.risk_rules;
-DROP POLICY IF EXISTS "Managers can insert risk rules" ON public.risk_rules;
-DROP POLICY IF EXISTS "Managers can update risk rules" ON public.risk_rules;
-DROP POLICY IF EXISTS "Viewers can view risk rules" ON public.risk_rules;
+-- risk_rules (5) — wrapped: table absent in clean preview DB
+DO $rr2drop$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='risk_rules') THEN
+    DROP POLICY IF EXISTS "Admins can delete risk rules" ON public.risk_rules;
+    DROP POLICY IF EXISTS "Authorized roles can view risk rules" ON public.risk_rules;
+    DROP POLICY IF EXISTS "Managers can insert risk rules" ON public.risk_rules;
+    DROP POLICY IF EXISTS "Managers can update risk rules" ON public.risk_rules;
+    DROP POLICY IF EXISTS "Viewers can view risk rules" ON public.risk_rules;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $rr2drop$;
 
 -- solicitacoes_lgpd (2)
 DROP POLICY IF EXISTS "Usuários veem suas próprias solicitações" ON public.solicitacoes_lgpd;
