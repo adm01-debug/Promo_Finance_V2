@@ -12803,178 +12803,294 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_eventos_contab_sucesso ON public.eventos_co
 -- SECAO 5: Constraints ausentes (58)
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alert_configurations_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alert_configurations
-    ADD CONSTRAINT alert_configurations_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
+    ADD CONSTRAINT alert_configurations_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alertas_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alertas
-    ADD CONSTRAINT alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_driver_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
+    ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_order_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT alerts_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='aliquotas_interestaduais_unq' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.aliquotas_interestaduais
-    ADD CONSTRAINT aliquotas_interestaduais_unq UNIQUE (uf_origem, uf_destino, vigente_de);'; END IF; END $do_block$;
+    ADD CONSTRAINT aliquotas_interestaduais_unq UNIQUE (uf_origem, uf_destino, vigente_de);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='aliquotas_internas_uf_unq' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.aliquotas_internas_uf
-    ADD CONSTRAINT aliquotas_internas_uf_unq UNIQUE (uf, categoria_produto, vigente_de);'; END IF; END $do_block$;
+    ADD CONSTRAINT aliquotas_internas_uf_unq UNIQUE (uf, categoria_produto, vigente_de);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='aliq_iss_mun_unq' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.aliquotas_iss_municipal
-    ADD CONSTRAINT aliq_iss_mun_unq UNIQUE (codigo_ibge, item_lista_id, vigente_de);'; END IF; END $do_block$;
+    ADD CONSTRAINT aliq_iss_mun_unq UNIQUE (codigo_ibge, item_lista_id, vigente_de);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='api_keys_hash_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.api_keys
-    ADD CONSTRAINT api_keys_hash_unico UNIQUE (key_hash);'; END IF; END $do_block$;
+    ADD CONSTRAINT api_keys_hash_unico UNIQUE (key_hash);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='api_keys_nome_unico_por_empresa' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.api_keys
-    ADD CONSTRAINT api_keys_nome_unico_por_empresa UNIQUE (empresa_id, name);'; END IF; END $do_block$;
+    ADD CONSTRAINT api_keys_nome_unico_por_empresa UNIQUE (empresa_id, name);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='audit_logs_pkey1' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.audit_logs
-    ADD CONSTRAINT audit_logs_pkey1 PRIMARY KEY (id, created_at);'; END IF; END $do_block$;
+    ADD CONSTRAINT audit_logs_pkey1 PRIMARY KEY (id, created_at);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='auditoria_tributaria_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.auditoria_tributaria
-    ADD CONSTRAINT auditoria_tributaria_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT auditoria_tributaria_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='benchmark_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.benchmarks_setoriais
-    ADD CONSTRAINT benchmark_unico UNIQUE (cnae_prefix, regime, vigencia_inicio);'; END IF; END $do_block$;
+    ADD CONSTRAINT benchmark_unico UNIQUE (cnae_prefix, regime, vigencia_inicio);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bitrix24_activities_order_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.bitrix24_activities
-    ADD CONSTRAINT bitrix24_activities_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT bitrix24_activities_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bitrix24_stage_mappings_lalamove_status_key' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.bitrix24_stage_mappings
-    ADD CONSTRAINT bitrix24_stage_mappings_lalamove_status_key UNIQUE (lalamove_status);'; END IF; END $do_block$;
+    ADD CONSTRAINT bitrix24_stage_mappings_lalamove_status_key UNIQUE (lalamove_status);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='catalogos_health_history_dia_key' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.catalogos_tributarios_health_history
-    ADD CONSTRAINT catalogos_health_history_dia_key UNIQUE (dia);'; END IF; END $do_block$;
+    ADD CONSTRAINT catalogos_health_history_dia_key UNIQUE (dia);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='conformidade_snapshots_unica' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.conformidade_snapshots
-    ADD CONSTRAINT conformidade_snapshots_unica UNIQUE (empresa_id, competencia);'; END IF; END $do_block$;
+    ADD CONSTRAINT conformidade_snapshots_unica UNIQUE (empresa_id, competencia);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='convites_contador_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.convites_contador
-    ADD CONSTRAINT convites_contador_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT convites_contador_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='convites_contador_token_hash_key' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.convites_contador
-    ADD CONSTRAINT convites_contador_token_hash_key UNIQUE (token_hash);'; END IF; END $do_block$;
+    ADD CONSTRAINT convites_contador_token_hash_key UNIQUE (token_hash);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='elisao_creditos_auditoria_nota_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.elisao_creditos_auditoria
-    ADD CONSTRAINT elisao_creditos_auditoria_nota_id_fkey FOREIGN KEY (nota_id) REFERENCES public.notas_fiscais_ocr(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT elisao_creditos_auditoria_nota_id_fkey FOREIGN KEY (nota_id) REFERENCES public.notas_fiscais_ocr(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='elisao_simulacoes_regime_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.elisao_simulacoes_regime
-    ADD CONSTRAINT elisao_simulacoes_regime_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT elisao_simulacoes_regime_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='entregas_obrigacoes_unica' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.entregas_obrigacoes
-    ADD CONSTRAINT entregas_obrigacoes_unica UNIQUE (empresa_id, obrigacao_id, competencia);'; END IF; END $do_block$;
+    ADD CONSTRAINT entregas_obrigacoes_unica UNIQUE (empresa_id, obrigacao_id, competencia);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='eventos_contabilizacao_log_regra_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.eventos_contabilizacao_log
-    ADD CONSTRAINT eventos_contabilizacao_log_regra_id_fkey FOREIGN KEY (regra_id) REFERENCES public.regras_contabilizacao_automatica(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT eventos_contabilizacao_log_regra_id_fkey FOREIGN KEY (regra_id) REFERENCES public.regras_contabilizacao_automatica(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='faixas_simples_unq' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.faixas_simples_nacional
-    ADD CONSTRAINT faixas_simples_unq UNIQUE (anexo, faixa, vigente_de);'; END IF; END $do_block$;
+    ADD CONSTRAINT faixas_simples_unq UNIQUE (anexo, faixa, vigente_de);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='fechamento_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.fechamentos_tributarios
-    ADD CONSTRAINT fechamento_unico UNIQUE (empresa_id, ano, mes);'; END IF; END $do_block$;
+    ADD CONSTRAINT fechamento_unico UNIQUE (empresa_id, ano, mes);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='frontend_error_logs_pkey1' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.frontend_error_logs
-    ADD CONSTRAINT frontend_error_logs_pkey1 PRIMARY KEY (id, created_at);'; END IF; END $do_block$;
+    ADD CONSTRAINT frontend_error_logs_pkey1 PRIMARY KEY (id, created_at);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='index_usage_snapshots_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.index_usage_snapshots
-    ADD CONSTRAINT index_usage_snapshots_unico UNIQUE (snapshot_date, schema_name, index_name);'; END IF; END $do_block$;
+    ADD CONSTRAINT index_usage_snapshots_unico UNIQUE (snapshot_date, schema_name, index_name);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='integration_secrets_chave_key' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.integration_secrets
-    ADD CONSTRAINT integration_secrets_chave_key UNIQUE (chave);'; END IF; END $do_block$;
+    ADD CONSTRAINT integration_secrets_chave_key UNIQUE (chave);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='kpis_operacionais_unique' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.kpis_operacionais
-    ADD CONSTRAINT kpis_operacionais_unique UNIQUE (user_id, nome);'; END IF; END $do_block$;
+    ADD CONSTRAINT kpis_operacionais_unique UNIQUE (user_id, nome);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='operacoes_icms_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.operacoes_icms
-    ADD CONSTRAINT operacoes_icms_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT operacoes_icms_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='overlay_rejeicoes_unicidade' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.overlay_rejeicoes_auditoria
-    ADD CONSTRAINT overlay_rejeicoes_unicidade UNIQUE (catalogo, identificador, campo, motivo, referencia);'; END IF; END $do_block$;
+    ADD CONSTRAINT overlay_rejeicoes_unicidade UNIQUE (catalogo, identificador, campo, motivo, referencia);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='plano_contas_parent_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.plano_contas
-    ADD CONSTRAINT plano_contas_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.plano_contas(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT plano_contas_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.plano_contas(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='projecoes_reforma_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.projecoes_reforma
-    ADD CONSTRAINT projecoes_reforma_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT projecoes_reforma_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='uq_proj_emp_ano' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.projecoes_reforma
-    ADD CONSTRAINT uq_proj_emp_ano UNIQUE (empresa_id, ano);'; END IF; END $do_block$;
+    ADD CONSTRAINT uq_proj_emp_ano UNIQUE (empresa_id, ano);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='protocolos_st_ncms_unq' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.protocolos_st_ncms
-    ADD CONSTRAINT protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo);'; END IF; END $do_block$;
+    ADD CONSTRAINT protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='protocolos_st_ufs_unq' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.protocolos_st_ufs
-    ADD CONSTRAINT protocolos_st_ufs_unq UNIQUE (protocolo_id, uf);'; END IF; END $do_block$;
+    ADD CONSTRAINT protocolos_st_ufs_unq UNIQUE (protocolo_id, uf);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='regra_nome_unico_empresa' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.regras_contabilizacao_automatica
-    ADD CONSTRAINT regra_nome_unico_empresa UNIQUE (empresa_id, nome);'; END IF; END $do_block$;
+    ADD CONSTRAINT regra_nome_unico_empresa UNIQUE (empresa_id, nome);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='regras_contabilizacao_automatica_categoria_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.regras_contabilizacao_automatica
-    ADD CONSTRAINT regras_contabilizacao_automatica_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT regras_contabilizacao_automatica_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='regras_contabilizacao_automatica_conta_credito_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.regras_contabilizacao_automatica
-    ADD CONSTRAINT regras_contabilizacao_automatica_conta_credito_id_fkey FOREIGN KEY (conta_credito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
+    ADD CONSTRAINT regras_contabilizacao_automatica_conta_credito_id_fkey FOREIGN KEY (conta_credito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='regras_contabilizacao_automatica_conta_debito_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.regras_contabilizacao_automatica
-    ADD CONSTRAINT regras_contabilizacao_automatica_conta_debito_id_fkey FOREIGN KEY (conta_debito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
+    ADD CONSTRAINT regras_contabilizacao_automatica_conta_debito_id_fkey FOREIGN KEY (conta_debito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='risk_rules_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.risk_rules
-    ADD CONSTRAINT risk_rules_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
+    ADD CONSTRAINT risk_rules_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='saved_filter_subscriptions_saved_filter_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.saved_filter_subscriptions
-    ADD CONSTRAINT saved_filter_subscriptions_saved_filter_id_fkey FOREIGN KEY (saved_filter_id) REFERENCES public.saved_filters(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT saved_filter_subscriptions_saved_filter_id_fkey FOREIGN KEY (saved_filter_id) REFERENCES public.saved_filters(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='saved_filter_subscriptions_unique' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.saved_filter_subscriptions
-    ADD CONSTRAINT saved_filter_subscriptions_unique UNIQUE (saved_filter_id, user_id);'; END IF; END $do_block$;
+    ADD CONSTRAINT saved_filter_subscriptions_unique UNIQUE (saved_filter_id, user_id);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='saved_filters_unique' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.saved_filters
-    ADD CONSTRAINT saved_filters_unique UNIQUE (user_id, entity_type, name);'; END IF; END $do_block$;
+    ADD CONSTRAINT saved_filters_unique UNIQUE (user_id, entity_type, name);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='scim_checklist_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.scim_setup_checklist
-    ADD CONSTRAINT scim_checklist_unico UNIQUE (user_id, item_key);'; END IF; END $do_block$;
+    ADD CONSTRAINT scim_checklist_unico UNIQUE (user_id, item_key);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='simulacao_tributos_detalhados_simulacao_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.simulacao_tributos_detalhados
-    ADD CONSTRAINT simulacao_tributos_detalhados_simulacao_id_fkey FOREIGN KEY (simulacao_id) REFERENCES public.simulacoes(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT simulacao_tributos_detalhados_simulacao_id_fkey FOREIGN KEY (simulacao_id) REFERENCES public.simulacoes(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='simulacoes_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.simulacoes
-    ADD CONSTRAINT simulacoes_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT simulacoes_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='simulacoes_executada_por_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.simulacoes
-    ADD CONSTRAINT simulacoes_executada_por_fkey FOREIGN KEY (executada_por) REFERENCES auth.users(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT simulacoes_executada_por_fkey FOREIGN KEY (executada_por) REFERENCES auth.users(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='solicitacoes_lgpd_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.solicitacoes_lgpd
-    ADD CONSTRAINT solicitacoes_lgpd_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT solicitacoes_lgpd_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='sso_role_mapping_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.sso_role_mappings
-    ADD CONSTRAINT sso_role_mapping_unico UNIQUE (provider_id, idp_group);'; END IF; END $do_block$;
+    ADD CONSTRAINT sso_role_mapping_unico UNIQUE (provider_id, idp_group);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='sso_role_mappings_provider_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.sso_role_mappings
-    ADD CONSTRAINT sso_role_mappings_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT sso_role_mappings_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='sso_sandbox_runs_provider_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.sso_sandbox_runs
-    ADD CONSTRAINT sso_sandbox_runs_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+    ADD CONSTRAINT sso_sandbox_runs_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE SET NULL;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='sso_user_group_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.sso_user_groups
-    ADD CONSTRAINT sso_user_group_unico UNIQUE (user_id, provider_id);'; END IF; END $do_block$;
+    ADD CONSTRAINT sso_user_group_unico UNIQUE (user_id, provider_id);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='sso_user_groups_provider_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.sso_user_groups
-    ADD CONSTRAINT sso_user_groups_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT sso_user_groups_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='user_active_filters_unique' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.user_active_filters
-    ADD CONSTRAINT user_active_filters_unique UNIQUE (user_id, entity_type);'; END IF; END $do_block$;
+    ADD CONSTRAINT user_active_filters_unique UNIQUE (user_id, entity_type);'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='user_anomalia_preferences_user_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.user_anomalia_preferences
-    ADD CONSTRAINT user_anomalia_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT user_anomalia_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='user_digest_preferences_user_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.user_digest_preferences
-    ADD CONSTRAINT user_digest_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT user_digest_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='user_roles_user_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.user_roles
-    ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+    ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;'; END IF;
+EXCEPTION WHEN undefined_table OR undefined_column THEN NULL;
+END $do_block$;
 
 -- SECAO 6: Cron jobs ausentes (14)
 
