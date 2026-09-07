@@ -447,7 +447,15 @@ DO $credibtag$ BEGIN
   END IF;
 EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $credibtag$;
-DROP POLICY IF EXISTS "Admins can view cron logs" ON public.cron_job_logs; CREATE POLICY "Admins can view cron logs" ON public.cron_job_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+DO $cronlogtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='cron_job_logs'
+  ) THEN
+    DROP POLICY IF EXISTS "Admins can view cron logs" ON public.cron_job_logs;
+    CREATE POLICY "Admins can view cron logs" ON public.cron_job_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cronlogtag$;
 DO $cfdeftag$ BEGIN
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
