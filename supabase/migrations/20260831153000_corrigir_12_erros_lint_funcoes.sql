@@ -38,7 +38,6 @@ BEGIN
     'public.sefaz_process_batch(text,text,uuid,bigint,bigint,text,text,jsonb)',
     'public.silenciar_alerta_erro_frontend(text,integer,text)',
     'public.validar_catalogos_tributarios()',
-    'public.watch_cron_failures()',
     'public.watch_cron_failures(integer,integer)'
   ]::text[]) AS v(assinatura)
   WHERE to_regprocedure(v.assinatura) IS NULL;
