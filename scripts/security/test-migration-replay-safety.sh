@@ -8,9 +8,16 @@ fail=0
 
 check_absent() {
   local pattern="$1"
+  local status
   shift
-  if rg -n "$pattern" "$@"; then
+  if grep -nER -- "$pattern" "$@"; then
     fail=1
+  else
+    status=$?
+    if [[ "$status" -ne 1 ]]; then
+      echo "Falha: não foi possível verificar o padrão '$pattern'." >&2
+      exit "$status"
+    fi
   fi
 }
 

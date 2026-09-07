@@ -135,7 +135,8 @@ export async function exigirPapel(
   const { data, error } = await admin
     .from("user_roles")
     .select("role")
-    .eq("user_id", auth.dados.userId);
+    .eq("user_id", auth.dados.userId)
+    .eq("is_active", true);
 
   if (error) {
     return { ok: false, resposta: respostaErro(500, "erro_autorizacao", "Falha ao validar permissões.") };
