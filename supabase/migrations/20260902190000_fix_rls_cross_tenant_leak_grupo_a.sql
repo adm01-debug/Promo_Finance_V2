@@ -37,12 +37,37 @@ DROP POLICY IF EXISTS "Financeiro+ podem atualizar acordos" ON public.acordos_pa
 DROP POLICY IF EXISTS "Admin pode deletar acordos" ON public.acordos_parcelamento;
 DROP POLICY IF EXISTS "Financeiro+ podem ver acordos" ON public.acordos_parcelamento;
 
--- alert_configurations (5)
-DROP POLICY IF EXISTS "Admins can delete alert configs" ON public.alert_configurations;
-DROP POLICY IF EXISTS "Admins managers can view alert configs" ON public.alert_configurations;
-DROP POLICY IF EXISTS "Managers can insert alert configs" ON public.alert_configurations;
-DROP POLICY IF EXISTS "Managers can update alert configs" ON public.alert_configurations;
-DROP POLICY IF EXISTS "Viewers can view alert configs" ON public.alert_configurations;
+-- alert_configurations (5) — wrapped: table absent in clean preview DB
+DO $ac2pol1$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Admins can delete alert configs" ON public.alert_configurations;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $ac2pol1$;
+DO $ac2pol2$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Admins managers can view alert configs" ON public.alert_configurations;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $ac2pol2$;
+DO $ac2pol3$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Managers can insert alert configs" ON public.alert_configurations;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $ac2pol3$;
+DO $ac2pol4$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Managers can update alert configs" ON public.alert_configurations;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $ac2pol4$;
+DO $ac2pol5$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Viewers can view alert configs" ON public.alert_configurations;
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $ac2pol5$;
 
 -- alertas (2)
 DROP POLICY IF EXISTS "Users can insert own or privileged system alertas" ON public.alertas;

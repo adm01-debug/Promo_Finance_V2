@@ -12,11 +12,41 @@ DROP POLICY IF EXISTS "Empresa-based access" ON public.acordos_parcelamento; CRE
    FROM user_roles
   WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
 DROP POLICY IF EXISTS "Owner manage acordos" ON public.acordos_parcelamento; CREATE POLICY "Owner manage acordos" ON public.acordos_parcelamento AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS "Admins can delete alert configs" ON public.alert_configurations; CREATE POLICY "Admins can delete alert configs" ON public.alert_configurations AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Admins managers can view alert configs" ON public.alert_configurations; CREATE POLICY "Admins managers can view alert configs" ON public.alert_configurations AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Managers can insert alert configs" ON public.alert_configurations; CREATE POLICY "Managers can insert alert configs" ON public.alert_configurations AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Managers can update alert configs" ON public.alert_configurations; CREATE POLICY "Managers can update alert configs" ON public.alert_configurations AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS "Viewers can view alert configs" ON public.alert_configurations; CREATE POLICY "Viewers can view alert configs" ON public.alert_configurations AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'visualizador'::app_role));
+DO $acpol1$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Admins can delete alert configs" ON public.alert_configurations;
+    CREATE POLICY "Admins can delete alert configs" ON public.alert_configurations AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR duplicate_object THEN NULL;
+END $acpol1$;
+DO $acpol2$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Admins managers can view alert configs" ON public.alert_configurations;
+    CREATE POLICY "Admins managers can view alert configs" ON public.alert_configurations AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR duplicate_object THEN NULL;
+END $acpol2$;
+DO $acpol3$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Managers can insert alert configs" ON public.alert_configurations;
+    CREATE POLICY "Managers can insert alert configs" ON public.alert_configurations AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR duplicate_object THEN NULL;
+END $acpol3$;
+DO $acpol4$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Managers can update alert configs" ON public.alert_configurations;
+    CREATE POLICY "Managers can update alert configs" ON public.alert_configurations AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR duplicate_object THEN NULL;
+END $acpol4$;
+DO $acpol5$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='alert_configurations') THEN
+    DROP POLICY IF EXISTS "Viewers can view alert configs" ON public.alert_configurations;
+    CREATE POLICY "Viewers can view alert configs" ON public.alert_configurations AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'visualizador'::app_role));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR duplicate_object THEN NULL;
+END $acpol5$;
 DROP POLICY IF EXISTS "Owner manage alertas" ON public.alertas; CREATE POLICY "Owner manage alertas" ON public.alertas AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS alertas_owner_delete ON public.alertas; CREATE POLICY alertas_owner_delete ON public.alertas AS PERMISSIVE FOR DELETE TO authenticated USING ((( SELECT (SELECT auth.uid()) AS uid) = user_id));
 DROP POLICY IF EXISTS alertas_owner_select ON public.alertas; CREATE POLICY alertas_owner_select ON public.alertas AS PERMISSIVE FOR SELECT TO authenticated USING ((( SELECT (SELECT auth.uid()) AS uid) = user_id));
