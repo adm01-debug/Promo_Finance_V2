@@ -528,10 +528,21 @@ DROP POLICY IF EXISTS elisao_regras_creditos_admin ON public.elisao_regras_credi
    FROM profiles
   WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
 DROP POLICY IF EXISTS regras_creditos_admin ON public.elisao_regras_creditos; CREATE POLICY regras_creditos_admin ON public.elisao_regras_creditos AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Admins can delete verifications" ON public.email_verifications; CREATE POLICY "Admins can delete verifications" ON public.email_verifications AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Users can insert own verifications" ON public.email_verifications; CREATE POLICY "Users can insert own verifications" ON public.email_verifications AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS "Users can update their verifications" ON public.email_verifications; CREATE POLICY "Users can update their verifications" ON public.email_verifications AS PERMISSIVE FOR UPDATE TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
-DROP POLICY IF EXISTS "Users can view own verifications" ON public.email_verifications; CREATE POLICY "Users can view own verifications" ON public.email_verifications AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
+DO $emailvertag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='email_verifications'
+  ) THEN
+    DROP POLICY IF EXISTS "Admins can delete verifications" ON public.email_verifications;
+    CREATE POLICY "Admins can delete verifications" ON public.email_verifications AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Users can insert own verifications" ON public.email_verifications;
+    CREATE POLICY "Users can insert own verifications" ON public.email_verifications AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
+    DROP POLICY IF EXISTS "Users can update their verifications" ON public.email_verifications;
+    CREATE POLICY "Users can update their verifications" ON public.email_verifications AS PERMISSIVE FOR UPDATE TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
+    DROP POLICY IF EXISTS "Users can view own verifications" ON public.email_verifications;
+    CREATE POLICY "Users can view own verifications" ON public.email_verifications AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $emailvertag$;
 DROP POLICY IF EXISTS "Operacional+ podem ver empresas" ON public.empresas; CREATE POLICY "Operacional+ podem ver empresas" ON public.empresas AS PERMISSIVE FOR SELECT TO authenticated USING (has_any_role((SELECT auth.uid()), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]));
 DROP POLICY IF EXISTS "Owner manage empresas" ON public.empresas; CREATE POLICY "Owner manage empresas" ON public.empresas AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS cert_admin_all ON public.empresas_certificados; CREATE POLICY cert_admin_all ON public.empresas_certificados AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
