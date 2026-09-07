@@ -318,61 +318,149 @@ DROP POLICY IF EXISTS cnaes_write_admin ON public.cnaes; CREATE POLICY cnaes_wri
 DROP POLICY IF EXISTS conciliacoes_owner_all ON public.conciliacoes; CREATE POLICY conciliacoes_owner_all ON public.conciliacoes AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS concil_parciais_owner_all ON public.conciliacoes_parciais; CREATE POLICY concil_parciais_owner_all ON public.conciliacoes_parciais AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = created_by)) WITH CHECK (((SELECT auth.uid()) = created_by));
 DROP POLICY IF EXISTS configuracoes_aprovacao_admin_all ON public.configuracoes_aprovacao; CREATE POLICY configuracoes_aprovacao_admin_all ON public.configuracoes_aprovacao AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS configuracoes_aprovacao_empresa_select ON public.configuracoes_aprovacao; CREATE POLICY configuracoes_aprovacao_empresa_select ON public.configuracoes_aprovacao AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao; CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.configuracoes_duplicidade; CREATE POLICY "Empresa-based access" ON public.configuracoes_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $cfgaprvtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='configuracoes_aprovacao' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS configuracoes_aprovacao_empresa_select ON public.configuracoes_aprovacao; CREATE POLICY configuracoes_aprovacao_empresa_select ON public.configuracoes_aprovacao AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao; CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cfgaprvtag$;
+DO $cfgduptag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='configuracoes_duplicidade' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.configuracoes_duplicidade; CREATE POLICY "Empresa-based access" ON public.configuracoes_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cfgduptag$;
 DROP POLICY IF EXISTS config_dup_admin_all ON public.configuracoes_duplicidade; CREATE POLICY config_dup_admin_all ON public.configuracoes_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade; CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS conformidade_snapshots_empresa_insert ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_empresa_insert ON public.conformidade_snapshots AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
-DROP POLICY IF EXISTS conformidade_snapshots_empresa_select ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_empresa_select ON public.conformidade_snapshots AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
-DROP POLICY IF EXISTS conformidade_snapshots_empresa_update ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_empresa_update ON public.conformidade_snapshots AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
-DROP POLICY IF EXISTS conformidade_snapshots_tenant_rw ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS contas_bancarias_empresa_select ON public.contas_bancarias; CREATE POLICY contas_bancarias_empresa_select ON public.contas_bancarias AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $cfgduprwtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='configuracoes_duplicidade' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade; CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cfgduprwtag$;
+DO $cfgsnaptag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='conformidade_snapshots' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS conformidade_snapshots_empresa_insert ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_empresa_insert ON public.conformidade_snapshots AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
+    DROP POLICY IF EXISTS conformidade_snapshots_empresa_select ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_empresa_select ON public.conformidade_snapshots AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
+    DROP POLICY IF EXISTS conformidade_snapshots_empresa_update ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_empresa_update ON public.conformidade_snapshots AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
+    DROP POLICY IF EXISTS conformidade_snapshots_tenant_rw ON public.conformidade_snapshots; CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cfgsnaptag$;
+DO $cntabantag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='contas_bancarias' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS contas_bancarias_empresa_select ON public.contas_bancarias; CREATE POLICY contas_bancarias_empresa_select ON public.contas_bancarias AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cntabantag$;
 DROP POLICY IF EXISTS "Admins can manage contas pagar" ON public.contas_pagar; CREATE POLICY "Admins can manage contas pagar" ON public.contas_pagar AS PERMISSIVE FOR ALL TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS contas_pagar_empresa_select ON public.contas_pagar; CREATE POLICY contas_pagar_empresa_select ON public.contas_pagar AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS contas_pagar_tenant_rw ON public.contas_pagar; CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
+DO $cntapgtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='contas_pagar' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS contas_pagar_empresa_select ON public.contas_pagar; CREATE POLICY contas_pagar_empresa_select ON public.contas_pagar AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS contas_pagar_tenant_rw ON public.contas_pagar; CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cntapgtag$;
 DROP POLICY IF EXISTS "Admins can manage contas receber" ON public.contas_receber; CREATE POLICY "Admins can manage contas receber" ON public.contas_receber AS PERMISSIVE FOR ALL TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
-DROP POLICY IF EXISTS contas_receber_empresa_select ON public.contas_receber; CREATE POLICY contas_receber_empresa_select ON public.contas_receber AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS contas_receber_tenant_rw ON public.contas_receber; CREATE POLICY contas_receber_tenant_rw ON public.contas_receber AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.contratos; CREATE POLICY "Empresa-based access" ON public.contratos AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $cntarectag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='contas_receber' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS contas_receber_empresa_select ON public.contas_receber; CREATE POLICY contas_receber_empresa_select ON public.contas_receber AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS contas_receber_tenant_rw ON public.contas_receber; CREATE POLICY contas_receber_tenant_rw ON public.contas_receber AS PERMISSIVE FOR ALL TO authenticated USING (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))) WITH CHECK (((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cntarectag$;
+DO $contrtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='contratos' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.contratos; CREATE POLICY "Empresa-based access" ON public.contratos AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $contrtag$;
 DROP POLICY IF EXISTS convites_manage_responsavel ON public.convites; CREATE POLICY convites_manage_responsavel ON public.convites AS PERMISSIVE FOR ALL TO authenticated USING ((is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role))) WITH CHECK (((convidado_por = (SELECT auth.uid())) AND (is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role))));
-DROP POLICY IF EXISTS convites_contador_revogar ON public.convites_contador; CREATE POLICY convites_contador_revogar ON public.convites_contador AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)))) WITH CHECK ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
-DROP POLICY IF EXISTS convites_contador_select ON public.convites_contador; CREATE POLICY convites_contador_select ON public.convites_contador AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
-DROP POLICY IF EXISTS "Access by empresa_id" ON public.creditos_tributarios; CREATE POLICY "Access by empresa_id" ON public.creditos_tributarios AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $convctag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='convites_contador' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS convites_contador_revogar ON public.convites_contador; CREATE POLICY convites_contador_revogar ON public.convites_contador AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)))) WITH CHECK ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
+    DROP POLICY IF EXISTS convites_contador_select ON public.convites_contador; CREATE POLICY convites_contador_select ON public.convites_contador AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $convctag$;
+DO $credibtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='creditos_tributarios' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Access by empresa_id" ON public.creditos_tributarios; CREATE POLICY "Access by empresa_id" ON public.creditos_tributarios AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $credibtag$;
 DROP POLICY IF EXISTS "Admins can view cron logs" ON public.cron_job_logs; CREATE POLICY "Admins can view cron logs" ON public.cron_job_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Custom field definitions scoped by empresa" ON public.custom_field_definitions; CREATE POLICY "Custom field definitions scoped by empresa" ON public.custom_field_definitions AS PERMISSIVE FOR ALL TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true)))))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true))))));
+DO $cfdeftag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='custom_field_definitions' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Custom field definitions scoped by empresa" ON public.custom_field_definitions; CREATE POLICY "Custom field definitions scoped by empresa" ON public.custom_field_definitions AS PERMISSIVE FOR ALL TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true)))))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $cfdeftag$;
 DROP POLICY IF EXISTS "Custom field values scoped by definition empresa" ON public.custom_field_values; CREATE POLICY "Custom field values scoped by definition empresa" ON public.custom_field_values AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM custom_field_definitions d
   WHERE ((d.id = custom_field_values.definition_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR (d.empresa_id IN ( SELECT ue.empresa_id
@@ -383,25 +471,49 @@ DROP POLICY IF EXISTS "Custom field values scoped by definition empresa" ON publ
            FROM user_empresas ue
           WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true)))))))));
 DROP POLICY IF EXISTS "Admins can manage darfs" ON public.darfs; CREATE POLICY "Admins can manage darfs" ON public.darfs AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "DARFs scoped by linked empresa" ON public.darfs; CREATE POLICY "DARFs scoped by linked empresa" ON public.darfs AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true)))) OR (alerta_id IN ( SELECT at.id
-   FROM alertas_tributarios at
-  WHERE (at.empresa_id IN ( SELECT ue.empresa_id
-           FROM user_empresas ue
-          WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true))))))));
-DROP POLICY IF EXISTS darfs_tenant_rw ON public.darfs; CREATE POLICY darfs_tenant_rw ON public.darfs AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $darftag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='darfs' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "DARFs scoped by linked empresa" ON public.darfs; CREATE POLICY "DARFs scoped by linked empresa" ON public.darfs AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true)))) OR (alerta_id IN ( SELECT at.id
+       FROM alertas_tributarios at
+      WHERE (at.empresa_id IN ( SELECT ue.empresa_id
+               FROM user_empresas ue
+              WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true))))))));
+    DROP POLICY IF EXISTS darfs_tenant_rw ON public.darfs; CREATE POLICY darfs_tenant_rw ON public.darfs AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $darftag$;
 DROP POLICY IF EXISTS "Admins podem consultar o log de envios do digest" ON public.digest_envios_log; CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.digest_envios_log AS PERMISSIVE FOR SELECT TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS "User-based access" ON public.dispositivos_conhecidos; CREATE POLICY "User-based access" ON public.dispositivos_conhecidos AS PERMISSIVE FOR ALL TO authenticated USING (((user_id = (SELECT auth.uid())) OR (EXISTS ( SELECT 1
    FROM user_roles
   WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.divergencias_conciliacao; CREATE POLICY "Empresa-based access" ON public.divergencias_conciliacao AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $divconctag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='divergencias_conciliacao' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.divergencias_conciliacao; CREATE POLICY "Empresa-based access" ON public.divergencias_conciliacao AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $divconctag$;
 DROP POLICY IF EXISTS edge_function_logs_admin_select ON public.edge_function_logs; CREATE POLICY edge_function_logs_admin_select ON public.edge_function_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria; CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $eliscredtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='elisao_creditos_auditoria' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria; CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $eliscredtag$;
 DROP POLICY IF EXISTS elisao_regras_creditos_admin ON public.elisao_regras_creditos; CREATE POLICY elisao_regras_creditos_admin ON public.elisao_regras_creditos AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))) WITH CHECK ((EXISTS ( SELECT 1
@@ -415,25 +527,41 @@ DROP POLICY IF EXISTS "Users can view own verifications" ON public.email_verific
 DROP POLICY IF EXISTS "Operacional+ podem ver empresas" ON public.empresas; CREATE POLICY "Operacional+ podem ver empresas" ON public.empresas AS PERMISSIVE FOR SELECT TO authenticated USING (has_any_role((SELECT auth.uid()), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]));
 DROP POLICY IF EXISTS "Owner manage empresas" ON public.empresas; CREATE POLICY "Owner manage empresas" ON public.empresas AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS cert_admin_all ON public.empresas_certificados; CREATE POLICY cert_admin_all ON public.empresas_certificados AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS cert_empresa_read ON public.empresas_certificados; CREATE POLICY cert_empresa_read ON public.empresas_certificados AS PERMISSIVE FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
-   FROM user_empresas ue
-  WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.empresa_id = empresas_certificados.empresa_id)))));
-DROP POLICY IF EXISTS empresas_certificados_tenant_rw ON public.empresas_certificados; CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $empcerttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='empresas_certificados' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS cert_empresa_read ON public.empresas_certificados; CREATE POLICY cert_empresa_read ON public.empresas_certificados AS PERMISSIVE FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
+       FROM user_empresas ue
+      WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.empresa_id = empresas_certificados.empresa_id)))));
+    DROP POLICY IF EXISTS empresas_certificados_tenant_rw ON public.empresas_certificados; CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $empcerttag$;
 DROP POLICY IF EXISTS entregas_obrigacoes_admin_all ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_admin_all ON public.entregas_obrigacoes AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM profiles p
   WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
-DROP POLICY IF EXISTS entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
-DROP POLICY IF EXISTS entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
-DROP POLICY IF EXISTS entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
-DROP POLICY IF EXISTS entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $entreobrtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='entregas_obrigacoes' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
+    DROP POLICY IF EXISTS entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
+    DROP POLICY IF EXISTS entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))));
+    DROP POLICY IF EXISTS entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes; CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $entreobrtag$;
 DROP POLICY IF EXISTS estrategias_write_admin ON public.estrategias_elisao; CREATE POLICY estrategias_write_admin ON public.estrategias_elisao AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS "Evidencias scoped by verificacao" ON public.evidencias_pacotes; CREATE POLICY "Evidencias scoped by verificacao" ON public.evidencias_pacotes AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM verificacoes_conformidade vc
@@ -445,11 +573,19 @@ DROP POLICY IF EXISTS "Evidencias scoped by verificacao" ON public.evidencias_pa
            FROM user_empresas ue
           WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.ativo = true)))))))));
 DROP POLICY IF EXISTS "Owner manage execucoes" ON public.execucoes_cobranca; CREATE POLICY "Owner manage execucoes" ON public.execucoes_cobranca AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS execucoes_cobranca_empresa_all ON public.execucoes_cobranca; CREATE POLICY execucoes_cobranca_empresa_all ON public.execucoes_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $execcobrtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='execucoes_cobranca' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS execucoes_cobranca_empresa_all ON public.execucoes_cobranca; CREATE POLICY execucoes_cobranca_empresa_all ON public.execucoes_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $execcobrtag$;
 DROP POLICY IF EXISTS "Users can manage their own conversations" ON public.expert_conversations; CREATE POLICY "Users can manage their own conversations" ON public.expert_conversations AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Usuários veem suas próprias conversas" ON public.expert_conversations; CREATE POLICY "Usuários veem suas próprias conversas" ON public.expert_conversations AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Users can insert messages to their conversations" ON public.expert_messages; CREATE POLICY "Users can insert messages to their conversations" ON public.expert_messages AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
@@ -464,11 +600,19 @@ DROP POLICY IF EXISTS "Usuários veem mensagens de suas conversas" ON public.exp
 DROP POLICY IF EXISTS "Users can manage their own extrato_bancario" ON public.extrato_bancario; CREATE POLICY "Users can manage their own extrato_bancario" ON public.extrato_bancario AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS extrato_owner_all ON public.extrato_bancario; CREATE POLICY extrato_owner_all ON public.extrato_bancario AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS faixas_simples_write_admin ON public.faixas_simples_nacional; CREATE POLICY faixas_simples_write_admin ON public.faixas_simples_nacional AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.faturamento_mensal; CREATE POLICY "Empresa-based access" ON public.faturamento_mensal AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $fatmenstag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='faturamento_mensal' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.faturamento_mensal; CREATE POLICY "Empresa-based access" ON public.faturamento_mensal AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $fatmenstag$;
 DROP POLICY IF EXISTS fechamentos_tributarios_all_admin ON public.fechamentos_tributarios; CREATE POLICY fechamentos_tributarios_all_admin ON public.fechamentos_tributarios AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))) WITH CHECK ((EXISTS ( SELECT 1
@@ -484,25 +628,57 @@ DROP POLICY IF EXISTS "User-based access" ON public.feedback_conciliacao_ia; CRE
   WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
 DROP POLICY IF EXISTS "Users can manage feedback" ON public.feedback_conciliacao_ia; CREATE POLICY "Users can manage feedback" ON public.feedback_conciliacao_ia AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Admins can manage queue" ON public.fila_cobrancas; CREATE POLICY "Admins can manage queue" ON public.fila_cobrancas AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS fila_cobrancas_empresa_select ON public.fila_cobrancas; CREATE POLICY fila_cobrancas_empresa_select ON public.fila_cobrancas AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS fila_cobrancas_tenant_rw ON public.fila_cobrancas; CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS "Access by empresa_id" ON public.fluxos_aprovacao_niveis; CREATE POLICY "Access by empresa_id" ON public.fluxos_aprovacao_niveis AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.folha_pagamento; CREATE POLICY "Empresa-based access" ON public.folha_pagamento AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.formas_pagamento; CREATE POLICY "Empresa-based access" ON public.formas_pagamento AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $filacobtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='fila_cobrancas' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS fila_cobrancas_empresa_select ON public.fila_cobrancas; CREATE POLICY fila_cobrancas_empresa_select ON public.fila_cobrancas AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS fila_cobrancas_tenant_rw ON public.fila_cobrancas; CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $filacobtag$;
+DO $fluxapvtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='fluxos_aprovacao_niveis' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Access by empresa_id" ON public.fluxos_aprovacao_niveis; CREATE POLICY "Access by empresa_id" ON public.fluxos_aprovacao_niveis AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $fluxapvtag$;
+DO $folhapgtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='folha_pagamento' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.folha_pagamento; CREATE POLICY "Empresa-based access" ON public.folha_pagamento AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $folhapgtag$;
+DO $formapgtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='formas_pagamento' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.formas_pagamento; CREATE POLICY "Empresa-based access" ON public.formas_pagamento AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $formapgtag$;
 DROP POLICY IF EXISTS fornecedores_owner_delete ON public.fornecedores; CREATE POLICY fornecedores_owner_delete ON public.fornecedores AS PERMISSIVE FOR DELETE TO authenticated USING (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS fornecedores_owner_insert ON public.fornecedores; CREATE POLICY fornecedores_owner_insert ON public.fornecedores AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS fornecedores_owner_select ON public.fornecedores; CREATE POLICY fornecedores_owner_select ON public.fornecedores AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
@@ -530,9 +706,17 @@ DROP POLICY IF EXISTS "Admins can manage geo blocks" ON public.geo_blocks; CREAT
 DROP POLICY IF EXISTS "Admins can update geo blocks" ON public.geo_blocks; CREATE POLICY "Admins can update geo blocks" ON public.geo_blocks AS PERMISSIVE FOR UPDATE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Managers can view geo blocks" ON public.geo_blocks; CREATE POLICY "Managers can view geo blocks" ON public.geo_blocks AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'financeiro'::app_role));
 DROP POLICY IF EXISTS glossario_admin ON public.glossario_tributario; CREATE POLICY glossario_admin ON public.glossario_tributario AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS health_scores_empresa_select ON public.health_scores_operacionais; CREATE POLICY health_scores_empresa_select ON public.health_scores_operacionais AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $healthsctag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='health_scores_operacionais' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS health_scores_empresa_select ON public.health_scores_operacionais; CREATE POLICY health_scores_empresa_select ON public.health_scores_operacionais AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $healthsctag$;
 DROP POLICY IF EXISTS hap_user_insert ON public.historico_analises_preditivas; CREATE POLICY hap_user_insert ON public.historico_analises_preditivas AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
 DO $haptag$ BEGIN
   IF EXISTS (
@@ -546,16 +730,32 @@ DO $haptag$ BEGIN
   END IF;
 EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $haptag$;
-DROP POLICY IF EXISTS historico_cobranca_empresa_all ON public.historico_cobranca; CREATE POLICY historico_cobranca_empresa_all ON public.historico_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.historico_cobranca_whatsapp; CREATE POLICY "Empresa-based access" ON public.historico_cobranca_whatsapp AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $histcobtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='historico_cobranca' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS historico_cobranca_empresa_all ON public.historico_cobranca; CREATE POLICY historico_cobranca_empresa_all ON public.historico_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $histcobtag$;
+DO $histcobwatag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='historico_cobranca_whatsapp' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.historico_cobranca_whatsapp; CREATE POLICY "Empresa-based access" ON public.historico_cobranca_whatsapp AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $histcobwatag$;
 DROP POLICY IF EXISTS historico_cobrancas_boletos_empresa_select ON public.historico_cobrancas_boletos; CREATE POLICY historico_cobrancas_boletos_empresa_select ON public.historico_cobrancas_boletos AS PERMISSIVE FOR SELECT TO authenticated USING ((conta_receber_id IN ( SELECT contas_receber.id
    FROM contas_receber
   WHERE (contas_receber.empresa_id IN ( SELECT user_empresas.empresa_id
@@ -573,9 +773,17 @@ DROP POLICY IF EXISTS historico_conciliacao_ia_tenant_select ON public.historico
 DROP POLICY IF EXISTS historico_relatorios_leitura ON public.historico_relatorios; CREATE POLICY historico_relatorios_leitura ON public.historico_relatorios AS PERMISSIVE FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM relatorios_agendados r
   WHERE ((r.id = historico_relatorios.relatorio_agendado_id) AND ((r.created_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role))))));
-DROP POLICY IF EXISTS historico_score_saude_empresa_select ON public.historico_score_saude; CREATE POLICY historico_score_saude_empresa_select ON public.historico_score_saude AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $histsctag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='historico_score_saude' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS historico_score_saude_empresa_select ON public.historico_score_saude; CREATE POLICY historico_score_saude_empresa_select ON public.historico_score_saude AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $histsctag$;
 DROP POLICY IF EXISTS admins_all_incentivos_fiscais ON public.incentivos_fiscais; CREATE POLICY admins_all_incentivos_fiscais ON public.incentivos_fiscais AS PERMISSIVE FOR ALL TO authenticated USING ((((auth.jwt() ->> 'role'::text) = 'service_role'::text) OR ((auth.jwt() ->> 'role'::text) = 'anon'::text) OR (((auth.jwt() ->> 'role'::text) = 'authenticated'::text) AND (((SELECT auth.uid()))::text = (empresa_id)::text))));
 DROP POLICY IF EXISTS "Somente admins leem snapshots de índices" ON public.index_usage_snapshots; CREATE POLICY "Somente admins leem snapshots de índices" ON public.index_usage_snapshots AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes; CREATE POLICY "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
@@ -594,11 +802,19 @@ DROP POLICY IF EXISTS itens_pedido_compra_empresa_select ON public.itens_pedido_
   WHERE (pedidos_compra.empresa_id IN ( SELECT user_empresas.empresa_id
            FROM user_empresas
           WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))))));
-DROP POLICY IF EXISTS "Lancamentos scoped by empresa" ON public.lancamentos_contabeis; CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis AS PERMISSIVE FOR ALL TO authenticated USING (((user_id = ( SELECT (SELECT auth.uid()) AS uid)) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))))) WITH CHECK (((user_id = ( SELECT (SELECT auth.uid()) AS uid)) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
-   FROM user_empresas ue
-  WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true))))));
+DO $lancconttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='lancamentos_contabeis' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Lancamentos scoped by empresa" ON public.lancamentos_contabeis; CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis AS PERMISSIVE FOR ALL TO authenticated USING (((user_id = ( SELECT (SELECT auth.uid()) AS uid)) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true)))))) WITH CHECK (((user_id = ( SELECT (SELECT auth.uid()) AS uid)) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id
+       FROM user_empresas ue
+      WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (ue.ativo = true))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $lancconttag$;
 DROP POLICY IF EXISTS "Owner manage lancamentos" ON public.lancamentos_contabeis; CREATE POLICY "Owner manage lancamentos" ON public.lancamentos_contabeis AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Admins can delete login attempts" ON public.login_attempts; CREATE POLICY "Admins can delete login attempts" ON public.login_attempts AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins can insert login attempts" ON public.login_attempts; CREATE POLICY "Admins can insert login attempts" ON public.login_attempts AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
@@ -610,28 +826,52 @@ DROP POLICY IF EXISTS logs_baixa_select_owner ON public.logs_baixa_automatica; C
 DROP POLICY IF EXISTS logs_retro_insert_owner ON public.logs_conciliacao_retroativa; CREATE POLICY logs_retro_insert_owner ON public.logs_conciliacao_retroativa AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((( SELECT (SELECT auth.uid()) AS uid) = user_id));
 DROP POLICY IF EXISTS logs_retro_owner_all ON public.logs_conciliacao_retroativa; CREATE POLICY logs_retro_owner_all ON public.logs_conciliacao_retroativa AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS logs_retro_select_owner ON public.logs_conciliacao_retroativa; CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa AS PERMISSIVE FOR SELECT TO authenticated USING ((( SELECT (SELECT auth.uid()) AS uid) = user_id));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.metas_financeiras; CREATE POLICY "Empresa-based access" ON public.metas_financeiras AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $metasfintag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='metas_financeiras' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.metas_financeiras; CREATE POLICY "Empresa-based access" ON public.metas_financeiras AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $metasfintag$;
 DROP POLICY IF EXISTS "Users can delete their MFA sessions" ON public.mfa_sessions; CREATE POLICY "Users can delete their MFA sessions" ON public.mfa_sessions AS PERMISSIVE FOR DELETE TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS "Users can insert their MFA sessions" ON public.mfa_sessions; CREATE POLICY "Users can insert their MFA sessions" ON public.mfa_sessions AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Users can manage own MFA sessions" ON public.mfa_sessions; CREATE POLICY "Users can manage own MFA sessions" ON public.mfa_sessions AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id)) WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Users can update their MFA sessions" ON public.mfa_sessions; CREATE POLICY "Users can update their MFA sessions" ON public.mfa_sessions AS PERMISSIVE FOR UPDATE TO authenticated USING (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS "Access by empresa_id" ON public.movimentacoes; CREATE POLICY "Access by empresa_id" ON public.movimentacoes AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $movimtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='movimentacoes' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Access by empresa_id" ON public.movimentacoes; CREATE POLICY "Access by empresa_id" ON public.movimentacoes AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $movimtag$;
 DROP POLICY IF EXISTS "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs; CREATE POLICY "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
 DROP POLICY IF EXISTS "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs; CREATE POLICY "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs AS PERMISSIVE FOR ALL TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
 DROP POLICY IF EXISTS ncms_write_admin ON public.ncms; CREATE POLICY ncms_write_admin ON public.ncms AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins can manage negativacoes" ON public.negativacoes; CREATE POLICY "Admins can manage negativacoes" ON public.negativacoes AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS negativacoes_empresa_select ON public.negativacoes; CREATE POLICY negativacoes_empresa_select ON public.negativacoes AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS negativacoes_tenant_rw ON public.negativacoes; CREATE POLICY negativacoes_tenant_rw ON public.negativacoes AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $negativtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='negativacoes' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS negativacoes_empresa_select ON public.negativacoes; CREATE POLICY negativacoes_empresa_select ON public.negativacoes AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS negativacoes_tenant_rw ON public.negativacoes; CREATE POLICY negativacoes_tenant_rw ON public.negativacoes AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $negativtag$;
 DROP POLICY IF EXISTS "Users can delete their device alerts" ON public.new_device_alerts; CREATE POLICY "Users can delete their device alerts" ON public.new_device_alerts AS PERMISSIVE FOR DELETE TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS "Users can insert their device alerts" ON public.new_device_alerts; CREATE POLICY "Users can insert their device alerts" ON public.new_device_alerts AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Users can update their device alerts" ON public.new_device_alerts; CREATE POLICY "Users can update their device alerts" ON public.new_device_alerts AS PERMISSIVE FOR UPDATE TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
@@ -646,25 +886,49 @@ DROP POLICY IF EXISTS nfe_rec_empresa_read ON public.nfe_recebidas; CREATE POLIC
 DROP POLICY IF EXISTS nfe_rec_empresa_update ON public.nfe_recebidas; CREATE POLICY nfe_rec_empresa_update ON public.nfe_recebidas AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR ((empresa_id IS NOT NULL) AND (EXISTS ( SELECT 1
    FROM user_empresas ue
   WHERE ((ue.user_id = (SELECT auth.uid())) AND (ue.empresa_id = nfe_recebidas.empresa_id)))))));
-DROP POLICY IF EXISTS notas_fiscais_empresa_select ON public.notas_fiscais; CREATE POLICY notas_fiscais_empresa_select ON public.notas_fiscais AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS notas_fiscais_tenant_delete ON public.notas_fiscais; CREATE POLICY notas_fiscais_tenant_delete ON public.notas_fiscais AS PERMISSIVE FOR DELETE TO authenticated USING ((empresa_membro_ativo(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
+DO $notafistag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='notas_fiscais' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS notas_fiscais_empresa_select ON public.notas_fiscais; CREATE POLICY notas_fiscais_empresa_select ON public.notas_fiscais AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS notas_fiscais_tenant_delete ON public.notas_fiscais; CREATE POLICY notas_fiscais_tenant_delete ON public.notas_fiscais AS PERMISSIVE FOR DELETE TO authenticated USING ((empresa_membro_ativo(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $notafistag$;
 DROP POLICY IF EXISTS notas_fiscais_ocr_all_admin ON public.notas_fiscais_ocr; CREATE POLICY notas_fiscais_ocr_all_admin ON public.notas_fiscais_ocr AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
-DROP POLICY IF EXISTS notas_fiscais_ocr_select_own ON public.notas_fiscais_ocr; CREATE POLICY notas_fiscais_ocr_select_own ON public.notas_fiscais_ocr AS PERMISSIVE FOR SELECT TO authenticated USING (((empresa_id IN ( SELECT profiles.empresa_id
-   FROM profiles
-  WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1
-   FROM profiles
-  WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))));
+DO $notaocrtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='notas_fiscais_ocr' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS notas_fiscais_ocr_select_own ON public.notas_fiscais_ocr; CREATE POLICY notas_fiscais_ocr_select_own ON public.notas_fiscais_ocr AS PERMISSIVE FOR SELECT TO authenticated USING (((empresa_id IN ( SELECT profiles.empresa_id
+       FROM profiles
+      WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1
+       FROM profiles
+      WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $notaocrtag$;
 DROP POLICY IF EXISTS notification_history_owner ON public.notification_history; CREATE POLICY notification_history_owner ON public.notification_history AS PERMISSIVE FOR ALL TO authenticated USING ((user_id = (SELECT auth.uid()))) WITH CHECK ((user_id = (SELECT auth.uid())));
 DROP POLICY IF EXISTS "Users can manage their own consents" ON public.open_finance_consents; CREATE POLICY "Users can manage their own consents" ON public.open_finance_consents AS PERMISSIVE FOR ALL TO authenticated USING (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS operacoes_tributaveis_empresa_select ON public.operacoes_tributaveis; CREATE POLICY operacoes_tributaveis_empresa_select ON public.operacoes_tributaveis AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $opttribtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='operacoes_tributaveis' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS operacoes_tributaveis_empresa_select ON public.operacoes_tributaveis; CREATE POLICY operacoes_tributaveis_empresa_select ON public.operacoes_tributaveis AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $opttribtag$;
 DROP POLICY IF EXISTS org_membros_manage_responsavel ON public.organizacao_membros; CREATE POLICY org_membros_manage_responsavel ON public.organizacao_membros AS PERMISSIVE FOR ALL TO authenticated USING ((is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role))) WITH CHECK ((is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS org_membros_select ON public.organizacao_membros; CREATE POLICY org_membros_select ON public.organizacao_membros AS PERMISSIVE FOR SELECT TO authenticated USING (((usuario_id = (SELECT auth.uid())) OR is_org_membro(organizacao_id, (SELECT auth.uid())) OR is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS organizacoes_delete_responsavel ON public.organizacoes; CREATE POLICY organizacoes_delete_responsavel ON public.organizacoes AS PERMISSIVE FOR DELETE TO authenticated USING (((responsavel_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
@@ -704,9 +968,17 @@ DROP POLICY IF EXISTS "Admins can delete reset tokens" ON public.password_reset_
 DROP POLICY IF EXISTS "Authenticated can insert own reset tokens" ON public.password_reset_tokens; CREATE POLICY "Authenticated can insert own reset tokens" ON public.password_reset_tokens AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Users can select own reset tokens" ON public.password_reset_tokens; CREATE POLICY "Users can select own reset tokens" ON public.password_reset_tokens AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Users can view own reset tokens" ON public.password_reset_tokens; CREATE POLICY "Users can view own reset tokens" ON public.password_reset_tokens AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS pedidos_compra_empresa_select ON public.pedidos_compra; CREATE POLICY pedidos_compra_empresa_select ON public.pedidos_compra AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $pedcomprtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='pedidos_compra' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS pedidos_compra_empresa_select ON public.pedidos_compra; CREATE POLICY pedidos_compra_empresa_select ON public.pedidos_compra AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $pedcomprtag$;
 DROP POLICY IF EXISTS per_dcomp_admin_all ON public.per_dcomp; CREATE POLICY per_dcomp_admin_all ON public.per_dcomp AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM profiles p
   WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
@@ -717,32 +989,64 @@ DROP POLICY IF EXISTS "Admins can update permissions" ON public.permissions; CRE
 DROP POLICY IF EXISTS "Anyone authenticated can view permissions" ON public.permissions; CREATE POLICY "Anyone authenticated can view permissions" ON public.permissions AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) IS NOT NULL));
 DROP POLICY IF EXISTS "Admins can view baselines" ON public.pg_stat_statements_baseline; CREATE POLICY "Admins can view baselines" ON public.pg_stat_statements_baseline AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins can manage pix" ON public.pix_templates; CREATE POLICY "Admins can manage pix" ON public.pix_templates AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS pix_templates_empresa_select ON public.pix_templates; CREATE POLICY pix_templates_empresa_select ON public.pix_templates AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS pix_templates_tenant_rw ON public.pix_templates; CREATE POLICY pix_templates_tenant_rw ON public.pix_templates AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.plano_contas; CREATE POLICY "Empresa-based access" ON public.plano_contas AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $pixtmpltag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='pix_templates' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS pix_templates_empresa_select ON public.pix_templates; CREATE POLICY pix_templates_empresa_select ON public.pix_templates AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS pix_templates_tenant_rw ON public.pix_templates; CREATE POLICY pix_templates_tenant_rw ON public.pix_templates AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $pixtmpltag$;
+DO $planconttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='plano_contas' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.plano_contas; CREATE POLICY "Empresa-based access" ON public.plano_contas AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $planconttag$;
 DROP POLICY IF EXISTS planos_acao_owner ON public.planos_acao; CREATE POLICY planos_acao_owner ON public.planos_acao AS PERMISSIVE FOR ALL TO authenticated USING ((user_id = (SELECT auth.uid()))) WITH CHECK ((user_id = (SELECT auth.uid())));
 DROP POLICY IF EXISTS portal_acessos_admin_insert ON public.portal_cliente_acessos; CREATE POLICY portal_acessos_admin_insert ON public.portal_cliente_acessos AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS portal_acessos_admin_select ON public.portal_cliente_acessos; CREATE POLICY portal_acessos_admin_select ON public.portal_cliente_acessos AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS portal_tokens_admin_all ON public.portal_cliente_tokens; CREATE POLICY portal_tokens_admin_all ON public.portal_cliente_tokens AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS prejuizos_fiscais_admin_write ON public.prejuizos_fiscais; CREATE POLICY prejuizos_fiscais_admin_write ON public.prejuizos_fiscais AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS prejuizos_fiscais_empresa_select ON public.prejuizos_fiscais; CREATE POLICY prejuizos_fiscais_empresa_select ON public.prejuizos_fiscais AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais; CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $prejfistag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='prejuizos_fiscais' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS prejuizos_fiscais_empresa_select ON public.prejuizos_fiscais; CREATE POLICY prejuizos_fiscais_empresa_select ON public.prejuizos_fiscais AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais; CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $prejfistag$;
 DROP POLICY IF EXISTS "Admins can manage profiles" ON public.profiles; CREATE POLICY "Admins can manage profiles" ON public.profiles AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles; CREATE POLICY "Users can update own profile" ON public.profiles AS PERMISSIVE FOR UPDATE TO authenticated USING ((((SELECT auth.uid()) = id) OR ((SELECT auth.uid()) = user_id))) WITH CHECK (((((SELECT auth.uid()) = id) OR ((SELECT auth.uid()) = user_id)) AND profile_sensitive_fields_unchanged(id, user_id, role, empresa_id)));
 DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles; CREATE POLICY "Users can view own profile" ON public.profiles AS PERMISSIVE FOR SELECT TO authenticated USING ((((SELECT auth.uid()) = id) OR ((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS "Admins can manage protestos" ON public.protestos; CREATE POLICY "Admins can manage protestos" ON public.protestos AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS protestos_empresa_select ON public.protestos; CREATE POLICY protestos_empresa_select ON public.protestos AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS protestos_tenant_rw ON public.protestos; CREATE POLICY protestos_tenant_rw ON public.protestos AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $protesttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='protestos' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS protestos_empresa_select ON public.protestos; CREATE POLICY protestos_empresa_select ON public.protestos AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS protestos_tenant_rw ON public.protestos; CREATE POLICY protestos_tenant_rw ON public.protestos AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $protesttag$;
 DROP POLICY IF EXISTS protocolos_st_write_admin ON public.protocolos_st; CREATE POLICY protocolos_st_write_admin ON public.protocolos_st AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS protocolos_st_ncms_write_admin ON public.protocolos_st_ncms; CREATE POLICY protocolos_st_ncms_write_admin ON public.protocolos_st_ncms AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS protocolos_st_ufs_write_admin ON public.protocolos_st_ufs; CREATE POLICY protocolos_st_ufs_write_admin ON public.protocolos_st_ufs AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
@@ -752,51 +1056,123 @@ DROP POLICY IF EXISTS "Managers can view telemetry" ON public.query_telemetry; C
 DROP POLICY IF EXISTS "System can insert telemetry" ON public.query_telemetry; CREATE POLICY "System can insert telemetry" ON public.query_telemetry AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
 DROP POLICY IF EXISTS "Admins can view rate limit logs" ON public.rate_limit_logs; CREATE POLICY "Admins can view rate limit logs" ON public.rate_limit_logs AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
 DROP POLICY IF EXISTS "Authenticated can insert rate limit logs" ON public.rate_limit_logs; CREATE POLICY "Authenticated can insert rate limit logs" ON public.rate_limit_logs AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role) OR has_role((SELECT auth.uid()), 'visualizador'::app_role)));
-DROP POLICY IF EXISTS recomendacoes_metas_ia_empresa_select ON public.recomendacoes_metas_ia; CREATE POLICY recomendacoes_metas_ia_empresa_select ON public.recomendacoes_metas_ia AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS "Access by empresa_id" ON public.regimes_especiais_empresa; CREATE POLICY "Access by empresa_id" ON public.regimes_especiais_empresa AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS regimes_simulados_empresa_insert ON public.regimes_simulados; CREATE POLICY regimes_simulados_empresa_insert ON public.regimes_simulados AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS regimes_simulados_empresa_select ON public.regimes_simulados; CREATE POLICY regimes_simulados_empresa_select ON public.regimes_simulados AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.regimes_tributarios; CREATE POLICY "Empresa-based access" ON public.regimes_tributarios AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_conciliacao; CREATE POLICY "Empresa-based access" ON public.regras_conciliacao AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS regras_contab_write ON public.regras_contabilizacao_automatica; CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'contador'::app_role)))) WITH CHECK ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'contador'::app_role))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_duplicidade; CREATE POLICY "Empresa-based access" ON public.regras_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_roteamento_financeiro; CREATE POLICY "Empresa-based access" ON public.regras_roteamento_financeiro AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS empresa_based_access ON public.regras_roteamento_financeiro; CREATE POLICY empresa_based_access ON public.regras_roteamento_financeiro AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $recometag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='recomendacoes_metas_ia' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS recomendacoes_metas_ia_empresa_select ON public.recomendacoes_metas_ia; CREATE POLICY recomendacoes_metas_ia_empresa_select ON public.recomendacoes_metas_ia AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $recometag$;
+DO $regimeepetag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regimes_especiais_empresa' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Access by empresa_id" ON public.regimes_especiais_empresa; CREATE POLICY "Access by empresa_id" ON public.regimes_especiais_empresa AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $regimeepetag$;
+DO $regimesimtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regimes_simulados' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS regimes_simulados_empresa_insert ON public.regimes_simulados; CREATE POLICY regimes_simulados_empresa_insert ON public.regimes_simulados AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS regimes_simulados_empresa_select ON public.regimes_simulados; CREATE POLICY regimes_simulados_empresa_select ON public.regimes_simulados AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $regimesimtag$;
+DO $regimetribtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regimes_tributarios' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.regimes_tributarios; CREATE POLICY "Empresa-based access" ON public.regimes_tributarios AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $regimetribtag$;
+DO $regrasconctag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regras_conciliacao' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_conciliacao; CREATE POLICY "Empresa-based access" ON public.regras_conciliacao AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $regrasconctag$;
+DO $regrascontatag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regras_contabilizacao_automatica' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS regras_contab_write ON public.regras_contabilizacao_automatica; CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica AS PERMISSIVE FOR ALL TO authenticated USING ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'contador'::app_role)))) WITH CHECK ((empresa_acessivel(empresa_id) AND (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'contador'::app_role))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $regrascontatag$;
+DO $regrasduptag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regras_duplicidade' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_duplicidade; CREATE POLICY "Empresa-based access" ON public.regras_duplicidade AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $regrasduptag$;
+DO $regrasrotetag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regras_roteamento_financeiro' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_roteamento_financeiro; CREATE POLICY "Empresa-based access" ON public.regras_roteamento_financeiro AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+    DROP POLICY IF EXISTS empresa_based_access ON public.regras_roteamento_financeiro; CREATE POLICY empresa_based_access ON public.regras_roteamento_financeiro AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $regrasrotetag$;
 DROP POLICY IF EXISTS "Admins can manage regua" ON public.regua_cobranca; CREATE POLICY "Admins can manage regua" ON public.regua_cobranca AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS regua_cobranca_empresa_select ON public.regua_cobranca; CREATE POLICY regua_cobranca_empresa_select ON public.regua_cobranca AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS regua_cobranca_tenant_rw ON public.regua_cobranca; CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $reguacobtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regua_cobranca' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS regua_cobranca_empresa_select ON public.regua_cobranca; CREATE POLICY regua_cobranca_empresa_select ON public.regua_cobranca AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS regua_cobranca_tenant_rw ON public.regua_cobranca; CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $reguacobtag$;
 DROP POLICY IF EXISTS "Admins can manage stages" ON public.regua_cobranca_etapas; CREATE POLICY "Admins can manage stages" ON public.regua_cobranca_etapas AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS regua_cobranca_etapas_empresa_select ON public.regua_cobranca_etapas; CREATE POLICY regua_cobranca_etapas_empresa_select ON public.regua_cobranca_etapas AS PERMISSIVE FOR SELECT TO authenticated USING ((regua_id IN ( SELECT regua_cobranca.id
    FROM regua_cobranca
@@ -808,33 +1184,65 @@ DROP POLICY IF EXISTS regua_cobranca_etapas_tenant_write ON public.regua_cobranc
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND empresa_acessivel(r.empresa_id)))))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1
    FROM regua_cobranca r
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND empresa_acessivel(r.empresa_id))))));
-DROP POLICY IF EXISTS "Access by empresa_id" ON public.regua_cobranca_status; CREATE POLICY "Access by empresa_id" ON public.regua_cobranca_status AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $reguacobstattag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='regua_cobranca_status' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Access by empresa_id" ON public.regua_cobranca_status; CREATE POLICY "Access by empresa_id" ON public.regua_cobranca_status AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $reguacobstattag$;
 DROP POLICY IF EXISTS relatorios_agendados_proprios ON public.relatorios_agendados; CREATE POLICY relatorios_agendados_proprios ON public.relatorios_agendados AS PERMISSIVE FOR ALL TO authenticated USING (((created_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role))) WITH CHECK (((created_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS relatorios_tributarios_agendados_all_admin ON public.relatorios_tributarios_agendados; CREATE POLICY relatorios_tributarios_agendados_all_admin ON public.relatorios_tributarios_agendados AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
-DROP POLICY IF EXISTS relatorios_tributarios_agendados_select_own ON public.relatorios_tributarios_agendados; CREATE POLICY relatorios_tributarios_agendados_select_own ON public.relatorios_tributarios_agendados AS PERMISSIVE FOR SELECT TO authenticated USING (((empresa_id IN ( SELECT profiles.empresa_id
-   FROM profiles
-  WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1
-   FROM profiles
-  WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.resumos_executivos_semanais; CREATE POLICY "Empresa-based access" ON public.resumos_executivos_semanais AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $reltribselecttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='relatorios_tributarios_agendados' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS relatorios_tributarios_agendados_select_own ON public.relatorios_tributarios_agendados; CREATE POLICY relatorios_tributarios_agendados_select_own ON public.relatorios_tributarios_agendados AS PERMISSIVE FOR SELECT TO authenticated USING (((empresa_id IN ( SELECT profiles.empresa_id
+       FROM profiles
+      WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1
+       FROM profiles
+      WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $reltribselecttag$;
+DO $resumoexetag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='resumos_executivos_semanais' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.resumos_executivos_semanais; CREATE POLICY "Empresa-based access" ON public.resumos_executivos_semanais AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $resumoexetag$;
 DROP POLICY IF EXISTS retencao_politicas_admin_select ON public.retencao_politicas; CREATE POLICY retencao_politicas_admin_select ON public.retencao_politicas AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.retencoes_fonte; CREATE POLICY "Empresa-based access" ON public.retencoes_fonte AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $retenfonttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='retencoes_fonte' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.retencoes_fonte; CREATE POLICY "Empresa-based access" ON public.retencoes_fonte AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $retenfonttag$;
 DROP POLICY IF EXISTS "Admins can delete risk rules" ON public.risk_rules; CREATE POLICY "Admins can delete risk rules" ON public.risk_rules AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Authorized roles can view risk rules" ON public.risk_rules; CREATE POLICY "Authorized roles can view risk rules" ON public.risk_rules AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role)));
 DROP POLICY IF EXISTS "Managers can insert risk rules" ON public.risk_rules; CREATE POLICY "Managers can insert risk rules" ON public.risk_rules AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role)));
@@ -856,9 +1264,17 @@ DROP POLICY IF EXISTS saved_filters_admin_all ON public.saved_filters; CREATE PO
   WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
 DROP POLICY IF EXISTS saved_filters_owner_all ON public.saved_filters; CREATE POLICY saved_filters_owner_all ON public.saved_filters AS PERMISSIVE FOR ALL TO authenticated USING ((user_id = (SELECT auth.uid()))) WITH CHECK ((user_id = (SELECT auth.uid())));
 DROP POLICY IF EXISTS saved_filters_owner_write ON public.saved_filters; CREATE POLICY saved_filters_owner_write ON public.saved_filters AS PERMISSIVE FOR ALL TO authenticated USING ((user_id = (SELECT auth.uid()))) WITH CHECK ((user_id = (SELECT auth.uid())));
-DROP POLICY IF EXISTS saved_filters_select ON public.saved_filters; CREATE POLICY saved_filters_select ON public.saved_filters AS PERMISSIVE FOR SELECT TO authenticated USING (((user_id = (SELECT auth.uid())) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1
-   FROM user_roles ur
-  WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
+DO $savedfilttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='saved_filters' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS saved_filters_select ON public.saved_filters; CREATE POLICY saved_filters_select ON public.saved_filters AS PERMISSIVE FOR SELECT TO authenticated USING (((user_id = (SELECT auth.uid())) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1
+       FROM user_roles ur
+      WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $savedfilttag$;
 DROP POLICY IF EXISTS scim_operations_log_admin_select ON public.scim_operations_log; CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins manage scim_tokens" ON public.scim_tokens; CREATE POLICY "Admins manage scim_tokens" ON public.scim_tokens AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM user_roles
@@ -878,39 +1294,79 @@ DROP POLICY IF EXISTS solicitacoes_lgpd_admin_all ON public.solicitacoes_lgpd; C
   WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
 DROP POLICY IF EXISTS solicitacoes_lgpd_user_insert ON public.solicitacoes_lgpd; CREATE POLICY solicitacoes_lgpd_user_insert ON public.solicitacoes_lgpd AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((user_id = (SELECT auth.uid())));
 DROP POLICY IF EXISTS solicitacoes_lgpd_user_select ON public.solicitacoes_lgpd; CREATE POLICY solicitacoes_lgpd_user_select ON public.solicitacoes_lgpd AS PERMISSIVE FOR SELECT TO authenticated USING ((user_id = (SELECT auth.uid())));
-DROP POLICY IF EXISTS sped_arquivos_delete_admin ON public.sped_contabil_arquivos; CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS sped_arquivos_update_admin ON public.sped_contabil_arquivos; CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
-DROP POLICY IF EXISTS split_payment_empresa_insert ON public.split_payment_transacoes; CREATE POLICY split_payment_empresa_insert ON public.split_payment_transacoes AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS split_payment_empresa_select ON public.split_payment_transacoes; CREATE POLICY split_payment_empresa_select ON public.split_payment_transacoes AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS split_payment_empresa_update ON public.split_payment_transacoes; CREATE POLICY split_payment_empresa_update ON public.split_payment_transacoes AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+DO $spedconttag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='sped_contabil_arquivos' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS sped_arquivos_delete_admin ON public.sped_contabil_arquivos; CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos AS PERMISSIVE FOR DELETE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+    DROP POLICY IF EXISTS sped_arquivos_update_admin ON public.sped_contabil_arquivos; CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos AS PERMISSIVE FOR UPDATE TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $spedconttag$;
+DO $splitpaytag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='split_payment_transacoes' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS split_payment_empresa_insert ON public.split_payment_transacoes; CREATE POLICY split_payment_empresa_insert ON public.split_payment_transacoes AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS split_payment_empresa_select ON public.split_payment_transacoes; CREATE POLICY split_payment_empresa_select ON public.split_payment_transacoes AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS split_payment_empresa_update ON public.split_payment_transacoes; CREATE POLICY split_payment_empresa_update ON public.split_payment_transacoes AS PERMISSIVE FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $splitpaytag$;
 DROP POLICY IF EXISTS "Admins can view SSO login attempts" ON public.sso_login_attempts; CREATE POLICY "Admins can view SSO login attempts" ON public.sso_login_attempts AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins manage sso providers" ON public.sso_providers; CREATE POLICY "Admins manage sso providers" ON public.sso_providers AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS sso_role_mappings_admin ON public.sso_role_mappings; CREATE POLICY sso_role_mappings_admin ON public.sso_role_mappings AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS sso_user_groups_select ON public.sso_user_groups; CREATE POLICY sso_user_groups_select ON public.sso_user_groups AS PERMISSIVE FOR SELECT TO authenticated USING (((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
-DROP POLICY IF EXISTS tax_audit_select ON public.tax_audit_trail; CREATE POLICY tax_audit_select ON public.tax_audit_trail AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR ((empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id))));
+DO $taxaudittag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='tax_audit_trail' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS tax_audit_select ON public.tax_audit_trail; CREATE POLICY tax_audit_select ON public.tax_audit_trail AS PERMISSIVE FOR SELECT TO authenticated USING ((has_role((SELECT auth.uid()), 'admin'::app_role) OR ((empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $taxaudittag$;
 DROP POLICY IF EXISTS "Admins can manage templates" ON public.templates_cobranca; CREATE POLICY "Admins can manage templates" ON public.templates_cobranca AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS templates_cobranca_empresa_select ON public.templates_cobranca; CREATE POLICY templates_cobranca_empresa_select ON public.templates_cobranca AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
-DROP POLICY IF EXISTS templates_cobranca_tenant_rw ON public.templates_cobranca; CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+DO $tmplcobtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='templates_cobranca' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS templates_cobranca_empresa_select ON public.templates_cobranca; CREATE POLICY templates_cobranca_empresa_select ON public.templates_cobranca AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))));
+    DROP POLICY IF EXISTS templates_cobranca_tenant_rw ON public.templates_cobranca; CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $tmplcobtag$;
 DROP POLICY IF EXISTS transacoes_bancarias_empresa_select ON public.transacoes_bancarias; CREATE POLICY transacoes_bancarias_empresa_select ON public.transacoes_bancarias AS PERMISSIVE FOR SELECT TO authenticated USING ((conta_bancaria_id IN ( SELECT contas_bancarias.id
    FROM contas_bancarias
   WHERE (contas_bancarias.empresa_id IN ( SELECT user_empresas.empresa_id
            FROM user_empresas
           WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))))));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.transferencias; CREATE POLICY "Empresa-based access" ON public.transferencias AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $transfertag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='transferencias' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.transferencias; CREATE POLICY "Empresa-based access" ON public.transferencias AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $transfertag$;
 DROP POLICY IF EXISTS admin_all ON public.ufs; CREATE POLICY admin_all ON public.ufs AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM user_roles
   WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role)))));
@@ -952,16 +1408,32 @@ DROP POLICY IF EXISTS "Admins can manage all roles" ON public.user_roles; CREATE
 DROP POLICY IF EXISTS "Admins can update user roles" ON public.user_roles; CREATE POLICY "Admins can update user roles" ON public.user_roles AS PERMISSIVE FOR UPDATE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Users can view own roles" ON public.user_roles; CREATE POLICY "Users can view own roles" ON public.user_roles AS PERMISSIVE FOR SELECT TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS "Users see own sessions" ON public.user_sessions; CREATE POLICY "Users see own sessions" ON public.user_sessions AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.vendedores; CREATE POLICY "Empresa-based access" ON public.vendedores AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
-DROP POLICY IF EXISTS "Access by empresa_id" ON public.verificacoes_conformidade; CREATE POLICY "Access by empresa_id" ON public.verificacoes_conformidade AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $vendedtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='vendedores' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.vendedores; CREATE POLICY "Empresa-based access" ON public.vendedores AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $vendedtag$;
+DO $verifconftag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='verificacoes_conformidade' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Access by empresa_id" ON public.verificacoes_conformidade; CREATE POLICY "Access by empresa_id" ON public.verificacoes_conformidade AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $verifconftag$;
 DROP POLICY IF EXISTS "Authenticated can create challenges" ON public.webauthn_challenges; CREATE POLICY "Authenticated can create challenges" ON public.webauthn_challenges AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((SELECT auth.uid()) = user_id));
 DROP POLICY IF EXISTS "Authenticated can read own challenges" ON public.webauthn_challenges; CREATE POLICY "Authenticated can read own challenges" ON public.webauthn_challenges AS PERMISSIVE FOR SELECT TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
 DROP POLICY IF EXISTS "Users can delete their challenges" ON public.webauthn_challenges; CREATE POLICY "Users can delete their challenges" ON public.webauthn_challenges AS PERMISSIVE FOR DELETE TO authenticated USING ((((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role)));
@@ -983,8 +1455,16 @@ DROP POLICY IF EXISTS "Users can insert simulation runs" ON public.webhook_simul
 DROP POLICY IF EXISTS "Users can view simulation runs" ON public.webhook_simulation_runs; CREATE POLICY "Users can view simulation runs" ON public.webhook_simulation_runs AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = created_by));
 DROP POLICY IF EXISTS webhooks_log_admin_insert ON public.webhooks_log; CREATE POLICY webhooks_log_admin_insert ON public.webhooks_log AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS webhooks_log_admin_select ON public.webhooks_log; CREATE POLICY webhooks_log_admin_select ON public.webhooks_log AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Empresa-based access" ON public.whatsapp_conversas; CREATE POLICY "Empresa-based access" ON public.whatsapp_conversas AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
-   FROM user_empresas
-  WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
-   FROM user_roles
-  WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+DO $whatconvtag$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='whatsapp_conversas' AND column_name='empresa_id'
+  ) THEN
+    DROP POLICY IF EXISTS "Empresa-based access" ON public.whatsapp_conversas; CREATE POLICY "Empresa-based access" ON public.whatsapp_conversas AS PERMISSIVE FOR ALL TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
+       FROM user_empresas
+      WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
+       FROM user_roles
+      WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role))))));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
+END $whatconvtag$;
