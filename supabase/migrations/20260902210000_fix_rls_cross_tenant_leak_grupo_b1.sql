@@ -10,6 +10,20 @@
 
 BEGIN;
 
+-- Ensure empresa_id exists on tables that may have been created before the
+-- column was added. ADD COLUMN IF NOT EXISTS is a no-op when it already exists.
+ALTER TABLE public.alertas_preditivos
+  ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+
+ALTER TABLE public.historico_analises_preditivas
+  ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+
+ALTER TABLE public.historico_score_saude
+  ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+
+ALTER TABLE public.recomendacoes_metas_ia
+  ADD COLUMN IF NOT EXISTS empresa_id UUID REFERENCES public.empresas(id);
+
 -- alertas (1)
 DROP POLICY IF EXISTS "Users can view own or privileged system alertas" ON public.alertas;
 CREATE POLICY "Users can view own or privileged system alertas" ON public.alertas AS PERMISSIVE FOR SELECT TO authenticated
