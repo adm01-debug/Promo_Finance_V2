@@ -223,9 +223,14 @@ DO $audtribemprtag$ BEGIN
   END IF;
 EXCEPTION WHEN undefined_table OR undefined_object OR undefined_column THEN NULL;
 END $audtribemprtag$;
-DROP POLICY IF EXISTS "Admins can view all auth logs" ON public.auth_logs; CREATE POLICY "Admins can view all auth logs" ON public.auth_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS "Authenticated can insert auth logs" ON public.auth_logs; CREATE POLICY "Authenticated can insert auth logs" ON public.auth_logs AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role) OR has_role((SELECT auth.uid()), 'visualizador'::app_role)));
-DROP POLICY IF EXISTS "Users can view own auth logs" ON public.auth_logs; CREATE POLICY "Users can view own auth logs" ON public.auth_logs AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
+DO $authlogstag$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='auth_logs') THEN
+    DROP POLICY IF EXISTS "Admins can view all auth logs" ON public.auth_logs; CREATE POLICY "Admins can view all auth logs" ON public.auth_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
+    DROP POLICY IF EXISTS "Authenticated can insert auth logs" ON public.auth_logs; CREATE POLICY "Authenticated can insert auth logs" ON public.auth_logs AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'financeiro'::app_role) OR has_role((SELECT auth.uid()), 'operacional'::app_role) OR has_role((SELECT auth.uid()), 'visualizador'::app_role)));
+    DROP POLICY IF EXISTS "Users can view own auth logs" ON public.auth_logs; CREATE POLICY "Users can view own auth logs" ON public.auth_logs AS PERMISSIVE FOR SELECT TO authenticated USING (((SELECT auth.uid()) = user_id));
+  END IF;
+EXCEPTION WHEN undefined_table OR undefined_object THEN NULL;
+END $authlogstag$;
 DROP POLICY IF EXISTS benchmarks_admin_write ON public.benchmarks_setoriais; CREATE POLICY benchmarks_admin_write ON public.benchmarks_setoriais AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS beneficios_write_admin ON public.beneficios_fiscais; CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais AS PERMISSIVE FOR ALL TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)) WITH CHECK (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins can delete activities" ON public.bitrix24_activities; CREATE POLICY "Admins can delete activities" ON public.bitrix24_activities AS PERMISSIVE FOR DELETE TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
