@@ -13102,30 +13102,40 @@ SELECT cron.schedule('pgss_weekly_baseline', '0 3 * * 0', $CRON_CMD$| to_char(no
 -- =====================================================
 
 -- Dedup aliquotas_iss_municipal (28 linhas duplicadas)
-WITH keep AS (
-  SELECT min(ctid) AS ctid_keep
-  FROM public.aliquotas_iss_municipal
-  WHERE item_lista_id IS NULL
-  GROUP BY codigo_ibge, vigente_de
-)
-DELETE FROM public.aliquotas_iss_municipal
-WHERE item_lista_id IS NULL
-  AND ctid NOT IN (SELECT ctid_keep FROM keep);
+DO $dedup_aliq_iss$ BEGIN
+  EXECUTE $dedup_aliq_iss_q$
+    WITH keep AS (
+      SELECT min(ctid) AS ctid_keep
+      FROM public.aliquotas_iss_municipal
+      WHERE item_lista_id IS NULL
+      GROUP BY codigo_ibge, vigente_de
+    )
+    DELETE FROM public.aliquotas_iss_municipal
+    WHERE item_lista_id IS NULL
+      AND ctid NOT IN (SELECT ctid_keep FROM keep)
+  $dedup_aliq_iss_q$;
+EXCEPTION WHEN undefined_table OR undefined_column OR undefined_object THEN NULL;
+END $dedup_aliq_iss$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS aliq_iss_mun_geral_unq
   ON public.aliquotas_iss_municipal USING btree (codigo_ibge, vigente_de)
   WHERE (item_lista_id IS NULL);
 
 -- Dedup plano_contas (6 linhas, mantendo a mais referenciada)
-WITH ranked AS (
-  SELECT p.id,
-    row_number() OVER (
-      PARTITION BY p.empresa_id, p.codigo
-      ORDER BY (SELECT count(*) FROM public.partidas_contabeis pc WHERE pc.conta_contabil_id=p.id) DESC, p.ctid ASC
-    ) AS rn
-  FROM public.plano_contas p WHERE p.empresa_id IS NOT NULL
-)
-DELETE FROM public.plano_contas WHERE id IN (SELECT id FROM ranked WHERE rn > 1);
+DO $dedup_plano_contas$ BEGIN
+  EXECUTE $dedup_plano_contas_q$
+    WITH ranked AS (
+      SELECT p.id,
+        row_number() OVER (
+          PARTITION BY p.empresa_id, p.codigo
+          ORDER BY (SELECT count(*) FROM public.partidas_contabeis pc WHERE pc.conta_contabil_id=p.id) DESC, p.ctid ASC
+        ) AS rn
+      FROM public.plano_contas p WHERE p.empresa_id IS NOT NULL
+    )
+    DELETE FROM public.plano_contas WHERE id IN (SELECT id FROM ranked WHERE rn > 1)
+  $dedup_plano_contas_q$;
+EXCEPTION WHEN undefined_table OR undefined_column OR undefined_object THEN NULL;
+END $dedup_plano_contas$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS plano_contas_empresa_codigo_uidx
   ON public.plano_contas USING btree (empresa_id, codigo)
