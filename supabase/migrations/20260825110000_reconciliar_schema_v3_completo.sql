@@ -2708,18 +2708,24 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.is_country_blocked(_country_code text) RETURNS boolean
-    LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
-    AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.geo_blocks
-        WHERE country_code = _country_code
-          AND is_blocked = true
-          AND (expires_at IS NULL OR expires_at > now())
-    )
-$$;
+DO $geo_fn_guard$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'geo_blocks') THEN
+    EXECUTE $geo_fn_sql$
+      CREATE OR REPLACE FUNCTION public.is_country_blocked(_country_code text) RETURNS boolean
+          LANGUAGE sql STABLE SECURITY DEFINER
+          SET search_path TO 'public', 'pg_catalog'
+          AS $geo_fn_body$
+          SELECT EXISTS (
+              SELECT 1
+              FROM public.geo_blocks
+              WHERE country_code = _country_code
+                AND is_blocked = true
+                AND (expires_at IS NULL OR expires_at > now())
+          )
+      $geo_fn_body$;
+    $geo_fn_sql$;
+  END IF;
+END $geo_fn_guard$;
 
 CREATE OR REPLACE FUNCTION public.is_ip_allowed_for_login(_ip inet) RETURNS boolean
     LANGUAGE plpgsql SECURITY DEFINER
