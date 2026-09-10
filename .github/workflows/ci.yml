@@ -49,6 +49,11 @@ jobs:
         # SQL ambíguos e escrita manual no ledger de migrations.
         run: bash scripts/security/test-migration-replay-safety.sh
 
+      - name: Integridade do Supabase config
+        # O parser TOML detecta tabelas duplicadas; as asserções preservam os
+        # contratos que fazem autenticação por segredo dentro da Edge Function.
+        run: python3 scripts/security/test-supabase-config.py
+
       - name: Gate estático do reparo SQL
         # Evita que a evidência do reparo dos 12 erros reais do linter passe com
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.

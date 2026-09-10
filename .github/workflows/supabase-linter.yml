@@ -18,6 +18,8 @@ on:
       - 'scripts/security/test-canonical-db-gates.mjs'
       - 'scripts/security/test-canonical-db-gates.test.mjs'
       - 'scripts/security/test-migration-replay-safety.sh'
+      - 'scripts/security/test-supabase-config.py'
+      - 'supabase/config.toml'
       - 'scripts/security/test-lint-function-repairs.mjs'
       - '.github/workflows/supabase-linter.yml'
   pull_request:
@@ -29,6 +31,8 @@ on:
       - 'scripts/security/test-canonical-db-gates.mjs'
       - 'scripts/security/test-canonical-db-gates.test.mjs'
       - 'scripts/security/test-migration-replay-safety.sh'
+      - 'scripts/security/test-supabase-config.py'
+      - 'supabase/config.toml'
       - 'scripts/security/test-lint-function-repairs.mjs'
       - '.github/workflows/supabase-linter.yml'
   workflow_dispatch: {}
@@ -47,6 +51,9 @@ jobs:
 
       - name: Replay safety das migrations críticas
         run: bash scripts/security/test-migration-replay-safety.sh
+
+      - name: Integridade do Supabase config
+        run: python3 scripts/security/test-supabase-config.py
 
       - name: Gate estático do reparo SQL
         run: node scripts/security/test-lint-function-repairs.mjs

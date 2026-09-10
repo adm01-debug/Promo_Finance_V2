@@ -27,10 +27,19 @@ test.describe('Autenticação', () => {
       await expect(page.getByText('Senha deve ter no mínimo 8 caracteres')).toBeVisible();
     });
 
-    test('valida a obrigatoriedade de caractere especial', async ({ page }) => {
+    test('login aceita senha legada sem exigir regra de cadastro', async ({ page }) => {
       await page.locator('#login-email').fill('usuario@example.com');
       await page.locator('#login-password').fill('SenhaSemEspecial123');
       await page.getByRole('button', { name: 'Acessar Plataforma' }).click();
+
+      await expect(page.getByText('Senha deve conter caractere especial')).toBeHidden();
+    });
+
+    test('cadastro exige caractere especial', async ({ page }) => {
+      await page.getByRole('tab', { name: 'Criar Conta' }).click();
+      await page.locator('#register-email').fill('usuario@example.com');
+      await page.locator('#register-password').fill('SenhaSemEspecial123');
+      await page.getByRole('button', { name: 'Criar Conta Premium' }).click();
 
       await expect(page.getByText('Senha deve conter caractere especial')).toBeVisible();
     });
@@ -50,11 +59,29 @@ test.describe('Autenticação', () => {
     test('autentica no ambiente canônico e sai de /auth', async ({ page }, testInfo) => {
       testInfo.skip(!HAS_E2E_CREDENTIALS, 'Credenciais E2E não configuradas');
 
+      let authRequestObserved = false;
+      page.on('request', (request) => {
+        if (new URL(request.url()).pathname.endsWith('/auth/v1/token')) {
+          authRequestObserved = true;
+        }
+      });
+
       await page.locator('#login-email').fill(process.env.E2E_USER_EMAIL!);
       await page.locator('#login-password').fill(process.env.E2E_USER_PASSWORD!);
       await page.getByRole('button', { name: 'Acessar Plataforma' }).click();
 
-      await expect(page).not.toHaveURL(/\/auth(?:\?|$)/, { timeout: 20_000 });
+      try {
+        await expect(page).not.toHaveURL(/\/auth(?:\?|$)/, { timeout: 20_000 });
+      } catch (error) {
+        const feedback = await page
+          .locator('[data-sonner-toast], [role="alert"]')
+          .allTextContents();
+        console.error('Diagnóstico seguro do login E2E', {
+          authRequestObserved,
+          feedback,
+        });
+        throw error;
+      }
     });
   });
 

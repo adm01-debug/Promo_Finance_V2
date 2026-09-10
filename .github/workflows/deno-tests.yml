@@ -46,6 +46,7 @@ jobs:
           deno lint --no-config \
             --rules-exclude=no-import-prefix,no-explicit-any,no-unused-vars,prefer-const,require-await \
             supabase/functions/_shared/auth-guard.ts \
+            supabase/functions/_shared/auth-guard_test.ts \
             supabase/functions/_shared/proxy-audit.ts \
             supabase/functions/_shared/sql-write-guard.ts \
             supabase/functions/_shared/sql-write-guard_test.ts \
@@ -91,6 +92,7 @@ jobs:
             supabase/functions/_shared/contract-response_test.ts \
             supabase/functions/_shared/versioned-contract_test.ts \
             supabase/functions/_shared/contract-coverage_test.ts \
+            supabase/functions/_shared/auth-guard_test.ts \
             supabase/functions/_shared/sql-write-guard_test.ts \
             supabase/functions/_shared/rate-limit_test.ts \
             supabase/functions/_shared/webhook-auth_test.ts \

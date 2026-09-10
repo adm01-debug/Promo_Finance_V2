@@ -98,11 +98,6 @@ test.describe('Login › validação do formulário', () => {
   });
 });
 
-// ============================================================================
-
-// ============================================================================
-// 4) RBAC NEGATIVO — usuário autenticado SEM admin é barrado em /admin/*
-=======
 // 3) RBAC NEGATIVO — usuário autenticado SEM admin é barrado em /admin/*
 // ============================================================================
 
