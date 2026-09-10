@@ -310,21 +310,11 @@ export function useApuracoesTributarias(empresaId?: string) {
 
   // Transmitir apuração
   const transmitirApuracao = useMutation({
-    mutationFn: async (id: string) => {
-      // Simulação de transmissão - em produção, integrar com SPED/eSocial
-
-      const { data, error } = await supabase
-        .from('apuracoes_tributarias')
-        // TODO(2026-08-14): data_transmissao/protocolo_transmissao removidos — não existem em apuracoes_tributarias (types.ts)
-        .update({
-          status: 'transmitido',
-        })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+    mutationFn: async (_id: string) => {
+      // Não altere o status fiscal sem protocolo emitido pelo integrador.
+      // O contrato SPED/eSocial ainda não está ligado a esta tela; marcá-la
+      // como transmitida aqui criava uma evidência fiscal falsa.
+      throw new Error('Transmissão indisponível: integre e confirme o protocolo fiscal antes de marcar a apuração como transmitida.');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['apuracoes_tributarias'] });
@@ -336,7 +326,7 @@ export function useApuracoesTributarias(empresaId?: string) {
   });
 
   return {
-    apuracoes,
+    apuracoes: apuracoes ?? [],
     isLoading,
     error,
     buscarApuracao,

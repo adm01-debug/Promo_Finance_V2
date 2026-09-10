@@ -29,7 +29,6 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
     descricao: '',
     conta_receber_id: '',
     conta_pagar_id: '',
-    provider: 'system' as 'system' | 'asaas'
   });
 
   const searchParams = new URLSearchParams(window.location.search);
@@ -102,7 +101,7 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
       descricao: formData.descricao || undefined,
       conta_receber_id: formData.conta_receber_id || undefined,
       conta_pagar_id: formData.conta_pagar_id || undefined,
-      provider: formData.provider,
+      provider: 'asaas',
     });
     onClose();
   };
@@ -119,15 +118,8 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
         <div className="col-span-2"><Label>Descrição (opcional)</Label><Input value={formData.descricao} onChange={(e) => setFormData({ ...formData, descricao: e.target.value })} placeholder="Descrição ou referência do boleto" /></div>
         <div className="col-span-2">
           <Label>Provedor de Emissão</Label>
-          <Select value={formData.provider} onValueChange={(v) => setFormData({ ...formData, provider: v as 'system' | 'asaas' })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o provedor" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="system">Sistema Interno (Simulado)</SelectItem>
-              <SelectItem value="asaas">ASAAS (API Direta)</SelectItem>
-            </SelectContent>
-          </Select>
+          <Input value="ASAAS (API Direta)" readOnly aria-describedby="provedor-emissao-ajuda" />
+          <p id="provedor-emissao-ajuda" className="mt-1 text-sm text-muted-foreground">A emissão depende da confirmação do provedor; o sistema não gera boletos simulados.</p>
         </div>
       </div>
       <div className="flex gap-2 pt-4">

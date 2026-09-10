@@ -103,10 +103,11 @@ export function parseCurrency(value: string, currency: CurrencyCode = 'BRL'): nu
   }
 
   const info = currencies[currency];
-  let cleaned = value.replace(info.symbol, '').replace(currency, '').trim();
+  const escapedSymbol = info.symbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  let cleaned = value.replace(new RegExp(escapedSymbol, 'g'), '').replace(currency, '').trim();
 
   const isNegative = cleaned.startsWith('-') || cleaned.startsWith('(');
-  cleaned = cleaned.replace(/[()-]/g, '');
+  cleaned = cleaned.replace(/[()-]/g, '').trim();
 
   const compactMatch = cleaned.match(/^([\d.,]+)\s*([KMB])$/i);
   if (compactMatch) {
@@ -133,11 +134,20 @@ export function parseCurrency(value: string, currency: CurrencyCode = 'BRL'): nu
     return isNegative ? -result : result;
   }
 
-  const normalized = cleaned
-    .replace(new RegExp(`\\${info.thousandSeparator}`, 'g'), '')
-    .replace(info.decimalSeparator, '.');
+  // `parseFloat` aceita prefixos válidos (por exemplo, "12abc"), o que é
+  // perigoso para valores financeiros. Valide toda a representação antes de
+  // converter e respeite os separadores da moeda selecionada.
+  const escapedThousands = info.thousandSeparator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapedDecimal = info.decimalSeparator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const validFormatted = new RegExp(
+    `^(?:\\d+|\\d{1,3}(?:${escapedThousands}\\d{3})+)(?:${escapedDecimal}\\d+)?$`,
+  );
+  if (!validFormatted.test(cleaned)) return NaN;
 
-  const result = parseFloat(normalized);
+  const normalized = cleaned
+    .replace(new RegExp(escapedThousands, 'g'), '')
+    .replace(info.decimalSeparator, '.');
+  const result = Number(normalized);
   return isNegative ? -result : result;
 }
 
@@ -148,9 +158,14 @@ export function centsToValue(cents: number, currency: CurrencyCode = 'BRL'): num
 }
 
 export function valueToCents(value: number, currency: CurrencyCode = 'BRL'): number {
+  if (!Number.isFinite(value)) {
+    throw new Error('value must be a finite number');
+  }
   const info = currencies[currency];
   const multiplier = Math.pow(10, info.decimalPlaces);
-  return Math.round(value * multiplier);
+  // Arredondamento simétrico em relação a zero, com epsilon para compensar a
+  // representação binária de valores como 1.005.
+  return Math.sign(value) * Math.round((Math.abs(value) + Number.EPSILON) * multiplier);
 }
 
 export function calculatePercentage(value: number, percentage: number): number {
@@ -201,6 +216,9 @@ export function calculateInstallments(
   }
   if (!Number.isFinite(totalValue) || totalValue < 0) {
     throw new Error('totalValue must be a non-negative finite number');
+  }
+  if (!Number.isFinite(interestRate) || interestRate < 0) {
+    throw new Error('interestRate must be a non-negative finite number');
   }
 
   let totalWithInterest: number;

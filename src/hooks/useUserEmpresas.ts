@@ -90,7 +90,9 @@ export function useUserEmpresas() {
 
       if (error) {
         logger.warn('[useUserEmpresas] Falha ao carregar vínculos de empresa', error);
-        return [];
+        // Não transforme indisponibilidade em "usuário sem empresas": isso
+        // poderia trocar o escopo ativo por vazio e induzir decisões erradas.
+        throw error;
       }
 
       return ((data ?? []) as UserEmpresaQueryRow[])

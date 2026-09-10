@@ -33,7 +33,7 @@ VITE_VAPID_PUBLIC_KEY              # opcional — web push; privada vai no vault
 
 ```bash
 bun install --frozen-lockfile
-bun run build:prod
+bun run build
 # Upload dist/ para Vercel via CLI ou dashboard
 ```
 

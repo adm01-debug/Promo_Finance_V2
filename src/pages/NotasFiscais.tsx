@@ -10,13 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   FileText, Download, Eye, Plus, Search, Copy, FileCode, Ban,
-  Calendar, Clock, RefreshCw, CheckCircle2, XCircle, Loader2,
+  Calendar, Clock, RefreshCw, CheckCircle2, XCircle,
   TrendingUp, DollarSign, Hash, BarChart3, History, Shield, Activity,
   ExternalLink, FileX as FileXIcon
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
-import { NotaFiscal, statusConfig, mockNotasFiscais } from '@/components/nfe/nfe-types';
+import { NotaFiscal, statusConfig } from '@/components/nfe/nfe-types';
 import { NFePreview } from '@/components/nfe/NFePreview';
 import { NovaNFeForm } from '@/components/nfe/NovaNFeForm';
 import { EventosHistorico } from '@/components/nfe/EventosHistorico';
@@ -42,8 +42,7 @@ export default function NotasFiscais() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [showNovaNFe, setShowNovaNFe] = useState(false);
-  const [notas, setNotas] = useState<NotaFiscal[]>(mockNotasFiscais);
-  const [isConsultando, setIsConsultando] = useState(false);
+  const [notas, setNotas] = useState<NotaFiscal[]>([]);
   const [notaCancelar, setNotaCancelar] = useState<NotaFiscal | null>(null);
 
   const handleNovaNota = useCallback((novaNota: NotaFiscal) => {
@@ -56,21 +55,6 @@ export default function NotasFiscais() {
       nota.id === notaId ? { ...nota, status: 'cancelada' as const, motivoCancelamento: justificativa } : nota
     ));
     setNotaCancelar(null);
-  }, []);
-
-  const handleConsultarSefaz = useCallback(async () => {
-    setIsConsultando(true);
-    toast.info('Consultando status na SEFAZ...');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setNotas(prev => prev.map(nota => {
-      if (nota.status === 'pendente' && Math.random() > 0.2) {
-        toast.success(`NF-e #${nota.numero} autorizada!`);
-        return { ...nota, status: 'autorizada' as const, protocolo: `135${new Date().getFullYear()}${String(Math.floor(Math.random() * 9999999999)).padStart(10, '0')}` };
-      }
-      return nota;
-    }));
-    setIsConsultando(false);
-    toast.success('Consulta SEFAZ finalizada!');
   }, []);
 
   const totalEmitido = notas.filter(n => n.status === 'autorizada').reduce((acc, n) => acc + n.valorTotal, 0);
@@ -97,7 +81,7 @@ export default function NotasFiscais() {
         <motion.div variants={itemVariants} className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Notas Fiscais Eletrônicas</h1>
-            <p className="text-muted-foreground mt-1">Emissão e controle de NF-e com integração SEFAZ</p>
+            <p className="text-muted-foreground mt-1">Emissão e consulta dependem de integração SEFAZ homologada.</p>
           </div>
           <Dialog open={showNovaNFe} onOpenChange={setShowNovaNFe}>
             <DialogTrigger asChild>
@@ -161,8 +145,8 @@ export default function NotasFiscais() {
                         <SelectItem value="inutilizada">Inutilizada</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" className="gap-2" onClick={handleConsultarSefaz} disabled={isConsultando}>
-                      {isConsultando ? (<><Loader2 className="h-4 w-4 animate-spin" /> Consultando...</>) : (<><RefreshCw className="h-4 w-4" /> Consultar SEFAZ</>)}
+                    <Button variant="outline" className="gap-2" disabled title="Integração SEFAZ ainda não homologada">
+                      <RefreshCw className="h-4 w-4" /> Consulta SEFAZ indisponível
                     </Button>
                   </div>
                 </CardContent>

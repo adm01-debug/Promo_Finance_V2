@@ -384,7 +384,7 @@ export function useOperacoesTributaveis(empresaId?: string) {
   };
 
   return {
-    operacoes,
+    operacoes: operacoes ?? [],
     isLoading,
     error,
     criarOperacao,

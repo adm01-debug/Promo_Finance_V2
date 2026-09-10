@@ -56,35 +56,38 @@ export interface NovoBoletoData {
   descricao?: string;
   conta_receber_id?: string;
   conta_pagar_id?: string;
-  provider?: 'system' | 'asaas';
+  provider?: 'asaas';
 }
 
-function generateLinhaDigitavel(valor: number, _vencimento: string): string {
-  const valorStr = Math.round(valor * 100)
-    .toString()
-    .padStart(10, '0');
-  const random1 = Math.floor(Math.random() * 100000)
-    .toString()
-    .padStart(5, '0');
-  const random2 = Math.floor(Math.random() * 100000000)
-    .toString()
-    .padStart(8, '0');
-  const random3 = Math.floor(Math.random() * 100000000)
-    .toString()
-    .padStart(8, '0');
-
-  return `00190.${random1} ${random2}.123456 ${random3}.789012 1 9999${valorStr}`;
+export interface EmissaoBoletoConfirmada {
+  id: string;
+  linhaDigitavel: string;
+  codigoBarras: string;
 }
 
-function generateCodigoBarras(valor: number): string {
-  const valorStr = Math.round(valor * 100)
-    .toString()
-    .padStart(10, '0');
-  const random = Math.floor(Math.random() * 10000000000000000)
-    .toString()
-    .padStart(16, '0');
-
-  return `00191999900000${valorStr}${random}`;
+/**
+ * Aceita somente uma resposta que permita pagar o boleto de fato. Não é uma
+ * validação de dígitos bancários: essa responsabilidade é do emissor, que
+ * também precisa devolver um identificador externo rastreável.
+ */
+export function validarEmissaoBoletoConfirmada(resposta: unknown): EmissaoBoletoConfirmada {
+  if (!resposta || typeof resposta !== 'object') {
+    throw new Error('ASAAS não retornou confirmação da emissão.');
+  }
+  const dados = resposta as Record<string, unknown>;
+  const id = dados.id;
+  const linhaDigitavel = dados.identificationField;
+  const codigoBarras = dados.barCode;
+  if (typeof id !== 'string' || id.trim() === '') {
+    const mensagem = typeof dados.error === 'string' && dados.error.trim()
+      ? dados.error
+      : 'ASAAS não retornou identificador';
+    throw new Error(mensagem);
+  }
+  if (typeof linhaDigitavel !== 'string' || linhaDigitavel.trim() === '' || typeof codigoBarras !== 'string' || codigoBarras.trim() === '') {
+    throw new Error('ASAAS não retornou linha digitável e código de barras válidos. Nenhum boleto foi criado.');
+  }
+  return { id, linhaDigitavel, codigoBarras };
 }
 
 async function getNextBoletoNumber(): Promise<string> {
@@ -203,8 +206,13 @@ export function useBoletos() {
         ],
       };
 
-      // Se o provedor for ASAAS, integrar via Edge Function
-      if (data.provider === 'asaas') {
+      // A emissão só é válida quando o provedor retorna identificador e
+      // instrumentos de cobrança. O sistema não fabrica linha/código local.
+      if (data.provider !== 'asaas') {
+        throw new Error('Selecione um provedor de cobrança homologado para emitir boleto.');
+      }
+
+      {
         const { data: asaasResult, error: asaasError } = await supabase.functions.invoke(
           'asaas-proxy',
           {
@@ -227,28 +235,15 @@ export function useBoletos() {
 
         // VAL-GAP-04: proxy não lança em 400/422 (negócio ASAAS) — sem esta
         // validação o boleto nasceria sem vínculo ASAAS silenciosamente.
-        const asaasId = asaasResult?.id;
-        if (typeof asaasId !== 'string' || asaasId.trim() === '') {
-          const mensagemAsaas =
-            typeof asaasResult?.error === 'string' && asaasResult.error.trim()
-              ? asaasResult.error
-              : 'ASAAS não retornou identificador';
-          throw new Error(mensagemAsaas);
-        }
+        const emissao = validarEmissaoBoletoConfirmada(asaasResult);
 
         boletoData = {
           ...boletoData,
-          asaas_id: asaasId,
+          asaas_id: emissao.id,
           external_provider: 'asaas',
-          linha_digitavel:
-            asaasResult.identificationField || generateLinhaDigitavel(data.valor, data.vencimento),
-          codigo_barras: asaasResult.barCode || generateCodigoBarras(data.valor),
+          linha_digitavel: emissao.linhaDigitavel,
+          codigo_barras: emissao.codigoBarras,
         };
-      } else {
-        // Fluxo 'system' (sem ASAAS): explicitar provider para nao herdar o DEFAULT 'asaas' do banco
-        boletoData.external_provider = 'system';
-        boletoData.linha_digitavel = generateLinhaDigitavel(data.valor, data.vencimento);
-        boletoData.codigo_barras = generateCodigoBarras(data.valor);
       }
 
       const { data: newBoleto, error } = await supabase

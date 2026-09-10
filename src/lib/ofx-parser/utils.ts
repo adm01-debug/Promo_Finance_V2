@@ -2,7 +2,7 @@
 
 export function parseOFXDate(dateStr: string): Date {
   // OFX date format: YYYYMMDDHHMMSS or YYYYMMDD
-  if (!/^\d{8}(\d{6})?/.test(dateStr)) {
+  if (!/^\d{8}(\d{6})?$/.test(dateStr)) {
     throw new Error(`Data OFX inválida: ${dateStr}`);
   }
   const year = parseInt(dateStr.substring(0, 4), 10);
@@ -13,7 +13,15 @@ export function parseOFXDate(dateStr: string): Date {
   const sec = dateStr.length > 12 ? parseInt(dateStr.substring(12, 14), 10) : 0;
 
   const d = new Date(year, month, day, hour, min, sec);
-  if (isNaN(d.getTime())) {
+  if (
+    isNaN(d.getTime()) ||
+    d.getFullYear() !== year ||
+    d.getMonth() !== month ||
+    d.getDate() !== day ||
+    d.getHours() !== hour ||
+    d.getMinutes() !== min ||
+    d.getSeconds() !== sec
+  ) {
     throw new Error(`Data OFX inválida: ${dateStr}`);
   }
   return d;
@@ -30,7 +38,9 @@ export function parseData(dateStr: string): Date {
     let year = parseInt(match[3], 10);
     if (year < 100) year += 2000;
     const d = new Date(year, month, day);
-    if (isNaN(d.getTime())) throw new Error(`Data inválida: ${dateStr}`);
+    if (isNaN(d.getTime()) || d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) {
+      throw new Error(`Data inválida: ${dateStr}`);
+    }
     return d;
   }
 
@@ -42,7 +52,12 @@ export function parseData(dateStr: string): Date {
       parseInt(match[2], 10) - 1,
       parseInt(match[3], 10),
     );
-    if (isNaN(d.getTime())) throw new Error(`Data inválida: ${dateStr}`);
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const day = parseInt(match[3], 10);
+    if (isNaN(d.getTime()) || d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) {
+      throw new Error(`Data inválida: ${dateStr}`);
+    }
     return d;
   }
 
