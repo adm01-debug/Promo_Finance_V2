@@ -2,6 +2,23 @@
 import type { ResultadoImportacao, TransacaoOFX } from './types';
 import { parseCSVLine, parseData } from './utils';
 
+function parseValorCsv(valorRaw: string): number {
+  const cleaned = valorRaw.trim().replace(/^R\$\s*/i, '').replace(/\s/g, '');
+  let normalized: string;
+  if (/^-?(?:\d+|\d{1,3}(?:\.\d{3})+)(?:,\d+)?$/.test(cleaned)) {
+    normalized = cleaned.replace(/\./g, '').replace(',', '.');
+  } else if (/^-?\d+\.\d{1,2}$/.test(cleaned)) {
+    // Extratos internacionais normalmente usam ponto decimal. Só aceite essa
+    // forma quando ela não puder ser confundida com agrupamento BRL de milhar.
+    normalized = cleaned;
+  } else {
+    throw new Error(`Valor inválido: ${valorRaw}`);
+  }
+  const valor = Number(normalized);
+  if (!Number.isFinite(valor)) throw new Error(`Valor inválido: ${valorRaw}`);
+  return valor;
+}
+
 export function parseCSV(
   content: string,
   fileName: string,
@@ -66,7 +83,7 @@ export function parseCSV(
         const valorRaw = valorIdx !== -1 ? cols[valorIdx] : cols[1];
         if (!valorRaw) continue;
 
-        let valor = parseFloat(valorRaw.replace(/[^\d,.-]/g, '').replace(',', '.'));
+        let valor = parseValorCsv(valorRaw);
 
         let tipo: 'credito' | 'debito' = valor >= 0 ? 'credito' : 'debito';
 

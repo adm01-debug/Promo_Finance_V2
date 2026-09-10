@@ -3,7 +3,8 @@ import {
   parseCurrency, 
   sumCurrency, 
   compareCurrency,
-  calculateInstallments
+  calculateInstallments,
+  valueToCents,
 } from '../currency';
 
 describe('Currency Utilities - Robustness & Regression', () => {
@@ -37,6 +38,24 @@ describe('Currency Utilities - Robustness & Regression', () => {
 
     it('deve retornar NaN para strings inválidas', () => {
       expect(parseCurrency('texto inválido')).toBeNaN();
+      expect(parseCurrency('12abc')).toBeNaN();
+    });
+
+    it('não aceita separadores monetários malformados', () => {
+      expect(parseCurrency('1.23,45')).toBeNaN();
+      expect(parseCurrency('1,234.56')).toBeNaN();
+    });
+  });
+
+  describe('Conversão para centavos', () => {
+    it('arredonda meias unidades de forma simétrica', () => {
+      expect(valueToCents(1.005)).toBe(101);
+      expect(valueToCents(-1.005)).toBe(-101);
+    });
+
+    it('rejeita números não finitos', () => {
+      expect(() => valueToCents(Number.NaN)).toThrow(/finite/i);
+      expect(() => valueToCents(Number.POSITIVE_INFINITY)).toThrow(/finite/i);
     });
   });
 
@@ -53,6 +72,12 @@ describe('Currency Utilities - Robustness & Regression', () => {
       const result = calculateInstallments(1000, 10, 1); // 1% ao mês
       expect(result.installmentValue).toBe(105.58);
       expect(result.totalWithInterest).toBe(1055.82);
+    });
+
+    it('rejeita taxa de juros não finita ou negativa', () => {
+      expect(() => calculateInstallments(1000, 3, Number.NaN)).toThrow(/interestRate/i);
+      expect(() => calculateInstallments(1000, 3, Number.POSITIVE_INFINITY)).toThrow(/interestRate/i);
+      expect(() => calculateInstallments(1000, 3, -1)).toThrow(/interestRate/i);
     });
   });
 

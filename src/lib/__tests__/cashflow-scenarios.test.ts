@@ -90,6 +90,16 @@ describe('Cashflow Scenarios Engine', () => {
       expect(alertas.length).toBe(0);
     });
 
+    it('classifica saldo entre os limites alto e médio como risco médio', () => {
+      const alertas = detectarAlertasRuptura({
+        otimista: [],
+        pessimista: [],
+        realista: [{ data: '2026-09-11', receitas: 0, despesas: 0, saldo: 75000, cenario: 'realista' }],
+      }, 0, 50000, 100000);
+      expect(alertas).toHaveLength(1);
+      expect(alertas[0].tipo).toBe('risco_medio');
+    });
+
     it('limita a 10 alertas', () => {
       const muitosDias = Array.from({ length: 100 }, (_, i) => ({
         data: `2024-01-${String(i + 1).padStart(2, '0')}`,
@@ -137,6 +147,11 @@ describe('Cashflow Scenarios Engine', () => {
       const projecoes = gerarTodasProjecoes(dadosBase, 100000);
       const metricas = calcularMetricasCenarios(projecoes);
       expect(metricas.realista.diasCriticos).toBeGreaterThanOrEqual(0);
+    });
+
+    it('não produz Infinity em projeção vazia', () => {
+      const metricas = calcularMetricasCenarios({ otimista: [], realista: [], pessimista: [] });
+      expect(metricas.realista.saldoMinimo).toBe(0);
     });
   });
 

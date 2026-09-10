@@ -4,6 +4,7 @@ import {
   parseCSV,
   parseExtratoBancario,
 } from '../ofx-parser';
+import { parseData, parseOFXDate } from '../ofx-parser/utils';
 
 describe('OFX/CSV Parser', () => {
   // ========================
@@ -160,6 +161,32 @@ invalido;teste;abc
 15/01/2024;ok;100`;
       const r = parseCSV(csv, 'test.csv');
       expect(r.avisos.length).toBeGreaterThan(0);
+    });
+
+    it('preserva milhar brasileiro e rejeita valor inválido', () => {
+      const csv = [
+        'data;descricao;valor',
+        '15/01/2024;Crédito;1.234,56',
+        '16/01/2024;Inválido;abc',
+      ].join('\n');
+      const r = parseCSV(csv, 'extrato.csv');
+      expect(r.sucesso).toBe(true);
+      expect(r.extrato?.transacoes).toHaveLength(1);
+      expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+      expect(r.avisos).toHaveLength(1);
+    });
+
+    it('aceita ponto decimal sem tratar como milhar', () => {
+      const csv = ['date,description,amount', '2024-01-15,Payment,500.50'].join('\n');
+      const r = parseCSV(csv, 'statement.csv');
+      expect(r.extrato?.transacoes[0].valor).toBe(500.5);
+    });
+
+    it('rejeita datas civis inexistentes', () => {
+      expect(() => parseData('31/02/2026')).toThrow(/Data inválida/);
+      expect(() => parseData('2026-02-31')).toThrow(/Data inválida/);
+      expect(() => parseOFXDate('20260231')).toThrow(/OFX inválida/);
+      expect(parseData('29/02/2024').getDate()).toBe(29);
     });
   });
 

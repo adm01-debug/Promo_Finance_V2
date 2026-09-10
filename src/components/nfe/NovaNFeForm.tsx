@@ -1,18 +1,14 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, XCircle, Loader2, CheckCircle2, Zap, Package, User } from 'lucide-react';
+import { Plus, XCircle, AlertTriangle, Package, User } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { toast } from 'sonner';
-import { processarSefaz, NFEData, SefazResponse } from '@/lib/sefaz-simulator';
-import { registrarEvento } from '@/lib/sefaz-event-logger';
-import { SefazStatusPanel } from './SefazStatusPanel';
 import { NotaFiscal, ItemNFe } from './nfe-types';
 
 interface NovaNFeFormProps {
@@ -20,7 +16,7 @@ interface NovaNFeFormProps {
   onSuccess: (nota: NotaFiscal) => void;
 }
 
-export function NovaNFeForm({ onClose, onSuccess }: NovaNFeFormProps) {
+export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
   const { data: empresas = [] } = useEmpresas();
   
   const [formData, setFormData] = useState({
@@ -31,10 +27,6 @@ export function NovaNFeForm({ onClose, onSuccess }: NovaNFeFormProps) {
   const [itens, setItens] = useState<ItemNFe[]>([
     { codigo: '', descricao: '', ncm: '', cfop: '5102', unidade: 'UN', quantidade: 1, valorUnitario: 0, valorTotal: 0 }
   ]);
-
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [currentStep, setCurrentStep] = useState('');
-  const [sefazResponse, setSefazResponse] = useState<SefazResponse | null>(null);
 
   const addItem = () => {
     setItens([...itens, { codigo: '', descricao: '', ncm: '', cfop: '5102', unidade: 'UN', quantidade: 1, valorUnitario: 0, valorTotal: 0 }]);
@@ -57,76 +49,15 @@ export function NovaNFeForm({ onClose, onSuccess }: NovaNFeFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsProcessing(true);
-    setSefazResponse(null);
-
-    const empresa = empresas.find(c => c.id === formData.empresa);
-    const steps = ['validating', 'connecting', 'sending', 'processing', 'done'];
-    
-    for (const step of steps.slice(0, -1)) {
-      setCurrentStep(step);
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 500));
-    }
-
-    const nfeData: NFEData = {
-      numero: Math.floor(1000 + Math.random() * 9000), serie: 1,
-      naturezaOperacao: formData.naturezaOperacao, dataEmissao: new Date(),
-      emitente: {
-        cnpj: empresa?.cnpj || '12.345.678/0001-90',
-        razaoSocial: empresa?.razao_social || 'Promo Brindes Ltda',
-        inscricaoEstadual: empresa?.inscricao_estadual || '123.456.789.123',
-        uf: empresa?.estado || 'SP'
-      },
-      destinatario: { cpfCnpj: formData.destinatarioCnpj, nome: formData.destinatarioNome, endereco: formData.destinatarioEndereco },
-      itens: itens.map(item => ({
-        codigo: item.codigo || 'PROD001', descricao: item.descricao, ncm: item.ncm || '96082000',
-        cfop: item.cfop, quantidade: item.quantidade, valorUnitario: item.valorUnitario, valorTotal: item.valorTotal
-      })),
-      valorTotal: totalProdutos
-    };
-
-    const tempoInicio = Date.now();
-    registrarEvento({ tipo: 'VALIDACAO', numeroNfe: String(nfeData.numero).padStart(9, '0'), cStat: '000', xMotivo: 'Validação de schema XML concluída', ambiente: 'homologacao', tempoResposta: Date.now() - tempoInicio, detalhes: 'Estrutura XML validada conforme schema NF-e 4.00' });
-    registrarEvento({ tipo: 'ENVIO_LOTE', numeroNfe: String(nfeData.numero).padStart(9, '0'), cStat: '103', xMotivo: 'Lote recebido com sucesso', ambiente: 'homologacao', tempoResposta: 1200, detalhes: 'Lote enviado para processamento na SEFAZ' });
-
-    const response = await processarSefaz({ tipo: 'autorizacao', nfeData });
-    const tempoTotal = Date.now() - tempoInicio;
-
-    registrarEvento({
-      tipo: response.success ? 'AUTORIZACAO' : 'REJEICAO',
-      numeroNfe: String(nfeData.numero).padStart(9, '0'), chaveAcesso: response.chaveAcesso,
-      cStat: response.cStat, xMotivo: response.xMotivo, protocolo: response.protocolo,
-      ambiente: 'homologacao', tempoResposta: tempoTotal,
-      detalhes: response.success ? 'NF-e autorizada com sucesso pela SEFAZ' : `Rejeição: ${response.errors?.join(', ') || response.xMotivo}`
-    });
-
-    setCurrentStep('done');
-    setSefazResponse(response);
-    setIsProcessing(false);
-
-    if (response.success) {
-      toast.success(`NF-e autorizada! Protocolo: ${response.protocolo}`);
-      const novaNota: NotaFiscal = {
-        id: Date.now().toString(), numero: String(nfeData.numero).padStart(9, '0'), serie: '1',
-        chaveAcesso: response.chaveAcesso!, naturezaOperacao: formData.naturezaOperacao,
-        dataEmissao: new Date().toISOString(), cnpjEmitente: nfeData.emitente.cnpj,
-        emitenteNome: nfeData.emitente.razaoSocial, cnpjDestinatario: formData.destinatarioCnpj,
-        destinatarioNome: formData.destinatarioNome, destinatarioEndereco: formData.destinatarioEndereco,
-        valorProdutos: totalProdutos, valorFrete: 0, valorSeguro: 0, valorDesconto: 0,
-        valorIPI: 0, valorICMS: totalProdutos * 0.18, valorTotal: totalProdutos,
-        status: 'autorizada', protocolo: response.protocolo, itens
-      };
-      setTimeout(() => onSuccess(novaNota), 1500);
-    } else {
-      toast.error(`Rejeição SEFAZ: ${response.xMotivo}`);
-    }
+    toast.error('Emissão indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real.');
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-h-[70vh] overflow-y-auto p-1">
-      <AnimatePresence>
-        <SefazStatusPanel isProcessing={isProcessing} currentStep={currentStep} response={sefazResponse} />
-      </AnimatePresence>
+      <div className="flex gap-2 rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-muted-foreground">
+        <AlertTriangle className="h-4 w-4 shrink-0 text-warning" />
+        Esta tela não transmite NF-e até que a integração SEFAZ esteja homologada. Nenhum protocolo será simulado.
+      </div>
 
       <div className="space-y-4">
         <h4 className="font-medium flex items-center gap-2"><User className="h-4 w-4" /> Destinatário</h4>
@@ -196,14 +127,10 @@ export function NovaNFeForm({ onClose, onSuccess }: NovaNFeFormProps) {
       </div>
 
       <div className="flex gap-2 pt-4 sticky bottom-0 bg-background">
-        <Button type="submit" className="flex-1 gap-2" disabled={isProcessing || sefazResponse?.success}>
-          {isProcessing ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processando...</>) :
-           sefazResponse?.success ? (<><CheckCircle2 className="h-4 w-4" /> Autorizada!</>) :
-           (<><Zap className="h-4 w-4" /> Transmitir para SEFAZ</>)}
+        <Button type="submit" className="flex-1 gap-2" disabled>
+          <AlertTriangle className="h-4 w-4" /> Emissão indisponível
         </Button>
-        <Button type="button" variant="outline" onClick={onClose} disabled={isProcessing}>
-          {sefazResponse?.success ? 'Fechar' : 'Cancelar'}
-        </Button>
+        <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
       </div>
     </form>
   );

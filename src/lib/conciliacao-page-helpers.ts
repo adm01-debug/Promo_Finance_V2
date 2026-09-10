@@ -22,6 +22,7 @@ interface ContaPagarRow {
   id: string;
   descricao: string;
   valor: number;
+  valor_pago?: number | null;
   data_vencimento: string;
   fornecedor_nome: string;
   status: string;
@@ -35,6 +36,7 @@ interface ContaReceberRow {
   id: string;
   descricao: string;
   valor: number;
+  valor_recebido?: number | null;
   data_vencimento: string;
   cliente_nome: string;
   status: string;
@@ -68,6 +70,7 @@ export function montarLancamentosSistema(
       id: cp.id,
       descricao: cp.descricao,
       valor: cp.valor,
+      valor_pago: cp.valor_pago,
       data_vencimento: cp.data_vencimento,
       fornecedor_nome: cp.fornecedor_nome,
       status: cp.status,
@@ -86,6 +89,7 @@ export function montarLancamentosSistema(
       id: cr.id,
       descricao: cr.descricao,
       valor: cr.valor,
+      valor_recebido: cr.valor_recebido,
       data_vencimento: cr.data_vencimento,
       cliente_nome: cr.cliente_nome,
       status: cr.status,

@@ -12,6 +12,7 @@ import { FileText, Download, Printer, BarChart3, TrendingUp, TrendingDown, Calcu
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/formatters';
+import { exportToCSV, exportToPDF } from '@/lib/export-utils';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useApuracoesTributarias } from '@/hooks/useApuracoesTributarias';
 import { useCreditosTributarios } from '@/hooks/useCreditosTributarios';
@@ -33,9 +34,9 @@ export function RelatoriosContabeisTributarios({ empresaId: initialEmpresaId }: 
   const [tipoRelatorio, setTipoRelatorio] = useState<TipoRelatorio>('dre-tributario');
 
   const { data: empresas = [] } = useAllEmpresas();
-  const { apuracoes } = useApuracoesTributarias(empresaId || undefined);
+  const { apuracoes = [] } = useApuracoesTributarias(empresaId || undefined);
   const { creditos = [] } = useCreditosTributarios(empresaId || undefined);
-  const { operacoes } = useOperacoesTributaveis(empresaId || undefined);
+  const { operacoes = [] } = useOperacoesTributaveis(empresaId || undefined);
   const empresaSelecionada = empresas.find(e => e.id === empresaId);
 
   const apuracoesPeriodo = useMemo(() => apuracoes.filter(a => a.competencia >= periodoInicio && a.competencia <= periodoFim), [apuracoes, periodoInicio, periodoFim]);
@@ -68,7 +69,34 @@ export function RelatoriosContabeisTributarios({ empresaId: initialEmpresaId }: 
     { grupo: 'Carga Tributária Efetiva', nivel: 0, percentual: cargaTributariaEfetiva },
   ];
 
-  const handleExportar = (formato: 'pdf' | 'excel') => toast.info(`Exportando relatório em formato ${formato.toUpperCase()}...`);
+  const handleExportar = (formato: 'pdf' | 'excel') => {
+    if (!empresaId) {
+      toast.error('Selecione uma empresa antes de exportar o relatório.');
+      return;
+    }
+
+    const dados = linhasDRE
+      .filter((linha) => typeof linha.valor === 'number')
+      .map((linha) => ({ demonstrativo: linha.grupo, valor: Number(linha.valor) }));
+    const colunas = [
+      { key: 'demonstrativo', header: 'Demonstrativo' },
+      { key: 'valor', header: 'Valor', formatter: (valor: unknown) => formatCurrency(typeof valor === 'number' ? valor : 0) },
+    ] as const;
+    const nomeBase = `relatorio-tributario-${empresaId}-${periodoInicio}-a-${periodoFim}`;
+
+    if (formato === 'excel') {
+      exportToCSV(dados, [...colunas], nomeBase);
+      toast.success('Arquivo CSV compatível com Excel gerado.');
+      return;
+    }
+
+    exportToPDF(dados, [...colunas], 'Relatório Contábil Tributário', {
+      empresa: {
+        razao_social: empresaSelecionada?.razao_social,
+        cnpj: empresaSelecionada?.cnpj || undefined,
+      },
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -80,7 +108,7 @@ export function RelatoriosContabeisTributarios({ empresaId: initialEmpresaId }: 
             <div className="space-y-2 min-w-48"><Label>Empresa</Label><Select value={empresaId} onValueChange={setEmpresaId}><SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger><SelectContent>{empresas.map((emp) => <SelectItem key={emp.id} value={emp.id}>{emp.razao_social}</SelectItem>)}</SelectContent></Select></div>
             <div className="space-y-2"><Label>Período Inicial</Label><Input type="month" value={periodoInicio} onChange={(e) => setPeriodoInicio(e.target.value)} className="w-36" /></div>
             <div className="space-y-2"><Label>Período Final</Label><Input type="month" value={periodoFim} onChange={(e) => setPeriodoFim(e.target.value)} className="w-36" /></div>
-            <div className="flex gap-2"><Button variant="outline" onClick={() => handleExportar('excel')}><Download className="h-4 w-4 mr-2" />Excel</Button><Button variant="outline" onClick={() => handleExportar('pdf')}><Printer className="h-4 w-4 mr-2" />PDF</Button></div>
+            <div className="flex gap-2"><Button variant="outline" disabled={!empresaId} onClick={() => handleExportar('excel')}><Download className="h-4 w-4 mr-2" />Excel (CSV)</Button><Button variant="outline" disabled={!empresaId} onClick={() => handleExportar('pdf')}><Printer className="h-4 w-4 mr-2" />Imprimir / PDF</Button></div>
           </div>
         </CardContent>
       </Card>

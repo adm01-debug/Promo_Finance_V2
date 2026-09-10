@@ -5,6 +5,7 @@ export function converterContasPagarParaLancamentos(
     id: string;
     descricao: string;
     valor: number;
+    valor_pago?: number | null;
     data_vencimento: string;
     fornecedor_nome: string;
     status: string;
@@ -16,7 +17,7 @@ export function converterContasPagarParaLancamentos(
     id: cp.id,
     tipo: 'pagar' as const,
     descricao: cp.descricao,
-    valor: cp.valor,
+    valor: cp.status === 'parcial' ? Math.max(0, cp.valor - Number(cp.valor_pago || 0)) : cp.valor,
     dataVencimento: new Date(cp.data_vencimento),
     entidade: cp.fornecedor_nome,
     entidadeNome: cp.fornecedores?.nome_fantasia || cp.fornecedores?.razao_social,
@@ -30,6 +31,7 @@ export function converterContasReceberParaLancamentos(
     id: string;
     descricao: string;
     valor: number;
+    valor_recebido?: number | null;
     data_vencimento: string;
     cliente_nome: string;
     status: string;
@@ -41,7 +43,7 @@ export function converterContasReceberParaLancamentos(
     id: cr.id,
     tipo: 'receber' as const,
     descricao: cr.descricao,
-    valor: cr.valor,
+    valor: cr.status === 'parcial' ? Math.max(0, cr.valor - Number(cr.valor_recebido || 0)) : cr.valor,
     dataVencimento: new Date(cr.data_vencimento),
     entidade: cr.cliente_nome,
     entidadeNome: cr.clientes?.nome_fantasia || cr.clientes?.razao_social,

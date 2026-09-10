@@ -109,7 +109,7 @@ export function detectarAlertasRuptura(
   projecoes: Record<CenarioTipo, ProjecaoCenario[]>,
   limiteRupturaTotal: number = 0,
   limiteRiscoAlto: number = 50000,
-  _limiteRiscoMedio: number = 100000
+  limiteRiscoMedio: number = 100000
 ): AlertaRuptura[] {
   const alertas: AlertaRuptura[] = [];
   const hoje = new Date();
@@ -119,14 +119,21 @@ export function detectarAlertasRuptura(
     // Buscar o primeiro dia de ruptura ou risco alto para cada cenário
     const diaRuptura = dados.find(d => d.saldo <= limiteRupturaTotal);
     const diaRiscoAlto = dados.find(d => d.saldo <= limiteRiscoAlto && d.saldo > limiteRupturaTotal);
+    const diaRiscoMedio = dados.find(
+      d => d.saldo <= limiteRiscoMedio && d.saldo > limiteRiscoAlto,
+    );
     
-    [diaRuptura, diaRiscoAlto].filter(Boolean).forEach((dia) => {
+    [diaRuptura, diaRiscoAlto, diaRiscoMedio].filter(Boolean).forEach((dia) => {
       if (!dia) return;
       
       const dataEvento = new Date(dia.data);
       dataEvento.setHours(0, 0, 0, 0);
       const diasAteEvento = Math.ceil((dataEvento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-      const tipo = dia.saldo <= limiteRupturaTotal ? 'ruptura' : 'risco_alto';
+      const tipo = dia.saldo <= limiteRupturaTotal
+        ? 'ruptura'
+        : dia.saldo <= limiteRiscoAlto
+          ? 'risco_alto'
+          : 'risco_medio';
 
       alertas.push({
         id: `${tipo}-${cenario}-${dia.data}`,
@@ -136,11 +143,15 @@ export function detectarAlertasRuptura(
         cenario: cenario as CenarioTipo,
         mensagem: tipo === 'ruptura' 
           ? `Ruptura de caixa projetada no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`
-          : `Saldo crítico projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
+          : tipo === 'risco_alto'
+            ? `Saldo crítico projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`
+            : `Saldo de atenção projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
         diasAteEvento,
         acaoSugerida: tipo === 'ruptura'
           ? 'Antecipar recebíveis ou renegociar pagamentos urgentes'
-          : 'Revisar fluxo de pagamentos e priorizar despesas essenciais',
+          : tipo === 'risco_alto'
+            ? 'Revisar fluxo de pagamentos e priorizar despesas essenciais'
+            : 'Monitorar recebimentos e revisar a projeção de caixa',
       });
     });
   });
@@ -171,7 +182,7 @@ export function calcularMetricasCenarios(
     const saldos = dados.map(d => d.saldo);
     resultado[cenario as CenarioTipo] = {
       saldoFinal: saldos[saldos.length - 1] || 0,
-      saldoMinimo: Math.min(...saldos),
+      saldoMinimo: saldos.length > 0 ? Math.min(...saldos) : 0,
       diasCriticos: saldos.filter(s => s < 100000).length,
     };
   });
