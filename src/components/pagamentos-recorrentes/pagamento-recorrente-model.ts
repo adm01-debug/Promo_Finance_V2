@@ -27,12 +27,13 @@ export const frequenciaOptions: { value: FrequenciaPagamento; label: string }[] 
   { value: 'anual', label: 'Anual' },
 ];
 
-export type TipoCobranca = 'boleto' | 'pix' | 'transferencia' | 'cartao' | 'dinheiro';
+export type TipoCobranca = 'boleto' | 'pix' | 'transferencia' | 'cartao_credito' | 'cartao_debito' | 'dinheiro';
 
 export const tipoCobrancaOptions: { value: TipoCobranca; label: string }[] = [
   { value: 'boleto', label: 'Boleto' },
   { value: 'pix', label: 'PIX' },
   { value: 'transferencia', label: 'Transferência' },
-  { value: 'cartao', label: 'Cartão' },
+  { value: 'cartao_credito', label: 'Cartão de Crédito' },
+  { value: 'cartao_debito', label: 'Cartão de Débito' },
   { value: 'dinheiro', label: 'Dinheiro' },
 ];

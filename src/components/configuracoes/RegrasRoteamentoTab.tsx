@@ -29,7 +29,7 @@ interface RegraRoteamento {
   nome: string;
   cnpj: string;
   contaBancariaId: string;
-  tipoCobranca: 'boleto' | 'pix' | 'cartao' | 'todos';
+  tipoCobranca: 'boleto' | 'pix' | 'cartao_credito' | 'cartao_debito' | 'todos';
   prioridade: number;
   ativo: boolean;
 }

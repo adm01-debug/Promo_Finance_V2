@@ -28,7 +28,7 @@ interface ContaReceberFormValues {
   categoria_id?: string;
   conta_bancaria_id?: string;
   vendedor_id?: string;
-  tipo_cobranca?: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+  tipo_cobranca?: 'boleto' | 'pix' | 'cartao_credito' | 'cartao_debito' | 'transferencia' | 'dinheiro';
   numero_documento?: string;
   codigo_barras?: string;
   chave_pix?: string;
@@ -80,7 +80,8 @@ interface CategoriaOption {
 const tipoCobrancaOptions = [
   { value: 'boleto', label: 'Boleto', icon: Banknote },
   { value: 'pix', label: 'PIX', icon: QrCode },
-  { value: 'cartao', label: 'Cartão', icon: CreditCard },
+  { value: 'cartao_credito', label: 'Cartão de Crédito', icon: CreditCard },
+  { value: 'cartao_debito', label: 'Cartão de Débito', icon: CreditCard },
   { value: 'transferencia', label: 'Transferência', icon: Building2 },
   { value: 'dinheiro', label: 'Dinheiro', icon: Wallet },
 ];

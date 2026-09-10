@@ -1,6 +1,6 @@
 export type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 export type TipoTransacao = 'receita' | 'despesa';
-export type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+export type TipoCobranca = 'boleto' | 'pix' | 'cartao_credito' | 'cartao_debito' | 'transferencia' | 'dinheiro';
 export type PrioridadeAlerta = 'baixa' | 'media' | 'alta' | 'critica';
 export type EtapaReguaCobranca = 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico';
 

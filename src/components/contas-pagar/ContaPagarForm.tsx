@@ -41,7 +41,7 @@ const contaPagarSchema = z.object({
   centro_custo_id: z.string().optional(),
   categoria_id: z.string().optional(),
   conta_bancaria_id: z.string().optional(),
-  tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
+  tipo_cobranca: z.enum(['boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro']),
   numero_documento: z.string().max(50, 'Número muito longo').optional(),
   codigo_barras: z.string().max(100, 'Código muito longo').optional(),
   observacoes: z.string().max(1000, 'Observações muito longas').optional(),
@@ -62,7 +62,7 @@ interface ContaPagar {
   centro_custo_id: string | null; 
   categoria_id: string | null; 
   conta_bancaria_id: string | null;
-  tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+  tipo_cobranca: 'boleto' | 'pix' | 'cartao_credito' | 'cartao_debito' | 'transferencia' | 'dinheiro';
   numero_documento: string | null; 
   codigo_barras: string | null; 
   observacoes: string | null; 

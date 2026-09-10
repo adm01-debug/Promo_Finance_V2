@@ -39,7 +39,7 @@ const contaReceberSchema = z.object({
   categoria_id: z.string().optional(),
   conta_bancaria_id: z.string().optional(),
   vendedor_id: z.string().optional(),
-  tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
+  tipo_cobranca: z.enum(['boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro']),
   numero_documento: z.string().max(50).optional(),
   codigo_barras: z.string().max(100).optional(),
   chave_pix: z.string().max(100).optional(),
