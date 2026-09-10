@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 export interface Categoria {
@@ -10,6 +11,7 @@ export interface Categoria {
   icone: string | null;
   ativo: boolean;
   plano_conta_id: string | null;
+  empresa_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -25,15 +27,23 @@ export interface CategoriaInput {
 // HOOKS
 
 export function useCategorias(tipo?: 'despesa' | 'receita') {
+  const { currentEmpresaId } = useAuth();
   const {
     data: categorias = [],
     isLoading,
     error,
     refetch,
   } = useQuery({
-    queryKey: ['categorias', tipo],
+    queryKey: ['categorias', tipo, currentEmpresaId],
     queryFn: async () => {
-      let query = supabase.from('categorias').select('*').eq('ativo', true).order('nome');
+      if (!currentEmpresaId) return [];
+
+      let query = supabase
+        .from('categorias')
+        .select('*')
+        .eq('ativo', true)
+        .eq('empresa_id', currentEmpresaId)
+        .order('nome');
 
       if (tipo) {
         query = query.eq('tipo', tipo);
@@ -43,6 +53,7 @@ export function useCategorias(tipo?: 'despesa' | 'receita') {
       if (error) throw error;
       return (data || []) as Categoria[];
     },
+    enabled: Boolean(currentEmpresaId),
   });
 
   const categoriasDespesa = categorias.filter((c) => c.tipo === 'despesa');
@@ -59,30 +70,35 @@ export function useCategorias(tipo?: 'despesa' | 'receita') {
 }
 
 export function useCategoria(id: string | undefined) {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['categorias', 'detail', id],
+    queryKey: ['categorias', 'detail', id, currentEmpresaId],
     queryFn: async () => {
-      if (!id) return null;
+      if (!id || !currentEmpresaId) return null;
       const { data, error } = await supabase
         .from('categorias')
         .select('*')
         .eq('id', id)
+        .eq('empresa_id', currentEmpresaId)
         .maybeSingle();
       if (error) throw error;
       return data as Categoria | null;
     },
-    enabled: !!id,
+    enabled: Boolean(id && currentEmpresaId),
   });
 }
 
 export function useCreateCategoria() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async (input: CategoriaInput) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
+      const { empresa_id: _empresaIdIgnorada, ...dados } = input;
       const { data, error } = await supabase
         .from('categorias')
-        .insert({ ...input, ativo: true })
+        .insert({ ...dados, ativo: true, empresa_id: currentEmpresaId })
         .select()
         .single();
       if (error) throw error;
@@ -100,13 +116,17 @@ export function useCreateCategoria() {
 
 export function useUpdateCategoria() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, data: input }: { id: string; data: Partial<CategoriaInput> }) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
+      const { empresa_id: _empresaIdIgnorada, ...dados } = input;
       const { data, error } = await supabase
         .from('categorias')
-        .update(input)
+        .update(dados)
         .eq('id', id)
+        .eq('empresa_id', currentEmpresaId)
         .select()
         .single();
       if (error) throw error;
@@ -124,10 +144,16 @@ export function useUpdateCategoria() {
 
 export function useDeleteCategoria() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('categorias').update({ ativo: false }).eq('id', id);
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
+      const { error } = await supabase
+        .from('categorias')
+        .update({ ativo: false })
+        .eq('id', id)
+        .eq('empresa_id', currentEmpresaId);
       if (error) throw error;
     },
     onSuccess: () => {

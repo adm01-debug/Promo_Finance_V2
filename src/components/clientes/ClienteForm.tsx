@@ -7,6 +7,7 @@ import { User, Edit } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
 import { ClienteFormFields } from './ClienteFormFields';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { logger } from '@/lib/logger';
@@ -71,6 +72,7 @@ interface ClienteFormProps {
 export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const queryClient = useQueryClient();
   const { customCelebration } = useConfetti();
+  const { currentEmpresaId } = useAuth();
   const isEditing = !!cliente;
 
   const form = useForm<ClienteFormData>({
@@ -130,6 +132,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
 
   const createMutation = useMutation({
     mutationFn: async (data: ClienteFormData) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
       const { error } = await supabase.from('clientes').insert({
         razao_social: data.razao_social,
         nome_fantasia: data.nome_fantasia || null,
@@ -144,6 +147,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
         ramo_atividade: data.ramo_atividade || null,
         observacoes: data.observacoes || null,
         ativo: data.ativo,
+        empresa_id: currentEmpresaId,
       });
 
       if (error) throw error;
@@ -169,6 +173,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const updateMutation = useMutation({
     mutationFn: async (data: ClienteFormData) => {
       if (!cliente) throw new Error('Cliente não encontrado');
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
 
       const { error } = await supabase
         .from('clientes')
@@ -187,7 +192,8 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
           observacoes: data.observacoes || null,
           ativo: data.ativo,
         })
-        .eq('id', cliente.id);
+        .eq('id', cliente.id)
+        .eq('empresa_id', currentEmpresaId);
 
       if (error) throw error;
     },

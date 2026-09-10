@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { useAuth } from '@/hooks/useAuth';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 
 export type CentroCusto = Tables<'centros_custo'>;
@@ -45,12 +46,15 @@ export function useAllCentrosCusto() {
 
 export function useCriarCentroCusto() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async (centro: CentroCustoInsert) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
+      const { empresa_id: _empresaIdIgnorada, ...dados } = centro;
       const { data, error } = await supabase
         .from('centros_custo')
-        .insert(centro)
+        .insert({ ...dados, empresa_id: currentEmpresaId })
         .select()
         .single();
 
@@ -70,13 +74,17 @@ export function useCriarCentroCusto() {
 
 export function useAtualizarCentroCusto() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: CentroCustoUpdate }) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
+      const { empresa_id: _empresaIdIgnorada, ...dados } = data;
       const { data: result, error } = await supabase
         .from('centros_custo')
-        .update(data)
+        .update(dados)
         .eq('id', id)
+        .eq('empresa_id', currentEmpresaId)
         .select()
         .single();
 
@@ -96,14 +104,17 @@ export function useAtualizarCentroCusto() {
 
 export function useExcluirCentroCusto() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
       // Soft delete - apenas desativa
       const { error } = await supabase
         .from('centros_custo')
         .update({ ativo: false })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('empresa_id', currentEmpresaId);
 
       if (error) throw error;
     },
@@ -120,13 +131,16 @@ export function useExcluirCentroCusto() {
 
 export function useReativarCentroCusto() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
       const { error } = await supabase
         .from('centros_custo')
         .update({ ativo: true })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('empresa_id', currentEmpresaId);
 
       if (error) throw error;
     },
