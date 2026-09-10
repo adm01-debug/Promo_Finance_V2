@@ -41,10 +41,6 @@ export function useCreateApiKey() {
       expires_at?: string;
       scopes: string[];
     }) => {
-      // In a real app, the key generation and hashing would happen in an Edge Function
-      // For this implementation, we'll simulate the process and return a mock key
-      // and let the backend (edge function) handle the actual secure storage.
-
       const { data, error } = await supabase.functions.invoke('api-keys-manage', {
         body: { action: 'create', ...payload },
       });
@@ -57,9 +53,8 @@ export function useCreateApiKey() {
       toast.success('Chave de API criada com sucesso');
     },
     onError: () => {
-      // A edge function `api-keys-manage` ainda não foi implantada — ver docs/FUNCIONALIDADES_SEM_UI.md
       toast.error('Não foi possível criar a chave de API', {
-        description: 'O serviço de gestão de chaves não está disponível.',
+        description: 'Verifique as permissões e tente novamente.',
       });
     },
   });
@@ -78,7 +73,7 @@ export function useRevokeApiKey() {
     },
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ['api-keys', vars.empresa_id] });
-      toast.success('Chave de API revogada');
+      toast.success('Chave de API removida');
     },
   });
 }

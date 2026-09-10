@@ -222,9 +222,6 @@ export default function Cobrancas() {
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                     <CustomerDeepScore 
                       score={selectedDevedor.score || 0}
-                      serasaScore={Math.floor(Math.random() * 400) + 400} // Mock data for now
-                      boaVistaScore={Math.floor(Math.random() * 400) + 400} // Mock data for now
-                      riscoComportamental="O cliente apresenta um padrão de pagamento sazonal, com maior risco nos meses de fim de trimestre."
                     />
                   </motion.div>
                 )}

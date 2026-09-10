@@ -3,15 +3,13 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Copy, CheckCircle2, Terminal, AlertCircle, Clock, ChevronRight, Braces } from 'lucide-react';
+import { Globe, CheckCircle2, Terminal, AlertCircle, Clock, ChevronRight, Braces } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { env } from '@/config/env';
 
 interface WebhookLog {
   id: string;
@@ -28,8 +26,6 @@ interface WebhookLog {
 }
 
 export function WebhookConfigPanel() {
-  const [webhookUrl] = useState(`${env.SUPABASE_URL}/functions/v1/webhook-financeiro?id=project_alpha`);
-  const [copied, setCopied] = useState(false);
   const [logs, setLogs] = useState<WebhookLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
@@ -67,13 +63,6 @@ export function WebhookConfigPanel() {
     };
   }, []);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(webhookUrl);
-    setCopied(true);
-    toast.success('URL do Webhook copiada!');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <div className="space-y-6">
       <Card className="border-primary/20 bg-primary/5">
@@ -82,19 +71,13 @@ export function WebhookConfigPanel() {
             <Globe className="h-4 w-4 text-primary" /> Webhook de Baixa Automática
           </CardTitle>
           <CardDescription className="text-xs">
-            Utilize esta URL para integrar seu banco ou processador de pagamentos.
+            A recepção genérica ainda exige contrato assinado por provedor; não há URL pública ativa.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2">
-            <Input value={webhookUrl} readOnly className="bg-background/50 border-white/10 text-xs font-mono" />
-            <Button size="icon" variant="outline" onClick={handleCopy} className="shrink-0">
-              {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
-            </Button>
-          </div>
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-            <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-            Status: Listener Ativo (v2.0)
+          <div className="flex items-center gap-2 text-xs text-muted-foreground rounded-lg border border-warning/30 bg-warning/5 p-3">
+            <AlertCircle className="h-4 w-4 text-warning shrink-0" />
+            Configure um provedor suportado, como Asaas, antes de receber baixas automáticas.
           </div>
         </CardContent>
       </Card>

@@ -98,7 +98,7 @@ export default function ApiManagement() {
             gradientTo="to-indigo-500"
           >
             <div className="flex items-center gap-3">
-              <Button variant="outline" className="bg-card/5 border-border text-foreground gap-2">
+              <Button variant="outline" className="bg-card/5 border-border text-foreground gap-2" disabled title="A documentação pública da API ainda não foi publicada.">
                 <Book className="h-4 w-4" />
                 Documentação API
               </Button>
@@ -173,7 +173,7 @@ export default function ApiManagement() {
                 <CardContent className="flex flex-col items-center justify-center py-12 text-foreground/20">
                   <Zap className="h-12 w-12 mb-4 opacity-10" />
                   <p className="mb-4">Nenhum webhook configurado.</p>
-                  <Button variant="outline" className="border-border text-foreground">Adicionar Endpoint</Button>
+                  <Button variant="outline" className="border-border text-foreground" disabled title="O cadastro de endpoints ainda não foi implantado.">Adicionar Endpoint</Button>
                 </CardContent>
               </Card>
             </div>
@@ -188,11 +188,11 @@ export default function ApiManagement() {
                 </CardHeader>
                 <CardContent className="text-sm text-foreground/60 space-y-4">
                   <p>
-                    As chaves de API têm as mesmas permissões que um usuário administrador no Promo Finance.
+                    A chave é exibida uma única vez e armazenada apenas como hash. O consumo por APIs externas depende do endpoint contratado para a integração.
                   </p>
                   <ul className="list-disc pl-4 space-y-2">
                     <li>Use chaves com escopos restritos sempre que possível.</li>
-                    <li>Rode as chaves periodicamente por segurança.</li>
+                    <li>Remova chaves que não estejam mais em uso.</li>
                     <li>Sempre utilize HTTPS para chamadas de API.</li>
                   </ul>
                 </CardContent>
@@ -205,13 +205,13 @@ export default function ApiManagement() {
                 <CardContent className="space-y-4">
                   <div className="p-3 bg-black/40 rounded-lg border border-border">
                     <p className="text-[10px] text-primary font-black uppercase mb-2">Endpoint Base</p>
-                    <code className="text-xs text-foreground/80">https://api.promofinance.com/v1</code>
+                    <code className="text-xs text-foreground/80">Disponível por integração contratada</code>
                   </div>
                   <div className="p-3 bg-black/40 rounded-lg border border-border">
                     <p className="text-[10px] text-primary font-black uppercase mb-2">Autenticação</p>
-                    <code className="text-xs text-foreground/80 break-all">Authorization: Bearer pf_live_...</code>
+                    <code className="text-xs text-foreground/80 break-all">A chave não habilita uma API pública genérica.</code>
                   </div>
-                  <Button variant="link" className="text-primary p-0 h-auto text-xs gap-1">
+                  <Button variant="link" className="text-primary p-0 h-auto text-xs gap-1" disabled>
                     Ver exemplos de código <ExternalLink className="h-3 w-3" />
                   </Button>
                 </CardContent>
