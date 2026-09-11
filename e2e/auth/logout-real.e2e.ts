@@ -72,7 +72,10 @@ test.describe('Login/Logout › fluxo real com admin (isolado)', () => {
     await logout(page);
     await expect(page).toHaveURL(/\/auth/, { timeout: 10_000 });
 
-    await page.evaluate(() => window.location.assign('/dashboard'));
-    await expect(page).toHaveURL(/\/auth/);
+    // Navega pela API do Playwright para aguardar com segurança a troca do
+    // documento. window.location.assign() dentro de page.evaluate() destrói o
+    // próprio contexto de execução e pode gerar falso negativo no CI.
+    await page.goto('/dashboard');
+    await expect(page).toHaveURL(/\/auth/, { timeout: 10_000 });
   });
 });

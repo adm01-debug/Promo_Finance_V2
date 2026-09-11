@@ -1,0 +1,2 @@
+# Dependência exclusiva de desenvolvimento; nunca entra no bundle do produto.
+graphifyy==0.9.48

@@ -32,6 +32,13 @@ def command(args, cwd, env=None, timeout=180):
     ).stdout
 
 
+def atomic_write_json(path, payload):
+    """Substitui um JSON no mesmo diretório, sem expor arquivo parcialmente gravado."""
+    temporary = path.with_name(f".{path.name}.tmp")
+    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+    temporary.replace(path)
+
+
 def profile_config(config, name):
     """Seleciona um perfil versionado; regras não vêm do terminal."""
     if not PROFILE_NAME.fullmatch(name):
@@ -63,19 +70,23 @@ def is_allowed_path(name):
 def selected_names(tracked, config):
     files = config.get("files")
     prefixes = config.get("includePrefixes")
-    if files:
-        if not isinstance(files, list) or len(files) != len(set(files)):
-            raise ValueError("Lista de arquivos vazia ou duplicada.")
-        names = files
-    else:
+    names = set()
+    if files is not None:
+        if (not isinstance(files, list) or not files
+                or any(not isinstance(name, str) or not name for name in files)
+                or len(files) != len(set(files))):
+            raise ValueError("Lista de arquivos inválida, vazia ou duplicada.")
+        names.update(files)
+    if prefixes is not None:
         if not isinstance(prefixes, list) or not prefixes:
             raise ValueError("Prefixos do perfil inválidos.")
         if any(not isinstance(prefix, str) or not prefix.endswith("/")
                or prefix.startswith("/") or ".." in PurePosixPath(prefix).parts
                for prefix in prefixes):
             raise ValueError("Prefixos do perfil inválidos.")
-        names = sorted(name for name in tracked
-                       if any(name.startswith(prefix) for prefix in prefixes) and is_allowed_path(name))
+        names.update(name for name in tracked
+                     if any(name.startswith(prefix) for prefix in prefixes) and is_allowed_path(name))
+    names = sorted(names)
     if not names or len(names) > config["maxFiles"]:
         raise ValueError("Corpus vazio ou acima do limite de arquivos.")
     return names
@@ -145,26 +156,28 @@ def analyze(root, config, files):
     run = Path(tempfile.mkdtemp(prefix="execucao-", dir=output))
     run.chmod(0o700)
     env = isolated_env(run)
-    corpus = run / "corpus"
-    for name, content in files.items():
-        target = corpus / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
-    # Limita a descoberta de raiz/aliases do extrator à cópia, não ao worktree pai.
-    command(["git", "init", "--quiet", str(corpus)], run, env)
     evidence = {
-        "status": "iniciado", "commit": command(["git", "rev-parse", "HEAD"], root).strip(),
-        "timestamp": datetime.now(timezone.utc).isoformat(), "version": version,
+        "status": "iniciado", "timestamp": datetime.now(timezone.utc).isoformat(), "version": version,
         "profile": config["name"],
-        "source_worktree_dirty": bool(command(["git", "status", "--porcelain", "--", *files], root).strip()),
         "mode": "AST local; sem semântica LLM; sem banco de dados",
         "input_tokens": 0, "output_tokens": 0,
         "files": {name: hashlib.sha256(content).hexdigest() for name, content in files.items()},
     }
     manifest = run / "evidencia.json"
-    manifest.write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + "\n")
+    atomic_write_json(manifest, evidence)
     print(f"Execução isolada: {run}", flush=True)
     try:
+        evidence["commit"] = command(["git", "rev-parse", "HEAD"], root).strip()
+        evidence["source_worktree_dirty"] = bool(
+            command(["git", "status", "--porcelain", "--", *files], root).strip()
+        )
+        corpus = run / "corpus"
+        for name, content in files.items():
+            target = corpus / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(content)
+        # Limita a descoberta de raiz/aliases do extrator à cópia, não ao worktree pai.
+        command(["git", "init", "--quiet", str(corpus)], run, env)
         # A exceção ao gitignore vale SOMENTE para a cópia previamente filtrada.
         log = command([executable, "extract", str(corpus), "--code-only", "--no-cluster",
                        "--max-workers", "2", "--no-gitignore", "--out", str(run)],
@@ -183,6 +196,10 @@ def analyze(root, config, files):
                       run, env, config["timeoutSeconds"])
         (run / "agrupamento.log").write_text(log)
         evidence["graph"] = validate_graph(json.loads(graph_path.read_text()), files)
+        evidence["artifacts"] = {
+            "graph": hashlib.sha256(graph_path.read_bytes()).hexdigest(),
+            "raw": hashlib.sha256((run / "extracao-bruta.json").read_bytes()).hexdigest(),
+        }
         evidence["status"] = "validado_com_limitacoes"
         evidence["limitations"] = [
             "Corpus parcial; ausência de relação não comprova código morto.",
@@ -204,7 +221,7 @@ def analyze(root, config, files):
         evidence["status"] = "falhou"
         raise
     finally:
-        manifest.write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + "\n")
+        atomic_write_json(manifest, evidence)
     return run
 
 

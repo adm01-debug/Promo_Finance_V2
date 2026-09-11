@@ -1,6 +1,7 @@
 """Inventário lexical de migrations PostgreSQL; não conecta nem executa SQL."""
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path
@@ -8,7 +9,7 @@ import re
 import tempfile
 from datetime import datetime, timezone
 
-from run import ROOT, SECRET, command
+from run import ROOT, SECRET, atomic_write_json, command
 
 
 MIGRATIONS = ROOT / "supabase" / "migrations"
@@ -24,6 +25,18 @@ OBJECT_PATTERNS = (
     ("alter_table", re.compile(r"^\s*ALTER\s+TABLE\s+(?:ONLY\s+)?([\w.\"]+)", re.I)),
     ("grant", re.compile(r"^\s*GRANT\s+.+?\s+ON\s+(?:TABLE|FUNCTION|SEQUENCE|ALL\s+TABLES\s+IN\s+SCHEMA)\s+(.+?)\s+TO\s+([\w.\"]+)", re.I | re.S)),
     ("job", re.compile(r"\b(?:cron\.schedule|pg_cron\.schedule)\s*\(\s*'([^']+)'", re.I)),
+)
+TABLE_CONTEXT = re.compile(r"^\s*(?:CREATE\s+(?:UNLOGGED\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?|ALTER\s+TABLE\s+(?:ONLY\s+)?)([\w.\"]+)", re.I)
+FOREIGN_REFERENCE = re.compile(r"\bREFERENCES\s+([\w.\"]+)", re.I)
+TRIGGER_DEPENDENCY = re.compile(
+    r"^\s*CREATE\s+(?:CONSTRAINT\s+)?TRIGGER\s+([\w.\"]+).*?\sON\s+([\w.\"]+).*?"
+    r"EXECUTE\s+(?:FUNCTION|PROCEDURE)\s+([\w.\"]+)", re.I | re.S)
+POLICY_DEPENDENCY = re.compile(r"^\s*CREATE\s+POLICY\s+([\w.\"]+)\s+ON\s+([\w.\"]+)", re.I | re.S)
+FUNCTION_CONTEXT = re.compile(r"^\s*CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+([\w.\"]+)", re.I)
+RELATION_USE = re.compile(r"\b(?:FROM|JOIN|UPDATE|INSERT\s+INTO|DELETE\s+FROM)\s+([\w.\"]+)", re.I)
+CTE_ALIAS = re.compile(
+    r"(?:\bWITH\b|,)\s*(?:RECURSIVE\s+)?([A-Za-z_][A-Za-z0-9_$]*|\"[^\"]+\")"
+    r"\s*(?:\([^)]*\)\s*)?AS\s+(?:(?:NOT\s+)?MATERIALIZED\s+)?\(", re.I
 )
 
 
@@ -111,11 +124,58 @@ def objects_in_file(relative, text):
     return objects
 
 
+def dependencies_in_file(relative, text):
+    """Extrai dependências SQL qualificadas com confiança lexical explícita."""
+    dependencies = []
+    offset = 0
+    for statement in split_statements(text):
+        trivia = skip_leading_trivia(statement)
+        body = statement[trivia:]
+        table = TABLE_CONTEXT.search(body)
+        if table:
+            for match in FOREIGN_REFERENCE.finditer(body):
+                dependencies.append({
+                    "kind": "foreign_key", "source": clean_name(table.group(1)),
+                    "target": clean_name(match.group(1)), "migration": relative,
+                    "line": line_of(text, offset + trivia + match.start(1)), "confidence": "LEXICAL",
+                })
+        trigger = TRIGGER_DEPENDENCY.search(body)
+        if trigger:
+            dependencies.append({
+                "kind": "trigger_function", "source": clean_name(trigger.group(2)),
+                "target": clean_name(trigger.group(3)), "via": clean_name(trigger.group(1)),
+                "migration": relative, "line": line_of(text, offset + trivia + trigger.start(3)),
+                "confidence": "LEXICAL",
+            })
+        policy = POLICY_DEPENDENCY.search(body)
+        if policy:
+            dependencies.append({
+                "kind": "policy_table", "source": clean_name(policy.group(1)),
+                "target": clean_name(policy.group(2)), "migration": relative,
+                "line": line_of(text, offset + trivia + policy.start(2)), "confidence": "LEXICAL",
+            })
+        function = FUNCTION_CONTEXT.search(body)
+        if function:
+            source = clean_name(function.group(1))
+            cte_aliases = {clean_name(match.group(1)).casefold() for match in CTE_ALIAS.finditer(body)}
+            for match in RELATION_USE.finditer(body):
+                target = clean_name(match.group(1))
+                if target.casefold() in {"select", "values", "set"} | cte_aliases:
+                    continue
+                dependencies.append({
+                    "kind": "function_relation", "source": source, "target": target,
+                    "migration": relative, "line": line_of(text, offset + trivia + match.start(1)),
+                    "confidence": "LEXICAL_LOW",
+                })
+        offset += len(statement)
+    return dependencies
+
+
 def inventory(root=ROOT):
     files = sorted(MIGRATIONS.glob("*.sql"))
     if not files:
         raise ValueError("Nenhuma migration SQL encontrada.")
-    objects, hashes, credential_like = [], {}, []
+    objects, dependencies, hashes, credential_like = [], [], {}, []
     for path in files:
         relative = path.relative_to(root).as_posix()
         content = path.read_bytes()
@@ -128,10 +188,13 @@ def inventory(root=ROOT):
             credential_like.append(relative)
         hashes[relative] = hashlib.sha256(content).hexdigest()
         objects.extend(objects_in_file(relative, text))
+        dependencies.extend(dependencies_in_file(relative, text))
     counts = {}
     for item in objects:
         counts[item["kind"]] = counts.get(item["kind"], 0) + 1
-    return {"migration_files": len(files), "objects": objects, "counts": counts, "hashes": hashes,
+    dependency_counts = dict(Counter(item["kind"] for item in dependencies))
+    return {"migration_files": len(files), "objects": objects, "counts": counts,
+            "dependencies": dependencies, "dependency_counts": dependency_counts, "hashes": hashes,
             "credential_like_migrations": credential_like}
 
 
@@ -146,12 +209,14 @@ def main():
     run = Path(tempfile.mkdtemp(prefix="execucao-", dir=output))
     run.chmod(0o700)
     evidence = {"status": "iniciado", "timestamp": datetime.now(timezone.utc).isoformat(),
-                "commit": command(["git", "rev-parse", "HEAD"], ROOT).strip(),
                 "mode": "Inventário lexical de migrations; sem banco; sem execução SQL"}
+    atomic_write_json(run / "evidencia.json", evidence)
     try:
+        evidence["commit"] = command(["git", "rev-parse", "HEAD"], ROOT).strip()
         result = inventory()
         evidence.update({"status": "validado_com_limitacoes", "migration_files": result["migration_files"],
                          "counts": result["counts"], "hashes": result["hashes"],
+                         "dependency_counts": result["dependency_counts"],
                          "credential_like_migrations": result["credential_like_migrations"],
                          "limitations": [
                              "Não é parser PostgreSQL completo; objetos não reconhecidos ficam fora do catálogo.",
@@ -159,16 +224,19 @@ def main():
                              "Objetos alterados/removidos exigem leitura ordenada do histórico e catálogo real.",
                          ]})
         (run / "catalogo-migrations.json").write_text(json.dumps({
-            "migration_files": result["migration_files"], "counts": result["counts"], "objects": result["objects"]
+            "migration_files": result["migration_files"], "counts": result["counts"],
+            "objects": result["objects"], "dependency_counts": result["dependency_counts"],
+            "dependencies": result["dependencies"]
         }, ensure_ascii=False, indent=2) + "\n")
         print(json.dumps({"migrations": result["migration_files"], "objects": len(result["objects"]),
-                          "counts": result["counts"], "credential_like_migrations": len(result["credential_like_migrations"])}, ensure_ascii=False))
+                          "counts": result["counts"], "dependencies": result["dependency_counts"],
+                          "credential_like_migrations": len(result["credential_like_migrations"])}, ensure_ascii=False))
         print(f"Catálogo: {run / 'catalogo-migrations.json'}")
     except Exception:
         evidence["status"] = "falhou"
         raise
     finally:
-        (run / "evidencia.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n")
+        atomic_write_json(run / "evidencia.json", evidence)
 
 
 if __name__ == "__main__":

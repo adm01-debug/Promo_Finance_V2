@@ -27,6 +27,12 @@ class TestePerfis(unittest.TestCase):
         with self.assertRaises(ValueError):
             run.selected_names({"src/lib/a.test.ts"}, config)
 
+    def test_combina_arquivos_explicitos_e_prefixos_sem_duplicar(self):
+        self.base["profiles"]["teste"]["files"] = ["src/pages/c.ts"]
+        config = run.profile_config(self.base, "teste")
+        tracked = {"src/lib/a.ts", "src/pages/c.ts"}
+        self.assertEqual(run.selected_names(tracked, config), ["src/lib/a.ts", "src/pages/c.ts"])
+
     def test_perfil_inexistente_ou_inseguro(self):
         for name in ["nao-existe", "../teste", "Teste", "a" * 49]:
             with self.subTest(name=name):
