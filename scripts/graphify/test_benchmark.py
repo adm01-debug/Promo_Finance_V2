@@ -1,6 +1,7 @@
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -54,8 +55,15 @@ class TesteBenchmark(unittest.TestCase):
                 source.write_text("const ancora = 'alterado';")
                 return True
 
+            def simular_rg(args, cwd, **_kwargs):
+                term, files = args[4], args[5:]
+                hits = [name for name in files if term in (cwd / name).read_text()]
+                return subprocess.CompletedProcess(args, 0 if hits else 1,
+                                                   stdout="\n".join(hits) + ("\n" if hits else ""))
+
             case = {"profile": "perfil", "term": "original", "expectedSource": "src/a.ts"}
-            with patch.object(benchmark, "validate_freshness", side_effect=alterar_worktree):
+            with patch.object(benchmark, "validate_freshness", side_effect=alterar_worktree), \
+                    patch.object(benchmark.subprocess, "run", side_effect=simular_rg):
                 result = benchmark.run_case(root, case, repetitions=3)
             self.assertTrue(result["rg"]["expected_found"])
             self.assertNotIn("original", source.read_text())
