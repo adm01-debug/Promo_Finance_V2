@@ -40,6 +40,9 @@ npm run graphify:pilot
 npm run graphify:analyze -- --profile edge-runtime
 npm run graphify:sql-inventory
 npm run graphify:code-references
+npm run graphify:edge-inventory
+npm run graphify:quality -- --profile pilot
+npm run graphify:benchmark
 ```
 
 Alternativa sem `uv`: instalar o mesmo pacote/versão em um ambiente virtual Python
@@ -142,13 +145,23 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - Duas execuções concorrentes do perfil `frontend-entry` produziram diretórios
   separados e o mesmo total (259 nós/385 relações); uma reexecução sequencial
   teve nós e relações idênticos. Ainda falta a simulação em worktrees distintos.
-- O MCP `supabase_producao` disponível nesta sessão recusou `connection_info`,
-  `overview`, `migrations` e `db_query` com Management API 403. Como a identidade
-  do projeto não pôde ser comprovada, nenhuma chamada posterior foi feita e os
-  passos de catálogo canônico permanecem bloqueados.
-- As etapas 017, 019, 024 e 025 continuam parciais: exigem reconciliação humana,
-  cobertura dinâmica e leitura autenticada do catálogo canônico. As etapas 022–023
-  estão bloqueadas por ausência de uma conexão MCP/DSN de leitura verificável nesta sessão.
+- Em 11/09/2026, o MCP oficial comprovou o destino canônico
+  `bwwbeyolnnzppeuhgkcd` e permitiu listar tabelas, migrations, extensões, Edge
+  Functions e advisors. A permissão de `execute_sql` continuou insuficiente; por
+  isso policies, rotinas, triggers, views, privilégios e jobs vivos não foram
+  inventados a partir de migrations. O gateway legado `supabase_producao` ainda
+  retornou Management API 403.
+- Seis perfis financeiros, resolução lexical de imports, inventário Edge,
+  calibração de qualidade, navegação com teto, resumo SVG offline e benchmark
+  foram executados. Evidência agregada e limites estão em
+  `docs/GRAPHIFY_VALIDACAO_2026-09-11.md`; artefatos completos continuam privados.
+- Duas execuções simultâneas do piloto em worktrees distintos produziram o mesmo
+  SHA-256 do grafo. Uma interrupção real com `SIGKILL` deixou manifesto `iniciado`
+  e nenhum grafo final, eliminando o diretório órfão sem estado observado antes do ajuste.
+- As etapas 022–025 e 046–047 continuam parciais enquanto faltar catálogo vivo
+  completo e acesso autenticado à origem. A 035 e a política destrutiva da 044
+  continuam dependentes de decisão explícita; conclusão técnica não substitui a
+  aceitação operacional humana da 050.
 
 ### A. Governança e diagnóstico — etapas 001–005
 
@@ -173,7 +186,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - [x] **006 — Reproduzir instalação em ambiente limpo.** P1 · responsável: tooling · depende: 003.
   Instalar e executar o piloto em venv Python 3.11 vazio, separado da instalação original.
   **Aceite:** versão correta, parser TS disponível e piloto concluído sem reutilizar o ambiente local.
-- [ ] **007 — Fechar a cadeia de dependências.** P0 · responsável: segurança/DevOps · depende: 006.
+- [x] **007 — Fechar a cadeia de dependências.** P0 · responsável: segurança/DevOps · depende: 006.
   Gerar lock transitivo por plataforma com hashes, revisar licença e vulnerabilidades e definir atualização.
   **Aceite:** instalação com hashes verificados e revisão registrada; pin direto sozinho não conclui esta etapa.
 - [x] **008 — Implementar corpus explícito rastreado.** P0 · responsável: tooling · depende: 005.
@@ -209,16 +222,16 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - [x] **016 — Validar o piloto AST real.** P1 · responsável: arquitetura · depende: 015.
   Mapear analisador de imports, módulos, cliente Supabase e guards de usuário/webhook.
   **Aceite:** cinco arquivos representados, grafo não vazio, referências pendentes expostas e tokens LLM zero.
-- [ ] **017 — Expandir por módulos financeiros.** P1 · responsável: frontend · depende: 016, 030.
+- [x] **017 — Expandir por módulos financeiros.** P1 · responsável: frontend · depende: 016, 030.
   Criar perfis separados para pagar, receber, cobrança, conciliação, contabilidade e tributário.
   **Aceite:** relatório por perfil com denominador de arquivos, amostra manual de funções e orçamento respeitado.
-- [ ] **018 — Validar resolução de imports TypeScript.** P1 · responsável: tooling/frontend · depende: 016.
+- [x] **018 — Validar resolução de imports TypeScript.** P1 · responsável: tooling/frontend · depende: 016.
   Testar `@/`, relativos, reexports, barrels, imports de tipos, lazy imports e arquivos inexistentes.
   **Aceite:** fixtures com arestas esperadas e limites documentados; não inferir resolução a partir do nome.
-- [ ] **019 — Expandir backend Deno e helpers.** P1 · responsável: backend · depende: 016, 018.
+- [x] **019 — Expandir backend Deno e helpers.** P1 · responsável: backend · depende: 016, 018.
   Inventariar Edge Functions efetivamente presentes, URLs de imports, helpers e entradas HTTP.
   **Aceite:** denominador atualizado a partir do checkout; não reutilizar contagens antigas como baseline.
-- [ ] **020 — Mapear relações dinâmicas da aplicação.** P2 · responsável: frontend/backend · depende: 017–019.
+- [x] **020 — Mapear relações dinâmicas da aplicação.** P2 · responsável: frontend/backend · depende: 017–019.
   Criar adaptadores testados para rotas, lazy loading, queries, mutation keys e `functions.invoke`.
   **Aceite:** diferenciar referência literal de chamada dinâmica não resolvida, com arquivo/linha e confiança.
 
@@ -256,7 +269,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - [x] **029 — Recusar evidência estrutural inválida.** P0 · responsável: QA · depende: 027–028.
   Rejeitar grafo vazio, IDs duplicados, arquivo omitido e aresta final com endpoint ausente.
   **Aceite:** testes negativos aprovados; tolerância só no bruto, onde referência externa permanece registrada.
-- [ ] **030 — Calibrar qualidade antes de expandir.** P1 · responsável: arquitetura/QA · depende: 016, 026–029.
+- [x] **030 — Calibrar qualidade antes de expandir.** P1 · responsável: arquitetura/QA · depende: 016, 026–029.
   Definir tolerâncias de omissão por símbolo e colapso de relações; avaliar multigrafo e coesão por comunidade.
   **Aceite:** amostra manual confrontada com AST, métricas brutas e decisão registrada; não usar número de nós como nota 10/10.
 
@@ -264,14 +277,14 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 
 - [x] **031 — Integrar comandos do projeto.** P1 · responsável: tooling · depende: 016.
   Adicionar inventário, piloto e testes ao `package.json`, sem lifecycle hooks ou dependência de runtime.
-  **Aceite:** três comandos executáveis; `dev`, `build` e `prepare` não disparam Graphify.
-- [ ] **032 — Homologar consultas e caminhos.** P1 · responsável: arquitetura/QA · depende: 028, 031.
+  **Aceite:** nove comandos explícitos executáveis; `dev`, `build` e `prepare` não disparam Graphify.
+- [x] **032 — Homologar consultas e caminhos.** P1 · responsável: arquitetura/QA · depende: 028, 031.
   Validar consultas com termos do grafo, caminho conhecido, termo inexistente e orçamento de saída.
   **Aceite:** fixture com resultados esperados e smoke real; sem caminho não equivale a função desconectada.
-- [ ] **033 — Nomear comunidades de forma verificável.** P2 · responsável: arquitetura · depende: 030, 032.
+- [x] **033 — Nomear comunidades de forma verificável.** P2 · responsável: arquitetura · depende: 030, 032.
   Trocar rótulos genéricos por nomes curtos baseados nos membros e confirmar coesão bruta.
   **Aceite:** rótulos estáveis e revisados. Rotulagem por LLM somente após decisão explícita sobre dados/custo.
-- [ ] **034 — Disponibilizar visualização local segura.** P2 · responsável: tooling/segurança · depende: 030, 033.
+- [x] **034 — Disponibilizar visualização local segura.** P2 · responsável: tooling/segurança · depende: 030, 033.
   Validar HTML/SVG, dependências de CDN, caracteres hostis, arquivos grandes e modo sem rede.
   **Aceite:** navegador não envia conteúdo privado; acima de 5.000 nós usar agregação ou manter `--no-viz`.
 - [ ] **035 — Oferecer MCP local opcional.** P2 · responsável: tooling/segurança · depende: 007, 032, 047.
@@ -282,11 +295,11 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 
 - [x] **036 — Exercitar falhas com dados sintéticos.** P0 · responsável: QA · depende: 009–015, 029.
   Testar filtros, snapshots, limites, isolamento de ambiente, ferramenta ausente, timeout e preservação.
-  **Aceite:** 38 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
+  **Aceite:** 57 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
 - [x] **037 — Executar smoke com o Graphify real.** P1 · responsável: QA · depende: 016, 036.
   Usar CLI instalado e os cinco arquivos reais, incluindo diagnóstico e geração de relatório.
   **Aceite:** extração, agrupamento, grafo e status verificáveis; não considerar mock do processo como substituto.
-- [ ] **038 — Verificar reprodutibilidade e concorrência.** P0 · responsável: QA/tooling · depende: 037.
+- [x] **038 — Verificar reprodutibilidade e concorrência.** P0 · responsável: QA/tooling · depende: 037.
   Comparar execuções em worktrees/caminhos diferentes; simular duas execuções, edição simultânea e interrupção abrupta.
   **Aceite:** diferenças só em metadados previstos; nenhum grafo anterior perdido; definir captura consistente de mudanças concorrentes.
 - [ ] **039 — Homologar o workflow privado.** P1 · responsável: DevOps · depende: 006, 036–038.
@@ -304,7 +317,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - [x] **042 — Orientar múltiplos agentes sem instalar hooks.** P0 · responsável: mantenedor · depende: 015, 041.
   Acrescentar seção mínima em `AGENTS.md`, mantendo instruções anteriores.
   **Aceite:** agentes verificam frescor/corpus, confirmam fonte e não alteram configs globais ou trabalho concorrente.
-- [ ] **043 — Medir ganho real de navegação.** P2 · responsável: auditoria · depende: 017–020, 032.
+- [x] **043 — Medir ganho real de navegação.** P2 · responsável: auditoria · depende: 017–020, 032.
   Comparar buscas `rg` com consultas do grafo em perguntas financeiras conhecidas, contabilizando latência e acertos.
   **Aceite:** benchmark repetível com custos medidos; nenhuma promessa percentual de economia sem medição.
 - [ ] **044 — Definir atualização e retenção.** P2 · responsável: DevOps · depende: 038–043.
@@ -365,7 +378,7 @@ podem ser preservados; qualquer remoção material deve identificar o alvo e ser
 - Grafo navegável: **61 nós e 93 relações**. As referências excluídas continuam no bruto.
 - Diagnóstico inicial: zero endpoints ausentes por campo, zero autoarestas e zero
   pares colapsados no corpus inicial. Não extrapolar para o repositório inteiro.
-- Suite local: **38 testes aprovados**. Não inclui testes das funcionalidades financeiras.
+- Suite local: **57 testes aprovados**. Não inclui testes das funcionalidades financeiras.
 - Instalação independente em venv Python 3.11 validada: 30 pacotes instalados e
   mesmo resultado do piloto (61 nós/93 relações). `actionlint` aprovou o workflow.
 - Navegação real: `construirGrafoObservado` retornou oito nós; `authenticateWebhook`

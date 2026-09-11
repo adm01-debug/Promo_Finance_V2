@@ -185,6 +185,31 @@ class TesteExecucao(unittest.TestCase):
             with self.assertRaises(ValueError):
                 run.analyze(root, {"version": "0.9.48", "name": "teste"}, {})
 
+    def test_falha_na_copia_preserva_manifesto_de_auditoria(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(run.shutil, "which", return_value="graphify"):
+            root = Path(directory)
+
+            def fake_command(args, *unused):
+                if "--version" in args:
+                    return "graphify 0.9.48"
+                return "commit-sintetico"
+
+            original = Path.write_bytes
+
+            def fail_corpus(path, content):
+                if "corpus" in path.parts:
+                    raise OSError("falha sintética de cópia")
+                return original(path, content)
+
+            with patch.object(run, "command", side_effect=fake_command), \
+                    patch.object(Path, "write_bytes", fail_corpus):
+                with self.assertRaises(OSError):
+                    run.analyze(root, {"version": "0.9.48", "name": "teste", "timeoutSeconds": 1},
+                                {"src/a.ts": b"const a=1;"})
+            evidence = list((root / "graphify-out/teste").glob("execucao-*/evidencia.json"))
+            self.assertEqual(len(evidence), 1)
+            self.assertEqual(json.loads(evidence[0].read_text())["status"], "falhou")
+
 
 if __name__ == "__main__":
     unittest.main()

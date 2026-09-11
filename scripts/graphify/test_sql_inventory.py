@@ -69,6 +69,25 @@ SELECT cron.schedule('job-diario', '* * * * *', 'SELECT 1');
             self.assertEqual(result["credential_like_migrations"], ["supabase/migrations/001.sql"])
             self.assertNotIn(literal, str(result["objects"]))
 
+    def test_extrai_dependencias_indiretas_sem_corpos_sql(self):
+        text = """CREATE TABLE public.filhos (
+  id uuid, pai_id uuid REFERENCES public.pais(id)
+);
+CREATE TRIGGER auditar AFTER UPDATE ON public.filhos EXECUTE FUNCTION public.auditar_filhos();
+CREATE POLICY leitura ON public.filhos USING (true);
+CREATE FUNCTION public.listar() RETURNS SETOF public.filhos AS $$
+  SELECT * FROM public.filhos JOIN public.pais ON true;
+$$ LANGUAGE sql;
+"""
+        dependencies = sql.dependencies_in_file("x.sql", text)
+        self.assertEqual([(item["kind"], item["source"], item["target"]) for item in dependencies], [
+            ("foreign_key", "public.filhos", "public.pais"),
+            ("trigger_function", "public.filhos", "public.auditar_filhos"),
+            ("policy_table", "leitura", "public.filhos"),
+            ("function_relation", "public.listar", "public.filhos"),
+            ("function_relation", "public.listar", "public.pais"),
+        ])
+
 
 if __name__ == "__main__":
     unittest.main()

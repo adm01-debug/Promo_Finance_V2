@@ -63,19 +63,21 @@ def is_allowed_path(name):
 def selected_names(tracked, config):
     files = config.get("files")
     prefixes = config.get("includePrefixes")
-    if files:
-        if not isinstance(files, list) or len(files) != len(set(files)):
+    names = set()
+    if files is not None:
+        if not isinstance(files, list) or not files or len(files) != len(set(files)):
             raise ValueError("Lista de arquivos vazia ou duplicada.")
-        names = files
-    else:
+        names.update(files)
+    if prefixes is not None:
         if not isinstance(prefixes, list) or not prefixes:
             raise ValueError("Prefixos do perfil inválidos.")
         if any(not isinstance(prefix, str) or not prefix.endswith("/")
                or prefix.startswith("/") or ".." in PurePosixPath(prefix).parts
                for prefix in prefixes):
             raise ValueError("Prefixos do perfil inválidos.")
-        names = sorted(name for name in tracked
-                       if any(name.startswith(prefix) for prefix in prefixes) and is_allowed_path(name))
+        names.update(name for name in tracked
+                     if any(name.startswith(prefix) for prefix in prefixes) and is_allowed_path(name))
+    names = sorted(names)
     if not names or len(names) > config["maxFiles"]:
         raise ValueError("Corpus vazio ou acima do limite de arquivos.")
     return names
@@ -145,13 +147,6 @@ def analyze(root, config, files):
     run = Path(tempfile.mkdtemp(prefix="execucao-", dir=output))
     run.chmod(0o700)
     env = isolated_env(run)
-    corpus = run / "corpus"
-    for name, content in files.items():
-        target = corpus / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
-    # Limita a descoberta de raiz/aliases do extrator à cópia, não ao worktree pai.
-    command(["git", "init", "--quiet", str(corpus)], run, env)
     evidence = {
         "status": "iniciado", "commit": command(["git", "rev-parse", "HEAD"], root).strip(),
         "timestamp": datetime.now(timezone.utc).isoformat(), "version": version,
@@ -165,6 +160,13 @@ def analyze(root, config, files):
     manifest.write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + "\n")
     print(f"Execução isolada: {run}", flush=True)
     try:
+        corpus = run / "corpus"
+        for name, content in files.items():
+            target = corpus / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(content)
+        # Limita a descoberta de raiz/aliases do extrator à cópia, não ao worktree pai.
+        command(["git", "init", "--quiet", str(corpus)], run, env)
         # A exceção ao gitignore vale SOMENTE para a cópia previamente filtrada.
         log = command([executable, "extract", str(corpus), "--code-only", "--no-cluster",
                        "--max-workers", "2", "--no-gitignore", "--out", str(run)],

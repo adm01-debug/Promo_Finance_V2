@@ -1,0 +1,8 @@
+[
+  {"profile": "finance-contas-pagar", "term": "ContasPagar", "expectedSource": "src/pages/ContasPagar.tsx"},
+  {"profile": "finance-contas-receber", "term": "ContasReceber", "expectedSource": "src/pages/ContasReceber.tsx"},
+  {"profile": "finance-cobranca", "term": "useCobrancas", "expectedSource": "src/hooks/useCobrancas.ts"},
+  {"profile": "finance-conciliacao", "term": "ConciliacaoDashboard", "expectedSource": "src/components/conciliacao/ConciliacaoDashboard.tsx"},
+  {"profile": "finance-contabilidade", "term": "SpedContabil", "expectedSource": "src/hooks/useSpedContabil.ts"},
+  {"profile": "finance-tributario", "term": "CalculadoraTributaria", "expectedSource": "src/pages/tributario/CalculadoraTributaria.tsx"}
+]

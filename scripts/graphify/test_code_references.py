@@ -12,11 +12,14 @@ client.from(nomeDinamico).select();
 client.rpc(nomeDinamico);
 client.functions.invoke(nomeDinamico);
 navigate('/financeiro');
+useQuery({ queryKey: ['contas-pagar'] });
+useMutation({ mutationKey: ["baixar-conta"] });
 """
         refs, dynamic = code.extract_references("src/a.ts", text)
         self.assertEqual([(item["kind"], item["name"], item["line"]) for item in refs], [
             ("relation", "contas_pagar", 1), ("rpc", "calcular_total", 2),
-            ("edge_function", "enviar-alerta-email", 3), ("route", "/financeiro", 7)
+            ("edge_function", "enviar-alerta-email", 3), ("route", "/financeiro", 7),
+            ("query_key", "contas-pagar", 8), ("mutation_key", "baixar-conta", 9)
         ])
         self.assertEqual({kind: dynamic[kind] for kind in ("relation", "rpc", "edge_function")},
                          {"relation": 1, "rpc": 1, "edge_function": 1})

@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /scripts/graphify
+    schedule:
+      interval: monthly
+    labels:
+      - dependencias
+      - graphify
+    open-pull-requests-limit: 2

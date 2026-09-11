@@ -42,6 +42,94 @@
       "maxBytes": 8388608,
       "timeoutSeconds": 600,
       "includePrefixes": ["src/components/"]
+    },
+    "finance-contas-pagar": {
+      "maxFiles": 80,
+      "maxBytes": 1572864,
+      "timeoutSeconds": 300,
+      "files": [
+        "src/pages/ContasPagar.tsx",
+        "src/hooks/useContasPagarLogic.ts",
+        "src/hooks/financial/useContasPagar.ts"
+      ],
+      "includePrefixes": ["src/pages/ContasPagar/", "src/components/contas-pagar/"]
+    },
+    "finance-contas-receber": {
+      "maxFiles": 100,
+      "maxBytes": 2097152,
+      "timeoutSeconds": 300,
+      "files": [
+        "src/pages/ContasReceber.tsx",
+        "src/pages/DashboardReceber.tsx",
+        "src/hooks/useContasReceberLogic.ts",
+        "src/hooks/financial/useContasReceber.ts"
+      ],
+      "includePrefixes": ["src/components/contas-receber/", "src/components/dashboard-receber/"]
+    },
+    "finance-cobranca": {
+      "maxFiles": 100,
+      "maxBytes": 2097152,
+      "timeoutSeconds": 300,
+      "files": [
+        "src/pages/Cobrancas.tsx",
+        "src/hooks/useCobrancas.ts",
+        "src/hooks/useReguaCobranca.ts",
+        "src/hooks/useWhatsAppCobrancaHistory.ts"
+      ],
+      "includePrefixes": ["src/components/cobranca/", "src/components/asaas/"]
+    },
+    "finance-conciliacao": {
+      "maxFiles": 120,
+      "maxBytes": 2621440,
+      "timeoutSeconds": 360,
+      "files": [
+        "src/pages/Conciliacao.tsx",
+        "src/pages/ConciliacaoToolbarHost.tsx",
+        "src/pages/conciliacao-variants.ts",
+        "src/hooks/useConciliacao.ts",
+        "src/hooks/useConciliacaoAudit.ts",
+        "src/hooks/useConciliacaoIA.ts",
+        "src/hooks/useConciliacaoPage.ts",
+        "src/hooks/useConciliacaoRetroativa.ts",
+        "src/hooks/useDivergenciasConciliacao.ts",
+        "src/hooks/useHistoricoConciliacaoIA.ts",
+        "src/hooks/useRegrasConciliacao.ts"
+      ],
+      "includePrefixes": ["src/components/conciliacao/"]
+    },
+    "finance-contabilidade": {
+      "maxFiles": 180,
+      "maxBytes": 3670016,
+      "timeoutSeconds": 420,
+      "files": [
+        "src/pages/Contabilidade.tsx",
+        "src/hooks/useDemonstrativosContabeis.ts",
+        "src/hooks/useIndicesContabeis.ts",
+        "src/hooks/useLancamentosContabeis.ts",
+        "src/hooks/useSpedContabil.ts",
+        "src/lib/export-contabil.ts"
+      ],
+      "includePrefixes": [
+        "src/components/contabilidade/",
+        "src/lib/contabil/",
+        "src/lib/contabilidade/",
+        "src/lib/export-contabil/"
+      ]
+    },
+    "finance-tributario": {
+      "maxFiles": 500,
+      "maxBytes": 7340032,
+      "timeoutSeconds": 600,
+      "files": [
+        "src/pages/ReformaTributaria.tsx",
+        "src/hooks/useReformaTributaria.ts"
+      ],
+      "includePrefixes": [
+        "src/pages/tributario/",
+        "src/components/tributario/",
+        "src/components/reforma-tributaria/",
+        "src/lib/tributario/"
+      ]
     }
   }
 }
