@@ -11,7 +11,7 @@ import re
 import tempfile
 from datetime import datetime, timezone
 
-from run import ROOT, SECRET, command, is_allowed_path
+from run import ROOT, SECRET, atomic_write_json, command, is_allowed_path
 from sql_inventory import inventory as migration_inventory
 from typescript_imports import extract_imports, resolve_imports
 
@@ -28,9 +28,13 @@ DYNAMIC_PATTERNS = {
     "relation": re.compile(r"\.from\(\s*(?!['\"])[^)]+\)"),
     "rpc": re.compile(r"\.rpc\(\s*(?!['\"])[^)]+\)"),
     "edge_function": re.compile(r"\.functions\.invoke\(\s*(?!['\"])[^)]+\)"),
-    "query_key": re.compile(r"\bqueryKey\s*:\s*(?!\[\s*['\"])[^,}\n]+"),
-    "mutation_key": re.compile(r"\bmutationKey\s*:\s*(?!\[\s*['\"])[^,}\n]+"),
+    "query_key": re.compile(r"\bqueryKey\s*:(?!\s*\[)\s*[^,}\n]+"),
+    "mutation_key": re.compile(r"\bmutationKey\s*:(?!\s*\[)\s*[^,}\n]+"),
 }
+KEY_ARRAY = re.compile(r"\b(queryKey|mutationKey)\s*:\s*\[([^\]]*)\]", re.DOTALL)
+STATIC_KEY_TOKEN = re.compile(
+    r"(?:'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|-?\d+(?:\.\d+)?|\b(?:true|false|null)\b)"
+)
 
 
 def source_files(root=ROOT):
@@ -49,6 +53,11 @@ def extract_references(relative, text):
             references.append({"kind": kind, "name": match.group(2), "source": relative,
                                "line": line_of(text, match.start()), "confidence": "LITERAL"})
         dynamic[kind] = len(DYNAMIC_PATTERNS.get(kind, re.compile("(?!x)x")).findall(text))
+    for match in KEY_ARRAY.finditer(text):
+        kind = "query_key" if match.group(1) == "queryKey" else "mutation_key"
+        residue = STATIC_KEY_TOKEN.sub("", match.group(2)).strip(" \t\r\n,")
+        if residue:
+            dynamic[kind] += 1
     return references, dynamic
 
 
@@ -87,9 +96,10 @@ def main():
     run = Path(tempfile.mkdtemp(prefix="execucao-", dir=args.output_root))
     run.chmod(0o700)
     evidence = {"status": "iniciado", "timestamp": datetime.now(timezone.utc).isoformat(),
-                "commit": command(["git", "rev-parse", "HEAD"], ROOT).strip(),
                 "mode": "Análise lexical estática; sem banco; sem execução de código"}
+    atomic_write_json(run / "evidencia.json", evidence)
     try:
+        evidence["commit"] = command(["git", "rev-parse", "HEAD"], ROOT).strip()
         references, imports, dynamic, hashes, credential_like = [], [], {kind: 0 for kind in PATTERNS}, {}, []
         files = source_files()
         tracked = set(command(["git", "ls-files", "-z"], ROOT).split("\0"))
@@ -135,7 +145,7 @@ def main():
         evidence["status"] = "falhou"
         raise
     finally:
-        (run / "evidencia.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n")
+        atomic_write_json(run / "evidencia.json", evidence)
 
 
 if __name__ == "__main__":

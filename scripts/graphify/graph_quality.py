@@ -5,7 +5,8 @@ from collections import Counter, deque
 import hashlib
 import html
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import re
 import tempfile
 
 from run import ROOT, command
@@ -15,16 +16,31 @@ def edges_of(graph):
     return graph.get("edges", graph.get("links", []))
 
 
+SHA256 = re.compile(r"^[0-9a-f]{64}$")
+
+
+def validate_file_hashes(root, files):
+    if not isinstance(files, dict) or not files:
+        raise ValueError("Evidência não contém inventário de arquivos.")
+    resolved_root = root.resolve()
+    for relative, expected in files.items():
+        rel = PurePosixPath(relative) if isinstance(relative, str) else PurePosixPath()
+        if (not rel.parts or rel.is_absolute() or ".." in rel.parts or "\\" in relative
+                or not isinstance(expected, str) or not SHA256.fullmatch(expected)):
+            raise ValueError("Inventário de arquivos inválido.")
+        path = root / relative
+        if (not path.is_file() or not path.resolve().is_relative_to(resolved_root)
+                or hashlib.sha256(path.read_bytes()).hexdigest() != expected):
+            raise ValueError(f"Evidência desatualizada para: {relative}")
+    return True
+
+
 def validate_freshness(root, evidence):
     if evidence.get("status") != "validado_com_limitacoes":
         raise ValueError("Evidência não está validada.")
     if evidence.get("commit") != command(["git", "rev-parse", "HEAD"], root).strip():
         raise ValueError("Evidência pertence a outro commit.")
-    for relative, expected in evidence.get("files", {}).items():
-        path = root / relative
-        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
-            raise ValueError(f"Evidência desatualizada para: {relative}")
-    return True
+    return validate_file_hashes(root, evidence.get("files"))
 
 
 def community_label(nodes):

@@ -137,10 +137,10 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
   12 extensões, 310 grants e 29 jobs. O número é histórico (create/alter em
   migrations), não o número de objetos vivos no banco. Ele marcou quatro arquivos com literais
   semelhantes a credenciais sem copiar seus valores; tratar como P0 separado.
-- A correlação de 1.646 fontes de código identificou 1.645 referências literais
-  (1.251 relações, 74 RPCs, 91 Edge Functions e 229 rotas), mais 237 chamadas
-  dinâmicas não resolvidas. Com o parser corrigido, nove relações literais e uma
-  Edge Function não tiveram match histórico/versionado; são itens para investigação,
+- A correlação de 1.646 fontes de código identificou 2.366 referências literais
+  (1.251 relações, 74 RPCs, 91 Edge Functions, 229 rotas e 721 query keys), mais
+  509 chamadas dinâmicas não resolvidas. Com o parser corrigido, nove relações
+  literais e uma Edge Function não tiveram match histórico/versionado; são itens para investigação,
   não bugs provados. O resultado é histórico/estático, não catálogo canônico.
 - Duas execuções concorrentes do perfil `frontend-entry` produziram diretórios
   separados e o mesmo total (259 nós/385 relações); uma reexecução sequencial
@@ -295,7 +295,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 
 - [x] **036 — Exercitar falhas com dados sintéticos.** P0 · responsável: QA · depende: 009–015, 029.
   Testar filtros, snapshots, limites, isolamento de ambiente, ferramenta ausente, timeout e preservação.
-  **Aceite:** 57 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
+  **Aceite:** 65 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
 - [x] **037 — Executar smoke com o Graphify real.** P1 · responsável: QA · depende: 016, 036.
   Usar CLI instalado e os cinco arquivos reais, incluindo diagnóstico e geração de relatório.
   **Aceite:** extração, agrupamento, grafo e status verificáveis; não considerar mock do processo como substituto.
@@ -378,7 +378,8 @@ podem ser preservados; qualquer remoção material deve identificar o alvo e ser
 - Grafo navegável: **61 nós e 93 relações**. As referências excluídas continuam no bruto.
 - Diagnóstico inicial: zero endpoints ausentes por campo, zero autoarestas e zero
   pares colapsados no corpus inicial. Não extrapolar para o repositório inteiro.
-- Suite local: **57 testes aprovados**. Não inclui testes das funcionalidades financeiras.
+- Suite local do Graphify: **65 testes aprovados**. A validação complementar do
+  produto executou **2.712 testes Vitest**, sem falhas.
 - Instalação independente em venv Python 3.11 validada: 30 pacotes instalados e
   mesmo resultado do piloto (61 nós/93 relações). `actionlint` aprovou o workflow.
 - Navegação real: `construirGrafoObservado` retornou oito nós; `authenticateWebhook`

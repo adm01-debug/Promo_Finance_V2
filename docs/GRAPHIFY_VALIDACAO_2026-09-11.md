@@ -11,6 +11,11 @@ Esta validação não atribui nota 10/10 ao produto financeiro. Ela comprova os 
 da integração Graphify descritos abaixo e mantém as lacunas de banco/produção
 explicitamente abertas.
 
+Na validação local final, 65 testes específicos do Graphify e 2.712 testes
+Vitest do produto passaram. `type-check`, build de produção, `actionlint` e
+lint também concluíram sem erros; o lint preserva 11 avisos preexistentes fora
+do diff desta integração.
+
 ## Simulação preventiva aplicada
 
 | Falha simulada | Controle | Resultado |
@@ -46,10 +51,11 @@ indica fragmentação do recorte e não qualidade superior.
 ## Imports, chamadas e backend
 
 - 1.646 fontes TypeScript/TSX analisadas sem execução;
-- 9.796 imports literais: 6.974 locais resolvidos, 2.822 externos e zero local ausente;
+- 10.392 imports literais: 7.390 locais resolvidos, 3.002 externos e zero local ausente;
 - 2.366 referências de aplicação: relações, RPCs, Edge Functions, rotas, query keys e mutation keys;
 - chamadas dinâmicas contadas separadamente: 216 relações, 8 RPCs, 13 Edge Functions,
-  755 query keys e zero mutation key;
+  272 query keys e zero mutation key; arrays com primeiro elemento literal e
+  elementos dependentes de execução agora são classificados como dinâmicos;
 - 102 Edge Functions locais, todas com entrada HTTP detectada;
 - 102 Edge Functions ativas no destino canônico, com igualdade exata de nomes;
 - 67 funções locais têm sinal estático de guard, 83 usam service role e 98 têm

@@ -1,3 +1,6 @@
+import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -34,6 +37,17 @@ Deno.serve(async req => { exigirUsuario(req); return Deno.env.get('SUPABASE_SERV
             with patch.object(edge, "command", return_value=tracked):
                 result = edge.inventory(root)
             self.assertEqual([item["name"] for item in result["functions"]], ["f"])
+
+    def test_falha_ao_obter_commit_preserva_manifesto_atomico(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(sys, "argv", ["edge_inventory.py", "--output-root", directory]), \
+                patch.object(edge, "command", side_effect=subprocess.CalledProcessError(1, ["git"])):
+            with self.assertRaises(subprocess.CalledProcessError):
+                edge.main()
+            evidence = list(Path(directory).glob("execucao-*/evidencia.json"))
+            self.assertEqual(len(evidence), 1)
+            self.assertEqual(json.loads(evidence[0].read_text())["status"], "falhou")
+            self.assertFalse(list(Path(directory).glob("execucao-*/.evidencia.json.tmp")))
 
 
 if __name__ == "__main__":

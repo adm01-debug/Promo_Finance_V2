@@ -8,7 +8,7 @@ import re
 import tempfile
 from datetime import datetime, timezone
 
-from run import ROOT, SECRET, command
+from run import ROOT, SECRET, atomic_write_json, command
 from typescript_imports import extract_imports
 
 
@@ -61,6 +61,10 @@ def inventory(root=ROOT):
     return {"functions": functions, "hashes": hashes, "credential_like_files": credential_like}
 
 
+def persist_evidence(run, evidence):
+    atomic_write_json(run / "evidencia.json", evidence)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-root", type=Path, default=ROOT / "graphify-out" / "edge-inventory")
@@ -73,10 +77,11 @@ def main():
     evidence = {
         "status": "iniciado",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "commit": command(["git", "rev-parse", "HEAD"], ROOT).strip(),
         "mode": "Inventário estático Deno/Edge; sem execução e sem rede",
     }
+    persist_evidence(run, evidence)
     try:
+        evidence["commit"] = command(["git", "rev-parse", "HEAD"], ROOT).strip()
         result = inventory()
         functions = result["functions"]
         summary = {
@@ -106,7 +111,7 @@ def main():
         evidence["status"] = "falhou"
         raise
     finally:
-        (run / "evidencia.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n")
+        persist_evidence(run, evidence)
 
 
 if __name__ == "__main__":

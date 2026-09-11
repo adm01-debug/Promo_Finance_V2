@@ -32,6 +32,13 @@ def command(args, cwd, env=None, timeout=180):
     ).stdout
 
 
+def atomic_write_json(path, payload):
+    """Substitui um JSON no mesmo diretório, sem expor arquivo parcialmente gravado."""
+    temporary = path.with_name(f".{path.name}.tmp")
+    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+    temporary.replace(path)
+
+
 def profile_config(config, name):
     """Seleciona um perfil versionado; regras não vêm do terminal."""
     if not PROFILE_NAME.fullmatch(name):
@@ -65,8 +72,10 @@ def selected_names(tracked, config):
     prefixes = config.get("includePrefixes")
     names = set()
     if files is not None:
-        if not isinstance(files, list) or not files or len(files) != len(set(files)):
-            raise ValueError("Lista de arquivos vazia ou duplicada.")
+        if (not isinstance(files, list) or not files
+                or any(not isinstance(name, str) or not name for name in files)
+                or len(files) != len(set(files))):
+            raise ValueError("Lista de arquivos inválida, vazia ou duplicada.")
         names.update(files)
     if prefixes is not None:
         if not isinstance(prefixes, list) or not prefixes:
@@ -148,18 +157,20 @@ def analyze(root, config, files):
     run.chmod(0o700)
     env = isolated_env(run)
     evidence = {
-        "status": "iniciado", "commit": command(["git", "rev-parse", "HEAD"], root).strip(),
-        "timestamp": datetime.now(timezone.utc).isoformat(), "version": version,
+        "status": "iniciado", "timestamp": datetime.now(timezone.utc).isoformat(), "version": version,
         "profile": config["name"],
-        "source_worktree_dirty": bool(command(["git", "status", "--porcelain", "--", *files], root).strip()),
         "mode": "AST local; sem semântica LLM; sem banco de dados",
         "input_tokens": 0, "output_tokens": 0,
         "files": {name: hashlib.sha256(content).hexdigest() for name, content in files.items()},
     }
     manifest = run / "evidencia.json"
-    manifest.write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + "\n")
+    atomic_write_json(manifest, evidence)
     print(f"Execução isolada: {run}", flush=True)
     try:
+        evidence["commit"] = command(["git", "rev-parse", "HEAD"], root).strip()
+        evidence["source_worktree_dirty"] = bool(
+            command(["git", "status", "--porcelain", "--", *files], root).strip()
+        )
         corpus = run / "corpus"
         for name, content in files.items():
             target = corpus / name
@@ -206,7 +217,7 @@ def analyze(root, config, files):
         evidence["status"] = "falhou"
         raise
     finally:
-        manifest.write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + "\n")
+        atomic_write_json(manifest, evidence)
     return run
 
 

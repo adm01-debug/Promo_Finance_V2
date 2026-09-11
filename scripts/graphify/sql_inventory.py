@@ -9,7 +9,7 @@ import re
 import tempfile
 from datetime import datetime, timezone
 
-from run import ROOT, SECRET, command
+from run import ROOT, SECRET, atomic_write_json, command
 
 
 MIGRATIONS = ROOT / "supabase" / "migrations"
@@ -204,9 +204,10 @@ def main():
     run = Path(tempfile.mkdtemp(prefix="execucao-", dir=output))
     run.chmod(0o700)
     evidence = {"status": "iniciado", "timestamp": datetime.now(timezone.utc).isoformat(),
-                "commit": command(["git", "rev-parse", "HEAD"], ROOT).strip(),
                 "mode": "Inventário lexical de migrations; sem banco; sem execução SQL"}
+    atomic_write_json(run / "evidencia.json", evidence)
     try:
+        evidence["commit"] = command(["git", "rev-parse", "HEAD"], ROOT).strip()
         result = inventory()
         evidence.update({"status": "validado_com_limitacoes", "migration_files": result["migration_files"],
                          "counts": result["counts"], "hashes": result["hashes"],
@@ -230,7 +231,7 @@ def main():
         evidence["status"] = "falhou"
         raise
     finally:
-        (run / "evidencia.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n")
+        atomic_write_json(run / "evidencia.json", evidence)
 
 
 if __name__ == "__main__":

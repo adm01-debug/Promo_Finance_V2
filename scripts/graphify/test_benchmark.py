@@ -1,4 +1,9 @@
+import hashlib
+import json
+from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
 import benchmark
 
@@ -17,6 +22,42 @@ class TesteBenchmark(unittest.TestCase):
         self.assertEqual(len(calls), 3)
         self.assertEqual(result, ["ok"])
         self.assertGreaterEqual(median, 0)
+
+    def test_busca_textual_usa_corpus_preservado_apos_mudanca_concorrente(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run = root / "graphify-out/perfil/execucao-teste"
+            (run / "graphify-out").mkdir(parents=True)
+            (run / "corpus/src").mkdir(parents=True)
+            source = root / "src/a.ts"
+            source.parent.mkdir(parents=True)
+            source.write_text("const ancora = 'original';")
+            (run / "corpus/src/a.ts").write_text(source.read_text())
+            (run / "graphify-out/graph.json").write_text(json.dumps({
+                "nodes": [{"id": "ancora", "label": "original", "source_file": "src/a.ts"}],
+                "edges": [],
+            }))
+            (run / "extracao-bruta.json").write_text("{}")
+            (run / "evidencia.json").write_text(json.dumps({
+                "status": "validado_com_limitacoes",
+                "commit": "sha",
+                "files": {"src/a.ts": hashlib.sha256(source.read_bytes()).hexdigest()},
+            }))
+
+            def alterar_worktree(*_args):
+                source.write_text("const ancora = 'alterado';")
+                return True
+
+            case = {"profile": "perfil", "term": "original", "expectedSource": "src/a.ts"}
+            with patch.object(benchmark, "validate_freshness", side_effect=alterar_worktree):
+                result = benchmark.run_case(root, case, repetitions=3)
+            self.assertTrue(result["rg"]["expected_found"])
+            self.assertNotIn("original", source.read_text())
+
+            (run / "corpus/src/a.ts").write_text("corpus adulterado")
+            with patch.object(benchmark, "validate_freshness", return_value=True), \
+                    self.assertRaisesRegex(ValueError, "desatualizada"):
+                benchmark.run_case(root, case, repetitions=3)
 
 
 if __name__ == "__main__":

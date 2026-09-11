@@ -20,7 +20,9 @@ class TesteLockGraphify(unittest.TestCase):
     def test_versao_direta_confere_com_configuracao(self):
         config = json.loads((ROOT / "config.json").read_text())
         requirement = (ROOT / "requirements.in").read_text()
+        lock = (ROOT / "requirements-linux-py311.lock").read_text()
         self.assertIn(f"graphifyy=={config['version']}", requirement)
+        self.assertRegex(lock, rf"(?m)^graphifyy=={re.escape(config['version'])}(?:\s|$)")
 
 
 if __name__ == "__main__":

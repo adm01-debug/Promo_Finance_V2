@@ -52,6 +52,26 @@ class TesteQualidadeGrafo(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     quality.validate_freshness(root, evidence)
 
+    def test_frescor_rejeita_inventario_de_arquivos_ausente_ou_invalido(self):
+        with patch.object(quality, "command", return_value="sha"):
+            for files in (None, [], {}):
+                with self.subTest(files=files), self.assertRaisesRegex(ValueError, "inventário"):
+                    evidence = {"status": "validado_com_limitacoes", "commit": "sha"}
+                    if files is not None:
+                        evidence["files"] = files
+                    quality.validate_freshness(Path("."), evidence)
+
+    def test_frescor_rejeita_hash_invalido_e_travessia_de_diretorio(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch.object(quality, "command", return_value="sha"):
+                for files in ({"a.ts": "curto"}, {"../fora.ts": "a" * 64},
+                              {"src\\fora.ts": "a" * 64}):
+                    with self.subTest(files=files), self.assertRaisesRegex(ValueError, "inválido"):
+                        quality.validate_freshness(root, {
+                            "status": "validado_com_limitacoes", "commit": "sha", "files": files,
+                        })
+
     def test_svg_e_offline_e_escapa_rotulo_hostil(self):
         metrics = {"communities": {"0": {"label": "<script>alert(1)</script>", "nodes": 1,
                                               "cohesion": 1.0}}}

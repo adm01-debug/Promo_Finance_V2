@@ -39,6 +39,17 @@ useMutation({ mutationKey: ["baixar-conta"] });
         self.assertEqual(refs[0]["line"], 2)
         self.assertEqual(refs[0]["confidence"], "LITERAL")
 
+    def test_chaves_parcialmente_dinamicas_sao_contadas(self):
+        text = """useQuery({ queryKey: ['contas', contaId] });
+useMutation({ mutationKey: ["baixar", payload.id] });
+useQuery({ queryKey: ['estatica,com-virgula', 'segmento', 2026] });
+"""
+        refs, dynamic = code.extract_references("src/a.ts", text)
+        self.assertEqual([item["name"] for item in refs if item["kind"] == "query_key"],
+                         ["contas", "estatica,com-virgula"])
+        self.assertEqual(dynamic["query_key"], 1)
+        self.assertEqual(dynamic["mutation_key"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

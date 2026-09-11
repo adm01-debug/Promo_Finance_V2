@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 from time import perf_counter
 
-from graph_quality import latest_profile_files, matching_ids, validate_freshness
+from graph_quality import latest_profile_files, matching_ids, validate_file_hashes, validate_freshness
 from run import ROOT
 
 
@@ -42,10 +42,14 @@ def run_case(root, case, repetitions=5):
     graph_path, _, evidence_path = latest_profile_files(root, case["profile"])
     evidence = json.loads(evidence_path.read_text())
     validate_freshness(root, evidence)
+    corpus = evidence_path.parent / "corpus"
+    if not corpus.is_dir():
+        raise ValueError("Corpus preservado da execução não foi encontrado.")
+    validate_file_hashes(corpus, evidence["files"])
     graph = json.loads(graph_path.read_text())
     files = sorted(evidence["files"])
     graph_ms, graph_sources = median_time(lambda: source_hits(graph, case["term"]), repetitions)
-    rg_ms, text_sources = median_time(lambda: rg_hits(root, case["term"], files), repetitions)
+    rg_ms, text_sources = median_time(lambda: rg_hits(corpus, case["term"], files), repetitions)
     expected = case["expectedSource"]
     return {
         **case,

@@ -45,7 +45,8 @@ class TesteInventario(unittest.TestCase):
                     run.inventory(self.root, self.config)
 
     def test_corpus_vazio_duplicado_ou_acima_do_limite(self):
-        for names in [[], [self.name, self.name], ["src/a.ts", "src/b.ts", "src/c.ts"]]:
+        for names in [[], [self.name, self.name], ["src/a.ts", "src/b.ts", "src/c.ts"],
+                      [""], [{"arquivo": self.name}], [[self.name]]]:
             with self.subTest(names=names):
                 self.config["files"] = names
                 with self.assertRaises(ValueError):
@@ -209,6 +210,24 @@ class TesteExecucao(unittest.TestCase):
             evidence = list((root / "graphify-out/teste").glob("execucao-*/evidencia.json"))
             self.assertEqual(len(evidence), 1)
             self.assertEqual(json.loads(evidence[0].read_text())["status"], "falhou")
+
+    def test_falha_ao_obter_commit_preserva_manifesto_inicial(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(run.shutil, "which", return_value="graphify"):
+            root = Path(directory)
+
+            def fake_command(args, *unused):
+                if "--version" in args:
+                    return "graphify 0.9.48"
+                raise subprocess.CalledProcessError(1, args)
+
+            with patch.object(run, "command", side_effect=fake_command), \
+                    self.assertRaises(subprocess.CalledProcessError):
+                run.analyze(root, {"version": "0.9.48", "name": "teste", "timeoutSeconds": 1},
+                            {"src/a.ts": b"const a=1;"})
+            manifests = list((root / "graphify-out/teste").glob("execucao-*/evidencia.json"))
+            self.assertEqual(len(manifests), 1)
+            self.assertEqual(json.loads(manifests[0].read_text())["status"], "falhou")
+            self.assertFalse(list((root / "graphify-out/teste").glob("execucao-*/.evidencia.json.tmp")))
 
 
 if __name__ == "__main__":

@@ -38,6 +38,22 @@ const Pagina = lazy(() => import('@/pages/Pagina'));
         resolved = imports.resolve_imports(found, {"src/x.ts"})
         self.assertEqual(resolved[0]["target"], "src/x.ts")
 
+    def test_imports_estatico_e_de_tipo_em_multiplas_linhas(self):
+        text = """import type {
+  Tipo,
+} from './tipo';
+import {
+  valor,
+} from './valor';
+"""
+        found = imports.extract_imports("src/a.ts", text)
+        self.assertEqual([(item["kind"], item["specifier"]) for item in found], [
+            ("type_import", "./tipo"), ("static_import", "./valor")
+        ])
+
+    def test_caminho_normalizado_sem_partes_nao_interrompe_inventario(self):
+        self.assertEqual(imports.candidate_paths("src/a.ts", ".."), [])
+
 
 if __name__ == "__main__":
     unittest.main()

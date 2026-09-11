@@ -6,8 +6,8 @@ import re
 
 
 IMPORT_PATTERNS = (
-    ("type_import", re.compile(r"\bimport\s+type\s+.+?\s+from\s*(['\"])([^'\"]+)\1")),
-    ("static_import", re.compile(r"\bimport\s+(?!type\b).+?\s+from\s*(['\"])([^'\"]+)\1")),
+    ("type_import", re.compile(r"\bimport\s+type\s+[^;]+?\s+from\s*(['\"])([^'\"]+)\1")),
+    ("static_import", re.compile(r"\bimport\s+(?!type\b|['\"])[^;]+?\s+from\s*(['\"])([^'\"]+)\1")),
     ("side_effect_import", re.compile(r"\bimport\s*(['\"])([^'\"]+)\1")),
     ("reexport", re.compile(r"\bexport\s+(?:type\s+)?(?:\*|\{[^}]*\})\s+from\s*(['\"])([^'\"]+)\1")),
     ("lazy_import", re.compile(r"\bimport\s*\(\s*(['\"])([^'\"]+)\1\s*\)")),
@@ -45,7 +45,8 @@ def candidate_paths(relative, specifier):
     else:
         return []
     normalized = PurePosixPath(posixpath.normpath(base.as_posix()))
-    if normalized.is_absolute() or ".." in normalized.parts or normalized.parts[0] not in {"src", "supabase"}:
+    if (not normalized.parts or normalized.is_absolute() or ".." in normalized.parts
+            or normalized.parts[0] not in {"src", "supabase"}):
         return []
     candidates = [normalized]
     if normalized.suffix not in SOURCE_SUFFIXES:
