@@ -12,12 +12,15 @@ import { useConciliacaoTributaria } from '@/hooks/useConciliacaoTributaria';
 import { formatCurrency } from '@/lib/formatters';
 
 interface Props {
-  empresaId: string;
+  empresaId?: string;
 }
 
 export function ConciliacaoTributariaPanel({ empresaId }: Props) {
   const [ano, setAno] = useState(new Date().getFullYear());
   const [mes, setMes] = useState(new Date().getMonth() + 1);
+  const empresaValida = Boolean(
+    empresaId && !['todas', 'all', 'default'].includes(empresaId)
+  );
 
   const { divergencias, resumo, isAnalisando, executarConciliacao } = useConciliacaoTributaria(empresaId);
 
@@ -54,12 +57,18 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={() => executarConciliacao.mutate({ ano, mes })} disabled={isAnalisando}>
+          <Button onClick={() => executarConciliacao.mutate({ ano, mes })} disabled={isAnalisando || !empresaValida}>
             <RefreshCw className={`mr-2 h-4 w-4 ${isAnalisando ? 'animate-spin' : ''}`} />
             Executar
           </Button>
         </div>
       </div>
+
+      {!empresaValida && (
+        <p className="text-sm text-muted-foreground" role="status">
+          Selecione uma empresa no contexto global para executar a conciliação tributária.
+        </p>
+      )}
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card>

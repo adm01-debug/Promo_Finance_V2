@@ -36,19 +36,22 @@ export interface ResumoConciliacao {
 export function useConciliacaoTributaria(empresaId?: string, competencia?: string) {
   const [isAnalisando, setIsAnalisando] = useState(false);
   const [divergencias, setDivergencias] = useState<DiferencaConciliacao[]>([]);
+  const empresaValida = Boolean(
+    empresaId && !['todas', 'all', 'default'].includes(empresaId)
+  );
 
   // Buscar notas fiscais
   const { data: notasFiscais } = useQuery({
     queryKey: ['notas-fiscais-conciliacao', empresaId, competencia],
+    enabled: empresaValida,
     queryFn: async () => {
+      if (!empresaValida) return [];
       let query = supabase
         .from('notas_fiscais')
         .select('*')
         .order('data_emissao', { ascending: false });
 
-      if (empresaId && empresaId !== 'todas' && empresaId !== 'all' && empresaId !== 'default') {
-        query = query.eq('empresa_id', empresaId);
-      }
+      query = query.eq('empresa_id', empresaId!);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -59,15 +62,15 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
   // Buscar apurações
   const { data: apuracoes } = useQuery({
     queryKey: ['apuracoes-conciliacao', empresaId, competencia],
+    enabled: empresaValida,
     queryFn: async () => {
+      if (!empresaValida) return [];
       let query = supabase
         .from('apuracoes_tributarias')
         .select('*')
         .order('competencia', { ascending: false });
 
-      if (empresaId && empresaId !== 'todas' && empresaId !== 'all' && empresaId !== 'default') {
-        query = query.eq('empresa_id', empresaId);
-      }
+      query = query.eq('empresa_id', empresaId!);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -78,15 +81,15 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
   // Buscar créditos
   const { data: creditos } = useQuery({
     queryKey: ['creditos-conciliacao', empresaId, competencia],
+    enabled: empresaValida,
     queryFn: async () => {
+      if (!empresaValida) return [];
       let query = supabase
         .from('creditos_tributarios')
         .select('*')
         .order('data_origem', { ascending: false });
 
-      if (empresaId && empresaId !== 'todas' && empresaId !== 'all' && empresaId !== 'default') {
-        query = query.eq('empresa_id', empresaId);
-      }
+      query = query.eq('empresa_id', empresaId!);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -97,6 +100,7 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
   // Executar análise de conciliação
   const executarConciliacao = useMutation({
     mutationFn: async (config: { ano: number; mes: number }) => {
+      if (!empresaValida) throw new Error('Selecione uma empresa válida antes de executar a conciliação');
       setIsAnalisando(true);
       const novasDivergencias: DiferencaConciliacao[] = [];
       const { ano, mes } = config;

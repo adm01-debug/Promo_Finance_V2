@@ -64,7 +64,7 @@ export default function Conciliacao() {
     totalTransacoes, conciliadas, pendentes, percentualConciliado,
     showSugestoesFila, setShowSugestoesFila,
     handleImportSuccess, handleConfirmarMatch, handleRejeitarMatch,
-    handleConciliarManual, handleManualSuccess,
+    handleConciliarManual, handleManualSuccess, handleSplitSuccess,
     handleConciliar, handleIgnorar,
     handleBulkConciliar, handleBulkIgnorar,
     toggleSelect, toggleSelectAll,
@@ -396,7 +396,7 @@ export default function Conciliacao() {
         transacao={selectedTransacaoSplit} 
         lancamentos={lancamentosSistema}
         onSuccess={() => {
-          if (selectedTransacaoSplit) handleManualSuccess(selectedTransacaoSplit.id, '', 'pagar');
+          if (selectedTransacaoSplit) handleSplitSuccess(selectedTransacaoSplit.id);
         }}
       />
       <RelatorioImportacaoDialog 

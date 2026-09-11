@@ -102,12 +102,9 @@ export default function CalculadoraTributaria() {
   async function salvarCenario() {
     setSalvando(true);
     try {
+      if (!empresaId) throw new Error('Selecione uma empresa antes de salvar o cenário');
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Não autenticado');
-      const { data: empresas } = await supabase
-        .from('user_empresas').select('empresa_id').eq('user_id', user.id).limit(1);
-      const empresaId = empresas?.[0]?.empresa_id;
-      if (!empresaId) throw new Error('Sem empresa vinculada');
 
       const cenariosResumo = resultado.cenarios.map((c) => ({
         regime: c.regime, nome: c.nome, totalAPagar: c.totalAPagar, cargaEfetiva: c.cargaEfetiva,
@@ -175,7 +172,7 @@ export default function CalculadoraTributaria() {
           <Button variant="outline" size="sm" onClick={exportarPDF}>
             <FileDown className="h-4 w-4 mr-2" /> PDF
           </Button>
-          <Button size="sm" onClick={salvarCenario} disabled={salvando}>
+          <Button size="sm" onClick={salvarCenario} disabled={salvando || !empresaId}>
             <Save className="h-4 w-4 mr-2" /> {salvando ? 'Salvando…' : 'Salvar cenário'}
           </Button>
         </div>
