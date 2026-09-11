@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "graphify:inventory": "python3 scripts/graphify/run.py inventory",
+    "graphify:pilot": "python3 scripts/graphify/run.py pilot",
+    "graphify:test": "python3 -m unittest discover -s scripts/graphify -p 'test_*.py' -v",
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",

@@ -57,3 +57,14 @@ Workers/editores NUNCA mexem em git/branches — só o orquestrador.
 2. **Verdade acima de validação.** Não sabe → diga. Falhou → diga. Nunca "sucesso" fabricado.
 3. **Zero churn / diff mínimo.** Não refatore nem reescreva arquivo inteiro para mudar 3 linhas.
 4. **Execução end-to-end.** Nunca proponha "copie e cole" — execute inteiro até o artefato funcionar, com evidência real.
+
+## Graphify — análise estrutural complementar
+
+- Ler `docs/GRAPHIFY_PLANO_50_ETAPAS.md`. O piloto é `npm run graphify:pilot`;
+  revisar o corpus antes com `npm run graphify:inventory`.
+- Consultar apenas um grafo cuja `evidencia.json` tenha status de piloto validado,
+  commit e hashes compatíveis com os arquivos atuais. Um grafo parcial não é o sistema inteiro.
+- Os resultados ficam privados em `graphify-out/piloto-*/`. Não executar `graphify update .`
+  nem ativar hooks globais, LLM, MCP público ou banco automaticamente.
+- Preservar `src/lib/arquitetura/` e seu analisador existente. Confirmar relações no código;
+  nó isolado não significa lixo e AST não comprova implantação, RLS ou segurança financeira.

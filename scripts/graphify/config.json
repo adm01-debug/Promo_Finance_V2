@@ -1,0 +1,13 @@
+{
+  "version": "0.9.48",
+  "maxFiles": 50,
+  "maxBytes": 1048576,
+  "timeoutSeconds": 180,
+  "files": [
+    "src/lib/arquitetura/analisador-imports.ts",
+    "src/lib/arquitetura/modulos.ts",
+    "src/integrations/supabase/client.ts",
+    "supabase/functions/_shared/auth-guard.ts",
+    "supabase/functions/_shared/webhook-auth.ts"
+  ]
+}
