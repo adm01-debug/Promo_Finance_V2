@@ -21,7 +21,7 @@ do diff desta integração.
 - PR #72 homologado no head `d50315305e6d565ed6771786265e419e99318a9d`
   e integrado por squash na `main` em
   `cfb20e6363c71f62962a43d86f8effbbd3041dac`;
-- workflow Graphify remoto: 68 testes, piloto e onze perfis aprovados;
+- workflow Graphify remoto `34637671415`: 68 testes, piloto e onze perfis aprovados;
 - pipeline do PR `34637671321`: qualidade, build, E2E crítico, logout destrutivo
   e quarentena aprovados;
 - pipeline pós-merge `34638407809`: os mesmos gates aprovados no commit canônico;

@@ -310,8 +310,9 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
   **Aceite:** diferenças só em metadados previstos; nenhum grafo anterior perdido; definir captura consistente de mudanças concorrentes.
 - [x] **039 — Homologar o workflow privado.** P1 · responsável: DevOps · depende: 006, 036–038.
   Workflow já versionado: testes e piloto em Python 3.11, permissão `contents: read`, sem credenciais persistidas/upload.
-  **Aceite:** execução remota verde ligada ao SHA `d50315305e6d565ed6771786265e419e99318a9d`
-  no run `34637671321`; YAML existir ou teste local passar não conclui a etapa.
+  **Aceite:** workflow Graphify remoto da PR #72 aprovado no run `34637671415`,
+  ligado ao SHA `d50315305e6d565ed6771786265e419e99318a9d`; YAML existir ou teste local
+  passar não conclui a etapa.
 - [ ] **040 — Testar compatibilidade e upgrades.** P2 · responsável: DevOps · depende: 007, 039.
   Definir matriz Linux/ambientes dos agentes e testar versão nova com o mesmo corpus antes de atualizar o pin.
   **Aceite:** procedimento de rollback e comparação de métricas, hashes e relações revisado.
