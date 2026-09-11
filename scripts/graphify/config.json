@@ -1,13 +1,47 @@
 {
   "version": "0.9.48",
-  "maxFiles": 50,
-  "maxBytes": 1048576,
-  "timeoutSeconds": 180,
-  "files": [
-    "src/lib/arquitetura/analisador-imports.ts",
-    "src/lib/arquitetura/modulos.ts",
-    "src/integrations/supabase/client.ts",
-    "supabase/functions/_shared/auth-guard.ts",
-    "supabase/functions/_shared/webhook-auth.ts"
-  ]
+  "profiles": {
+    "pilot": {
+      "maxFiles": 50,
+      "maxBytes": 1048576,
+      "timeoutSeconds": 180,
+      "files": [
+        "src/lib/arquitetura/analisador-imports.ts",
+        "src/lib/arquitetura/modulos.ts",
+        "src/integrations/supabase/client.ts",
+        "supabase/functions/_shared/auth-guard.ts",
+        "supabase/functions/_shared/webhook-auth.ts"
+      ]
+    },
+    "edge-runtime": {
+      "maxFiles": 200,
+      "maxBytes": 2097152,
+      "timeoutSeconds": 300,
+      "includePrefixes": ["supabase/functions/"]
+    },
+    "domain-integrations": {
+      "maxFiles": 300,
+      "maxBytes": 2097152,
+      "timeoutSeconds": 300,
+      "includePrefixes": ["src/lib/", "src/integrations/"]
+    },
+    "frontend-entry": {
+      "maxFiles": 20,
+      "maxBytes": 524288,
+      "timeoutSeconds": 180,
+      "files": ["src/App.tsx", "src/main.tsx", "src/i18n.ts"]
+    },
+    "frontend-routes": {
+      "maxFiles": 600,
+      "maxBytes": 4194304,
+      "timeoutSeconds": 480,
+      "includePrefixes": ["src/pages/", "src/hooks/"]
+    },
+    "frontend-components": {
+      "maxFiles": 1000,
+      "maxBytes": 8388608,
+      "timeoutSeconds": 600,
+      "includePrefixes": ["src/components/"]
+    }
+  }
 }

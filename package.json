@@ -6,6 +6,9 @@
   "scripts": {
     "graphify:inventory": "python3 scripts/graphify/run.py inventory",
     "graphify:pilot": "python3 scripts/graphify/run.py pilot",
+    "graphify:analyze": "python3 scripts/graphify/run.py analyze",
+    "graphify:sql-inventory": "python3 scripts/graphify/sql_inventory.py",
+    "graphify:code-references": "python3 scripts/graphify/code_references.py",
     "graphify:test": "python3 -m unittest discover -s scripts/graphify -p 'test_*.py' -v",
     "dev": "vite",
     "build": "vite build",

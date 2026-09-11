@@ -1,22 +1,21 @@
-name: Graphify — piloto local
+name: Graphify — mapas privados
 
 on:
   pull_request:
     paths:
       - 'scripts/graphify/**'
       - '.github/workflows/graphify.yml'
-      - 'src/lib/arquitetura/analisador-imports.ts'
-      - 'src/lib/arquitetura/modulos.ts'
-      - 'src/integrations/supabase/client.ts'
-      - 'supabase/functions/_shared/auth-guard.ts'
-      - 'supabase/functions/_shared/webhook-auth.ts'
+      - 'src/**'
+      - 'supabase/functions/**'
+      - 'supabase/migrations/**'
+      - 'package.json'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  piloto:
+  validacoes:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -32,4 +31,28 @@ jobs:
         run: python3 -m pip install graphifyy==0.9.48
       - name: Validar piloto AST sem segredos ou banco
         run: python3 scripts/graphify/run.py pilot
+      - name: Inventariar migrations sem executar SQL
+        run: python3 scripts/graphify/sql_inventory.py
+      - name: Correlacionar referências literais sem banco
+        run: python3 scripts/graphify/code_references.py
       # Não publicar corpus, grafos, logs de extração ou evidências como artifacts.
+
+  perfis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [edge-runtime, domain-integrations, frontend-entry, frontend-routes, frontend-components]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar ferramenta de desenvolvimento fixada
+        run: python3 -m pip install graphifyy==0.9.48
+      - name: Construir mapa AST privado do perfil
+        run: python3 scripts/graphify/run.py analyze --profile ${{ matrix.profile }}
+      # Nenhuma saída é publicada: pode carregar nomes internos e linhas de código.
