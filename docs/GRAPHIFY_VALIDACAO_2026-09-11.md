@@ -16,6 +16,26 @@ Vitest do produto passaram. `type-check`, build de produção, `actionlint` e
 lint também concluíram sem erros; o lint preserva 11 avisos preexistentes fora
 do diff desta integração.
 
+## Publicação e gates remotos
+
+- PR #72 homologado no head `d50315305e6d565ed6771786265e419e99318a9d`
+  e integrado por squash na `main` em
+  `cfb20e6363c71f62962a43d86f8effbbd3041dac`;
+- workflow Graphify remoto: 68 testes, piloto e onze perfis aprovados;
+- pipeline do PR `34637671321`: qualidade, build, E2E crítico, logout destrutivo
+  e quarentena aprovados;
+- pipeline pós-merge `34638407809`: os mesmos gates aprovados no commit canônico;
+- a primeira rodada revelou um falso negativo no teste de logout: a navegação
+  esperada destruía o contexto de `page.evaluate`. A troca por `page.goto`
+  preservou a asserção de redirecionamento e passou com os secrets reais;
+- o job de stress em produção permaneceu corretamente desativado. Ele exige
+  `ENABLE_PRODUCTION_SIMULATION_AUDIT=true` durante janela explicitamente
+  autorizada e não faz parte da simulação offline desta entrega.
+
+O estado verificável do roteiro após a publicação é **38/50 etapas concluídas**.
+As 12 restantes preservam dependências de catálogo, origem, privacidade, retenção,
+compatibilidade e aceite humano; não foram marcadas como prontas por inferência.
+
 ## Simulação preventiva aplicada
 
 | Falha simulada | Controle | Resultado |
