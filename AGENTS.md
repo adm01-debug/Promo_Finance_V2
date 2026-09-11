@@ -61,7 +61,8 @@ Workers/editores NUNCA mexem em git/branches — só o orquestrador.
 ## Graphify — análise estrutural complementar
 
 - Ler `docs/GRAPHIFY_PLANO_50_ETAPAS.md`. O piloto é `npm run graphify:pilot`;
-  revisar o corpus antes com `npm run graphify:inventory`.
+  perfis explícitos usam `npm run graphify:analyze -- --profile NOME` e podem ser
+  revisados antes com `npm run graphify:inventory -- --profile NOME`.
 - Consultar apenas um grafo cuja `evidencia.json` tenha status de piloto validado,
   commit e hashes compatíveis com os arquivos atuais. Um grafo parcial não é o sistema inteiro.
 - Os resultados ficam privados em `graphify-out/piloto-*/`. Não executar `graphify update .`

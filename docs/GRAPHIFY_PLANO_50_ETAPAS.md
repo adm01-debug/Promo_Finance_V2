@@ -37,6 +37,9 @@ uv tool install graphifyy==0.9.48
 npm run graphify:inventory
 npm run graphify:test
 npm run graphify:pilot
+npm run graphify:analyze -- --profile edge-runtime
+npm run graphify:sql-inventory
+npm run graphify:code-references
 ```
 
 Alternativa sem `uv`: instalar o mesmo pacote/versão em um ambiente virtual Python
@@ -70,7 +73,9 @@ graphify query "construirGrafoObservado" --budget 800 --graph graphify-out/pilot
 graphify explain "authenticateWebhook" --graph graphify-out/piloto-ID/graphify-out/graph.json
 ```
 
-`piloto-ID` é um marcador documental, substituído pelo diretório real. Selecionar
+`piloto-ID` é um marcador documental, substituído pelo diretório real. Os perfis
+versionados atuais são `pilot`, `edge-runtime`, `domain-integrations`, `frontend-entry`,
+`frontend-routes` e `frontend-components`; o processo recusa perfis ad hoc. Selecionar
 termos existentes nos rótulos; não inventar sinônimos como se o CLI os resolvesse.
 Não executar `graphify update .`, `extract .`, instalação de hooks ou rotulagem por LLM
 como atalho: isso abandona os controles do wrapper e amplia o corpus.
@@ -112,6 +117,38 @@ como atalho: isso abandona os controles do wrapper e amplia o corpus.
 Prioridades: **P0** proteção/integridade; **P1** entrega fundamental; **P2** expansão;
 **P3** otimização. Responsáveis indicam papéis, não agentes já designados.
 Uma etapa só muda para concluída com artefato e comando/evidência verificável.
+
+### Execução posterior à fundação (11/09/2026)
+
+- O lote inicial foi integrado por squash na `main` em `434ba7ec`; todos os checks
+  da PR #70 estavam verdes antes da integração.
+- Foram executados cinco perfis AST privados: Edge runtime (148 arquivos, 1.205.292
+  bytes, 1.115 nós/2.175 relações), domínio e integrações (227, 1.007.449,
+  1.654/2.845), entrada frontend (3, 31.678, 259/385), rotas/hooks (429,
+  2.658.801, 2.043/2.287) e componentes (804, 5.194.434, 3.653/4.194).
+- Referências sem destino dentro do próprio recorte foram preservadas no bruto:
+  207, 304, 51, 6.384 e 13.024 respectivamente. Não são erros confirmados:
+  são principalmente dependências que estão em outro perfil ou fora do código.
+- O inventário lexical local de 595 migrations achou 5.005 declarações: 482 tabelas,
+  88 views, 588 funções, 741 índices, 963 policies, 317 triggers, 13 enums,
+  12 extensões, 310 grants e 29 jobs. O número é histórico (create/alter em
+  migrations), não o número de objetos vivos no banco. Ele marcou quatro arquivos com literais
+  semelhantes a credenciais sem copiar seus valores; tratar como P0 separado.
+- A correlação de 1.646 fontes de código identificou 1.645 referências literais
+  (1.251 relações, 74 RPCs, 91 Edge Functions e 229 rotas), mais 237 chamadas
+  dinâmicas não resolvidas. Com o parser corrigido, nove relações literais e uma
+  Edge Function não tiveram match histórico/versionado; são itens para investigação,
+  não bugs provados. O resultado é histórico/estático, não catálogo canônico.
+- Duas execuções concorrentes do perfil `frontend-entry` produziram diretórios
+  separados e o mesmo total (259 nós/385 relações); uma reexecução sequencial
+  teve nós e relações idênticos. Ainda falta a simulação em worktrees distintos.
+- O MCP `supabase_producao` disponível nesta sessão recusou `connection_info`,
+  `overview`, `migrations` e `db_query` com Management API 403. Como a identidade
+  do projeto não pôde ser comprovada, nenhuma chamada posterior foi feita e os
+  passos de catálogo canônico permanecem bloqueados.
+- As etapas 017, 019, 024 e 025 continuam parciais: exigem reconciliação humana,
+  cobertura dinâmica e leitura autenticada do catálogo canônico. As etapas 022–023
+  estão bloqueadas por ausência de uma conexão MCP/DSN de leitura verificável nesta sessão.
 
 ### A. Governança e diagnóstico — etapas 001–005
 
@@ -187,7 +224,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 
 ### E. Banco e rastreabilidade funcional — etapas 021–025
 
-- [ ] **021 — Mapear migrations sem executá-las.** P1 · responsável: DBA · depende: 019.
+- [x] **021 — Mapear migrations sem executá-las.** P1 · responsável: DBA · depende: 019.
   Ler DDL de forma segura; separar criação, alteração, remoção e estado histórico, sem aplicar SQL.
   **Aceite:** parser testado com comentários, dollar quoting, overloads e migrations repetidas; falhas visíveis.
 - [ ] **022 — Inventariar o catálogo canônico somente leitura.** P0 · responsável: DBA/segurança · depende: 021.
@@ -245,7 +282,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 
 - [x] **036 — Exercitar falhas com dados sintéticos.** P0 · responsável: QA · depende: 009–015, 029.
   Testar filtros, snapshots, limites, isolamento de ambiente, ferramenta ausente, timeout e preservação.
-  **Aceite:** 22 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
+  **Aceite:** 38 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
 - [x] **037 — Executar smoke com o Graphify real.** P1 · responsável: QA · depende: 016, 036.
   Usar CLI instalado e os cinco arquivos reais, incluindo diagnóstico e geração de relatório.
   **Aceite:** extração, agrupamento, grafo e status verificáveis; não considerar mock do processo como substituto.
@@ -328,7 +365,7 @@ podem ser preservados; qualquer remoção material deve identificar o alvo e ser
 - Grafo navegável: **61 nós e 93 relações**. As referências excluídas continuam no bruto.
 - Diagnóstico inicial: zero endpoints ausentes por campo, zero autoarestas e zero
   pares colapsados no corpus inicial. Não extrapolar para o repositório inteiro.
-- Suite local: **22 testes aprovados**. Não inclui testes das funcionalidades financeiras.
+- Suite local: **38 testes aprovados**. Não inclui testes das funcionalidades financeiras.
 - Instalação independente em venv Python 3.11 validada: 30 pacotes instalados e
   mesmo resultado do piloto (61 nós/93 relações). `actionlint` aprovou o workflow.
 - Navegação real: `construirGrafoObservado` retornou oito nós; `authenticateWebhook`

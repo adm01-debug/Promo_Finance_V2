@@ -146,19 +146,19 @@ class TesteExecucao(unittest.TestCase):
                 patch.object(run, "command", return_value="graphify 0.0.0"):
             root = Path(directory)
             with self.assertRaises(ValueError):
-                run.pilot(root, {"version": "0.9.48"}, {})
+                run.analyze(root, {"version": "0.9.48", "name": "teste"}, {})
             self.assertFalse((root / "graphify-out").exists())
 
     def test_ferramenta_ausente(self):
         with patch.object(run.shutil, "which", return_value=None):
             with self.assertRaisesRegex(ValueError, "uv tool install"):
-                run.pilot(Path("."), {"version": "0.9.48"}, {})
+                run.analyze(Path("."), {"version": "0.9.48", "name": "teste"}, {})
 
     def test_timeout_marca_falha_e_preserva_saida_anterior(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(run.shutil, "which", return_value="graphify"):
             root = Path(directory)
-            output = root / "graphify-out"
-            output.mkdir()
+            output = root / "graphify-out" / "teste"
+            output.mkdir(parents=True)
             previous = output / "graph.json"
             previous.write_text("evidencia anterior")
 
@@ -171,9 +171,9 @@ class TesteExecucao(unittest.TestCase):
 
             with patch.object(run, "command", side_effect=fake):
                 with self.assertRaises(subprocess.TimeoutExpired):
-                    run.pilot(root, {"version": "0.9.48", "timeoutSeconds": 1}, {"src/a.ts": b"const a=1;"})
+                    run.analyze(root, {"version": "0.9.48", "name": "teste", "timeoutSeconds": 1}, {"src/a.ts": b"const a=1;"})
             self.assertEqual(previous.read_text(), "evidencia anterior")
-            evidence = list(output.glob("piloto-*/evidencia.json"))
+            evidence = list(output.glob("execucao-*/evidencia.json"))
             self.assertEqual(len(evidence), 1)
             self.assertEqual(json.loads(evidence[0].read_text())["status"], "falhou")
 
@@ -183,7 +183,7 @@ class TesteExecucao(unittest.TestCase):
             root = Path(directory)
             (root / "graphify-out").symlink_to(root / "fora", target_is_directory=True)
             with self.assertRaises(ValueError):
-                run.pilot(root, {"version": "0.9.48"}, {})
+                run.analyze(root, {"version": "0.9.48", "name": "teste"}, {})
 
 
 if __name__ == "__main__":

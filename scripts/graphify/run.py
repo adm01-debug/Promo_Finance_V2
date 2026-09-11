@@ -19,6 +19,10 @@ SECRET = re.compile(
     r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|sb_secret_[A-Za-z0-9_-]{15,}|"
     r"eyJ[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{10,})"
 )
+PROFILE_NAME = re.compile(r"^[a-z][a-z0-9-]{0,47}$")
+ALLOWED_SUFFIXES = {".ts", ".tsx", ".js", ".jsx"}
+EXCLUDED_PATHS = ("/__tests__/", "/__mocks__/", "/.graphify/", "/node_modules/")
+EXCLUDED_NAMES = ("_test.ts", ".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx")
 
 
 def command(args, cwd, env=None, timeout=180):
@@ -28,20 +32,63 @@ def command(args, cwd, env=None, timeout=180):
     ).stdout
 
 
+def profile_config(config, name):
+    """Seleciona um perfil versionado; regras não vêm do terminal."""
+    if not PROFILE_NAME.fullmatch(name):
+        raise ValueError("Nome de perfil inválido.")
+    profile = config.get("profiles", {}).get(name)
+    if not isinstance(profile, dict):
+        raise ValueError(f"Perfil inexistente: {name}")
+    merged = {**config, **profile, "name": name}
+    for required in ("maxFiles", "maxBytes", "timeoutSeconds"):
+        if not isinstance(merged.get(required), int) or merged[required] <= 0:
+            raise ValueError(f"Perfil com {required} inválido.")
+    if not merged.get("files") and not merged.get("includePrefixes"):
+        raise ValueError("Perfil sem arquivos ou prefixos permitidos.")
+    return merged
+
+
+def is_allowed_path(name):
+    rel = PurePosixPath(name)
+    return not (
+        rel.is_absolute() or ".." in rel.parts or "\\" in name
+        or rel.suffix not in ALLOWED_SUFFIXES or rel.parts[0] not in {"src", "supabase"}
+        or any(part.startswith(".") for part in rel.parts)
+        or any(word in name.lower() for word in ("secret", "credential", "dump", "types.ts"))
+        or any(marker in f"/{name}" for marker in EXCLUDED_PATHS)
+        or name.endswith(EXCLUDED_NAMES)
+    )
+
+
+def selected_names(tracked, config):
+    files = config.get("files")
+    prefixes = config.get("includePrefixes")
+    if files:
+        if not isinstance(files, list) or len(files) != len(set(files)):
+            raise ValueError("Lista de arquivos vazia ou duplicada.")
+        names = files
+    else:
+        if not isinstance(prefixes, list) or not prefixes:
+            raise ValueError("Prefixos do perfil inválidos.")
+        if any(not isinstance(prefix, str) or not prefix.endswith("/")
+               or prefix.startswith("/") or ".." in PurePosixPath(prefix).parts
+               for prefix in prefixes):
+            raise ValueError("Prefixos do perfil inválidos.")
+        names = sorted(name for name in tracked
+                       if any(name.startswith(prefix) for prefix in prefixes) and is_allowed_path(name))
+    if not names or len(names) > config["maxFiles"]:
+        raise ValueError("Corpus vazio ou acima do limite de arquivos.")
+    return names
+
+
 def inventory(root, config):
     """Falha fechada; devolve os mesmos bytes que serão analisados."""
     tracked = set(command(["git", "ls-files", "-z"], root).split("\0"))
-    names = config["files"]
-    if not names or len(names) != len(set(names)) or len(names) > config["maxFiles"]:
-        raise ValueError("Corpus vazio, duplicado ou acima do limite de arquivos.")
+    names = selected_names(tracked, config)
     files = {}
     for name in names:
         rel = PurePosixPath(name)
-        if (rel.is_absolute() or ".." in rel.parts or "\\" in name
-                or name not in tracked or rel.suffix not in {".ts", ".tsx", ".js", ".jsx"}
-                or rel.parts[0] not in {"src", "supabase"}
-                or any(part.startswith(".") for part in rel.parts)
-                or any(word in name.lower() for word in ("secret", "credential", "dump", "types.ts"))):
+        if name not in tracked or not is_allowed_path(name):
             raise ValueError(f"Arquivo fora da política do piloto: {name}")
         path = root / name
         if any(parent.is_symlink() for parent in [path, *path.parents] if parent != root.parent):
@@ -83,18 +130,19 @@ def validate_graph(data, expected, *, raw=False):
     return {"nodes": len(nodes), "edges": len(edges), "unresolved_edges": dangling}
 
 
-def pilot(root, config, files):
+def analyze(root, config, files):
     executable = shutil.which("graphify")
     if not executable:
         raise ValueError(f"Instale a ferramenta de desenvolvimento: uv tool install graphifyy=={config['version']}")
     version = command([executable, "--version"], root).strip()
     if version != f"graphify {config['version']}":
         raise ValueError(f"Versão incompatível: esperada graphify {config['version']}.")
-    output = root / "graphify-out"
-    if output.is_symlink():
+    output_root = root / "graphify-out"
+    output = output_root / config["name"]
+    if output_root.is_symlink() or output.is_symlink():
         raise ValueError("Diretório de saída não pode ser link simbólico.")
-    output.mkdir(exist_ok=True)
-    run = Path(tempfile.mkdtemp(prefix="piloto-", dir=output))
+    output.mkdir(parents=True, exist_ok=True)
+    run = Path(tempfile.mkdtemp(prefix="execucao-", dir=output))
     run.chmod(0o700)
     env = isolated_env(run)
     corpus = run / "corpus"
@@ -107,6 +155,7 @@ def pilot(root, config, files):
     evidence = {
         "status": "iniciado", "commit": command(["git", "rev-parse", "HEAD"], root).strip(),
         "timestamp": datetime.now(timezone.utc).isoformat(), "version": version,
+        "profile": config["name"],
         "source_worktree_dirty": bool(command(["git", "status", "--porcelain", "--", *files], root).strip()),
         "mode": "AST local; sem semântica LLM; sem banco de dados",
         "input_tokens": 0, "output_tokens": 0,
@@ -134,7 +183,7 @@ def pilot(root, config, files):
                       run, env, config["timeoutSeconds"])
         (run / "agrupamento.log").write_text(log)
         evidence["graph"] = validate_graph(json.loads(graph_path.read_text()), files)
-        evidence["status"] = "piloto_validado_com_limitacoes"
+        evidence["status"] = "validado_com_limitacoes"
         evidence["limitations"] = [
             "Corpus parcial; ausência de relação não comprova código morto.",
             "Verificar diagnostico.json: agrupamento pode colapsar relações paralelas.",
@@ -143,9 +192,9 @@ def pilot(root, config, files):
         ]
         report = graph_path.with_name("GRAPH_REPORT.md")
         warning = (
-            "> Piloto parcial, não auditoria de produção. A proveniência dos bytes está em ../evidencia.json.\n"
+            f"> Perfil `{config['name']}` parcial, não auditoria de produção. A proveniência dos bytes está em ../evidencia.json.\n"
             f"> {evidence['raw']['unresolved_edges']} referências sem destino no corpus bruto; consultar ../diagnostico.json.\n"
-            "> Não executar a sugestão genérica `graphify update .`: repetir `npm run graphify:pilot`.\n\n"
+            "> Não executar a sugestão genérica `graphify update .`: repetir o comando do perfil.\n\n"
         )
         report.write_text(warning + report.read_text())
         print(json.dumps(evidence["graph"], ensure_ascii=False))
@@ -161,20 +210,24 @@ def pilot(root, config, files):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["inventory", "pilot"])
+    parser.add_argument("action", choices=["inventory", "pilot", "analyze"])
+    parser.add_argument("--profile", default="pilot")
+    parser.add_argument("--list", action="store_true", help="lista arquivos após aplicar a política")
     args = parser.parse_args()
     config = json.loads(CONFIG.read_text())
     try:
+        config = profile_config(config, args.profile)
         files = inventory(ROOT, config)
-        print(f"Corpus: {len(files)} arquivos, {sum(map(len, files.values()))} bytes; somente código.", flush=True)
+        print(f"Perfil {config['name']}: {len(files)} arquivos, {sum(map(len, files.values()))} bytes; somente código.", flush=True)
         if args.action == "inventory":
-            print("\n".join(files))
+            if args.list:
+                print("\n".join(files))
         else:
-            pilot(ROOT, config, files)
+            analyze(ROOT, config, files)
     except (ValueError, OSError, subprocess.SubprocessError) as error:
         # Não imprimir stdout/stderr de dependência: podem conter conteúdo privado.
         message = str(error) if isinstance(error, (ValueError, FileNotFoundError)) else type(error).__name__
-        parser.exit(1, f"Falha no piloto Graphify: {message}\n")
+        parser.exit(1, f"Falha na análise Graphify: {message}\n")
 
 
 if __name__ == "__main__":
