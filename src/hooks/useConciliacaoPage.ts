@@ -333,18 +333,53 @@ export function useConciliacaoPage() {
   );
 
   const handleBulkConciliar = useCallback(() => {
-    setTransacoes((prev) =>
-      prev.map((t) => (selectedIds.has(t.id) ? { ...t, conciliada: true } : t))
+    if (selectedIds.size === 0) return;
+
+    // Uma conciliação exige um lançamento de pagar ou receber. Marcar itens
+    // selecionados sem esse vínculo só alterava a memória e criava um falso
+    // positivo visual; o operador deve abrir a conciliação de cada item.
+    toast.warning('Selecione o lançamento de cada transação para confirmar a conciliação.');
+  }, [selectedIds.size]);
+
+  const handleBulkIgnorar = useCallback(async () => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+
+    const resultados = await Promise.allSettled(
+      ids.map(async (id) => {
+        const { error } = await supabase
+          .from('transacoes_bancarias')
+          .update({ conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' })
+          .eq('id', id);
+        if (error) throw error;
+        return id;
+      })
     );
-    toast.success(`${selectedIds.size} transações conciliadas`);
-    setSelectedIds(new Set());
+
+    const persistidos = new Set(
+      resultados.flatMap((resultado) => (resultado.status === 'fulfilled' ? [resultado.value] : []))
+    );
+    const falhas = ids.length - persistidos.size;
+
+    if (persistidos.size > 0) {
+      setTransacoes((prev) => prev.filter((t) => !persistidos.has(t.id)));
+    }
+    setSelectedIds(new Set(ids.filter((id) => !persistidos.has(id))));
+
+    if (persistidos.size > 0) {
+      toast.success(`${persistidos.size} transações ignoradas e persistidas`);
+    }
+    if (falhas > 0) {
+      toast.error(`${falhas} transações não foram ignoradas; a seleção foi preservada para nova tentativa.`);
+    }
   }, [selectedIds]);
 
-  const handleBulkIgnorar = useCallback(() => {
-    setTransacoes((prev) => prev.filter((t) => !selectedIds.has(t.id)));
-    toast.success(`${selectedIds.size} transações ignoradas`);
-    setSelectedIds(new Set());
-  }, [selectedIds]);
+  const handleSplitSuccess = useCallback((transacaoId: string) => {
+    setTransacoes((prev) =>
+      prev.map((t) => (t.id === transacaoId ? { ...t, conciliada: true } : t))
+    );
+    setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
+  }, []);
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -450,6 +485,7 @@ export function useConciliacaoPage() {
     handleIgnorar,
     handleBulkConciliar,
     handleBulkIgnorar,
+    handleSplitSuccess,
     toggleSelect,
     toggleSelectAll,
     handleDesfazerConciliacao,

@@ -699,7 +699,7 @@ describe('useConciliacaoPage — seleção, bulk, filtros e KPIs', () => {
     return hook;
   }
 
-  it('#18 handleBulkConciliar limpa seleção, atualiza local e emite toast com contagem', async () => {
+  it('#18 handleBulkConciliar não cria uma conciliação sem lançamento vinculado', async () => {
     const { result } = await mountWith([
       {
         id: 'a',
@@ -728,12 +728,34 @@ describe('useConciliacaoPage — seleção, bulk, filtros e KPIs', () => {
       result.current.handleBulkConciliar();
     });
 
-    expect(mocks.toasts.success).toHaveBeenCalledWith('2 transações conciliadas');
-    expect(result.current.selectedIds.size).toBe(0);
-    expect(result.current.transacoes.every((t) => t.conciliada)).toBe(true);
+    expect(mocks.toasts.warning).toHaveBeenCalledWith(
+      'Selecione o lançamento de cada transação para confirmar a conciliação.'
+    );
+    expect(result.current.selectedIds.size).toBe(2);
+    expect(result.current.transacoes.every((t) => !t.conciliada)).toBe(true);
   });
 
-  it('#19 toggleSelectAll alterna entre todos-pendentes e nenhum', async () => {
+  it('#19 handleBulkIgnorar só remove itens cuja persistência confirmou', async () => {
+    const { result } = await mountWith([
+      { id: 'a', data: '2025-01-01', descricao: 'a', valor: 10, tipo: 'receita', conciliada: false },
+      { id: 'b', data: '2025-01-01', descricao: 'b', valor: 20, tipo: 'receita', conciliada: false },
+    ]);
+    act(() => {
+      result.current.toggleSelect('a');
+      result.current.toggleSelect('b');
+    });
+
+    await act(async () => {
+      await result.current.handleBulkIgnorar();
+    });
+
+    expect(mocks.supabase.updates.transacoes_bancarias).toHaveLength(2);
+    expect(mocks.toasts.success).toHaveBeenCalledWith('2 transações ignoradas e persistidas');
+    expect(result.current.transacoes).toHaveLength(0);
+    expect(result.current.selectedIds.size).toBe(0);
+  });
+
+  it('#20 toggleSelectAll alterna entre todos-pendentes e nenhum', async () => {
     const { result } = await mountWith([
       {
         id: 'a',
@@ -755,7 +777,7 @@ describe('useConciliacaoPage — seleção, bulk, filtros e KPIs', () => {
     expect(result.current.selectedIds.size).toBe(0);
   });
 
-  it('#20 toggleSelect adiciona/remove individualmente', async () => {
+  it('#21 toggleSelect adiciona/remove individualmente', async () => {
     const { result } = await mountWith([
       {
         id: 'a',

@@ -2,8 +2,11 @@ import { ConciliacaoTributariaPanel } from '@/components/reforma-tributaria/Conc
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { RefreshCcw } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ConciliacaoTributariaPage() {
+  const { currentEmpresaId } = useAuth();
+
   return (
     <MainLayout>
       <div className="relative min-h-screen">
@@ -20,7 +23,7 @@ export default function ConciliacaoTributariaPage() {
             gradientTo="to-orange-600"
           />
           
-          <ConciliacaoTributariaPanel empresaId="all" />
+          <ConciliacaoTributariaPanel empresaId={currentEmpresaId ?? undefined} />
         </div>
       </div>
     </MainLayout>

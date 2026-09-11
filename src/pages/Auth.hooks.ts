@@ -222,7 +222,9 @@ export function useAuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
-        await supabase.rpc('increment_failed_attempts', { _email: email });
+        // Não chamamos RPC de contador antes da autenticação: expor uma
+        // mutação por e-mail a anon permite lockout forçado por terceiros.
+        // A limitação de tentativas deve permanecer no provedor de Auth/WAF.
         await logLoginAttempt(email, false, error.message);
 
         if (error.message.includes('Invalid login credentials')) {
