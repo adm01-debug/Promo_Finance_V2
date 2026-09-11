@@ -1,0 +1,35 @@
+name: Graphify — piloto local
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/graphify/**'
+      - '.github/workflows/graphify.yml'
+      - 'src/lib/arquitetura/analisador-imports.ts'
+      - 'src/lib/arquitetura/modulos.ts'
+      - 'src/integrations/supabase/client.ts'
+      - 'supabase/functions/_shared/auth-guard.ts'
+      - 'supabase/functions/_shared/webhook-auth.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  piloto:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testar filtros e simular falhas
+        run: python3 -m unittest discover -s scripts/graphify -p 'test_*.py' -v
+      - name: Instalar ferramenta de desenvolvimento fixada
+        run: python3 -m pip install graphifyy==0.9.48
+      - name: Validar piloto AST sem segredos ou banco
+        run: python3 scripts/graphify/run.py pilot
+      # Não publicar corpus, grafos, logs de extração ou evidências como artifacts.

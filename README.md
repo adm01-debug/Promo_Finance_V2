@@ -56,6 +56,7 @@ A arquitetura do projeto é baseada em princípios de **resiliência, telemetria
 - **[Auditoria Técnica e Resiliência](docs/TECHNICAL_AUDIT_RESILIENCE.md)**: telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.
 - **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: como rodar e escrever testes.
 - **[Acessibilidade](docs/ACCESSIBILITY.md)**: padrões WCAG seguidos no frontend.
+- **[Graphify — integração e plano de 50 etapas](docs/GRAPHIFY_PLANO_50_ETAPAS.md)**: piloto local de análise estrutural, sem acesso ao banco ou IA externa.
 - **[ADR-001 — módulo Lalamove fora de escopo](docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md)**: decisão que identifica os 14 objetos de outro projeto que não devem ser recuperados.
 - **[ADR-002 — funções essenciais do Promo Finance](docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md)**: registro das funções legítimas que devem ser preservadas ou recuperadas.
 
