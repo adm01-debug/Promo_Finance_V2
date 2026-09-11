@@ -33,15 +33,21 @@ class TesteBenchmark(unittest.TestCase):
             source.parent.mkdir(parents=True)
             source.write_text("const ancora = 'original';")
             (run / "corpus/src/a.ts").write_text(source.read_text())
-            (run / "graphify-out/graph.json").write_text(json.dumps({
+            graph_path = run / "graphify-out/graph.json"
+            raw_path = run / "extracao-bruta.json"
+            graph_path.write_text(json.dumps({
                 "nodes": [{"id": "ancora", "label": "original", "source_file": "src/a.ts"}],
                 "edges": [],
             }))
-            (run / "extracao-bruta.json").write_text("{}")
+            raw_path.write_text("{}")
             (run / "evidencia.json").write_text(json.dumps({
                 "status": "validado_com_limitacoes",
                 "commit": "sha",
                 "files": {"src/a.ts": hashlib.sha256(source.read_bytes()).hexdigest()},
+                "artifacts": {
+                    "graph": hashlib.sha256(graph_path.read_bytes()).hexdigest(),
+                    "raw": hashlib.sha256(raw_path.read_bytes()).hexdigest(),
+                },
             }))
 
             def alterar_worktree(*_args):

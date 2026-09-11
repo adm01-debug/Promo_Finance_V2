@@ -8,7 +8,8 @@ import subprocess
 import tempfile
 from time import perf_counter
 
-from graph_quality import latest_profile_files, matching_ids, validate_file_hashes, validate_freshness
+from graph_quality import (latest_profile_files, matching_ids, validate_artifacts,
+                           validate_file_hashes, validate_freshness)
 from run import ROOT
 
 
@@ -39,9 +40,10 @@ def median_time(callable_, repetitions):
 
 
 def run_case(root, case, repetitions=5):
-    graph_path, _, evidence_path = latest_profile_files(root, case["profile"])
+    graph_path, raw_path, evidence_path = latest_profile_files(root, case["profile"])
     evidence = json.loads(evidence_path.read_text())
     validate_freshness(root, evidence)
+    validate_artifacts(graph_path, raw_path, evidence)
     corpus = evidence_path.parent / "corpus"
     if not corpus.is_dir():
         raise ValueError("Corpus preservado da execução não foi encontrado.")

@@ -144,7 +144,9 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
   não bugs provados. O resultado é histórico/estático, não catálogo canônico.
 - Duas execuções concorrentes do perfil `frontend-entry` produziram diretórios
   separados e o mesmo total (259 nós/385 relações); uma reexecução sequencial
-  teve nós e relações idênticos. Ainda falta a simulação em worktrees distintos.
+  teve nós e relações idênticos. No piloto, dois worktrees produziram o mesmo
+  SHA-256 final; três destinos não resolvidos do bruto variaram apenas no prefixo
+  absoluto do worktree incorporado pelo fornecedor.
 - Em 11/09/2026, o MCP oficial comprovou o destino canônico
   `bwwbeyolnnzppeuhgkcd` e permitiu listar tabelas, migrations, extensões, Edge
   Functions e advisors. A permissão de `execute_sql` continuou insuficiente; por
@@ -155,8 +157,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
   calibração de qualidade, navegação com teto, resumo SVG offline e benchmark
   foram executados. Evidência agregada e limites estão em
   `docs/GRAPHIFY_VALIDACAO_2026-09-11.md`; artefatos completos continuam privados.
-- Duas execuções simultâneas do piloto em worktrees distintos produziram o mesmo
-  SHA-256 do grafo. Uma interrupção real com `SIGKILL` deixou manifesto `iniciado`
+- Uma interrupção real com `SIGKILL` deixou manifesto `iniciado`
   e nenhum grafo final, eliminando o diretório órfão sem estado observado antes do ajuste.
 - As etapas 022–025 e 046–047 continuam parciais enquanto faltar catálogo vivo
   completo e acesso autenticado à origem. A 035 e a política destrutiva da 044
@@ -295,7 +296,7 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 
 - [x] **036 — Exercitar falhas com dados sintéticos.** P0 · responsável: QA · depende: 009–015, 029.
   Testar filtros, snapshots, limites, isolamento de ambiente, ferramenta ausente, timeout e preservação.
-  **Aceite:** 65 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
+  **Aceite:** 68 testes `unittest` aprovados; casos sintéticos identificados como tais, sem aprovação fictícia de produção.
 - [x] **037 — Executar smoke com o Graphify real.** P1 · responsável: QA · depende: 016, 036.
   Usar CLI instalado e os cinco arquivos reais, incluindo diagnóstico e geração de relatório.
   **Aceite:** extração, agrupamento, grafo e status verificáveis; não considerar mock do processo como substituto.
@@ -378,7 +379,7 @@ podem ser preservados; qualquer remoção material deve identificar o alvo e ser
 - Grafo navegável: **61 nós e 93 relações**. As referências excluídas continuam no bruto.
 - Diagnóstico inicial: zero endpoints ausentes por campo, zero autoarestas e zero
   pares colapsados no corpus inicial. Não extrapolar para o repositório inteiro.
-- Suite local do Graphify: **65 testes aprovados**. A validação complementar do
+- Suite local do Graphify: **68 testes aprovados**. A validação complementar do
   produto executou **2.712 testes Vitest**, sem falhas.
 - Instalação independente em venv Python 3.11 validada: 30 pacotes instalados e
   mesmo resultado do piloto (61 nós/93 relações). `actionlint` aprovou o workflow.

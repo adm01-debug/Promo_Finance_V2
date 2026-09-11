@@ -196,6 +196,10 @@ def analyze(root, config, files):
                       run, env, config["timeoutSeconds"])
         (run / "agrupamento.log").write_text(log)
         evidence["graph"] = validate_graph(json.loads(graph_path.read_text()), files)
+        evidence["artifacts"] = {
+            "graph": hashlib.sha256(graph_path.read_bytes()).hexdigest(),
+            "raw": hashlib.sha256((run / "extracao-bruta.json").read_bytes()).hexdigest(),
+        }
         evidence["status"] = "validado_com_limitacoes"
         evidence["limitations"] = [
             "Corpus parcial; ausência de relação não comprova código morto.",

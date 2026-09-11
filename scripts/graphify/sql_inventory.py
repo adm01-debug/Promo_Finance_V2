@@ -34,6 +34,10 @@ TRIGGER_DEPENDENCY = re.compile(
 POLICY_DEPENDENCY = re.compile(r"^\s*CREATE\s+POLICY\s+([\w.\"]+)\s+ON\s+([\w.\"]+)", re.I | re.S)
 FUNCTION_CONTEXT = re.compile(r"^\s*CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+([\w.\"]+)", re.I)
 RELATION_USE = re.compile(r"\b(?:FROM|JOIN|UPDATE|INSERT\s+INTO|DELETE\s+FROM)\s+([\w.\"]+)", re.I)
+CTE_ALIAS = re.compile(
+    r"(?:\bWITH\b|,)\s*(?:RECURSIVE\s+)?([A-Za-z_][A-Za-z0-9_$]*|\"[^\"]+\")"
+    r"\s*(?:\([^)]*\)\s*)?AS\s+(?:(?:NOT\s+)?MATERIALIZED\s+)?\(", re.I
+)
 
 
 def split_statements(text):
@@ -153,9 +157,10 @@ def dependencies_in_file(relative, text):
         function = FUNCTION_CONTEXT.search(body)
         if function:
             source = clean_name(function.group(1))
+            cte_aliases = {clean_name(match.group(1)).casefold() for match in CTE_ALIAS.finditer(body)}
             for match in RELATION_USE.finditer(body):
                 target = clean_name(match.group(1))
-                if target.casefold() in {"select", "values", "set"}:
+                if target.casefold() in {"select", "values", "set"} | cte_aliases:
                     continue
                 dependencies.append({
                     "kind": "function_relation", "source": source, "target": target,

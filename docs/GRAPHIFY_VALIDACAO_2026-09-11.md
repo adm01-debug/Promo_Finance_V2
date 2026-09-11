@@ -11,7 +11,7 @@ Esta validação não atribui nota 10/10 ao produto financeiro. Ela comprova os 
 da integração Graphify descritos abaixo e mantém as lacunas de banco/produção
 explicitamente abertas.
 
-Na validação local final, 65 testes específicos do Graphify e 2.712 testes
+Na validação local final, 68 testes específicos do Graphify e 2.712 testes
 Vitest do produto passaram. `type-check`, build de produção, `actionlint` e
 lint também concluíram sem erros; o lint preserva 11 avisos preexistentes fora
 do diff desta integração.
@@ -31,6 +31,11 @@ do diff desta integração.
 | Consulta excede orçamento | limite rígido por número de nós | truncamento exercitado |
 | Migration local diferente é chamada de perda | comparação nominal tratada como indeterminada | nenhuma migration aplicada automaticamente |
 | Catálogo parcial vira “zero objetos” | categoria indisponível permanece indisponível | aprovado por documentação |
+
+Em dois worktrees distintos, o grafo final do piloto teve o mesmo SHA-256. O
+bruto diferiu apenas em três identificadores de destinos não resolvidos nos quais
+o fornecedor incorpora o caminho absoluto do worktree; esses destinos são
+removidos do grafo final e permanecem explicitamente classificados como lacuna.
 
 ## Perfis financeiros reais
 
@@ -70,9 +75,13 @@ O inventário de 595 arquivos encontrou 5.005 declarações históricas e, adici
 | Dependência lexical | Quantidade |
 | --- | ---: |
 | FK tabela → tabela | 547 |
-| função → relação | 2.022 |
+| função → relação | 1.682 |
 | trigger → função | 317 |
 | policy → tabela | 963 |
+
+O refinamento de CTEs eliminou 340 vínculos lexicais para aliases locais como
+`q`, `ct`, `ins` e `base`; esses nomes não são mais apresentados como relações
+físicas sem confirmação.
 
 As relações função→tabela têm confiança `LEXICAL_LOW`; SQL dinâmico, overloads,
 renomes e remoções exigem catálogo vivo. Quatro migrations continuam marcadas por

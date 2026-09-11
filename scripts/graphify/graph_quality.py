@@ -43,6 +43,18 @@ def validate_freshness(root, evidence):
     return validate_file_hashes(root, evidence.get("files"))
 
 
+def validate_artifacts(graph_path, raw_path, evidence):
+    artifacts = evidence.get("artifacts")
+    if not isinstance(artifacts, dict):
+        raise ValueError("Evidência não vincula os artefatos da execução.")
+    for name, path in (("graph", graph_path), ("raw", raw_path)):
+        expected = artifacts.get(name)
+        if (not isinstance(expected, str) or not SHA256.fullmatch(expected)
+                or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected):
+            raise ValueError(f"Artefato não corresponde à evidência: {name}")
+    return True
+
+
 def community_label(nodes):
     candidates = []
     for node in nodes:
@@ -64,7 +76,16 @@ def quality_metrics(raw, final):
     ids = {node["id"] for node in nodes}
     raw_edges = edges_of(raw)
     resolved_raw = [edge for edge in raw_edges if edge.get("source") in ids and edge.get("target") in ids]
-    pair_counts = Counter((edge.get("source"), edge.get("target"), edge.get("relation")) for edge in resolved_raw)
+    pair_counts = Counter((edge.get("source"), edge.get("target")) for edge in resolved_raw)
+    parallel_details = []
+    for (source, target), count in sorted(pair_counts.items()):
+        if count > 1:
+            relations = Counter(edge.get("relation") for edge in resolved_raw
+                                if edge.get("source") == source and edge.get("target") == target)
+            parallel_details.append({
+                "source": source, "target": target, "count": count,
+                "relations": dict(sorted(relations.items(), key=lambda item: str(item[0]))),
+            })
     communities = {}
     node_community = {node["id"]: str(node.get("community", "sem-comunidade")) for node in nodes}
     for community in sorted(set(node_community.values())):
@@ -89,7 +110,8 @@ def quality_metrics(raw, final):
         "raw_edges": len(raw_edges),
         "raw_unresolved_edges": len(raw_edges) - len(resolved_raw),
         "resolved_edges_removed_or_collapsed": max(0, len(resolved_raw) - len(edges)),
-        "parallel_relation_groups_raw": sum(count > 1 for count in pair_counts.values()),
+        "parallel_relation_groups_raw": len(parallel_details),
+        "parallel_relation_details_raw": parallel_details,
         "communities": communities,
         "manual_review_sample": sample,
     }
@@ -127,14 +149,16 @@ def query_graph(graph, term, max_nodes=20):
     return {"matches": starts, "nodes": nodes, "edges": edges, "truncated": bool(queue)}
 
 
-def shortest_path(graph, source_term, target_term):
+def shortest_path(graph, source_term, target_term, directed=None):
     sources, targets = matching_ids(graph, source_term), set(matching_ids(graph, target_term))
     if not sources or not targets:
         return []
     adjacency = {}
+    directed = graph.get("directed", False) if directed is None else directed
     for edge in edges_of(graph):
         adjacency.setdefault(edge.get("source"), []).append(edge.get("target"))
-        adjacency.setdefault(edge.get("target"), []).append(edge.get("source"))
+        if not directed:
+            adjacency.setdefault(edge.get("target"), []).append(edge.get("source"))
     queue = deque((source, [source]) for source in sources)
     seen = set(sources)
     while queue:
@@ -174,7 +198,12 @@ def latest_profile_files(root, profile):
         raw = run / "extracao-bruta.json"
         evidence = run / "evidencia.json"
         if graph.is_file() and raw.is_file() and evidence.is_file():
-            return graph, raw, evidence
+            try:
+                manifest = json.loads(evidence.read_text())
+            except (OSError, json.JSONDecodeError):
+                continue
+            if manifest.get("status") == "validado_com_limitacoes":
+                return graph, raw, evidence
     raise ValueError(f"Nenhuma execução completa para o perfil: {profile}")
 
 
@@ -196,6 +225,7 @@ def main():
         parser.exit(2, "Informe --profile ou graph, --raw e --evidence.\n")
     evidence = json.loads(args.evidence.read_text())
     validate_freshness(ROOT, evidence)
+    validate_artifacts(args.graph, args.raw, evidence)
     metrics = quality_metrics(json.loads(args.raw.read_text()), json.loads(args.graph.read_text()))
     args.output_root.mkdir(parents=True, exist_ok=True)
     run = Path(tempfile.mkdtemp(prefix="execucao-", dir=args.output_root))

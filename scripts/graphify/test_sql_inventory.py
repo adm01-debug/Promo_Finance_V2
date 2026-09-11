@@ -88,6 +88,19 @@ $$ LANGUAGE sql;
             ("function_relation", "public.listar", "public.pais"),
         ])
 
+    def test_aliases_de_cte_nao_viram_relacoes_fisicas(self):
+        text = """CREATE FUNCTION public.resumo() RETURNS SETOF public.final AS $$
+WITH q AS (SELECT * FROM public.base),
+     ct(id) AS MATERIALIZED (SELECT id FROM q JOIN public.outra ON true)
+SELECT * FROM ct JOIN public.final ON true;
+$$ LANGUAGE sql;
+"""
+        dependencies = sql.dependencies_in_file("x.sql", text)
+        targets = [item["target"] for item in dependencies if item["kind"] == "function_relation"]
+        self.assertEqual(targets, ["public.base", "public.outra", "public.final"])
+        self.assertNotIn("q", targets)
+        self.assertNotIn("ct", targets)
+
 
 if __name__ == "__main__":
     unittest.main()

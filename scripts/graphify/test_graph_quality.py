@@ -25,12 +25,15 @@ class TesteQualidadeGrafo(unittest.TestCase):
     def test_metricas_expoem_lacunas_colapso_e_coesao(self):
         raw = {**self.graph, "links": self.graph["links"] + [
             {"source": "a", "target": "b", "relation": "calls"},
+            {"source": "a", "target": "b", "relation": "imports"},
             {"source": "a", "target": "ausente", "relation": "imports"},
         ]}
         result = quality.quality_metrics(raw, self.graph)
         self.assertEqual(result["raw_unresolved_edges"], 1)
-        self.assertEqual(result["resolved_edges_removed_or_collapsed"], 1)
+        self.assertEqual(result["resolved_edges_removed_or_collapsed"], 2)
         self.assertEqual(result["parallel_relation_groups_raw"], 1)
+        self.assertEqual(result["parallel_relation_details_raw"][0]["relations"],
+                         {"calls": 2, "imports": 1})
         self.assertEqual(result["communities"]["0"]["cohesion"], 0.5)
 
     def test_consulta_tem_teto_e_termo_inexistente_e_caminho(self):
@@ -39,6 +42,13 @@ class TesteQualidadeGrafo(unittest.TestCase):
         self.assertTrue(result["truncated"])
         self.assertEqual(quality.query_graph(self.graph, "inexistente")["nodes"], [])
         self.assertEqual(quality.shortest_path(self.graph, "ContasPagar", "supabase"), ["a", "b", "c"])
+
+    def test_caminho_respeita_direcao_por_padrao(self):
+        graph = {**self.graph, "directed": True}
+        self.assertEqual(quality.shortest_path(graph, "ContasPagar", "supabase"), ["a", "b", "c"])
+        self.assertEqual(quality.shortest_path(graph, "supabase", "ContasPagar"), [])
+        self.assertEqual(quality.shortest_path(graph, "supabase", "ContasPagar", directed=False),
+                         ["c", "b", "a"])
 
     def test_frescor_exige_commit_status_e_hash(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -80,6 +90,23 @@ class TesteQualidadeGrafo(unittest.TestCase):
         self.assertNotIn("<script>", svg)
         self.assertNotIn("http://", svg.replace("http://www.w3.org/2000/svg", ""))
 
+    def test_artefatos_sao_vinculados_ao_manifesto_por_hash(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            graph, raw = root / "graph.json", root / "raw.json"
+            graph.write_text("grafo")
+            raw.write_text("bruto")
+            evidence = {"artifacts": {
+                "graph": hashlib.sha256(graph.read_bytes()).hexdigest(),
+                "raw": hashlib.sha256(raw.read_bytes()).hexdigest(),
+            }}
+            self.assertTrue(quality.validate_artifacts(graph, raw, evidence))
+            graph.write_text("outro")
+            with self.assertRaisesRegex(ValueError, "não corresponde"):
+                quality.validate_artifacts(graph, raw, evidence)
+            with self.assertRaisesRegex(ValueError, "não vincula"):
+                quality.validate_artifacts(graph, raw, {})
+
     def test_localiza_execucao_completa_mais_recente(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -89,11 +116,12 @@ class TesteQualidadeGrafo(unittest.TestCase):
                 (run / "graphify-out").mkdir(parents=True)
                 (run / "graphify-out/graph.json").write_text("{}")
                 (run / "extracao-bruta.json").write_text("{}")
-                (run / "evidencia.json").write_text("{}")
+            (old / "evidencia.json").write_text('{"status":"validado_com_limitacoes"}')
+            (new / "evidencia.json").write_text('{"status":"falhou"}')
             graph, raw, evidence = quality.latest_profile_files(root, "p")
-            self.assertEqual(graph.parent.parent, new)
-            self.assertEqual(raw.parent, new)
-            self.assertEqual(evidence.parent, new)
+            self.assertEqual(graph.parent.parent, old)
+            self.assertEqual(raw.parent, old)
+            self.assertEqual(evidence.parent, old)
 
 
 if __name__ == "__main__":
