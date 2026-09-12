@@ -2,6 +2,7 @@ import { Loader2, PieChart as PieChartIcon, TrendingUp, Users } from 'lucide-rea
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ResponsiveContainer,
+  ComposedChart,
   BarChart,
   Bar,
   XAxis,
@@ -11,6 +12,8 @@ import {
   Pie,
   Cell,
   CartesianGrid,
+  Legend,
+  Line,
 } from 'recharts';
 import { formatCurrency } from '@/lib/formatters';
 import { motion } from 'framer-motion';

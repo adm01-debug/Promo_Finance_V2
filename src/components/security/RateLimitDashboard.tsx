@@ -8,6 +8,8 @@ import { useRateLimitLogs } from '@/hooks/useRateLimitLogs';
 import { useSecurityAlerts } from '@/hooks/useSecurityAlerts';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   BarChart,
   Bar,
@@ -20,7 +22,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Activity, Globe, Loader2, Search, Trash2, Bell } from 'lucide-react';
+import { Activity, Ban, Bell, Globe, Loader2, Search, Trash2 } from 'lucide-react';
 import {
   Table,
   TableBody,

@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/select';
 import { INITIAL_FILTERS, type ConciliacaoFilterState } from './conciliacaoFiltersState';
 
+export type { ConciliacaoFilterState } from './conciliacaoFiltersState';
+
 interface ConciliacaoFiltersProps {
   filters: ConciliacaoFilterState;
   onFiltersChange: (filters: ConciliacaoFilterState) => void;
