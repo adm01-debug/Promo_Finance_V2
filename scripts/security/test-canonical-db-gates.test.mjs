@@ -18,7 +18,7 @@ import {
 
 test("evaluateRequiredMigrations falha quando uma migration obrigatória some", () => {
   const rows = REQUIRED_MIGRATIONS.slice(0, -1).map((version) => ({ version }));
-  assert.throws(() => evaluateRequiredMigrations(rows), /20260826050000/);
+  assert.throws(() => evaluateRequiredMigrations(rows), /20260912100000/);
 });
 
 test("evaluateFunctionPrivileges rejeita fail-open por PUBLIC e ausência de função", () => {
@@ -74,10 +74,13 @@ test("runCanonicalDbGates valida snapshot offline consistente", async () => {
   const fetchImpl = buildFetchMock({
     migrations: REQUIRED_MIGRATIONS.map((version) => ({ version })),
     functionRows: EXPECTED_FUNCTION_PRIVILEGES.map((entry) => ({ function_name: entry.functionName })),
-    functionGrantRows: EXPECTED_FUNCTION_PRIVILEGES.map((entry) => ({
-      function_name: entry.functionName,
-      grantee: "service_role",
-    })),
+    functionGrantRows: EXPECTED_FUNCTION_PRIVILEGES.flatMap((entry) => {
+      const grants = [{ function_name: entry.functionName, grantee: "service_role" }];
+      if (entry.expected.authenticated) {
+        grants.push({ function_name: entry.functionName, grantee: "authenticated" });
+      }
+      return grants;
+    }),
     fixedPolicies: EXPECTED_FIXED_POLICIES.map((entry) => ({
       tablename: entry.tableName,
       policyname: entry.policyName,
@@ -113,7 +116,7 @@ test("runCanonicalDbGates valida snapshot offline consistente", async () => {
   });
 
   assert.equal(summary.projectRef, "bwwbeyolnnzppeuhgkcd");
-  assert.equal(summary.migrations.checked, 5);
+  assert.equal(summary.migrations.checked, 6);
   assert.equal(summary.functions.checked, EXPECTED_FUNCTION_PRIVILEGES.length);
   assert.equal(summary.literalTruePolicies.checked, ALLOWED_LITERAL_TRUE_POLICIES.length);
 });
