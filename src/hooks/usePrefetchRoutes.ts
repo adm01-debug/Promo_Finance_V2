@@ -65,66 +65,86 @@ export function usePrefetchRoutes() {
 
   const prefetchRoute = useCallback((route: string) => {
     if (prefetchedRoutes.has(route)) return;
-    
+
     const moduleLoader = routeModules[route];
     if (moduleLoader) {
       if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(() => {
-          moduleLoader().then(() => {
-            prefetchedRoutes.add(route);
-          }).catch(() => {});
-        }, { timeout: 2000 });
+        window.requestIdleCallback(
+          () => {
+            moduleLoader()
+              .then(() => {
+                prefetchedRoutes.add(route);
+              })
+              .catch(() => {});
+          },
+          { timeout: 2000 }
+        );
       } else {
         setTimeout(() => {
-          moduleLoader().then(() => {
-            prefetchedRoutes.add(route);
-          }).catch(() => {});
+          moduleLoader()
+            .then(() => {
+              prefetchedRoutes.add(route);
+            })
+            .catch(() => {});
         }, 100);
       }
     }
   }, []);
 
-  const prefetchData = useCallback(async (route: string) => {
-    const queryKeys = routeQueryKeys[route];
-    if (!queryKeys) return;
+  const prefetchData = useCallback(
+    async (route: string) => {
+      const queryKeys = routeQueryKeys[route];
+      if (!queryKeys) return;
 
-    for (const queryKey of queryKeys) {
-      const keyString = JSON.stringify(queryKey);
-      if (prefetchedQueries.has(keyString)) continue;
+      for (const queryKey of queryKeys) {
+        const keyString = JSON.stringify(queryKey);
+        if (prefetchedQueries.has(keyString)) continue;
 
-      try {
-        const existingData = queryClient.getQueryData(queryKey);
-        const queryState = queryClient.getQueryState(queryKey);
-        
-        if (existingData && queryState?.dataUpdatedAt) {
-          const age = Date.now() - queryState.dataUpdatedAt;
-          if (age < 2 * 60 * 1000) {
-            prefetchedQueries.add(keyString);
-            continue;
-          }
-        }
+        try {
+          const existingData = queryClient.getQueryData(queryKey);
+          const queryState = queryClient.getQueryState(queryKey);
 
-        if ('requestIdleCallback' in window) {
-          window.requestIdleCallback(() => {
-            queryClient.prefetchQuery({
-              queryKey,
-              staleTime: 2 * 60 * 1000,
-            }).then(() => {
+          if (existingData && queryState?.dataUpdatedAt) {
+            const age = Date.now() - queryState.dataUpdatedAt;
+            if (age < 2 * 60 * 1000) {
               prefetchedQueries.add(keyString);
-            }).catch(() => {});
-          }, { timeout: 3000 });
+              continue;
+            }
+          }
+
+          const queryDefaults = queryClient.getQueryDefaults(queryKey);
+          if (!queryDefaults.queryFn) continue;
+
+          if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(
+              () => {
+                queryClient
+                  .prefetchQuery({
+                    queryKey,
+                    queryFn: queryDefaults.queryFn,
+                    staleTime: 2 * 60 * 1000,
+                  })
+                  .then(() => {
+                    prefetchedQueries.add(keyString);
+                  })
+                  .catch(() => {});
+              },
+              { timeout: 3000 }
+            );
+          }
+        } catch {
+          // Silently fail
         }
-      } catch {
-        // Silently fail
       }
-    }
-  }, [queryClient]);
+    },
+    [queryClient]
+  );
 
   const prefetchRelatedRoutes = useCallback(() => {
     const currentPath = location.pathname;
     const related = relatedRoutes[currentPath] || [];
-    
-    related.forEach(route => {
+
+    related.forEach((route) => {
       prefetchRoute(route);
       prefetchData(route);
     });
@@ -139,7 +159,7 @@ export function usePrefetchRoutes() {
     const handleRefresh = () => {
       prefetchedQueries.clear();
     };
-    
+
     window.addEventListener('refresh-data', handleRefresh);
     return () => window.removeEventListener('refresh-data', handleRefresh);
   }, []);
@@ -150,7 +170,7 @@ export function usePrefetchRoutes() {
 // Hook for link hover prefetching
 export function useLinkPrefetch(to: string) {
   const { prefetchRoute, prefetchData } = usePrefetchRoutes();
-  
+
   const handleMouseEnter = useCallback(() => {
     prefetchRoute(to);
     prefetchData(to);
@@ -161,7 +181,7 @@ export function useLinkPrefetch(to: string) {
     prefetchData(to);
   }, [to, prefetchRoute, prefetchData]);
 
-  return { 
+  return {
     onMouseEnter: handleMouseEnter,
     onFocus: handleFocus,
   };

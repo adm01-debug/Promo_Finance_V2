@@ -68,12 +68,27 @@ describe('aprenderRegra', () => {
     expect(arg.created_by).toBe('user-1');
     expect(arg.padrao_descricao).not.toMatch(/\d/);
   });
+
+  it('propaga erro da busca em vez de assumir que não há regra', async () => {
+    const erro = new Error('RLS indisponível');
+    mocks.maybeSingle.mockResolvedValueOnce({ data: null, error: erro });
+    await expect(
+      aprenderRegra('PIX RECEBIDO ANA 15/07/2026 12345', 'Ana', 'receber')
+    ).rejects.toThrow(erro);
+    expect(mocks.insert).not.toHaveBeenCalled();
+  });
 });
 
 describe('aplicarRegras', () => {
   it('retorna null quando não há regras', async () => {
     mocks.order.mockResolvedValueOnce({ data: [] });
     expect(await aplicarRegras('qualquer texto')).toBeNull();
+  });
+
+  it('propaga erro da leitura em vez de exibir lista vazia', async () => {
+    const erro = new Error('Banco indisponível');
+    mocks.order.mockResolvedValueOnce({ data: null, error: erro });
+    await expect(aplicarRegras('qualquer texto')).rejects.toThrow(erro);
   });
 
   it('retorna primeira regra correspondente e incrementa uso', async () => {

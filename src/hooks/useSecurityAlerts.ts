@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
 
-interface SecurityAlert {
+export interface SecurityAlert {
   id: string;
   type: string;
   severity: string;
@@ -24,9 +24,14 @@ interface SecurityAlert {
 // Function to send push notification for security alerts
 async function sendSecurityPushAlert(alert: SecurityAlert) {
   try {
-    const prioridade = alert.severity === 'critical' ? 'critica' : 
-                       alert.severity === 'high' ? 'alta' : 
-                       alert.severity === 'medium' ? 'media' : 'baixa';
+    const prioridade =
+      alert.severity === 'critical'
+        ? 'critica'
+        : alert.severity === 'high'
+          ? 'alta'
+          : alert.severity === 'medium'
+            ? 'media'
+            : 'baixa';
 
     await supabase.functions.invoke('send-push-notification', {
       body: {
@@ -35,14 +40,14 @@ async function sendSecurityPushAlert(alert: SecurityAlert) {
         body: alert.description || 'Novo alerta de segurança detectado',
         tag: `security-${alert.type}`,
         prioridade,
-        data: { 
+        data: {
           url: '/seguranca',
           alertId: alert.id,
-          type: alert.type
-        }
-      }
+          type: alert.type,
+        },
+      },
     });
-    
+
     logger.debug('[useSecurityAlerts] Push notification sent for alert:', alert.id);
   } catch (error: unknown) {
     logger.error('[useSecurityAlerts] Error sending push notification:', error);
@@ -74,7 +79,7 @@ export function useSecurityAlerts() {
       }
 
       setAlerts(data || []);
-      setUnresolvedCount(data?.filter(a => !a.resolved).length || 0);
+      setUnresolvedCount(data?.filter((a) => !a.resolved).length || 0);
     } catch (error: unknown) {
       logger.error('Erro ao buscar alertas:', error);
     } finally {
@@ -97,21 +102,22 @@ export function useSecurityAlerts() {
         },
         async (payload) => {
           const newAlert = payload.new as SecurityAlert;
-          setAlerts(prev => [newAlert, ...prev]);
-          setUnresolvedCount(prev => prev + 1);
-          
+          setAlerts((prev) => [newAlert, ...prev]);
+          setUnresolvedCount((prev) => prev + 1);
+
           // Show toast notification for new alerts
-          const toastType = newAlert.severity === 'critical' || newAlert.severity === 'high' 
-            ? toast.error 
-            : toast.warning;
-          
+          const toastType =
+            newAlert.severity === 'critical' || newAlert.severity === 'high'
+              ? toast.error
+              : toast.warning;
+
           toastType(`🔒 Alerta de Segurança: ${newAlert.title}`, {
             description: newAlert.description || undefined,
             duration: 15000,
             action: {
               label: 'Ver detalhes',
-              onClick: () => window.location.href = '/seguranca'
-            }
+              onClick: () => (window.location.href = '/seguranca'),
+            },
           });
 
           // Send push notification
@@ -138,14 +144,19 @@ export function useSecurityAlerts() {
 
       if (error) throw error;
 
-      setAlerts(prev => 
-        prev.map(a => 
-          a.id === alertId 
-            ? { ...a, resolved: true, resolved_at: new Date().toISOString(), resolved_by: user?.id || null }
+      setAlerts((prev) =>
+        prev.map((a) =>
+          a.id === alertId
+            ? {
+                ...a,
+                resolved: true,
+                resolved_at: new Date().toISOString(),
+                resolved_by: user?.id || null,
+              }
             : a
         )
       );
-      setUnresolvedCount(prev => Math.max(0, prev - 1));
+      setUnresolvedCount((prev) => Math.max(0, prev - 1));
       toast.success('Alerta resolvido');
     } catch (error: unknown) {
       logger.error('Erro ao resolver alerta:', error);
@@ -171,7 +182,7 @@ export function useSecurityAlerts() {
           description,
           user_id: user?.id,
           user_email: user?.email,
-          metadata: metadata as Json
+          metadata: metadata as Json,
         })
         .select()
         .single();
@@ -185,8 +196,8 @@ export function useSecurityAlerts() {
     }
   };
 
-  const getAlertsByType = (type: string) => alerts.filter(a => a.type === type);
-  const getAlertsBySeverity = (severity: string) => alerts.filter(a => a.severity === severity);
+  const getAlertsByType = (type: string) => alerts.filter((a) => a.type === type);
+  const getAlertsBySeverity = (severity: string) => alerts.filter((a) => a.severity === severity);
 
   return {
     alerts,

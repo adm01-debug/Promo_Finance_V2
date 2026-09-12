@@ -4,31 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
 } from '@/components/ui/sheet';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
-
-export interface ConciliacaoFilterState {
-  periodoInicio: string;
-  periodoFim: string;
-  valorMin: string;
-  valorMax: string;
-  tipo: 'todos' | 'credito' | 'debito';
-  confiancaIA: 'todos' | 'alta' | 'media' | 'baixa';
-  centroCustoId: string;
-}
-
-const INITIAL_FILTERS: ConciliacaoFilterState = {
-  periodoInicio: '',
-  periodoFim: '',
-  valorMin: '',
-  valorMax: '',
-  tipo: 'todos',
-  confiancaIA: 'todos',
-  centroCustoId: 'todos',
-};
+import { INITIAL_FILTERS, type ConciliacaoFilterState } from './conciliacaoFiltersState';
 
 interface ConciliacaoFiltersProps {
   filters: ConciliacaoFilterState;
@@ -59,7 +49,13 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
   };
 
   return (
-    <Sheet open={open} onOpenChange={(v) => { setOpen(v); if (v) setDraft(filters); }}>
+    <Sheet
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (v) setDraft(filters);
+      }}
+    >
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="relative">
           <Filter className="h-4 w-4" />
@@ -89,13 +85,13 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
               <Input
                 type="date"
                 value={draft.periodoInicio}
-                onChange={(e) => setDraft(d => ({ ...d, periodoInicio: e.target.value }))}
+                onChange={(e) => setDraft((d) => ({ ...d, periodoInicio: e.target.value }))}
                 placeholder="Início"
               />
               <Input
                 type="date"
                 value={draft.periodoFim}
-                onChange={(e) => setDraft(d => ({ ...d, periodoFim: e.target.value }))}
+                onChange={(e) => setDraft((d) => ({ ...d, periodoFim: e.target.value }))}
                 placeholder="Fim"
               />
             </div>
@@ -113,7 +109,7 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
                 step="0.01"
                 min="0"
                 value={draft.valorMin}
-                onChange={(e) => setDraft(d => ({ ...d, valorMin: e.target.value }))}
+                onChange={(e) => setDraft((d) => ({ ...d, valorMin: e.target.value }))}
                 placeholder="Min"
               />
               <Input
@@ -121,7 +117,7 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
                 step="0.01"
                 min="0"
                 value={draft.valorMax}
-                onChange={(e) => setDraft(d => ({ ...d, valorMax: e.target.value }))}
+                onChange={(e) => setDraft((d) => ({ ...d, valorMax: e.target.value }))}
                 placeholder="Max"
               />
             </div>
@@ -132,9 +128,13 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
             <Label className="text-sm font-medium">Tipo de Transação</Label>
             <Select
               value={draft.tipo}
-              onValueChange={(v) => setDraft(d => ({ ...d, tipo: v as ConciliacaoFilterState['tipo'] }))}
+              onValueChange={(v) =>
+                setDraft((d) => ({ ...d, tipo: v as ConciliacaoFilterState['tipo'] }))
+              }
             >
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos</SelectItem>
                 <SelectItem value="credito">Crédito (Entradas)</SelectItem>
@@ -151,9 +151,13 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
             </Label>
             <Select
               value={draft.confiancaIA}
-              onValueChange={(v) => setDraft(d => ({ ...d, confiancaIA: v as ConciliacaoFilterState['confiancaIA'] }))}
+              onValueChange={(v) =>
+                setDraft((d) => ({ ...d, confiancaIA: v as ConciliacaoFilterState['confiancaIA'] }))
+              }
             >
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todas</SelectItem>
                 <SelectItem value="alta">Alta (≥80%)</SelectItem>
@@ -161,26 +165,30 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
                 <SelectItem value="baixa">Baixa (&lt;60%)</SelectItem>
               </SelectContent>
             </Select>
-          {/* Centro de Custo */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-sm font-medium">
-              <LayoutGrid className="h-4 w-4 text-muted-foreground" />
-              Centro de Custo
-            </Label>
-            <Select
-              value={draft.centroCustoId}
-              onValueChange={(v) => setDraft(d => ({ ...d, centroCustoId: v }))}
-            >
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os centros</SelectItem>
-                {centrosCusto?.map(c => (
-                  <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Centro de Custo */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2 text-sm font-medium">
+                <LayoutGrid className="h-4 w-4 text-muted-foreground" />
+                Centro de Custo
+              </Label>
+              <Select
+                value={draft.centroCustoId}
+                onValueChange={(v) => setDraft((d) => ({ ...d, centroCustoId: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os centros</SelectItem>
+                  {centrosCusto?.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
         </div>
 
         <SheetFooter className="mt-8 flex gap-2">
@@ -196,5 +204,3 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
     </Sheet>
   );
 }
-
-export { INITIAL_FILTERS };

@@ -26,7 +26,6 @@ export function useApiKeys(empresaId?: string) {
 
       if (error) throw error;
       return (data ?? []) as unknown as ApiKey[];
-
     },
     enabled: !!empresaId,
   });
@@ -63,11 +62,12 @@ export function useCreateApiKey() {
 export function useRevokeApiKey() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id }: { id: string; empresa_id: string }) => {
+    mutationFn: async ({ id, empresa_id }: { id: string; empresa_id: string }) => {
       const { error } = await supabaseDyn
         .from('api_keys')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('empresa_id', empresa_id);
 
       if (error) throw error;
     },

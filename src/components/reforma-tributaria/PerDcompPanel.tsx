@@ -5,11 +5,17 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Scale } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/formatters';
-import usePerDcomp from '@/hooks/usePerDcomp';
+import usePerDcomp, { TRANSMISSAO_PER_DCOMP_INDISPONIVEL } from '@/hooks/usePerDcomp';
 import { useCreditosTributarios } from '@/hooks/useCreditosTributarios';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { PerDcompStats } from './per-dcomp/PerDcompStats';
@@ -48,7 +54,7 @@ export function PerDcompPanel({ empresaId: initialEmpresaId }: Props) {
   } = usePerDcomp(empresaId || undefined);
 
   const { creditos = [] } = useCreditosTributarios(empresaId || undefined);
-  const creditosDisponiveis = creditos.filter(c => c.status === 'disponivel');
+  const creditosDisponiveis = creditos.filter((c) => c.status === 'disponivel');
 
   const handleCriarPedido = () => {
     if (!empresaId) return;
@@ -123,6 +129,12 @@ export function PerDcompPanel({ empresaId: initialEmpresaId }: Props) {
         <>
           <PerDcompStats estatisticas={estatisticas} />
 
+          <Card className="border-warning/30 bg-warning/5">
+            <CardContent className="pt-6 text-sm text-muted-foreground">
+              {TRANSMISSAO_PER_DCOMP_INDISPONIVEL}
+            </CardContent>
+          </Card>
+
           {creditosDisponiveis.length > 0 && (
             <Card className="border-success/20 bg-success/5">
               <CardHeader className="pb-2">
@@ -153,6 +165,7 @@ export function PerDcompPanel({ empresaId: initialEmpresaId }: Props) {
             pedidos={pedidos}
             onTransmitir={(id) => transmitirPedido.mutate(id)}
             onCancelar={(id) => cancelarPedido.mutate(id)}
+            transmissaoDisponivel={false}
           />
         </>
       )}
