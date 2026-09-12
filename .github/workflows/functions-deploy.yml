@@ -21,6 +21,9 @@ concurrency:
 jobs:
   deploy:
     name: Deploy da função aprovada
+    # Secrets de produção só podem ser materializados a partir da branch
+    # protegida/canônica, nunca de uma ref enviada para revisão.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
