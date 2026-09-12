@@ -10,6 +10,7 @@ on:
         default: convidar-usuario
         options:
           - convidar-usuario
+          - api-keys-manage
 
 permissions:
   contents: read
