@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { BarChart3, Mail, MessageSquare, Smartphone, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface MetricaCanal {
+export interface MetricaCanal {
   canal: string;
   enviados: number;
   abertos: number;
@@ -18,7 +18,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 } as const;
 
-export function MetricasPorCanal({ metricas }: { metricas: MetricaCanal[] }) {
+export function MetricasPorCanal({ metricas = [] }: { metricas?: MetricaCanal[] }) {
   return (
     <motion.div variants={itemVariants}>
       <Card className="card-elevated">
@@ -29,6 +29,11 @@ export function MetricasPorCanal({ metricas }: { metricas: MetricaCanal[] }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {metricas.length === 0 ? (
+            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+              Métricas por canal indisponíveis até que os registros de entrega, leitura e pagamento sejam reconciliados no banco.
+            </p>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {metricas.map((canal, index) => (
               <motion.div
@@ -75,6 +80,7 @@ export function MetricasPorCanal({ metricas }: { metricas: MetricaCanal[] }) {
               </motion.div>
             ))}
           </div>
+          )}
         </CardContent>
       </Card>
     </motion.div>
