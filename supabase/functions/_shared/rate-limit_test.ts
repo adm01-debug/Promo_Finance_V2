@@ -56,3 +56,29 @@ Deno.test("rate limit fechado marca indisponibilidade também em exceção inesp
   assertEquals(result.unavailable, true);
   assertEquals(result.retryAfterSeconds, 1);
 });
+
+Deno.test("rate limit fechado reprova quando não consegue registrar a chamada", async () => {
+  const supabaseComFalhaNoRegistro = {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          eq: () => ({
+            gte: async () => ({ count: 0, error: null }),
+          }),
+        }),
+      }),
+      insert: async () => ({ error: { message: "escrita indisponível" } }),
+    }),
+  };
+
+  const result = await checkRateLimit(supabaseComFalhaNoRegistro, {
+    endpoint: "convidar-usuario",
+    ip: "127.0.0.1",
+    limit: 5,
+    failureMode: "closed",
+  });
+
+  assertEquals(result.allowed, false);
+  assertEquals(result.unavailable, true);
+  assertEquals(result.retryAfterSeconds, 1);
+});

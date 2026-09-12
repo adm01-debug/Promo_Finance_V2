@@ -34,6 +34,19 @@ export interface RateLimitResult {
   unavailable?: boolean;
 }
 
+function resultadoIndisponivel(
+  failureMode: 'open' | 'closed',
+  limit: number,
+): RateLimitResult {
+  return {
+    allowed: failureMode === 'open',
+    count: 0,
+    limit,
+    retryAfterSeconds: failureMode === 'closed' ? 1 : 0,
+    unavailable: failureMode === 'closed',
+  };
+}
+
 export async function checkRateLimit(
   supabase: SupabaseLike,
   opts: RateLimitOptions,
@@ -52,20 +65,15 @@ export async function checkRateLimit(
 
     if (error) {
       console.warn(`[rate-limit] query error, fail-${failureMode}:`, error.message);
-      return {
-        allowed: failureMode === 'open',
-        count: 0,
-        limit: opts.limit,
-        retryAfterSeconds: failureMode === 'closed' ? 1 : 0,
-        unavailable: failureMode === 'closed',
-      };
+      return resultadoIndisponivel(failureMode, opts.limit);
     }
 
     const currentCount = (count ?? 0) + 1;
     const allowed = currentCount <= opts.limit;
 
-    // Registra a requisição atual (fire-and-forget, mas awaited para consistência)
-    await supabase.from('rate_limit_logs').insert({
+    // A inserção também é parte da defesa: ignorar seu erro faria um endpoint
+    // em modo fechado aceitar chamadas sem conseguir contabilizá-las.
+    const { error: erroRegistro } = await supabase.from('rate_limit_logs').insert({
       endpoint: opts.endpoint,
       ip_address: opts.ip,
       user_agent: opts.userAgent ?? null,
@@ -74,6 +82,10 @@ export async function checkRateLimit(
       window_start: since,
       window_end: new Date().toISOString(),
     });
+    if (erroRegistro) {
+      console.warn(`[rate-limit] insert error, fail-${failureMode}:`, erroRegistro.message);
+      return resultadoIndisponivel(failureMode, opts.limit);
+    }
 
     return {
       allowed,
@@ -83,13 +95,7 @@ export async function checkRateLimit(
     };
   } catch (err) {
     console.warn(`[rate-limit] fail-${failureMode} on exception:`, err);
-    return {
-      allowed: failureMode === 'open',
-      count: 0,
-      limit: opts.limit,
-      retryAfterSeconds: failureMode === 'closed' ? 1 : 0,
-      unavailable: failureMode === 'closed',
-    };
+    return resultadoIndisponivel(failureMode, opts.limit);
   }
 }
 

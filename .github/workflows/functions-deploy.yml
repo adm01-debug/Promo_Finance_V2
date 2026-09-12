@@ -1,0 +1,62 @@
+name: Deploy controlado de Edge Function
+
+on:
+  workflow_dispatch:
+    inputs:
+      function_name:
+        description: Função previamente aprovada para implantação no canônico
+        required: true
+        type: choice
+        default: convidar-usuario
+        options:
+          - convidar-usuario
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-edge-function-canonico
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy da função aprovada
+    # Secrets de produção só podem ser materializados a partir da branch
+    # protegida/canônica, nunca de uma ref enviada para revisão.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Validar credenciais e contrato de implantação
+        run: |
+          set -euo pipefail
+          bash scripts/ci/require-env.sh \
+            --label "Deploy de Edge Function no canônico" \
+            SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
+          python3 scripts/security/test-supabase-config.py
+
+      - name: Implantar somente a função aprovada
+        run: |
+          set -euo pipefail
+          bash scripts/migrate-functions.sh --only "${{ inputs.function_name }}"
+
+      - name: Registrar evidência do deploy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-edge-function-log
+          path: /tmp/deploy-log-*.jsonl
+          if-no-files-found: warn
+          retention-days: 30

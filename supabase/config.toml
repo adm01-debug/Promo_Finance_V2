@@ -158,6 +158,11 @@ verify_jwt = true
 [functions.convidar-contador]
 verify_jwt = true
 
+# O JWT é validado em código por exigirPapel(req, ['admin']). O gateway fica
+# desabilitado para preservar a validação centralizada das signing keys.
+[functions.convidar-usuario]
+verify_jwt = false
+
 [functions.copilot-global]
 verify_jwt = true
 
