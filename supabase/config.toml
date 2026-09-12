@@ -221,6 +221,10 @@ verify_jwt = true
 [functions.get-mapbox-token]
 verify_jwt = true
 
+[functions.api-keys-manage]
+# O guard em código valida usuário, papel admin e vínculo ativo à empresa.
+verify_jwt = false
+
 [functions.health]
 verify_jwt = true
 
