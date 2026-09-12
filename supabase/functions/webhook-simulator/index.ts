@@ -168,13 +168,14 @@ Deno.serve(async (req) => {
 
       } catch (err) {
         failureCount++
-        errors.push(err.message)
+        const errorMessage = err instanceof Error ? err.message : String(err)
+        errors.push(errorMessage)
         await supabase.from('webhook_simulation_results').insert({
           run_id,
           scenario_name: `${scenario.name} #${i+1} (Erro)`,
           payload,
           success: false,
-          error_message: err.message
+          error_message: errorMessage
         })
       }
     }
@@ -203,7 +204,8 @@ Deno.serve(async (req) => {
     })
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
     })

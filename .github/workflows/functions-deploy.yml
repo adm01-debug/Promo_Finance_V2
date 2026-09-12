@@ -11,6 +11,10 @@ on:
         options:
           - convidar-usuario
           - api-keys-manage
+          - compare-schemas
+          - detectar-anomalias-financeiras
+          - send-push-notification
+          - webhook-simulator
 
 permissions:
   contents: read
