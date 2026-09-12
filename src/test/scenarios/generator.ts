@@ -1,31 +1,31 @@
-import type { Domain, FaultKind, FaultSpec, ScenarioSpec } from "./types";
-import { createRng } from "./rng";
+import type { Domain, FaultKind, FaultSpec, ScenarioSpec } from './types';
+import { createRng } from './rng';
 
-const DOMAINS: Domain[] = ["conciliacao", "webhooks", "cobranca", "anomalias", "nfe"];
+const DOMAINS: Domain[] = ['conciliacao', 'webhooks', 'cobranca', 'anomalias', 'nfe'];
 const FAULT_KINDS: FaultKind[] = [
-  "none",
-  "timeout",
-  "flaky",
-  "reorder",
-  "duplicate",
-  "latency",
-  "partial_write",
-  "nfe_gzip_corrupt",
-  "nfe_nsu_gap",
-  "nfe_soap_timeout",
+  'none',
+  'timeout',
+  'flaky',
+  'reorder',
+  'duplicate',
+  'latency',
+  'partial_write',
+  'nfe_gzip_corrupt',
+  'nfe_nsu_gap',
+  'nfe_soap_timeout',
 ];
 
 function faultParam(kind: FaultKind, rng: ReturnType<typeof createRng>): FaultSpec {
   switch (kind) {
-    case "flaky":
+    case 'flaky':
       return { kind, param: rng.pick([0.05, 0.1, 0.2, 0.3]) };
-    case "timeout":
+    case 'timeout':
       return { kind, param: rng.int(2, 8) };
-    case "duplicate":
+    case 'duplicate':
       return { kind, param: rng.pick([2, 3, 5]) };
-    case "latency":
+    case 'latency':
       return { kind, param: rng.int(10, 200) };
-    case "partial_write":
+    case 'partial_write':
       return { kind, param: rng.pick([0.1, 0.2, 0.3]) };
     default:
       return { kind };
@@ -57,9 +57,9 @@ export function buildMatrix(opts: BuildMatrixOptions = {}): ScenarioSpec[] {
     const domain = domains[i % domains.length];
     const kind = faults[Math.floor(i / domains.length) % faults.length];
     const fault = faultParam(kind, rng);
-    const seed = ((rootSeed + i * 2654435761) >>> 0) || 1;
+    const seed = (rootSeed + i * 2654435761) >>> 0 || 1;
     specs.push({
-      id: `sc-${i.toString().padStart(4, "0")}-${domain}-${kind}`,
+      id: `sc-${i.toString().padStart(4, '0')}-${domain}-${kind}`,
       domain,
       fault,
       seed,

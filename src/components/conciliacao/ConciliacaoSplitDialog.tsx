@@ -92,6 +92,10 @@ export function ConciliacaoSplitDialog({
 
   const handleConfirmar = async () => {
     if (!transacao || splits.length === 0) return;
+    if (splits.some((split) => !Number.isFinite(split.valorParcial) || split.valorParcial <= 0)) {
+      toast.error('Cada lançamento parcial deve ter um valor maior que zero');
+      return;
+    }
     if (Math.abs(totalSplit - transacao.valor) > 0.01) {
       toast.error('A soma dos valores parciais deve ser igual ao valor da transação');
       return;
@@ -104,6 +108,7 @@ export function ConciliacaoSplitDialog({
         data: { user },
       } = await supabase.auth.getUser();
       const records = splits.map((s) => ({
+        id: crypto.randomUUID(),
         transacao_bancaria_id: transacao.id,
         conta_pagar_id: s.lancamento.tipo === 'pagar' ? s.lancamentoId : null,
         conta_receber_id: s.lancamento.tipo === 'receber' ? s.lancamentoId : null,
@@ -125,7 +130,18 @@ export function ConciliacaoSplitDialog({
         })
         .eq('id', transacao.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        // Compensação restrita aos IDs criados nesta tentativa. Não removemos
+        // históricos de outra tentativa ou de outro operador.
+        const { error: rollbackError } = await supabase
+          .from('conciliacoes_parciais')
+          .delete()
+          .in('id', records.map((record) => record.id));
+        if (rollbackError) {
+          throw new Error('Falha ao atualizar a transação e ao reverter os vínculos parciais');
+        }
+        throw updateError;
+      }
 
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
       toast.success(`Conciliação parcial: ${splits.length} lançamentos vinculados`);

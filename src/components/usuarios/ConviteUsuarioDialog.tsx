@@ -28,17 +28,15 @@ export function ConviteUsuarioDialog({ open, onOpenChange }: ConviteUsuarioDialo
     }
     setSending(true);
     try {
-      // Use Supabase invite (admin API via edge function would be needed for real invites)
-      // For now, create a placeholder invite record
-      await supabase.from('audit_logs').insert({
-        action: 'INVITE_USER',
-        details: `Convite enviado para ${email} com perfil ${role}`,
-        table_name: 'user_invites',
-        user_id: (await supabase.auth.getUser()).data.user?.id,
+      const { data, error } = await supabase.functions.invoke('convidar-usuario', {
+        body: { email, role },
       });
+      if (error) throw error;
 
-      toast.success(`Convite enviado para ${email}!`, {
-        description: `Perfil atribuído: ${role}`,
+      toast.success('Convite criado', {
+        description: data?.email_status === 'solicitado_ao_auth'
+          ? 'O serviço de autenticação processará o e-mail conforme sua configuração.'
+          : 'O convite foi criado.',
       });
       setEmail('');
       setRole('visualizador');

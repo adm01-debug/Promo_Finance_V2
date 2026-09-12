@@ -54,6 +54,9 @@ jobs:
         # contratos que fazem autenticação por segredo dentro da Edge Function.
         run: python3 scripts/security/test-supabase-config.py
 
+      - name: Contrato de deploy das Edge Functions
+        run: bash scripts/security/test-functions-deploy.sh
+
       - name: Gate estático do reparo SQL
         # Evita que a evidência do reparo dos 12 erros reais do linter passe com
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
@@ -368,17 +371,17 @@ jobs:
       - name: Montar lista da quarentena
         run: |
           set -euo pipefail
-          mapfile -t quarantine_specs < <(
-            rg --files e2e -g '*.e2e.ts' \
-              | grep -Fvx 'e2e/auth/login.e2e.ts' \
-              | grep -Fvx 'e2e/auth/admin-rbac.e2e.ts' \
-              | grep -Fvx 'e2e/visual-theme.e2e.ts' \
-              | grep -Fvx 'e2e/auth/logout-real.e2e.ts'
-          )
+          mapfile -t all_specs < <(git ls-files -- 'e2e/**/*.e2e.ts' | sort)
+          quarantine_specs=()
+          for spec in "${all_specs[@]}"; do
+            case "$spec" in
+              e2e/auth/login.e2e.ts|e2e/auth/admin-rbac.e2e.ts|e2e/visual-theme.e2e.ts|e2e/auth/logout-real.e2e.ts) ;;
+              *) quarantine_specs+=("$spec") ;;
+            esac
+          done
           if [ "${#quarantine_specs[@]}" -eq 0 ]; then
-            echo "count=0" >> "$GITHUB_OUTPUT"
-            : > quarantine-specs.txt
-            exit 0
+            echo "::error::Nenhuma spec elegível foi encontrada para a quarentena E2E."
+            exit 1
           fi
           printf '%s\n' "${quarantine_specs[@]}" > quarantine-specs.txt
           echo "count=${#quarantine_specs[@]}" >> "$GITHUB_OUTPUT"

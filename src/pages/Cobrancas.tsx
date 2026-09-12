@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
   useCobrancaKPIs, useAgingData, useTopDevedores, useEtapasCobranca,
-  type CobrancaKPIs, type TopDevedor 
+  type TopDevedor
 } from '@/hooks/useCobrancas';
 import { 
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -48,13 +48,6 @@ const etapasRegua = [
   { id: 'cobranca', nome: 'Cobrança', dias: 7, descricao: '7 dias após vencimento', canal: 'Email + WhatsApp', icon: Send, cor: 'bg-primary/10 text-primary border-primary/20' },
   { id: 'negociacao', nome: 'Negociação', dias: 15, descricao: '15 dias após vencimento', canal: 'Telefone', icon: Phone, cor: 'bg-destructive/10 text-destructive border-destructive/20' },
   { id: 'juridico', nome: 'Jurídico', dias: 30, descricao: '30 dias após - Escalação', canal: 'Jurídico', icon: AlertTriangle, cor: 'bg-destructive/10 text-destructive border-destructive/20' },
-];
-
-const getMetricsCanal = (kpis: CobrancaKPIs | undefined) => [
-  { canal: 'Email', enviados: Math.round(kpis?.qtdVencidas * 0.8) || 0, abertos: Math.round(kpis?.qtdVencidas * 0.6) || 0, pagos: Math.round(kpis?.qtdRecuperadas * 0.4) || 0, taxaConversao: 42 },
-  { canal: 'WhatsApp', enviados: Math.round(kpis?.qtdVencidas * 0.9) || 0, abertos: Math.round(kpis?.qtdVencidas * 0.85) || 0, pagos: Math.round(kpis?.qtdRecuperadas * 0.5) || 0, taxaConversao: 58 },
-  { canal: 'SMS', enviados: Math.round(kpis?.qtdVencidas * 0.5) || 0, abertos: Math.round(kpis?.qtdVencidas * 0.3) || 0, pagos: Math.round(kpis?.qtdRecuperadas * 0.1) || 0, taxaConversao: 12 },
-  { canal: 'Telefone', enviados: Math.round(kpis?.qtdVencidas * 0.2) || 0, abertos: Math.round(kpis?.qtdVencidas * 0.2) || 0, pagos: Math.round(kpis?.qtdRecuperadas * 0.15) || 0, taxaConversao: 75 },
 ];
 
 export default function Cobrancas() {
@@ -229,16 +222,13 @@ export default function Cobrancas() {
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                     <CustomerDeepScore 
                       score={selectedDevedor.score || 0}
-                      serasaScore={Math.floor(Math.random() * 400) + 400} // Mock data for now
-                      boaVistaScore={Math.floor(Math.random() * 400) + 400} // Mock data for now
-                      riscoComportamental="O cliente apresenta um padrão de pagamento sazonal, com maior risco nos meses de fim de trimestre."
                     />
                   </motion.div>
                 )}
               </motion.div>
             </div>
 
-            <MetricasPorCanal metricas={getMetricsCanal(kpis)} />
+            <MetricasPorCanal />
 
             <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <NegociacaoIA 
@@ -274,4 +264,3 @@ export default function Cobrancas() {
     </MainLayout>
   );
 }
-

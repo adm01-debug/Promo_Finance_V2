@@ -1,6 +1,7 @@
 # Graphify no Promo Finance V2 — implementação em 50 etapas
 
-Data: 11/09/2026. Base inspecionada: `b0ff4c55e504d4483e397ff2110556aa0dbfda57`.
+Data: 11/09/2026. Base inicial inspecionada: `b0ff4c55e504d4483e397ff2110556aa0dbfda57`.
+Integração publicada na `main`: `cfb20e6363c71f62962a43d86f8effbbd3041dac`.
 
 ## Objetivo e limite desta entrega
 
@@ -9,7 +10,8 @@ Integrar o Graphify ao desenvolvimento e à auditoria do repositório privado
 evidências. **Não é uma nova funcionalidade da aplicação financeira, nem uma
 certificação de que o sistema inteiro está correto ou implantado.**
 
-Esta entrega implementa a fundação e um piloto AST reproduzível de cinco arquivos.
+Esta entrega implementa a fundação, um piloto AST reproduzível de cinco arquivos e
+onze perfis adicionais, incluindo seis domínios financeiros.
 As 50 etapas abaixo constituem o roteiro completo de expansão. `[x]` significa
 critério local desta etapa atendido; `[ ]` significa pendente, parcial ou dependente
 de autorização, conforme descrito. Não significa 50 etapas concluídas, deploy ou
@@ -23,8 +25,9 @@ validação do banco. A aceitação operacional integral está reservada à etap
 - Pacote Python **`graphifyy==0.9.48`**, executável `graphify`, API/CLI inspecionada na
   instalação local. Não confundir com pacotes homônimos ou uma biblioteca React.
 - Python 3.11 recomendado. Nenhuma dependência adicionada ao bundle Vite ou Deno.
-- Banco canônico, apenas como identidade documental: `bwwbeyolnnzppeuhgkcd`.
-  Origem Lovable/Cloud: `lszcmoymovkpckehlagr`. **Nenhum banco foi acessado neste piloto.**
+- Banco canônico: `bwwbeyolnnzppeuhgkcd`; catálogo parcial consultado somente
+  por leitura durante a validação. Origem Lovable/Cloud: `lszcmoymovkpckehlagr`,
+  ainda sem autenticação nesta execução. Nenhum SQL, DDL ou dado financeiro foi alterado.
 - Relações do AST são observações estáticas; relações dinâmicas e execução real
   exigem evidências independentes. Não remover objetos porque estejam vazios ou isolados.
 
@@ -47,7 +50,8 @@ npm run graphify:benchmark
 
 Alternativa sem `uv`: instalar o mesmo pacote/versão em um ambiente virtual Python
 e ativá-lo antes dos comandos. O piloto não instala nem atualiza dependências sozinho.
-A versão direta é fixada; lock com hashes das dependências transitivas ainda é a etapa 007.
+A versão direta e as dependências transitivas estão fixadas no lock Linux
+x86_64/Python 3.11, com hashes exigidos na instalação do CI.
 
 O inventário e os testes usam a biblioteca padrão do Python e não precisam do
 Graphify instalado. O piloto exige o CLI da versão configurada no `PATH`.
@@ -162,7 +166,8 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - As etapas 022–025 e 046–047 continuam parciais enquanto faltar catálogo vivo
   completo e acesso autenticado à origem. A 035 e a política destrutiva da 044
   continuam dependentes de decisão explícita; conclusão técnica não substitui a
-  aceitação operacional humana da 050.
+  aceitação operacional humana da 050. Com a homologação remota e o merge, o
+  placar verificável passou para **38 concluídas e 12 pendentes**.
 
 ### A. Governança e diagnóstico — etapas 001–005
 
@@ -303,9 +308,11 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - [x] **038 — Verificar reprodutibilidade e concorrência.** P0 · responsável: QA/tooling · depende: 037.
   Comparar execuções em worktrees/caminhos diferentes; simular duas execuções, edição simultânea e interrupção abrupta.
   **Aceite:** diferenças só em metadados previstos; nenhum grafo anterior perdido; definir captura consistente de mudanças concorrentes.
-- [ ] **039 — Homologar o workflow privado.** P1 · responsável: DevOps · depende: 006, 036–038.
+- [x] **039 — Homologar o workflow privado.** P1 · responsável: DevOps · depende: 006, 036–038.
   Workflow já versionado: testes e piloto em Python 3.11, permissão `contents: read`, sem credenciais persistidas/upload.
-  **Aceite:** execução remota verde ligada ao SHA entregue; YAML existir ou teste local passar não conclui a etapa.
+  **Aceite:** workflow Graphify remoto da PR #72 aprovado no run `34637671415`,
+  ligado ao SHA `d50315305e6d565ed6771786265e419e99318a9d`; YAML existir ou teste local
+  passar não conclui a etapa.
 - [ ] **040 — Testar compatibilidade e upgrades.** P2 · responsável: DevOps · depende: 007, 039.
   Definir matriz Linux/ambientes dos agentes e testar versão nova com o mesmo corpus antes de atualizar o pin.
   **Aceite:** procedimento de rollback e comparação de métricas, hashes e relações revisado.
@@ -339,9 +346,11 @@ Uma etapa só muda para concluída com artefato e comando/evidência verificáve
 - [ ] **048 — Comparar utilidade antes/depois.** P2 · responsável: produto/arquitetura · depende: 043, 046–047.
   Repetir perguntas de impacto e implementação parcial usando evidências do código e, se disponível, catálogo real.
   **Aceite:** ganho mensurado sem crescimento injustificado de falsos positivos ou custos.
-- [ ] **049 — Integrar via PR com gates verificados.** P0 · responsável: mantenedor · depende: 039, 041–042.
+- [x] **049 — Integrar via PR com gates verificados.** P0 · responsável: mantenedor · depende: 039, 041–042.
   Revisar diff, reconciliar outras PRs, executar gates e integrar seguindo proteção da branch.
-  **Aceite:** commit presente na branch canônica e status remoto comprovado; não contornar falhas preexistentes.
+  **Aceite:** PR #72 integrado por squash na `main` em
+  `cfb20e6363c71f62962a43d86f8effbbd3041dac`; pipeline pós-merge `34638407809`
+  aprovado, sem contornar a falha E2E encontrada e corrigida durante a homologação.
 - [ ] **050 — Aceitar operacionalmente e manter backlog honesto.** P1 · responsável: mantenedor/usuário · depende: 045–049.
   Demonstrar uso por agentes em uma mudança real, conferir evidências e registrar limitações remanescentes.
   **Aceite:** fluxo utilizado e útil no projeto, cobertura pactuada e responsáveis definidos. Isso não certifica

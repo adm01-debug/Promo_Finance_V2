@@ -3,7 +3,13 @@ import { Fingerprint, Plus, Trash2, Loader2, Smartphone, Monitor, Shield } from 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
@@ -19,7 +25,7 @@ interface WebAuthnCredential {
 
 export function WebAuthnManager() {
   const { user } = useAuth();
-  const { registerCredential } = useWebAuthn();
+  const { registerCredential, isServerVerificationAvailable } = useWebAuthn();
   const [credentials, setCredentials] = useState<WebAuthnCredential[]>([]);
   const [loading, setLoading] = useState(true);
   const [registerOpen, setRegisterOpen] = useState(false);
@@ -57,13 +63,18 @@ export function WebAuthnManager() {
     }
     setRegistering(true);
     try {
-      await registerCredential(deviceName);
+      const registrada = await registerCredential(deviceName);
+      if (!registrada) return;
       toast.success(`Passkey "${deviceName}" registrada com sucesso!`);
       setRegisterOpen(false);
       setDeviceName('');
       loadCredentials();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? (err.message || 'Erro ao registrar passkey') : 'Erro ao registrar passkey');
+      toast.error(
+        err instanceof Error
+          ? err.message || 'Erro ao registrar passkey'
+          : 'Erro ao registrar passkey'
+      );
     } finally {
       setRegistering(false);
     }
@@ -71,10 +82,7 @@ export function WebAuthnManager() {
 
   const handleRemove = async (id: string, name: string) => {
     try {
-      const { error } = await supabase
-        .from('webauthn_credentials')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('webauthn_credentials').delete().eq('id', id);
       if (error) throw error;
       toast.success(`Passkey "${name}" removida`);
       loadCredentials();
@@ -85,8 +93,10 @@ export function WebAuthnManager() {
 
   const getDeviceIcon = (name: string) => {
     const lower = name.toLowerCase();
-    if (lower.includes('phone') || lower.includes('celular') || lower.includes('mobile')) return Smartphone;
-    if (lower.includes('pc') || lower.includes('desktop') || lower.includes('notebook')) return Monitor;
+    if (lower.includes('phone') || lower.includes('celular') || lower.includes('mobile'))
+      return Smartphone;
+    if (lower.includes('pc') || lower.includes('desktop') || lower.includes('notebook'))
+      return Monitor;
     return Fingerprint;
   };
 
@@ -98,37 +108,61 @@ export function WebAuthnManager() {
             <Fingerprint className="h-5 w-5 text-primary" />
             <div>
               <CardTitle className="text-base">Passkeys / WebAuthn</CardTitle>
-              <CardDescription>Gerencie dispositivos biométricos para login sem senha</CardDescription>
+              <CardDescription>
+                {isServerVerificationAvailable
+                  ? 'Gerencie dispositivos biométricos para login sem senha'
+                  : 'Registro e login indisponíveis até a verificação pelo servidor ser configurada'}
+              </CardDescription>
             </div>
           </div>
-          <Button size="sm" onClick={() => setRegisterOpen(true)} className="gap-2">
+          <Button
+            size="sm"
+            onClick={() => setRegisterOpen(true)}
+            disabled={!isServerVerificationAvailable}
+            className="gap-2"
+          >
             <Plus className="h-4 w-4" /> Adicionar Dispositivo
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
         ) : credentials.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Shield className="h-8 w-8 mx-auto mb-3 opacity-50" />
             <p>Nenhuma passkey registrada.</p>
-            <p className="text-sm">Adicione um dispositivo para login biométrico.</p>
+            <p className="text-sm">
+              {isServerVerificationAvailable
+                ? 'Adicione um dispositivo para login biométrico.'
+                : 'O registro de novos dispositivos está temporariamente indisponível.'}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
-            {credentials.map(cred => {
+            {credentials.map((cred) => {
               const DeviceIcon = getDeviceIcon(cred.device_name);
               return (
-                <div key={cred.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:border-primary/30 transition-colors">
+                <div
+                  key={cred.id}
+                  className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:border-primary/30 transition-colors"
+                >
                   <div className="flex items-center gap-3">
                     <DeviceIcon className="h-5 w-5 text-primary" />
                     <div>
                       <p className="font-medium text-sm">{cred.device_name}</p>
-                      <p className="text-xs text-muted-foreground">Registrado em {formatDate(cred.created_at)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Registrado em {formatDate(cred.created_at)}
+                      </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => handleRemove(cred.id, cred.device_name)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemove(cred.id, cred.device_name)}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -151,13 +185,23 @@ export function WebAuthnManager() {
             <Input
               placeholder="Ex: iPhone 15, Notebook Dell, Touch ID"
               value={deviceName}
-              onChange={e => setDeviceName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleRegister()}
+              onChange={(e) => setDeviceName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
             />
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setRegisterOpen(false)}>Cancelar</Button>
-              <Button onClick={handleRegister} disabled={registering || !deviceName.trim()} className="gap-2">
-                {registering ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
+              <Button variant="outline" onClick={() => setRegisterOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleRegister}
+                disabled={!isServerVerificationAvailable || registering || !deviceName.trim()}
+                className="gap-2"
+              >
+                {registering ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Fingerprint className="h-4 w-4" />
+                )}
                 Registrar
               </Button>
             </div>

@@ -20,6 +20,8 @@ supabase/functions/_shared/auth-guard.ts
 supabase/functions/_shared/proxy-audit.ts
 supabase/functions/_shared/sql-write-guard.ts
 supabase/functions/_shared/webhook-auth.ts
+supabase/functions/api-keys-manage/index.ts
+supabase/functions/convidar-usuario/index.ts
 supabase/functions/mcp-query/index.ts
 supabase/functions/analise-fluxo-ia/index.ts
 supabase/functions/analyze-document/index.ts

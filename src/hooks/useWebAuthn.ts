@@ -14,6 +14,15 @@ interface StoredCredential {
   created_at: string;
 }
 
+/**
+ * Registro e autenticação por passkey exigem desafio, origem e assinatura
+ * verificados pelo servidor. Enquanto as Edge Functions correspondentes não
+ * existirem, a interface falha fechada e não cria credenciais locais.
+ */
+export const WEBAUTHN_SERVER_VERIFICATION_DISPONIVEL = false;
+export const WEBAUTHN_INDISPONIVEL =
+  'A autenticação biométrica está indisponível até a verificação de passkeys pelo servidor ser configurada.';
+
 // Helper functions
 function generateChallenge(): string {
   const array = new Uint8Array(32);
@@ -54,22 +63,24 @@ export function useWebAuthn() {
   const { user } = useAuth();
   const [isSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return window.PublicKeyCredential !== undefined &&
-      typeof window.PublicKeyCredential === 'function';
+    return (
+      window.PublicKeyCredential !== undefined && typeof window.PublicKeyCredential === 'function'
+    );
   });
   const [isLoading, setIsLoading] = useState(false);
   const [registeredCredentials, setRegisteredCredentials] = useState<StoredCredential[]>([]);
 
   // Check WebAuthn support
   const checkSupport = useCallback(() => {
-    return window.PublicKeyCredential !== undefined &&
-      typeof window.PublicKeyCredential === 'function';
+    return (
+      window.PublicKeyCredential !== undefined && typeof window.PublicKeyCredential === 'function'
+    );
   }, []);
 
   // Check if platform authenticator is available (Face ID, Touch ID, Windows Hello)
   const isPlatformAuthenticatorAvailable = useCallback(async (): Promise<boolean> => {
     if (!checkSupport()) return false;
-    
+
     try {
       return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
     } catch {
@@ -102,73 +113,79 @@ export function useWebAuthn() {
   }, [user]);
 
   // Register a new passkey/biometric credential
-  const registerCredential = useCallback(async (deviceName?: string): Promise<boolean> => {
-    if (!user) {
-      toast.error('Você precisa estar logado para registrar biometria');
-      return false;
-    }
-
-    if (!checkSupport()) {
-      toast.error('WebAuthn não é suportado neste navegador');
-      return false;
-    }
-
-    const platformAvailable = await isPlatformAuthenticatorAvailable();
-    if (!platformAvailable) {
-      toast.error('Autenticação biométrica não está disponível neste dispositivo');
-      return false;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const challenge = generateChallenge();
-      const userId = new TextEncoder().encode(user.id);
-
-      const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
-        challenge: base64UrlDecode(challenge),
-        rp: {
-          name: 'Promo Finance',
-          id: window.location.hostname,
-        },
-        user: {
-          id: userId,
-          name: user.email || 'user',
-          displayName: user.email || 'User',
-        },
-        pubKeyCredParams: [
-          { type: 'public-key', alg: -7 },   // ES256
-          { type: 'public-key', alg: -257 }, // RS256
-        ],
-        timeout: 60000,
-        attestation: 'none',
-        authenticatorSelection: {
-          authenticatorAttachment: 'platform', // Forces Face ID, Touch ID, Windows Hello
-          userVerification: 'required',
-          residentKey: 'preferred',
-        },
-      };
-
-      logger.debug('[WebAuthn] Starting credential registration...');
-
-      const credential = await navigator.credentials.create({
-        publicKey: publicKeyCredentialCreationOptions,
-      }) as PublicKeyCredential;
-
-      if (!credential) {
-        throw new Error('Falha ao criar credencial');
+  const registerCredential = useCallback(
+    async (deviceName?: string): Promise<boolean> => {
+      if (!WEBAUTHN_SERVER_VERIFICATION_DISPONIVEL) {
+        toast.error(WEBAUTHN_INDISPONIVEL);
+        return false;
       }
 
-      const response = credential.response as AuthenticatorAttestationResponse;
-      
-      // Extract public key from attestation
-      const credentialId = base64UrlEncode(credential.rawId);
-      const publicKey = arrayBufferToBase64(response.getPublicKey?.() || response.attestationObject);
+      if (!user) {
+        toast.error('Você precisa estar logado para registrar biometria');
+        return false;
+      }
 
-      // Store credential in database
-      const { error } = await supabase
-        .from('webauthn_credentials')
-        .insert({
+      if (!checkSupport()) {
+        toast.error('WebAuthn não é suportado neste navegador');
+        return false;
+      }
+
+      const platformAvailable = await isPlatformAuthenticatorAvailable();
+      if (!platformAvailable) {
+        toast.error('Autenticação biométrica não está disponível neste dispositivo');
+        return false;
+      }
+
+      setIsLoading(true);
+
+      try {
+        const challenge = generateChallenge();
+        const userId = new TextEncoder().encode(user.id);
+
+        const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
+          challenge: base64UrlDecode(challenge),
+          rp: {
+            name: 'Promo Finance',
+            id: window.location.hostname,
+          },
+          user: {
+            id: userId,
+            name: user.email || 'user',
+            displayName: user.email || 'User',
+          },
+          pubKeyCredParams: [
+            { type: 'public-key', alg: -7 }, // ES256
+            { type: 'public-key', alg: -257 }, // RS256
+          ],
+          timeout: 60000,
+          attestation: 'none',
+          authenticatorSelection: {
+            authenticatorAttachment: 'platform', // Forces Face ID, Touch ID, Windows Hello
+            userVerification: 'required',
+            residentKey: 'preferred',
+          },
+        };
+
+        logger.debug('[WebAuthn] Starting credential registration...');
+
+        const credential = (await navigator.credentials.create({
+          publicKey: publicKeyCredentialCreationOptions,
+        })) as PublicKeyCredential;
+
+        if (!credential) {
+          throw new Error('Falha ao criar credencial');
+        }
+
+        const response = credential.response as AuthenticatorAttestationResponse;
+
+        // Extract public key from attestation
+        const credentialId = base64UrlEncode(credential.rawId);
+        const publicKey = arrayBufferToBase64(
+          response.getPublicKey?.() || response.attestationObject
+        );
+
+        // Store credential in database
+        const { error } = await supabase.from('webauthn_credentials').insert({
           user_id: user.id,
           credential_id: credentialId,
           public_key: publicKey,
@@ -176,147 +193,163 @@ export function useWebAuthn() {
           device_name: deviceName || detectDeviceName(),
         });
 
-      if (error) {
-        logger.error('[WebAuthn] Error storing credential:', error);
-        throw new Error('Falha ao salvar credencial');
-      }
+        if (error) {
+          logger.error('[WebAuthn] Error storing credential:', error);
+          throw new Error('Falha ao salvar credencial');
+        }
 
-      await fetchCredentials();
-      toast.success('Biometria registrada com sucesso!');
-      return true;
-    } catch (error: unknown) {
-      const err = error as Error & { name?: string };
-      logger.error('[WebAuthn] Registration error:', err);
-      
-      if (err.name === 'NotAllowedError') {
-        toast.error('Registro cancelado pelo usuário');
-      } else if (err.name === 'SecurityError') {
-        toast.error('Erro de segurança. Verifique se está usando HTTPS.');
-      } else {
-        toast.error(err.message || 'Erro ao registrar biometria');
+        await fetchCredentials();
+        toast.success('Biometria registrada com sucesso!');
+        return true;
+      } catch (error: unknown) {
+        const err = error as Error & { name?: string };
+        logger.error('[WebAuthn] Registration error:', err);
+
+        if (err.name === 'NotAllowedError') {
+          toast.error('Registro cancelado pelo usuário');
+        } else if (err.name === 'SecurityError') {
+          toast.error('Erro de segurança. Verifique se está usando HTTPS.');
+        } else {
+          toast.error(err.message || 'Erro ao registrar biometria');
+        }
+        return false;
+      } finally {
+        setIsLoading(false);
       }
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, checkSupport, isPlatformAuthenticatorAvailable, fetchCredentials]);
+    },
+    [user, checkSupport, isPlatformAuthenticatorAvailable, fetchCredentials]
+  );
 
   // Authenticate using passkey/biometric
-  const authenticate = useCallback(async (userEmail: string): Promise<{ success: boolean; userId?: string }> => {
-    if (!checkSupport()) {
-      toast.error('WebAuthn não é suportado neste navegador');
-      return { success: false };
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Get user's registered credentials using RPC function
-      const { data: rawCredentials, error: fetchError } = await (
-        supabase.rpc as unknown as (
-          fn: 'get_webauthn_credential_by_email',
-          args: { p_email: string },
-        ) => Promise<{ data: unknown; error: { message: string } | null }>
-      )('get_webauthn_credential_by_email', { p_email: userEmail });
-
-      if (fetchError || !rawCredentials || (rawCredentials as unknown[]).length === 0) {
-        toast.error('Nenhuma biometria registrada para este email');
+  const authenticate = useCallback(
+    async (userEmail: string): Promise<{ success: boolean; userId?: string }> => {
+      if (!WEBAUTHN_SERVER_VERIFICATION_DISPONIVEL) {
+        toast.error(WEBAUTHN_INDISPONIVEL);
         return { success: false };
       }
 
-      const credentials = rawCredentials as unknown as StoredCredential[];
-      const challenge = generateChallenge();
-
-      const allowCredentials: PublicKeyCredentialDescriptor[] = credentials.map((cred: StoredCredential) => ({
-        type: 'public-key' as const,
-        id: base64UrlDecode(cred.credential_id),
-        transports: ['internal'] as AuthenticatorTransport[],
-      }));
-
-      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
-        challenge: base64UrlDecode(challenge),
-        timeout: 60000,
-        rpId: window.location.hostname,
-        allowCredentials,
-        userVerification: 'required',
-      };
-
-      logger.debug('[WebAuthn] Starting authentication...');
-
-      const assertion = await navigator.credentials.get({
-        publicKey: publicKeyCredentialRequestOptions,
-      }) as PublicKeyCredential;
-
-      if (!assertion) {
-        throw new Error('Falha na autenticação biométrica');
+      if (!checkSupport()) {
+        toast.error('WebAuthn não é suportado neste navegador');
+        return { success: false };
       }
 
-      const response = assertion.response as AuthenticatorAssertionResponse;
-      const assertionCredentialId = base64UrlEncode(assertion.rawId);
+      setIsLoading(true);
 
-      // Verify credential exists
-      const matchedCredential = credentials.find(
-        (c: StoredCredential) => c.credential_id === assertionCredentialId
-      );
+      try {
+        // Get user's registered credentials using RPC function
+        const { data: rawCredentials, error: fetchError } = await (
+          supabase.rpc as unknown as (
+            fn: 'get_webauthn_credential_by_email',
+            args: { p_email: string }
+          ) => Promise<{ data: unknown; error: { message: string } | null }>
+        )('get_webauthn_credential_by_email', { p_email: userEmail });
 
-      if (!matchedCredential) {
-        throw new Error('Credencial não reconhecida');
+        if (fetchError || !rawCredentials || (rawCredentials as unknown[]).length === 0) {
+          toast.error('Nenhuma biometria registrada para este email');
+          return { success: false };
+        }
+
+        const credentials = rawCredentials as unknown as StoredCredential[];
+        const challenge = generateChallenge();
+
+        const allowCredentials: PublicKeyCredentialDescriptor[] = credentials.map(
+          (cred: StoredCredential) => ({
+            type: 'public-key' as const,
+            id: base64UrlDecode(cred.credential_id),
+            transports: ['internal'] as AuthenticatorTransport[],
+          })
+        );
+
+        const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
+          challenge: base64UrlDecode(challenge),
+          timeout: 60000,
+          rpId: window.location.hostname,
+          allowCredentials,
+          userVerification: 'required',
+        };
+
+        logger.debug('[WebAuthn] Starting authentication...');
+
+        const assertion = (await navigator.credentials.get({
+          publicKey: publicKeyCredentialRequestOptions,
+        })) as PublicKeyCredential;
+
+        if (!assertion) {
+          throw new Error('Falha na autenticação biométrica');
+        }
+
+        const response = assertion.response as AuthenticatorAssertionResponse;
+        const assertionCredentialId = base64UrlEncode(assertion.rawId);
+
+        // Verify credential exists
+        const matchedCredential = credentials.find(
+          (c: StoredCredential) => c.credential_id === assertionCredentialId
+        );
+
+        if (!matchedCredential) {
+          throw new Error('Credencial não reconhecida');
+        }
+
+        // Update counter for replay attack protection
+        const authenticatorData = new Uint8Array(response.authenticatorData);
+        const counter = new DataView(authenticatorData.buffer).getUint32(33, false);
+
+        await supabase
+          .from('webauthn_credentials')
+          .update({ counter, last_used_at: new Date().toISOString() })
+          .eq('credential_id', assertionCredentialId);
+
+        logger.debug('[WebAuthn] Authentication successful');
+        return { success: true, userId: matchedCredential.user_id };
+      } catch (error: unknown) {
+        const err = error as Error & { name?: string };
+        logger.error('[WebAuthn] Authentication error:', err);
+
+        if (err.name === 'NotAllowedError') {
+          toast.error('Autenticação cancelada');
+        } else if (err.name === 'SecurityError') {
+          toast.error('Erro de segurança');
+        } else {
+          toast.error(err.message || 'Erro na autenticação biométrica');
+        }
+        return { success: false };
+      } finally {
+        setIsLoading(false);
       }
-
-      // Update counter for replay attack protection
-      const authenticatorData = new Uint8Array(response.authenticatorData);
-      const counter = new DataView(authenticatorData.buffer).getUint32(33, false);
-
-      await supabase
-        .from('webauthn_credentials')
-        .update({ counter, last_used_at: new Date().toISOString() })
-        .eq('credential_id', assertionCredentialId);
-
-      logger.debug('[WebAuthn] Authentication successful');
-      return { success: true, userId: matchedCredential.user_id };
-    } catch (error: unknown) {
-      const err = error as Error & { name?: string };
-      logger.error('[WebAuthn] Authentication error:', err);
-      
-      if (err.name === 'NotAllowedError') {
-        toast.error('Autenticação cancelada');
-      } else if (err.name === 'SecurityError') {
-        toast.error('Erro de segurança');
-      } else {
-        toast.error(err.message || 'Erro na autenticação biométrica');
-      }
-      return { success: false };
-    } finally {
-      setIsLoading(false);
-    }
-  }, [checkSupport]);
+    },
+    [checkSupport]
+  );
 
   // Remove a registered credential
-  const removeCredential = useCallback(async (credentialId: string): Promise<boolean> => {
-    if (!user) return false;
+  const removeCredential = useCallback(
+    async (credentialId: string): Promise<boolean> => {
+      if (!user) return false;
 
-    try {
-      const { error } = await supabase
-        .from('webauthn_credentials')
-        .delete()
-        .eq('credential_id', credentialId)
-        .eq('user_id', user.id);
+      try {
+        const { error } = await supabase
+          .from('webauthn_credentials')
+          .delete()
+          .eq('credential_id', credentialId)
+          .eq('user_id', user.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      await fetchCredentials();
-      toast.success('Biometria removida');
-      return true;
-    } catch (error: unknown) {
-      logger.error('Error removing credential:', error);
-      toast.error('Erro ao remover biometria');
-      return false;
-    }
-  }, [user, fetchCredentials]);
+        await fetchCredentials();
+        toast.success('Biometria removida');
+        return true;
+      } catch (error: unknown) {
+        logger.error('Error removing credential:', error);
+        toast.error('Erro ao remover biometria');
+        return false;
+      }
+    },
+    [user, fetchCredentials]
+  );
 
   return {
     isSupported,
     isLoading,
+    isServerVerificationAvailable: WEBAUTHN_SERVER_VERIFICATION_DISPONIVEL,
     registeredCredentials,
     isPlatformAuthenticatorAvailable,
     registerCredential,
@@ -329,7 +362,7 @@ export function useWebAuthn() {
 // Helper to detect device name
 function detectDeviceName(): string {
   const ua = navigator.userAgent;
-  
+
   if (/iPhone/.test(ua)) return 'iPhone (Face ID/Touch ID)';
   if (/iPad/.test(ua)) return 'iPad (Face ID/Touch ID)';
   if (/Macintosh/.test(ua) && 'ontouchend' in document) return 'Mac (Touch ID)';
@@ -337,6 +370,6 @@ function detectDeviceName(): string {
   if (/Windows/.test(ua)) return 'Windows (Windows Hello)';
   if (/Android/.test(ua)) return 'Android (Biometria)';
   if (/Linux/.test(ua)) return 'Linux';
-  
+
   return 'Dispositivo desconhecido';
 }

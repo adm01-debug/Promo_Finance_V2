@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Inbox, CheckCircle2, XCircle, LayoutGrid, Table as TableIcon, Plus, Zap, Settings, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -29,6 +31,7 @@ import { cn } from '@/lib/utils';
 import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher';
 import { BaixaAutomaticaDialog } from '@/components/contas-receber/BaixaAutomaticaDialog';
 import { WebhookConfigDialog } from '@/components/contas-receber/WebhookConfigDialog';
+import { deveAbrirNovoRegistro } from '@/lib/navigation-intent';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,6 +44,8 @@ const itemVariants = {
 } as const;
 
 export default function ContasReceber() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const {
     searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
     contaBancariaFilter, handleContaBancariaChange,
@@ -62,6 +67,25 @@ export default function ContasReceber() {
   } = useContasReceberLogic();
 
   useHighlightFromUrl('highlight', (sortedContas?.length ?? 0) > 0);
+
+  useEffect(() => {
+    if (!deveAbrirNovoRegistro(location.state)) return;
+
+    setEditingConta(null);
+    setFormOpen(true);
+    navigate(
+      { pathname: location.pathname, search: location.search, hash: location.hash },
+      { replace: true, state: null }
+    );
+  }, [
+    location.hash,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+    setEditingConta,
+    setFormOpen,
+  ]);
 
   const bulkActions = [
     { id: 'mark-received', label: 'Marcar como Recebido', icon: <CheckCircle2 className="h-4 w-4" />, variant: 'default' as const, onClick: handleBulkMarkAsReceived },

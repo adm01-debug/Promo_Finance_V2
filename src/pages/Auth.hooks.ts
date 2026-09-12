@@ -12,11 +12,11 @@ import { readSloFailure, type SloFailureSnapshot } from '@/lib/sso-slo-state';
 
 // Validation schemas
 const emailSchema = z.string().email('Email inválido');
-const loginPasswordSchema = z
-  .string()
-  .min(8, 'Senha deve ter no mínimo 8 caracteres');
-const registrationPasswordSchema = loginPasswordSchema
-  .regex(/[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/~`]/, 'Senha deve conter caractere especial');
+const loginPasswordSchema = z.string().min(8, 'Senha deve ter no mínimo 8 caracteres');
+const registrationPasswordSchema = loginPasswordSchema.regex(
+  /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/~`]/,
+  'Senha deve conter caractere especial'
+);
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -56,6 +56,7 @@ export function useAuthPage() {
   const {
     isSupported: webAuthnSupported,
     isLoading: webAuthnLoading,
+    isServerVerificationAvailable: webAuthnServerVerificationAvailable,
     authenticate,
     isPlatformAuthenticatorAvailable,
   } = useWebAuthn();
@@ -130,13 +131,13 @@ export function useAuthPage() {
   // Check biometric availability
   useEffect(() => {
     const checkBiometric = async () => {
-      if (webAuthnSupported) {
+      if (webAuthnSupported && webAuthnServerVerificationAvailable) {
         const available = await isPlatformAuthenticatorAvailable();
         setBiometricAvailable(available);
       }
     };
     checkBiometric();
-  }, [webAuthnSupported, isPlatformAuthenticatorAvailable]);
+  }, [webAuthnSupported, webAuthnServerVerificationAvailable, isPlatformAuthenticatorAvailable]);
 
   const validateForm = useCallback(
     (isSignUp: boolean) => {
@@ -222,7 +223,9 @@ export function useAuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
-        await supabase.rpc('increment_failed_attempts', { _email: email });
+        // Não chamamos RPC de contador antes da autenticação: expor uma
+        // mutação por e-mail a anon permite lockout forçado por terceiros.
+        // A limitação de tentativas deve permanecer no provedor de Auth/WAF.
         await logLoginAttempt(email, false, error.message);
 
         if (error.message.includes('Invalid login credentials')) {
@@ -254,6 +257,13 @@ export function useAuthPage() {
   };
 
   const handleBiometricLogin = async () => {
+    if (!webAuthnServerVerificationAvailable) {
+      toast.info(
+        'O acesso biométrico será liberado quando a verificação pelo servidor estiver configurada.'
+      );
+      return;
+    }
+
     if (!email) {
       toast.error('Digite seu email primeiro');
       return;
