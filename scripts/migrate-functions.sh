@@ -165,6 +165,7 @@ validate_config_coverage
 OK=0; FAIL=0
 for fn in "${FNS[@]}"; do
   vjwt="$(verify_jwt_for "$fn")"
+  DEPLOY_ARGS=()
   # Segurança fail-closed: toda função precisa declarar explicitamente a política
   # de JWT. Sem isso, um deploy em massa poderia tornar pública uma função que o
   # ambiente remoto atualmente protege na borda.
@@ -174,9 +175,11 @@ for fn in "${FNS[@]}"; do
     log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_missing"}'
     continue
   elif [[ "$vjwt" == "true" ]]; then
-    FLAG="--verify-jwt"
+    # A CLI atual protege por JWT por padrão e não aceita mais --verify-jwt.
+    FLAG="jwt-padrao"
   elif [[ "$vjwt" == "false" ]]; then
     FLAG="--no-verify-jwt"
+    DEPLOY_ARGS=("$FLAG")
   else
     echo "❌ ${fn}: verify_jwt inválido em ${CONFIG_TOML}: ${vjwt}" >&2
     FAIL=$((FAIL + 1))
@@ -192,7 +195,7 @@ for fn in "${FNS[@]}"; do
 
   if supabase functions deploy "$fn" \
       --project-ref "$SUPABASE_PROJECT_REF" \
-      "$FLAG" \
+      "${DEPLOY_ARGS[@]}" \
       >/tmp/deploy-out-$$.log 2>&1; then
     OK=$((OK+1))
     log_event "deploy" "$fn" "ok" "$(jq -cn --arg f "$FLAG" '{flag:$f}')"
