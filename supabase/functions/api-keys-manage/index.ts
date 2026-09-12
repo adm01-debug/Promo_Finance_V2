@@ -119,6 +119,10 @@ export function createHandler(deps: DependenciasApiKeys): (req: Request) => Prom
       .from('api_keys')
       .insert({
         empresa_id: payload.empresa_id,
+        // Compatibilidade transitória com as colunas legadas não nulas. A
+        // credencial bruta jamais é persistida: chave recebe o mesmo SHA-256.
+        nome: payload.name,
+        chave: key_hash,
         name: payload.name,
         key_hash,
         key_prefix: 'pfv2',

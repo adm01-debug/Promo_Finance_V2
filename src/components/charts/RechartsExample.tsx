@@ -1,5 +1,6 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ChartContainer, getChartColor } from "./ChartContainer";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ChartContainer } from './ChartContainer';
+import { getChartColor } from './chartColors';
 
 /**
  * Example usage of re-themed Recharts with ChartContainer
@@ -28,11 +29,11 @@ import { ChartContainer, getChartColor } from "./ChartContainer";
 
 // Sample data for demonstration
 const sampleData = [
-  { name: "Jan", value: 400 },
-  { name: "Feb", value: 300 },
-  { name: "Mar", value: 600 },
-  { name: "Apr", value: 800 },
-  { name: "May", value: 500 },
+  { name: 'Jan', value: 400 },
+  { name: 'Feb', value: 300 },
+  { name: 'Mar', value: 600 },
+  { name: 'Apr', value: 800 },
+  { name: 'May', value: 500 },
 ];
 
 export function RechartsExample() {
@@ -45,9 +46,9 @@ export function RechartsExample() {
           <YAxis stroke="var(--t1)" />
           <Tooltip
             contentStyle={{
-              backgroundColor: "var(--bg-2)",
-              border: "1px solid var(--line)",
-              borderRadius: "8px",
+              backgroundColor: 'var(--bg-2)',
+              border: '1px solid var(--line)',
+              borderRadius: '8px',
             }}
           />
           <Bar dataKey="value" fill={getChartColor(0)} />

@@ -1,7 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Send, Scale, FileText, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import type { StatusPedido } from '@/hooks/usePerDcomp';
@@ -9,9 +16,15 @@ import type { ReactNode } from 'react';
 
 const STATUS_CONFIG: Record<StatusPedido, { cor: string; icone: ReactNode }> = {
   rascunho: { cor: 'bg-muted text-muted-foreground', icone: <FileText className="h-4 w-4" /> },
-  aguardando_transmissao: { cor: 'bg-warning/10 text-warning', icone: <Clock className="h-4 w-4" /> },
+  aguardando_transmissao: {
+    cor: 'bg-warning/10 text-warning',
+    icone: <Clock className="h-4 w-4" />,
+  },
   transmitido: { cor: 'bg-primary/10 text-primary', icone: <Send className="h-4 w-4" /> },
-  em_analise: { cor: 'bg-secondary text-secondary-foreground', icone: <Clock className="h-4 w-4" /> },
+  em_analise: {
+    cor: 'bg-secondary text-secondary-foreground',
+    icone: <Clock className="h-4 w-4" />,
+  },
   deferido: { cor: 'bg-success/10 text-success', icone: <CheckCircle2 className="h-4 w-4" /> },
   indeferido: { cor: 'bg-destructive/10 text-destructive', icone: <XCircle className="h-4 w-4" /> },
   cancelado: { cor: 'bg-muted text-muted-foreground', icone: <XCircle className="h-4 w-4" /> },
@@ -31,9 +44,10 @@ interface Props {
   pedidos: Pedido[];
   onTransmitir: (id: string) => void;
   onCancelar: (id: string) => void;
+  transmissaoDisponivel: boolean;
 }
 
-export function PerDcompTable({ pedidos, onTransmitir, onCancelar }: Props) {
+export function PerDcompTable({ pedidos, onTransmitir, onCancelar, transmissaoDisponivel }: Props) {
   return (
     <Card>
       <CardHeader>
@@ -85,7 +99,16 @@ export function PerDcompTable({ pedidos, onTransmitir, onCancelar }: Props) {
                     <TableCell className="text-right">
                       {pedido.status === 'rascunho' && (
                         <div className="flex gap-2 justify-end">
-                          <Button size="sm" onClick={() => onTransmitir(pedido.id)}>
+                          <Button
+                            size="sm"
+                            onClick={() => onTransmitir(pedido.id)}
+                            disabled={!transmissaoDisponivel}
+                            title={
+                              transmissaoDisponivel
+                                ? undefined
+                                : 'Transmissão externa ainda não configurada'
+                            }
+                          >
                             <Send className="h-4 w-4 mr-1" />
                             Transmitir
                           </Button>

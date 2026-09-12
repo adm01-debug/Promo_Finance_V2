@@ -3,15 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
-import { 
-  Fingerprint, 
-  Plus, 
-  Trash2, 
-  Smartphone, 
+import {
+  Fingerprint,
+  Plus,
+  Trash2,
+  Smartphone,
   Laptop,
   Loader2,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -32,6 +32,7 @@ export function BiometricSettings() {
   const {
     isSupported,
     isLoading,
+    isServerVerificationAvailable,
     registeredCredentials,
     isPlatformAuthenticatorAvailable,
     registerCredential,
@@ -47,10 +48,35 @@ export function BiometricSettings() {
       const available = await isPlatformAuthenticatorAvailable();
       setBiometricAvailable(available);
     };
-    
+
     checkAvailability();
     fetchCredentials();
   }, [isPlatformAuthenticatorAvailable, fetchCredentials]);
+
+  if (!isServerVerificationAvailable) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Fingerprint className="h-5 w-5" />
+            Autenticação Biométrica
+          </CardTitle>
+          <CardDescription>
+            Indisponível até a validação de passkey pelo servidor ser configurada
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Nenhuma credencial será criada ou usada para login enquanto o desafio, a origem e a
+              assinatura não forem verificados pelo backend.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleRegister = async () => {
     setIsRegistering(true);
@@ -77,16 +103,14 @@ export function BiometricSettings() {
             <Fingerprint className="h-5 w-5" />
             Autenticação Biométrica
           </CardTitle>
-          <CardDescription>
-            WebAuthn não é suportado neste navegador
-          </CardDescription>
+          <CardDescription>WebAuthn não é suportado neste navegador</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Seu navegador não suporta autenticação biométrica (WebAuthn). 
-              Tente usar Chrome, Firefox, Safari ou Edge em suas versões mais recentes.
+              Seu navegador não suporta autenticação biométrica (WebAuthn). Tente usar Chrome,
+              Firefox, Safari ou Edge em suas versões mais recentes.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -102,16 +126,14 @@ export function BiometricSettings() {
             <Fingerprint className="h-5 w-5" />
             Autenticação Biométrica
           </CardTitle>
-          <CardDescription>
-            Configure Face ID, Touch ID ou Windows Hello
-          </CardDescription>
+          <CardDescription>Configure Face ID, Touch ID ou Windows Hello</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Autenticação biométrica não está disponível neste dispositivo. 
-              Verifique se você tem Face ID, Touch ID ou Windows Hello configurado.
+              Autenticação biométrica não está disponível neste dispositivo. Verifique se você tem
+              Face ID, Touch ID ou Windows Hello configurado.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -136,17 +158,12 @@ export function BiometricSettings() {
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-green-500" />
             <span className="text-sm font-medium">
-              {registeredCredentials.length > 0 
+              {registeredCredentials.length > 0
                 ? `${registeredCredentials.length} dispositivo(s) registrado(s)`
-                : 'Nenhum dispositivo registrado'
-              }
+                : 'Nenhum dispositivo registrado'}
             </span>
           </div>
-          <Button 
-            size="sm" 
-            onClick={handleRegister}
-            disabled={isRegistering || isLoading}
-          >
+          <Button size="sm" onClick={handleRegister} disabled={isRegistering || isLoading}>
             {isRegistering ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : (
@@ -161,7 +178,7 @@ export function BiometricSettings() {
           <div className="space-y-2">
             <h4 className="text-sm font-medium text-muted-foreground">Dispositivos Registrados</h4>
             {registeredCredentials.map((credential) => (
-              <div 
+              <div
                 key={credential.id}
                 className="flex items-center justify-between p-3 border rounded-lg"
               >
@@ -170,7 +187,10 @@ export function BiometricSettings() {
                   <div>
                     <p className="text-sm font-medium">{credential.device_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      Registrado em {format(new Date(credential.created_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                      Registrado em{' '}
+                      {format(new Date(credential.created_at), "dd 'de' MMMM 'de' yyyy", {
+                        locale: ptBR,
+                      })}
                     </p>
                   </div>
                 </div>
@@ -194,7 +214,7 @@ export function BiometricSettings() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction 
+                        <AlertDialogAction
                           onClick={() => handleRemove(credential.credential_id)}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

@@ -21,28 +21,34 @@ export async function aprenderRegra(
   if (padrao.length < 4) return; // too short to be useful
 
   // Check existing
-  const { data: existing } = await supabase
+  const { data: existing, error: erroBusca } = await supabase
     .from('regras_conciliacao')
     .select('id, vezes_aplicada')
     .eq('padrao_descricao', padrao)
     .eq('entidade_nome', entidadeNome)
     .maybeSingle();
 
+  if (erroBusca) throw erroBusca;
+
   if (existing) {
-    await supabase
+    const { error } = await supabase
       .from('regras_conciliacao')
       .update({ vezes_aplicada: (existing.vezes_aplicada || 0) + 1 })
       .eq('id', existing.id);
+    if (error) throw error;
   } else {
-    const user = (await supabase.auth.getUser()).data.user;
-    await supabase.from('regras_conciliacao').insert({
+    const { data: authData, error: erroAuth } = await supabase.auth.getUser();
+    if (erroAuth) throw erroAuth;
+
+    const { error } = await supabase.from('regras_conciliacao').insert({
       nome: entidadeNome,
       padrao_descricao: padrao,
       entidade_nome: entidadeNome,
       lancamento_tipo: lancamentoTipo,
       entidade_id: entidadeId,
-      created_by: user?.id,
+      created_by: authData.user?.id,
     });
+    if (error) throw error;
   }
 }
 
@@ -51,12 +57,13 @@ export async function aprenderRegra(
  * Retorna a regra mais relevante, se houver.
  */
 export async function aplicarRegras(descricaoExtrato: string) {
-  const { data: regras } = await supabase
+  const { data: regras, error: erroBusca } = await supabase
     .from('regras_conciliacao')
     .select('*')
     .eq('ativo', true)
     .order('vezes_aplicada', { ascending: false });
 
+  if (erroBusca) throw erroBusca;
   if (!regras?.length) return null;
 
   const descNorm = descricaoExtrato.toLowerCase();
@@ -64,10 +71,11 @@ export async function aplicarRegras(descricaoExtrato: string) {
   for (const regra of regras) {
     if (descNorm.includes(regra.padrao_descricao)) {
       // Increment usage
-      await supabase
+      const { error } = await supabase
         .from('regras_conciliacao')
         .update({ vezes_aplicada: (regra.vezes_aplicada || 0) + 1 })
         .eq('id', regra.id);
+      if (error) throw error;
       return regra;
     }
   }

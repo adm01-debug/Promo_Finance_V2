@@ -4,48 +4,30 @@ import { useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/us
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
 import { useConciliacao } from '@/hooks/useConciliacao';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  ConciliacaoFilterState,
-  INITIAL_FILTERS,
-} from '@/components/conciliacao/ConciliacaoFilters';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { encontrarTodosMatches, calcularEstatisticasMatch } from '@/lib/transaction-matcher';
 import { type ImportReport } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { toast } from 'sonner';
 import {
   montarLancamentosSistema,
-  carregarTransacoesBanco,
   buscarConfigConciliacao,
   aplicarConciliacoesAutomaticas,
   filtrarTransacoes,
   montarExportData,
 } from '@/lib/conciliacao-page-helpers';
 
-interface TransacaoExtrato {
-  id: string;
-  data: Date;
-  descricao: string;
-  valor: number;
-  tipo: 'credito' | 'debito';
-  conciliada: boolean;
-  compensacao_valor?: number;
-  compensacao_motivo?: string;
-  compensacao_classificacao?: string;
-  compensacao_regra?: string;
-  compensacao_evidencia_url?: string;
-}
+import type { TransacaoExtrato } from './conciliacaoPage.types';
+import {
+  useContaBancariaSelecionada,
+  useFiltrosConciliacaoPersistidos,
+  useTransacoesBancariasSelecionadas,
+} from './useConciliacaoPageState';
 
 export function useConciliacaoPage() {
   const { currentBankAccountId } = useGlobalFinancialFilter();
   const [mainTab, setMainTab] = useState('conciliacao');
   const [statusTab, setStatusTab] = useState('pendentes');
-  const [selectedBanco, setSelectedBanco] = useState<string>(currentBankAccountId || '');
-
-  useEffect(() => {
-    if (currentBankAccountId && selectedBanco !== currentBankAccountId) {
-      setSelectedBanco(currentBankAccountId);
-    }
-  }, [currentBankAccountId, selectedBanco]);
+  const [selectedBanco, setSelectedBanco] = useContaBancariaSelecionada(currentBankAccountId);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showSugestoesFila, setShowSugestoesFila] = useState(false);
@@ -59,17 +41,10 @@ export function useConciliacaoPage() {
   const [selectedTransacaoSplit, setSelectedTransacaoSplit] = useState<TransacaoExtrato | null>(
     null
   );
-  const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
+  const [transacoes, setTransacoes] = useTransacoesBancariasSelecionadas(selectedBanco);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
-  const [filters, setFilters] = useState<ConciliacaoFilterState>(() => {
-    const saved = localStorage.getItem('conciliacao_filters');
-    return saved ? JSON.parse(saved) : INITIAL_FILTERS;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('conciliacao_filters', JSON.stringify(filters));
-  }, [filters]);
+  const [filters, setFilters] = useFiltrosConciliacaoPersistidos();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [importReport, setImportReport] = useState<ImportReport | null>(null);
@@ -79,18 +54,6 @@ export function useConciliacaoPage() {
   const { data: contasPagar } = useContasPagar();
   const { data: contasReceber } = useContasReceber();
   const { confirmarConciliacao, salvarExtratoBanco, desfazerConciliacao } = useConciliacao();
-
-  // Carregar transações do banco ao selecionar conta
-  useEffect(() => {
-    if (!selectedBanco) {
-      setTransacoes([]);
-      return;
-    }
-
-    carregarTransacoesBanco(selectedBanco).then((rows) => {
-      if (rows) setTransacoes(rows);
-    });
-  }, [selectedBanco]);
 
   const lancamentosSistema = useMemo(
     () => montarLancamentosSistema(contasPagar, contasReceber),
@@ -148,14 +111,16 @@ export function useConciliacaoPage() {
         }
       }
 
-      const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX): TransacaoExtrato => ({
-        id: t.id,
-        data: t.data,
-        descricao: t.descricao,
-        valor: t.valor,
-        tipo: t.tipo,
-        conciliada: false,
-      }));
+      const novasTransacoes = extrato.transacoes.map(
+        (t: TransacaoOFX): TransacaoExtrato => ({
+          id: t.id,
+          data: t.data,
+          descricao: t.descricao,
+          valor: t.valor,
+          tipo: t.tipo,
+          conciliada: false,
+        })
+      );
 
       let savedCount = extrato.transacoes.length;
       let duplicateCount = 0;
@@ -234,6 +199,7 @@ export function useConciliacaoPage() {
       confirmarConciliacao,
       contasBancarias,
       handleConciliarManual,
+      setTransacoes,
     ]
   );
 
@@ -255,7 +221,7 @@ export function useConciliacaoPage() {
         // Toast já é exibido pelo onError da mutation em useConciliacao; não corrompemos o estado local.
       }
     },
-    [confirmarConciliacao]
+    [confirmarConciliacao, setTransacoes]
   );
 
   const handleRejeitarMatch = useCallback((transacaoId: string, _lancamentoId: string) => {
@@ -291,7 +257,7 @@ export function useConciliacaoPage() {
         // Estado local preservado: transação continua pendente para reprocessamento.
       }
     },
-    [confirmarConciliacao]
+    [confirmarConciliacao, setTransacoes]
   );
 
   const handleConciliar = useCallback((transacao: TransacaoExtrato) => {
@@ -303,20 +269,23 @@ export function useConciliacaoPage() {
     setShowManualDialog(true);
   }, []);
 
-  const handleIgnorar = useCallback(async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('transacoes_bancarias')
-        .update({ conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' })
-        .eq('id', id);
+  const handleIgnorar = useCallback(
+    async (id: string) => {
+      try {
+        const { error } = await supabase
+          .from('transacoes_bancarias')
+          .update({ conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' })
+          .eq('id', id);
 
-      if (error) throw error;
-      setTransacoes((prev) => prev.filter((t) => t.id !== id));
-      toast.info('Transação marcada como ignorada');
-    } catch {
-      toast.error('Erro ao ignorar transação');
-    }
-  }, []);
+        if (error) throw error;
+        setTransacoes((prev) => prev.filter((t) => t.id !== id));
+        toast.info('Transação marcada como ignorada');
+      } catch {
+        toast.error('Erro ao ignorar transação');
+      }
+    },
+    [setTransacoes]
+  );
 
   const handleDesfazerConciliacao = useCallback(
     async (transacaoId: string) => {
@@ -329,7 +298,7 @@ export function useConciliacaoPage() {
         /* toast already handled */
       }
     },
-    [desfazerConciliacao]
+    [desfazerConciliacao, setTransacoes]
   );
 
   const handleBulkConciliar = useCallback(() => {
@@ -370,16 +339,21 @@ export function useConciliacaoPage() {
       toast.success(`${persistidos.size} transações ignoradas e persistidas`);
     }
     if (falhas > 0) {
-      toast.error(`${falhas} transações não foram ignoradas; a seleção foi preservada para nova tentativa.`);
+      toast.error(
+        `${falhas} transações não foram ignoradas; a seleção foi preservada para nova tentativa.`
+      );
     }
-  }, [selectedIds]);
+  }, [selectedIds, setTransacoes]);
 
-  const handleSplitSuccess = useCallback((transacaoId: string) => {
-    setTransacoes((prev) =>
-      prev.map((t) => (t.id === transacaoId ? { ...t, conciliada: true } : t))
-    );
-    setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
-  }, []);
+  const handleSplitSuccess = useCallback(
+    (transacaoId: string) => {
+      setTransacoes((prev) =>
+        prev.map((t) => (t.id === transacaoId ? { ...t, conciliada: true } : t))
+      );
+      setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
+    },
+    [setTransacoes]
+  );
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -491,5 +465,3 @@ export function useConciliacaoPage() {
     handleDesfazerConciliacao,
   };
 }
-
-export type { TransacaoExtrato };

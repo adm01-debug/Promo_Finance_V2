@@ -2,7 +2,6 @@ import { useState, Fragment } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Activity,
   LayoutDashboard,
   ArrowDownCircle,
   ArrowUpCircle,
@@ -21,40 +20,28 @@ import {
   CreditCard,
   BarChart3,
   Receipt,
-  Beaker,
   RefreshCcw,
   Users,
   Zap,
   ScrollText,
   User,
   Truck,
-  Factory,
-  FileSpreadsheet,
   ShieldCheck,
   Bot,
   Shield,
   Scale,
-  Sparkles,
   Wallet,
   UserCog,
-  FileSignature,
   Calculator,
-  Camera,
   ArrowLeftRight,
-  FileCheck,
-  BookOpen,
   Target,
   Brain,
   BrainCircuit,
-  ShieldAlert,
   MessageSquare,
   Tag,
   Code2,
   ClipboardCheck,
-  CalendarCheck,
 } from 'lucide-react';
-
-
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -66,26 +53,9 @@ import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
-
-
-interface NavItem {
-  label: string;
-  icon: React.ElementType;
-  href: string;
-  badge?: number;
-  badgeKey?: string;
-  highlight?: boolean;
-  // Rótulo de seção exibido como separador visual antes deste item (menu expandido)
-  sectionHeader?: string;
-}
-
-interface NavGroup {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  items: NavItem[];
-  defaultOpen?: boolean;
-}
+import { isSidebarNavItemActive } from './sidebarNavState';
+import { fiscalNavGroup } from './sidebarFiscalNavGroup';
+import type { NavGroup, NavItem } from './sidebarNav.types';
 
 // Define navigation groups - Consolidado para 5 grupos (melhor UX)
 const navGroups: NavGroup[] = [
@@ -97,8 +67,18 @@ const navGroups: NavGroup[] = [
       { label: 'Dashboard Executivo', icon: LayoutDashboard, href: '/' },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
       { label: 'BI Gestão Estratégica', icon: BarChart3, href: '/bi', highlight: true },
-      { label: 'Inteligência Operacional 360°', icon: BrainCircuit, href: '/inteligencia', highlight: true },
-      { label: 'Action Matrix Audit', icon: ClipboardCheck, href: '/inteligencia#action-matrix', highlight: true },
+      {
+        label: 'Inteligência Operacional 360°',
+        icon: BrainCircuit,
+        href: '/inteligencia',
+        highlight: true,
+      },
+      {
+        label: 'Action Matrix Audit',
+        icon: ClipboardCheck,
+        href: '/inteligencia#action-matrix',
+        highlight: true,
+      },
       { label: 'Benchmarking Setorial', icon: Scale, href: '/benchmarking', highlight: true },
       { label: 'EXPERT IA Financeira', icon: Bot, href: '/expert', highlight: true },
       { label: 'Alertas do Sistema', icon: Bell, href: '/alertas', badgeKey: 'alertas' },
@@ -110,7 +90,12 @@ const navGroups: NavGroup[] = [
     label: 'Financeiro',
     icon: Wallet,
     items: [
-      { label: 'Visão Geral Financeira', icon: LayoutDashboard, href: '/financeiro', highlight: true },
+      {
+        label: 'Visão Geral Financeira',
+        icon: LayoutDashboard,
+        href: '/financeiro',
+        highlight: true,
+      },
       { label: 'Contas a Pagar', icon: ArrowUpCircle, href: '/contas-pagar' },
       { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber' },
       { label: 'Movimentações', icon: ArrowLeftRight, href: '/movimentacoes' },
@@ -120,70 +105,37 @@ const navGroups: NavGroup[] = [
       { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
-      { label: 'Auditoria de Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', highlight: true },
       { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
       { label: 'Orçamentos', icon: Scale, href: '/orcamentos', highlight: true },
-      { label: 'Quantum-Sentinel: Riscos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
+      {
+        label: 'Quantum-Sentinel: Riscos',
+        icon: Brain,
+        href: '/inteligencia#alertas-preditivos',
+        highlight: true,
+      },
       { label: 'Gestão de Compras', icon: ShoppingCart, href: '/compras', highlight: true },
-
     ],
   },
-  {
-    id: 'fiscal',
-    label: 'Fiscal & Documentos',
-    icon: FileText,
-    items: [
-      { label: 'Quantum-Sentinel: Tributário', icon: Scale, href: '/tributario/dashboard', highlight: true, badgeKey: 'tributario', sectionHeader: 'Tributário' },
-      { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria/visao-geral' },
-      { label: 'Split Payment', icon: ArrowLeftRight, href: '/tributario/split-payment' },
-      { label: 'Conciliação Tributária', icon: RefreshCcw, href: '/tributario/conciliacao' },
-      { label: 'Incentivos Fiscais', icon: Zap, href: '/tributario/incentivos' },
-      { label: 'Compliance & Auditoria', icon: ShieldCheck, href: '/tributario/auditoria' },
-      { label: 'Comparativo Regimes', icon: Scale, href: '/tributario/comparativo' },
-      { label: 'Cashback Simulador', icon: Wallet, href: '/tributario/cashback' },
-      { label: 'Importação XML', icon: FileSpreadsheet, href: '/tributario/importacao-xml', sectionHeader: 'Documentos Fiscais' },
-      { label: 'Exportação SPED', icon: BookOpen, href: '/tributario/sped' },
-      { label: 'Relatórios Contábeis', icon: FileSpreadsheet, href: '/tributario/relatorios-contabeis' },
-      { label: 'PER/DCOMP', icon: FileText, href: '/tributario/per-dcomp' },
-      { label: 'Retenções na Fonte', icon: Receipt, href: '/tributario/retencoes' },
-      { label: 'Monofásico PIS/COFINS', icon: Beaker, href: '/tributario/monofasico' },
-      { label: 'Encargos de Folha (RAT/FAP)', icon: Users, href: '/tributario/folha-encargos' },
-      { label: 'ICMS-ST e DIFAL', icon: Truck, href: '/tributario/icms-st' },
-      { label: 'IPI e ISS', icon: Factory, href: '/tributario/ipi-iss' },
-      { label: 'PIS/COFINS (créditos)', icon: Receipt, href: '/tributario/pis-cofins' },
-      { label: 'IRPJ/CSLL (Lucro Real)', icon: Landmark, href: '/tributario/irpj-csll', sectionHeader: 'Contabilidade & Compliance' },
-      { label: 'DARF Consolidado', icon: Receipt, href: '/tributario/darf' },
-      { label: 'Obrigações Acessórias', icon: CalendarCheck, href: '/tributario/obrigacoes' },
-      { label: 'Comparativo de Conformidade', icon: BarChart3, href: '/tributario/comparativo-conformidade' },
-      { label: 'Preferências do Resumo', icon: BarChart3, href: '/tributario/preferencias-digest' },
-      { label: 'Observabilidade do Resumo', icon: BarChart3, href: '/tributario/observabilidade-digest' },
-
-      { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
-      { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true, sectionHeader: 'Relatórios & Ferramentas' },
-      { label: 'Simulação de Regimes', icon: Calculator, href: '/tributario/simulacao-regimes', highlight: true },
-      { label: 'Oportunidades de Elisão', icon: Sparkles, href: '/tributario/oportunidades-elisao', highlight: true },
-      { label: 'Projeção 2026-2033', icon: BarChart3, href: '/tributario/projecao-reforma', highlight: true },
-      { label: 'Histórico Tributário', icon: FileSpreadsheet, href: '/tributario/historico-financeiro' },
-      { label: 'Certificados Digitais A1', icon: ShieldCheck, href: '/tributario/certificados-digitais', highlight: true },
-      { label: 'NF-e Recebidas (SEFAZ)', icon: FileText, href: '/tributario/nfe-recebidas', highlight: true },
-      { label: 'Observabilidade SEFAZ', icon: Activity, href: '/tributario/sefaz-observabilidade' },
-      { label: 'Notas Fiscais', icon: FileText, href: '/notas-fiscais' },
-      { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
-      { label: 'Contabilidade & SPED', icon: BookOpen, href: '/contabilidade' },
-      { label: 'Contratos', icon: FileCheck, href: '/contratos' },
-      { label: 'Assinatura Digital', icon: FileSignature, href: '/assinatura-digital' },
-      { label: 'Comprovante OCR', icon: Camera, href: '/comprovante-ocr' },
-      { label: 'Cofre de Integridade', icon: ShieldCheck, href: '/contas-pagar/bloqueios', highlight: true },
-    ],
-  },
+  fiscalNavGroup,
   {
     id: 'records',
     label: 'Cadastros',
     icon: Users,
     items: [
       { label: 'Gestão de Clientes', icon: User, href: '/clientes' },
-      { label: 'Histórico & Chat WA', icon: MessageSquare, href: '/cobrancas#whatsapp', badgeKey: 'whatsapp', highlight: true },
-      { label: 'Scoring de Crédito & Risco', icon: Target, href: '/clientes/scoring', highlight: true },
+      {
+        label: 'Histórico & Chat WA',
+        icon: MessageSquare,
+        href: '/cobrancas#whatsapp',
+        badgeKey: 'whatsapp',
+        highlight: true,
+      },
+      {
+        label: 'Scoring de Crédito & Risco',
+        icon: Target,
+        href: '/clientes/scoring',
+        highlight: true,
+      },
       { label: 'Portal de Tokens API', icon: Key, href: '/clientes/portal-tokens' },
       { label: 'Gestão de Fornecedores', icon: Truck, href: '/fornecedores' },
       { label: 'Gestão de Vendedores', icon: UserCog, href: '/vendedores' },
@@ -204,7 +156,12 @@ const navGroups: NavGroup[] = [
       { label: 'Segurança', icon: Shield, href: '/seguranca', highlight: true },
       { label: 'Logs de Auditoria', icon: ScrollText, href: '/audit-logs' },
       { label: 'Eventos JIT (SSO)', icon: ShieldCheck, href: '/admin/sso-jit-events' },
-      { label: 'Privacidade & LGPD', icon: Shield, href: '/configuracoes/privacidade', highlight: true },
+      {
+        label: 'Privacidade & LGPD',
+        icon: Shield,
+        href: '/configuracoes/privacidade',
+        highlight: true,
+      },
       { label: 'Usuários', icon: UserCog, href: '/usuarios' },
       { label: 'Organizações & Equipes', icon: Users, href: '/organizacoes', highlight: true },
 
@@ -215,13 +172,15 @@ const navGroups: NavGroup[] = [
       { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },
       { label: 'Guia de Estilo', icon: Palette, href: '/style-guide', highlight: true },
       { label: 'API & Integrações', icon: Code2, href: '/admin/api', highlight: true },
-      { label: 'Campos Customizados', icon: Settings2, href: '/admin/campos-customizados', highlight: true },
+      {
+        label: 'Campos Customizados',
+        icon: Settings2,
+        href: '/admin/campos-customizados',
+        highlight: true,
+      },
       { label: 'Arquitetura Modular', icon: Code2, href: '/tributario/arquitetura' },
-
     ],
   },
-
-
 ];
 
 interface SidebarNavGroupsProps {
@@ -244,9 +203,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   // Track which groups are open
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
-    navGroups.forEach(group => {
+    navGroups.forEach((group) => {
       // Open group if it contains current route or is defaultOpen
-      const hasActiveItem = group.items.some(item => item.href === location.pathname);
+      const hasActiveItem = group.items.some((item) => isSidebarNavItemActive(item.href, location));
       initial[group.id] = hasActiveItem;
     });
     return initial;
@@ -254,7 +213,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
 
   const toggleGroup = (groupId: string) => {
     if (collapsed) return; // Don't toggle when collapsed
-    setOpenGroups(prev => ({
+    setOpenGroups((prev) => ({
       ...prev,
       [groupId]: !prev[groupId],
     }));
@@ -271,7 +230,10 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     if (badgeKey === 'tributario' && alertasTributarios > 0) {
       return alertasTributarios;
     }
-    if (badgeKey === 'whatsapp' && (whatsappUnread > 0 || localStorage.getItem(`whatsapp-unread-manual-${user?.id}`) === 'true')) {
+    if (
+      badgeKey === 'whatsapp' &&
+      (whatsappUnread > 0 || localStorage.getItem(`whatsapp-unread-manual-${user?.id}`) === 'true')
+    ) {
       return whatsappUnread || 1;
     }
     return undefined;
@@ -279,12 +241,12 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
 
   // Check if group has active item
   const groupHasActiveItem = (group: NavGroup): boolean => {
-    return group.items.some(item => location.pathname === item.href);
+    return group.items.some((item) => isSidebarNavItemActive(item.href, location));
   };
 
   // Render nav item
   const NavItemComponent = ({ item }: { item: NavItem }) => {
-    const isActive = location.pathname === item.href;
+    const isActive = isSidebarNavItemActive(item.href, location);
     const Icon = item.icon;
     const badge = getBadgeCount(item.badgeKey);
 
@@ -311,10 +273,10 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         )}
         {badge && !collapsed && (
           <Badge
-            variant={item.highlight ? "default" : "secondary"}
+            variant={item.highlight ? 'default' : 'secondary'}
             className={cn(
-              "ml-auto text-[10px] h-5 px-1.5 font-bold tabular-nums",
-              item.highlight && "bg-primary text-primary-foreground border-none shadow-sm"
+              'ml-auto text-[10px] h-5 px-1.5 font-bold tabular-nums',
+              item.highlight && 'bg-primary text-primary-foreground border-none shadow-sm'
             )}
           >
             {badge}
@@ -342,7 +304,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
 
   return (
     <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin">
-      {navGroups.map(group => {
+      {navGroups.map((group) => {
         const GroupIcon = group.icon;
         const isOpen = openGroups[group.id];
         const hasActive = groupHasActiveItem(group);
@@ -379,10 +341,14 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "p-1.5 rounded border border-border transition-colors",
-                    hasActive ? "bg-accent text-primary" : "bg-muted text-muted-foreground group-hover:bg-muted/80"
-                  )}>
+                  <div
+                    className={cn(
+                      'p-1.5 rounded border border-border transition-colors',
+                      hasActive
+                        ? 'bg-accent text-primary'
+                        : 'bg-muted text-muted-foreground group-hover:bg-muted/80'
+                    )}
+                  >
                     <GroupIcon className="h-4 w-4" />
                   </div>
                   <span>{translatedGroupLabel}</span>
@@ -408,7 +374,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                     className="overflow-hidden"
                   >
                     <div className="pl-3 space-y-0.5 mt-1 transition-all">
-                      {group.items.map(item => (
+                      {group.items.map((item) => (
                         <Fragment key={item.href}>
                           {item.sectionHeader && (
                             <div className="border-t border-line my-2 px-3 py-2">
@@ -429,7 +395,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
             {/* Collapsed state - show items in tooltip */}
             {collapsed && (
               <div className="space-y-0.5">
-                {group.items.map(item => (
+                {group.items.map((item) => (
                   <NavItemComponent key={item.href} item={item} />
                 ))}
               </div>

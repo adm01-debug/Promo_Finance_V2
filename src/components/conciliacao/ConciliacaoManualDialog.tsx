@@ -101,8 +101,13 @@ export function ConciliacaoManualDialog({
         ajusteCentavos: isWithinPennyTolerance ? valorDiff : 0,
       });
       
-      // Learn rule from this manual match
-      await aprenderRegra(transacao.descricao, lancamento.entidade, tipo, lancamento.id);
+      // O aprendizado é auxiliar: a conciliação já foi confirmada no banco e
+      // não pode ser apresentada como falha caso esse enriquecimento falhe.
+      try {
+        await aprenderRegra(transacao.descricao, lancamento.entidade, tipo, lancamento.id);
+      } catch (error: unknown) {
+        logger.warn('[ConciliacaoManualDialog] Não foi possível aprender regra:', error);
+      }
       
       celebrateReconciliation(1);
       onSuccess(transacao.id, lancamento.id, tipo);

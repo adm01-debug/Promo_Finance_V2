@@ -120,6 +120,9 @@ Deno.test(
     assertEquals(insercoes.length, 1);
     assertEquals(insercoes[0].key_hash, 'a'.repeat(64));
     assertNotEquals(insercoes[0].key_hash, corpo.key);
+    assertEquals(insercoes[0].nome, 'Integração ERP');
+    assertEquals(insercoes[0].chave, 'a'.repeat(64));
+    assertNotEquals(insercoes[0].chave, corpo.key);
     assertEquals(insercoes[0].scopes, ['read', 'finance']);
   }
 );

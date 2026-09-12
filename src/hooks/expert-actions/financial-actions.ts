@@ -235,20 +235,14 @@ export async function atualizarScoreCliente(
   };
 }
 
-export async function gerarBoleto(contaId: string): Promise<ActionResult> {
-  const { data: conta, error } = await supabase
-    .from('contas_receber')
-    .select('*, clientes(razao_social, cnpj_cpf)')
-    .eq('id', contaId)
-    .maybeSingle();
+export const BOLETO_EXPERT_INDISPONIVEL =
+  'A geração de boleto pelo EXPERT está indisponível até a integração com um provedor homologado ser configurada.';
 
-  if (error || !conta) return { success: false, message: `Conta ${contaId} não encontrada.` };
-
-  const codigoBarras = `23793.38128 60000.000003 00000.000406 ${Math.random().toString().slice(2, 6)} ${Math.floor(Date.now() / 1000)}`;
-  toast.success('Boleto gerado com sucesso!');
-
-  return {
-    success: true,
-    message: `🎫 **BOLETO GERADO**\n\nCliente: ${conta.clientes?.razao_social || conta.cliente_nome}\nValor: ${formatCurrency(Number(conta.valor))}\nVencimento: ${conta.data_vencimento}\n\nCódigo de Barras:\n\`${codigoBarras}\``,
-  };
+/**
+ * Não fabrica linha digitável nem confirma emissão financeira sem um provedor.
+ * A ação é mantida para que o orquestrador responda de forma honesta enquanto a
+ * integração de cobrança é implementada no backend.
+ */
+export async function gerarBoleto(_contaId: string): Promise<ActionResult> {
+  return { success: false, message: BOLETO_EXPERT_INDISPONIVEL };
 }

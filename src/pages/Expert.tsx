@@ -1,21 +1,9 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import {
-  Bot,
-  Send,
-  Loader2,
-  History,
-  Plus,
-  Database,
-  FileUp,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
+import { Bot, Loader2, History, Plus, Database } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
@@ -31,31 +19,23 @@ import {
   useUpdateMessageActions,
   ExpertMessage,
 } from '@/hooks/useExpertConversations';
-import { DocumentAnalyzer } from '@/components/expert/DocumentAnalyzer';
+import { ExpertPromptComposer } from '@/components/expert/ExpertPromptComposer';
 import { ProactiveSuggestions } from '@/components/expert/ProactiveSuggestions';
 import { ExpertChatMessages } from '@/components/expert/ExpertChatMessages';
 import { ExpertWelcomeScreen } from '@/components/expert/ExpertWelcomeScreen';
 import { ExpertHistoryPanel } from '@/components/expert/ExpertHistoryPanel';
-import { isToday, isThisWeek, isThisMonth, subDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { supabase } from '@/integrations/supabase/client';
-import { env } from '@/config/env';
-
-interface LocalMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  actions?: ExpertAction[];
-  actionsExecuted?: boolean;
-}
-
-const CHAT_URL = `${env.SUPABASE_URL}/functions/v1/expert-agent`;
+import { useQueuedMessage } from '@/hooks/useQueuedMessage';
+import {
+  EXPERT_CHAT_URL,
+  filtrarConversasExpert,
+  type LocalExpertMessage,
+} from '@/components/expert/expertPageSupport';
 
 export default function Expert() {
-  const [messages, setMessages] = useState<LocalMessage[]>([]);
+  const [messages, setMessages] = useState<LocalExpertMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -85,32 +65,10 @@ export default function Expert() {
   const saveMessage = useSaveMessage();
   const updateMessageActions = useUpdateMessageActions();
 
-  const filteredConversations = useMemo(() => {
-    if (!conversations) return [];
-    return conversations.filter((conv) => {
-      const matchesSearch =
-        searchQuery === '' ||
-        conv.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (conv.resumo && conv.resumo.toLowerCase().includes(searchQuery.toLowerCase()));
-      const convDate = new Date(conv.created_at);
-      let matchesDate = true;
-      switch (dateFilter) {
-        case 'today':
-          matchesDate = isToday(convDate);
-          break;
-        case 'week':
-          matchesDate = isThisWeek(convDate, { locale: ptBR });
-          break;
-        case 'month':
-          matchesDate = isThisMonth(convDate);
-          break;
-        case 'older':
-          matchesDate = convDate < subDays(new Date(), 30);
-          break;
-      }
-      return matchesSearch && matchesDate;
-    });
-  }, [conversations, searchQuery, dateFilter]);
+  const filteredConversations = useMemo(
+    () => filtrarConversasExpert(conversations, searchQuery, dateFilter),
+    [conversations, searchQuery, dateFilter]
+  );
 
   useEffect(() => {
     if (savedMessages)
@@ -177,7 +135,7 @@ export default function Expert() {
         return;
       }
     }
-    const userMessage: LocalMessage = {
+    const userMessage: LocalExpertMessage = {
       id: crypto.randomUUID(),
       role: 'user',
       content: messageText.trim(),
@@ -206,7 +164,7 @@ export default function Expert() {
         throw new Error('Sua sessão expirou. Faça login novamente para usar o EXPERT.');
       }
 
-      const response = await fetch(CHAT_URL, {
+      const response = await fetch(EXPERT_CHAT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
         body: JSON.stringify({
@@ -309,6 +267,8 @@ export default function Expert() {
       setIsLoading(false);
     }
   };
+
+  const enfileirarMensagem = useQueuedMessage(isLoading, sendMessage);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -427,64 +387,26 @@ export default function Expert() {
             />
           )}
 
-          <div className="p-4 border-t bg-card/50">
-            <div className="max-w-3xl mx-auto">
-              <Collapsible open={showDocumentUpload} onOpenChange={setShowDocumentUpload}>
-                <div className="flex items-center gap-2 mb-3">
-                  <CollapsibleTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <FileUp className="h-4 w-4" />
-                      Analisar Documento
-                      {showDocumentUpload ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </CollapsibleTrigger>
-                  <span className="text-xs text-muted-foreground">
-                    Upload de PDF, planilhas ou imagens para análise
-                  </span>
-                </div>
-                <CollapsibleContent className="mb-3">
-                  <DocumentAnalyzer
-                    onAnalysisComplete={(analysis) => {
-                      sendMessage(`Análise do documento:\n\n${analysis}`);
-                      setShowDocumentUpload(false);
-                    }}
-                  />
-                </CollapsibleContent>
-              </Collapsible>
-              <form onSubmit={handleSubmit}>
-                <div className="relative">
-                  <Textarea
-                    ref={textareaRef}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Digite sua pergunta para o EXPERT..."
-                    className="min-h-[60px] max-h-[200px] pr-14 resize-none"
-                    disabled={isLoading}
-                  />
-                  <Button
-                    type="submit"
-                    size="icon"
-                    disabled={!input.trim() || isLoading}
-                    className="absolute right-2 bottom-2 h-10 w-10 rounded-xl"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <Send className="h-5 w-5" />
-                    )}
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground text-center mt-2">
-                  Pressione Enter para enviar ou Shift+Enter para nova linha
-                </p>
-              </form>
-            </div>
-          </div>
+          <ExpertPromptComposer
+            input={input}
+            isLoading={isLoading}
+            textareaRef={textareaRef}
+            showDocumentUpload={showDocumentUpload}
+            onInputChange={setInput}
+            onInputKeyDown={handleKeyDown}
+            onSubmit={handleSubmit}
+            onShowDocumentUploadChange={setShowDocumentUpload}
+            onDocumentAnalysisComplete={(analysis) => {
+              const mensagem = `Análise do documento:\n\n${analysis}`;
+              if (isLoading) {
+                enfileirarMensagem(mensagem);
+                toast.info('Análise enfileirada para envio');
+              } else {
+                void sendMessage(mensagem);
+              }
+              setShowDocumentUpload(false);
+            }}
+          />
         </Card>
       </div>
     </MainLayout>
