@@ -54,6 +54,9 @@ jobs:
         # contratos que fazem autenticação por segredo dentro da Edge Function.
         run: python3 scripts/security/test-supabase-config.py
 
+      - name: Contrato de deploy das Edge Functions
+        run: bash scripts/security/test-functions-deploy.sh
+
       - name: Gate estático do reparo SQL
         # Evita que a evidência do reparo dos 12 erros reais do linter passe com
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.

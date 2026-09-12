@@ -51,6 +51,7 @@ jobs:
             --label "Deploy de Edge Function no canônico" \
             SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
           python3 scripts/security/test-supabase-config.py
+          bash scripts/security/test-functions-deploy.sh
 
       - name: Implantar somente a função aprovada
         run: |
