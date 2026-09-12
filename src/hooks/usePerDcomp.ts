@@ -4,7 +4,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
 
 export type TipoPedido = 'per' | 'dcomp';
 export type StatusPedido =
@@ -17,7 +16,11 @@ export type StatusPedido =
   | 'cancelado';
 
 export type TipoCreditoOrigem =
-  'saldo_negativo' | 'pagamento_indevido' | 'retencao' | 'ressarcimento' | 'exportacao';
+  | 'saldo_negativo'
+  | 'pagamento_indevido'
+  | 'retencao'
+  | 'ressarcimento'
+  | 'exportacao';
 
 export interface PerDcomp {
   id: string;
@@ -64,6 +67,14 @@ export const TIPOS_CREDITO_ORIGEM = [
   { codigo: 'ressarcimento', nome: 'Ressarcimento de IPI/Exportação' },
   { codigo: 'exportacao', nome: 'Créditos de Exportação (IBS/CBS)' },
 ];
+
+export const TRANSMISSAO_PER_DCOMP_INDISPONIVEL =
+  'A transmissão de PER/DCOMP não está configurada. O pedido permanece como rascunho e nenhum crédito foi compensado.';
+
+/** Impede que a interface registre transmissão fiscal sem comprovante externo verificável. */
+export function transmitirPerDcompNaoConfigurado(): never {
+  throw new Error(TRANSMISSAO_PER_DCOMP_INDISPONIVEL);
+}
 
 export function usePerDcomp(empresaId?: string) {
   const queryClient = useQueryClient();
@@ -129,45 +140,12 @@ export function usePerDcomp(empresaId?: string) {
     },
   });
 
-  // Transmitir pedido (simular)
+  // A transmissão externa ainda não está homologada. Falhar fechado é mais seguro
+  // do que atribuir um recibo aleatório e alterar créditos locais.
   const transmitirPedido = useMutation({
-    mutationFn: async (pedidoId: string) => {
-      // Gerar número de recibo simulado
-      const numeroRecibo = `${format(new Date(), 'yyyyMMddHHmmss')}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-
-      const { data, error } = await supabase
-        .from('per_dcomp')
-        .update({
-          status: 'transmitido',
-          data_transmissao: new Date().toISOString(),
-          numero_recibo: numeroRecibo,
-          data_protocolo: format(new Date(), 'yyyy-MM-dd'),
-        })
-        .eq('id', pedidoId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Se for DCOMP, atualizar os créditos como compensados
-      if (data.tipo === 'dcomp' && data.creditos_ids?.length) {
-        await supabase
-          .from('creditos_tributarios')
-          .update({ status: 'compensado' })
-          .in('id', data.creditos_ids);
-      }
-
-      return data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['per-dcomp'] });
-      queryClient.invalidateQueries({ queryKey: ['creditos-tributarios'] });
-      toast.success('Pedido transmitido com sucesso', {
-        description: `Recibo: ${data.numero_recibo}`,
-      });
-    },
+    mutationFn: async (_pedidoId: string) => transmitirPerDcompNaoConfigurado(),
     onError: (error) => {
-      toast.error('Erro na transmissão: ' + error.message);
+      toast.error('Transmissão indisponível: ' + error.message);
     },
   });
 

@@ -15,23 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   BarChart,
   Bar,
@@ -46,32 +30,18 @@ import {
   useCreateBudget,
   useUpdateBudget,
   useDeleteBudget,
-  type Budget,
 } from '@/hooks/useBudget';
 import { useCategorias } from '@/hooks/useCategorias';
 import { formatCurrency } from '@/lib/formatters';
 import { format } from 'date-fns';
 import { useZodForm } from '@/hooks/useZodForm';
-import { z } from 'zod';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
-
-const budgetSchema = z.object({
-  category: z.string().min(1, 'Selecione uma categoria'),
-  budgeted_amount: z.number().min(0.01, 'Valor deve ser maior que zero'),
-  period: z.string().min(7, 'Selecione o período'),
-});
-
-type BudgetFormData = z.infer<typeof budgetSchema>;
-
-type BudgetWithSpent = Budget & {
-  actual_spent: number;
-  remaining: number;
-  percent_used: number;
-};
+import { OrcamentosFormDialog } from './OrcamentosFormDialog';
+import { budgetSchema, type BudgetFormData, type BudgetWithSpent } from './orcamentos.types';
+import { obterDadosOrcamentos } from './orcamentos.helpers';
 
 const Orcamentos = () => {
-  const currentPeriod = format(new Date(), 'yyyy-MM');
-  const [selectedPeriod, setSelectedPeriod] = useState(currentPeriod);
+  const [selectedPeriod, setSelectedPeriod] = useState(() => format(new Date(), 'yyyy-MM'));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<BudgetWithSpent | null>(null);
 
@@ -126,20 +96,7 @@ const Orcamentos = () => {
     setIsDialogOpen(true);
   };
 
-  const totals = React.useMemo(() => {
-    const totalBudgeted = budgets.reduce((acc, curr) => acc + Number(curr.budgeted_amount), 0);
-    const totalSpent = budgets.reduce((acc, curr) => acc + curr.actual_spent, 0);
-    const remaining = totalBudgeted - totalSpent;
-    const percent = totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0;
-
-    return { totalBudgeted, totalSpent, remaining, percent };
-  }, [budgets]);
-
-  const chartData = budgets.map((b) => ({
-    name: b.category,
-    Orçado: Number(b.budgeted_amount),
-    Gasto: b.actual_spent,
-  }));
+  const { totals, chartData } = React.useMemo(() => obterDadosOrcamentos(budgets), [budgets]);
 
   if (isLoading)
     return (
@@ -448,82 +405,14 @@ const Orcamentos = () => {
         </div>
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-popover border-border text-foreground max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingBudget ? 'Editar Orçamento' : 'Criar Novo Orçamento'}</DialogTitle>
-            <DialogDescription className="text-foreground/40">
-              Defina o limite de gastos para uma categoria específica no período selecionado.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={form.handleSubmit} className="space-y-6 py-4">
-            <div className="space-y-2">
-              <Label>Categoria</Label>
-              <Select
-                value={form.values.category}
-                onValueChange={(val) => form.setFieldValue('category', val)}
-              >
-                <SelectTrigger className="bg-card/5 border-border">
-                  <SelectValue placeholder="Selecione uma categoria" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border text-foreground">
-                  {categoriasDespesa.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.nome}>
-                      {cat.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {form.errors.category && (
-                <p className="text-xs text-red-500">{form.errors.category}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Valor Orçado (R$)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                {...form.getFieldProps('budgeted_amount')}
-                className="bg-card/5 border-border"
-                placeholder="0,00"
-              />
-              {form.errors.budgeted_amount && (
-                <p className="text-xs text-red-500">{form.errors.budgeted_amount}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Período</Label>
-              <Input
-                type="month"
-                {...form.getFieldProps('period')}
-                className="bg-card/5 border-border"
-              />
-              {form.errors.period && <p className="text-xs text-red-500">{form.errors.period}</p>}
-            </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsDialogOpen(false)}
-                className="text-foreground/40"
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={createBudget.isPending || updateBudget.isPending}
-                className="bg-primary hover:bg-primary/90"
-              >
-                {editingBudget ? 'Atualizar Orçamento' : 'Salvar Orçamento'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <OrcamentosFormDialog
+        open={isDialogOpen}
+        editing={!!editingBudget}
+        categorias={categoriasDespesa}
+        form={form}
+        isSubmitting={createBudget.isPending || updateBudget.isPending}
+        onOpenChange={setIsDialogOpen}
+      />
     </MainLayout>
   );
 };

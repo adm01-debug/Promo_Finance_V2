@@ -23,45 +23,48 @@ export function usePrefetchCriticalData() {
 
       // Prefetch em paralelo para máxima velocidade
       await Promise.all([
-      queryClient.prefetchQuery({
-        queryKey: ['empresas'],
-        queryFn: async () => {
-          const { data } = await supabase
-            .from('empresas')
-            .select('id, razao_social, nome_fantasia, cnpj, ativo')
-            .eq('ativo', true)
-            .order('razao_social');
-          return data || [];
-        },
-        staleTime: STALE_TIMES.static,
-        gcTime: GC_TIMES.static,
-      }),
-      queryClient.prefetchQuery({
-        queryKey: ['contas-bancarias'],
-        queryFn: async () => {
-          const { data } = await supabase
-            .from('contas_bancarias')
-            .select('id, banco, agencia, conta, saldo_atual, empresa_id, cor')
-            .eq('ativo', true)
-            .order('banco');
-          return data || [];
-        },
-        staleTime: STALE_TIMES.config,
-        gcTime: GC_TIMES.normal,
-      }),
-      queryClient.prefetchQuery({
-        queryKey: ['centros-custo'],
-        queryFn: async () => {
-          const { data } = await supabase
-            .from('centros_custo')
-            .select('id, nome, codigo, ativo')
-            .eq('ativo', true)
-            .order('nome');
-          return data || [];
-        },
-        staleTime: STALE_TIMES.static,
-        gcTime: GC_TIMES.static,
-      }),
+        queryClient.prefetchQuery({
+          queryKey: ['empresas'],
+          queryFn: async () => {
+            const { data, error } = await supabase
+              .from('empresas')
+              .select('id, razao_social, nome_fantasia, cnpj, ativo')
+              .eq('ativo', true)
+              .order('razao_social');
+            if (error) throw error;
+            return data ?? [];
+          },
+          staleTime: STALE_TIMES.static,
+          gcTime: GC_TIMES.static,
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ['contas-bancarias'],
+          queryFn: async () => {
+            const { data, error } = await supabase
+              .from('contas_bancarias')
+              .select('id, banco, agencia, conta, saldo_atual, empresa_id, cor')
+              .eq('ativo', true)
+              .order('banco');
+            if (error) throw error;
+            return data ?? [];
+          },
+          staleTime: STALE_TIMES.config,
+          gcTime: GC_TIMES.normal,
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ['centros-custo'],
+          queryFn: async () => {
+            const { data, error } = await supabase
+              .from('centros_custo')
+              .select('id, nome, codigo, ativo')
+              .eq('ativo', true)
+              .order('nome');
+            if (error) throw error;
+            return data ?? [];
+          },
+          staleTime: STALE_TIMES.static,
+          gcTime: GC_TIMES.static,
+        }),
       ]);
     };
 
@@ -78,12 +81,13 @@ export function useEmpresas() {
   return useQuery({
     queryKey: ['empresas'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('empresas')
         .select('id, razao_social, nome_fantasia, cnpj, ativo')
         .eq('ativo', true)
         .order('razao_social');
-      return data || [];
+      if (error) throw error;
+      return data ?? [];
     },
     staleTime: STALE_TIMES.static,
     gcTime: GC_TIMES.static,
@@ -94,12 +98,13 @@ export function useContasBancariasSelect() {
   return useQuery({
     queryKey: ['contas-bancarias-select'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('contas_bancarias')
         .select('id, banco, agencia, conta, empresa_id')
         .eq('ativo', true)
         .order('banco');
-      return data || [];
+      if (error) throw error;
+      return data ?? [];
     },
     staleTime: STALE_TIMES.config,
     gcTime: GC_TIMES.normal,
@@ -110,12 +115,13 @@ export function useCentrosCustoSelect() {
   return useQuery({
     queryKey: ['centros-custo-select'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('centros_custo')
         .select('id, nome, codigo')
         .eq('ativo', true)
         .order('nome');
-      return data || [];
+      if (error) throw error;
+      return data ?? [];
     },
     staleTime: STALE_TIMES.static,
     gcTime: GC_TIMES.static,
@@ -242,26 +248,25 @@ export function getPaginationRange(params: PaginationParams) {
 export const queryKeys = {
   empresas: () => ['empresas'] as const,
   empresa: (id: string) => ['empresas', id] as const,
-  contasBancarias: (filters?: Record<string, unknown>) => 
+  contasBancarias: (filters?: Record<string, unknown>) =>
     filters ? ['contas-bancarias', filters] : ['contas-bancarias'],
   contaBancaria: (id: string) => ['contas-bancarias', id] as const,
-  contasReceber: (filters?: Record<string, unknown>) => 
+  contasReceber: (filters?: Record<string, unknown>) =>
     filters ? ['contas-receber', filters] : ['contas-receber'],
   contaReceber: (id: string) => ['contas-receber', id] as const,
-  contasPagar: (filters?: Record<string, unknown>) => 
+  contasPagar: (filters?: Record<string, unknown>) =>
     filters ? ['contas-pagar', filters] : ['contas-pagar'],
   contaPagar: (id: string) => ['contas-pagar', id] as const,
-  clientes: (filters?: Record<string, unknown>) => 
-    filters ? ['clientes', filters] : ['clientes'],
+  clientes: (filters?: Record<string, unknown>) => (filters ? ['clientes', filters] : ['clientes']),
   cliente: (id: string) => ['clientes', id] as const,
-  fornecedores: (filters?: Record<string, unknown>) => 
+  fornecedores: (filters?: Record<string, unknown>) =>
     filters ? ['fornecedores', filters] : ['fornecedores'],
   fornecedor: (id: string) => ['fornecedores', id] as const,
   centrosCusto: () => ['centros-custo'] as const,
   centroCusto: (id: string) => ['centros-custo', id] as const,
   dashboardKpis: () => ['dashboard-kpis'] as const,
   fluxoCaixa: (dias: number) => ['fluxo-caixa', dias] as const,
-  transacoesBancarias: (contaId?: string) => 
+  transacoesBancarias: (contaId?: string) =>
     contaId ? ['transacoes-bancarias', contaId] : ['transacoes-bancarias'],
   alertas: () => ['alertas'] as const,
   aprovacoes: () => ['aprovacoes'] as const,

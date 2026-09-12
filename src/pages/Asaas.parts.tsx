@@ -37,32 +37,9 @@ import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { statusConfig } from '@/components/asaas/tabs/constants';
 import { formatCurrency } from '@/lib/currency';
 import type { AsaasPayment } from '@/hooks/useAsaas';
+import type { AsaasStats, AuditTrailLog, DetailStatEntry, SaldoAsaas } from './Asaas.types';
 
-type DetailStatEntry = { status?: string };
-
-type AuditTrailLog = {
-  id: string;
-  payment_id?: string;
-  action: string;
-  created_at: string;
-  details?: { message?: string } | null;
-  previous_status?: string | null;
-  new_status?: string | null;
-};
-
-interface AsaasStats {
-  total: number;
-  pendentes: number;
-  recebidos: number;
-  vencidos: number;
-  valorPendente: number;
-  valorRecebido: number;
-}
-
-interface SaldoAsaas {
-  balance: number;
-  totalPending: number;
-}
+export { QueueHistoryDialog } from './AsaasQueueHistoryDialog';
 
 export function AsaasHeader({
   saldo,
@@ -420,40 +397,5 @@ export function BoletoPreviewDialog({
         )}
       </DialogContent>
     </Dialog>
-  );
-}
-
-export function QueueHistoryDialog({
-  isOpen,
-  onClose,
-  logs,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  logs: Record<string, unknown>[] | null;
-}) {
-  return (
-    <ConfirmationDialog
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Histórico de Falhas (Fila)"
-      message={
-        <div className="space-y-4 max-h-[350px] overflow-y-auto">
-          {logs?.map((log: Record<string, unknown>, i: number) => (
-            <div key={i} className="p-3 bg-muted/20 rounded-md border text-xs">
-              <div className="flex justify-between font-bold mb-1">
-                <span>Tentativa #{String(log.attempt)}</span>
-                <span className="text-muted-foreground">
-                  {format(parseISO(String(log.timestamp)), 'dd/MM HH:mm', { locale: ptBR })}
-                </span>
-              </div>
-              <p className="text-destructive font-mono">{String(log.message)}</p>
-            </div>
-          ))}
-        </div>
-      }
-      confirmText="Entendido"
-      onConfirm={onClose}
-    />
   );
 }

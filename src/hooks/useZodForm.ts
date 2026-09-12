@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { z, ZodSchema } from 'zod';
 
-type FormErrors<T> = Partial<Record<keyof T, string>>;
+export type FormErrors<T> = Partial<Record<keyof T, string>>;
 
 interface UseZodFormOptions<T extends z.ZodRawShape> {
   schema: ZodSchema<z.infer<z.ZodObject<T>>>;
@@ -12,7 +12,7 @@ interface UseZodFormOptions<T extends z.ZodRawShape> {
   validateOnBlur?: boolean;
 }
 
-interface UseZodFormReturn<T> {
+export interface UseZodFormReturn<T> {
   values: T;
   errors: FormErrors<T>;
   touched: Partial<Record<keyof T, boolean>>;
@@ -25,14 +25,18 @@ interface UseZodFormReturn<T> {
   setValues: (values: Partial<T>) => void;
   setErrors: (errors: FormErrors<T>) => void;
   resetForm: (newValues?: Partial<T>) => void;
-  handleChange: (field: keyof T) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  handleChange: (
+    field: keyof T
+  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
   handleBlur: (field: keyof T) => () => void;
   handleSubmit: (e?: React.FormEvent) => Promise<void>;
   validateField: (field: keyof T) => string | undefined;
   validateForm: () => boolean;
   getFieldProps: (field: keyof T) => {
     value: T[keyof T];
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+    onChange: (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => void;
     onBlur: () => void;
     name: string;
   };
@@ -47,7 +51,7 @@ export function useZodForm<T extends z.ZodRawShape>(
   options: UseZodFormOptions<T>
 ): UseZodFormReturn<z.infer<z.ZodObject<T>>> {
   type FormData = z.infer<z.ZodObject<T>>;
-  
+
   const {
     schema,
     initialValues = {} as Partial<FormData>,
@@ -109,7 +113,7 @@ export function useZodForm<T extends z.ZodRawShape>(
   const setFieldValue = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]) => {
       setValues((prev) => ({ ...prev, [field]: value }));
-      
+
       if (validateOnChange) {
         const error = validateField(field);
         setErrors((prev) => {
@@ -124,25 +128,19 @@ export function useZodForm<T extends z.ZodRawShape>(
     [validateOnChange, validateField]
   );
 
-  const setFieldTouched = useCallback(
-    (field: keyof FormData, isTouched: boolean = true) => {
-      setTouched((prev) => ({ ...prev, [field]: isTouched }));
-    },
-    []
-  );
+  const setFieldTouched = useCallback((field: keyof FormData, isTouched: boolean = true) => {
+    setTouched((prev) => ({ ...prev, [field]: isTouched }));
+  }, []);
 
-  const setFieldError = useCallback(
-    (field: keyof FormData, error: string | undefined) => {
-      setErrors((prev) => {
-        if (error) {
-          return { ...prev, [field]: error };
-        }
-        const { [field]: _, ...rest } = prev;
-        return rest as FormErrors<FormData>;
-      });
-    },
-    []
-  );
+  const setFieldError = useCallback((field: keyof FormData, error: string | undefined) => {
+    setErrors((prev) => {
+      if (error) {
+        return { ...prev, [field]: error };
+      }
+      const { [field]: _, ...rest } = prev;
+      return rest as FormErrors<FormData>;
+    });
+  }, []);
 
   const resetForm = useCallback(
     (newValues?: Partial<FormData>) => {
@@ -154,25 +152,27 @@ export function useZodForm<T extends z.ZodRawShape>(
   );
 
   const handleChange = useCallback(
-    (field: keyof FormData) => (
-      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-    ) => {
-      const { type, value } = e.target;
-      const newValue = type === 'checkbox' 
-        ? (e.target as HTMLInputElement).checked
-        : type === 'number'
-        ? value === '' ? undefined : Number(value)
-        : value;
-      
-      setFieldValue(field, newValue as FormData[typeof field]);
-    },
+    (field: keyof FormData) =>
+      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { type, value } = e.target;
+        const newValue =
+          type === 'checkbox'
+            ? (e.target as HTMLInputElement).checked
+            : type === 'number'
+              ? value === ''
+                ? undefined
+                : Number(value)
+              : value;
+
+        setFieldValue(field, newValue as FormData[typeof field]);
+      },
     [setFieldValue]
   );
 
   const handleBlur = useCallback(
     (field: keyof FormData) => () => {
       setFieldTouched(field);
-      
+
       if (validateOnBlur) {
         const error = validateField(field);
         setFieldError(field, error);
@@ -184,7 +184,7 @@ export function useZodForm<T extends z.ZodRawShape>(
   const handleSubmit = useCallback(
     async (e?: React.FormEvent) => {
       e?.preventDefault();
-      
+
       // Touch all fields
       const allTouched = Object.keys(values).reduce(
         (acc, key) => ({ ...acc, [key]: true }),
@@ -236,7 +236,9 @@ export function useZodForm<T extends z.ZodRawShape>(
     setFieldValue,
     setFieldTouched,
     setFieldError,
-    setValues: ((v: Partial<FormData>) => setValues((prev) => ({ ...prev, ...v }))) as (values: Partial<FormData>) => void,
+    setValues: ((v: Partial<FormData>) => setValues((prev) => ({ ...prev, ...v }))) as (
+      values: Partial<FormData>
+    ) => void,
     setErrors,
     resetForm,
     handleChange,
@@ -250,10 +252,7 @@ export function useZodForm<T extends z.ZodRawShape>(
 }
 
 // Hook simplificado para campos individuais
-export function useZodField<T>(
-  schema: ZodSchema<T>,
-  initialValue?: T
-) {
+export function useZodField<T>(schema: ZodSchema<T>, initialValue?: T) {
   const [value, setValue] = useState<T | undefined>(initialValue);
   const [error, setError] = useState<string | undefined>();
   const [touched, setTouched] = useState(false);
@@ -268,13 +267,16 @@ export function useZodField<T>(
     return false;
   }, [schema, value]);
 
-  const handleChange = useCallback((newValue: T) => {
-    setValue(newValue);
-    if (touched) {
-      const result = schema.safeParse(newValue);
-      setError(result.success ? undefined : result.error.errors[0]?.message);
-    }
-  }, [schema, touched]);
+  const handleChange = useCallback(
+    (newValue: T) => {
+      setValue(newValue);
+      if (touched) {
+        const result = schema.safeParse(newValue);
+        setError(result.success ? undefined : result.error.errors[0]?.message);
+      }
+    },
+    [schema, touched]
+  );
 
   const handleBlur = useCallback(() => {
     setTouched(true);

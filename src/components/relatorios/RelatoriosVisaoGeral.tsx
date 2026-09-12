@@ -1,35 +1,29 @@
-import { Loader2, PieChart as PieChartIcon, TrendingUp, Users, AlertTriangle } from 'lucide-react';
+import { Loader2, PieChart as PieChartIcon, TrendingUp, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ResponsiveContainer,
   ComposedChart,
   BarChart,
   Bar,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   PieChart,
   Pie,
   Cell,
   CartesianGrid,
+  Legend,
+  Line,
 } from 'recharts';
 import { formatCurrency } from '@/lib/formatters';
 import { motion } from 'framer-motion';
-
-const COLORS = [
-  'hsl(var(--primary))',
-  'hsl(var(--secondary))',
-  'hsl(var(--success))',
-  'hsl(var(--accent))',
-  'hsl(var(--warning))',
-  'hsl(var(--destructive))',
-];
+import { ESTILO_TOOLTIP_RELATORIOS, RELATORIOS_CORES } from './relatoriosVisaoGeral.constants';
+import { RelatoriosInadimplenciaCard } from './RelatoriosInadimplenciaCard';
 
 interface RelatoriosVisaoGeralProps {
   fluxoMensal:
-    Array<{ mes: string; receitas: number; despesas: number; saldo: number }> | undefined;
+    | Array<{ mes: string; receitas: number; despesas: number; saldo: number }>
+    | undefined;
   despesasPorCategoria: Array<{ nome: string; valor: number; percentual: number }> | undefined;
   receitasPorCliente: Array<{ cliente: string; valor: number }> | undefined;
   inadimplenciaPorMes: Array<{ mes: string; taxa: number; valor: number }> | undefined;
@@ -45,16 +39,6 @@ export function RelatoriosVisaoGeral({
   loadingFluxo,
   loadingDespesas,
 }: RelatoriosVisaoGeralProps) {
-  const tooltipStyle = {
-    backgroundColor: 'var(--bg-2)',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid var(--line)',
-    borderRadius: '16px',
-    color: 'var(--t0)',
-    fontWeight: 'bold',
-    fontSize: '12px',
-  };
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Fluxo de Caixa Mensal */}
@@ -119,7 +103,7 @@ export function RelatoriosVisaoGeral({
                   />
                   <Tooltip
                     formatter={(v: number) => formatCurrency(v)}
-                    contentStyle={tooltipStyle}
+                    contentStyle={ESTILO_TOOLTIP_RELATORIOS}
                     cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }}
                   />
                   <Legend
@@ -218,7 +202,7 @@ export function RelatoriosVisaoGeral({
                         {(despesasPorCategoria || []).map((_, i) => (
                           <Cell
                             key={`cell-${i}`}
-                            fill={COLORS[i % COLORS.length]}
+                            fill={RELATORIOS_CORES[i % RELATORIOS_CORES.length]}
                             stroke="rgba(255,255,255,0.05)"
                             strokeWidth={2}
                           />
@@ -226,7 +210,7 @@ export function RelatoriosVisaoGeral({
                       </Pie>
                       <Tooltip
                         formatter={(v: number) => formatCurrency(v)}
-                        contentStyle={tooltipStyle}
+                        contentStyle={ESTILO_TOOLTIP_RELATORIOS}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -238,7 +222,9 @@ export function RelatoriosVisaoGeral({
                         <div className="flex items-center gap-2">
                           <div
                             className="h-2 w-2 rounded-full"
-                            style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                            style={{
+                              backgroundColor: RELATORIOS_CORES[i % RELATORIOS_CORES.length],
+                            }}
                           />
                           <span className="truncate max-w-[120px]">{cat.nome}</span>
                         </div>
@@ -250,7 +236,9 @@ export function RelatoriosVisaoGeral({
                           animate={{ width: `${cat.percentual}%` }}
                           transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
                           className="h-full rounded-full"
-                          style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                          style={{
+                            backgroundColor: RELATORIOS_CORES[i % RELATORIOS_CORES.length],
+                          }}
                         />
                       </div>
                     </div>
@@ -316,7 +304,10 @@ export function RelatoriosVisaoGeral({
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={tooltipStyle} />
+                <Tooltip
+                  formatter={(v: number) => formatCurrency(v)}
+                  contentStyle={ESTILO_TOOLTIP_RELATORIOS}
+                />
                 <Bar dataKey="valor" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} barSize={18}>
                   {(receitasPorCliente || []).map((_, i) => (
                     <Cell
@@ -331,105 +322,7 @@ export function RelatoriosVisaoGeral({
         </Card>
       </motion.div>
 
-      {/* Evolução da Inadimplência */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <Card className="border-none bg-background/40 backdrop-blur-xl shadow-2xl rounded-[2.5rem] overflow-hidden">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-warning/10 text-warning">
-                <AlertTriangle className="h-5 w-5" />
-              </div>
-              <div>
-                <CardTitle className="text-xl font-black tracking-tight">
-                  Matriz de Inadimplência
-                </CardTitle>
-                <CardDescription className="font-medium text-xs uppercase tracking-widest opacity-60">
-                  Risco e Exposição de Crédito
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="h-[350px] p-6 pt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart
-                data={inadimplenciaPorMes}
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="rgba(255,255,255,0.05)"
-                />
-                <XAxis
-                  dataKey="mes"
-                  stroke="rgba(255,255,255,0.3)"
-                  fontSize={10}
-                  fontWeight="bold"
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  yAxisId="left"
-                  tickFormatter={(v) => `${v}%`}
-                  stroke="hsl(var(--warning))"
-                  fontSize={10}
-                  fontWeight="black"
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
-                  stroke="hsl(var(--destructive))"
-                  fontSize={10}
-                  fontWeight="black"
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  formatter={(v: number, name: string) =>
-                    name === 'taxa' ? `${v.toFixed(1)}%` : formatCurrency(v)
-                  }
-                  contentStyle={tooltipStyle}
-                />
-                <Legend
-                  iconType="wye"
-                  wrapperStyle={{
-                    paddingTop: '20px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                  }}
-                />
-                <Bar
-                  yAxisId="right"
-                  dataKey="valor"
-                  name="Exposição ($)"
-                  fill="rgba(var(--destructive-rgb), 0.3)"
-                  stroke="hsl(var(--destructive))"
-                  strokeWidth={1}
-                  radius={[4, 4, 0, 0]}
-                  barSize={25}
-                />
-                <Line
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="taxa"
-                  name="Taxa de Risco (%)"
-                  stroke="hsl(var(--warning))"
-                  strokeWidth={4}
-                  dot={{ r: 5, fill: 'hsl(var(--warning))', strokeWidth: 2, stroke: 'var(--bg-1)' }}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </motion.div>
+      <RelatoriosInadimplenciaCard dados={inadimplenciaPorMes} />
     </div>
   );
 }

@@ -1,2 +1,3 @@
-export { ChartContainer, chartColors, getChartColor } from "./ChartContainer";
-export { Sparkline } from "./Sparkline";
+export { ChartContainer } from './ChartContainer';
+export { chartColors, getChartColor } from './chartColors';
+export { Sparkline } from './Sparkline';
