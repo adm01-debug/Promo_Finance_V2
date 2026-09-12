@@ -27,6 +27,7 @@ import { ExpertHistoryPanel } from '@/components/expert/ExpertHistoryPanel';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueuedMessage } from '@/hooks/useQueuedMessage';
 import {
   EXPERT_CHAT_URL,
   filtrarConversasExpert,
@@ -267,6 +268,8 @@ export default function Expert() {
     }
   };
 
+  const enfileirarMensagem = useQueuedMessage(isLoading, sendMessage);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendMessage(input);
@@ -394,7 +397,13 @@ export default function Expert() {
             onSubmit={handleSubmit}
             onShowDocumentUploadChange={setShowDocumentUpload}
             onDocumentAnalysisComplete={(analysis) => {
-              sendMessage(`Análise do documento:\n\n${analysis}`);
+              const mensagem = `Análise do documento:\n\n${analysis}`;
+              if (isLoading) {
+                enfileirarMensagem(mensagem);
+                toast.info('Análise enfileirada para envio');
+              } else {
+                void sendMessage(mensagem);
+              }
               setShowDocumentUpload(false);
             }}
           />

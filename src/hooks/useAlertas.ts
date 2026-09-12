@@ -20,32 +20,31 @@ export interface Alerta {
   created_at: string;
 }
 
+export async function buscarAlertas(): Promise<Alerta[]> {
+  const { data, error } = await supabase
+    .from('alertas')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map((alerta) => ({
+    id: alerta.id,
+    tipo: alerta.tipo,
+    titulo: alerta.titulo,
+    mensagem: alerta.mensagem,
+    prioridade: alerta.prioridade as PrioridadeAlerta,
+    lido: alerta.lido,
+    entidade_tipo: alerta.entidade_tipo,
+    entidade_id: alerta.entidade_id,
+    acao_url: alerta.acao_url,
+    user_id: alerta.user_id,
+    created_at: alerta.created_at,
+  }));
+}
+
 export function useAlertas() {
-  return useQuery({
-    queryKey: ['alertas'],
-    queryFn: async (): Promise<Alerta[]> => {
-      const { data, error } = await supabase
-        .from('alertas')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      return (data || []).map((alerta) => ({
-        id: alerta.id,
-        tipo: alerta.tipo,
-        titulo: alerta.titulo,
-        mensagem: alerta.mensagem,
-        prioridade: alerta.prioridade as PrioridadeAlerta,
-        lido: alerta.lido,
-        entidade_tipo: alerta.entidade_tipo,
-        entidade_id: alerta.entidade_id,
-        acao_url: alerta.acao_url,
-        user_id: alerta.user_id,
-        created_at: alerta.created_at,
-      }));
-    },
-  });
+  return useQuery({ queryKey: ['alertas'], queryFn: buscarAlertas });
 }
 
 export function useAlertasNaoLidos() {

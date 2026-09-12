@@ -79,7 +79,7 @@ export function RelatoriosInadimplenciaCard({ dados }: RelatoriosInadimplenciaCa
               />
               <Tooltip
                 formatter={(value: number, name: string) =>
-                  name === 'taxa' ? `${value.toFixed(1)}%` : formatCurrency(value)
+                  name === 'Taxa de Risco (%)' ? `${value.toFixed(1)}%` : formatCurrency(value)
                 }
                 contentStyle={ESTILO_TOOLTIP_RELATORIOS}
               />

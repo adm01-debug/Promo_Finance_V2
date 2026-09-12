@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, CheckCircle2, XCircle, ShieldAlert } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { CategorizacaoLoteButton } from '@/components/contas-pagar/CategorizacaoIABadge';
 import { Button } from '@/components/ui/button';
 import { ExportMenu } from '@/components/ui/export-menu';
@@ -21,6 +22,7 @@ import { QuickDateFilters } from '@/components/ui/quick-date-filters';
 import { useContasPagarLogic } from '@/hooks/useContasPagarLogic';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { formatCurrency } from '@/lib/formatters';
+import { deveAbrirNovoRegistro } from '@/lib/navigation-intent';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -35,6 +37,28 @@ const itemVariants = {
 export default function ContasPagar() {
   const logic = useContasPagarLogic();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { setEditingConta, setFormOpen } = logic;
+
+  useEffect(() => {
+    if (!deveAbrirNovoRegistro(location.state)) return;
+
+    setEditingConta(null);
+    setFormOpen(true);
+    navigate(
+      { pathname: location.pathname, search: location.search, hash: location.hash },
+      { replace: true, state: null }
+    );
+  }, [
+    location.hash,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+    setEditingConta,
+    setFormOpen,
+  ]);
+
   useHighlightFromUrl('highlight', (logic.sortedContas?.length ?? 0) > 0);
 
   const bulkActions = [

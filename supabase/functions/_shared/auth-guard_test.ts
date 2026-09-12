@@ -1,8 +1,27 @@
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
 import { exigirPapel } from './auth-guard.ts';
 
+const CHAVES_DE_AMBIENTE = [
+  'SUPABASE_URL',
+  'SUPABASE_ANON_KEY',
+  'SUPABASE_SERVICE_ROLE_KEY',
+] as const;
+
+function restaurarAmbiente(original: Map<string, string | undefined>) {
+  for (const chave of CHAVES_DE_AMBIENTE) {
+    const valor = original.get(chave);
+    if (valor === undefined) Deno.env.delete(chave);
+    else Deno.env.set(chave, valor);
+  }
+}
+
+function ambienteOriginal() {
+  return new Map(CHAVES_DE_AMBIENTE.map((chave) => [chave, Deno.env.get(chave)]));
+}
+
 Deno.test('exigirPapel consulta somente papéis ativos', async () => {
   const originalFetch = globalThis.fetch;
+  const originalEnv = ambienteOriginal();
   const urls: string[] = [];
 
   Deno.env.set('SUPABASE_URL', 'https://supabase.test');
@@ -39,11 +58,13 @@ Deno.test('exigirPapel consulta somente papéis ativos', async () => {
     assertEquals(new URL(rolesRequest).searchParams.get('select'), 'role,expires_at');
   } finally {
     globalThis.fetch = originalFetch;
+    restaurarAmbiente(originalEnv);
   }
 });
 
 Deno.test('exigirPapel rejeita papel ativo já expirado', async () => {
   const originalFetch = globalThis.fetch;
+  const originalEnv = ambienteOriginal();
   Deno.env.set('SUPABASE_URL', 'https://supabase.test');
   Deno.env.set('SUPABASE_ANON_KEY', 'anon-key-fixture');
   Deno.env.set('SUPABASE_SERVICE_ROLE_KEY', 'service-role-fixture');
@@ -72,5 +93,6 @@ Deno.test('exigirPapel rejeita papel ativo já expirado', async () => {
     if (!result.ok) assertEquals(result.resposta.status, 403);
   } finally {
     globalThis.fetch = originalFetch;
+    restaurarAmbiente(originalEnv);
   }
 });

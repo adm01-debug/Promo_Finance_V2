@@ -10,7 +10,6 @@ import { makeWebhookStream, type WebhookEvent } from './fixtures/webhooks';
 import { makeBoletos, makeReguaEtapas } from './fixtures/cobranca';
 import { makeAnomalias, makeAcoes } from './fixtures/anomalias';
 import { makeNfeStream, type NfeDfeEvento } from './fixtures/nfe';
-import { makeEntregasStream, type EntregaEvento } from './fixtures/entregas';
 import { checkAll } from './invariants';
 import type { ScenarioResult, ScenarioSpec, ScenarioState } from './types';
 
@@ -260,7 +259,30 @@ function runNfe(spec: ScenarioSpec, state: ScenarioState): number {
   return mutations;
 }
 
-// Entregas usam uma simulação in-memory com invariantes de rastreabilidade.
+// Cenário legado de entregas, removido da matriz executável.
+
+type EntregaEvento = {
+  eventId: string;
+  orderId: string;
+  tipo:
+    | 'ORDER_CREATED'
+    | 'DRIVER_ASSIGNED'
+    | 'PICKED_UP'
+    | 'IN_PROGRESS'
+    | 'DELIVERED'
+    | 'CANCELED'
+    | 'FAILED'
+    | 'GPS_PING';
+  ts: number;
+  driverId?: string;
+  hasPodPhoto?: boolean;
+  cancelReason?: string;
+};
+
+const makeEntregasStream = (
+  _rng: ReturnType<typeof createRng>,
+  _size: number
+): EntregaEvento[] => [];
 
 const STATUS_RANK: Record<string, number> = {
   pending: 0,
@@ -293,7 +315,7 @@ function tipoToStatus(t: EntregaEvento['tipo']): string | null {
   }
 }
 
-function runEntregas(spec: ScenarioSpec, state: ScenarioState): number {
+function _runEntregas(spec: ScenarioSpec, state: ScenarioState): number {
   const rng = createRng(spec.seed);
   let stream: EntregaEvento[] = makeEntregasStream(rng, spec.size);
 
@@ -424,9 +446,6 @@ export function runScenario(spec: ScenarioSpec): ScenarioResult {
       break;
     case 'nfe':
       mutations = runNfe(spec, state);
-      break;
-    case 'entregas':
-      mutations = runEntregas(spec, state);
       break;
   }
 

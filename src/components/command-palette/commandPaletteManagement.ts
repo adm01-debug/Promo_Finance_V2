@@ -17,6 +17,7 @@ import {
   Users,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { navegarParaNovoRegistro } from '@/lib/navigation-intent';
 import type { PaletteCommandGroup, PaletteCommandItem } from './commandPalette.types';
 
 type SetTheme = (theme: 'light' | 'dark') => void;
@@ -104,11 +105,7 @@ export function buildManagementCommandGroups(
           title: 'Nova Conta a Receber',
           icon: Plus,
           action: () => {
-            navigate('/contas-receber');
-            setTimeout(
-              () => document.querySelector<HTMLButtonElement>('[data-add-new]')?.click(),
-              100
-            );
+            navigate('/contas-receber', { state: navegarParaNovoRegistro() });
           },
           keywords: ['nova', 'receita', 'criar'],
           shortcut: ['⌘', '⇧', 'R'],
@@ -118,11 +115,7 @@ export function buildManagementCommandGroups(
           title: 'Nova Conta a Pagar',
           icon: Plus,
           action: () => {
-            navigate('/contas-pagar');
-            setTimeout(
-              () => document.querySelector<HTMLButtonElement>('[data-add-new]')?.click(),
-              100
-            );
+            navigate('/contas-pagar', { state: navegarParaNovoRegistro() });
           },
           keywords: ['nova', 'despesa', 'criar'],
           shortcut: ['⌘', '⇧', 'P'],
@@ -145,7 +138,7 @@ export function buildManagementCommandGroups(
           icon: RefreshCw,
           action: () => {
             window.dispatchEvent(new CustomEvent('refresh-data'));
-            toast.success('Dados atualizados!');
+            toast.success('Atualização solicitada');
           },
           keywords: ['atualizar', 'refresh', 'sync'],
           shortcut: ['⌘', '⇧', 'R'],

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   INITIAL_FILTERS,
   type ConciliacaoFilterState,
@@ -42,12 +42,18 @@ export function useFiltrosConciliacaoPersistidos() {
 
 export function useContaBancariaSelecionada(currentBankAccountId: string | null | undefined) {
   const [selectedBanco, setSelectedBanco] = useState(currentBankAccountId || '');
+  const bancoGlobalAnterior = useRef(currentBankAccountId);
 
   useEffect(() => {
-    if (currentBankAccountId && selectedBanco !== currentBankAccountId) {
-      setSelectedBanco(currentBankAccountId);
-    }
-  }, [currentBankAccountId, selectedBanco]);
+    const bancoAnterior = bancoGlobalAnterior.current;
+    bancoGlobalAnterior.current = currentBankAccountId;
+
+    // `undefined` significa que o filtro global ainda não foi carregado. Já
+    // `null` é uma remoção explícita e deve limpar a seleção local anterior.
+    if (currentBankAccountId === undefined || bancoAnterior === currentBankAccountId) return;
+
+    setSelectedBanco(currentBankAccountId ?? '');
+  }, [currentBankAccountId]);
 
   return [selectedBanco, setSelectedBanco] as const;
 }
@@ -56,14 +62,22 @@ export function useTransacoesBancariasSelecionadas(selectedBanco: string) {
   const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
 
   useEffect(() => {
+    let consultaAtiva = true;
+    setTransacoes([]);
+
     if (!selectedBanco) {
-      setTransacoes([]);
-      return;
+      return () => {
+        consultaAtiva = false;
+      };
     }
 
     carregarTransacoesBanco(selectedBanco).then((rows) => {
-      if (rows) setTransacoes(rows);
+      if (consultaAtiva && rows) setTransacoes(rows);
     });
+
+    return () => {
+      consultaAtiva = false;
+    };
   }, [selectedBanco]);
 
   return [transacoes, setTransacoes] as const;

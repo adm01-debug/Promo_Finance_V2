@@ -37,7 +37,6 @@ import {
   Target,
   Brain,
   BrainCircuit,
-  ShieldAlert,
   MessageSquare,
   Tag,
   Code2,
@@ -106,12 +105,6 @@ const navGroups: NavGroup[] = [
       { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
-      {
-        label: 'Auditoria de Duplicidade',
-        icon: ShieldAlert,
-        href: '/contas-pagar/bloqueios',
-        highlight: true,
-      },
       { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
       { label: 'Orçamentos', icon: Scale, href: '/orcamentos', highlight: true },
       {

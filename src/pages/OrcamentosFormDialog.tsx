@@ -47,12 +47,12 @@ export function OrcamentosFormDialog({
         </DialogHeader>
         <form onSubmit={form.handleSubmit} className="space-y-6 py-4">
           <div className="space-y-2">
-            <Label>Categoria</Label>
+            <Label htmlFor="orcamento-categoria">Categoria</Label>
             <Select
               value={form.values.category}
               onValueChange={(value) => form.setFieldValue('category', value)}
             >
-              <SelectTrigger className="bg-card/5 border-border">
+              <SelectTrigger id="orcamento-categoria" className="bg-card/5 border-border">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border text-foreground">
@@ -66,8 +66,9 @@ export function OrcamentosFormDialog({
             {form.errors.category && <p className="text-xs text-red-500">{form.errors.category}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Valor Orçado (R$)</Label>
+            <Label htmlFor="orcamento-valor">Valor Orçado (R$)</Label>
             <Input
+              id="orcamento-valor"
               type="number"
               step="0.01"
               {...form.getFieldProps('budgeted_amount')}
@@ -79,8 +80,9 @@ export function OrcamentosFormDialog({
             )}
           </div>
           <div className="space-y-2">
-            <Label>Período</Label>
+            <Label htmlFor="orcamento-periodo">Período</Label>
             <Input
+              id="orcamento-periodo"
               type="month"
               {...form.getFieldProps('period')}
               className="bg-card/5 border-border"

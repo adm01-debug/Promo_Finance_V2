@@ -1,6 +1,5 @@
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { formatarTimestampFila } from './asaasQueueHistory.helpers';
 
 interface QueueHistoryDialogProps {
   isOpen: boolean;
@@ -21,7 +20,7 @@ export function QueueHistoryDialog({ isOpen, onClose, logs }: QueueHistoryDialog
               <div className="flex justify-between font-bold mb-1">
                 <span>Tentativa #{String(log.attempt)}</span>
                 <span className="text-muted-foreground">
-                  {format(parseISO(String(log.timestamp)), 'dd/MM HH:mm', { locale: ptBR })}
+                  {formatarTimestampFila(log.timestamp)}
                 </span>
               </div>
               <p className="text-destructive font-mono">{String(log.message)}</p>

@@ -159,12 +159,13 @@ describe('useConciliacaoPage — importação de extrato', () => {
   });
 
   it('continua apresentando o relatório se a auditoria do arquivo não puder ser persistida', async () => {
-    mocks.supabase.insertResp.extratos_bancarios_importados = () => {
-      throw new Error('unique violation');
-    };
+    vi.mocked(mocks.mutations.salvarExtratoBanco.mutateAsync).mockRejectedValue(
+      new Error('unique violation')
+    );
     const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
     act(() => result.current.setSelectedBanco('bank-1'));
     await act(async () => result.current.handleImportSuccess(makeExtrato()));
+    expect(mocks.mutations.salvarExtratoBanco.mutateAsync).toHaveBeenCalledOnce();
     expect(result.current.importReport).not.toBeNull();
     expect(result.current.showReportDialog).toBe(true);
   });

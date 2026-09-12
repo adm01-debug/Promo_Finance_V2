@@ -1,6 +1,7 @@
 import { useCallback, useEffect, type ComponentType } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { buscarAlertas } from '@/hooks/useAlertas';
 
 // Define a type for lazy-loaded React components
 interface LazyModule {
@@ -44,16 +45,14 @@ const relatedRoutes: Record<string, string[]> = {
   '/bi': ['/', '/relatorios', '/fluxo-caixa'],
 };
 
-// Query keys to prefetch for each route
-const routeQueryKeys: Record<string, string[][]> = {
-  '/': [['dashboard-data'], ['alertas-nao-lidos-count']],
-  '/contas-pagar': [['contas-pagar']],
-  '/contas-receber': [['contas-receber']],
-  '/clientes': [['clientes']],
-  '/fornecedores': [['fornecedores']],
-  '/alertas': [['alertas']],
-  '/aprovacoes': [['aprovacoes-pendentes']],
-  '/fluxo-caixa': [['fluxo-caixa']],
+// Só registramos carregadores cujo contrato de chave e escopo é estável. Consultas
+// financeiras dependentes de empresa, conta, paginação e filtros não podem ser
+// aquecidas com uma chave genérica, pois isso misturaria caches de contextos distintos.
+const routeDataPrefetchers: Record<
+  string,
+  Array<{ queryKey: string[]; queryFn: () => Promise<unknown> }>
+> = {
+  '/alertas': [{ queryKey: ['alertas'], queryFn: buscarAlertas }],
 };
 
 const prefetchedRoutes = new Set<string>();
@@ -93,10 +92,10 @@ export function usePrefetchRoutes() {
 
   const prefetchData = useCallback(
     async (route: string) => {
-      const queryKeys = routeQueryKeys[route];
-      if (!queryKeys) return;
+      const prefetchers = routeDataPrefetchers[route];
+      if (!prefetchers) return;
 
-      for (const queryKey of queryKeys) {
+      for (const { queryKey, queryFn } of prefetchers) {
         const keyString = JSON.stringify(queryKey);
         if (prefetchedQueries.has(keyString)) continue;
 
@@ -112,25 +111,22 @@ export function usePrefetchRoutes() {
             }
           }
 
-          const queryDefaults = queryClient.getQueryDefaults(queryKey);
-          if (!queryDefaults.queryFn) continue;
+          const prefetch = () =>
+            queryClient
+              .prefetchQuery({
+                queryKey,
+                queryFn,
+                staleTime: 2 * 60 * 1000,
+              })
+              .then(() => {
+                prefetchedQueries.add(keyString);
+              })
+              .catch(() => {});
 
           if ('requestIdleCallback' in window) {
-            window.requestIdleCallback(
-              () => {
-                queryClient
-                  .prefetchQuery({
-                    queryKey,
-                    queryFn: queryDefaults.queryFn,
-                    staleTime: 2 * 60 * 1000,
-                  })
-                  .then(() => {
-                    prefetchedQueries.add(keyString);
-                  })
-                  .catch(() => {});
-              },
-              { timeout: 3000 }
-            );
+            window.requestIdleCallback(prefetch, { timeout: 3000 });
+          } else {
+            setTimeout(prefetch, 0);
           }
         } catch {
           // Silently fail
