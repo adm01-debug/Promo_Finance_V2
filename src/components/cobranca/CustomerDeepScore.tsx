@@ -10,18 +10,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 interface CustomerDeepScoreProps {
   score: number;
-  serasaScore?: number;
-  boaVistaScore?: number;
-  riscoComportamental?: string;
+  serasaScore?: number | null;
+  boaVistaScore?: number | null;
+  riscoComportamental?: string | null;
   lastUpdate?: string;
+  variacaoMensal?: number | null;
 }
 
 export function CustomerDeepScore({ 
   score, 
-  serasaScore = 0, 
-  boaVistaScore = 0, 
-  riscoComportamental = "Neutro",
-  lastUpdate
+  serasaScore,
+  boaVistaScore,
+  riscoComportamental,
+  lastUpdate,
+  variacaoMensal,
 }: CustomerDeepScoreProps) {
   
   const getScoreColor = (val: number) => {
@@ -41,6 +43,9 @@ export function CustomerDeepScore({
     if (val >= 500) return "bg-warning";
     return "bg-destructive";
   };
+
+  const scoreDisponivel = (valor: number | null | undefined): valor is number =>
+    typeof valor === "number" && Number.isFinite(valor) && valor >= 0 && valor <= 1000;
 
   return (
     <Card className="overflow-hidden border-primary/20">
@@ -87,10 +92,14 @@ export function CustomerDeepScore({
                 <span className="text-[10px] font-bold text-muted-foreground uppercase">Global</span>
               </div>
           </div>
-          <div className="flex items-center justify-center gap-2 text-xs font-semibold text-muted-foreground">
-            <TrendingUp className="h-3 w-3 text-success" />
-            <span>+5 pts este mês</span>
-          </div>
+          {typeof variacaoMensal === 'number' && Number.isFinite(variacaoMensal) ? (
+            <div className="flex items-center justify-center gap-2 text-xs font-semibold text-muted-foreground">
+              <TrendingUp className="h-3 w-3 text-success" />
+              <span>{variacaoMensal >= 0 ? '+' : ''}{variacaoMensal} pts este mês</span>
+            </div>
+          ) : (
+            <span className="text-xs font-semibold text-muted-foreground">Variação mensal não disponível</span>
+          )}
         </div>
 
         {/* Scores Externos */}
@@ -101,10 +110,11 @@ export function CustomerDeepScore({
               <ExternalLink className="h-3 w-3 text-muted-foreground" />
             </div>
             <div className="flex items-end justify-between">
-              <span className="text-xl font-black">{serasaScore}</span>
-              <span className="text-[10px] text-muted-foreground mb-1">/ 1000</span>
+              {scoreDisponivel(serasaScore) ? (
+                <><span className="text-xl font-black">{serasaScore}</span><span className="text-[10px] text-muted-foreground mb-1">/ 1000</span></>
+              ) : <span className="text-xs font-medium text-muted-foreground">Não consultado</span>}
             </div>
-            <Progress value={serasaScore / 10} className={`h-1.5 ${getExternalScoreColor(serasaScore)}`} />
+            {scoreDisponivel(serasaScore) ? <Progress value={serasaScore / 10} className={`h-1.5 ${getExternalScoreColor(serasaScore)}`} /> : <p className="text-[10px] text-muted-foreground">Integração não configurada</p>}
           </div>
 
           <div className="p-3 rounded-xl border bg-muted/30 space-y-2">
@@ -113,10 +123,11 @@ export function CustomerDeepScore({
               <ExternalLink className="h-3 w-3 text-muted-foreground" />
             </div>
             <div className="flex items-end justify-between">
-              <span className="text-xl font-black">{boaVistaScore}</span>
-              <span className="text-[10px] text-muted-foreground mb-1">/ 1000</span>
+              {scoreDisponivel(boaVistaScore) ? (
+                <><span className="text-xl font-black">{boaVistaScore}</span><span className="text-[10px] text-muted-foreground mb-1">/ 1000</span></>
+              ) : <span className="text-xs font-medium text-muted-foreground">Não consultado</span>}
             </div>
-            <Progress value={boaVistaScore / 10} className={`h-1.5 ${getExternalScoreColor(boaVistaScore)}`} />
+            {scoreDisponivel(boaVistaScore) ? <Progress value={boaVistaScore / 10} className={`h-1.5 ${getExternalScoreColor(boaVistaScore)}`} /> : <p className="text-[10px] text-muted-foreground">Integração não configurada</p>}
           </div>
         </div>
 
@@ -127,12 +138,12 @@ export function CustomerDeepScore({
             Behavioral Insight (IA)
           </div>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            {riscoComportamental || "O cliente demonstra um padrão de pagamento estável, com tendência a liquidar faturas entre o 2º e 4º dia após o vencimento."}
+            {riscoComportamental || "Ainda não há análise comportamental disponível para este cliente."}
           </p>
           <div className="flex items-center justify-between pt-1">
              <div className="flex items-center gap-1">
                 <History className="h-3 w-3 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Última atualização: {lastUpdate || "Hoje"}</span>
+                <span className="text-[10px] text-muted-foreground">Última atualização: {lastUpdate || "Sem consulta registrada"}</span>
              </div>
              <TooltipProvider>
                 <Tooltip>
@@ -140,7 +151,7 @@ export function CustomerDeepScore({
                     <Info className="h-3 w-3 text-primary/50" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="text-[10px] w-48">Análise baseada em 24 meses de histórico interno + bureaus de crédito externos.</p>
+                    <p className="text-[10px] w-48">Bureaus externos só aparecem após uma consulta configurada e registrada.</p>
                   </TooltipContent>
                 </Tooltip>
              </TooltipProvider>
