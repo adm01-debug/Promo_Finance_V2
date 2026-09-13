@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Antecipa os dois gates que mais reprovam PR no CI, mas só os baratos:
+# type-check e os testes afetados pelo diff contra origin/main. A suíte
+# completa, o build e os E2E continuam sendo responsabilidade do CI.
+#
+# Assim como o pre-commit, invocamos os binários direto via `node` em vez de
+# `npx`/`bun`: o PATH do Git não é o do shell interativo em vários ambientes.
+#
+# Para pular numa emergência: git push --no-verify
+
+echo "[pre-push] type-check..."
+node node_modules/typescript/bin/tsc --noEmit || {
+  echo "[pre-push] type-check falhou. Use --no-verify para forçar."
+  exit 1
+}
+
+echo "[pre-push] testes afetados pelo diff contra origin/main..."
+node node_modules/vitest/vitest.mjs run --changed origin/main --passWithNoTests || {
+  echo "[pre-push] testes falharam. Use --no-verify para forçar."
+  exit 1
+}

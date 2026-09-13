@@ -4,11 +4,12 @@
 // persiste os metadados criptografados via RPC certificado_upsert.
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { corsHeaders } from "../_shared/cors.ts";
+import { corsHeaders } from '../_shared/cors.ts';
 import forge from 'npm:node-forge@1.3.1';
 import { z } from 'npm:zod@3.23.8';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -94,6 +95,13 @@ Deno.serve(async (req) => {
     }
     const { empresa_id, pfx_base64, password, ambiente, uf } = parsed.data;
 
+    // `has_role('admin')` acima é GLOBAL: prova que o usuário é admin em alguma
+    // empresa, não nesta. Sem o vínculo explícito, o admin da empresa A poderia
+    // sobrescrever o certificado A1 e a senha da empresa B — a credencial que
+    // assina NF-e perante a SEFAZ.
+    const escopo = await exigirVinculoEmpresa(user.id, empresa_id);
+    if (!escopo.ok) return escopo.resposta;
+
     // Decodifica o .pfx
     let pfxBytes: Uint8Array;
     try {
@@ -127,12 +135,17 @@ Deno.serve(async (req) => {
       if (cnpjMatch) cnpj = cnpjMatch[1];
       if (!cnpj) {
         // procurar OID 2.16.76.1.3.3 nas extensões
-        const altExt = cert.getExtension('subjectAltName') as forge.pki.SubjectAltNameExtension | null;
+        const altExt = cert.getExtension(
+          'subjectAltName'
+        ) as forge.pki.SubjectAltNameExtension | null;
         if (altExt?.altNames) {
           for (const alt of altExt.altNames) {
             const v = (alt.value ?? '') as string;
             const m = v.match(/(\d{14})/);
-            if (m) { cnpj = m[1]; break; }
+            if (m) {
+              cnpj = m[1];
+              break;
+            }
           }
         }
       }
@@ -143,10 +156,10 @@ Deno.serve(async (req) => {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       log('parse_error', msg);
-      return new Response(
-        JSON.stringify({ error: 'pfx_parse_failed', details: msg }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return new Response(JSON.stringify({ error: 'pfx_parse_failed', details: msg }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     if (new Date(validoAte!) < new Date()) {
@@ -166,10 +179,13 @@ Deno.serve(async (req) => {
       });
     if (upErr) {
       log('storage_error', upErr.message);
-      return new Response(JSON.stringify({ error: 'storage_upload_failed', details: upErr.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'storage_upload_failed', details: upErr.message }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Persiste via RPC (criptografa a senha com pgp_sym_encrypt)
@@ -199,7 +215,7 @@ Deno.serve(async (req) => {
       .from('sefaz_dfe_cursor')
       .upsert(
         { cnpj, ambiente, ultimo_nsu: 0, max_nsu: 0 },
-        { onConflict: 'cnpj,ambiente', ignoreDuplicates: true },
+        { onConflict: 'cnpj,ambiente', ignoreDuplicates: true }
       );
 
     log('success', { cnpj, ambiente, duration_ms: Date.now() - t0 });
@@ -214,7 +230,7 @@ Deno.serve(async (req) => {
         valido_ate: validoAte,
         ambiente,
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

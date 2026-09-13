@@ -1,0 +1,351 @@
+# Plano de Melhorias e Correções — 50 Etapas
+
+> **Data:** 2026-09-13
+> **Baseline:** `56411654` (main, sincronizado com `origin/main`)
+> **Natureza:** plano derivado de auditoria com evidência verificada — cada etapa cita arquivo e linha.
+
+---
+
+## Sumário executivo
+
+O projeto passa em todos os gates superficiais: **2736/2736 testes**, **0 erros TypeScript**, **0 warnings ESLint**, **0 vulnerabilidades de dependência**, build em 4,46s. Essa saúde aparente esconde três classes de problema que os gates atuais são estruturalmente incapazes de detectar:
+
+1. **Isolamento multi-empresa quebrado em pontos específicos** — inclusive uma edge function que devolve os dados financeiros de _todas_ as empresas a qualquer usuário autenticado.
+2. **Escritas silenciosas** — 45 operações de escrita cujo erro nunca é inspecionado, atrás de toasts de sucesso.
+3. **Gates de CI que não exercem o que afirmam exercer** — 20 de 26 specs E2E nunca executam, e o piso de cobertura está calibrado 10× abaixo da realidade.
+
+O que **já está bom e não deve consumir esforço**: `_shared/auth-guard.ts` (valida JWT contra o Auth service, falha fechado, comparação timing-safe), o gate de contrato que obriga validação Zod, os 51 `verify_jwt=false` (todos legitimamente protegidos por segredo compartilhado), a higiene de `.env`, e a limpeza de escape hatches de tipo (apenas 4 `as any` em produção).
+
+### Distribuição das 50 etapas
+
+| Bloco | Tema                                       | Etapas | Prioridade |
+| ----- | ------------------------------------------ | ------ | ---------- |
+| A     | Segurança crítica — vazamento cross-tenant | 1–9    | **P0**     |
+| B     | Prevenção sistêmica do IDOR                | 10–13  | **P0**     |
+| C     | Integridade de escrita                     | 14–21  | **P1**     |
+| D     | Isolamento multi-empresa no cliente        | 22–28  | **P1**     |
+| E     | Gates de CI que não protegem               | 29–38  | **P1**     |
+| F     | Cobertura de testes                        | 39–44  | P2         |
+| G     | Higiene de repositório e documentação      | 45–50  | P3         |
+
+---
+
+## Bloco A — Segurança crítica (P0)
+
+> **Causa raiz comum:** `user_roles` não possui coluna `empresa_id` (`supabase/migrations/20251214170739_*.sql:41-48`) e `has_role()` filtra apenas `user_id AND role` (`20260518164611_*.sql:10-11`). Portanto **`admin` é global, não por empresa**. Toda checagem que usa apenas `has_role()` sobre um `empresa_id` vindo do corpo da requisição é um IDOR. `user_empresas` é o único vínculo real de tenant.
+
+### Etapa 1 — Rotacionar a `service_role` key exposta no histórico
+
+**Severidade:** CRÍTICA · **Esforço:** 1h
+Uma JWT com `"role":"service_role"` e validade até **2036-03-15** foi commitada em `compare-schemas/index.ts:20` (introduzida em `d5d1229b`, removida em `dfb8b4c5`). O arquivo está limpo hoje, mas **remoção do código não é revogação** — a chave segue válida e recuperável por qualquer pessoa com acesso ao histórico do repositório.
+**Ação:** rotacionar a chave no dashboard Supabase, atualizar os secrets do GitHub Actions e do Lovable, e invalidar a antiga.
+**Aceite:** a JWT antiga retorna 401 contra a API.
+
+### Etapa 2 — Confirmar a rotação das credenciais do `migrate-helper`
+
+**Severidade:** CRÍTICA · **Esforço:** 30min
+O `migrate-helper` (removido em `5e97d6be`) expunha um endpoint `action=credentials` que devolvia `SUPABASE_SERVICE_ROLE_KEY` e `SUPABASE_DB_URL` em texto puro, com `verify_jwt=false`, CORS `*` e um `ACCESS_KEY` hardcoded como única barreira. `docs/execucao-cline/baseline-lote-a.md:51` prescreve a rotação — **é preciso confirmar que ocorreu**, não presumir.
+**Aceite:** registro datado da rotação no runbook de segurança.
+
+### Etapa 3 — Corrigir `analise-preditiva` (vazamento cross-tenant ativo)
+
+**Severidade:** CRÍTICA · **Esforço:** 2h
+`supabase/functions/analise-preditiva/index.ts` — 268 linhas, **zero guards**. A linha 3 importa `OptionalEmpresaIdSchema` e `validatePayload` e **nunca os invoca**; o filtro de tenant foi planejado e nunca conectado. A linha 19 monta um cliente service-role (que ignora RLS) e as linhas 27–30 executam `SELECT *` em `contas_receber`, `contas_pagar`, `clientes` e `transacoes_bancarias` **sem qualquer filtro de `empresa_id`**.
+Como `verify_jwt = true` (`supabase/config.toml:3-4`) apenas prova que existe _algum_ JWT válido, **qualquer usuário de qualquer empresa** obtém o contas a receber, contas a pagar, carteira de clientes e extrato bancário de **todas as empresas** — resumidos por LLM. Alcançável a partir de `src/components/dashboard/PrevisaoIA.tsx:50` sem argumentos.
+**Ação:** aplicar `exigirUsuario`, resolver a empresa via `user_empresas` e aplicar `.eq('empresa_id', …)` nas quatro consultas.
+**Aceite:** teste que autentica como usuário da empresa A e confirma ausência de qualquer registro da empresa B na resposta.
+
+### Etapa 4 — Corrigir `nfe-upload-certificado` (sequestro de certificado digital)
+
+**Severidade:** CRÍTICA · **Esforço:** 2h
+`supabase/functions/nfe-upload-certificado/index.ts:79-95,160` valida apenas `has_role(user,'admin')` — que é global. O `empresa_id` vem direto do corpo (L95) para o caminho de storage (L160) e para `p_empresa_id` (L177). Permite que o admin da empresa A **substitua o certificado A1 e-CNPJ e a senha da empresa B** — a credencial que assina notas fiscais perante a SEFAZ.
+**Ação:** validar o vínculo `user_empresas` antes de aceitar `empresa_id`, seguindo `convidar-contador/index.ts:92-101`.
+
+### Etapa 5 — Corrigir `executar-fechamento-tributario`
+
+**Severidade:** CRÍTICA · **Esforço:** 2h
+`index.ts:66-77` — mesma raiz: `has_role()` global para `admin`/`financeiro`, sem vincular `body.empresa_id` a `user_empresas`, seguido de leituras e upserts com service-role em L96, 111, 129, 161, 175, 203, 234, 246. Permite ler e **escrever** o fechamento tributário de outra empresa.
+
+### Etapa 6 — Corrigir `executar-relatorios` (guard condicional)
+
+**Severidade:** ALTA · **Esforço:** 1h
+`index.ts:65` — a validação de vínculo só roda `if (relatorioId && guard.dados.origem === 'usuario')`. Um usuário autenticado que envie corpo vazio (`relatorio_id` nulo) **pula o guard inteiro** e força a execução do lote global de relatórios agendados, atravessando todos os tenants.
+**Ação:** exigir origem interna quando `relatorioId` for ausente.
+
+### Etapa 7 — Corrigir `enviar-digest-conformidade`
+
+**Severidade:** MÉDIA · **Esforço:** 1h
+`index.ts:103,127` — `has_role('admin')` global com filtro de `empresaId` opcional: o admin de um tenant recebe no digest os alertas de conformidade de todos os demais.
+
+### Etapa 8 — Corrigir `executar-analise-preditiva`
+
+**Severidade:** MÉDIA · **Esforço:** 1h
+`index.ts:37-39` — mesma agregação sem filtro da Etapa 3, porém corretamente restrita a cron (`exigirChamadaInterna`, L16). Não é explorável externamente, mas **mistura dados de todos os tenants dentro de um resultado por-tenant**, corrompendo a análise.
+
+### Etapa 9 — Criar o helper canônico `exigirVinculoEmpresa()`
+
+**Severidade:** ALTA · **Esforço:** 4h
+As etapas 3–8 são a mesma falha seis vezes. Extrair um helper único em `_shared/` que receba `empresa_id` do corpo e o usuário autenticado, e rejeite quando não houver vínculo em `user_empresas`. **Padrão de referência a copiar:** `decidir-regime/index.ts:150-161`, que sonda `empresas` pelo cliente RLS do usuário _antes_ de recorrer ao service-role.
+**Aceite:** as seis funções passam a usar o helper; nenhuma repete a lógica.
+
+---
+
+## Bloco B — Prevenção sistêmica (P0)
+
+### Etapa 10 — Teste de contrato contra IDOR de tenant
+
+**Esforço:** 6h
+O repositório já possui a máquina certa: `_shared/contract-coverage_test.ts` quebra o build se uma função que chama `req.json()` não usar `validatePayload`. Estender o mesmo mecanismo: **toda função que lê `empresa_id` do corpo deve invocar `exigirVinculoEmpresa()`**.
+**Aceite:** reintroduzir a falha da Etapa 3 faz o CI falhar.
+
+### Etapa 11 — Decidir o modelo de papéis por empresa
+
+**Esforço:** 8h (decisão + ADR)
+`user_roles` ser tenant-agnóstico é a raiz das etapas 4, 5 e 7. Duas saídas: **(a)** adicionar `empresa_id` a `user_roles` e tornar `has_role()` consciente de empresa, ou **(b)** declarar `has_role()` inadequado para escopo de tenant e proibi-lo por lint em contextos multi-empresa. Registrar em ADR — é decisão arquitetural, não correção pontual.
+
+### Etapa 12 — Adicionar varredura de segredos ao CI e ao pre-commit
+
+**Esforço:** 3h
+Não existe gitleaks configurado — apenas uma anotação órfã `// gitleaks:allow` em `vitest.config.ts:33`. **Nada detectou as etapas 1 e 2.**
+**Aceite:** gitleaks roda no CI e no hook pre-commit, com baseline dos achados históricos.
+
+### Etapa 13 — Migrar anon keys hardcoded para o Vault
+
+**Esforço:** 3h
+Chaves anon aparecem embutidas em 4 migrations versionadas (ex.: `20260905130000_fix_notify_performance_alert_destino.sql:23`), padrão que continua em `notify_performance_alert_trigger`.
+
+---
+
+## Bloco C — Integridade de escrita (P1)
+
+> **Padrão sistemático:** o primeiro passo da operação é verificado (`if (error) throw`), os passos seguintes são fire-and-forget, e o toast de sucesso dispara de qualquer forma. Resultado: **estado parcial persistido sob confirmação de êxito**. São 45 escritas nessa condição. Este é exatamente o formato do incidente "PGRST204 silencioso" já registrado no repositório.
+
+### Etapa 14 — Criar o wrapper `mustSucceed()`
+
+**Esforço:** 2h
+Helper que recebe o retorno `{ data, error }` do Supabase, lança em caso de erro e preserva o tipo de `data`.
+
+### Etapa 15 — Regra ESLint `no-floating-supabase-write`
+
+**Esforço:** 4h
+Proibir `await supabase…insert|update|delete|upsert|rpc` cujo resultado não seja desestruturado. Sem isso, as correções 16–20 regridem.
+
+### Etapa 16 — Corrigir aprovação de pagamento
+
+**Severidade:** ALTA · **Esforço:** 2h
+`src/hooks/expert-actions/financial-actions.ts:81-84` — atualiza `solicitacoes_aprovacao` (verificado), depois `contas_pagar.update({aprovado_por})` **sem verificação**, e então `toast.success('Pagamento aprovado com sucesso!')`. Há um `TODO(2026-08-14)` na L82 registrando que uma coluna foi removida dessa mesma tabela — precisamente a forma do PGRST204. **Um pagamento pode ser reportado como aprovado sem que a aprovação seja gravada.**
+
+### Etapa 17 — Corrigir conciliação bancária
+
+**Severidade:** ALTA · **Esforço:** 2h
+`src/hooks/useConciliacao.ts:62-64` (`transacoes_bancarias` → `status:'confirmado'`) e `:90-92` (`contas_receber.transacao_conciliada_id`). A conciliação pode reportar sucesso com o vínculo nunca gravado.
+
+### Etapa 18 — Corrigir retenções na fonte / DARF
+
+**Severidade:** ALTA · **Esforço:** 2h
+`src/hooks/useRetencoesFonte.ts:220-223` (`darf_gerado: true`) e `:255` (`status:'recolhido'`). DARF gerado e retenções nunca marcadas — divergência fiscal.
+
+### Etapa 19 — Corrigir créditos tributários CBS/IBS
+
+**Severidade:** ALTA · **Esforço:** 3h
+`src/hooks/useImportacaoXMLNFe.ts:267,283` — inserts em `creditos_tributarios` sem verificação, ambos com `TODO(2026-08-14): campos removidos` imediatamente acima. **Créditos podem desaparecer enquanto os totais são incrementados.**
+
+### Etapa 20 — Corrigir acordos, lançamentos contábeis e anexos
+
+**Esforço:** 3h
+`useAcordosParcelamento.ts:206-209` (`status:'quitado'`) e `:227-231`; `useLancamentosContabeis.ts:210` — onde o _delete compensatório_ de cabeçalho órfão é ele próprio não verificado, de modo que o rollback pode falhar em silêncio; `src/components/financeiro/AnexoList.tsx:87` — `storageError` apenas logado e a linha do banco removida, gerando objeto órfão no storage.
+
+### Etapa 21 — Mover sequências multi-passo para RPC atômica
+
+**Esforço:** 12h
+As etapas 16–20 são multi-passo sem transação. Onde a consistência é obrigatória (aprovação, conciliação, DARF, créditos), a sequência deve virar uma função Postgres única.
+
+---
+
+## Bloco D — Isolamento multi-empresa no cliente (P1)
+
+> **Já está correto e deve ser replicado:** `useCategorias.ts:98-101` e `useCentrosCusto.ts:53-56` _descartam_ o `empresa_id` enviado pelo cliente (`const { empresa_id: _ignorada, ...dados }`) e injetam `currentEmpresaId`. Esse é o padrão.
+
+### Etapa 22 — Corrigir as duas views sem filtro de tenant
+
+**Severidade:** ALTA · **Esforço:** 2h
+`src/hooks/useViews.ts:36-49` (`useFluxoCaixaView`) e `:80-93` (`useGastosCentroCusto`) executam `supabase.from('vw_…').select('*')` **sem `.eq('empresa_id', …)` e sem escopo na queryKey** — enquanto todos os vizinhos do mesmo arquivo fazem ambos. `src/lib/queryClient.ts` espelha a falha: `views.fluxoCaixa()` e `views.gastosCentroCusto()` não recebem `empresaId`, ao contrário de `views.saldos/dre/dsoAging`. A única defesa é o RLS; para um usuário multi-empresa, o dashboard **soma todas as suas empresas em uma visão que se apresenta como de empresa única**.
+
+### Etapa 23 — Tornar `empresaId` segmento obrigatório das queryKeys
+
+**Esforço:** 8h
+Toda chave escopada passa a ter a forma `['recurso', empresaId, …]`.
+
+### Etapa 24 — Substituir a invalidação heurística por remoção estrutural
+
+**Severidade:** ALTA · **Esforço:** 4h
+`src/hooks/useSelectiveEmpresaInvalidation.ts:24-39` invalida uma query apenas se alguma parte da chave _contiver a string_ `"empresa"`, for igual ao UUID antigo/novo, ou for objeto com campo `empresa_id`. Após a Etapa 23, trocar por `queryClient.removeQueries` sobre o segmento de escopo.
+
+### Etapa 25 — Corrigir os 51 pontos de query sem empresa na chave
+
+**Severidade:** ALTA · **Esforço:** 10h
+51 queries filtram por `empresa_id` no `queryFn` mas têm chave que não contém nem o UUID nem `"empresa"` — **nunca são invalidadas na troca de empresa**. Piores casos: `useCategorias.ts:108/136` (`['categorias']`), `useCentrosCusto.ts:35/65` (`['centros_custo','all']`), `useContratos.ts:60`, `useLancamentosContabeis.ts:76`, `useApuracoesTributarias.ts:166`, `useCreditosTributarios.ts:244`, `useRetencoesFonte.ts:167`, `useContasReceberLogic.ts:167`.
+
+### Etapa 26 — Corrigir leituras não-reativas de tenant
+
+**Esforço:** 3h
+`src/pages/Orcamentos.tsx:48` chama `getCurrentEmpresaId()` (leitura crua de `localStorage`) durante o render, sem inscrição. Alimenta `useBudget.ts:42`. Na troca de empresa a invalidação dispara, mas o componente não re-renderiza — **o refetch busca de novo a empresa anterior**. Mesmo padrão em `RecentAndFavorites.tsx:26`.
+
+### Etapa 27 — Resolver o modo consolidado
+
+**Esforço:** 6h
+`EmpresaScopeContext.tsx` expõe `ids`/`isConsolidated`/`scopedEmpresas`, mas `ids` só é consumido por dois componentes de apresentação (`EmpresaScopeBar.tsx:21`, `EmpresaActionPicker.tsx:36`). Os 5 hooks de dados usam `currentEmpresaId = ids[0]` (`:135-138`). **A interface anuncia visão consolidada de N empresas enquanto os dados mostram uma.** Pior: `toggleEmpresa` sobre empresa não-primeira não altera `currentEmpresaId`, o efeito `syncLegacyKey` (`:141-143`) não dispara e **nenhuma invalidação ocorre**.
+**Ação:** ou implementar agregação real por `ids`, ou remover a promessa da UI.
+
+### Etapa 28 — Teste de arquitetura para escopo de chave
+
+**Esforço:** 4h
+`src/lib/arquitetura/__tests__/` já possui o mecanismo. Adicionar regra que quebra o build quando uma query filtra por `empresa_id` sem incluí-lo na chave.
+
+---
+
+## Bloco E — Gates de CI que não protegem (P1)
+
+### Etapa 29 — Corrigir o glob que desativa 20 specs E2E
+
+**Severidade:** CRÍTICA (para confiança no CI) · **Esforço:** 2h
+`.github/workflows/ci.yml:374` usa `git ls-files -- 'e2e/**/*.e2e.ts'`, que casa **5 de 26** specs — apenas as aninhadas em `e2e/auth/` e `e2e/system/`. **Todas as 21 specs de nível superior nunca executam**, incluindo `contas-pagar`, `conciliacao`, `nfe-fluxo`, `nfe-fluxo-falhas`, `regua-cobranca`, `split-payment`, `calculadora-tributaria`, `sped-wizard`, `importacao-xml`, `aprovacoes` e `lgpd-privacidade`.
+Agrava: a guarda em `:382-385` só falha se **zero** specs forem encontradas — com 5 encontradas, o job reporta sucesso e produz confiança falsa.
+**Aceite:** as 26 specs aparecem na lista montada pelo job.
+
+### Etapa 30 — Remover a referência morta na lista de exclusão
+
+**Esforço:** 15min
+`ci.yml:378` exclui `e2e/visual-theme.e2e.ts` da quarentena, mas esse arquivo é de nível superior e nunca foi casado pelo glob — exclusão sem efeito.
+
+### Etapa 31 — Promover as specs financeiras ao gate bloqueante
+
+**Severidade:** ALTA · **Esforço:** 8h
+Hoje bloqueiam o merge apenas 4 specs: `login`, `admin-rbac`, `visual-theme` (`playwright.critical.config.ts:12`) e `logout-real`. **Nenhum fluxo de dinheiro tem gate.** Estabilizar e promover, em ondas: conciliação, contas a pagar, NF-e, régua de cobrança, split payment.
+
+### Etapa 32 — Recalibrar o piso de cobertura
+
+**Severidade:** ALTA · **Esforço:** 1h
+`vitest.config.ts:58-62` fixa `lines: 6`, `statements: 6`, `functions: 18`, `branches: 50`. A cobertura **real medida** é **71,76% linhas / 70,58% statements / 63,57% funções / 64,70% branches**. O piso está ~10× abaixo do real: a cobertura poderia despencar de 71,76% para 7% sem que o CI reclamasse. **O gate não oferece proteção alguma contra regressão.**
+**Ação:** elevar os pisos para ~5 pontos abaixo do medido (65/65/58/60) e subir por degraus.
+
+### Etapa 33 — Corrigir o comentário obsoleto de cobertura
+
+**Esforço:** 10min
+`vitest.config.ts:53-55` afirma "cobertura real atual (~6,8% linhas / 19,8% funções / 55% branches)" — defasado por um fator de 10 e origem provável da calibragem errada da Etapa 32.
+
+### Etapa 34 — Incluir o gate de RLS/GRANT nos checks obrigatórios
+
+**Severidade:** ALTA · **Esforço:** 30min
+A proteção de `main` exige 4 checks: `Quality Gate & Tests`, `E2E Critical Gate`, `Unit tests (offline)` e `Integration tests (edge functions live)`. **`Supabase DB Linter` / `Supabase Linter (RLS/GRANT gate)` não está na lista** — pode falhar sem impedir o merge, como ocorre hoje no PR #79.
+
+### Etapa 35 — Exigir ao menos uma revisão aprovada
+
+**Severidade:** ALTA · **Esforço:** 15min
+`required_approving_review_count` está **ausente**: PRs podem ser mergeados em `main` sem qualquer revisão humana, num sistema financeiro em produção. (`enforce_admins: true` e `allow_force_pushes: false` já estão corretos.)
+
+### Etapa 36 — Resolver o deadlock de `REQUIRED_MIGRATIONS`
+
+**Severidade:** ALTA · **Esforço:** 4h
+`scripts/security/test-canonical-db-gates.mjs:7-13` valida a lista contra o **banco canônico ao vivo**. O PR #79 adiciona `20260912100000_revoke_anon_admin_observability_rpcs.sql` _e_ inscreve a versão em `REQUIRED_MIGRATIONS` — mas a migration só chega à produção **depois** do merge. **O PR não consegue passar no próprio gate.** Qualquer PR que adicione migration obrigatória fica permanentemente bloqueado.
+**Ação:** o gate deve exigir apenas migrations já presentes na base de merge (`origin/main`), tratando as introduzidas pelo próprio PR como pendentes esperadas.
+
+### Etapa 37 — Atualizar actions com Node 20 depreciado
+
+**Esforço:** 2h
+`actions/checkout@v4` (11 usos), `actions/upload-artifact@v4` (5), `actions/cache@v4` (5) — o runner já força Node 24 e emite aviso de depreciação em toda execução.
+
+### Etapa 38 — Adicionar hook `pre-push`
+
+**Esforço:** 1h
+`.husky/pre-commit` roda apenas `lint-staged`; não há `pre-push`. Executar `type-check` e `test:changed` antes do push encurta o ciclo de feedback.
+
+---
+
+## Bloco F — Cobertura de testes (P2)
+
+> **77 de 104 edge functions (74%) não possuem teste.** As ausentes concentram-se exatamente na lógica de cálculo de dinheiro e imposto.
+
+### Etapa 39 — Testes dos motores de cálculo tributário
+
+**Esforço:** 16h
+`simular-simples`, `simular-presumido`, `simular-real`, `calculo-iva`, `decidir-regime`, `prever-carga-tributaria`. Erro aqui produz imposto errado — priorizar casos de fronteira de faixa e anexo.
+
+### Etapa 40 — Testes de geração de SPED
+
+**Esforço:** 12h
+`gerar-sped-ecd`, `gerar-sped-ecf`, `exportar-sped-contribuicoes`, `gerar-dre-tributaria`. Arquivos rejeitados pelo fisco são retrabalho caro; validar layout por golden files.
+
+### Etapa 41 — Testes de cobrança
+
+**Esforço:** 10h
+`processar-fila-cobrancas`, `executar-regua-cobranca` (idempotência já foi incidente conhecido), `enviar-relatorios-tributarios-agendados`.
+
+### Etapa 42 — Testes de conciliação e categorização
+
+**Esforço:** 8h
+`conciliacao-ia`, `categorizar-despesa`, `detectar-anomalias-financeiras`.
+
+### Etapa 43 — Testes de integração externa
+
+**Esforço:** 12h
+`bling-proxy`, `asaas-proxy`, `open-finance`, `sefaz-dfe-puxar`, `sefaz-manifestar`, `nfe-upload-certificado`. Contratos com terceiros mudam sem aviso — testar com fixtures gravadas.
+
+### Etapa 44 — Piso de cobertura para edge functions
+
+**Esforço:** 4h
+Análogo à Etapa 32, porém no pipeline Deno: travar o percentual atual e subir por degraus.
+
+---
+
+## Bloco G — Higiene (P3)
+
+### Etapa 45 — Reconstruir o grafo e corrigir o gatilho
+
+**Esforço:** 2h
+`graphify-out/GRAPH_REPORT.md` foi construído de `4a081b85` (2026-08-28); `main` está **36 commits à frente**. A causa: `.github/workflows/graphify.yml:3-12` dispara apenas em `pull_request` e `workflow_dispatch` — **não há `schedule` nem `push` para `main`**, e o job tem `permissions: contents: read`, não podendo sequer commitar o resultado. A afirmação de `CLAUDE.md:90` ("auto-sync N8N corrige em até 15 min") **não é sustentada por nenhum gatilho existente**.
+**Ação:** rodar `graphify update . --force` e adicionar gatilho `push` em `main` com permissão de escrita — ou corrigir/remover a alegação do N8N.
+
+### Etapa 46 — Limpar branches e worktrees obsoletos
+
+**Esforço:** 2h
+33 branches locais e **18 worktrees**. Seguras para remover (PRs já mergeados): `feat/codex-graphify-20260911` (#70), `feat/codex-graphify-expansao-20260911` (#71), `fix/codex-financial-hardening-20260910` (#67). Há ainda um worktree em **detached HEAD** (`codex-auditoria-plano-20260830`).
+
+### Etapa 47 — Decidir sobre os 5 commits órfãos
+
+**Esforço:** 3h
+Commits que não existem em nenhuma ref remota. Dois têm conteúdo **ausente** do `main`: `8b62718f` (docs + scripts de auditoria financeira) e `7c684900` (`docs/REMOTE_ONLY_MIGRATIONS_STRATEGY.md`). Os outros três (`29eb6719`, `fb9e6442`, `80aa2880`, de agosto) tocam arquivos que o `main` já possui com conteúdo divergente — provavelmente superados, mas `29eb6719` altera `auth-guard.ts` e **exige revisão dirigida antes de descarte**.
+
+### Etapa 48 — Resolver os PRs abertos
+
+**Esforço:** 4h
+**#69** (`CONFLICTING/DIRTY`): título quase idêntico ao do **#78, já mergeado** — provavelmente obsoleto; fechar em vez de rebasear. **#79**: desbloqueado pela Etapa 36. **#73** (dependabot graphifyy): `validacoes=FAILURE`.
+
+### Etapa 49 — Normalizar migrations e auditar views
+
+**Esforço:** 6h
+Três migrations violam a convenção de timestamp de 14 dígitos exigida por `CLAUDE.md:15`: `001_create_tables.sql`, `002_rls_policies.sql`, `003_seed_data.sql`. Além disso, há **106 ocorrências de `CREATE VIEW`** contra apenas **30 arquivos com `security_invoker`** — auditar quais views ainda rodam como _definer_, contrariando o hardening P15+ (`CLAUDE.md:22`).
+_(Nota positiva: nenhuma violação de `CREATE INDEX CONCURRENTLY`, nenhum timestamp duplicado e ordem lexicográfica = cronológica.)_
+
+### Etapa 50 — Corrigir a deriva do `CLAUDE.md`
+
+**Esforço:** 1h
+
+| Afirmação          | Documento           | Real                   |
+| ------------------ | ------------------- | ---------------------- |
+| Migrations         | 571+                | **596**                |
+| Edge functions     | 105                 | **104**                |
+| Meta de testes     | 2689/2689           | **2736/2736**          |
+| Auto-sync do grafo | "N8N em até 15 min" | **não existe gatilho** |
+
+---
+
+## Ordem de execução recomendada
+
+1. **Imediato (24h):** Etapas 1, 2, 3 — credenciais vivas e vazamento cross-tenant ativo.
+2. **Semana 1:** Etapas 4–13 — fechar a classe IDOR e impedir reincidência.
+3. **Semana 2:** Etapas 29, 32, 34, 35, 36 — restaurar a capacidade do CI de detectar as demais.
+4. **Semanas 3–4:** Bloco C (14–21) e Bloco D (22–28).
+5. **Contínuo:** Blocos F e G.
+
+> **Observação de sequenciamento:** as etapas 29 e 32 vêm antes do grosso das correções de propósito. Enquanto 20 specs E2E não rodarem e o piso de cobertura estiver 10× abaixo do real, **não há como comprovar que as correções dos blocos C e D funcionam nem que permanecem funcionando**.

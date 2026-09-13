@@ -50,16 +50,20 @@ export default defineConfig({
         'src/main.tsx',
         'src/vite-env.d.ts',
       ],
-      // Limiares como "trava de não-regressão" calibrados à cobertura real
-      // atual (~6.8% linhas / 19.8% funções / 55% branches). O alvo de 85%
-      // era aspiracional e nunca era exercido (o CI quebrava no install).
-      // Estes pisos impedem regressões e devem ser elevados gradualmente à
-      // medida que a cobertura aumentar.
+      // Trava de não-regressão calibrada à cobertura REAL medida em 2026-09-13:
+      // 71,76% linhas / 70,58% statements / 63,57% funções / 64,70% branches.
+      //
+      // Os pisos anteriores (6/6/18/50) vinham de uma medição de ~6,8% que há
+      // muito deixou de valer: a cobertura podia despencar de 71% para 7% sem
+      // o CI reclamar — o gate não protegia contra nada.
+      //
+      // Margem de ~5 pontos abaixo do medido para absorver variação legítima
+      // (arquivo novo ainda sem teste). Elevar por degraus conforme sobe.
       thresholds: {
-        lines: 6,
-        functions: 18,
-        branches: 50,
-        statements: 6,
+        lines: 66,
+        functions: 58,
+        branches: 59,
+        statements: 65,
       },
     },
     testTimeout: 10000,

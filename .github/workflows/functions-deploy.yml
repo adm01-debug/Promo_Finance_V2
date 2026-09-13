@@ -37,7 +37,7 @@ jobs:
       SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Preparar Supabase CLI
         uses: supabase/setup-cli@v1
@@ -60,7 +60,7 @@ jobs:
 
       - name: Registrar evidência do deploy
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: deploy-edge-function-log
           path: /tmp/deploy-log-*.jsonl

@@ -44,7 +44,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Gate offline do banco canônico
         run: node --test scripts/security/test-canonical-db-gates.test.mjs
@@ -153,7 +153,7 @@ jobs:
 
       - name: Upload linter report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: supabase-lint-report
           path: lint.json

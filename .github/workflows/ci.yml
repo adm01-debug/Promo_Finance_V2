@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -181,7 +181,7 @@ jobs:
 
       - name: Upload function privileges artifact
         if: ${{ steps.db_url_preflight.outputs.available == 'true' && always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: function-privileges
           path: artifacts/security/function-privileges.*
@@ -209,7 +209,7 @@ jobs:
 
       - name: Upload Error Logs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ci-error-logs
           path: "*.log"
@@ -225,7 +225,7 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -237,7 +237,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: pw-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -283,7 +283,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -295,7 +295,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: pw-cache-destructive
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -343,7 +343,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -355,7 +355,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: pw-cache-quarantine
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -371,7 +371,10 @@ jobs:
       - name: Montar lista da quarentena
         run: |
           set -euo pipefail
-          mapfile -t all_specs < <(git ls-files -- 'e2e/**/*.e2e.ts' | sort)
+          # `**` NÃO é recursivo em pathspec do git: 'e2e/**/*.e2e.ts' casava só
+          # as specs aninhadas (5 de 26), deixando 21 fora da quarentena sem
+          # qualquer sinal. Em pathspec, `*` já atravessa `/`.
+          mapfile -t all_specs < <(git ls-files -- 'e2e/*.e2e.ts' | sort)
           quarantine_specs=()
           for spec in "${all_specs[@]}"; do
             case "$spec" in
@@ -379,6 +382,14 @@ jobs:
               *) quarantine_specs+=("$spec") ;;
             esac
           done
+          # Guard estrutural: o que o git enxerga precisa bater com o que existe
+          # em disco. Só checar "> 0" foi exatamente o que deixou o glob quebrado
+          # passar despercebido — havia 5 specs, o job reportava sucesso.
+          em_disco=$(find e2e -name '*.e2e.ts' -type f | wc -l)
+          if [ "${#all_specs[@]}" -ne "$em_disco" ]; then
+            echo "::error::Descoberta de specs inconsistente: git ls-files=${#all_specs[@]} vs disco=${em_disco}. Specs não rastreadas ou pathspec quebrado."
+            exit 1
+          fi
           if [ "${#quarantine_specs[@]}" -eq 0 ]; then
             echo "::error::Nenhuma spec elegível foi encontrada para a quarentena E2E."
             exit 1

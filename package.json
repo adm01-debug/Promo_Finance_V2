@@ -25,7 +25,7 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:run": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run",
-    "test:changed": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --passWithNoTests",
+    "test:changed": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --changed origin/main --passWithNoTests",
     "test:coverage": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",

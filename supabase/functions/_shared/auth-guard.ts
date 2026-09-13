@@ -253,3 +253,106 @@ export async function exigirInternaOuUsuario(
 
   return { ok: false, resposta: usuario.resposta };
 }
+
+// ---------------------------------------------------------------------------
+// Escopo de empresa (tenant)
+// ---------------------------------------------------------------------------
+//
+// Por que este helper existe:
+//
+// `has_role()` é tenant-agnóstico — consulta apenas (user_id, role, is_active),
+// sem qualquer noção de empresa. Portanto `has_role(user,'admin')` prova que o
+// usuário é admin em *alguma* empresa, nunca que ele é admin **daquela** empresa
+// cujo `empresa_id` chegou no corpo da requisição. Confiar em `has_role` sozinho
+// para autorizar uma operação sobre `body.empresa_id` é um IDOR de tenant.
+//
+// `user_empresas` é o único vínculo real usuário↔empresa. Toda função que aceite
+// `empresa_id` vindo do cliente precisa passar por aqui antes de tocar em dados.
+
+/** Empresas às quais o usuário está ativamente vinculado. */
+export async function empresasDoUsuario(userId: string): Promise<string[] | null> {
+  const admin = clientDeServico();
+  const { data, error } = await admin
+    .from('user_empresas')
+    .select('empresa_id')
+    .eq('user_id', userId)
+    .eq('ativo', true);
+
+  if (error) return null;
+  return (data ?? [])
+    .map((linha: { empresa_id: string | null }) => linha.empresa_id)
+    .filter((id: string | null): id is string => Boolean(id));
+}
+
+/**
+ * Exige que o usuário esteja vinculado à empresa informada.
+ *
+ * Quando `empresaId` vem nulo/ausente, resolve o escopo a partir do vínculo:
+ * usuário de uma única empresa recebe essa empresa; usuário multi-empresa
+ * precisa declarar qual — omitir vira erro, nunca "todas".
+ *
+ * Devolve sempre o `empresaId` **validado**, que é o que o chamador deve usar
+ * dali em diante (jamais o valor cru do corpo).
+ */
+export async function exigirVinculoEmpresa(
+  userId: string,
+  empresaId: string | null | undefined
+): Promise<ResultadoGuard<{ empresaId: string; empresaIds: string[] }>> {
+  const vinculadas = await empresasDoUsuario(userId);
+
+  if (vinculadas === null) {
+    return {
+      ok: false,
+      resposta: respostaErro(500, 'erro_autorizacao', 'Falha ao validar vínculo de empresa.'),
+    };
+  }
+
+  if (vinculadas.length === 0) {
+    return {
+      ok: false,
+      resposta: respostaErro(403, 'sem_empresa', 'Usuário não está vinculado a nenhuma empresa.'),
+    };
+  }
+
+  if (!empresaId) {
+    if (vinculadas.length === 1) {
+      return { ok: true, dados: { empresaId: vinculadas[0], empresaIds: vinculadas } };
+    }
+    return {
+      ok: false,
+      resposta: respostaErro(
+        400,
+        'empresa_obrigatoria',
+        'Informe empresa_id: o usuário está vinculado a mais de uma empresa.'
+      ),
+    };
+  }
+
+  if (!vinculadas.includes(empresaId)) {
+    // Mesma resposta de "não vinculado" para empresa inexistente e para empresa
+    // de terceiro: não confirmamos a existência de tenants alheios.
+    return {
+      ok: false,
+      resposta: respostaErro(403, 'sem_permissao_empresa', 'Sem permissão para esta empresa.'),
+    };
+  }
+
+  return { ok: true, dados: { empresaId, empresaIds: vinculadas } };
+}
+
+/**
+ * Atalho para o caso mais comum: exige usuário autenticado **e** vínculo com a
+ * empresa alvo, devolvendo tudo junto.
+ */
+export async function exigirUsuarioComEmpresa(
+  req: Request,
+  empresaId: string | null | undefined
+): Promise<ResultadoGuard<UsuarioAutenticado & { empresaId: string; empresaIds: string[] }>> {
+  const auth = await exigirUsuario(req);
+  if (!auth.ok) return auth;
+
+  const escopo = await exigirVinculoEmpresa(auth.dados.userId, empresaId);
+  if (!escopo.ok) return escopo;
+
+  return { ok: true, dados: { ...auth.dados, ...escopo.dados } };
+}
