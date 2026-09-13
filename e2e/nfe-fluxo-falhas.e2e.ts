@@ -7,15 +7,25 @@ import {
   mockEdgeFunctions,
   mockPostgrest,
 } from './fixtures/nfe';
+import { EMPRESA_OFFLINE, autenticarOffline } from './fixtures/sessao';
 
 /**
  * E2E de falhas do fluxo NF-e — cobre upload de certificado, manifestação
  * rejeitada pela SEFAZ e guarda client-side para "Operação Não Realizada".
  * Usa as fixtures em `e2e/fixtures/nfe.ts` para determinismo e reuso.
+ *
+ * Gate bloqueante desde a Etapa 31 (`playwright.financeiro.config.ts`):
+ * `autenticarOffline` dispensa credenciais e isola a suíte da rede.
  */
 
 test.describe('Fluxo NF-e — cenários de falha', () => {
-  test('upload de certificado com senha inválida exibe erro e mantém lista vazia', async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
+    await autenticarOffline(page);
+  });
+
+  test('upload de certificado com senha inválida exibe erro e mantém lista vazia', async ({
+    page,
+  }) => {
     await mockPostgrest(page); // sem certificados
     const counts = await mockEdgeFunctions(page, {
       'nfe-upload-certificado': {
@@ -25,7 +35,11 @@ test.describe('Fluxo NF-e — cenários de falha', () => {
     });
 
     await page.goto('/tributario/certificados-digitais');
-    await expect(page.getByRole('heading', { name: /certificados digitais/i })).toBeVisible({ timeout: 15_000 });
+    // `{ level: 1 }`: a aba renderiza um <h3> "Certificados Digitais A1" além
+    // do <h1> da página, e o seletor sem nível casava com os dois.
+    await expect(
+      page.getByRole('heading', { level: 1, name: /certificados digitais/i })
+    ).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText(/nenhum certificado cadastrado/i)).toBeVisible();
 
     await page.getByRole('button', { name: /novo certificado/i }).click();
@@ -33,8 +47,15 @@ test.describe('Fluxo NF-e — cenários de falha', () => {
 
     await page.locator('input[type="file"]').first().setInputFiles(fakePfxFile());
     await page.locator('input[type="password"]').first().fill('senha-errada');
+    // Empresa é obrigatória no formulário; sem ela o envio nem é habilitado e
+    // o cenário de senha inválida não chegaria a ser exercitado.
+    await page.getByRole('dialog').getByRole('combobox').first().click();
+    await page.getByRole('option', { name: new RegExp(EMPRESA_OFFLINE.razao_social, 'i') }).click();
 
-    const enviar = page.getByRole('button', { name: /enviar|cadastrar|salvar/i }).last();
+    const enviar = page
+      .getByRole('dialog')
+      .getByRole('button', { name: /enviar|cadastrar|salvar/i })
+      .last();
     await expect(enviar).toBeEnabled();
     await enviar.click();
 
@@ -50,8 +71,13 @@ test.describe('Fluxo NF-e — cenários de falha', () => {
     expect(counts['nfe-upload-certificado']).toBe(1);
   });
 
-  test('manifestação rejeitada pela SEFAZ exibe cStat/xMotivo e mantém NF-e pendente', async ({ page }) => {
-    const nfe = makeNfe({ razao_emitente: 'Fornecedor Falha LTDA', chave_acesso: CHAVES_ACESSO.PADRAO });
+  test('manifestação rejeitada pela SEFAZ exibe cStat/xMotivo e mantém NF-e pendente', async ({
+    page,
+  }) => {
+    const nfe = makeNfe({
+      razao_emitente: 'Fornecedor Falha LTDA',
+      chave_acesso: CHAVES_ACESSO.PADRAO,
+    });
     await mockPostgrest(page, { nfes: [nfe] });
 
     const counts = await mockEdgeFunctions(page, {
@@ -59,11 +85,19 @@ test.describe('Fluxo NF-e — cenários de falha', () => {
     });
 
     await page.goto('/tributario/nfe-recebidas');
-    await expect(page.getByRole('heading', { name: /nf-e recebidas/i })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /nf-e recebidas/i })).toBeVisible({
+      timeout: 15_000,
+    });
     await expect(page.getByText(/fornecedor falha ltda/i)).toBeVisible();
 
-    await page.getByRole('button', { name: /manifestar/i }).first().click();
-    await page.getByRole('menuitem', { name: /ciência/i }).first().click();
+    await page
+      .getByRole('button', { name: /manifestar/i })
+      .first()
+      .click();
+    await page
+      .getByRole('menuitem', { name: /ciência/i })
+      .first()
+      .click();
 
     await expect(page.getByText(/falha ao manifestar nfe/i)).toBeVisible({ timeout: 5_000 });
     await expect(page.getByText(/cStat 539|Duplicidade de evento/i)).toBeVisible();
@@ -80,10 +114,18 @@ test.describe('Fluxo NF-e — cenários de falha', () => {
     });
 
     await page.goto('/tributario/nfe-recebidas');
-    await expect(page.getByRole('heading', { name: /nf-e recebidas/i })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /nf-e recebidas/i })).toBeVisible({
+      timeout: 15_000,
+    });
 
-    await page.getByRole('button', { name: /manifestar/i }).first().click();
-    await page.getByRole('menuitem', { name: /não realizada/i }).first().click();
+    await page
+      .getByRole('button', { name: /manifestar/i })
+      .first()
+      .click();
+    await page
+      .getByRole('menuitem', { name: /não realizada/i })
+      .first()
+      .click();
 
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();

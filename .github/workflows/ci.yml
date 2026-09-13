@@ -240,6 +240,14 @@ jobs:
       - name: Type check
         run: bun run type-check
 
+      - name: Type check da infraestrutura de teste
+        # `tsc --noEmit` cobre só `src/`. O Playwright transpila as specs com
+        # esbuild, que apaga tipos sem verificá-los: um símbolo inexistente vira
+        # `undefined` em silêncio e a asserção passa a comparar com nada. Com o
+        # gate financeiro bloqueante, a fixture que o sustenta é código de
+        # produção do CI.
+        run: bun run type-check:e2e
+
       - name: Unit & Integration Tests
         run: bun run test:run
 
@@ -379,13 +387,68 @@ jobs:
           CI: true
 
   # ---------------------------------------------------------------------------
+  # Gate E2E financeiro: telas de dinheiro, 100% offline.
+  #
+  # Bloqueante e sem um único secret. As specs rodam contra um projeto Supabase
+  # sintético e sessão semeada no browser (`e2e/fixtures/sessao.ts`), então não
+  # há preflight `require-env.sh` a fazer: não existe variável cuja ausência
+  # possa degradar o gate para verde-vazio. É o motivo de ele poder ser
+  # bloqueante onde `e2e-critical` não poderia — inclusive em PR de fork, que
+  # não recebe secrets.
+  # ---------------------------------------------------------------------------
+  e2e-financeiro:
+    name: E2E Financeiro (offline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.11"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        id: pw-cache-financeiro
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install Playwright browsers
+        if: steps.pw-cache-financeiro.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.pw-cache-financeiro.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: E2E financeiro obrigatório
+        run: bunx playwright test --config=playwright.financeiro.config.ts --project=chromium --reporter=list
+        env:
+          CI: true
+
+      - name: Publicar artefatos de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-financeiro-falhas
+          path: test-results/financeiro
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
   # Quarentena E2E legada: não bloqueante, 1 worker, sem claims de aprovação
   # de produção. O resultado é publicado no step summary do workflow.
   # ---------------------------------------------------------------------------
   e2e-quarantine:
     name: E2E Quarantine (non-blocking)
     if: ${{ always() }}
-    needs: [quality-gate, e2e-critical, e2e-destructive]
+    needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -417,31 +480,14 @@ jobs:
       - name: Montar lista da quarentena
         run: |
           set -euo pipefail
-          # `**` NÃO é recursivo em pathspec do git: 'e2e/**/*.e2e.ts' casava só
-          # as specs aninhadas (5 de 26), deixando 21 fora da quarentena sem
-          # qualquer sinal. Em pathspec, `*` já atravessa `/`.
-          mapfile -t all_specs < <(git ls-files -- 'e2e/*.e2e.ts' | sort)
-          quarantine_specs=()
-          for spec in "${all_specs[@]}"; do
-            case "$spec" in
-              e2e/auth/login.e2e.ts|e2e/auth/admin-rbac.e2e.ts|e2e/visual-theme.e2e.ts|e2e/auth/logout-real.e2e.ts) ;;
-              *) quarantine_specs+=("$spec") ;;
-            esac
-          done
-          # Guard estrutural: o que o git enxerga precisa bater com o que existe
-          # em disco. Só checar "> 0" foi exatamente o que deixou o glob quebrado
-          # passar despercebido — havia 5 specs, o job reportava sucesso.
-          em_disco=$(find e2e -name '*.e2e.ts' -type f | wc -l)
-          if [ "${#all_specs[@]}" -ne "$em_disco" ]; then
-            echo "::error::Descoberta de specs inconsistente: git ls-files=${#all_specs[@]} vs disco=${em_disco}. Specs não rastreadas ou pathspec quebrado."
-            exit 1
-          fi
-          if [ "${#quarantine_specs[@]}" -eq 0 ]; then
-            echo "::error::Nenhuma spec elegível foi encontrada para a quarentena E2E."
-            exit 1
-          fi
-          printf '%s\n' "${quarantine_specs[@]}" > quarantine-specs.txt
-          echo "count=${#quarantine_specs[@]}" >> "$GITHUB_OUTPUT"
+          # A lista é DERIVADA do `testMatch` dos configs bloqueantes, nunca
+          # cravada aqui. Duas listas descrevendo a mesma cobertura divergem, e
+          # a divergência perigosa é silenciosa: uma spec removida de um gate e
+          # ainda excluída daqui para de rodar em qualquer job, sem sinal
+          # vermelho. O script também falha se algum `testMatch` deixar de casar
+          # arquivo — um gate verde que não testa nada.
+          bun run scripts/ci/listar-specs-quarentena.ts > quarantine-specs.txt
+          echo "count=$(wc -l < quarantine-specs.txt)" >> "$GITHUB_OUTPUT"
         id: quarantine_specs
 
       - name: Executar suíte legada em quarentena
@@ -478,6 +524,7 @@ jobs:
             echo "- Resultado do quality-gate: ${{ needs.quality-gate.result }}"
             echo "- Resultado do e2e-critical: ${{ needs.e2e-critical.result }}"
             echo "- Resultado do e2e-destructive: ${{ needs.e2e-destructive.result }}"
+            echo "- Resultado do e2e-financeiro: ${{ needs.e2e-financeiro.result }}"
             echo "- Specs listadas: ${{ steps.quarantine_specs.outputs.count }}"
             if [ "${{ steps.quarantine_specs.outputs.count }}" = "0" ]; then
               echo "- Resultado: nenhuma spec elegível para quarentena"
@@ -497,7 +544,7 @@ jobs:
     # Stress em produção é mutável e deve ser opt-in, com a variável de
     # repositório explicitamente habilitada durante uma janela autorizada.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.ENABLE_PRODUCTION_SIMULATION_AUDIT == 'true'
-    needs: [quality-gate, e2e-critical, e2e-destructive]
+    needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Simulation Audit

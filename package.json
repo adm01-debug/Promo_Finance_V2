@@ -23,6 +23,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "type-check": "tsc --noEmit",
+    "type-check:e2e": "tsc -p tsconfig.e2e.json",
     "test": "vitest",
     "test:run": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run",
     "test:changed": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --changed origin/main --passWithNoTests",

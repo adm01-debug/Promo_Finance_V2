@@ -18,11 +18,24 @@ import { useQueryClient, type QueryKey } from '@tanstack/react-query';
  *  - remover algo agnóstico  → um refetch desnecessário;
  *  - manter algo por tenant  → dados de outra empresa exibidos ao usuário.
  *
- * Usamos `removeQueries` em vez de `invalidateQueries` porque invalidar marca
- * como stale mas **mantém os dados antigos no cache**: uma query inativa volta
- * a ser montada servindo o tenant anterior até o refetch resolver. Remover
- * elimina a entrada — as queries montadas refazem o fetch, as demais somem sem
- * tráfego algum.
+ * `invalidateQueries` não serve: invalidar marca como stale mas **mantém os
+ * dados antigos no cache**, e uma query inativa volta a ser montada servindo o
+ * tenant anterior até o refetch resolver.
+ *
+ * `removeQueries` também não, apesar de ter sido a escolha original. Remover
+ * destrói a entrada do cache junto com o fetch em andamento, e o observer
+ * montado fica apontando para uma query destruída: ele não é notificado, não
+ * refaz o fetch e não volta a renderizar. Na prática, trocar de empresa
+ * enquanto qualquer tela tinha uma requisição em voo deixava essa tela presa no
+ * spinner para sempre — só navegação ou reload a recuperavam. A Etapa 31
+ * flagrou o caso em `CertificadosDigitaisTab`: a resposta de
+ * `empresas_certificados` chegava (200, `[]`) e o spinner continuava lá.
+ *
+ * `resetQueries` é o que o comentário original descrevia: devolve a entrada ao
+ * estado inicial — descartando os dados do tenant anterior, como `remove` — e
+ * **refaz o fetch das queries ativas**, que são justamente as da tela aberta e
+ * precisam recarregar de qualquer forma. As inativas ficam vazias e buscam ao
+ * montar, sem tráfego agora.
  */
 
 /**
@@ -75,7 +88,7 @@ export function useSelectiveEmpresaInvalidation() {
 
   useEffect(() => {
     const handler = () => {
-      queryClient.removeQueries({
+      queryClient.resetQueries({
         predicate: (query) => deveRemoverNaTrocaDeEmpresa(query.queryKey),
       });
     };

@@ -218,10 +218,67 @@ Agrava: a guarda em `:382-385` só falha se **zero** specs forem encontradas —
 **Esforço:** 15min
 `ci.yml:378` exclui `e2e/visual-theme.e2e.ts` da quarentena, mas esse arquivo é de nível superior e nunca foi casado pelo glob — exclusão sem efeito.
 
+**Resolvida junto da Etapa 31:** a lista cravada de exclusões deixou de existir — a quarentena passou a ser derivada do `testMatch` dos configs bloqueantes, o que torna uma exclusão sem efeito impossível de escrever.
+
 ### Etapa 31 — Promover as specs financeiras ao gate bloqueante
 
 **Severidade:** ALTA · **Esforço:** 8h
 Hoje bloqueiam o merge apenas 4 specs: `login`, `admin-rbac`, `visual-theme` (`playwright.critical.config.ts:12`) e `logout-real`. **Nenhum fluxo de dinheiro tem gate.** Estabilizar e promover, em ondas: conciliação, contas a pagar, NF-e, régua de cobrança, split payment.
+
+#### Execução — onda 1 (concluída)
+
+**Por que não bastou promover as specs existentes.** Elas dependem de `E2E_USER_EMAIL`/`E2E_USER_PASSWORD`. Sem os segredos, `auth.setup.ts` grava um `storageState` vazio, o app redireciona para `/auth` e a spec passa sem ter exercitado nada. Um gate bloqueante que abre sozinho quando falta segredo é pior que gate nenhum — e em PR de fork, que nunca recebe segredos, ele abriria sempre.
+
+**Solução: harness offline.** `e2e/fixtures/sessao.ts` semeia uma sessão GoTrue sintética em `localStorage` e serve o app contra um projeto Supabase igualmente sintético (`e2eoffline0000000000`), interceptando `auth/v1`, `rest/v1`, `functions/v1` e `storage/v1`. Consequências: roda sem um único secret, não escreve uma linha em banco real, e falha por regressão de UI — nunca por indisponibilidade de ambiente.
+
+| Artefato                                          | Papel                                                                                                                  |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `playwright.financeiro.config.ts`                 | Config do gate. Fixa `America/Sao_Paulo` (Node + browser), `locale: 'pt-BR'`, `reducedMotion: 'reduce'`, `retries: 0`. |
+| `e2e/fixtures/sessao.ts`                          | Sessão sintética + baseline de rede (registrada uma vez por página).                                                   |
+| `e2e/fixtures/edge.ts`                            | `mockEdgeFunctions` com contador por função — permite provar que uma operação de dinheiro disparou **uma** vez.        |
+| `e2e/fixtures/financeiro.ts`                      | Fixtures de contas a pagar e conciliação.                                                                              |
+| `.github/workflows/ci.yml` → job `e2e-financeiro` | Gate bloqueante, sem secrets e sem preflight `require-env.sh`.                                                         |
+| `scripts/ci/listar-specs-quarentena.ts`           | Deriva a quarentena do `testMatch` dos configs bloqueantes.                                                            |
+| `tsconfig.e2e.json` + `bun run type-check:e2e`    | Type-check de `e2e/`, `scripts/` e configs do Playwright — território que `tsc --noEmit` nunca cobriu.                 |
+
+**Specs promovidas (10 de 28 no total, 16 casos):** `financeiro/conciliacao-offline` (3), `financeiro/contas-pagar-offline` (6), `nfe-fluxo` (2), `nfe-fluxo-falhas` (3), `regua-cobranca` (1), `split-payment` (1).
+
+**Três decisões de config que não são cosméticas:**
+
+1. **`contextOptions: { reducedMotion: 'reduce' }`** — `AnimatedNumber` conta de 0 até o valor final em ~1,1s, e os matchers do Playwright passam na primeira leitura que casa. Um KPI errado de 91.500,00 satisfaz uma asserção de 1.500,00 ao cruzar esse ponto no meio da animação: o teste ficaria verde justamente no caso que deveria pegar. **Precisa estar em `contextOptions`:** no Playwright 1.62 `reducedMotion` não é opção de topo de `use`, e o loader descarta chave desconhecida sem avisar — ver o defeito #7 abaixo.
+2. **`timezoneId` + `process.env.TZ` em `America/Sao_Paulo`** — `transacoes_bancarias.data` é `DATE`; o PostgREST devolve `"2026-09-13"` e o `new Date` do JS lê isso como meia-noite **UTC**. Em runner UTC (o default do GitHub Actions) o deslocamento é zero e o bug some. Sem fuso fixo, o gate ficaria cego exatamente na classe de erro que mais dói aqui.
+3. **`retries: 0`** — o harness é determinístico por construção; um retry só mascararia flakiness que, aqui, seria bug do teste.
+
+#### Seis defeitos de produção que o harness converteu em teste vermelho
+
+Nenhum foi procurado: todos apareceram porque a spec exigiu um comportamento que o código não tinha.
+
+| #   | Defeito                                                                                                                                                            | Correção                                                                                                                                                                                                           |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `mutations.retry` global reenviava operações **não idempotentes** — uma falha de rede virava duas baixas.                                                          | `src/lib/queryClient.ts`: `mutations.retry: false` + `src/lib/queryClient.retry.test.ts`.                                                                                                                          |
+| 2   | `removeQueries` na troca de empresa órfãva observers montados.                                                                                                     | `src/hooks/useSelectiveEmpresaInvalidation.ts`.                                                                                                                                                                    |
+| 3   | Upload de certificado engolia a mensagem de erro da edge function.                                                                                                 | `src/hooks/useCertificadosDigitais.ts`.                                                                                                                                                                            |
+| 4   | `NfeVinculoDialog` derrubava a página inteira com payload de sugestões não-array.                                                                                  | `src/hooks/useNfeVinculo.ts`.                                                                                                                                                                                      |
+| 5   | **Extrato bancário inteiro exibido um dia antes** (UTC × BRT) — numa tela onde a data é o critério de casamento.                                                   | `src/lib/conciliacao-page-helpers.ts` usa `toLocalDate` na linha **e nos dois limites do filtro**: corrigir só a linha deslocaria o limite superior em 3h e passaria a excluir as transações do próprio dia final. |
+| 6   | Conciliação manual empilhava **dois** toasts "Conciliação Concluída!" e confete em dobro (o diálogo celebrava por conta própria, além do `onSuccess` da mutation). | `src/components/conciliacao/ConciliacaoManualDialog.tsx` mantém só o `haptic('success')`.                                                                                                                          |
+
+Cada correção foi validada **por inversão**: revertida uma a uma, com a spec ficando vermelha, e restaurada em seguida. Uma asserção que não fica vermelha quando o bug volta não é um teste, é decoração.
+
+#### Sétimo defeito — no próprio harness
+
+`reducedMotion: 'reduce'` estava solto em `use`. No Playwright 1.62 essa não é opção de topo (só `contextOptions` a aceita) e o loader **descarta chaves desconhecidas em silêncio**: a suíte passava exibindo uma proteção que nunca foi aplicada. Comprovado medindo `matchMedia('(prefers-reduced-motion: reduce)').matches` dentro da página — `false` na forma antiga, `true` sob `contextOptions`.
+
+Quem revelou isso foi o **`tsconfig.e2e.json`**, criado no mesmo passo. `tsc --noEmit` tem `include: ["src"]` e `exclude: ["e2e", …]`: `e2e/`, `scripts/` e os configs do Playwright **nunca foram type-checked**. Como o Playwright transpila as specs com esbuild — que apaga tipos sem verificá-los — um símbolo inexistente vira `undefined` em silêncio e a asserção passa a comparar com nada; foi exatamente o que aconteceu com um `CNPJS.EMITENTE` inexistente em `e2e/fixtures/nfe.ts`. O novo `bun run type-check:e2e` roda no `quality-gate`. Um gate bloqueante cuja fixture não é verificada é um gate cuja proteção ninguém conferiu.
+
+#### O que permanece em quarentena, e por quê
+
+18 das 28 specs. Todas dependem de **banco real e credenciais** — login com usuário de verdade, RBAC contra `user_roles` em produção, snapshots visuais autenticados. Convertê-las exige estender o harness offline por domínio, que é o trabalho das ondas seguintes; promovê-las como estão reintroduziria exatamente o gate-que-abre-sozinho descrito acima.
+
+**A lista de exclusão deixou de ser cravada no YAML.** Ela agora é derivada do `testMatch` dos três configs bloqueantes por `scripts/ci/listar-specs-quarentena.ts`. O motivo: duas listas descrevendo a mesma cobertura divergem, e a direção perigosa da divergência é silenciosa — bastava remover uma spec do `testMatch` de um gate e esquecer o YAML para que ela parasse de rodar em **qualquer** job, sem um único sinal vermelho. O script também falha quando um `testMatch` deixa de casar arquivo (spec renomeada ⇒ gate verde que não testa nada) e quando `git ls-files` diverge do disco.
+
+#### Pendência que exige decisão humana
+
+O job `e2e-financeiro` roda, mas **ainda não é um check obrigatório** na proteção de `main` — isso é alteração de branch protection, mesma classe das Etapas 34 e 35, e depende de confirmação explícita.
 
 ### Etapa 32 — Recalibrar o piso de cobertura
 

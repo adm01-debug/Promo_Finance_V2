@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { garantirBaselineOffline } from './sessao';
 
 /**
  * Fixtures reutilizáveis para o domínio NF-e / SEFAZ.
@@ -55,6 +56,22 @@ export interface SefazManifestFail {
   evento_inserido: false;
 }
 export type SefazManifestResponse = SefazManifestOk | SefazManifestFail;
+
+/**
+ * Linha devolvida pela RPC `nfe_suggest_contas_pagar`, encaminhada pelo proxy
+ * `nfe-vinculo-proxy` dentro de um envelope `{ data: [...] }`.
+ */
+export interface SugestaoContaPagarFixture {
+  conta_pagar_id: string;
+  descricao: string;
+  valor: number;
+  data_vencimento: string;
+  status: string;
+  fornecedor_cnpj: string | null;
+  fornecedor_nome: string | null;
+  score: number;
+  match_motivo: string | null;
+}
 
 // ---------- Constantes reutilizáveis ----------
 
@@ -132,6 +149,36 @@ export function makeManifestFail(overrides: Partial<SefazManifestFail> = {}): Se
   };
 }
 
+export function makeSugestaoContaPagar(
+  overrides: Partial<SugestaoContaPagarFixture> = {}
+): SugestaoContaPagarFixture {
+  return {
+    conta_pagar_id: 'cp-1',
+    descricao: 'Compra de brindes — pedido 4821',
+    valor: 1500,
+    data_vencimento: '2026-10-15',
+    status: 'pendente',
+    fornecedor_cnpj: CNPJS.EMITENTE_A,
+    fornecedor_nome: 'Fornecedor Teste LTDA',
+    score: 92,
+    match_motivo: 'CNPJ e valor conferem',
+    ...overrides,
+  };
+}
+
+/**
+ * Envelope do proxy para `action: 'suggest'`. O proxy responde
+ * `{ data: [...] }` (ver `supabase/functions/nfe-vinculo-proxy/index.ts`) e é
+ * `invokeEdge` que desembrulha a chave `data`. Devolver a lista crua aqui
+ * mascararia o desembrulho; devolver `{ ok: true }` — o default deste mock
+ * antes da Etapa 31 — entregava um objeto onde a UI espera array.
+ */
+export function makeSugestoesResponse(
+  sugestoes: SugestaoContaPagarFixture[] = [makeSugestaoContaPagar()]
+) {
+  return { data: sugestoes };
+}
+
 // ---------- Payload PFX sintético ----------
 
 export function fakePfxFile(name = 'certificado.pfx') {
@@ -156,6 +203,11 @@ export interface PostgrestMockOptions {
  */
 export async function mockPostgrest(page: Page, opts: PostgrestMockOptions = {}) {
   const { nfes = [], certificados = [], contasPagar = [] } = opts;
+
+  // Rede de segurança compartilhada — registrada uma vez só por página, para
+  // não passar à frente dos handlers de sessão. Ver `garantirBaselineOffline`.
+  await garantirBaselineOffline(page);
+
   await page.route('**/rest/v1/**', async (route: Route) => {
     const url = route.request().url();
     const json = (body: unknown, status = 200) =>
@@ -164,43 +216,13 @@ export async function mockPostgrest(page: Page, opts: PostgrestMockOptions = {})
     if (url.includes('nfe_recebidas')) return json(nfes);
     if (url.includes('empresas_certificados')) return json(certificados);
     if (url.includes('contas_pagar')) return json(contasPagar);
-    return json([]);
+    // Encadeia em vez de engolir: responder `[]` a tudo zerava também
+    // `user_empresas`, e o EmpresaGuard barrava a tela antes do teste começar.
+    return route.fallback();
   });
 }
 
-export interface EdgeFunctionResponse {
-  status?: number;
-  body: unknown;
-}
-
-export type EdgeFunctionMocks = Record<string, EdgeFunctionResponse | ((route: Route) => Promise<void> | void)>;
-
-/**
- * Intercepta Edge Functions (`/functions/v1/**`).
- * Cada chave do map é o nome (ou fragmento) da função; valor pode ser
- * uma resposta declarativa `{ status, body }` ou um handler custom.
- * Funções não mapeadas respondem `{"ok":true}`.
- *
- * Retorna um contador de chamadas por função para asserts.
- */
-export async function mockEdgeFunctions(page: Page, mocks: EdgeFunctionMocks = {}) {
-  const counts: Record<string, number> = Object.fromEntries(Object.keys(mocks).map((k) => [k, 0]));
-
-  await page.route('**/functions/v1/**', async (route: Route) => {
-    const url = route.request().url();
-    for (const [name, handler] of Object.entries(mocks)) {
-      if (url.includes(name)) {
-        counts[name] = (counts[name] ?? 0) + 1;
-        if (typeof handler === 'function') return handler(route);
-        return route.fulfill({
-          status: handler.status ?? 200,
-          contentType: 'application/json',
-          body: JSON.stringify(handler.body),
-        });
-      }
-    }
-    return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
-  });
-
-  return counts;
-}
+// `mockEdgeFunctions` mudou para `./edge`: o helper é genérico e conciliação
+// também o usa. Reexportado aqui para não quebrar os imports existentes.
+export { mockEdgeFunctions } from './edge';
+export type { EdgeFunctionMocks, EdgeFunctionResponse } from './edge';

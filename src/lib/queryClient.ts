@@ -28,8 +28,20 @@ export const queryClient = new QueryClient({
       networkMode: 'online',
     },
     mutations: {
-      retry: 1,
-      retryDelay: 1000,
+      // Mutação NÃO é reexecutada automaticamente. O default anterior
+      // (`retry: 1`) reenviava toda mutação que falhasse — e, ao contrário do
+      // predicado de `queries` acima, sem nem excluir 4xx. Como o cliente não
+      // sabe se a falha ocorreu antes ou depois do efeito no servidor, o
+      // reenvio de uma operação não idempotente a executa duas vezes: um
+      // segundo evento de manifestação na SEFAZ, um segundo boleto no Asaas,
+      // uma segunda baixa. Foi assim que a Etapa 31 flagrou dois POSTs em
+      // `sefaz-manifestar` com um clique só.
+      //
+      // Quem precisar de reenvio deve declará-lo na própria mutação, e só
+      // depois de garantir idempotência (chave de idempotência ou RPC que
+      // reconheça a repetição). Falha transitória aqui vira erro na tela:
+      // o usuário reenvia sabendo o que está reenviando.
+      retry: false,
       networkMode: 'online',
     },
   },
