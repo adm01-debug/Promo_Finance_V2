@@ -8,6 +8,52 @@ on:
     branches: [ main, master, develop ]
 
 jobs:
+  secret-scan:
+    name: Varredura de segredos (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # A varredura cobre o histórico inteiro, não só o diff: força-push e
+          # rebase podem trazer de volta um segredo já removido da ponta.
+          fetch-depth: 0
+
+      - name: Instalar gitleaks
+        env:
+          GITLEAKS_VERSAO: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          set -euo pipefail
+          arquivo="gitleaks_${GITLEAKS_VERSAO}_linux_x64.tar.gz"
+          curl -sSfL -o "$arquivo" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSAO}/${arquivo}"
+          echo "${GITLEAKS_SHA256}  ${arquivo}" | sha256sum -c -
+          sudo tar -xzf "$arquivo" -C /usr/local/bin gitleaks
+          gitleaks version
+
+      - name: Varredura de segredos
+        # --redact impede que um segredo recém-detectado seja impresso no log
+        # público do build, que é exatamente onde ele não pode acabar.
+        # O baseline carrega os achados históricos já tratados; qualquer
+        # ocorrência nova reprova o job.
+        run: |
+          gitleaks git \
+            --no-banner \
+            --redact \
+            --baseline-path .gitleaks-baseline.json \
+            --report-format sarif \
+            --report-path gitleaks.sarif
+
+      - name: Publicar relatório
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-sarif
+          path: gitleaks.sarif
+          retention-days: 14
+
   quality-gate:
     name: Quality Gate & Tests
     runs-on: ubuntu-latest

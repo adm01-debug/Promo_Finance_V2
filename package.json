@@ -37,7 +37,9 @@
     "db:seed": "supabase db seed",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build:types": "tsc && vite build"
+    "build:types": "tsc && vite build",
+    "scan:secrets": "gitleaks git --no-banner --redact --baseline-path .gitleaks-baseline.json",
+    "scan:secrets:tree": "gitleaks dir . --no-banner --redact --baseline-path .gitleaks-baseline.json"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
