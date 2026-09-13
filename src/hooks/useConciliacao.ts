@@ -8,6 +8,7 @@ import type { ExtratoOFX } from '@/lib/ofx-parser';
 import type { TablesInsert, Tables, TablesUpdate, Json } from '@/integrations/supabase/types';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
 import { toISOLocal } from '@/lib/formatters';
+import { mustSucceed } from '@/lib/supabase-write';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
@@ -36,11 +37,14 @@ export function useConciliacao() {
       evidenciaUrl,
       regraId,
     }: ConfirmarConciliacaoParams) => {
-      const { data: transacao } = await supabase
-        .from('transacoes_bancarias')
-        .select('*')
-        .eq('id', transacaoId)
-        .single();
+      // O erro deste select era descartado. Sem a transação, os dois blocos de
+      // rastreabilidade abaixo (`if (contaReceberId && transacao)`) eram pulados
+      // em silêncio — a conciliação era confirmada pelo proxy e o vínculo com a
+      // conta nunca era gravado, com toast de sucesso no fim.
+      const transacao = await mustSucceed(
+        supabase.from('transacoes_bancarias').select('*').eq('id', transacaoId).single(),
+        'carregar a transação bancária a conciliar'
+      );
 
       const {
         data: { user },
@@ -72,8 +76,11 @@ export function useConciliacao() {
         updateData.compensacao_evidencia_url = evidenciaUrl;
       }
 
-      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 17
-      await supabase.from('transacoes_bancarias').update(updateData).eq('id', transacaoId);
+      await mustSucceed(
+        supabase.from('transacoes_bancarias').update(updateData).eq('id', transacaoId).select('id'),
+        'marcar a transação bancária como confirmada',
+        { exigirLinhas: true }
+      );
 
       const regraAplicada =
         ajusteCentavos && ajusteCentavos !== 0
@@ -84,7 +91,7 @@ export function useConciliacao() {
           : null;
 
       // Adiciona metadados de conciliação para rastreabilidade
-      if (contaReceberId && transacao) {
+      if (contaReceberId) {
         let mensagem = `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`;
         if (regraAplicada) {
           mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos || 0).toFixed(2)})`;
@@ -103,16 +110,18 @@ export function useConciliacao() {
           } as unknown as Json,
         });
 
-        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 17
-        await supabase
-          .from('contas_receber')
-          .update({
-            transacao_conciliada_id: transacaoId,
-          })
-          .eq('id', contaReceberId);
+        await mustSucceed(
+          supabase
+            .from('contas_receber')
+            .update({ transacao_conciliada_id: transacaoId })
+            .eq('id', contaReceberId)
+            .select('id'),
+          'vincular a transação à conta a receber',
+          { exigirLinhas: true }
+        );
       }
 
-      if (contaPagarId && transacao) {
+      if (contaPagarId) {
         let mensagem = `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`;
         if (regraAplicada) {
           mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos || 0).toFixed(2)})`;
