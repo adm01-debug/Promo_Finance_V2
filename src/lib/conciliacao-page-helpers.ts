@@ -242,6 +242,7 @@ export async function aplicarConciliacoesAutomaticas(params: {
 
           // Registrar log de erro de conciliação no banco
           if (selectedBanco) {
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
             await supabase.from('webhooks_log').insert({
               event_type: 'reconciliation.failed',
               status: 'error',

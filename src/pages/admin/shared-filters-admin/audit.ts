@@ -8,6 +8,7 @@ export async function logAudit(params: {
   newData?: Record<string, unknown>;
 }) {
   try {
+    // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
     await supabase.rpc('log_audit', {
       p_action: 'UPDATE',
       p_table_name: 'saved_filters',

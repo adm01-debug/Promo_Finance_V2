@@ -114,11 +114,20 @@ export function useSaveSSOProvider() {
     mutationFn: async (provider: Partial<SSOProvider> & { nome: string; tipo: SSOTipo }) => {
       const { id, ...rest } = provider;
       if (id) {
-        const { data, error } = await supabase.from('sso_providers').update(rest as never).eq('id', id).select().maybeSingle();
+        const { data, error } = await supabase
+          .from('sso_providers')
+          .update(rest as never)
+          .eq('id', id)
+          .select()
+          .maybeSingle();
         if (error) throw error;
         return data;
       }
-      const { data, error } = await supabase.from('sso_providers').insert(rest as never).select().maybeSingle();
+      const { data, error } = await supabase
+        .from('sso_providers')
+        .insert(rest as never)
+        .select()
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -149,7 +158,10 @@ export function useToggleSSOProvider() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await supabase.from('sso_providers').update({ ativo } as never).eq('id', id);
+      const { error } = await supabase
+        .from('sso_providers')
+        .update({ ativo } as never)
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sso-providers'] }),
@@ -160,7 +172,9 @@ export function useToggleSSOProvider() {
 export function useTestSSOConfig() {
   return useMutation({
     mutationFn: async (payload: Record<string, unknown>) => {
-      const { data, error } = await supabase.functions.invoke('sso-validate-config', { body: payload });
+      const { data, error } = await supabase.functions.invoke('sso-validate-config', {
+        body: payload,
+      });
       if (error) throw error;
       return data as { valid: boolean; message: string; discovered?: Record<string, unknown> };
     },
@@ -170,7 +184,9 @@ export function useTestSSOConfig() {
 export function useGenerateSSOMetadata() {
   return useMutation({
     mutationFn: async (payload: { tipo: SSOTipo; nome?: string }) => {
-      const { data, error } = await supabase.functions.invoke('sso-generate-metadata', { body: payload });
+      const { data, error } = await supabase.functions.invoke('sso-generate-metadata', {
+        body: payload,
+      });
       if (error) throw error;
       return data;
     },
@@ -190,12 +206,19 @@ export function useTestSSOLogin() {
 export function useSaveSSORoleMappings() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ providerId, mappings }: { providerId: string; mappings: Array<{ idp_group: string; app_role: AppRole }> }) => {
+    mutationFn: async ({
+      providerId,
+      mappings,
+    }: {
+      providerId: string;
+      mappings: Array<{ idp_group: string; app_role: AppRole }>;
+    }) => {
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabaseDyn.from('sso_role_mappings').delete().eq('provider_id', providerId);
       if (mappings.length) {
-        const { error } = await supabaseDyn.from('sso_role_mappings').insert(
-          mappings.map((m, i) => ({ ...m, provider_id: providerId, ordem: i }))
-        );
+        const { error } = await supabaseDyn
+          .from('sso_role_mappings')
+          .insert(mappings.map((m, i) => ({ ...m, provider_id: providerId, ordem: i })));
         if (error) throw error;
       }
     },

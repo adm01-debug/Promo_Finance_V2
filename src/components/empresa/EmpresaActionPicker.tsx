@@ -22,7 +22,10 @@ export interface EmpresaActionPickerProps {
   onChange: (empresaId: string) => void;
   contexto: ContextoOperacao;
   /** Mapa empresaId → metadados tributários (opcional; fallback: tudo Lucro Real) */
-  metaPorEmpresa?: Record<string, { regime: RegimeTributario; rbt12?: number; creditoIcms?: number }>;
+  metaPorEmpresa?: Record<
+    string,
+    { regime: RegimeTributario; rbt12?: number; creditoIcms?: number }
+  >;
   label?: string;
 }
 
@@ -61,21 +64,28 @@ export function EmpresaActionPicker({
     try {
       const aceitouRecomendacao = empresaId === recomendadaId;
       const rec = ranking.find((r) => r.empresaId === empresaId);
-      const { data: { user } } = await supabase.auth.getUser();
-      await supabase.from('audit_logs').insert([{
-        user_id: user?.id ?? null,
-        action: 'empresa_action_pick',
-        table_name: 'empresas',
-        record_id: empresaId,
-        details: `Operação ${contexto.tipo} por ${empresaId}${aceitouRecomendacao ? ' (aceitou sugestão IA)' : ' (rejeitou sugestão IA)'}`,
-        new_data: JSON.parse(JSON.stringify({
-          empresa_id: empresaId,
-          recomendada_id: recomendadaId,
-          aceitou_recomendacao: aceitouRecomendacao,
-          score: rec?.score,
-          contexto,
-        })),
-      }]);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+      await supabase.from('audit_logs').insert([
+        {
+          user_id: user?.id ?? null,
+          action: 'empresa_action_pick',
+          table_name: 'empresas',
+          record_id: empresaId,
+          details: `Operação ${contexto.tipo} por ${empresaId}${aceitouRecomendacao ? ' (aceitou sugestão IA)' : ' (rejeitou sugestão IA)'}`,
+          new_data: JSON.parse(
+            JSON.stringify({
+              empresa_id: empresaId,
+              recomendada_id: recomendadaId,
+              aceitou_recomendacao: aceitouRecomendacao,
+              score: rec?.score,
+              contexto,
+            })
+          ),
+        },
+      ]);
     } catch (err) {
       logger.warn('[EmpresaActionPicker] falha ao auditar escolha', err);
     }
@@ -91,7 +101,9 @@ export function EmpresaActionPicker({
 
   return (
     <div className="space-y-2">
-      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</label>
+      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </label>
       <div className="grid gap-2">
         {ranking.map((rec) => {
           const vinculo = availableEmpresas.find((v) => v.empresa_id === rec.empresaId);
@@ -111,7 +123,7 @@ export function EmpresaActionPicker({
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 isSelected
                   ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border bg-card hover:border-primary/40 hover:bg-accent/30',
+                  : 'border-border bg-card hover:border-primary/40 hover:bg-accent/30'
               )}
             >
               <div className="flex items-start gap-3">
@@ -125,12 +137,17 @@ export function EmpresaActionPicker({
                         Sugerida pela IA
                       </span>
                     )}
-                    <span className="text-[10px] font-mono text-muted-foreground">score {rec.score}</span>
+                    <span className="text-[10px] font-mono text-muted-foreground">
+                      score {rec.score}
+                    </span>
                   </div>
                   {rec.motivos.length > 0 && (
                     <ul className="mt-1 space-y-0.5">
                       {rec.motivos.slice(0, 2).map((m, i) => (
-                        <li key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                        <li
+                          key={i}
+                          className="flex items-start gap-1.5 text-[11px] text-muted-foreground"
+                        >
                           <ShieldCheck className="h-3 w-3 mt-0.5 text-success shrink-0" />
                           <span>{m}</span>
                         </li>

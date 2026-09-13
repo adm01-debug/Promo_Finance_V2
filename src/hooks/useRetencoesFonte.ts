@@ -107,10 +107,7 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
   const { data: darfs = [], isLoading: isLoadingDarfs } = useQuery({
     queryKey: ['darfs', empresaId, competencia],
     queryFn: async () => {
-      let query = supabase
-        .from('darfs')
-        .select('*')
-        .order('data_vencimento', { ascending: true });
+      let query = supabase.from('darfs').select('*').order('data_vencimento', { ascending: true });
 
       if (empresaId) {
         query = query.eq('empresa_id', empresaId);
@@ -171,20 +168,20 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
 
   // Gerar DARF consolidado
   const gerarDARF = useMutation({
-    mutationFn: async ({ 
-      empresaId, 
-      competencia, 
+    mutationFn: async ({
+      empresaId,
+      competencia,
       tipoRetencao,
-      retencoesIds 
-    }: { 
-      empresaId: string; 
-      competencia: string; 
+      retencoesIds,
+    }: {
+      empresaId: string;
+      competencia: string;
       tipoRetencao: TipoRetencao;
       retencoesIds: string[];
     }) => {
       // Buscar retenções selecionadas
-      const retencoesSelecionadas = retencoes.filter(r => retencoesIds.includes(r.id));
-      
+      const retencoesSelecionadas = retencoes.filter((r) => retencoesIds.includes(r.id));
+
       if (retencoesSelecionadas.length === 0) {
         throw new Error('Nenhuma retenção selecionada');
       }
@@ -217,10 +214,8 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
       if (error) throw error;
 
       // Marcar retenções como DARF gerado
-      await supabase
-        .from('retencoes_fonte')
-        .update({ darf_gerado: true })
-        .in('id', retencoesIds);
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 18
+      await supabase.from('retencoes_fonte').update({ darf_gerado: true }).in('id', retencoesIds);
 
       return darf;
     },
@@ -239,7 +234,7 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
     mutationFn: async ({ darfId, dataPagamento }: { darfId: string; dataPagamento: string }) => {
       const { data, error } = await supabase
         .from('darfs')
-        .update({ 
+        .update({
           status: 'pago',
           data_pagamento: dataPagamento,
         })
@@ -250,11 +245,12 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
       if (error) throw error;
 
       // Atualizar retenções vinculadas
-      const darf = darfs.find(d => d.id === darfId);
+      const darf = darfs.find((d) => d.id === darfId);
       if (darf?.retencoes_ids?.length) {
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 18
         await supabase
           .from('retencoes_fonte')
-          .update({ 
+          .update({
             status: 'recolhido',
             data_recolhimento: dataPagamento,
           })
@@ -284,19 +280,25 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
   };
 
   // Resumo por tipo
-  const resumoPorTipo = retencoes.reduce((acc, r) => {
-    if (!acc[r.tipo_retencao]) {
-      acc[r.tipo_retencao] = { total: 0, pendente: 0, recolhido: 0, count: 0 };
-    }
-    acc[r.tipo_retencao].total += r.valor_retido;
-    acc[r.tipo_retencao].count++;
-    if (r.status === 'pendente') acc[r.tipo_retencao].pendente += r.valor_retido;
-    if (r.status === 'recolhido') acc[r.tipo_retencao].recolhido += r.valor_retido;
-    return acc;
-  }, {} as Record<TipoRetencao, { total: number; pendente: number; recolhido: number; count: number }>);
+  const resumoPorTipo = retencoes.reduce(
+    (acc, r) => {
+      if (!acc[r.tipo_retencao]) {
+        acc[r.tipo_retencao] = { total: 0, pendente: 0, recolhido: 0, count: 0 };
+      }
+      acc[r.tipo_retencao].total += r.valor_retido;
+      acc[r.tipo_retencao].count++;
+      if (r.status === 'pendente') acc[r.tipo_retencao].pendente += r.valor_retido;
+      if (r.status === 'recolhido') acc[r.tipo_retencao].recolhido += r.valor_retido;
+      return acc;
+    },
+    {} as Record<
+      TipoRetencao,
+      { total: number; pendente: number; recolhido: number; count: number }
+    >
+  );
 
   // Retenções pendentes próximas do vencimento
-  const retencoesCriticas = retencoes.filter(r => {
+  const retencoesCriticas = retencoes.filter((r) => {
     if (r.status !== 'pendente') return false;
     const diasParaVencer = Math.ceil(
       (new Date(r.data_vencimento).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)

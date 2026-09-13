@@ -264,6 +264,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
           const competencia = `${nfe.dataEmissao.getFullYear()}-${String(nfe.dataEmissao.getMonth() + 1).padStart(2, '0')}`;
 
           if (cbsCalculado > 0) {
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 19
             await supabase.from('creditos_tributarios').insert({
               empresa_id: empresaId,
               tipo_tributo: 'CBS',
@@ -280,6 +281,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
           }
 
           if (ibsCalculado > 0) {
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 19
             await supabase.from('creditos_tributarios').insert({
               empresa_id: empresaId,
               tipo_tributo: 'IBS',

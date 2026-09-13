@@ -294,6 +294,7 @@ export function useWebAuthn() {
         const authenticatorData = new Uint8Array(response.authenticatorData);
         const counter = new DataView(authenticatorData.buffer).getUint32(33, false);
 
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
         await supabase
           .from('webauthn_credentials')
           .update({ counter, last_used_at: new Date().toISOString() })

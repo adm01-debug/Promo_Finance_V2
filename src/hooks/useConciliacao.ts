@@ -25,14 +25,27 @@ export function useConciliacao() {
   const queryClient = useQueryClient();
 
   const confirmarConciliacao = useMutation({
-    mutationFn: async ({ 
-      transacaoId, contaPagarId, contaReceberId, ajusteCentavos, 
-      motivo, classificacao, regra, evidenciaUrl, regraId
+    mutationFn: async ({
+      transacaoId,
+      contaPagarId,
+      contaReceberId,
+      ajusteCentavos,
+      motivo,
+      classificacao,
+      regra,
+      evidenciaUrl,
+      regraId,
     }: ConfirmarConciliacaoParams) => {
-      const { data: transacao } = await supabase.from('transacoes_bancarias').select('*').eq('id', transacaoId).single();
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const { data: transacao } = await supabase
+        .from('transacoes_bancarias')
+        .select('*')
+        .eq('id', transacaoId)
+        .single();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       // Proxy Edge Function (service_role) em vez de RPC direta
       await invokeEdge('conciliacao-proxy', {
         action: 'confirmar',
@@ -41,7 +54,6 @@ export function useConciliacao() {
         contaReceberId: contaReceberId || null,
         ajusteCentavos: ajusteCentavos || 0,
       });
-
 
       // Atualiza metadados extras na transação bancária
       const updateData: TablesUpdate<'transacoes_bancarias'> = {
@@ -54,18 +66,22 @@ export function useConciliacao() {
       if (ajusteCentavos && ajusteCentavos !== 0) {
         updateData.compensacao_valor = ajusteCentavos;
         updateData.compensacao_motivo = motivo || 'Tolerância configurada';
-        updateData.compensacao_classificacao = classificacao || (ajusteCentavos > 0 ? 'Juros' : 'Desconto');
+        updateData.compensacao_classificacao =
+          classificacao || (ajusteCentavos > 0 ? 'Juros' : 'Desconto');
         updateData.compensacao_regra = regra || 'Ajuste automático de centavos';
         updateData.compensacao_evidencia_url = evidenciaUrl;
       }
 
-      await supabase.from('transacoes_bancarias')
-        .update(updateData)
-        .eq('id', transacaoId);
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 17
+      await supabase.from('transacoes_bancarias').update(updateData).eq('id', transacaoId);
 
-      const regraAplicada = ajusteCentavos && ajusteCentavos !== 0 
-        ? (classificacao || (ajusteCentavos > 0 ? 'Compensação automática: Juros' : 'Compensação automática: Desconto'))
-        : null;
+      const regraAplicada =
+        ajusteCentavos && ajusteCentavos !== 0
+          ? classificacao ||
+            (ajusteCentavos > 0
+              ? 'Compensação automática: Juros'
+              : 'Compensação automática: Desconto')
+          : null;
 
       // Adiciona metadados de conciliação para rastreabilidade
       if (contaReceberId && transacao) {
@@ -86,10 +102,14 @@ export function useConciliacao() {
             regra_aplicada: regraAplicada,
           } as unknown as Json,
         });
-        
-        await supabase.from('contas_receber').update({ 
-          transacao_conciliada_id: transacaoId 
-        }).eq('id', contaReceberId);
+
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 17
+        await supabase
+          .from('contas_receber')
+          .update({
+            transacao_conciliada_id: transacaoId,
+          })
+          .eq('id', contaReceberId);
       }
 
       if (contaPagarId && transacao) {
@@ -150,14 +170,16 @@ export function useConciliacao() {
   });
 
   const importarTransacoes = useMutation({
-    mutationFn: async (transacoes: Array<{
-      conta_bancaria_id: string;
-      data: string;
-      descricao: string;
-      valor: number;
-      tipo: 'receita' | 'despesa';
-      saldo: number;
-    }>) => {
+    mutationFn: async (
+      transacoes: Array<{
+        conta_bancaria_id: string;
+        data: string;
+        descricao: string;
+        valor: number;
+        tipo: 'receita' | 'despesa';
+        saldo: number;
+      }>
+    ) => {
       const { data, error } = await supabase
         .from('transacoes_bancarias')
         .insert(transacoes as never)
@@ -177,7 +199,13 @@ export function useConciliacao() {
   });
 
   const salvarExtratoBanco = useMutation({
-    mutationFn: async ({ extrato, contaBancariaId }: { extrato: ExtratoOFX; contaBancariaId: string }) => {
+    mutationFn: async ({
+      extrato,
+      contaBancariaId,
+    }: {
+      extrato: ExtratoOFX;
+      contaBancariaId: string;
+    }) => {
       const rows: TablesInsert<'extrato_bancario'>[] = extrato.transacoes.map((t, i) => ({
         conta_bancaria_id: contaBancariaId,
         data: toISOLocal(t.data),
@@ -195,23 +223,21 @@ export function useConciliacao() {
         saldo: extrato.conta.saldoFinal || null,
       }));
 
-      const hashes = rows.map(r => r.hash_transacao).filter(Boolean) as string[];
+      const hashes = rows.map((r) => r.hash_transacao).filter(Boolean) as string[];
       const { data: existing } = await supabase
         .from('extrato_bancario')
         .select('hash_transacao')
         .in('hash_transacao', hashes);
 
-      const existingHashes = new Set((existing || []).map(e => e.hash_transacao));
-      const newRows = rows.filter(r => !existingHashes.has(r.hash_transacao));
+      const existingHashes = new Set((existing || []).map((e) => e.hash_transacao));
+      const newRows = rows.filter((r) => !existingHashes.has(r.hash_transacao));
       const duplicateCount = rows.length - newRows.length;
 
       if (newRows.length === 0) {
         return { saved: 0, duplicates: duplicateCount };
       }
 
-      const { error } = await supabase
-        .from('extrato_bancario')
-        .insert(newRows);
+      const { error } = await supabase.from('extrato_bancario').insert(newRows);
 
       if (error) throw error;
 
@@ -228,11 +254,12 @@ export function useConciliacao() {
 
   const desfazerConciliacao = useMutation({
     mutationFn: async (transacaoId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
       await invokeEdge('conciliacao-proxy', { action: 'desfazer', transacaoId });
-
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
@@ -257,7 +284,7 @@ export function useConciliacao() {
 
 export function useTransacoesBancarias(contaBancariaId?: string) {
   const queryClient = useQueryClient();
-  
+
   const fetchTransacoes = async () => {
     let query = supabase
       .from('transacoes_bancarias')

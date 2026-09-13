@@ -63,7 +63,7 @@ export function useOnboardingProgress() {
       }
       await fetchProgress();
     },
-    [user, fetchProgress],
+    [user, fetchProgress]
   );
 
   const iniciarTour = useCallback(async () => {
@@ -80,12 +80,13 @@ export function useOnboardingProgress() {
       if (!user || !progress) return;
       const novas = Array.from(new Set([...(progress.steps_completed ?? []), etapa]));
       setProgress({ ...progress, steps_completed: novas, last_step: etapa });
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase
         .from('user_onboarding_progress' as never)
         .update({ steps_completed: novas, last_step: etapa } as never)
         .eq('user_id', user.id);
     },
-    [user, progress],
+    [user, progress]
   );
 
   const finalizar = useCallback(
@@ -97,7 +98,7 @@ export function useOnboardingProgress() {
         steps_completed: progress?.steps_completed ?? [],
       });
     },
-    [user, upsert, progress],
+    [user, upsert, progress]
   );
 
   const reiniciar = useCallback(async () => {

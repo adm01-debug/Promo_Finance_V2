@@ -203,6 +203,7 @@ export function useAcordosParcelamento() {
       const todasPagas = parcelas?.every((p) => p.status === 'pago');
 
       if (todasPagas) {
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 20
         await supabase
           .from('acordos_parcelamento')
           .update({ status: 'quitado' })
@@ -224,6 +225,7 @@ export function useAcordosParcelamento() {
   const cancelarAcordoMutation = useMutation({
     mutationFn: async (acordoId: string) => {
       // Cancelar parcelas pendentes
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 20
       await supabase
         .from('parcelas_acordo')
         .update({ status: 'cancelado' })

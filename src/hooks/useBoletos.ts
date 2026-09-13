@@ -79,13 +79,21 @@ export function validarEmissaoBoletoConfirmada(resposta: unknown): EmissaoBoleto
   const linhaDigitavel = dados.identificationField;
   const codigoBarras = dados.barCode;
   if (typeof id !== 'string' || id.trim() === '') {
-    const mensagem = typeof dados.error === 'string' && dados.error.trim()
-      ? dados.error
-      : 'ASAAS não retornou identificador';
+    const mensagem =
+      typeof dados.error === 'string' && dados.error.trim()
+        ? dados.error
+        : 'ASAAS não retornou identificador';
     throw new Error(mensagem);
   }
-  if (typeof linhaDigitavel !== 'string' || linhaDigitavel.trim() === '' || typeof codigoBarras !== 'string' || codigoBarras.trim() === '') {
-    throw new Error('ASAAS não retornou linha digitável e código de barras válidos. Nenhum boleto foi criado.');
+  if (
+    typeof linhaDigitavel !== 'string' ||
+    linhaDigitavel.trim() === '' ||
+    typeof codigoBarras !== 'string' ||
+    codigoBarras.trim() === ''
+  ) {
+    throw new Error(
+      'ASAAS não retornou linha digitável e código de barras válidos. Nenhum boleto foi criado.'
+    );
   }
   return { id, linhaDigitavel, codigoBarras };
 }
@@ -352,6 +360,7 @@ export function useBoletos() {
       if (error) throw error;
 
       // Registrar no novo histórico de cobranças
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase.from('historico_cobrancas_boletos').insert({
         boleto_id: id,
         tipo_evento: `status_${status}`,

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
@@ -25,14 +24,14 @@ export function useAuthValidation() {
         // Try primary geo API
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
-        
+
         // Use HTTPS API since ip-api free tier only supports HTTP
         // which is blocked by mixed content policies on HTTPS sites
         const response = await fetch('https://ipapi.co/json/', {
-          signal: controller.signal
+          signal: controller.signal,
         });
         clearTimeout(timeout);
-        
+
         if (response.ok) {
           const data = await response.json();
           // ipapi.co returns 'ip' and 'country_code' fields
@@ -42,20 +41,20 @@ export function useAuthValidation() {
       } catch {
         // Silently fail and try fallback
       }
-      
+
       // Fallback to IP-only service
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
-        
+
         const fallback = await fetch('https://api.ipify.org?format=json', {
-          signal: controller.signal
+          signal: controller.signal,
         });
         clearTimeout(timeout);
-        
+
         if (fallback.ok) {
           const fallbackData = await fallback.json();
-          setGeoData(prev => ({ ...prev, ip: fallbackData.ip }));
+          setGeoData((prev) => ({ ...prev, ip: fallbackData.ip }));
         }
       } catch {
         // Silently fail - IP/geo validation will be skipped
@@ -87,10 +86,10 @@ export function useAuthValidation() {
             data.reason === 'blocked_ip'
               ? 'IP bloqueado por atividade suspeita'
               : data.reason === 'ip_not_allowlisted'
-              ? `IP ${data.ip ?? ''} não autorizado para acesso`
-              : data.reason === 'country_not_allowlisted'
-              ? `Acesso não permitido do país: ${data.country ?? ''}`
-              : 'Acesso negado pela política de segurança',
+                ? `IP ${data.ip ?? ''} não autorizado para acesso`
+                : data.reason === 'country_not_allowlisted'
+                  ? `Acesso não permitido do país: ${data.country ?? ''}`
+                  : 'Acesso negado pela política de segurança',
         };
       }
       return { allowed: true };
@@ -105,7 +104,6 @@ export function useAuthValidation() {
     // Coberto por validateIp (mesma edge function faz IP + Geo em uma chamada).
     return { allowed: true };
   }, []);
-
 
   const checkBlockedIp = useCallback(async (): Promise<boolean> => {
     if (!geoData.ip) return false;
@@ -129,23 +127,23 @@ export function useAuthValidation() {
     }
   }, [geoData.ip]);
 
-  const logLoginAttempt = useCallback(async (
-    email: string, 
-    success: boolean, 
-    blockedReason?: string
-  ) => {
-    try {
-      await supabase.from('login_attempts').insert({
-        email: email,
-        ip_address: geoData.ip,
-        user_agent: navigator.userAgent,
-        success,
-        blocked_reason: blockedReason || null,
-      });
-    } catch (error: unknown) {
-      logger.error('Erro ao registrar tentativa de login:', error);
-    }
-  }, [geoData.ip]);
+  const logLoginAttempt = useCallback(
+    async (email: string, success: boolean, blockedReason?: string) => {
+      try {
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+        await supabase.from('login_attempts').insert({
+          email: email,
+          ip_address: geoData.ip,
+          user_agent: navigator.userAgent,
+          success,
+          blocked_reason: blockedReason || null,
+        });
+      } catch (error: unknown) {
+        logger.error('Erro ao registrar tentativa de login:', error);
+      }
+    },
+    [geoData.ip]
+  );
 
   const resetBlocks = useCallback(() => {
     setIpBlocked(false);

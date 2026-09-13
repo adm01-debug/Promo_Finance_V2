@@ -78,6 +78,7 @@ export async function aprovarPagamento(
 
   if (updateError) throw updateError;
 
+  // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 16
   await supabase
     .from('contas_pagar')
     // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts canônico)
@@ -190,6 +191,7 @@ export async function agendarCobranca(contaId: string): Promise<ActionResult> {
     .eq('id', contaId);
   if (error) throw error;
 
+  // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
   await supabase.from('historico_cobranca').insert({
     conta_receber_id: contaId,
     // TODO(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);

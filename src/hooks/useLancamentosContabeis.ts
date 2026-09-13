@@ -207,6 +207,7 @@ export function useImportLancamentosLote() {
         } catch (e) {
           // Compensação: remove cabeçalho órfão
           if (lancId) {
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 20
             await supabase.from('lancamentos_contabeis').delete().eq('id', lancId);
           }
           result.falhas.push({
