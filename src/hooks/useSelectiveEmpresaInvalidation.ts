@@ -2,49 +2,81 @@ import { useEffect } from 'react';
 import { useQueryClient, type QueryKey } from '@tanstack/react-query';
 
 /**
- * Invalidação SELETIVA de React Query ao trocar de empresa.
+ * Descarte estrutural do cache de React Query ao trocar de empresa.
  *
- * Estratégia:
- *  - Não usar `queryClient.clear()` (força refetch storm em toda a app).
- *  - Percorrer o cache e invalidar apenas queries cuja `queryKey` contenha
- *    marcadores de escopo por empresa: strings como "empresa", "empresa_id",
- *    ou o próprio UUID da empresa anterior/nova.
- *  - Views (`queryKeys.views.*`) já são parametrizadas por empresaId — o
- *    predicate detecta pela presença do UUID trocado na key.
+ * A versão anterior era *fail-open*: invalidava uma query apenas se alguma
+ * parte da chave contivesse a string "empresa", fosse igual ao UUID
+ * anterior/novo, ou fosse um objeto com `empresa_id`. Chaves legítimas como
+ * `['centros_custo', 'all']` ou `['auditoria-ia']` não casam com nenhum desses
+ * critérios — os dados da empresa anterior permaneciam no cache. Pior, no
+ * primeiro switch da sessão `prev` era `null`, de modo que nem o critério de
+ * UUID funcionava.
  *
- * Aceite: trocar empresa não força reload total; Network Tab mostra apenas
- * as queries dependentes sendo refetchadas.
+ * Agora é *fail-closed*: tudo é removido, exceto uma allowlist explícita de
+ * recursos comprovadamente independentes de empresa. O custo de um erro na
+ * allowlist é assimétrico e a escolha segue essa assimetria:
+ *  - remover algo agnóstico  → um refetch desnecessário;
+ *  - manter algo por tenant  → dados de outra empresa exibidos ao usuário.
+ *
+ * Usamos `removeQueries` em vez de `invalidateQueries` porque invalidar marca
+ * como stale mas **mantém os dados antigos no cache**: uma query inativa volta
+ * a ser montada servindo o tenant anterior até o refetch resolver. Remover
+ * elimina a entrada — as queries montadas refazem o fetch, as demais somem sem
+ * tráfego algum.
  */
+
+/**
+ * Raízes de queryKey que não dependem da empresa: identidade do usuário,
+ * catálogos nacionais estáticos e telemetria de plataforma.
+ *
+ * `user-empresas` e `empresas` são obrigatórios aqui — são a própria fonte da
+ * troca de empresa; removê-los durante o switch derrubaria o `EmpresaGuard`
+ * para o estado de carregamento.
+ */
+export const RAIZES_AGNOSTICAS_A_EMPRESA: ReadonlySet<string> = new Set([
+  // Identidade / vínculos do usuário
+  'user-empresas',
+  'empresas',
+  'empresas-simples',
+  'profiles-by-ids',
+  'profiles-audit',
+  'profiles-aprovadores',
+  // Catálogos nacionais estáticos
+  'bancos',
+  'ramos-atividade',
+  'glossario-tributario',
+  'catalogo',
+  'catalogo-iss-municipal',
+  'catalogos-fiscais',
+  'catalogos-tributarios-health',
+  'catalogos-tributarios-history',
+  'estrategias-elisao-catalogo',
+  'cobertura-fiscal-uf',
+  // Saúde/telemetria de plataforma
+  'public-status-metrics',
+  'system-health',
+  'slo-metrics',
+  'edge-health',
+  'sys-edge-health',
+]);
+
+/**
+ * Decide se uma query deve ser descartada na troca de empresa.
+ * Fail-closed: chave sem raiz string reconhecida é sempre removida.
+ */
+export function deveRemoverNaTrocaDeEmpresa(key: QueryKey): boolean {
+  const raiz = key[0];
+  if (typeof raiz !== 'string') return true;
+  return !RAIZES_AGNOSTICAS_A_EMPRESA.has(raiz);
+}
+
 export function useSelectiveEmpresaInvalidation() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    let lastEmpresaId: string | null = null;
-
-    const shouldInvalidate = (key: QueryKey, prev: string | null, next: string | null) => {
-      for (const part of key) {
-        if (typeof part === 'string') {
-          const lower = part.toLowerCase();
-          if (lower.includes('empresa')) return true;
-          if (prev && part === prev) return true;
-          if (next && part === next) return true;
-        }
-        // Filtros passados como objetos costumam ter { empresa_id }
-        if (part && typeof part === 'object' && !Array.isArray(part)) {
-          const obj = part as Record<string, unknown>;
-          if ('empresa_id' in obj || 'empresaId' in obj) return true;
-        }
-      }
-      return false;
-    };
-
-    const handler = (event: Event) => {
-      const next = (event as CustomEvent<string>).detail ?? null;
-      const prev = lastEmpresaId;
-      lastEmpresaId = next;
-
-      queryClient.invalidateQueries({
-        predicate: (query) => shouldInvalidate(query.queryKey, prev, next),
+    const handler = () => {
+      queryClient.removeQueries({
+        predicate: (query) => deveRemoverNaTrocaDeEmpresa(query.queryKey),
       });
     };
 

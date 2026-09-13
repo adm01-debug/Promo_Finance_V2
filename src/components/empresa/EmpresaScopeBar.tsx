@@ -11,14 +11,31 @@ import { useState, useEffect, useRef } from 'react';
 import { LayoutGrid, Crosshair, ChevronDown, Check, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import { EmpresaBadge } from '@/components/empresa/EmpresaBadge';
 
 export function EmpresaScopeBar() {
-  const { mode, ids, availableEmpresas, isLoading, setMode, toggleEmpresa, selectAll, focusEmpresa } = useEmpresaScope();
+  const {
+    mode,
+    ids,
+    availableEmpresas,
+    isLoading,
+    setMode,
+    toggleEmpresa,
+    selectAll,
+    focusEmpresa,
+    currentEmpresaId,
+  } = useEmpresaScope();
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -28,7 +45,11 @@ export function EmpresaScopeBar() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'e') {
         const target = e.target as HTMLElement | null;
         // Não interferir em inputs
-        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+        if (
+          target &&
+          (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+        )
+          return;
         e.preventDefault();
         setOpen((v) => !v);
         triggerRef.current?.focus();
@@ -56,6 +77,14 @@ export function EmpresaScopeBar() {
   const totalSelected = ids.length;
   const totalAvail = availableEmpresas.length;
 
+  // O modo "múltiplas" é um escopo de SELEÇÃO (usado por pickers de ação),
+  // não uma agregação de dados: os hooks financeiros leem currentEmpresaId.
+  // A UI precisa dizer isso, senão o usuário lê o número de uma empresa
+  // acreditando ser o total do grupo.
+  const empresaDosDados = availableEmpresas.find((v) => v.empresa_id === currentEmpresaId);
+  const nomeEmpresaDosDados =
+    empresaDosDados?.empresa.nome_fantasia || empresaDosDados?.empresa.razao_social || null;
+
   return (
     <div className="flex items-center gap-2">
       {/* Toggle Consolidado/Focado */}
@@ -66,10 +95,10 @@ export function EmpresaScopeBar() {
           onClick={() => setMode('consolidated')}
           className="h-8 px-2.5 text-[11px] font-bold uppercase tracking-wider gap-1.5"
           aria-pressed={isConsolidated}
-          aria-label="Modo consolidado: ver várias empresas"
+          aria-label="Selecionar várias empresas para ações; os valores financeiros continuam seguindo a empresa principal"
         >
           <LayoutGrid className="h-3.5 w-3.5" />
-          Consolidado
+          Múltiplas
         </Button>
         <Button
           variant={!isConsolidated ? 'default' : 'ghost'}
@@ -119,6 +148,15 @@ export function EmpresaScopeBar() {
             <CommandList className="max-h-[420px]">
               <CommandEmpty>Nenhuma empresa encontrada.</CommandEmpty>
 
+              {isConsolidated && nomeEmpresaDosDados && (
+                <div className="px-3 py-2 border-b border-border/40 bg-amber-500/10">
+                  <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400">
+                    Valores financeiros exibem apenas {nomeEmpresaDosDados}. A seleção múltipla
+                    define o escopo de ações, não soma os dados das empresas.
+                  </span>
+                </div>
+              )}
+
               {isConsolidated && (
                 <div className="flex items-center justify-between px-3 py-2 border-b border-border/40">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -135,7 +173,9 @@ export function EmpresaScopeBar() {
                 </div>
               )}
 
-              <CommandGroup heading={isConsolidated ? 'Empresas em escopo' : 'Foque em uma empresa'}>
+              <CommandGroup
+                heading={isConsolidated ? 'Empresas em escopo de ação' : 'Foque em uma empresa'}
+              >
                 {availableEmpresas.map((v) => {
                   const selected = ids.includes(v.empresa_id);
                   const label = v.empresa.nome_fantasia || v.empresa.razao_social;
@@ -154,20 +194,30 @@ export function EmpresaScopeBar() {
                     >
                       <EmpresaBadge empresaId={v.empresa_id} />
                       <div className="flex-1 min-w-0">
-                        <div className={cn('text-sm font-semibold truncate', selected && 'text-primary')}>
+                        <div
+                          className={cn(
+                            'text-sm font-semibold truncate',
+                            selected && 'text-primary'
+                          )}
+                        >
                           {label}
                         </div>
-                        <div className="text-[10px] font-mono text-muted-foreground">{v.empresa.cnpj}</div>
+                        <div className="text-[10px] font-mono text-muted-foreground">
+                          {v.empresa.cnpj}
+                        </div>
                       </div>
                       {isConsolidated && selected && <Check className="h-4 w-4 text-primary" />}
-                      {!isConsolidated && selected && <Crosshair className="h-4 w-4 text-primary" />}
+                      {!isConsolidated && selected && (
+                        <Crosshair className="h-4 w-4 text-primary" />
+                      )}
                     </CommandItem>
                   );
                 })}
               </CommandGroup>
 
               <div className="px-3 py-2 border-t border-border/40 text-[10px] text-muted-foreground">
-                Atalho: <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">⌘E</kbd> para abrir
+                Atalho: <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">⌘E</kbd> para
+                abrir
               </div>
             </CommandList>
           </Command>

@@ -35,7 +35,7 @@ import { useCategorias } from '@/hooks/useCategorias';
 import { formatCurrency } from '@/lib/formatters';
 import { format } from 'date-fns';
 import { useZodForm } from '@/hooks/useZodForm';
-import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 import { OrcamentosFormDialog } from './OrcamentosFormDialog';
 import { budgetSchema, type BudgetFormData, type BudgetWithSpent } from './orcamentos.types';
 import { obterDadosOrcamentos } from './orcamentos.helpers';
@@ -45,7 +45,9 @@ const Orcamentos = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<BudgetWithSpent | null>(null);
 
-  const companyId = getCurrentEmpresaId();
+  // Leitura reativa: `getCurrentEmpresaId()` lia o localStorage cru durante o
+  // render, sem inscrição — na troca de empresa o refetch buscava a anterior.
+  const { currentEmpresaId: companyId } = useEmpresaScope();
   const { data: budgets = [], isLoading } = useBudgetsWithSpent(
     selectedPeriod,
     companyId || undefined

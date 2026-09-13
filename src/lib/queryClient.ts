@@ -35,7 +35,6 @@ export const queryClient = new QueryClient({
   },
 });
 
-
 export const STALE_TIMES = {
   // Dados que mudam raramente (10 min)
   static: 10 * 60 * 1000,
@@ -72,31 +71,31 @@ export const GC_TIMES = {
  */
 export const DOMAIN_QUERY_CONFIG = {
   // CRUD financeiro — comportamento default do sistema
-  contasPagar:       { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
-  contasReceber:     { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
-  boletos:           { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
-  movimentacoes:     { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
-  transferencias:    { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  contasPagar: { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  contasReceber: { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  boletos: { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  movimentacoes: { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
+  transferencias: { staleTime: STALE_TIMES.financial, gcTime: GC_TIMES.normal },
 
   // Cadastros — mudam pouco
-  fornecedores:      { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
-  clientes:          { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
+  fornecedores: { staleTime: STALE_TIMES.config, gcTime: GC_TIMES.normal },
+  clientes: { staleTime: STALE_TIMES.config, gcTime: GC_TIMES.normal },
 
   // Realtime — dashboards, saldos, alertas
-  dashboard:         { staleTime: STALE_TIMES.dashboard, gcTime: GC_TIMES.volatile },
-  saldos:            { staleTime: STALE_TIMES.realtime,  gcTime: GC_TIMES.volatile },
-  alertas:           { staleTime: STALE_TIMES.realtime,  gcTime: GC_TIMES.volatile },
-  views:             { staleTime: STALE_TIMES.dashboard, gcTime: GC_TIMES.normal },
+  dashboard: { staleTime: STALE_TIMES.dashboard, gcTime: GC_TIMES.volatile },
+  saldos: { staleTime: STALE_TIMES.realtime, gcTime: GC_TIMES.volatile },
+  alertas: { staleTime: STALE_TIMES.realtime, gcTime: GC_TIMES.volatile },
+  views: { staleTime: STALE_TIMES.dashboard, gcTime: GC_TIMES.normal },
 
   // Catálogos estáticos
-  categorias:        { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
-  formasPagamento:   { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
-  planoContas:       { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
-  centrosCusto:      { staleTime: STALE_TIMES.static,    gcTime: GC_TIMES.static },
+  categorias: { staleTime: STALE_TIMES.static, gcTime: GC_TIMES.static },
+  formasPagamento: { staleTime: STALE_TIMES.static, gcTime: GC_TIMES.static },
+  planoContas: { staleTime: STALE_TIMES.static, gcTime: GC_TIMES.static },
+  centrosCusto: { staleTime: STALE_TIMES.static, gcTime: GC_TIMES.static },
 
   // Tributário — dados densos, mudam mensalmente
-  tributario:        { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
-  apuracoes:         { staleTime: STALE_TIMES.config,    gcTime: GC_TIMES.normal },
+  tributario: { staleTime: STALE_TIMES.config, gcTime: GC_TIMES.normal },
+  apuracoes: { staleTime: STALE_TIMES.config, gcTime: GC_TIMES.normal },
 } as const satisfies Record<string, { staleTime: number; gcTime: number }>;
 
 export type QueryDomain = keyof typeof DOMAIN_QUERY_CONFIG;
@@ -128,11 +127,8 @@ export function createQueryOptions<T>(
   };
 }
 
-export function batchInvalidate(
-  client: QueryClient,
-  queryKeys: readonly unknown[][]
-) {
-  queryKeys.forEach(key => {
+export function batchInvalidate(client: QueryClient, queryKeys: readonly unknown[][]) {
+  queryKeys.forEach((key) => {
     client.invalidateQueries({ queryKey: key });
   });
 }
@@ -151,18 +147,12 @@ export function createOptimisticUpdate<TData, TVariables>(
 
       // Optimistically update
       if (previousData !== undefined) {
-        queryClient.setQueryData<TData>(queryKey, (old) => 
-          updateFn(old, variables)
-        );
+        queryClient.setQueryData<TData>(queryKey, (old) => updateFn(old, variables));
       }
 
       return { previousData };
     },
-    onError: (
-      _err: unknown,
-      _variables: TVariables,
-      context?: { previousData?: TData }
-    ) => {
+    onError: (_err: unknown, _variables: TVariables, context?: { previousData?: TData }) => {
       // Rollback on error
       if (context?.previousData !== undefined) {
         queryClient.setQueryData(queryKey, context.previousData);
@@ -177,11 +167,12 @@ export function createOptimisticUpdate<TData, TVariables>(
 
 export const queryKeys = {
   all: ['promo-finance'] as const,
-  
+
   contasPagar: {
     all: () => [...queryKeys.all, 'contas-pagar'] as const,
     lists: () => [...queryKeys.contasPagar.all(), 'list'] as const,
-    list: (filters?: Record<string, unknown>) => [...queryKeys.contasPagar.lists(), filters] as const,
+    list: (filters?: Record<string, unknown>) =>
+      [...queryKeys.contasPagar.lists(), filters] as const,
     details: () => [...queryKeys.contasPagar.all(), 'detail'] as const,
     detail: (id: string) => [...queryKeys.contasPagar.details(), id] as const,
     totals: () => [...queryKeys.contasPagar.all(), 'totals'] as const,
@@ -192,7 +183,8 @@ export const queryKeys = {
   contasReceber: {
     all: () => [...queryKeys.all, 'contas-receber'] as const,
     lists: () => [...queryKeys.contasReceber.all(), 'list'] as const,
-    list: (filters?: Record<string, unknown>) => [...queryKeys.contasReceber.lists(), filters] as const,
+    list: (filters?: Record<string, unknown>) =>
+      [...queryKeys.contasReceber.lists(), filters] as const,
     details: () => [...queryKeys.contasReceber.all(), 'detail'] as const,
     detail: (id: string) => [...queryKeys.contasReceber.details(), id] as const,
     totals: () => [...queryKeys.contasReceber.all(), 'totals'] as const,
@@ -203,7 +195,8 @@ export const queryKeys = {
   fornecedores: {
     all: () => [...queryKeys.all, 'fornecedores'] as const,
     lists: () => [...queryKeys.fornecedores.all(), 'list'] as const,
-    list: (filters?: Record<string, unknown>) => [...queryKeys.fornecedores.lists(), filters] as const,
+    list: (filters?: Record<string, unknown>) =>
+      [...queryKeys.fornecedores.lists(), filters] as const,
     details: () => [...queryKeys.fornecedores.all(), 'detail'] as const,
     detail: (id: string) => [...queryKeys.fornecedores.details(), id] as const,
     stats: () => [...queryKeys.fornecedores.all(), 'stats'] as const,
@@ -230,11 +223,17 @@ export const queryKeys = {
     all: () => ['views'] as const,
     saldos: (empresaId?: string) => [...queryKeys.views.all(), 'saldos-contas', empresaId] as const,
     dre: (empresaId?: string) => [...queryKeys.views.all(), 'dre-mensal', empresaId] as const,
-    fluxoCaixa: () => [...queryKeys.views.all(), 'fluxo-caixa'] as const,
-    fluxoDiario: (empresaId?: string) => [...queryKeys.views.all(), 'fluxo-caixa-diario', empresaId] as const,
+    fluxoCaixa: (empresaId?: string) =>
+      [...queryKeys.views.all(), 'fluxo-caixa', empresaId] as const,
+    fluxoDiario: (empresaId?: string) =>
+      [...queryKeys.views.all(), 'fluxo-caixa-diario', empresaId] as const,
     dsoAging: (empresaId?: string) => [...queryKeys.views.all(), 'dso-aging', empresaId] as const,
-    gastosCentroCusto: () => [...queryKeys.views.all(), 'gastos-centro-custo'] as const,
-    metricasCobranca: (empresaId?: string) => [...queryKeys.views.all(), 'metricas-cobranca', empresaId] as const,
+    gastosCentroCusto: (empresaId?: string) =>
+      [...queryKeys.views.all(), 'gastos-centro-custo', empresaId] as const,
+    metricasCobranca: (empresaId?: string) =>
+      [...queryKeys.views.all(), 'metricas-cobranca', empresaId] as const,
+    transferenciasPainel: (empresaId?: string) =>
+      [...queryKeys.views.all(), 'transferencias-painel', empresaId] as const,
   },
 
   movimentacoes: {
