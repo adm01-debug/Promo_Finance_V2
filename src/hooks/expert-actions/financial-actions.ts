@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { mustSucceed, bestEffort } from '@/lib/supabase-write';
 import { formatCurrency, todayISOLocal } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -71,19 +72,47 @@ export async function aprovarPagamento(
     return { success: false, message: `Solicitação ${id} não encontrada ou já processada` };
   }
 
-  const { error: updateError } = await supabase
-    .from('solicitacoes_aprovacao')
-    .update({ status: 'aprovado', aprovado_por: user?.id, aprovado_em: new Date().toISOString() })
-    .eq('id', solicitacao.id);
+  // Sem usuário não há quem aprovar: gravar `aprovado_por: undefined` deixaria a
+  // aprovação sem responsável, que é o dado auditável desta operação.
+  if (!user?.id) {
+    return { success: false, message: 'Sessão expirada. Faça login novamente para aprovar.' };
+  }
+  if (!solicitacao.conta_pagar_id) {
+    return {
+      success: false,
+      message: `Solicitação ${id} não está vinculada a uma conta a pagar.`,
+    };
+  }
 
-  if (updateError) throw updateError;
+  // Ordem invertida de propósito. Antes o `solicitacoes_aprovacao` era marcado
+  // como aprovado primeiro e o `contas_pagar` depois, sem verificação: a falha do
+  // segundo passo deixava a solicitação encerrada e a conta sem aprovador — sem
+  // nada a reprocessar, porque a solicitação já não estava mais pendente.
+  // Gravando a conta primeiro, uma falha do segundo passo deixa a solicitação
+  // ainda pendente, e reaprovar é idempotente (mesmo `aprovado_por`).
+  // A atomicidade de verdade vem na Etapa 21, com uma RPC única.
+  await mustSucceed(
+    supabase
+      .from('contas_pagar')
+      // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts canônico)
+      .update({ aprovado_por: user.id })
+      .eq('id', solicitacao.conta_pagar_id)
+      .select('id'),
+    'registrar o aprovador na conta a pagar',
+    // `.eq()` num id inexistente devolve `error: null`: sem esta checagem a
+    // aprovação seria reportada como gravada sem ter tocado em linha alguma.
+    { exigirLinhas: true }
+  );
 
-  // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 16
-  await supabase
-    .from('contas_pagar')
-    // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts canônico)
-    .update({ aprovado_por: user?.id })
-    .eq('id', solicitacao.conta_pagar_id);
+  await mustSucceed(
+    supabase
+      .from('solicitacoes_aprovacao')
+      .update({ status: 'aprovado', aprovado_por: user.id, aprovado_em: new Date().toISOString() })
+      .eq('id', solicitacao.id)
+      .select('id'),
+    'encerrar a solicitação de aprovação',
+    { exigirLinhas: true }
+  );
 
   queryClient.invalidateQueries({ queryKey: ['solicitacoes-aprovacao'] });
   queryClient.invalidateQueries({ queryKey: ['solicitacoes-pendentes'] });
@@ -191,14 +220,19 @@ export async function agendarCobranca(contaId: string): Promise<ActionResult> {
     .eq('id', contaId);
   if (error) throw error;
 
-  // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
-  await supabase.from('historico_cobranca').insert({
-    conta_receber_id: contaId,
-    // TODO(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);
-    // etapa_anterior preservada em metadata (Json)
-    etapa: proximaEtapa,
-    metadata: { etapa_anterior: etapaAtual },
-  });
+  // Acessório: a etapa da cobrança já avançou acima. Perder a linha de histórico
+  // abre um buraco na timeline, mas abortar aqui reportaria falha de uma operação
+  // que de fato aconteceu. Registra e segue.
+  await bestEffort(
+    supabase.from('historico_cobranca').insert({
+      conta_receber_id: contaId,
+      // TODO(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);
+      // etapa_anterior preservada em metadata (Json)
+      etapa: proximaEtapa,
+      metadata: { etapa_anterior: etapaAtual },
+    }),
+    'registrar o histórico de cobrança'
+  );
 
   toast.success(`Cobrança avançada para ${proximaEtapa}!`);
   return {
