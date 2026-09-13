@@ -9,7 +9,6 @@ import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 import { toISOLocal } from '@/lib/formatters';
 import { mustSucceed } from '@/lib/supabase-write';
-import type { TablesInsert } from '@/integrations/supabase/types';
 
 export interface NFeParsed {
   chaveAcesso: string;
@@ -239,50 +238,37 @@ export function useImportacaoXMLNFe(empresaId: string) {
           const cbsCalculado = nfe.valorProdutos * (aliquotas.cbs / 100);
           const ibsCalculado = nfe.valorProdutos * (aliquotas.ibs / 100);
 
-          const { data: nfInserted, error: nfError } = await supabase
-            .from('notas_fiscais')
-            .insert([
-              {
-                empresa_id: empresaId,
-                numero: nfe.numero,
-                serie: nfe.serie || '1',
-                cliente_nome: nfe.nomeEmitente,
-                cliente_cnpj: nfe.cnpjEmitente,
-                data_emissao: toISOLocal(nfe.dataEmissao),
-                valor_total: nfe.valorTotal,
-                valor_produtos: nfe.valorProdutos,
-                valor_icms: nfe.valorICMS,
-                chave_acesso: nfe.chaveAcesso,
-                natureza_operacao: nfe.naturezaOperacao || 'Compra para comercialização',
-                status: 'autorizada',
-                created_by: userData.user.id,
-              },
-            ])
-            .select()
-            .single();
-
-          if (nfError) throw nfError;
-
           const competencia = `${nfe.dataEmissao.getFullYear()}-${String(nfe.dataEmissao.getMonth() + 1).padStart(2, '0')}`;
 
-          // Um único insert para os dois créditos. Em chamadas separadas, o
-          // IBS podia falhar depois do CBS já gravado e a nota ficava marcada
-          // como erro com metade do crédito no banco. O PostgREST executa o
-          // array como um comando só: ou entram os dois, ou nenhum.
+          // Nota e créditos numa transação só. Antes eram duas requisições, e
+          // o PostgREST abre uma transação por requisição: se o insert dos
+          // créditos falhasse, a nota já estava gravada e `chave_acesso` é
+          // UNIQUE — a reimportação batia em 23505 e a nota ficava sem crédito
+          // para sempre. Havia um delete compensatório para isso, que por sua
+          // vez também podia falhar. Com a função, falhar no crédito desfaz a
+          // nota pelo próprio ROLLBACK: não existe estado intermediário a
+          // compensar, nem mensagem de "remova manualmente".
           //
-          // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios
-          // (types.ts canônico): tipo_credito, valor_base, aliquota,
-          // documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
-          const creditos: TablesInsert<'creditos_tributarios'>[] = [];
+          // A função valida cada chave do payload contra
+          // `information_schema.columns` e levanta
+          // `colunas_inexistentes_em_notas_fiscais` — deriva de schema falha
+          // alto em vez de descartar o campo em silêncio.
+          const creditos: Array<{
+            tipo_tributo: string;
+            valor_credito: number;
+            saldo_disponivel: number;
+            data_origem: string;
+            competencia_origem: string;
+            status: string;
+          }> = [];
+
+          // `data_origem` é DATE. `toISOString()` convertia para UTC: uma nota
+          // emitida à noite no fim do mês virava o dia 1º do mês seguinte,
+          // divergindo do `competencia_origem` logo acima, que usa os getters
+          // locais.
           const creditoBase = {
-            empresa_id: empresaId,
-            // `data_origem` é DATE. `toISOString()` convertia para UTC: uma nota
-            // emitida à noite no fim do mês virava o dia 1º do mês seguinte,
-            // divergindo do `competencia_origem` logo abaixo, que é calculado
-            // com os getters locais.
             data_origem: toISOLocal(nfe.dataEmissao),
             competencia_origem: competencia,
-            nota_fiscal_id: nfInserted.id,
             status: 'disponivel',
           };
 
@@ -304,36 +290,27 @@ export function useImportacaoXMLNFe(empresaId: string) {
             });
           }
 
-          if (creditos.length > 0) {
-            try {
-              await mustSucceed(
-                supabase.from('creditos_tributarios').insert(creditos).select('id'),
-                'registrar os créditos de CBS/IBS da nota',
-                { exigirLinhas: creditos.length }
-              );
-            } catch (erroCredito) {
-              // A nota já está gravada e `chave_acesso` é UNIQUE: sem desfazer,
-              // a reimportação bate em 23505 e a nota fica sem crédito para
-              // sempre, sem caminho de recuperação pela tela.
-              try {
-                await mustSucceed(
-                  supabase.from('notas_fiscais').delete().eq('id', nfInserted.id).select('id'),
-                  'desfazer a nota fiscal cujo crédito não foi gravado',
-                  { exigirLinhas: true }
-                );
-              } catch {
-                // Falhou o crédito E falhou o rollback: a mensagem precisa
-                // dizer o que ficou no banco, senão o usuário reimporta e só
-                // recebe "chave duplicada".
-                throw new Error(
-                  `Crédito não gravado e a nota ${nfe.numero} (chave ${nfe.chaveAcesso}) ` +
-                    `permaneceu no banco. Remova-a antes de reimportar. Causa: ` +
-                    `${(erroCredito as Error).message}`
-                );
-              }
-              throw erroCredito;
-            }
-          }
+          await mustSucceed(
+            supabase.rpc('registrar_nfe_com_creditos', {
+              p_empresa_id: empresaId,
+              p_nota: {
+                numero: nfe.numero,
+                serie: nfe.serie || '1',
+                cliente_nome: nfe.nomeEmitente,
+                cliente_cnpj: nfe.cnpjEmitente,
+                data_emissao: toISOLocal(nfe.dataEmissao),
+                valor_total: nfe.valorTotal,
+                valor_produtos: nfe.valorProdutos,
+                valor_icms: nfe.valorICMS,
+                chave_acesso: nfe.chaveAcesso,
+                natureza_operacao: nfe.naturezaOperacao || 'Compra para comercialização',
+                status: 'autorizada',
+                created_by: userData.user.id,
+              },
+              p_creditos: creditos,
+            }),
+            `registrar a nota ${nfe.numero} e seus créditos de CBS/IBS`
+          );
 
           // Os totais só sobem depois do crédito confirmado. Antes, o
           // incremento acontecia mesmo com o insert falhando em silêncio: o

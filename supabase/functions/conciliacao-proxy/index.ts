@@ -68,6 +68,10 @@ export function createHandler(deps: HandlerDeps) {
       if (payload.action === 'confirmar') {
         const ajuste = Number.isFinite(payload.ajusteCentavos) ? Number(payload.ajusteCentavos) : 0;
 
+        // Overload de 6 argumentos: aplica os metadados de compensação dentro da
+        // mesma transação que confirma a conciliação. Antes o cliente fazia esse
+        // UPDATE depois, numa segunda requisição — se ela falhasse, a transação
+        // ficava confirmada sem nenhum registro do porquê do ajuste.
         await auditedRpc(
           ctx,
           deps.admin,
@@ -78,6 +82,7 @@ export function createHandler(deps: HandlerDeps) {
             p_conta_pagar_id: payload.contaPagarId ?? null,
             p_conta_receber_id: payload.contaReceberId ?? null,
             p_ajuste_centavos: ajuste,
+            p_metadados: payload.metadados ?? {},
           },
           'confirmar'
         );

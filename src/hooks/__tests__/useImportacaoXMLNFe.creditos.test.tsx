@@ -1,14 +1,22 @@
 /**
- * Testes — useImportacaoXMLNFe: créditos CBS/IBS (Etapa 19)
+ * Testes — useImportacaoXMLNFe: créditos CBS/IBS (Etapas 19 e 21)
  *
- * Os dois inserts em `creditos_tributarios` tinham o resultado descartado,
- * enquanto `totalCBS`/`totalIBS` eram incrementados logo abaixo e a nota era
- * marcada como `importado`. O resumo da importação anunciava crédito que não
- * existia no banco — e `notas_fiscais.chave_acesso` é UNIQUE, então a
- * reimportação batia em 23505 e a nota ficava sem crédito para sempre.
+ * Etapa 19: os inserts em `creditos_tributarios` tinham o resultado descartado
+ * enquanto `totalCBS`/`totalIBS` eram incrementados logo abaixo. O resumo da
+ * importação anunciava crédito que não existia no banco — e
+ * `notas_fiscais.chave_acesso` é UNIQUE, então a reimportação batia em 23505 e
+ * a nota ficava sem crédito para sempre. A correção foi um delete compensatório
+ * da nota quando o crédito falhava.
  *
- * Os dois créditos passaram a ir num único insert (o PostgREST executa o array
- * como um comando só) e a falha desfaz a nota, devolvendo a chave para retry.
+ * Etapa 21 dispensa a compensação. Nota e créditos entram numa transação só
+ * (`registrar_nfe_com_creditos`): o crédito falhar desfaz a nota pelo próprio
+ * ROLLBACK, sem estado intermediário e sem o segundo delete — que também podia
+ * falhar, e para o qual existia uma mensagem de "remova manualmente".
+ *
+ * A função ainda valida cada chave do payload contra `information_schema`:
+ * deriva de schema levanta `colunas_inexistentes_em_notas_fiscais` em vez de
+ * descartar o campo em silêncio. `natureza_operacao` e `created_by`, que o
+ * types.ts canônico não lista, são exatamente os casos em risco.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ReactNode } from 'react';
@@ -17,13 +25,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 type Resultado = { data: unknown; error: unknown; count?: number | null };
 
-const { mockFrom, mockGetUser } = vi.hoisted(() => ({
+const { mockFrom, mockRpc, mockGetUser } = vi.hoisted(() => ({
   mockFrom: vi.fn(),
+  mockRpc: vi.fn(),
   mockGetUser: vi.fn(),
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: { from: mockFrom, auth: { getUser: mockGetUser } },
+  supabase: { from: mockFrom, rpc: mockRpc, auth: { getUser: mockGetUser } },
 }));
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 vi.mock('@/lib/logger', () => ({
@@ -86,6 +95,7 @@ beforeEach(() => {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
+  mockRpc.mockResolvedValue({ data: { id: 'nf-1' }, error: null });
 });
 
 async function montaHook(respostas: Record<string, Resultado[]>) {
@@ -100,56 +110,70 @@ async function montaHook(respostas: Record<string, Resultado[]>) {
   return { result, escritas };
 }
 
-const NOTA_OK: Resultado = { data: { id: 'nf-1' }, error: null };
-
 describe('importarNFes — créditos CBS/IBS', () => {
-  it('grava CBS e IBS num único insert e contabiliza depois de confirmado', async () => {
-    const { result, escritas } = await montaHook({
-      notas_fiscais: [NOTA_OK],
-      creditos_tributarios: [{ data: [{ id: 'c1' }, { id: 'c2' }], error: null }],
-    });
+  it('grava nota e créditos numa chamada só, e contabiliza depois de confirmado', async () => {
+    const { result, escritas } = await montaHook({});
 
     let resumo!: Awaited<ReturnType<typeof result.current.importarNFes.mutateAsync>>;
     await act(async () => {
       resumo = await result.current.importarNFes.mutateAsync();
     });
 
-    const inserts = escritas.filter(
-      (e) => e.tabela === 'creditos_tributarios' && e.metodo === 'insert'
-    );
-    expect(inserts).toHaveLength(1);
-    expect(inserts[0].payload).toHaveLength(2);
+    expect(mockRpc).toHaveBeenCalledTimes(1);
+    const [nome, payload] = mockRpc.mock.calls[0] as [string, Record<string, unknown>];
+    expect(nome).toBe('registrar_nfe_com_creditos');
+    expect(payload.p_creditos).toHaveLength(2);
+
+    // Nenhuma escrita direta em tabela: era a segunda requisição que abria a
+    // janela entre a nota gravada e o crédito ausente.
+    expect(escritas).toEqual([]);
     expect(resumo.sucesso).toBe(1);
     expect(resumo.creditosGerados.total).toBeGreaterThan(0);
+  });
+
+  it('manda natureza_operacao e created_by para a função decidir, não os descarta', async () => {
+    // A função confere as chaves contra `information_schema.columns`. Omitir
+    // aqui o que o types.ts não lista esconderia a deriva em vez de expô-la.
+    const { result } = await montaHook({});
+
+    await act(async () => {
+      await result.current.importarNFes.mutateAsync();
+    });
+
+    const nota = (mockRpc.mock.calls[0][1] as { p_nota: Record<string, unknown> }).p_nota;
+    expect(nota).toMatchObject({
+      // O parser tira o prefixo `NFe` do atributo `Id`: o que vai para o banco
+      // são os 44 dígitos, que é o formato da coluna UNIQUE.
+      chave_acesso: '35260312345678000199550010000000011000000017',
+      natureza_operacao: 'Compra',
+      created_by: 'user-1',
+    });
   });
 
   it('usa a data local da emissão, não a conversão para UTC', async () => {
     // Emissão 31/03 às 22:30 (-03:00). `toISOString()` levava para 01/04 em
     // UTC, divergindo do `competencia_origem` calculado com getters locais.
-    const { result, escritas } = await montaHook({
-      notas_fiscais: [NOTA_OK],
-      creditos_tributarios: [{ data: [{ id: 'c1' }, { id: 'c2' }], error: null }],
-    });
+    const { result } = await montaHook({});
 
     await act(async () => {
       await result.current.importarNFes.mutateAsync();
     });
 
     const [credito] = (
-      escritas.find((e) => e.tabela === 'creditos_tributarios')!.payload as Array<{
-        data_origem: string;
-        competencia_origem: string;
-      }>
-    ).slice(0, 1);
+      mockRpc.mock.calls[0][1] as {
+        p_creditos: Array<{ data_origem: string; competencia_origem: string }>;
+      }
+    ).p_creditos;
 
     expect(credito.data_origem.slice(0, 7)).toBe(credito.competencia_origem);
   });
 
-  it('não contabiliza crédito que o banco recusou', async () => {
-    const { result } = await montaHook({
-      notas_fiscais: [NOTA_OK, { data: [{ id: 'nf-1' }], error: null }],
-      creditos_tributarios: [{ data: null, error: { code: '42501', message: 'sem permissão' } }],
+  it('não contabiliza crédito quando a função recusa a gravação', async () => {
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: { code: '42501', message: 'sem permissão' },
     });
+    const { result } = await montaHook({});
 
     let resumo!: Awaited<ReturnType<typeof result.current.importarNFes.mutateAsync>>;
     await act(async () => {
@@ -161,39 +185,33 @@ describe('importarNFes — créditos CBS/IBS', () => {
     expect(resumo.creditosGerados.total).toBe(0);
   });
 
-  it('desfaz a nota quando o crédito falha, liberando a chave para reimportação', async () => {
-    const { result, escritas } = await montaHook({
-      notas_fiscais: [NOTA_OK, { data: [{ id: 'nf-1' }], error: null }],
-      creditos_tributarios: [{ data: null, error: { code: '42501', message: 'sem permissão' } }],
+  it('não tenta compensar nada: a falha é desfeita pelo ROLLBACK', async () => {
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: { code: '23514', message: 'valor_credito invalido' },
     });
-
-    await act(async () => {
-      await result.current.importarNFes.mutateAsync();
-    });
-
-    expect(escritas.some((e) => e.tabela === 'notas_fiscais' && e.metodo === 'delete')).toBe(true);
-  });
-
-  it('diz o que ficou no banco quando o próprio rollback falha', async () => {
-    const { result } = await montaHook({
-      notas_fiscais: [NOTA_OK, { data: [], error: null }], // delete não atinge linha
-      creditos_tributarios: [{ data: null, error: { code: '42501', message: 'sem permissão' } }],
-    });
+    const { result, escritas } = await montaHook({});
 
     let resumo!: Awaited<ReturnType<typeof result.current.importarNFes.mutateAsync>>;
     await act(async () => {
       resumo = await result.current.importarNFes.mutateAsync();
     });
 
-    expect(resumo.nfesProcessadas[0].mensagemErro).toMatch(/permaneceu no banco/);
-    expect(resumo.nfesProcessadas[0].mensagemErro).toMatch(/Remova-a antes de reimportar/);
+    expect(escritas.some((e) => e.metodo === 'delete')).toBe(false);
+    // A mensagem de "permaneceu no banco / remova antes de reimportar" perdeu
+    // o motivo de existir: a chave volta livre para reimportação.
+    expect(resumo.nfesProcessadas[0].mensagemErro).not.toMatch(/permaneceu no banco/);
   });
 
-  it('falha quando o insert em lote grava menos créditos do que os enviados', async () => {
-    const { result } = await montaHook({
-      notas_fiscais: [NOTA_OK, { data: [{ id: 'nf-1' }], error: null }],
-      creditos_tributarios: [{ data: [{ id: 'c1' }], error: null }],
+  it('reporta a deriva de schema em vez de gravar a nota sem os campos', async () => {
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: {
+        code: '42703',
+        message: 'colunas_inexistentes_em_notas_fiscais: created_by, natureza_operacao',
+      },
     });
+    const { result } = await montaHook({});
 
     let resumo!: Awaited<ReturnType<typeof result.current.importarNFes.mutateAsync>>;
     await act(async () => {
@@ -201,6 +219,9 @@ describe('importarNFes — créditos CBS/IBS', () => {
     });
 
     expect(resumo.erros).toBe(1);
-    expect(resumo.nfesProcessadas[0].mensagemErro).toMatch(/1 de 2 registros/);
+    // `mensagemAmigavel` troca a mensagem crua do PostgREST pela frase do
+    // código 42703 — o detalhe com os nomes das colunas fica no log, não na
+    // tela. O que o teste garante é que a importação para em vez de gravar.
+    expect(resumo.nfesProcessadas[0].mensagemErro).toMatch(/Coluna inexistente/);
   });
 });

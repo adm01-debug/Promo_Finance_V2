@@ -77,6 +77,9 @@ export async function aprovarPagamento(
   if (!user?.id) {
     return { success: false, message: 'Sessão expirada. Faça login novamente para aprovar.' };
   }
+
+  // A função também barra este caso (`solicitacao_sem_conta_pagar`), mas aqui
+  // ainda dá para explicar o problema em português em vez de devolver o código.
   if (!solicitacao.conta_pagar_id) {
     return {
       success: false,
@@ -84,34 +87,15 @@ export async function aprovarPagamento(
     };
   }
 
-  // Ordem invertida de propósito. Antes o `solicitacoes_aprovacao` era marcado
-  // como aprovado primeiro e o `contas_pagar` depois, sem verificação: a falha do
-  // segundo passo deixava a solicitação encerrada e a conta sem aprovador — sem
-  // nada a reprocessar, porque a solicitação já não estava mais pendente.
-  // Gravando a conta primeiro, uma falha do segundo passo deixa a solicitação
-  // ainda pendente, e reaprovar é idempotente (mesmo `aprovado_por`).
-  // A atomicidade de verdade vem na Etapa 21, com uma RPC única.
-  await mustSucceed(
-    supabase
-      .from('contas_pagar')
-      // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts canônico)
-      .update({ aprovado_por: user.id })
-      .eq('id', solicitacao.conta_pagar_id)
-      .select('id'),
-    'registrar o aprovador na conta a pagar',
-    // `.eq()` num id inexistente devolve `error: null`: sem esta checagem a
-    // aprovação seria reportada como gravada sem ter tocado em linha alguma.
-    { exigirLinhas: true }
-  );
-
-  await mustSucceed(
-    supabase
-      .from('solicitacoes_aprovacao')
-      .update({ status: 'aprovado', aprovado_por: user.id, aprovado_em: new Date().toISOString() })
-      .eq('id', solicitacao.id)
-      .select('id'),
-    'encerrar a solicitação de aprovação',
-    { exigirLinhas: true }
+  // Passo único. Antes eram dois UPDATEs em requisições separadas: o PostgREST
+  // abre uma transação por requisição, então uma falha entre elas deixava a
+  // conta com aprovador e a solicitação ainda pendente, ou o inverso. A função
+  // faz as duas gravações na mesma transação e trava a solicitação com
+  // `FOR UPDATE`, o que também serializa dois aprovadores clicando junto.
+  // É SECURITY INVOKER: o RLS continua sendo quem decide o que é visível.
+  const aprovacao = await mustSucceed(
+    supabase.rpc('aprovar_solicitacao_pagamento', { p_solicitacao_id: solicitacao.id }),
+    'aprovar a solicitação de pagamento'
   );
 
   queryClient.invalidateQueries({ queryKey: ['solicitacoes-aprovacao'] });
@@ -119,9 +103,15 @@ export async function aprovarPagamento(
   queryClient.invalidateQueries({ queryKey: ['aprovacoes-pendentes-count'] });
   toast.success('Pagamento aprovado com sucesso!');
 
+  // O nome vem do retorno da função, lido dentro da transação. O `solicitacao`
+  // carregado antes é um retrato anterior à aprovação.
+  const fornecedor =
+    (aprovacao as { fornecedor_nome?: string } | null)?.fornecedor_nome ??
+    solicitacao.contas_pagar?.fornecedor_nome;
+
   return {
     success: true,
-    message: `Pagamento para "${solicitacao.contas_pagar?.fornecedor_nome}" aprovado com sucesso!`,
+    message: `Pagamento para "${fornecedor}" aprovado com sucesso!`,
   };
 }
 

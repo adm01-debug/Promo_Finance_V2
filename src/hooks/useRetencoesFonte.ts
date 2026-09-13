@@ -181,67 +181,50 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
       retencoesIds: string[];
     }) => {
       // A lista precisa ser normalizada antes de virar critério de contagem:
-      // um id repetido faria `.in('id', ids)` devolver menos linhas do que
-      // `ids.length` e a verificação acusaria lote parcial sem haver problema.
+      // um id repetido faria a função contar menos disponíveis do que pedidas
+      // e acusar lote parcial sem haver problema. A função deduplica de novo
+      // do lado do servidor; aqui a normalização serve à checagem local.
       const idsUnicos = Array.from(new Set(retencoesIds));
-      const retencoesSelecionadas = retencoes.filter((r) => idsUnicos.includes(r.id));
 
-      if (retencoesSelecionadas.length === 0) {
+      if (idsUnicos.length === 0) {
         throw new Error('Nenhuma retenção selecionada');
       }
 
-      // Id selecionado que sumiu da lista carregada: gravar o DARF com ele em
-      // `retencoes_ids` criaria uma guia apontando para retenção inexistente.
+      // Id selecionado que sumiu da lista carregada: emitir a guia com ele em
+      // `retencoes_ids` criaria um DARF apontando para retenção inexistente.
+      // A função repete a checagem sobre o estado real do banco; esta aqui só
+      // antecipa o erro com uma mensagem que o usuário entende.
+      const retencoesSelecionadas = retencoes.filter((r) => idsUnicos.includes(r.id));
       if (retencoesSelecionadas.length !== idsUnicos.length) {
         throw new Error(
           'Parte das retenções selecionadas não está mais disponível. Recarregue a lista e tente novamente.'
         );
       }
 
-      const valorPrincipal = retencoesSelecionadas.reduce((sum, r) => sum + r.valor_retido, 0);
       const codigoReceita = CODIGOS_RECEITA[tipoRetencao];
 
       // Calcular data de vencimento (último dia útil do mês seguinte)
       const [ano, mes] = competencia.split('-').map(Number);
       const dataVencimento = format(endOfMonth(new Date(ano, mes, 1)), 'yyyy-MM-dd');
 
-      const { data: darf, error } = await supabase
-        .from('darfs')
-        .insert({
-          empresa_id: empresaId,
-          codigo_receita: codigoReceita.codigo,
-          descricao_receita: codigoReceita.descricao,
-          competencia,
-          valor_principal: valorPrincipal,
-          valor_multa: 0,
-          valor_juros: 0,
-          valor_total: valorPrincipal,
-          data_vencimento: dataVencimento,
-          status: 'gerado',
-          retencoes_ids: idsUnicos,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // O DARF é gravado primeiro de propósito. Marcar as retenções antes e
-      // falhar no insert as esconderia da lista de pendentes sem guia alguma
-      // emitida — omissão silenciosa ao fisco. Na ordem atual, uma falha aqui
-      // deixa um DARF emitido com as retenções ainda pendentes: visível na
-      // próxima apuração e recuperável. A atomicidade real vem na Etapa 21.
-      //
-      // A contagem exata importa: `.in('id', ids)` que pega só parte do lote
-      // devolve `error: null`, e as retenções não marcadas entrariam de novo
-      // no DARF seguinte — recolhimento em duplicidade.
-      await mustSucceed(
-        supabase
-          .from('retencoes_fonte')
-          .update({ darf_gerado: true })
-          .in('id', idsUnicos)
-          .select('id'),
-        'marcar as retenções como incluídas no DARF',
-        { exigirLinhas: idsUnicos.length }
+      // Passo único. Antes eram duas requisições — insert do DARF e depois
+      // `update ... in(ids)` nas retenções — e o PostgREST abre uma transação
+      // por requisição: falhar entre elas deixava a guia emitida com as
+      // retenções ainda pendentes, que voltariam ao DARF seguinte
+      // (recolhimento em duplicidade). A função grava as duas coisas na mesma
+      // transação, soma `valor_retido` no servidor (o cliente somava de uma
+      // lista já filtrada pelo RLS) e exige `darf_gerado = false` em todas,
+      // o que bloqueia a dupla inclusão na origem.
+      const darf = await mustSucceed(
+        supabase.rpc('gerar_darf_retencoes', {
+          p_empresa_id: empresaId,
+          p_competencia: competencia,
+          p_codigo_receita: codigoReceita.codigo,
+          p_descricao_receita: codigoReceita.descricao,
+          p_data_vencimento: dataVencimento,
+          p_retencoes_ids: idsUnicos,
+        }),
+        'gerar o DARF das retenções'
       );
 
       return darf;
@@ -259,43 +242,23 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
   // Registrar pagamento de DARF
   const pagarDARF = useMutation({
     mutationFn: async ({ darfId, dataPagamento }: { darfId: string; dataPagamento: string }) => {
-      const darf = await mustSucceed(
-        supabase
-          .from('darfs')
-          .update({
-            status: 'pago',
-            data_pagamento: dataPagamento,
-          })
-          .eq('id', darfId)
-          .select()
-          .single(),
+      // Passo único. Antes eram duas requisições — pagar o DARF e depois
+      // marcar as retenções — cada uma na sua própria transação: falhar entre
+      // elas deixava a guia paga com as retenções ainda pendentes, que
+      // reapareciam no DARF seguinte. A função grava as duas na mesma
+      // transação, lê `retencoes_ids` da linha travada (não do cache filtrado
+      // por empresa/competência), deduplica os ids herdados de guias antigas e
+      // confere o ROW_COUNT da marcação.
+      //
+      // O UPDATE da guia exige `status IS DISTINCT FROM 'pago'`: um segundo
+      // clique não regrava a data de pagamento, ele falha com `darf_nao_pagavel`.
+      return await mustSucceed(
+        supabase.rpc('pagar_darf_retencoes', {
+          p_darf_id: darfId,
+          p_data_pagamento: dataPagamento,
+        }),
         'registrar o pagamento do DARF'
       );
-
-      // Os ids vêm da linha que acabou de ser gravada, não de `darfs.find(...)`.
-      // A lista em cache é filtrada por empresa e competência: um DARF fora do
-      // filtro atual (ou um cache ainda não revalidado) fazia `darf` ser
-      // `undefined`, o `if` inteiro ser pulado e o DARF ficar pago com as
-      // retenções ainda pendentes — que voltariam ao próximo DARF.
-      // Deduplicado também aqui: DARFs gravados antes desta correção podem
-      // carregar ids repetidos, e a contagem exata os leria como lote parcial.
-      const retencoesIds = Array.from(new Set(darf.retencoes_ids ?? []));
-      if (retencoesIds.length > 0) {
-        await mustSucceed(
-          supabase
-            .from('retencoes_fonte')
-            .update({
-              status: 'recolhido',
-              data_recolhimento: dataPagamento,
-            })
-            .in('id', retencoesIds)
-            .select('id'),
-          'marcar as retenções como recolhidas',
-          { exigirLinhas: retencoesIds.length }
-        );
-      }
-
-      return darf;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['retencoes-fonte'] });

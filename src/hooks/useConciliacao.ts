@@ -5,7 +5,7 @@ import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-conf
 import { logger } from '@/lib/logger';
 import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
-import type { TablesInsert, Tables, TablesUpdate, Json } from '@/integrations/supabase/types';
+import type { TablesInsert, Tables, Json } from '@/integrations/supabase/types';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
 import { toISOLocal } from '@/lib/formatters';
 import { mustSucceed } from '@/lib/supabase-write';
@@ -46,41 +46,36 @@ export function useConciliacao() {
         'carregar a transação bancária a conciliar'
       );
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Metadados de compensação. Antes eram gravados por um UPDATE separado,
+      // depois de o proxy já ter confirmado a conciliação: se aquela segunda
+      // requisição falhasse, a transação ficava confirmada sem registro nenhum
+      // do ajuste — valor divergente aceito e nenhuma justificativa no banco.
+      // Agora seguem com a confirmação e são aplicados na mesma transação.
+      const metadados: Record<string, string | number | null> = {
+        regra_id: regraId || null,
+      };
 
-      // Proxy Edge Function (service_role) em vez de RPC direta
+      if (ajusteCentavos && ajusteCentavos !== 0) {
+        metadados.compensacao_valor = ajusteCentavos;
+        metadados.compensacao_motivo = motivo || 'Tolerância configurada';
+        metadados.compensacao_classificacao =
+          classificacao || (ajusteCentavos > 0 ? 'Juros' : 'Desconto');
+        metadados.compensacao_regra = regra || 'Ajuste automático de centavos';
+        metadados.compensacao_evidencia_url = evidenciaUrl ?? null;
+      }
+
+      // Proxy Edge Function (service_role) em vez de RPC direta. O RPC já grava
+      // status, `conciliada`, `data_confirmacao`, `confirmado_por` e o vínculo
+      // `contas_receber.transacao_conciliada_id` — nada disso precisa (nem deve)
+      // ser repetido pelo cliente fora da transação.
       await invokeEdge('conciliacao-proxy', {
         action: 'confirmar',
         transacaoId,
         contaPagarId: contaPagarId || null,
         contaReceberId: contaReceberId || null,
         ajusteCentavos: ajusteCentavos || 0,
+        metadados,
       });
-
-      // Atualiza metadados extras na transação bancária
-      const updateData: TablesUpdate<'transacoes_bancarias'> = {
-        status: 'confirmado',
-        data_confirmacao: new Date().toISOString(),
-        confirmado_por: user?.id,
-        regra_id: regraId || null,
-      };
-
-      if (ajusteCentavos && ajusteCentavos !== 0) {
-        updateData.compensacao_valor = ajusteCentavos;
-        updateData.compensacao_motivo = motivo || 'Tolerância configurada';
-        updateData.compensacao_classificacao =
-          classificacao || (ajusteCentavos > 0 ? 'Juros' : 'Desconto');
-        updateData.compensacao_regra = regra || 'Ajuste automático de centavos';
-        updateData.compensacao_evidencia_url = evidenciaUrl;
-      }
-
-      await mustSucceed(
-        supabase.from('transacoes_bancarias').update(updateData).eq('id', transacaoId).select('id'),
-        'marcar a transação bancária como confirmada',
-        { exigirLinhas: true }
-      );
 
       const regraAplicada =
         ajusteCentavos && ajusteCentavos !== 0
@@ -109,16 +104,6 @@ export function useConciliacao() {
             regra_aplicada: regraAplicada,
           } as unknown as Json,
         });
-
-        await mustSucceed(
-          supabase
-            .from('contas_receber')
-            .update({ transacao_conciliada_id: transacaoId })
-            .eq('id', contaReceberId)
-            .select('id'),
-          'vincular a transação à conta a receber',
-          { exigirLinhas: true }
-        );
       }
 
       if (contaPagarId) {

@@ -92,6 +92,7 @@ Deno.test('conciliacao-proxy: sucesso confirmar encaminha args completos', async
       p_conta_pagar_id: CP,
       p_conta_receber_id: CR,
       p_ajuste_centavos: 150,
+      p_metadados: {},
     },
   });
 });
@@ -102,6 +103,54 @@ Deno.test('conciliacao-proxy: confirmar com ajuste ausente vira 0', async () => 
   assertEquals(calls[0].args.p_ajuste_centavos, 0);
   assertEquals(calls[0].args.p_user_id, 'user-1');
   assertEquals(calls[0].args.p_conta_receber_id, null);
+});
+
+Deno.test('conciliacao-proxy: aceita ajuste fracionario (o valor trafega em reais)', async () => {
+  // O schema exigia `.int()` e devolvia 400 justamente para o payload que a
+  // tolerancia de centavos produz: apesar do nome do campo, o valor vem em
+  // reais (`-0.03`), e a RPC o soma direto em `valor_pago`.
+  const { deps, calls } = makeDeps();
+  const res = await createHandler(deps)(
+    req({ action: 'confirmar', transacaoId: T, contaPagarId: CP, ajusteCentavos: -0.03 })
+  );
+  assertEquals(res.status, 200);
+  assertEquals(calls[0].args.p_ajuste_centavos, -0.03);
+});
+
+Deno.test('conciliacao-proxy: encaminha os metadados de compensacao para a RPC', async () => {
+  // Antes estes campos eram gravados pelo cliente num UPDATE separado, depois
+  // do COMMIT da conciliacao: se ele falhasse, a transacao ficava confirmada
+  // sem registro do porque do ajuste. Agora viajam no mesmo COMMIT.
+  const { deps, calls } = makeDeps();
+  const metadados = {
+    regra_id: null,
+    compensacao_valor: -0.03,
+    compensacao_motivo: 'Tolerancia configurada',
+    compensacao_classificacao: 'Desconto',
+    compensacao_regra: 'Ajuste automatico de centavos',
+    compensacao_evidencia_url: null,
+  };
+  const res = await createHandler(deps)(
+    req({ action: 'confirmar', transacaoId: T, contaPagarId: CP, ajusteCentavos: -0.03, metadados })
+  );
+  assertEquals(res.status, 200);
+  assertEquals(calls[0].args.p_metadados, metadados);
+});
+
+Deno.test('conciliacao-proxy: 400 quando os metadados trazem chave desconhecida', async () => {
+  // `.strict()`: campo fora do contrato e descartado em silencio pela RPC seria
+  // exatamente o tipo de perda que a Etapa 21 veio fechar.
+  const { deps } = makeDeps();
+  const res = await createHandler(deps)(
+    req({
+      action: 'confirmar',
+      transacaoId: T,
+      contaPagarId: CP,
+      metadados: { compensacao_motivoo: 'typo' },
+    })
+  );
+  assertEquals(res.status, 400);
+  assertEquals((await res.json()).error, 'Invalid payload schema (Contract Violation)');
 });
 
 Deno.test('conciliacao-proxy: sucesso desfazer chama RPC correta', async () => {

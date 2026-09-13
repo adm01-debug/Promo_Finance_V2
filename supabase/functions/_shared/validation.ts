@@ -329,6 +329,21 @@ export const NfeVinculoProxySchema = z.discriminatedUnion('action', [
     .strict(),
 ]);
 
+// Metadados de compensação que antes o cliente gravava direto em
+// `transacoes_bancarias`, depois de o proxy já ter confirmado a conciliação.
+// Agora viajam junto com a confirmação para serem aplicados na mesma
+// transação do banco — por isso precisam ser validados aqui.
+const CompensacaoMetadadosSchema = z
+  .object({
+    regra_id: uuid.optional().nullable(),
+    compensacao_valor: z.number().optional().nullable(),
+    compensacao_motivo: z.string().max(500).optional().nullable(),
+    compensacao_classificacao: z.string().max(200).optional().nullable(),
+    compensacao_regra: z.string().max(500).optional().nullable(),
+    compensacao_evidencia_url: z.string().max(2000).optional().nullable(),
+  })
+  .strict();
+
 export const ConciliacaoProxySchema = z.discriminatedUnion('action', [
   z
     .object({
@@ -336,7 +351,11 @@ export const ConciliacaoProxySchema = z.discriminatedUnion('action', [
       transacaoId: uuid,
       contaPagarId: uuid.optional().nullable(),
       contaReceberId: uuid.optional().nullable(),
-      ajusteCentavos: z.number().int().optional().nullable(),
+      // Sem `.int()`: apesar do nome, o valor trafega em reais (`-0.03`), que é
+      // exatamente o que a tolerância de centavos produz. Exigir inteiro fazia
+      // toda conciliação com ajuste ser rejeitada com 400 antes de chegar ao RPC.
+      ajusteCentavos: z.number().optional().nullable(),
+      metadados: CompensacaoMetadadosSchema.optional().nullable(),
     })
     .strict(),
   z.object({ action: z.literal('desfazer'), transacaoId: uuid }).strict(),

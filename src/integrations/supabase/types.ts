@@ -19951,6 +19951,10 @@ export type Database = {
     };
     Functions: {
       auditar_acessos_cross_tenant: { Args: { _horas?: number }; Returns: Json };
+      aprovar_solicitacao_pagamento: {
+        Args: { p_solicitacao_id: string };
+        Returns: Json;
+      };
       backfill_empresa_id: {
         Args: { _dry_run?: boolean };
         Returns: {
@@ -20345,6 +20349,17 @@ export type Database = {
       gerar_contas_recorrentes: { Args: never; Returns: number };
       gerar_numero_acordo: { Args: never; Returns: string };
       gerar_sigla_empresa: { Args: { _nome: string }; Returns: string };
+      gerar_darf_retencoes: {
+        Args: {
+          p_codigo_receita: string;
+          p_competencia: string;
+          p_data_vencimento: string;
+          p_descricao_receita: string;
+          p_empresa_id: string;
+          p_retencoes_ids: string[];
+        };
+        Returns: Json;
+      };
       get_acessos_suspeitos: {
         Args: { _horas?: number; _somente_abertos?: boolean };
         Returns: {
@@ -20733,6 +20748,10 @@ export type Database = {
       };
       nfe_unlink_conta_pagar: { Args: { p_nfe_id: string }; Returns: Json };
       pode_ver_dado_sensivel: { Args: never; Returns: boolean };
+      pagar_darf_retencoes: {
+        Args: { p_darf_id: string; p_data_pagamento: string };
+        Returns: Json;
+      };
       processar_regua_cobranca: {
         Args: { p_empresa_id?: string; p_simulate?: boolean };
         Returns: Json;
@@ -20812,6 +20831,10 @@ export type Database = {
           p_tipo?: string;
         };
         Returns: undefined;
+      };
+      registrar_nfe_com_creditos: {
+        Args: { p_creditos?: Json; p_empresa_id: string; p_nota: Json };
+        Returns: Json;
       };
       reprocess_dlq: {
         Args: { p_dlq_id: string; p_notes?: string };

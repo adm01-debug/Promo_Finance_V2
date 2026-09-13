@@ -1,15 +1,22 @@
 /**
- * Testes — useConciliacao.confirmarConciliacao (Etapa 17)
+ * Testes — useConciliacao.confirmarConciliacao (Etapas 17 e 21)
  *
- * O defeito corrigido: depois que o proxy confirmava a conciliação, dois
- * updates seguiam sem verificação — `transacoes_bancarias.status` e
- * `contas_receber.transacao_conciliada_id` — e o `onSuccess` disparava
- * `toastReconciliationSuccess` de qualquer forma. A conciliação era reportada
- * como concluída com o vínculo nunca gravado.
+ * Etapa 17: depois que o proxy confirmava a conciliação, dois updates seguiam
+ * sem verificação — `transacoes_bancarias` e `contas_receber` — e o `onSuccess`
+ * disparava `toastReconciliationSuccess` de qualquer forma. Havia ainda um
+ * terceiro caminho silencioso: o `select` inicial descartava o erro e, com
+ * `transacao` nula, os blocos de rastreabilidade eram pulados sem sinal.
  *
- * Havia ainda um terceiro caminho silencioso: o `select` inicial da transação
- * descartava o erro, e com `transacao` nula os dois blocos de rastreabilidade
- * eram pulados sem qualquer sinal.
+ * Etapa 21 elimina os dois updates. A RPC por trás do proxy já gravava
+ * `status`, `conciliada`, `data_confirmacao`, `confirmado_por` e o vínculo
+ * `contas_receber.transacao_conciliada_id` — o cliente estava reescrevendo
+ * fora da transação o que o servidor já tinha gravado dentro dela. O único
+ * dado que faltava, os metadados de compensação, agora viaja no próprio
+ * payload de confirmação (`p_metadados`) e é aplicado no mesmo COMMIT.
+ *
+ * O que sobra ao cliente, e é o que estes testes cobrem: carregar a transação
+ * sem engolir erro, montar os metadados certos, e não anunciar sucesso quando
+ * o proxy recusa.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ReactNode } from 'react';
@@ -63,32 +70,12 @@ function criarChain(resultado: Resultado, registro: string[], tabela: string) {
 
 const TRANSACAO = { id: 'tx-1', data: '2026-01-15', valor: 100 };
 
-function montaCliente(opcoes: {
-  select?: Resultado;
-  updateTransacao?: Resultado;
-  updateContaReceber?: Resultado;
-}) {
+function montaCliente(opcoes: { select?: Resultado }) {
   const ordem: string[] = [];
-  let primeiraTransacoes = true;
 
   mockFrom.mockImplementation((tabela: string) => {
     if (tabela === 'transacoes_bancarias') {
-      if (primeiraTransacoes) {
-        primeiraTransacoes = false;
-        return criarChain(opcoes.select ?? { data: TRANSACAO, error: null }, ordem, tabela);
-      }
-      return criarChain(
-        opcoes.updateTransacao ?? { data: [{ id: 'tx-1' }], error: null },
-        ordem,
-        tabela
-      );
-    }
-    if (tabela === 'contas_receber') {
-      return criarChain(
-        opcoes.updateContaReceber ?? { data: [{ id: 'cr-1' }], error: null },
-        ordem,
-        tabela
-      );
+      return criarChain(opcoes.select ?? { data: TRANSACAO, error: null }, ordem, tabela);
     }
     throw new Error(`tabela inesperada: ${tabela}`);
   });
@@ -112,7 +99,7 @@ beforeEach(() => {
 });
 
 describe('confirmarConciliacao', () => {
-  it('confirma a transação e grava o vínculo na conta a receber', async () => {
+  it('confirma pelo proxy sem reescrever nada fora da transação', async () => {
     const ordem = montaCliente({});
     const { result } = renderHook(() => useConciliacao(), { wrapper });
 
@@ -121,32 +108,60 @@ describe('confirmarConciliacao', () => {
       contaReceberId: 'cr-1',
     });
 
-    expect(ordem).toEqual(['transacoes_bancarias.update', 'contas_receber.update']);
+    // Nenhuma escrita do cliente: era exatamente aí, entre o COMMIT da RPC e
+    // estes updates, que a conciliação podia ficar pela metade.
+    expect(ordem).toEqual([]);
+    expect(mockInvokeEdge).toHaveBeenCalledTimes(1);
     expect(mockRegistrarEvento).toHaveBeenCalledTimes(1);
   });
 
-  it('falha quando o PostgREST recusa a confirmação da transação', async () => {
-    const ordem = montaCliente({
-      updateTransacao: { data: null, error: { code: 'PGRST204', message: 'coluna some' } },
-    });
+  it('manda os metadados de compensação junto com a confirmação', async () => {
+    montaCliente({});
     const { result } = renderHook(() => useConciliacao(), { wrapper });
 
-    await expect(
-      result.current.confirmarConciliacao.mutateAsync({
-        transacaoId: 'tx-1',
-        contaReceberId: 'cr-1',
-      })
-    ).rejects.toThrow(/marcar a transação bancária como confirmada/);
+    await result.current.confirmarConciliacao.mutateAsync({
+      transacaoId: 'tx-1',
+      contaReceberId: 'cr-1',
+      ajusteCentavos: -0.03,
+      motivo: 'Tolerância configurada',
+      regraId: 'regra-1',
+    });
 
-    // não chega a tocar na conta a receber
-    expect(ordem).toEqual(['transacoes_bancarias.update']);
-    expect(toastSucesso).not.toHaveBeenCalled();
+    expect(mockInvokeEdge).toHaveBeenCalledWith('conciliacao-proxy', {
+      action: 'confirmar',
+      transacaoId: 'tx-1',
+      contaPagarId: null,
+      contaReceberId: 'cr-1',
+      // Apesar do nome, o ajuste trafega em reais. O schema do proxy exigia
+      // `.int()` e rejeitava com 400 justamente o valor que a tolerância produz.
+      ajusteCentavos: -0.03,
+      metadados: {
+        regra_id: 'regra-1',
+        compensacao_valor: -0.03,
+        compensacao_motivo: 'Tolerância configurada',
+        compensacao_classificacao: 'Desconto',
+        compensacao_regra: 'Ajuste automático de centavos',
+        compensacao_evidencia_url: null,
+      },
+    });
   });
 
-  it('falha quando o vínculo na conta a receber não atinge linha alguma', async () => {
-    // O caso que a checagem de `error` sozinha não pega: id fora do escopo da
-    // empresa ou já removido devolve `error: null` e zero linhas.
-    montaCliente({ updateContaReceber: { data: [], error: null } });
+  it('não manda bloco de compensação quando não houve ajuste', async () => {
+    montaCliente({});
+    const { result } = renderHook(() => useConciliacao(), { wrapper });
+
+    await result.current.confirmarConciliacao.mutateAsync({
+      transacaoId: 'tx-1',
+      contaPagarId: 'cp-1',
+    });
+
+    const payload = mockInvokeEdge.mock.calls[0][1] as { metadados: Record<string, unknown> };
+    expect(payload.metadados).toEqual({ regra_id: null });
+  });
+
+  it('falha quando o proxy recusa a confirmação, sem toast de sucesso', async () => {
+    mockInvokeEdge.mockRejectedValueOnce(new Error('forbidden_empresa_access'));
+    montaCliente({});
     const { result } = renderHook(() => useConciliacao(), { wrapper });
 
     await expect(
@@ -154,8 +169,10 @@ describe('confirmarConciliacao', () => {
         transacaoId: 'tx-1',
         contaReceberId: 'cr-1',
       })
-    ).rejects.toThrow(/vincular a transação à conta a receber.*nenhuma linha/s);
+    ).rejects.toThrow(/forbidden_empresa_access/);
 
+    // A rastreabilidade não é gravada sobre uma conciliação que não aconteceu.
+    expect(mockRegistrarEvento).not.toHaveBeenCalled();
     expect(toastSucesso).not.toHaveBeenCalled();
   });
 
