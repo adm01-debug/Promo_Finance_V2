@@ -1,4 +1,3 @@
-
 // ============================================
 // LOGICA TRIBUTARIA COMPARTILHADA
 // ============================================
@@ -9,13 +8,21 @@ export type AnexoSimples = 'I' | 'II' | 'III' | 'IV' | 'V';
 export type PeriodicidadeApuracao = 'trimestral' | 'anual';
 
 export interface FaturamentoMes {
-  ano: number; mes: number; receita_bruta: number;
-  receita_servicos?: number; receita_revenda?: number;
-  receita_industria?: number; receita_exportacao?: number;
+  ano: number;
+  mes: number;
+  receita_bruta: number;
+  receita_servicos?: number;
+  receita_revenda?: number;
+  receita_industria?: number;
+  receita_exportacao?: number;
 }
 export interface FolhaMes {
-  ano: number; mes: number; salarios: number; pro_labore: number;
-  encargos: number; total_folha: number;
+  ano: number;
+  mes: number;
+  salarios: number;
+  pro_labore: number;
+  encargos: number;
+  total_folha: number;
 }
 export interface ParametrosSimulacao {
   faturamentoAnual: number;
@@ -75,13 +82,26 @@ export interface ParametrosSimulacao {
 }
 
 export interface ResultadoCenario {
-  regime: RegimeTributario; nome: string; elegivel: boolean;
+  regime: RegimeTributario;
+  nome: string;
+  elegivel: boolean;
   motivoInelegibilidade?: string;
-  irpj: number; csll: number; pis: number; cofins: number; cpp: number;
-  icms: number; iss: number; cbs: number; ibs: number;
-  totalTributos: number; cargaEfetiva: number;
-  rbt12?: number; fatorR?: number; anexoAplicavel?: AnexoSimples;
-  faixaAplicavel?: number; aliquotaNominal?: number;
+  irpj: number;
+  csll: number;
+  pis: number;
+  cofins: number;
+  cpp: number;
+  icms: number;
+  iss: number;
+  cbs: number;
+  ibs: number;
+  totalTributos: number;
+  cargaEfetiva: number;
+  rbt12?: number;
+  fatorR?: number;
+  anexoAplicavel?: AnexoSimples;
+  faixaAplicavel?: number;
+  aliquotaNominal?: number;
   sublimiteExcedido?: boolean;
   icmsForaDAS?: number;
   issForaDAS?: number;
@@ -109,7 +129,10 @@ export interface ResultadoCenario {
   observacoes: string[];
 }
 
-export const ANEXOS: Record<AnexoSimples, Array<{ faixa: number; ate: number; aliq: number; pd: number }>> = {
+export const ANEXOS: Record<
+  AnexoSimples,
+  Array<{ faixa: number; ate: number; aliq: number; pd: number }>
+> = {
   I: [
     { faixa: 1, ate: 180000, aliq: 0.04, pd: 0 },
     { faixa: 2, ate: 360000, aliq: 0.073, pd: 5940 },
@@ -121,10 +144,10 @@ export const ANEXOS: Record<AnexoSimples, Array<{ faixa: number; ate: number; al
   II: [
     { faixa: 1, ate: 180000, aliq: 0.045, pd: 0 },
     { faixa: 2, ate: 360000, aliq: 0.078, pd: 5940 },
-    { faixa: 3, ate: 720000, aliq: 0.10, pd: 13860 },
+    { faixa: 3, ate: 720000, aliq: 0.1, pd: 13860 },
     { faixa: 4, ate: 1800000, aliq: 0.112, pd: 22500 },
     { faixa: 5, ate: 3600000, aliq: 0.147, pd: 85500 },
-    { faixa: 6, ate: 4800000, aliq: 0.30, pd: 720000 },
+    { faixa: 6, ate: 4800000, aliq: 0.3, pd: 720000 },
   ],
   III: [
     { faixa: 1, ate: 180000, aliq: 0.06, pd: 0 },
@@ -179,19 +202,31 @@ export function calcularFolha12m(hist: FolhaMes[], ano: number, mes: number): nu
  * onde a CPP fica FORA do DAS (recolhida à parte pela folha).
  */
 const PALAVRAS_ANEXO_IV = [
-  'construcao', 'obra', 'edificacao', 'vigilancia', 'seguranca',
-  'limpeza', 'conservacao', 'zeladoria', 'portaria', 'advocacia', 'advogado',
+  'construcao',
+  'obra',
+  'edificacao',
+  'vigilancia',
+  'seguranca',
+  'limpeza',
+  'conservacao',
+  'zeladoria',
+  'portaria',
+  'advocacia',
+  'advogado',
 ];
 
 const normalizar = (s: string) =>
-  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 
 /**
  * Determina o anexo do Simples Nacional pela atividade PREPONDERANTE.
  */
 export function determinarAnexoSimples(
   p: ParametrosSimulacao,
-  fatorR: number,
+  fatorR: number
 ): { anexo: AnexoSimples; motivo: string } {
   const servicos = Math.max(0, p.percentualServicos || 0);
   const industria = Math.max(0, p.percentualIndustria || 0);
@@ -209,13 +244,19 @@ export function determinarAnexoSimples(
     const anexo: AnexoSimples = fatorR >= 0.28 ? 'III' : 'V';
     return {
       anexo,
-      motivo: `Serviços preponderantes (${servicos.toFixed(1)}%). Fator R = ${(fatorR * 100).toFixed(2)}% -> Anexo ${anexo}.`,
+      motivo: `Serviços preponderantes (${servicos.toFixed(1)}%). Fator R = ${(fatorR * 100).toFixed(2)}% → Anexo ${anexo}.`,
     };
   }
   if (maior === industria && industria > 0) {
-    return { anexo: 'II', motivo: `Industrializacao preponderante (${industria.toFixed(1)}%) -> Anexo II.` };
+    return {
+      anexo: 'II',
+      motivo: `Industrialização preponderante (${industria.toFixed(1)}%) → Anexo II.`,
+    };
   }
-  return { anexo: 'I', motivo: `Revenda/comercio preponderante (${revenda.toFixed(1)}%) -> Anexo I.` };
+  return {
+    anexo: 'I',
+    motivo: `Revenda/comércio preponderante (${revenda.toFixed(1)}%) → Anexo I.`,
+  };
 }
 
 /** Coerção segura de número: descarta NaN/Infinity/negativos indevidos. */
@@ -255,9 +296,10 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
   const faturamentoAnual = Math.max(0, num(p.faturamentoAnual, 0));
   let servicos = clamp(num(p.percentualServicos, 0), 0, 100);
   let industria = clamp(num(p.percentualIndustria, 0), 0, 100);
-  let revenda = p.percentualRevenda === undefined || p.percentualRevenda === null
-    ? Math.max(0, 100 - servicos - industria)
-    : clamp(num(p.percentualRevenda, 0), 0, 100);
+  let revenda =
+    p.percentualRevenda === undefined || p.percentualRevenda === null
+      ? Math.max(0, 100 - servicos - industria)
+      : clamp(num(p.percentualRevenda, 0), 0, 100);
   const somaMix = servicos + industria + revenda;
   if (somaMix > 100 && somaMix > 0) {
     servicos = (servicos / somaMix) * 100;
@@ -271,34 +313,50 @@ export function sanitizarParametros(p: ParametrosSimulacao): ParametrosSimulacao
     percentualServicos: servicos,
     percentualIndustria: industria,
     percentualRevenda: revenda,
-    percentualExportacao: p.percentualExportacao === undefined || p.percentualExportacao === null
-      ? undefined
-      : clamp(num(p.percentualExportacao, 0), 0, 100),
+    percentualExportacao:
+      p.percentualExportacao === undefined || p.percentualExportacao === null
+        ? undefined
+        : clamp(num(p.percentualExportacao, 0), 0, 100),
     folhaAnual: Math.max(0, num(p.folhaAnual, 0)),
     comprasComCredito: Math.max(0, num(p.comprasComCredito, 0)),
     despesasOperacionais: Math.max(0, num(p.despesasOperacionais, 0)),
-    comprasComCreditoICMS: p.comprasComCreditoICMS === undefined
-      ? undefined
-      : Math.max(0, num(p.comprasComCreditoICMS, 0)),
+    comprasComCreditoICMS:
+      p.comprasComCreditoICMS === undefined
+        ? undefined
+        : Math.max(0, num(p.comprasComCreditoICMS, 0)),
     aliquotaICMS: p.aliquotaICMS === undefined ? undefined : clamp(num(p.aliquotaICMS, 0.18), 0, 1),
     aliquotaISS: p.aliquotaISS === undefined ? undefined : clamp(num(p.aliquotaISS, 0.05), 0, 1),
     aliquotaRAT: p.aliquotaRAT === undefined ? undefined : clamp(num(p.aliquotaRAT, 0.02), 0, 0.06),
-    aliquotaTerceiros: p.aliquotaTerceiros === undefined ? undefined : clamp(num(p.aliquotaTerceiros, 0.058), 0, 0.1),
+    aliquotaTerceiros:
+      p.aliquotaTerceiros === undefined
+        ? undefined
+        : clamp(num(p.aliquotaTerceiros, 0.058), 0, 0.1),
     issRetidoFonte: Math.max(0, num(p.issRetidoFonte, 0)),
-    presuncaoIrpjServicos: p.presuncaoIrpjServicos === undefined
-      ? undefined
-      : clamp(num(p.presuncaoIrpjServicos, 0.32), 0.08, 0.32),
-    presuncaoCsllServicos: p.presuncaoCsllServicos === undefined
-      ? undefined
-      : clamp(num(p.presuncaoCsllServicos, 0.32), 0.12, 0.32),
+    presuncaoIrpjServicos:
+      p.presuncaoIrpjServicos === undefined
+        ? undefined
+        : clamp(num(p.presuncaoIrpjServicos, 0.32), 0.08, 0.32),
+    presuncaoCsllServicos:
+      p.presuncaoCsllServicos === undefined
+        ? undefined
+        : clamp(num(p.presuncaoCsllServicos, 0.32), 0.12, 0.32),
 
     prejuizoFiscalAcumulado: Math.max(0, num(p.prejuizoFiscalAcumulado, 0)),
     baseNegativaCsllAcumulada: Math.max(0, num(p.baseNegativaCsllAcumulada, 0)),
-    sublimiteEstadual: p.sublimiteEstadual === undefined ? undefined : Math.max(0, num(p.sublimiteEstadual, 3600000)),
-    periodicidadeApuracao: p.periodicidadeApuracao === 'trimestral' ? 'trimestral' : (p.periodicidadeApuracao === 'anual' ? 'anual' : undefined),
-    lucroTrimestral: Array.isArray(p.lucroTrimestral) && p.lucroTrimestral.length === 4
-      ? p.lucroTrimestral.map((v) => num(v, 0))
-      : undefined,
+    sublimiteEstadual:
+      p.sublimiteEstadual === undefined
+        ? undefined
+        : Math.max(0, num(p.sublimiteEstadual, 3600000)),
+    periodicidadeApuracao:
+      p.periodicidadeApuracao === 'trimestral'
+        ? 'trimestral'
+        : p.periodicidadeApuracao === 'anual'
+          ? 'anual'
+          : undefined,
+    lucroTrimestral:
+      Array.isArray(p.lucroTrimestral) && p.lucroTrimestral.length === 4
+        ? p.lucroTrimestral.map((v) => num(v, 0))
+        : undefined,
   };
 }
 
@@ -306,16 +364,28 @@ export function simularSimples(
   p: ParametrosSimulacao,
   ano: number,
   mes: number,
-  forcarAnexo?: AnexoSimples,
+  forcarAnexo?: AnexoSimples
 ): ResultadoCenario {
   p = sanitizarParametros(p);
   const obs: string[] = [];
   if (p.faturamentoAnual > LIMITE_SIMPLES) {
     return {
-      regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: false,
+      regime: 'simples_nacional',
+      nome: 'Simples Nacional',
+      elegivel: false,
       motivoInelegibilidade: `Faturamento acima de R$ 4,8 mi`,
-      irpj: 0, csll: 0, pis: 0, cofins: 0, cpp: 0, icms: 0, iss: 0, cbs: 0, ibs: 0,
-      totalTributos: 0, cargaEfetiva: 0, observacoes: ['Acima do limite legal.'],
+      irpj: 0,
+      csll: 0,
+      pis: 0,
+      cofins: 0,
+      cpp: 0,
+      icms: 0,
+      iss: 0,
+      cbs: 0,
+      ibs: 0,
+      totalTributos: 0,
+      cargaEfetiva: 0,
+      observacoes: ['Acima do limite legal.'],
     };
   }
   let rbt12 = p.faturamentoAnual;
@@ -324,12 +394,14 @@ export function simularSimples(
     if (r > 0) {
       rbt12 = r;
     } else {
-      obs.push('RBT12 estimado a partir do faturamento anual informado (histórico mensal sem meses anteriores ao mês de referência).');
+      obs.push(
+        'RBT12 estimado a partir do faturamento anual informado (histórico mensal sem meses anteriores ao mês de referência).'
+      );
     }
   }
   const folha12m = p.folhaMensal?.length
     ? calcularFolha12m(p.folhaMensal, ano, mes)
-    : (p.folhaAnual || 0);
+    : p.folhaAnual || 0;
   const fatorR = rbt12 > 0 ? folha12m / rbt12 : 0;
   const { anexo: anexoDetectado, motivo } = determinarAnexoSimples(p, fatorR);
   let anexo: AnexoSimples = anexoDetectado;
@@ -340,33 +412,46 @@ export function simularSimples(
     obs.push(motivo);
   }
   const faixa = ANEXOS[anexo].find((f) => rbt12 <= f.ate) || ANEXOS[anexo][5];
-  const aliqEfet = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;
+  const aliqEfet = rbt12 > 0 ? Math.max(0, (rbt12 * faixa.aliq - faixa.pd) / rbt12) : faixa.aliq;
   const das = p.faturamentoAnual * aliqEfet;
-  obs.push(`Faixa ${faixa.faixa}, alíq nominal ${(faixa.aliq * 100).toFixed(2)}%, efetiva ${(aliqEfet * 100).toFixed(2)}%.`);
-  
+  obs.push(
+    `Faixa ${faixa.faixa}, alíq nominal ${(faixa.aliq * 100).toFixed(2)}%, efetiva ${(aliqEfet * 100).toFixed(2)}%.`
+  );
+
   // Distribuição simplificada
   type DistribuicaoAnexo = {
-    irpj: number; csll: number; cofins: number; pis: number;
-    cpp: number; icms: number; iss: number;
+    irpj: number;
+    csll: number;
+    cofins: number;
+    pis: number;
+    cpp: number;
+    icms: number;
+    iss: number;
   };
   const dist: Record<AnexoSimples, DistribuicaoAnexo> = {
-    I:   { irpj: 0.055, csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.415, icms: 0.34,  iss: 0 },
-    II:  { irpj: 0.055, csll: 0.035, cofins: 0.1182, pis: 0.0278, cpp: 0.415, icms: 0.32,  iss: 0 },
-    III: { irpj: 0.04,  csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.4340, icms: 0,    iss: 0.335 },
-    IV:  { irpj: 0.185, csll: 0.15,  cofins: 0.1603, pis: 0.0347, cpp: 0,     icms: 0,    iss: 0.47 },
-    V:   { irpj: 0.25,  csll: 0.15,  cofins: 0.1428, pis: 0.0309, cpp: 0.2885, icms: 0,    iss: 0.137 },
+    I: { irpj: 0.055, csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.415, icms: 0.34, iss: 0 },
+    II: { irpj: 0.055, csll: 0.035, cofins: 0.1182, pis: 0.0278, cpp: 0.415, icms: 0.32, iss: 0 },
+    III: { irpj: 0.04, csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.434, icms: 0, iss: 0.335 },
+    IV: { irpj: 0.185, csll: 0.15, cofins: 0.1603, pis: 0.0347, cpp: 0, icms: 0, iss: 0.47 },
+    V: { irpj: 0.25, csll: 0.15, cofins: 0.1428, pis: 0.0309, cpp: 0.2885, icms: 0, iss: 0.137 },
   };
 
   // As frações de cada anexo devem somar 1.0; renormalizamos defensivamente
   // para que desvios da tabela não distorçam a decomposição do DAS.
   const raw = dist[anexo];
   const sum = raw.irpj + raw.csll + raw.cofins + raw.pis + raw.cpp + raw.icms + raw.iss;
-  const d: DistribuicaoAnexo = sum > 0
-    ? {
-        irpj: raw.irpj / sum, csll: raw.csll / sum, cofins: raw.cofins / sum,
-        pis: raw.pis / sum, cpp: raw.cpp / sum, icms: raw.icms / sum, iss: raw.iss / sum,
-      }
-    : raw;
+  const d: DistribuicaoAnexo =
+    sum > 0
+      ? {
+          irpj: raw.irpj / sum,
+          csll: raw.csll / sum,
+          cofins: raw.cofins / sum,
+          pis: raw.pis / sum,
+          cpp: raw.cpp / sum,
+          icms: raw.icms / sum,
+          iss: raw.iss / sum,
+        }
+      : raw;
 
   // Sublimite estadual (LC 123/2006, arts. 19 e 20): ICMS/ISS fora do DAS.
   const sublimite = p.sublimiteEstadual ?? 3_600_000;
@@ -387,7 +472,7 @@ export function simularSimples(
 
   if (pExp > 0 && descontoExportacao > 0) {
     obs.push(
-      `Receita de exportação (${(pExp * 100).toFixed(1)}%) imune a PIS/COFINS/ICMS/ISS (LC 123/2006, art. 18 §14): R$ ${descontoExportacao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} excluídos do DAS.`,
+      `Receita de exportação (${(pExp * 100).toFixed(1)}%) imune a PIS/COFINS/ICMS/ISS (LC 123/2006, art. 18 §14): R$ ${descontoExportacao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} excluídos do DAS.`
     );
   }
 
@@ -403,7 +488,7 @@ export function simularSimples(
     icms = icmsForaDAS;
     iss = issForaDAS;
     obs.push(
-      `RBT12 (R$ ${rbt12.toLocaleString('pt-BR')}) acima do sublimite estadual de R$ ${sublimite.toLocaleString('pt-BR')}: ICMS e ISS recolhidos FORA do DAS pelo regime normal.`,
+      `RBT12 (R$ ${rbt12.toLocaleString('pt-BR')}) acima do sublimite estadual de R$ ${sublimite.toLocaleString('pt-BR')}: ICMS e ISS recolhidos FORA do DAS pelo regime normal.`
     );
   }
 
@@ -415,7 +500,7 @@ export function simularSimples(
     iss -= issRetidoDeduzido;
     dasFinal -= issRetidoDeduzido;
     obs.push(
-      `ISS retido na fonte de R$ ${issRetidoDeduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} deduzido do DAS.`,
+      `ISS retido na fonte de R$ ${issRetidoDeduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} deduzido do DAS.`
     );
   }
 
@@ -427,11 +512,11 @@ export function simularSimples(
   let cppForaDAS = 0;
   if (anexo === 'IV') {
     const rat = Math.min(0.06, Math.max(0, p.aliquotaRAT ?? 0.02));
-    cppForaDAS = Math.max(0, p.folhaAnual || 0) * (0.20 + rat);
+    cppForaDAS = Math.max(0, p.folhaAnual || 0) * (0.2 + rat);
     cpp = cppForaDAS;
     if (cppForaDAS > 0) {
       obs.push(
-        `Anexo IV: CPP patronal de R$ ${cppForaDAS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (20% + RAT ${(rat * 100).toFixed(2)}%) recolhida FORA do DAS.`,
+        `Anexo IV: CPP patronal de R$ ${cppForaDAS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (20% + RAT ${(rat * 100).toFixed(2)}%) recolhida FORA do DAS.`
       );
     }
   }
@@ -439,16 +524,30 @@ export function simularSimples(
   const totalTributos = (sublimiteExcedido ? dasFinal + icms + iss : dasFinal) + cppForaDAS;
 
   return {
-    regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
-    irpj: das * d.irpj, csll: das * d.csll,
-    pis: das * d.pis * imune, cofins: das * d.cofins * imune,
-    cpp, icms, iss,
-    cbs: 0, ibs: 0,
+    regime: 'simples_nacional',
+    nome: 'Simples Nacional',
+    elegivel: true,
+    irpj: das * d.irpj,
+    csll: das * d.csll,
+    pis: das * d.pis * imune,
+    cofins: das * d.cofins * imune,
+    cpp,
+    icms,
+    iss,
+    cbs: 0,
+    ibs: 0,
     totalTributos,
     cargaEfetiva: p.faturamentoAnual > 0 ? (totalTributos / p.faturamentoAnual) * 100 : 0,
-    rbt12, fatorR, anexoAplicavel: anexo, faixaAplicavel: faixa.faixa,
+    rbt12,
+    fatorR,
+    anexoAplicavel: anexo,
+    faixaAplicavel: faixa.faixa,
     aliquotaNominal: faixa.aliq * 100,
-    sublimiteExcedido, icmsForaDAS, issForaDAS, issRetidoDeduzido, cppForaDAS,
+    sublimiteExcedido,
+    icmsForaDAS,
+    issForaDAS,
+    issRetidoDeduzido,
+    cppForaDAS,
     observacoes: obs,
   };
 }
@@ -478,8 +577,12 @@ function terceiros(p: ParametrosSimulacao): number {
  * coerência). Divisões ausentes usam o padrão 5,8% (FPAS 507).
  */
 const TERCEIROS_POR_DIVISAO_CNAE: Readonly<Record<string, number>> = {
-  '01': 0.052, '02': 0.052, '03': 0.052,
-  '64': 0.052, '65': 0.052, '66': 0.052,
+  '01': 0.052,
+  '02': 0.052,
+  '03': 0.052,
+  '64': 0.052,
+  '65': 0.052,
+  '66': 0.052,
   '84': 0.025,
   '85': 0.027,
 };
@@ -504,7 +607,6 @@ function terceirosPorCnaeMotor(p: ParametrosSimulacao): number {
   return TERCEIROS_POR_DIVISAO_CNAE[divisao] ?? TERCEIROS_PADRAO;
 }
 
-
 /**
  * Apuração do ICMS pelo regime de compensação (CF/88, art. 155, §2º, I).
  * Espelha `src/lib/tributario/shared-logic.ts` (validado por teste de paridade).
@@ -512,14 +614,14 @@ function terceirosPorCnaeMotor(p: ParametrosSimulacao): number {
 export function apurarIcmsNaoCumulativo(
   p: ParametrosSimulacao,
   receitaMercadorias: number,
-  aliquota: number,
+  aliquota: number
 ): { icms: number; credito: number; saldoCredor: number; debito: number } {
-  const participacaoMercadorias = p.faturamentoAnual > 0
-    ? Math.max(0, Math.min(1, receitaMercadorias / p.faturamentoAnual))
-    : 0;
-  const comprasICMS = p.comprasComCreditoICMS !== undefined
-    ? Math.max(0, p.comprasComCreditoICMS)
-    : Math.max(0, p.comprasComCredito || 0) * participacaoMercadorias;
+  const participacaoMercadorias =
+    p.faturamentoAnual > 0 ? Math.max(0, Math.min(1, receitaMercadorias / p.faturamentoAnual)) : 0;
+  const comprasICMS =
+    p.comprasComCreditoICMS !== undefined
+      ? Math.max(0, p.comprasComCreditoICMS)
+      : Math.max(0, p.comprasComCredito || 0) * participacaoMercadorias;
   const debito = receitaMercadorias * aliquota;
   const credito = comprasICMS * aliquota;
   const saldo = debito - credito;
@@ -532,13 +634,13 @@ export function apurarIcmsNaoCumulativo(
  */
 export function irpjPeriodoTrimestral(base: number): number {
   const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
-  return b * 0.15 + (b > 60000 ? (b - 60000) * 0.10 : 0);
+  return b * 0.15 + (b > 60000 ? (b - 60000) * 0.1 : 0);
 }
 
 /** IRPJ de um período ANUAL (adicional sobre o excedente a R$ 240.000). */
 export function irpjPeriodoAnual(base: number): number {
   const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
-  return b * 0.15 + (b > 240000 ? (b - 240000) * 0.10 : 0);
+  return b * 0.15 + (b > 240000 ? (b - 240000) * 0.1 : 0);
 }
 
 /** Distribui o faturamento anual em 4 trimestres conforme a sazonalidade. */
@@ -550,7 +652,10 @@ export function distribuirTrimestres(p: ParametrosSimulacao): number[] {
     let soma = 0;
     for (const m of meses) {
       const mes = Number(m?.mes);
-      const receita = Math.max(0, Number.isFinite(Number(m?.receita_bruta)) ? Number(m.receita_bruta) : 0);
+      const receita = Math.max(
+        0,
+        Number.isFinite(Number(m?.receita_bruta)) ? Number(m.receita_bruta) : 0
+      );
       if (!Number.isFinite(mes) || mes < 1 || mes > 12) continue;
       acc[Math.floor((mes - 1) / 3)] += receita;
       soma += receita;
@@ -571,7 +676,7 @@ export function distribuirTrimestres(p: ParametrosSimulacao): number[] {
  */
 export function compensarPrejuizo(
   basePositiva: number,
-  estoqueAcumulado: number,
+  estoqueAcumulado: number
 ): { baseAjustada: number; compensado: number; saldo: number } {
   const estoque = Math.max(0, Number.isFinite(estoqueAcumulado) ? estoqueAcumulado : 0);
   const base = Number.isFinite(basePositiva) ? basePositiva : 0;
@@ -579,7 +684,7 @@ export function compensarPrejuizo(
     // Prejuízo do período soma-se ao estoque; nada a compensar.
     return { baseAjustada: 0, compensado: 0, saldo: estoque + Math.abs(Math.min(0, base)) };
   }
-  const limite = base * 0.30;
+  const limite = base * 0.3;
   const compensado = Math.min(estoque, limite);
   return { baseAjustada: base - compensado, compensado, saldo: estoque - compensado };
 }
@@ -588,10 +693,22 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   p = sanitizarParametros(p);
   if (p.faturamentoAnual > LIMITE_PRESUMIDO) {
     return {
-      regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: false,
+      regime: 'lucro_presumido',
+      nome: 'Lucro Presumido',
+      elegivel: false,
       motivoInelegibilidade: 'Faturamento > R$ 78 mi',
-      irpj: 0, csll: 0, pis: 0, cofins: 0, cpp: 0, icms: 0, iss: 0, cbs: 0, ibs: 0,
-      totalTributos: 0, cargaEfetiva: 0, observacoes: ['Obrigatório Lucro Real.'],
+      irpj: 0,
+      csll: 0,
+      pis: 0,
+      cofins: 0,
+      cpp: 0,
+      icms: 0,
+      iss: 0,
+      cbs: 0,
+      ibs: 0,
+      totalTributos: 0,
+      cargaEfetiva: 0,
+      observacoes: ['Obrigatório Lucro Real.'],
     };
   }
   const ps = p.percentualServicos / 100;
@@ -622,7 +739,7 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc * imune, aliqICMS);
   const icms = apuracaoICMS.icms;
   const iss = rs * imune * aliqISS;
-  const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
+  const cpp = Math.max(0, p.folhaAnual || 0) * (0.2 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   const observacoes = [
     `Presunção 8% comércio / IRPJ ${(presIrpjServ * 100).toFixed(0)}% e CSLL ${(presCsllServ * 100).toFixed(0)}% sobre serviços.`,
@@ -633,24 +750,37 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   ];
   if (apuracaoICMS.credito > 0) {
     observacoes.push(
-      `ICMS não-cumulativo (CF art. 155 §2º I): crédito de R$ ${apuracaoICMS.credito.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} sobre aquisições abatido do débito.`,
+      `ICMS não-cumulativo (CF art. 155 §2º I): crédito de R$ ${apuracaoICMS.credito.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} sobre aquisições abatido do débito.`
     );
   }
   if (apuracaoICMS.saldoCredor > 0) {
     observacoes.push(
-      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
+      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`
     );
   }
-  observacoes.push('IRPJ apurado trimestralmente (Lei 9.430/96, art. 1º): adicional de 10% sobre a base que exceder R$ 60 mil por trimestre.');
+  observacoes.push(
+    'IRPJ apurado trimestralmente (Lei 9.430/96, art. 1º): adicional de 10% sobre a base que exceder R$ 60 mil por trimestre.'
+  );
   if (efeitoSazonalidade > 1) {
     observacoes.push(
-      `Sazonalidade da receita eleva o adicional de IRPJ em R$ ${efeitoSazonalidade.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} frente a uma distribuição uniforme entre os trimestres.`,
+      `Sazonalidade da receita eleva o adicional de IRPJ em R$ ${efeitoSazonalidade.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} frente a uma distribuição uniforme entre os trimestres.`
     );
   }
   return {
-    regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
-    irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
-    totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
+    regime: 'lucro_presumido',
+    nome: 'Lucro Presumido',
+    elegivel: true,
+    irpj,
+    csll,
+    pis,
+    cofins,
+    cpp,
+    icms,
+    iss,
+    cbs: 0,
+    ibs: 0,
+    totalTributos: total,
+    cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
     periodicidadeApuracao: 'trimestral',
@@ -664,21 +794,40 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
 export function apurarRealTrimestral(
   lucrosTrimestrais: number[],
   estoqueIrpj: number,
-  estoqueCsll: number,
-): { irpj: number; csll: number; compensadoIrpj: number; compensadoCsll: number; saldoIrpj: number; saldoCsll: number } {
+  estoqueCsll: number
+): {
+  irpj: number;
+  csll: number;
+  compensadoIrpj: number;
+  compensadoCsll: number;
+  saldoIrpj: number;
+  saldoCsll: number;
+} {
   let sIrpj = Math.max(0, estoqueIrpj);
   let sCsll = Math.max(0, estoqueCsll);
-  let irpj = 0, csll = 0, cIrpj = 0, cCsll = 0;
+  let irpj = 0,
+    csll = 0,
+    cIrpj = 0,
+    cCsll = 0;
   for (const bruto of lucrosTrimestrais) {
     const lucro = Number.isFinite(bruto) ? Number(bruto) : 0;
     const ci = compensarPrejuizo(lucro, sIrpj);
     const cc = compensarPrejuizo(lucro, sCsll);
-    sIrpj = ci.saldo; sCsll = cc.saldo;
-    cIrpj += ci.compensado; cCsll += cc.compensado;
+    sIrpj = ci.saldo;
+    sCsll = cc.saldo;
+    cIrpj += ci.compensado;
+    cCsll += cc.compensado;
     irpj += irpjPeriodoTrimestral(ci.baseAjustada);
     csll += Math.max(0, cc.baseAjustada) * 0.09;
   }
-  return { irpj, csll, compensadoIrpj: cIrpj, compensadoCsll: cCsll, saldoIrpj: sIrpj, saldoCsll: sCsll };
+  return {
+    irpj,
+    csll,
+    compensadoIrpj: cIrpj,
+    compensadoCsll: cCsll,
+    saldoIrpj: sIrpj,
+    saldoCsll: sCsll,
+  };
 }
 
 export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
@@ -703,7 +852,7 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const trim = apurarRealTrimestral(
     lucrosTrim,
     p.prejuizoFiscalAcumulado ?? 0,
-    p.baseNegativaCsllAcumulada ?? 0,
+    p.baseNegativaCsllAcumulada ?? 0
   );
   const periodicidade: PeriodicidadeApuracao = p.periodicidadeApuracao ?? 'anual';
   const usaTrimestral = periodicidade === 'trimestral';
@@ -729,52 +878,74 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const apuracaoICMS = apurarIcmsNaoCumulativo(p, rc * imune, aliqICMS);
   const icms = apuracaoICMS.icms;
   const iss = rs * imune * aliqISS;
-  const cpp = Math.max(0, p.folhaAnual || 0) * (0.20 + ratFap(p) + terceiros(p));
+  const cpp = Math.max(0, p.folhaAnual || 0) * (0.2 + ratFap(p) + terceiros(p));
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
-  const observacoes = [`Lucro estimado: ${margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'];
+  const observacoes = [
+    `Lucro estimado: ${margemLucro}% do faturamento.`,
+    'PIS/COFINS não-cumulativo.',
+  ];
   if (pExp > 0) {
     observacoes.push(
-      `Exportação de ${(pExp * 100).toFixed(1)}% da receita: imune a PIS/COFINS, ICMS e ISS (CF/88 arts. 149 §2º I, 155 §2º X "a" e 156 §3º II). IRPJ/CSLL permanecem devidos, e os créditos de PIS/COFINS seguem aproveitáveis.`,
+      `Exportação de ${(pExp * 100).toFixed(1)}% da receita: imune a PIS/COFINS, ICMS e ISS (CF/88 arts. 149 §2º I, 155 §2º X "a" e 156 §3º II). IRPJ/CSLL permanecem devidos, e os créditos de PIS/COFINS seguem aproveitáveis.`
     );
   }
   if (compIrpj.compensado > 0 || compCsll.compensado > 0) {
     observacoes.push(
-      `Compensação de prejuízos limitada a 30% do lucro (Lei 9.065/95): IRPJ R$ ${compIrpj.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / CSLL R$ ${compCsll.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`,
+      `Compensação de prejuízos limitada a 30% do lucro (Lei 9.065/95): IRPJ R$ ${compIrpj.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / CSLL R$ ${compCsll.compensado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`
     );
   }
   if (compIrpj.saldo > 0) {
     observacoes.push(
-      `Saldo de prejuízo fiscal a compensar: R$ ${compIrpj.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (sem prazo de prescrição).`,
+      `Saldo de prejuízo fiscal a compensar: R$ ${compIrpj.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (sem prazo de prescrição).`
     );
   }
   if (usaTrimestral) {
-    observacoes.push('Apuração TRIMESTRAL: adicional de 10% sobre a base que exceder R$ 60 mil em cada trimestre, sem transporte de limite entre períodos.');
+    observacoes.push(
+      'Apuração TRIMESTRAL: adicional de 10% sobre a base que exceder R$ 60 mil em cada trimestre, sem transporte de limite entre períodos.'
+    );
   } else if (lucro <= 240000) {
     observacoes.push('Apuração ANUAL: sem adicional de IRPJ (lucro anual ≤ R$ 240k).');
   } else {
     observacoes.push('Apuração ANUAL: adicional de 10% sobre o lucro excedente a R$ 240k.');
   }
   if (Math.abs(economiaPeriodicidade) > 1) {
-    const melhor = economiaPeriodicidade > 0 ? periodicidade : (usaTrimestral ? 'anual' : 'trimestral');
-    const delta = Math.abs(economiaPeriodicidade).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const melhor =
+      economiaPeriodicidade > 0 ? periodicidade : usaTrimestral ? 'anual' : 'trimestral';
+    const delta = Math.abs(economiaPeriodicidade).toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
     observacoes.push(
       economiaPeriodicidade > 0
         ? `A opção ${melhor} economiza R$ ${delta} de IRPJ+CSLL frente à alternativa.`
-        : `Atenção: a periodicidade ${melhor} reduziria IRPJ+CSLL em R$ ${delta}. Avalie a mudança na 1ª quota do ano (opção irretratável).`,
+        : `Atenção: a periodicidade ${melhor} reduziria IRPJ+CSLL em R$ ${delta}. Avalie a mudança na 1ª quota do ano (opção irretratável).`
     );
   }
   if (margemLucro < 8) {
-    observacoes.push('Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.');
+    observacoes.push(
+      'Margem baixa (< 8%): Lucro Real tende a ser mais vantajoso; revise custos e créditos.'
+    );
   }
   if (apuracaoICMS.saldoCredor > 0) {
     observacoes.push(
-      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`,
+      `Saldo credor de ICMS de R$ ${apuracaoICMS.saldoCredor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} transportado para o período seguinte.`
     );
   }
   return {
-    regime: 'lucro_real', nome: 'Lucro Real', elegivel: true,
-    irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
-    totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
+    regime: 'lucro_real',
+    nome: 'Lucro Real',
+    elegivel: true,
+    irpj,
+    csll,
+    pis,
+    cofins,
+    cpp,
+    icms,
+    iss,
+    cbs: 0,
+    ibs: 0,
+    totalTributos: total,
+    cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     icmsCredito: apuracaoICMS.credito,
     icmsSaldoCredor: apuracaoICMS.saldoCredor,
     prejuizoFiscalCompensado: usaTrimestral ? trim.compensadoIrpj : compIrpj.compensado,

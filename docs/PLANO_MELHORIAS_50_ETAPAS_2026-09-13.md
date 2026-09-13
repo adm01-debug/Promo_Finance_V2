@@ -328,6 +328,129 @@ A proteção de `main` exige 4 checks: `Quality Gate & Tests`, `E2E Critical Gat
 **Esforço:** 16h
 `simular-simples`, `simular-presumido`, `simular-real`, `calculo-iva`, `decidir-regime`, `prever-carga-tributaria`. Erro aqui produz imposto errado — priorizar casos de fronteira de faixa e anexo.
 
+#### Execução — o risco não era o que a etapa supunha
+
+A etapa foi escrita como "faltam testes unitários nessas funções". O inventário
+mostrou outra coisa: o motor tributário existe **duas vezes**, e nenhuma
+quantidade de teste unitário de um lado pega divergência com o outro.
+
+| Cópia           | Arquivo                                          | Forma                                                                     |
+| --------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
+| Cliente (tela)  | `src/lib/tributario/shared-logic.ts`             | modular — reexporta `anexos`, `parametros`, `encargos-folha`, `apuracao`  |
+| Edge (servidor) | `supabase/functions/_shared/tributario-logic.ts` | achatada, autocontida, zero imports — Deno não resolve os `@/` do bundler |
+
+A duplicação não é descuido: é imposta pelo runtime. O problema é o modo de
+falha. Corrigir uma faixa do Anexo III num lado deixa o outro com a lei antiga,
+a tela mostra um DAS, o servidor grava outro, e **nenhum dos dois erra sozinho
+de forma óbvia**. Dois testes unitários verdes sobre números diferentes
+continuam verdes.
+
+#### O que foi feito
+
+`src/lib/tributario/__tests__/paridade-motor-edge.test.ts` (86 casos) roda a
+MESMA entrada nas duas cópias e exige o MESMO resultado, em
+`simularSimples`, `simularPresumido`, `simularReal`, `determinarAnexoSimples` e
+na tabela `ANEXOS` inteira. Cenários nas fronteiras, que é onde um `<` virando
+`<=` muda o imposto: teto exato de cada faixa e um real acima, teto do Simples
+(4.8M) e 4.8M+1, corte do Fator R em exatamente 28% e ±R$1, sublimite estadual
+excedido, prejuízo acumulado com a trava de 30%, presumido com créditos e ISS
+retido.
+
+#### O que a paridade encontrou
+
+39 dos 86 casos falharam na primeira execução. Nenhuma divergência numérica —
+verificado filtrando o diff completo, que sobrou vazio fora das strings. A
+divergência era de **texto exibido ao usuário**: a cópia da edge tinha perdido
+acentos e a seta num passo de transcodificação.
+
+| Cliente                                          | Edge (degradada)                                  |
+| ------------------------------------------------ | ------------------------------------------------- |
+| `Revenda/comércio preponderante (…) → Anexo I.`  | `Revenda/comercio preponderante (…) -> Anexo I.`  |
+| `Industrialização preponderante (…) → Anexo II.` | `Industrializacao preponderante (…) -> Anexo II.` |
+| `… Fator R = …% → Anexo …`                       | `… Fator R = …% -> Anexo …`                       |
+
+Corrigido no lado degradado, não afrouxando a asserção: a string do cliente é a
+que o usuário lê, e comparar normalizado cegaria o teste para deriva futura de
+mensagem — que é justamente o que se quer detectar.
+
+Um comparador de literais varreu os dois arquivos inteiros para garantir que
+eram só essas três: 3 degradadas, 0 órfãs.
+
+#### Já existia um guard — e ele estava verde
+
+`src/lib/tributario/__tests__/drift-guard-motor.test.ts` compara o **texto**
+normalizado das duas cópias e passava. Ele descarta o conteúdo dos literais de
+propósito, para não quebrar por estilo de mensagem; foi exatamente por esse furo
+que `comercio`/`->` conviveu com `comércio`/`→` sem ninguém reclamar.
+
+Os dois testes são complementares e nenhum substitui o outro:
+
+- o guard textual cobre **todo** o código, inclusive ramos que nenhum cenário
+  alcança, mas é cego para o conteúdo das mensagens;
+- a paridade cobre **comportamento observável**, mensagem incluída, mas só nos
+  caminhos que os cenários exercitam.
+
+#### A armadilha de formatação no guard textual
+
+Ao formatar a cópia da edge, os dois guards ficaram vermelhos **sem nenhuma
+deriva de lógica**. Causa: a comparação é lexical, e o prettier normaliza
+`0.20` para `0.2`, remove parênteses redundantes e insere vírgula final. O guard
+só estava verde porque as duas cópias estavam desformatadas do mesmo jeito.
+
+Isso é uma mina, não um detalhe: `lint-staged` roda `prettier --write` em todo
+`.ts` que entra no commit. Quem editasse **uma** das cópias e commitasse pelo
+hook derrubaria o guard com um vermelho que não aponta para bug nenhum — e a
+saída provável seria afrouxar ou apagar o guard.
+
+Desarmada formatando **as duas** cópias no mesmo commit. A partir daqui as duas
+estão prettier-clean, e o próprio hook mantém a propriedade: qualquer edição
+futura sai formatada dos dois lados. Verificado: `drift-guard-motor` e
+`drift-guard-obrigacoes` verdes, 18/18.
+
+#### Validação por inversão
+
+A paridade foi testada nos dois sentidos, não só observada verde:
+
+| Divergência injetada na cópia da edge   | Resultado          |
+| --------------------------------------- | ------------------ |
+| `LIMITE_SIMPLES` 4.800.000 → 4.800.001  | vermelho (1 caso)  |
+| Anexo III, faixa 1: `aliq` 0.06 → 0.061 | vermelho (2 casos) |
+| nenhuma                                 | verde, 86/86       |
+
+Suíte tributária completa após tudo: **1162/1162**.
+
+#### Efeito colateral assumido: um aviso novo de `max-lines`
+
+Formatar desdobrou linhas amontoadas (`ano: number; mes: number;` numa só) e as
+duas cópias cresceram — `shared-logic.ts` de 535 para 809 linhas cruas, a da
+edge de 789 para 960. Com isso `shared-logic.ts` cruzou o limite de 400 do
+`max-lines` e passou a emitir aviso; antes o amontoado escondia do linter um
+arquivo que já era grande.
+
+O aviso fica. Não quebra nada (`lint` do CI não usa `--max-warnings 0`, e
+`lint:strict` não é chamado por nenhum gate) e é verdadeiro. Suprimir com
+`eslint-disable` esconderia o mesmo fato que o amontoado escondia. E quebrar o
+arquivo em módulos menores seria o reparo errado: a cópia da edge é achatada por
+imposição do Deno, e afastar as duas estruturas enfraquece justamente a
+comparação textual que as prende. O reparo certo é o da recomendação de fundo
+abaixo — gerar uma cópia a partir da outra.
+
+#### Pendente nesta etapa
+
+`calculo-iva`, `decidir-regime` e `prever-carga-tributaria` ainda não têm
+paridade nem cobertura de fronteira — `calculo-iva` carrega um `CRONOGRAMA`
+2026-2033 inline na própria função, que é a mesma classe de dado que a tabela de
+anexos e merece o mesmo tratamento.
+
+#### Recomendação de fundo
+
+A paridade é costura, não cura: ela prende as cópias enquanto a duplicação
+existir. A cura é gerar a cópia da edge a partir da do cliente num passo de
+build (bundle/flatten), transformando "duas implementações que precisam
+concordar" em "um arquivo e um artefato". Fica registrado como candidato ao
+Bloco G — exige decidir onde o passo roda (CI, pre-commit) e como o CI prova que
+o artefato commitado está atualizado.
+
 ### Etapa 40 — Testes de geração de SPED
 
 **Esforço:** 12h
