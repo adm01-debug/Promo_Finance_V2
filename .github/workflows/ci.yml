@@ -48,7 +48,7 @@ jobs:
 
       - name: Publicar relatório
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: gitleaks-sarif
           path: gitleaks.sarif
@@ -434,7 +434,7 @@ jobs:
 
       - name: Publicar artefatos de falha
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-financeiro-falhas
           path: test-results/financeiro

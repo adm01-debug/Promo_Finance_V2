@@ -16,6 +16,12 @@ node node_modules/typescript/bin/tsc --noEmit || {
   exit 1
 }
 
+echo "[pre-push] type-check da infraestrutura de teste..."
+node node_modules/typescript/bin/tsc -p tsconfig.e2e.json || {
+  echo "[pre-push] type-check de e2e/scripts falhou. Use --no-verify para forçar."
+  exit 1
+}
+
 echo "[pre-push] testes afetados pelo diff contra origin/main..."
 node node_modules/vitest/vitest.mjs run --changed origin/main --passWithNoTests || {
   echo "[pre-push] testes falharam. Use --no-verify para forçar."
