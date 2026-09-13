@@ -55,20 +55,20 @@ Deno.test('conciliacao-proxy: 405 em GET', async () => {
   assertEquals(res.status, 405);
 });
 
-Deno.test('conciliacao-proxy: 400 se transacaoId não for UUID', async () => {
+Deno.test('conciliacao-proxy: 422 se transacaoId não for UUID', async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(req({ action: 'desfazer', transacaoId: 'abc' }));
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, 'Invalid payload schema (Contract Violation)');
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, 'VALIDATION_ERROR');
 });
 
-Deno.test('conciliacao-proxy: 400 quando contaPagarId inválido', async () => {
+Deno.test('conciliacao-proxy: 422 quando contaPagarId inválido', async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(
     req({ action: 'confirmar', transacaoId: T, contaPagarId: 'bad' })
   );
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, 'Invalid payload schema (Contract Violation)');
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, 'VALIDATION_ERROR');
 });
 
 Deno.test('conciliacao-proxy: sucesso confirmar encaminha args completos', async () => {
@@ -137,7 +137,7 @@ Deno.test('conciliacao-proxy: encaminha os metadados de compensacao para a RPC',
   assertEquals(calls[0].args.p_metadados, metadados);
 });
 
-Deno.test('conciliacao-proxy: 400 quando os metadados trazem chave desconhecida', async () => {
+Deno.test('conciliacao-proxy: 422 quando os metadados trazem chave desconhecida', async () => {
   // `.strict()`: campo fora do contrato e descartado em silencio pela RPC seria
   // exatamente o tipo de perda que a Etapa 21 veio fechar.
   const { deps } = makeDeps();
@@ -149,8 +149,8 @@ Deno.test('conciliacao-proxy: 400 quando os metadados trazem chave desconhecida'
       metadados: { compensacao_motivoo: 'typo' },
     })
   );
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, 'Invalid payload schema (Contract Violation)');
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, 'VALIDATION_ERROR');
 });
 
 Deno.test('conciliacao-proxy: sucesso desfazer chama RPC correta', async () => {
@@ -170,10 +170,14 @@ Deno.test('conciliacao-proxy: erro do RPC vira 400', async () => {
   assertEquals((await res.json()).error, 'conflito');
 });
 
-Deno.test('conciliacao-proxy: ação desconhecida retorna 400', async () => {
+Deno.test('conciliacao-proxy: ação desconhecida retorna 422', async () => {
+  // Ação fora do enum é violação de schema como qualquer outra: o `action`
+  // nunca chega ao switch, o Zod barra antes. Por isso 422 e não o 400 de
+  // `unknown_action`, que só alcança ação válida no schema e sem branch.
   const { deps } = makeDeps();
   const res = await createHandler(deps)(
     req({ action: 'outra' as unknown as 'desfazer', transacaoId: T })
   );
-  assertEquals(res.status, 400);
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, 'VALIDATION_ERROR');
 });

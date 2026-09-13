@@ -4,8 +4,90 @@ const FUNCTIONS_ROOT = new URL('../', import.meta.url);
 const BODY_PATTERN = /req\.(json|text)\s*\(/;
 const VALIDATION_PATTERN =
   /validatePayload|validateContract|validateVersionedContract|\.safeParse\s*\(/;
-const LEGACY_VALIDATION_400_PATTERN =
-  /if\s*\(\s*!\s*(?:__contract|parsed|validation)\.success\s*\)\s*return\s+new Response\(JSON\.stringify\(\{\s*error:\s*(?:__contract|parsed|validation)\.(?:error|details)[\s\S]{0,240}?status:\s*400/;
+/**
+ * Recorta o statement executado quando o schema falha.
+ *
+ * Precisa ser recorte exato, não janela de N caracteres: metade das funções
+ * escreve `if (!_v.success) return _v.response;` e logo abaixo faz uma
+ * checagem manual de campo que devolve 400 legitimamente. Uma janela fixa
+ * engole esse 400 e acusa 7 funções inocentes.
+ */
+function corpoDoRamo(source: string, apos: number): string {
+  let i = apos;
+  while (i < source.length && /\s/.test(source[i])) i++;
+  if (source[i] === '{') {
+    let prof = 0;
+    for (let j = i; j < source.length; j++) {
+      if (source[j] === '{') prof++;
+      else if (source[j] === '}' && --prof === 0) return source.slice(i, j + 1);
+    }
+    return source.slice(i);
+  }
+  // Statement solto: vai até o `;` de nível zero (ou o fim da linha, porque
+  // este repositório tem arquivos sem ponto-e-vírgula).
+  let prof = 0;
+  for (let j = i; j < source.length; j++) {
+    const c = source[j];
+    if ('([{'.includes(c)) prof++;
+    else if (')]}'.includes(c)) prof--;
+    else if (prof === 0 && (c === ';' || c === '\n')) return source.slice(i, j + 1);
+  }
+  return source.slice(i);
+}
+
+/**
+ * Endpoints cujo ramo de falha de schema responde 400 na prática.
+ *
+ * A versão anterior deste guard era um regex único exigindo a forma literal
+ * `return new Response(JSON.stringify({ error: ... status: 400`. Ele passava
+ * verde sobre 21 violações, porque quase ninguém escreve a resposta assim: a
+ * maioria usa um helper local (`json`, `jsonComCors`, `resposta`, `erro`) que
+ * o regex não enxergava. Um guard que só reconhece uma forma de escrever não
+ * é guard, é decoração — e este custou caro: `nfe-vinculo-proxy` tinha um
+ * teste exigindo 422 que nunca rodou no CI, ao lado deste teste verde.
+ *
+ * Agora a detecção é pelo RAMO, não pela forma da resposta, então qualquer
+ * jeito de montar a resposta é coberto — inclusive os que ainda não existem.
+ *
+ * `createErrorResponse(<validador>.error, 400, ...)` NÃO conta como violação:
+ * o helper intercepta mensagens com `Contract Violation` — que é exatamente o
+ * que `validatePayload` emite — e delega para `createValidationErrorResponse`,
+ * devolvendo 422 e ignorando o argumento de status. Nessas 25 chamadas o `400`
+ * é literal morto: enganoso de ler, correto no fio.
+ */
+const DIVIDA_400_CONHECIDA: readonly string[] = [
+  'aceitar-convite',
+  'api-keys-manage',
+  'comparar-benchmark-setorial',
+  'consulta-tributaria',
+  'convidar-usuario',
+  'enviar-convite-organizacao',
+  'enviar-digest-conformidade',
+  'executar-regua-cobranca',
+  'gerar-dre-tributaria',
+  'gerar-heatmap-tributario',
+  'gerar-snapshots-conformidade',
+  'mcp-query',
+  'overlay-rejeicoes-auditoria',
+  'prever-carga-tributaria',
+  'processar-nf-ocr',
+  'sefaz-manifestar',
+  'sso-generate-metadata',
+  'sso-initiate',
+  'sso-validate-config',
+];
+
+function endpointsComSchemaEm400(source: string): boolean {
+  // `success` é o discriminante de todos os validadores do projeto
+  // (`validatePayload`, `validateContract`, `safeParse`).
+  for (const m of source.matchAll(/!\s*\(?\s*(\w+)\.success\s*\)/g)) {
+    const corpo = corpoDoRamo(source, (m.index ?? 0) + m[0].length);
+    if (!/\b400\b/.test(corpo)) continue;
+    if (corpo.includes('createErrorResponse(')) continue;
+    return true;
+  }
+  return false;
+}
 
 Deno.test('toda Edge Function que consome body declara validação de contrato', async () => {
   const missing: string[] = [];
@@ -35,25 +117,37 @@ Deno.test('helpers compartilhados preservam o envelope 422 canônico', async () 
   assertEquals(validation.includes('createValidationErrorResponse'), true);
 });
 
-Deno.test('nenhum endpoint devolve 400 para falha de schema', async () => {
-  const legacyEndpoints: string[] = [];
+Deno.test('a dívida de 400 para falha de schema não cresce', async () => {
+  // Catraca, não asserção de lista vazia: a asserção limpa seria uma mentira
+  // com 19 violações no disco, e a saída honesta não é apagar o teste nem
+  // afrouxar o regex — é declarar a dívida e travá-la. Comparar conjuntos nos
+  // dois sentidos faz o teste ficar vermelho tanto quando alguém ADICIONA uma
+  // violação quanto quando alguém CORRIGE uma sem tirar da lista, que é o que
+  // impede a lista de virar folclore.
+  const encontrados: string[] = [];
 
   for await (const entry of Deno.readDir(FUNCTIONS_ROOT)) {
     if (!entry.isDirectory || entry.name === '_shared') continue;
     try {
       const source = await Deno.readTextFile(new URL(`${entry.name}/index.ts`, FUNCTIONS_ROOT));
-      if (LEGACY_VALIDATION_400_PATTERN.test(source)) {
-        legacyEndpoints.push(entry.name);
-      }
+      if (endpointsComSchemaEm400(source)) encontrados.push(entry.name);
     } catch (error) {
       if (!(error instanceof Deno.errors.NotFound)) throw error;
     }
   }
 
+  const novos = encontrados.filter((e) => !DIVIDA_400_CONHECIDA.includes(e));
+  const jaCorrigidos = DIVIDA_400_CONHECIDA.filter((e) => !encontrados.includes(e));
+
   assertEquals(
-    legacyEndpoints,
+    novos,
     [],
-    `Endpoints com falha de schema em 400: ${legacyEndpoints.join(', ')}`
+    `Falha de schema deve devolver 422 com {code,message,fields}. Novos em 400: ${novos.join(', ')}`
+  );
+  assertEquals(
+    jaCorrigidos,
+    [],
+    `Já migrados para 422 — remova de DIVIDA_400_CONHECIDA: ${jaCorrigidos.join(', ')}`
   );
 });
 

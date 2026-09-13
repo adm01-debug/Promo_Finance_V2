@@ -471,10 +471,119 @@ o artefato commitado está atualizado.
 **Esforço:** 12h
 `bling-proxy`, `asaas-proxy`, `open-finance`, `sefaz-dfe-puxar`, `sefaz-manifestar`, `nfe-upload-certificado`. Contratos com terceiros mudam sem aviso — testar com fixtures gravadas.
 
-### Etapa 44 — Piso de cobertura para edge functions
+### Etapa 44 — Piso de cobertura para edge functions ✅ (antecipada)
 
-**Esforço:** 4h
-Análogo à Etapa 32, porém no pipeline Deno: travar o percentual atual e subir por degraus.
+**Esforço:** 4h · **Status:** o pré-requisito foi feito; o piso percentual continua aberto.
+
+Esta etapa foi trazida à frente da Etapa 40 por um motivo prático: escrever
+testes de SPED para um pipeline que roda 61% da suíte é encher balde furado.
+E ao medir o balde, o furo era maior do que o previsto.
+
+#### O que a medição mostrou
+
+`.github/workflows/deno-tests.yml` enumerava os arquivos de teste à mão:
+**24 dos 48 arquivos do disco, 185 dos 305 testes. 120 testes — 39% — nunca
+rodaram no CI**, e nada avisava quando um arquivo novo nascia fora da lista.
+
+Não é dano hipotético. Dois casos concretos estavam na metade invisível:
+
+| Teste inerte                      | O que ele cobria                                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `nfe-vinculo-proxy/index_test.ts` | Exigia 422 de uma função que devolvia 400. O teste estava certo, a função errada, e o gate passava. |
+| `executar-regua-cobranca`         | Idempotência — que o próprio plano registra como incidente já ocorrido.                             |
+
+#### Três portas que não trancavam
+
+O padrão se repetiu em camadas, e vale nomear a classe: _gate verde que não
+guarda nada_.
+
+1. **A lista cravada** (acima).
+2. **A convenção de validação.** 38 funções devolvem 422 com
+   `{code, message, fields}`; `nfe-vinculo-proxy` e `conciliacao-proxy`
+   devolviam 400 com `{error, details}`. As duas foram alinhadas mantendo o
+   `json()` local — `createValidationErrorResponse` monta a própria `Response`
+   e descartaria o header de correlação e o `finalizeAudit`.
+3. **O guard que deveria ter pego o item 2.** Já existia um teste chamado
+   _"nenhum endpoint devolve 400 para falha de schema"_, e ele passava verde.
+   O regex exigia a forma literal `new Response(JSON.stringify({ error: ...
+status: 400`; quase ninguém escreve assim. Os dois violadores passavam por
+   um helper local que o regex não enxergava.
+
+#### O guard reescrito — e o que ele revelou
+
+A detecção passou a ser pelo **ramo**, não pela forma da resposta: acha
+`if (!<validador>.success)` e inspeciona o statement executado. Qualquer jeito
+de montar a resposta fica coberto, inclusive os que ainda não existem.
+
+Duas armadilhas no caminho, ambas encontradas antes de virarem commit:
+
+- **Janela fixa de caracteres acusa inocente.** Metade das funções escreve
+  `if (!_v.success) return _v.response;` e logo abaixo faz uma checagem manual
+  de campo que devolve 400 legitimamente. Uma janela de 400 chars engolia esse
+  400 e apontava 7 funções corretas. Corrigido com recorte por chaves
+  balanceadas / `;` de nível zero.
+- **`createErrorResponse(x.error, 400, ...)` não é violação.** O helper
+  intercepta mensagens com `Contract Violation` — exatamente o que
+  `validatePayload` emite — e delega para `createValidationErrorResponse`,
+  devolvendo 422 e **ignorando o argumento de status**. Em 25 chamadas o `400`
+  é literal morto: enganoso de ler, correto no fio.
+
+Descontadas as duas, sobraram **19 violações reais**. A saída honesta não era
+apagar o teste nem afrouxar o regex: o guard virou **catraca**, com a dívida
+declarada em `DIVIDA_400_CONHECIDA` e comparação nos dois sentidos — fica
+vermelho tanto quando alguém _adiciona_ uma violação quanto quando alguém
+_corrige_ uma sem tirar da lista, que é o que impede a lista de virar folclore.
+
+Validado por inversão dupla: reverter `conciliacao-proxy` para 400 →
+`Novos em 400: conciliacao-proxy`; listar um endpoint já migrado →
+`Já migrados para 422 — remova de DIVIDA_400_CONHECIDA`. Árvore restaurada nos
+dois casos.
+
+#### Um risco que a descoberta automática criou — e que foi fechado
+
+Rodar o diretório inteiro passou a incluir `sso-test-login/index.test.ts`, que
+é **integração viva contra a função publicada** e não tem guarda de skip. Ele
+aponta para `bwwbeyolnnzppeuhgkcd.supabase.co`: no CI sem secrets reprovaria
+por 401, e localmente a primeira execução bateu em produção de verdade.
+
+Duas medidas:
+
+- `--ignore` nesse arquivo, que já roda no job `integration-tests` com secrets.
+- **`--allow-net` escopado ao loopback** (`0.0.0.0:8000,127.0.0.1,localhost`).
+  Os testes só precisam da permissão porque vários módulos têm `Deno.serve()`
+  no topo, que faz bind na importação — nenhum deveria falar com a internet.
+  Com o escopo, "offline" deixa de ser convenção e passa a ser garantido pelo
+  runtime: quem vazar para a rede reprova com `NotCapable`.
+
+O env (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`,
+`DENO_TESTING`) foi declarado no step em vez de depender do vazamento de
+`Deno.env.set` de um módulo anterior na ordem alfabética — dependência que um
+arquivo novo com nome "errado" quebraria.
+
+#### Resultado
+
+|                           | Antes     | Depois                      |
+| ------------------------- | --------- | --------------------------- |
+| Arquivos de teste no gate | 24 de 48  | 48 de 48                    |
+| Testes executados         | 185       | 301 offline + 4 no job live |
+| Tempo                     | 6s        | 8s                          |
+| Saída para a internet     | permitida | bloqueada pelo runtime      |
+
+`nfe-vinculo-proxy` também entrou no `deno lint` e no
+`scripts/ci/deno-check-functions.sh`, onde faltava por omissão — mesma classe
+de porta destrancada.
+
+#### Pendente nesta etapa
+
+- **O piso percentual em si** (o objetivo original): `deno coverage` travando o
+  número atual e subindo por degraus. Só agora faz sentido medir, porque só
+  agora a medida cobre a suíte inteira.
+- **As 19 violações de 400.** Migrar cada uma para o envelope 422 e removê-la
+  de `DIVIDA_400_CONHECIDA`. É mudança de contrato de erro em 19 endpoints e
+  merece commit próprio, não carona neste.
+- **`sso-test-login/index.test.ts` sem guarda de skip.** Hoje depende do
+  `--ignore` no workflow. Uma guarda `ignore: !ANON_KEY` no próprio arquivo
+  seria mais robusta que o acordo à distância.
 
 ---
 

@@ -76,14 +76,14 @@ Deno.test('nfe-vinculo-proxy: 400 em JSON inválido', async () => {
   assertEquals((await res.json()).error, 'Invalid JSON');
 });
 
-Deno.test('nfe-vinculo-proxy: 400 quando nfeId não é UUID', async () => {
+Deno.test('nfe-vinculo-proxy: 422 quando nfeId não é UUID', async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(req({ action: 'suggest', nfeId: 'abc' }));
   assertEquals(res.status, 422);
   assertEquals((await res.json()).code, 'VALIDATION_ERROR');
 });
 
-Deno.test('nfe-vinculo-proxy: 400 em link sem contaPagarId válido', async () => {
+Deno.test('nfe-vinculo-proxy: 422 em link sem contaPagarId válido', async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(
     req({ action: 'link', nfeId: UUID_A, contaPagarId: 'nope' })

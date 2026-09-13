@@ -28,6 +28,7 @@ supabase/functions/analyze-document/index.ts
 supabase/functions/benchmarking-setorial/index.ts
 supabase/functions/categorizar-despesa/index.ts
 supabase/functions/conciliacao-proxy/index.ts
+supabase/functions/nfe-vinculo-proxy/index.ts
 supabase/functions/insights-relatorio/index.ts
 supabase/functions/enviar-alerta-email/index.ts
 supabase/functions/executar-analise-preditiva/index.ts

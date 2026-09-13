@@ -3,6 +3,7 @@
 // Auditoria: logs estruturados + persistência em audit_logs por chamada.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { auditedRpc, beginAudit, finalizeAudit, withCorrelation } from '../_shared/proxy-audit.ts';
+import { VALIDATION_ERROR_CODE, normalizeValidationFields } from '../_shared/contract-response.ts';
 import { NfeVinculoProxySchema, validatePayload } from '../_shared/validation.ts';
 import type { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
@@ -56,9 +57,18 @@ export function createHandler(deps: HandlerDeps) {
 
     const parsed = validatePayload(NfeVinculoProxySchema, raw, 'nfe-vinculo-proxy');
     if (!parsed.success) {
+      // 422 com o envelope `{code, message, fields}`, igual às outras 38
+      // funções. Aqui não dá para usar `createValidationErrorResponse`: ela
+      // monta a própria `Response` e perderia o header de correlação e o
+      // `finalizeAudit` que o `json()` local aplica — por isso o corpo é
+      // montado com os mesmos helpers e devolvido pelo caminho auditado.
       return json(
-        400,
-        { error: parsed.error, details: parsed.details },
+        422,
+        {
+          code: VALIDATION_ERROR_CODE,
+          message: 'Payload inválido',
+          fields: normalizeValidationFields(parsed.details ?? parsed.error),
+        },
         { reason: 'schema_violation' }
       );
     }
