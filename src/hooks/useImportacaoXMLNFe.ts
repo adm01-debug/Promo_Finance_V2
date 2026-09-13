@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 import { toISOLocal } from '@/lib/formatters';
+import { mustSucceed } from '@/lib/supabase-write';
+import type { TablesInsert } from '@/integrations/supabase/types';
 
 export interface NFeParsed {
   chaveAcesso: string;
@@ -263,39 +265,81 @@ export function useImportacaoXMLNFe(empresaId: string) {
 
           const competencia = `${nfe.dataEmissao.getFullYear()}-${String(nfe.dataEmissao.getMonth() + 1).padStart(2, '0')}`;
 
+          // Um único insert para os dois créditos. Em chamadas separadas, o
+          // IBS podia falhar depois do CBS já gravado e a nota ficava marcada
+          // como erro com metade do crédito no banco. O PostgREST executa o
+          // array como um comando só: ou entram os dois, ou nenhum.
+          //
+          // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios
+          // (types.ts canônico): tipo_credito, valor_base, aliquota,
+          // documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
+          const creditos: TablesInsert<'creditos_tributarios'>[] = [];
+          const creditoBase = {
+            empresa_id: empresaId,
+            // `data_origem` é DATE. `toISOString()` convertia para UTC: uma nota
+            // emitida à noite no fim do mês virava o dia 1º do mês seguinte,
+            // divergindo do `competencia_origem` logo abaixo, que é calculado
+            // com os getters locais.
+            data_origem: toISOLocal(nfe.dataEmissao),
+            competencia_origem: competencia,
+            nota_fiscal_id: nfInserted.id,
+            status: 'disponivel',
+          };
+
           if (cbsCalculado > 0) {
-            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 19
-            await supabase.from('creditos_tributarios').insert({
-              empresa_id: empresaId,
+            creditos.push({
+              ...creditoBase,
               tipo_tributo: 'CBS',
-              // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios (types.ts canônico):
-              // tipo_credito, valor_base, aliquota, documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
               valor_credito: cbsCalculado,
               saldo_disponivel: cbsCalculado,
-              data_origem: nfe.dataEmissao.toISOString(),
-              competencia_origem: competencia,
-              nota_fiscal_id: nfInserted.id,
-              status: 'disponivel',
             });
-            totalCBS += cbsCalculado;
           }
 
           if (ibsCalculado > 0) {
-            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 19
-            await supabase.from('creditos_tributarios').insert({
-              empresa_id: empresaId,
+            creditos.push({
+              ...creditoBase,
               tipo_tributo: 'IBS',
-              // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios (types.ts canônico):
-              // tipo_credito, valor_base, aliquota, documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
               valor_credito: ibsCalculado,
               saldo_disponivel: ibsCalculado,
-              data_origem: nfe.dataEmissao.toISOString(),
-              competencia_origem: competencia,
-              nota_fiscal_id: nfInserted.id,
-              status: 'disponivel',
             });
-            totalIBS += ibsCalculado;
           }
+
+          if (creditos.length > 0) {
+            try {
+              await mustSucceed(
+                supabase.from('creditos_tributarios').insert(creditos).select('id'),
+                'registrar os créditos de CBS/IBS da nota',
+                { exigirLinhas: creditos.length }
+              );
+            } catch (erroCredito) {
+              // A nota já está gravada e `chave_acesso` é UNIQUE: sem desfazer,
+              // a reimportação bate em 23505 e a nota fica sem crédito para
+              // sempre, sem caminho de recuperação pela tela.
+              try {
+                await mustSucceed(
+                  supabase.from('notas_fiscais').delete().eq('id', nfInserted.id).select('id'),
+                  'desfazer a nota fiscal cujo crédito não foi gravado',
+                  { exigirLinhas: true }
+                );
+              } catch {
+                // Falhou o crédito E falhou o rollback: a mensagem precisa
+                // dizer o que ficou no banco, senão o usuário reimporta e só
+                // recebe "chave duplicada".
+                throw new Error(
+                  `Crédito não gravado e a nota ${nfe.numero} (chave ${nfe.chaveAcesso}) ` +
+                    `permaneceu no banco. Remova-a antes de reimportar. Causa: ` +
+                    `${(erroCredito as Error).message}`
+                );
+              }
+              throw erroCredito;
+            }
+          }
+
+          // Os totais só sobem depois do crédito confirmado. Antes, o
+          // incremento acontecia mesmo com o insert falhando em silêncio: o
+          // resumo da importação anunciava crédito que não existia no banco.
+          totalCBS += cbsCalculado;
+          totalIBS += ibsCalculado;
 
           processadas[i] = { ...nfe, status: 'importado' };
           sucesso++;
