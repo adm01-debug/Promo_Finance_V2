@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format, endOfMonth } from 'date-fns';
+import { mustSucceed } from '@/lib/supabase-write';
 
 export type TipoRetencao = 'irrf' | 'csrf' | 'pis_cofins_csll' | 'inss' | 'iss' | 'cbs' | 'ibs';
 export type StatusRetencao = 'pendente' | 'recolhido' | 'compensado' | 'cancelado';
@@ -179,11 +180,22 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
       tipoRetencao: TipoRetencao;
       retencoesIds: string[];
     }) => {
-      // Buscar retenções selecionadas
-      const retencoesSelecionadas = retencoes.filter((r) => retencoesIds.includes(r.id));
+      // A lista precisa ser normalizada antes de virar critério de contagem:
+      // um id repetido faria `.in('id', ids)` devolver menos linhas do que
+      // `ids.length` e a verificação acusaria lote parcial sem haver problema.
+      const idsUnicos = Array.from(new Set(retencoesIds));
+      const retencoesSelecionadas = retencoes.filter((r) => idsUnicos.includes(r.id));
 
       if (retencoesSelecionadas.length === 0) {
         throw new Error('Nenhuma retenção selecionada');
+      }
+
+      // Id selecionado que sumiu da lista carregada: gravar o DARF com ele em
+      // `retencoes_ids` criaria uma guia apontando para retenção inexistente.
+      if (retencoesSelecionadas.length !== idsUnicos.length) {
+        throw new Error(
+          'Parte das retenções selecionadas não está mais disponível. Recarregue a lista e tente novamente.'
+        );
       }
 
       const valorPrincipal = retencoesSelecionadas.reduce((sum, r) => sum + r.valor_retido, 0);
@@ -206,16 +218,31 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
           valor_total: valorPrincipal,
           data_vencimento: dataVencimento,
           status: 'gerado',
-          retencoes_ids: retencoesIds,
+          retencoes_ids: idsUnicos,
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      // Marcar retenções como DARF gerado
-      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 18
-      await supabase.from('retencoes_fonte').update({ darf_gerado: true }).in('id', retencoesIds);
+      // O DARF é gravado primeiro de propósito. Marcar as retenções antes e
+      // falhar no insert as esconderia da lista de pendentes sem guia alguma
+      // emitida — omissão silenciosa ao fisco. Na ordem atual, uma falha aqui
+      // deixa um DARF emitido com as retenções ainda pendentes: visível na
+      // próxima apuração e recuperável. A atomicidade real vem na Etapa 21.
+      //
+      // A contagem exata importa: `.in('id', ids)` que pega só parte do lote
+      // devolve `error: null`, e as retenções não marcadas entrariam de novo
+      // no DARF seguinte — recolhimento em duplicidade.
+      await mustSucceed(
+        supabase
+          .from('retencoes_fonte')
+          .update({ darf_gerado: true })
+          .in('id', idsUnicos)
+          .select('id'),
+        'marcar as retenções como incluídas no DARF',
+        { exigirLinhas: idsUnicos.length }
+      );
 
       return darf;
     },
@@ -232,37 +259,53 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
   // Registrar pagamento de DARF
   const pagarDARF = useMutation({
     mutationFn: async ({ darfId, dataPagamento }: { darfId: string; dataPagamento: string }) => {
-      const { data, error } = await supabase
-        .from('darfs')
-        .update({
-          status: 'pago',
-          data_pagamento: dataPagamento,
-        })
-        .eq('id', darfId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Atualizar retenções vinculadas
-      const darf = darfs.find((d) => d.id === darfId);
-      if (darf?.retencoes_ids?.length) {
-        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, corrigido na Etapa 18
-        await supabase
-          .from('retencoes_fonte')
+      const darf = await mustSucceed(
+        supabase
+          .from('darfs')
           .update({
-            status: 'recolhido',
-            data_recolhimento: dataPagamento,
+            status: 'pago',
+            data_pagamento: dataPagamento,
           })
-          .in('id', darf.retencoes_ids);
+          .eq('id', darfId)
+          .select()
+          .single(),
+        'registrar o pagamento do DARF'
+      );
+
+      // Os ids vêm da linha que acabou de ser gravada, não de `darfs.find(...)`.
+      // A lista em cache é filtrada por empresa e competência: um DARF fora do
+      // filtro atual (ou um cache ainda não revalidado) fazia `darf` ser
+      // `undefined`, o `if` inteiro ser pulado e o DARF ficar pago com as
+      // retenções ainda pendentes — que voltariam ao próximo DARF.
+      // Deduplicado também aqui: DARFs gravados antes desta correção podem
+      // carregar ids repetidos, e a contagem exata os leria como lote parcial.
+      const retencoesIds = Array.from(new Set(darf.retencoes_ids ?? []));
+      if (retencoesIds.length > 0) {
+        await mustSucceed(
+          supabase
+            .from('retencoes_fonte')
+            .update({
+              status: 'recolhido',
+              data_recolhimento: dataPagamento,
+            })
+            .in('id', retencoesIds)
+            .select('id'),
+          'marcar as retenções como recolhidas',
+          { exigirLinhas: retencoesIds.length }
+        );
       }
 
-      return data;
+      return darf;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['retencoes-fonte'] });
       queryClient.invalidateQueries({ queryKey: ['darfs'] });
       toast.success('Pagamento registrado');
+    },
+    // Sem este handler a mutação rejeitava sem dizer nada ao usuário: o DARF
+    // aparecia como não pago e não havia sinal do porquê.
+    onError: (error) => {
+      toast.error('Erro ao registrar pagamento do DARF: ' + error.message);
     },
   });
 

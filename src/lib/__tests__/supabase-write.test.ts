@@ -166,6 +166,52 @@ describe('mustSucceed com exigirLinhas', () => {
     expect(erro.message).toContain(".select('id')");
   });
 
+  it('falha quando o lote pegou só parte das linhas esperadas', async () => {
+    // O caso que motivou o número: `update().in('id', [a, b, c])` em que só
+    // duas linhas estão no escopo da empresa devolve `error: null` e duas
+    // linhas. Sem comparar com o esperado, a terceira fica para trás calada.
+    const erro = await mustSucceed(
+      comoBuilder({ data: [{ id: 'a' }, { id: 'b' }], error: null }),
+      'marcar as retenções como recolhidas',
+      { exigirLinhas: 3 }
+    ).catch((e: unknown) => e as SupabaseWriteError);
+
+    expect(erro.isLinhasParciais).toBe(true);
+    expect(erro.message).toBe(
+      'Falha ao marcar as retenções como recolhidas: 2 de 3 registros foram afetados.'
+    );
+  });
+
+  it('passa quando o lote atinge exatamente o esperado', async () => {
+    await expect(
+      mustSucceed(comoBuilder({ data: null, error: null, count: 3 }), 'marcar retenções', {
+        exigirLinhas: 3,
+      })
+    ).resolves.toBeNull();
+  });
+
+  it('lote vazio ainda cai em NENHUMA_LINHA, não em parcial', async () => {
+    const erro = await mustSucceed(comoBuilder({ data: [], error: null }), 'marcar retenções', {
+      exigirLinhas: 2,
+    }).catch((e: unknown) => e as SupabaseWriteError);
+
+    expect(erro.code).toBe('NENHUMA_LINHA');
+  });
+
+  it('recusa exigirLinhas: 0 — verificação que não verifica nada é enfeite', async () => {
+    const erro = await mustSucceed(comoBuilder({ data: [], error: null }), 'marcar retenções', {
+      exigirLinhas: 0,
+    }).catch((e: unknown) => e as SupabaseWriteError);
+
+    expect(erro.code).toBe('CONTAGEM_INVALIDA');
+  });
+
+  it('exigirLinhas: false não verifica nada', async () => {
+    await expect(
+      mustSucceed(comoBuilder({ data: [], error: null }), 'apagar', { exigirLinhas: false })
+    ).resolves.toEqual([]);
+  });
+
   it('não verifica linhas quando a opção não é pedida', async () => {
     await expect(mustSucceed(comoBuilder({ data: [], error: null }), 'apagar')).resolves.toEqual(
       []

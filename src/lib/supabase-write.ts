@@ -121,6 +121,11 @@ export class SupabaseWriteError extends Error {
   get isNenhumaLinha(): boolean {
     return this.code === 'NENHUMA_LINHA';
   }
+
+  /** Escrita em lote que pegou só parte das linhas esperadas. */
+  get isLinhasParciais(): boolean {
+    return this.code === 'LINHAS_PARCIAIS';
+  }
 }
 
 function mensagemAmigavel(operacao: string, erro: PostgrestError): string {
@@ -144,8 +149,13 @@ export interface OpcoesMustSucceed {
    * tabela. Se a RLS permite escrever mas não ler a linha, a escrita é real e
    * mesmo assim volta vazia. Nas tabelas deste sistema quem escreve também lê,
    * mas vale conferir a policy antes de usar esta opção em tabela nova.
+   *
+   * Um **número** exige exatamente aquela quantidade de linhas. É o que uma
+   * escrita em lote quer dizer: `update().in('id', ids)` que atinge menos que
+   * `ids.length` aplicou-se a uma parte do lote — o resto ficou para trás, em
+   * silêncio, porque o PostgREST não considera isso um erro.
    */
-  exigirLinhas?: boolean;
+  exigirLinhas?: boolean | number;
 }
 
 /**
@@ -186,7 +196,18 @@ export async function mustSucceed<R extends RespostaPostgrest>(
     });
   }
 
-  if (opcoes.exigirLinhas) {
+  if (opcoes.exigirLinhas !== undefined && opcoes.exigirLinhas !== false) {
+    const esperadas = typeof opcoes.exigirLinhas === 'number' ? opcoes.exigirLinhas : null;
+    if (esperadas !== null && (!Number.isInteger(esperadas) || esperadas < 1)) {
+      // Erro de programação. `exigirLinhas: 0` só pode ser um lote vazio que o
+      // chamador deveria ter descartado antes de chegar aqui — e deixar passar
+      // transformaria a verificação em enfeite.
+      throw new SupabaseWriteError({
+        operacao: contexto,
+        code: 'CONTAGEM_INVALIDA',
+        message: `Falha ao ${contexto}: exigirLinhas recebeu ${esperadas}; espera um inteiro >= 1.`,
+      });
+    }
     const linhas = contaLinhas(resposta);
     if (linhas === null) {
       // Erro de programação, não de runtime do usuário: a resposta não permite
@@ -205,6 +226,14 @@ export async function mustSucceed<R extends RespostaPostgrest>(
         code: 'NENHUMA_LINHA',
         message: `Falha ao ${contexto}: nenhuma linha foi afetada.`,
         hint: 'O registro pode ter sido removido, já alterado por outro usuário, ou estar fora do escopo da sua empresa.',
+      });
+    }
+    if (esperadas !== null && linhas !== esperadas) {
+      throw new SupabaseWriteError({
+        operacao: contexto,
+        code: 'LINHAS_PARCIAIS',
+        message: `Falha ao ${contexto}: ${linhas} de ${esperadas} registros foram afetados.`,
+        hint: 'Parte do lote está fora do escopo da sua empresa, já foi removida ou foi alterada por outro usuário. Nada além dessas linhas foi gravado.',
       });
     }
   }
