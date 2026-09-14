@@ -451,10 +451,111 @@ concordar" em "um arquivo e um artefato". Fica registrado como candidato ao
 Bloco G — exige decidir onde o passo roda (CI, pre-commit) e como o CI prova que
 o artefato commitado está atualizado.
 
-### Etapa 40 — Testes de geração de SPED
+### Etapa 40 — Corrigir e testar o layout SPED (ECD, ECF, EFD-Contribuições) ✅
 
-**Esforço:** 12h
-`gerar-sped-ecd`, `gerar-sped-ecf`, `exportar-sped-contribuicoes`, `gerar-dre-tributaria`. Arquivos rejeitados pelo fisco são retrabalho caro; validar layout por golden files.
+**Esforço:** 12h · **Status:** concluída, com achado de escopo registrado abaixo.
+
+O plano listava as quatro funções sob "testar por golden file". Reler as
+quatro por completo mudou o escopo real de duas formas:
+
+1. **`gerar-dre-tributaria` não gera SPED.** É um DRE calculado a partir de
+   percentuais fixos de carga tributária média, devolvido como JSON — o
+   próprio arquivo se declara `// versão determinística (stub)`. Não há
+   registro, bloco, nem arquivo TXT. Fica fora deste trabalho (achado à
+   parte, ao final desta seção) — golden file não se aplica a algo que não
+   emite um layout.
+2. **Golden file sobre o output atual teria travado um arquivo que o
+   fisco rejeita.** As três funções que de fato emitem SPED tinham defeitos
+   de estrutura, não só ausência de teste. A ordem certa era corrigir
+   primeiro, testar depois — golden file antes teria significado reescrever
+   o golden a cada correção subsequente.
+
+#### Os defeitos (releitura linha a linha do código anterior)
+
+| Função                        | Defeito                                                                                                                                                                                                                                                                             |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gerar-sped-ecd`              | `I051` emitido num segundo loop após TODOS os `I050` — associava cada `I051` do arquivo ao **último** `I050`, não ao seu. No leiaute ECD, `I051` é registro-filho posicional.                                                                                                       |
+| `gerar-sped-ecd`              | Bloco `9900` era uma lista cravada de 9 linhas, sempre contagem `'1'` (`0001/0990/I001/I990/J001/J990/9001/9990/9999`). Faltavam `0000,0007,0020,I010,I030,I050,I051,I150,I155,I200,I250,J005,J100,J150,J900` — não "incompleto", uma lista fixa que nunca refletia o arquivo real. |
+| `gerar-sped-ecf`              | Mesma classe de defeito do `9900`, lista cravada `['0','C','J','K','L','M','N']`, faltando `0010,0020,0030,C040,J050,J051,J100,K030,K355,L030,L100,L210,L300,M010,M300,M350,N500,N620,N650`.                                                                                        |
+| `exportar-sped-contribuicoes` | `                                                                                                                                                                                                                                                                                   | M990 | ${5} | `cravado. Bloco M tem 5 registros só quando o`M100` condicional (crédito de PIS/Pasep) está presente; sem crédito são 4, e o arquivo mentia sobre a própria contagem. |
+| `exportar-sped-contribuicoes` | Bloco `9900` **inteiramente ausente** — zero linhas `9900` no arquivo — e `9990` cravado em `2`, ignorando que o bloco 9 deveria conter as linhas `9900` que faltavam.                                                                                                              |
+
+Os fechamentos de bloco já calculados dinamicamente (`0990`/`I990`/`J990`/
+`9999` no ECD e ECF; `0990`/`9999` em contribuições) estavam corretos e não
+foram tocados — só o que era cravado ou ausente mudou.
+
+#### A correção comum: `_shared/sped/bloco9.ts`
+
+As três funções tinham o mesmo defeito de raiz — uma lista de tipos de
+registro escrita à mão que nunca acompanhava o arquivo real — resolvido uma
+vez: `buildBloco9(linhasDeDados)` tabula por tipo de registro as linhas já
+emitidas, monta um `9900` por tipo distinto (a própria linha `9900` conta a
+si mesma, junto com `9001`/`9990` — algoritmo padrão do leiaute SPED) e
+fecha com `9990`. `9999` continua fora, de propósito: fecha o **arquivo**,
+não o bloco 9, e seu cálculo (`linhas.length + 1`) já estava correto nas
+três funções.
+
+`_shared/sped/push-helper.ts` extraiu o padrão `push`/`blocoCount`
+(rastreamento de linhas por bloco para os fechamentos `X990`) que já existia
+— duplicado — em ECD e ECF, e passou a ser adotado também por
+`exportar-sped-contribuicoes`, que montava as linhas com `.join('|')` cru e
+por isso nunca teve essa contagem disponível para o `M990`.
+
+Cada função ganhou um `layout.ts` — extração da montagem de linhas para uma
+função pura, sem `Deno.serve` nem chamada de rede, testável isoladamente.
+Os `index.ts` passaram a só buscar dados e chamar `build*Linhas(...)`;
+autenticação, autorização, cálculo de apuração, upload e insert no banco não
+mudaram.
+
+#### Testes: golden file + invariantes estruturais
+
+Mesmo raciocínio da Etapa 39: golden sozinho não pega regressão fora do
+cenário fixado; invariante sozinho não pega drift de conteúdo textual. Os
+goldens foram gerados **rodando o código real** sobre um fixture sintético
+(`deno run` + inspeção linha a linha), não transcritos à mão — transcrever
+seria repetir o próprio erro que a etapa corrige.
+
+- **ECD** (5 testes): bate com o golden; cada `I051` imediatamente após o
+  `I050` da mesma conta; contas sem `codigo_referencial` não geram `I051`;
+  bloco `9900` com a contagem real de cada tipo; `9990`/`9999` refletem o
+  total real de linhas.
+- **ECF** (4 testes): bate com o golden; bloco `9900` correto; `9990`/`9999`
+  corretos; `J051` continua agrupado sob o único `J050` do arquivo (não
+  tinha o defeito de posição do ECD — este teste é uma trava contra
+  regressão futura, não a correção de um bug).
+- **EFD-Contribuições** (6 testes): bate com o golden (cenário com
+  crédito); `M990=5` quando `M100` presente; **`M990=4` quando `M100`
+  ausente** — o cenário que o `|M990|5|` cravado errava, e por isso ganhou
+  teste próprio em vez de só golden; robustez com `apuracao=null`; bloco
+  `9900` correto nos dois cenários (com/sem crédito).
+- **`bloco9.ts`** (5 testes): contagem por tipo, autocontagem do `9900`,
+  fechamento `9990`, arquivo sem dados, ordem de emissão.
+
+Validado por inversão em cada correção (reintroduzir o bug original no
+`layout.ts`, confirmar vermelho, restaurar): I051 separado → 3 testes
+vermelhos; 9900 cravado (ECD) → 2 vermelhos; 9900 cravado (ECF) → 2
+vermelhos; M990=5 fixo → 2 vermelhos; bloco 9 ausente → 3 vermelhos. Suíte
+Deno completa: 301 → 321 (20 testes novos, descobertos automaticamente pelo
+gate de diretório da Etapa 44, sem tocar CI).
+
+#### `gerar-dre-tributaria` — achado à parte
+
+Fora do escopo de "geração de SPED": não emite registro algum, é um DRE
+calculado com percentuais fixos documentados como aproximação (`pis:
+1,65%`, `cofins: 7,6%`, `icms: 4%`, `cbs: 1,2%`, `ibs: 1,7%`, custo `55%` da
+receita líquida, regime ótimo assumindo 22% fixo) — o próprio código diz
+"stub". Não há layout a validar; um teste de valor exigiria decidir primeiro
+se esses percentuais são a verdade a proteger ou dívida a substituir. Fica
+pendente, não bloqueia esta etapa.
+
+#### Pendente nesta etapa
+
+- O achado de `gerar-dre-tributaria` acima, sem decisão tomada.
+- **A saída fiscal mudou.** ECD ganha registros `I051` reposicionados e
+  bloco `9900` completo; ECF ganha bloco `9900` completo; EFD-Contribuições
+  ganha bloco `9900` (antes inexistente) e `M990` correto quando não há
+  M100. Isto precisa ser comunicado e confirmado antes de produção — não é
+  uma correção que se aplica silenciosamente a um gerador de arquivo fiscal.
 
 ### Etapa 41 — Testes de cobrança
 

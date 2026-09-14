@@ -3,24 +3,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
+import { buildEfdContribuicoesLinhas } from './layout.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-function pad(n: number, len: number) {
-  return String(n).padStart(len, '0');
-}
-
-function fmtNum(n: number | null | undefined): string {
-  return (Number(n ?? 0)).toFixed(2).replace('.', ',');
-}
-
-function fmtDate(d: string | Date): string {
-  const date = typeof d === 'string' ? new Date(d) : d;
-  return `${pad(date.getDate(), 2)}${pad(date.getMonth() + 1, 2)}${date.getFullYear()}`;
-}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -38,7 +26,8 @@ Deno.serve(async (req) => {
     if (!auth) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'Não autorizado' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     const userClient = createClient(SUPABASE_URL, ANON_KEY, {
@@ -48,50 +37,68 @@ Deno.serve(async (req) => {
     if (!userData?.user) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'Não autenticado' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: roles } = await admin.from('user_roles').select('role').eq('user_id', userData.user.id).eq('is_active', true);
+    const { data: roles } = await admin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userData.user.id)
+      .eq('is_active', true);
     const userRoles = (roles ?? []).map((r) => r.role);
     if (!userRoles.some((r) => ['admin', 'financeiro'].includes(r))) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'Sem permissão' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const body = await req.json().catch(() => ({}));
-    const __contract = validatePayload(z.object({ empresa_id: z.string().uuid(), periodo: z.string().regex(/^\d{4}-\d{2}$/) }), (typeof body === 'object' ? body : {}) as unknown, 'exportar-sped-contribuicoes');
+    const __contract = validatePayload(
+      z.object({ empresa_id: z.string().uuid(), periodo: z.string().regex(/^\d{4}-\d{2}$/) }),
+      (typeof body === 'object' ? body : {}) as unknown,
+      'exportar-sped-contribuicoes'
+    );
     if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
     const empresa_id = body.empresa_id as string | undefined;
     const periodo = body.periodo as string | undefined; // YYYY-MM
 
     if (!empresa_id || !periodo || !/^\d{4}-\d{2}$/.test(periodo)) {
       await logger.flush();
-      return new Response(JSON.stringify({ error: 'empresa_id e periodo (YYYY-MM) obrigatórios' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'empresa_id e periodo (YYYY-MM) obrigatórios' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // financeiro sem vínculo ativo com a empresa pedia dados fiscais de
     // QUALQUER empresa via empresa_id arbitrário (achado P0 do cubic-dev-ai);
     // admin mantém acesso global, igual ao resto do sistema.
     if (!userRoles.includes('admin')) {
-      const { data: vinculo } = await admin.from('user_empresas').select('id')
-        .eq('user_id', userData.user.id).eq('empresa_id', empresa_id).eq('ativo', true).maybeSingle();
+      const { data: vinculo } = await admin
+        .from('user_empresas')
+        .select('id')
+        .eq('user_id', userData.user.id)
+        .eq('empresa_id', empresa_id)
+        .eq('ativo', true)
+        .maybeSingle();
       if (!vinculo) {
         await logger.flush();
         return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
-          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
     }
 
     const [ano, mes] = periodo.split('-').map(Number);
-    const dtIni = new Date(ano, mes - 1, 1);
-    const dtFim = new Date(ano, mes, 0);
 
     // Empresa
     const { data: empresa, error: empErr } = await admin
@@ -111,50 +118,15 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     const cnpjLimpo = (empresa.cnpj ?? '').replace(/\D/g, '');
-    const linhas: string[] = [];
 
-    // 0000 — Abertura do arquivo
-    linhas.push(['0000', '006', '0', fmtDate(dtIni), fmtDate(dtFim),
-      empresa.razao_social ?? '', cnpjLimpo, '', empresa.inscricao_estadual ?? '',
-      empresa.inscricao_municipal ?? '', '0', '1'].join('|') + '|');
-
-    // 0001 — Abertura do bloco 0
-    linhas.push('|0001|0|');
-    // 0140 — Estabelecimento
-    linhas.push(['0140', '001', empresa.razao_social ?? '', cnpjLimpo,
-      empresa.inscricao_estadual ?? '', '', '', empresa.inscricao_municipal ?? ''].join('|') + '|');
-    // 0990 — Encerramento do bloco 0
-    linhas.push(`|0990|${linhas.length + 1}|`);
-
-    // M001 — Abertura do bloco M
-    linhas.push('|M001|0|');
-
-    // M100 — Crédito de PIS/Pasep (residual) — usando cbs_creditos como proxy aproximado
-    if (apuracao?.cbs_creditos && Number(apuracao.cbs_creditos) > 0) {
-      linhas.push(['M100', '101', '0', '', fmtNum(apuracao.cbs_creditos),
-        fmtNum(0), fmtNum(0), '0', fmtNum(apuracao.cbs_creditos),
-        fmtNum(apuracao.cbs_creditos), '', fmtNum(0), fmtNum(0)].join('|') + '|');
-    }
-
-    // M200 — Consolidação da contribuição (CBS)
-    linhas.push(['M200', fmtNum(apuracao?.cbs_debitos), fmtNum(0),
-      fmtNum(apuracao?.cbs_creditos), fmtNum(0), fmtNum(apuracao?.cbs_a_pagar),
-      fmtNum(0), fmtNum(0), fmtNum(apuracao?.cbs_a_pagar)].join('|') + '|');
-
-    // M210 — Detalhamento por código
-    linhas.push(['M210', '01', fmtNum(apuracao?.cbs_debitos), fmtNum(apuracao?.cbs_debitos),
-      '0,00', fmtNum(apuracao?.cbs_debitos), '0,00', '0,00', fmtNum(apuracao?.cbs_debitos),
-      '0,00', '0,00', fmtNum(apuracao?.cbs_a_pagar)].join('|') + '|');
-
-    // M990 — Encerramento bloco M
-    linhas.push(`|M990|${5}|`);
-
-    // 9001 — Abertura bloco 9
-    linhas.push('|9001|0|');
-    // 9990 — Encerramento bloco 9
-    linhas.push(`|9990|2|`);
-    // 9999 — Encerramento do arquivo
-    linhas.push(`|9999|${linhas.length + 1}|`);
+    // Montagem pura em `layout.ts`, testada com golden file + invariantes
+    // (Etapa 40). Três correções ali em relação à versão anterior, que
+    // montava tudo inline aqui com `.join('|')` cru: `M990` passa a contar
+    // o bloco M de verdade (era cravado em `5`, certo só quando `M100`
+    // condicional está presente — sem ele o bloco tem 4 registros); e o
+    // bloco 9900 passa a existir (o arquivo não tinha NENHUM registro
+    // `9900`) com `9990` refletindo essa contagem real (era cravado em `2`).
+    const linhas = buildEfdContribuicoesLinhas({ empresa, apuracao, ano, mes });
 
     const conteudo = linhas.join('\r\n') + '\r\n';
     const fileName = `${empresa_id}/sped/EFD-Contrib-${cnpjLimpo}-${periodo.replace('-', '')}.txt`;
@@ -177,21 +149,31 @@ Deno.serve(async (req) => {
     });
     await logger.flush();
 
-    return new Response(JSON.stringify({
-      url: signed.signedUrl,
-      file_name: fileName,
-      total_linhas: linhas.length,
-      periodo,
-      observacao: 'Arquivo PRELIMINAR para análise. Validar no Validador SPED da RFB antes da entrega oficial.',
-    }), {
-      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({
+        url: signed.signedUrl,
+        file_name: fileName,
+        total_linhas: linhas.length,
+        periodo,
+        observacao:
+          'Arquivo PRELIMINAR para análise. Validar no Validador SPED da RFB antes da entrega oficial.',
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    logger.error('fn_failure', { duration_ms: Date.now() - t0, status_code: 500, error_message: msg });
+    logger.error('fn_failure', {
+      duration_ms: Date.now() - t0,
+      status_code: 500,
+      error_message: msg,
+    });
     await logger.flush();
     return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
