@@ -10,6 +10,7 @@ export const REQUIRED_MIGRATIONS = Object.freeze([
   "20260826030000",
   "20260826040000",
   "20260826050000",
+  "20260912100000",
 ]);
 
 export const EXPECTED_FUNCTION_PRIVILEGES = Object.freeze([
@@ -51,6 +52,18 @@ export const EXPECTED_FUNCTION_PRIVILEGES = Object.freeze([
     functionName:
       "public.generate_reconciliation_suggestions(p_empresa_id uuid, p_transaction_date date, p_transaction_value numeric, p_transaction_id uuid)",
     expected: freezeMatrix(),
+  },
+  {
+    functionName: "public.get_acessos_suspeitos(_horas integer, _somente_abertos boolean)",
+    // Painel administrativo: o corpo da RPC valida has_role(auth.uid(), 'admin').
+    // A ACL precisa permitir a chamada autenticada, mas nunca anon/PUBLIC.
+    expected: freezeAdminClientMatrix(),
+  },
+  {
+    functionName: "public.get_integrity_alerts(p_limit integer, p_incluir_resolvidos boolean)",
+    // Painel administrativo: o corpo da RPC valida has_role(auth.uid(), 'admin').
+    // A ACL precisa permitir a chamada autenticada, mas nunca anon/PUBLIC.
+    expected: freezeAdminClientMatrix(),
   },
 ]);
 
@@ -125,6 +138,15 @@ function freezeMatrix() {
   return Object.freeze({
     anon: false,
     authenticated: false,
+    service_role: true,
+    PUBLIC: false,
+  });
+}
+
+function freezeAdminClientMatrix() {
+  return Object.freeze({
+    anon: false,
+    authenticated: true,
     service_role: true,
     PUBLIC: false,
   });
