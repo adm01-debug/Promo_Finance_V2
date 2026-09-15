@@ -21,6 +21,7 @@ on:
       - 'scripts/security/test-supabase-config.py'
       - 'supabase/config.toml'
       - 'scripts/security/test-lint-function-repairs.mjs'
+      - 'scripts/security/check-view-replay-order.mjs'
       - '.github/workflows/supabase-linter.yml'
   pull_request:
     types: [opened, synchronize, reopened]
@@ -34,6 +35,7 @@ on:
       - 'scripts/security/test-supabase-config.py'
       - 'supabase/config.toml'
       - 'scripts/security/test-lint-function-repairs.mjs'
+      - 'scripts/security/check-view-replay-order.mjs'
       - '.github/workflows/supabase-linter.yml'
   workflow_dispatch: {}
 
@@ -51,6 +53,11 @@ jobs:
 
       - name: Replay safety das migrations críticas
         run: bash scripts/security/test-migration-replay-safety.sh
+
+      - name: Ordem de replay de views (CREATE VIEW nu)
+        # Falha se CREATE VIEW fora de guard DO $$ referenciar coluna criada depois
+        # (mesma classe que quebrava Supabase Preview: "column pc.tipo does not exist")
+        run: node scripts/security/check-view-replay-order.mjs
 
       - name: Integridade do Supabase config
         run: python3 scripts/security/test-supabase-config.py
