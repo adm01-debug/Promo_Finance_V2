@@ -25,23 +25,30 @@ test("evaluateRequiredMigrations falha quando uma migration obrigatória some", 
 test("evaluateRequiredMigrations tolera migration introduzida pelo próprio PR", () => {
   // Deadlock original: a migration nova só chega ao canônico depois do merge,
   // então o PR que a adiciona não conseguia passar no próprio gate.
-  const novaVersao = "20260912100000";
+  // Fixture sintética: a versão NÃO pode constar em REQUIRED_MIGRATIONS —
+  // 20260912100000 passou a ser obrigatória (PR #79) e quebrava a premissa.
+  const novaVersao = "20269999000000";
   const required = [...REQUIRED_MIGRATIONS, novaVersao];
   const rows = REQUIRED_MIGRATIONS.map((version) => ({ version }));
 
-  assert.throws(() => evaluateRequiredMigrations(rows, required), /20260912100000/);
+  assert.throws(() => evaluateRequiredMigrations(rows, required), /20269999000000/);
 
   const resultado = evaluateRequiredMigrations(rows, required, new Set([novaVersao]));
   assert.deepEqual(resultado.pendingFromPr, [novaVersao]);
 });
 
 test("evaluateRequiredMigrations ainda falha para migration ausente que o PR não introduziu", () => {
-  const required = [...REQUIRED_MIGRATIONS, "20260912100000"];
-  const rows = REQUIRED_MIGRATIONS.slice(0, -1).map((version) => ({ version }));
+  const novaVersao = "20269999000000";
+  const required = [...REQUIRED_MIGRATIONS, novaVersao];
+  // Remove explicitamente a versão citada — o antigo slice(0, -1) quebrava
+  // quando 20260912100000 passou a ser a última da lista (PR #79).
+  const rows = REQUIRED_MIGRATIONS.filter((version) => version !== "20260826050000").map(
+    (version) => ({ version }),
+  );
 
   // O PR introduz a nova, mas 20260826050000 sumiu do canônico: isso é falha real.
   assert.throws(
-    () => evaluateRequiredMigrations(rows, required, new Set(["20260912100000"])),
+    () => evaluateRequiredMigrations(rows, required, new Set([novaVersao])),
     /20260826050000/,
   );
 });
