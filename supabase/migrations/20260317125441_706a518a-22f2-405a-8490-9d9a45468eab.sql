@@ -166,18 +166,35 @@ SELECT cb.id, cb.banco, cb.agencia, cb.conta, cb.tipo_conta, cb.saldo_atual, cb.
     cb.empresa_id, cb.nome, cb.tipo, e.razao_social AS empresa_nome
 FROM contas_bancarias cb LEFT JOIN empresas e ON e.id = cb.empresa_id WHERE cb.ativo = true;
 
-CREATE VIEW public.vw_fluxo_caixa AS
-SELECT m.data_movimentacao, m.tipo, m.descricao, m.valor, m.valor_liquido, m.taxa_gateway,
-    cb.banco AS conta_bancaria, cat.nome AS categoria, pc.tipo AS tipo_categoria, cc.nome AS centro_custo,
-    cf.nome AS contato, m.conciliado, m.asaas_transaction_id, m.asaas_type, m.origem,
-    m.created_at, m.empresa_id, m.conta_bancaria_id
-FROM movimentacoes m
-    LEFT JOIN contas_bancarias cb ON cb.id = m.conta_bancaria_id
-    LEFT JOIN plano_contas pc ON pc.id = m.plano_conta_id
-    LEFT JOIN centros_custo cc ON cc.id = m.centro_custo_id
-    LEFT JOIN contatos_financeiros cf ON cf.id = m.contato_id
-    LEFT JOIN categorias cat ON cat.id = m.categoria_id
-WHERE m.deleted_at IS NULL;
+-- Guard: pc.tipo (plano_contas.tipo) só existe a partir de 20260518190420 —
+-- mesma classe de bug de vw_dre_mensal acima; esta instância passou batido e
+-- quebrava o replay do zero com "column pc.tipo does not exist".
+-- A definição final de vw_fluxo_caixa vem de 20260904000600.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'plano_contas' AND column_name = 'tipo'
+  ) THEN
+    EXECUTE $view$
+      CREATE VIEW public.vw_fluxo_caixa AS
+      SELECT m.data_movimentacao, m.tipo, m.descricao, m.valor, m.valor_liquido, m.taxa_gateway,
+          cb.banco AS conta_bancaria, cat.nome AS categoria, pc.tipo AS tipo_categoria, cc.nome AS centro_custo,
+          cf.nome AS contato, m.conciliado, m.asaas_transaction_id, m.asaas_type, m.origem,
+          m.created_at, m.empresa_id, m.conta_bancaria_id
+      FROM movimentacoes m
+          LEFT JOIN contas_bancarias cb ON cb.id = m.conta_bancaria_id
+          LEFT JOIN plano_contas pc ON pc.id = m.plano_conta_id
+          LEFT JOIN centros_custo cc ON cc.id = m.centro_custo_id
+          LEFT JOIN contatos_financeiros cf ON cf.id = m.contato_id
+          LEFT JOIN categorias cat ON cat.id = m.categoria_id
+      WHERE m.deleted_at IS NULL
+    $view$;
+  ELSE
+    RAISE NOTICE '20260317125441: plano_contas.tipo ausente; vw_fluxo_caixa recriada em 20260519160631/20260904000600.';
+  END IF;
+END
+$$;
 
 CREATE VIEW public.vw_fluxo_caixa_diario AS
 SELECT m.data_movimentacao AS dia, m.data_movimentacao AS data, m.empresa_id,
