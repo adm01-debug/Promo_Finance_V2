@@ -6,11 +6,18 @@ export type ScopeMode = 'consolidated' | 'focused';
 export interface EmpresaScopeContextValue {
   /** modo atual de visão */
   mode: ScopeMode;
-  /** IDs de empresas atualmente em escopo (1+ no consolidated, exatamente 1 no focused) */
+  /**
+   * IDs em escopo de SELEÇÃO (1+ no consolidated, exatamente 1 no focused).
+   *
+   * ATENÇÃO: `ids` NÃO agrega dados. Nenhum hook financeiro lê `ids`; todos
+   * leem `currentEmpresaId`. Use `ids` apenas para escolher alvos de ação
+   * (ex.: `EmpresaActionPicker` — "faturar por qual CNPJ?"). Exibir `ids` como
+   * se os números somassem N empresas é o bug que a Etapa 27 corrigiu.
+   */
   ids: string[];
   /** true quando mode === 'consolidated' E mais de 1 empresa selecionada */
   isConsolidated: boolean;
-  /** Empresa focada (modo focused) ou primeira selecionada (modo consolidated) */
+  /** Empresa cujos dados são de fato exibidos — a única fonte dos números. */
   currentEmpresaId: string | null;
   /** Vínculos completos do usuário (todas empresas disponíveis) */
   availableEmpresas: UserEmpresaLink[];

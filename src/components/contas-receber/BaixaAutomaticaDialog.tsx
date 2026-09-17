@@ -1,18 +1,30 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, CheckCircle2, AlertCircle, Loader2, Info } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao, TransacaoOFX } from '@/lib/ofx-parser';
+import {
+  parseExtratoBancario,
+  ExtratoOFX,
+  ResultadoImportacao,
+  TransacaoOFX,
+} from '@/lib/ofx-parser';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
 import type { Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
-import {formatCurrency, formatDate, toISOLocal } from '@/lib/formatters';
+import { formatCurrency, formatDate, toISOLocal } from '@/lib/formatters';
 
 interface BaixaAutomaticaDialogProps {
   open: boolean;
@@ -33,7 +45,11 @@ interface MatchResult {
   confianca: 'alta' | 'media' | 'baixa';
 }
 
-export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAutomaticaDialogProps) {
+export function BaixaAutomaticaDialog({
+  open,
+  onOpenChange,
+  empresaId,
+}: BaixaAutomaticaDialogProps) {
   const [step, setStep] = useState<Step>('upload');
   const [dragActive, setDragActive] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -42,7 +58,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
   const [unmatched, setUnmatched] = useState<TransacaoBancaria[]>([]);
   const [processing, setProcessing] = useState(false);
   const [summary, setSuccessSummary] = useState({ processados: 0, valor: 0 });
-  
+
   const queryClient = useQueryClient();
 
   const resetState = () => {
@@ -71,12 +87,12 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
 
     const matched: MatchResult[] = [];
     const notMatched: TransacaoBancaria[] = [];
-    
+
     for (const t of extrato.transacoes) {
       if (t.tipo !== 'credito') continue;
 
       // Matching simples por valor e data aproximada
-      const match = contas.find(c => {
+      const match = contas.find((c) => {
         const valorMatch = Math.abs(c.valor - t.valor) < 0.05;
         const dataT = new Date(t.data);
         const dataC = new Date(c.data_vencimento);
@@ -91,7 +107,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           cliente: match.cliente_nome,
           vencimento: match.data_vencimento,
           valor: match.valor,
-          confianca: 'alta'
+          confianca: 'alta',
         });
       } else {
         notMatched.push(t);
@@ -107,9 +123,11 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
       const content = await file.text();
       setProgress(50);
       const result = parseExtratoBancario(content, file.name);
-      
+
       if (result.sucesso && result.extrato) {
-        const { matched: foundMatches, unmatched: foundUnmatched } = await findMatches(result.extrato);
+        const { matched: foundMatches, unmatched: foundUnmatched } = await findMatches(
+          result.extrato
+        );
         setMatches(foundMatches);
         setUnmatched(foundUnmatched);
         setResultado(result);
@@ -120,7 +138,11 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
         setStep('error');
       }
     } catch (error: unknown) {
-      setResultado({ sucesso: false, erro: error instanceof Error ? error.message : String(error), avisos: [] });
+      setResultado({
+        sucesso: false,
+        erro: error instanceof Error ? error.message : String(error),
+        avisos: [],
+      });
       setStep('error');
     }
   };
@@ -137,15 +159,16 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           .update({
             status: 'pago',
             data_recebimento: toISOLocal(m.transacao.data),
-            valor_recebido: m.valor
+            valor_recebido: m.valor,
           })
           .eq('id', m.contaId);
 
         if (!error) {
           successCount++;
           totalValue += m.valor;
-          
+
           // Registra transação bancária confirmada para conciliação
+          // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
           await supabase.from('transacoes_bancarias').insert({
             conta_bancaria_id: m.transacao.conta_bancaria_id || '',
             data: toISOLocal(m.transacao.data),
@@ -168,9 +191,12 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
       }
 
       // Registra alertas para divergências (itens não encontrados)
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         for (const t of unmatched) {
+          // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
           await supabase.from('alertas').insert({
             user_id: user.id,
             tipo: 'divergencia_baixa',
@@ -181,17 +207,20 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
         }
 
         // Registra log global da importação
-        await supabase.from('logs_baixa_automatica').insert([{
-          user_id: user.id,
-          resultado: `Arquivo ${resultado?.extrato?.nomeArquivo || 'unknown'}: ${successCount}/${matches.length} sucesso`,
-          mensagem: `Importação concluída`,
-          detalhes: {
-            arquivo_nome: resultado?.extrato?.nomeArquivo ?? null,
-            total_registros: resultado?.extrato?.transacoes.length || 0,
-            sucesso_count: successCount,
-            falha_count: matches.length - successCount,
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+        await supabase.from('logs_baixa_automatica').insert([
+          {
+            user_id: user.id,
+            resultado: `Arquivo ${resultado?.extrato?.nomeArquivo || 'unknown'}: ${successCount}/${matches.length} sucesso`,
+            mensagem: `Importação concluída`,
+            detalhes: {
+              arquivo_nome: resultado?.extrato?.nomeArquivo ?? null,
+              total_registros: resultado?.extrato?.transacoes.length || 0,
+              sucesso_count: successCount,
+              falha_count: matches.length - successCount,
+            },
           },
-        }]);
+        ]);
       }
 
       setSuccessSummary({ processados: successCount, valor: totalValue });
@@ -222,35 +251,64 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn("transition-all duration-300", step === 'preview' ? "sm:max-w-2xl" : "sm:max-w-md")}>
+      <DialogContent
+        className={cn(
+          'transition-all duration-300',
+          step === 'preview' ? 'sm:max-w-2xl' : 'sm:max-w-md'
+        )}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-primary" />
             Baixa Automática (Arquivo de Retorno)
           </DialogTitle>
           <DialogDescription>
-            {step === 'upload' && 'Importe o arquivo OFX ou CSV do seu banco para liquidar títulos automaticamente.'}
-            {step === 'preview' && `Encontramos ${matches.length} correspondências e ${unmatched.length} divergências que requerem atenção.`}
+            {step === 'upload' &&
+              'Importe o arquivo OFX ou CSV do seu banco para liquidar títulos automaticamente.'}
+            {step === 'preview' &&
+              `Encontramos ${matches.length} correspondências e ${unmatched.length} divergências que requerem atenção.`}
           </DialogDescription>
         </DialogHeader>
 
         <AnimatePresence mode="wait">
           {step === 'upload' && (
-            <motion.div key="upload" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="py-4">
-              <div 
+            <motion.div
+              key="upload"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="py-4"
+            >
+              <div
                 className={cn(
-                  "border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer",
-                  dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-white/10 hover:border-primary/50 hover:bg-card/5"
+                  'border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer',
+                  dragActive
+                    ? 'border-primary bg-primary/5 scale-[1.02]'
+                    : 'border-white/10 hover:border-primary/50 hover:bg-card/5'
                 )}
-                onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
                 onClick={() => document.getElementById('retorno-upload')?.click()}
               >
-                <input id="retorno-upload" type="file" accept=".ofx,.csv" className="hidden" onChange={(e) => e.target.files?.[0] && processFile(e.target.files[0])} />
-                <div className={cn("h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-primary/10 text-primary")}>
+                <input
+                  id="retorno-upload"
+                  type="file"
+                  accept=".ofx,.csv"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && processFile(e.target.files[0])}
+                />
+                <div
+                  className={cn(
+                    'h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-primary/10 text-primary'
+                  )}
+                >
                   <Upload className="h-8 w-8" />
                 </div>
                 <p className="font-bold">Arraste o arquivo de retorno aqui</p>
-                <p className="text-xs text-muted-foreground mt-1">Suporta OFX (padrão bancário) e CSV</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Suporta OFX (padrão bancário) e CSV
+                </p>
               </div>
             </motion.div>
           )}
@@ -260,7 +318,9 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
               <Loader2 className="h-12 w-12 text-primary animate-spin" />
               <div className="text-center">
                 <p className="font-bold">Analisando Arquivo...</p>
-                <p className="text-xs text-muted-foreground mt-1">Cruzando dados com títulos em aberto</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Cruzando dados com títulos em aberto
+                </p>
               </div>
               <Progress value={progress} className="h-1.5 w-full max-w-[200px]" />
             </motion.div>
@@ -271,26 +331,38 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
               <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex gap-3">
                 <Info className="h-5 w-5 text-primary shrink-0" />
                 <p className="text-xs leading-relaxed">
-                  Revise as correspondências automáticas abaixo. As divergências (itens sem par correspondente) serão registradas como alertas para reprocessamento manual.
+                  Revise as correspondências automáticas abaixo. As divergências (itens sem par
+                  correspondente) serão registradas como alertas para reprocessamento manual.
                 </p>
               </div>
-              
+
               <div className="space-y-4">
                 {matches.length > 0 && (
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-success flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3" /> Correspondências Automáticas ({matches.length})
+                      <CheckCircle2 className="h-3 w-3" /> Correspondências Automáticas (
+                      {matches.length})
                     </h4>
                     <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                       {matches.map((m, i) => (
-                        <div key={i} className="p-3 rounded-lg border border-success/20 bg-success/5 flex items-center justify-between text-xs">
+                        <div
+                          key={i}
+                          className="p-3 rounded-lg border border-success/20 bg-success/5 flex items-center justify-between text-xs"
+                        >
                           <div>
                             <p className="font-bold text-foreground">{m.cliente}</p>
-                            <p className="text-muted-foreground">Venc: {formatDate(m.vencimento)} • {m.transacao.descricao}</p>
+                            <p className="text-muted-foreground">
+                              Venc: {formatDate(m.vencimento)} • {m.transacao.descricao}
+                            </p>
                           </div>
                           <div className="text-right">
                             <p className="font-black text-primary">{formatCurrency(m.valor)}</p>
-                            <Badge variant="outline" className="text-[8px] bg-success/20 text-success border-none h-4">MATCH ALTO</Badge>
+                            <Badge
+                              variant="outline"
+                              className="text-[8px] bg-success/20 text-success border-none h-4"
+                            >
+                              MATCH ALTO
+                            </Badge>
                           </div>
                         </div>
                       ))}
@@ -301,24 +373,32 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
                 {unmatched.length > 0 && (
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-warning flex items-center gap-2">
-                      <AlertCircle className="h-3 w-3" /> Divergências Detectadas ({unmatched.length})
+                      <AlertCircle className="h-3 w-3" /> Divergências Detectadas (
+                      {unmatched.length})
                     </h4>
                     <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                       {unmatched.map((t, i) => (
-                        <div key={i} className="p-3 rounded-lg border border-warning/20 bg-warning/5 flex items-center justify-between text-xs">
+                        <div
+                          key={i}
+                          className="p-3 rounded-lg border border-warning/20 bg-warning/5 flex items-center justify-between text-xs"
+                        >
                           <div>
                             <p className="font-bold text-foreground">Entrada não identificada</p>
-                            <p className="text-muted-foreground">{t.descricao} • {formatDate(t.data)}</p>
+                            <p className="text-muted-foreground">
+                              {t.descricao} • {formatDate(t.data)}
+                            </p>
                           </div>
                           <div className="text-right">
                             <p className="font-black text-warning">{formatCurrency(t.valor)}</p>
-                            <Button 
-                              variant="link" 
-                              size="sm" 
+                            <Button
+                              variant="link"
+                              size="sm"
                               className="h-4 p-0 text-[8px] uppercase font-black"
                               onClick={() => {
                                 // Futuro: Abrir modal de busca manual
-                                toast.info('Funcionalidade de vinculação manual em desenvolvimento');
+                                toast.info(
+                                  'Funcionalidade de vinculação manual em desenvolvimento'
+                                );
                               }}
                             >
                               Vincular Manualmente
@@ -344,20 +424,36 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
                   {summary.processados} títulos liquidados com sucesso.
                 </p>
                 <div className="mt-4 p-4 rounded-2xl bg-card/5 border border-white/5 inline-block">
-                  <p className="text-[10px] uppercase font-black tracking-widest opacity-40">Volume Recuperado</p>
-                  <p className="text-2xl font-black text-primary">{formatCurrency(summary.valor)}</p>
+                  <p className="text-[10px] uppercase font-black tracking-widest opacity-40">
+                    Volume Recuperado
+                  </p>
+                  <p className="text-2xl font-black text-primary">
+                    {formatCurrency(summary.valor)}
+                  </p>
                 </div>
               </div>
-              <Button onClick={handleClose} className="w-full h-12 rounded-xl mt-4 font-black">FECHAR</Button>
+              <Button onClick={handleClose} className="w-full h-12 rounded-xl mt-4 font-black">
+                FECHAR
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>
 
         {step === 'preview' && (
           <DialogFooter className="gap-2 pt-4">
-            <Button variant="outline" onClick={resetState} disabled={processing}>CANCELAR</Button>
-            <Button onClick={handleConfirmBaixa} disabled={processing} className="bg-primary font-black gap-2 h-11 px-8">
-              {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+            <Button variant="outline" onClick={resetState} disabled={processing}>
+              CANCELAR
+            </Button>
+            <Button
+              onClick={handleConfirmBaixa}
+              disabled={processing}
+              className="bg-primary font-black gap-2 h-11 px-8"
+            >
+              {processing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" />
+              )}
               CONFIRMAR BAIXA EM MASSA
             </Button>
           </DialogFooter>

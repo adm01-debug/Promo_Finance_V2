@@ -17,7 +17,11 @@ import {
 } from '@/components/ui/table';
 import { ExportMenu } from '@/components/ui/export-menu';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useFornecedores, useFornecedoresPaginated, ExternalCliente } from '@/hooks/useFinancialData';
+import {
+  useFornecedores,
+  useFornecedoresPaginated,
+  ExternalCliente,
+} from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
@@ -50,7 +54,7 @@ export default function Fornecedores() {
   const [isDeleting] = useState(false);
   const [viewingFornecedor, setViewingFornecedor] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
-  
+
   // Advanced filters — gerenciados via useManagedFilters
   const filtersController = useManagedFilters({
     entityType: 'fornecedores',
@@ -78,7 +82,7 @@ export default function Fornecedores() {
   const [pageSize, setPageSize] = useState(10);
 
   const queryClient = useQueryClient();
-  
+
   // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useFornecedoresPaginated({
     page: currentPage,
@@ -97,36 +101,34 @@ export default function Fornecedores() {
 
   // Get unique states for filter
   const estados = useMemo(() => {
-    const unique = [...new Set(fornecedores.map(f => f.estado).filter(Boolean))];
+    const unique = [...new Set(fornecedores.map((f) => f.estado).filter(Boolean))];
     return unique.sort() as string[];
   }, [fornecedores]);
 
   const filteredFornecedores = useMemo(() => {
-    return fornecedores.filter(f => {
+    return fornecedores.filter((f) => {
       // Text search
-      const matchesSearch = 
+      const matchesSearch =
         f.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (f.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (f.cnpj_cpf?.includes(searchTerm)) ||
-        (f.email?.toLowerCase().includes(searchTerm.toLowerCase()));
-      
+        f.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        f.cnpj_cpf?.includes(searchTerm) ||
+        f.email?.toLowerCase().includes(searchTerm.toLowerCase());
+
       // Status filter
-      const matchesStatus = 
-        statusFilter === 'all' || 
+      const matchesStatus =
+        statusFilter === 'all' ||
         (statusFilter === 'ativo' && f.ativo) ||
         (statusFilter === 'inativo' && !f.ativo);
-      
+
       // Estado filter
-      const matchesEstado = 
-        estadoFilter === 'all' || 
-        f.estado === estadoFilter;
-      
+      const matchesEstado = estadoFilter === 'all' || f.estado === estadoFilter;
+
       return matchesSearch && matchesStatus && matchesEstado;
     });
   }, [fornecedores, searchTerm, statusFilter, estadoFilter]);
 
   const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all';
-  
+
   const clearFilters = () => {
     setSearchTerm('');
     setCurrentPage(1);
@@ -141,15 +143,15 @@ export default function Fornecedores() {
   };
 
   const totalFornecedores = allFornecedores.length;
-  const fornecedoresAtivos = allFornecedores.filter(f => f.ativo).length;
+  const fornecedoresAtivos = allFornecedores.filter((f) => f.ativo).length;
 
   const handleDelete = async () => {
     if (!deletingFornecedor) return;
-    
+
     const fornecedorBackup = { ...deletingFornecedor };
     setDeleteDialogOpen(false);
     setDeletingFornecedor(null);
-    
+
     toastDeleteWithUndo({
       item: fornecedorBackup,
       itemName: `Fornecedor "${fornecedorBackup.razao_social}"`,
@@ -158,26 +160,29 @@ export default function Fornecedores() {
           .from('fornecedores')
           .update({ ativo: false })
           .eq('id', fornecedorBackup.id);
-        
+
         if (error) throw error;
         queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
       },
       onRestore: async () => {
-        await supabase
-          .from('fornecedores')
-          .update({ ativo: true })
-          .eq('id', fornecedorBackup.id);
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+        await supabase.from('fornecedores').update({ ativo: true }).eq('id', fornecedorBackup.id);
         queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
       },
     });
   };
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
+      >
         <PageBackground />
-        
-        <PageHeader 
-          title="Fornecedores" 
+
+        <PageHeader
+          title="Fornecedores"
           subtitle="Gerencie sua base de fornecedores e otimize a cadeia de suprimentos."
           badge="Supply Chain Management"
           icon={Package}
@@ -192,8 +197,8 @@ export default function Fornecedores() {
                 filename="fornecedores"
                 title="Relatório de Fornecedores"
               />
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
                 onClick={() => {
                   setEditingFornecedor(null);
@@ -241,22 +246,34 @@ export default function Fornecedores() {
           <StandardTableCard
             isLoading={isLoading}
             pageSize={pageSize}
-            pagination={filteredFornecedores.length > 0 ? {
-              currentPage,
-              totalPages,
-              pageSize,
-              totalItems: totalCount,
-              onPageChange: setCurrentPage,
-              onPageSizeChange: handlePageSizeChange
-            } : undefined}
+            pagination={
+              filteredFornecedores.length > 0
+                ? {
+                    currentPage,
+                    totalPages,
+                    pageSize,
+                    totalItems: totalCount,
+                    onPageChange: setCurrentPage,
+                    onPageSizeChange: handlePageSizeChange,
+                  }
+                : undefined
+            }
           >
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent border-b border-white/5">
-                  <TableHead className="w-[250px] font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Fornecedor</TableHead>
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Contato</TableHead>
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Localização</TableHead>
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Status</TableHead>
+                  <TableHead className="w-[250px] font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
+                    Fornecedor
+                  </TableHead>
+                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
+                    Contato
+                  </TableHead>
+                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
+                    Localização
+                  </TableHead>
+                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
+                    Status
+                  </TableHead>
                   <TableHead className="w-[80px] p-6"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -264,10 +281,18 @@ export default function Fornecedores() {
                 {fornecedores.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="p-0">
-                      <EmptyState 
+                      <EmptyState
                         icon={<Package className="h-8 w-8 text-muted-foreground" />}
-                        title={fornecedores.length === 0 ? 'Nenhum fornecedor cadastrado' : 'Nenhum fornecedor encontrado'}
-                        description={fornecedores.length === 0 ? 'Comece adicionando seu primeiro fornecedor' : 'Tente ajustar os filtros de busca'}
+                        title={
+                          fornecedores.length === 0
+                            ? 'Nenhum fornecedor cadastrado'
+                            : 'Nenhum fornecedor encontrado'
+                        }
+                        description={
+                          fornecedores.length === 0
+                            ? 'Comece adicionando seu primeiro fornecedor'
+                            : 'Tente ajustar os filtros de busca'
+                        }
                       />
                     </TableCell>
                   </TableRow>
@@ -277,9 +302,18 @@ export default function Fornecedores() {
                       key={fornecedor.id}
                       fornecedor={fornecedor}
                       index={index}
-                      onView={(f) => { setViewingFornecedor(f); setDetailOpen(true); }}
-                      onEdit={(f) => { setEditingFornecedor(f); setFormOpen(true); }}
-                      onDelete={(f) => { setDeletingFornecedor(f); setDeleteDialogOpen(true); }}
+                      onView={(f) => {
+                        setViewingFornecedor(f);
+                        setDetailOpen(true);
+                      }}
+                      onEdit={(f) => {
+                        setEditingFornecedor(f);
+                        setFormOpen(true);
+                      }}
+                      onDelete={(f) => {
+                        setDeletingFornecedor(f);
+                        setDeleteDialogOpen(true);
+                      }}
                     />
                   ))
                 )}
@@ -288,13 +322,17 @@ export default function Fornecedores() {
           </StandardTableCard>
         </motion.div>
 
-        <FornecedorForm 
-          open={formOpen} 
+        <FornecedorForm
+          open={formOpen}
           onOpenChange={(open) => {
             setFormOpen(open);
             if (!open) setEditingFornecedor(null);
           }}
-          fornecedor={editingFornecedor as unknown as React.ComponentProps<typeof FornecedorForm>['fornecedor']}
+          fornecedor={
+            editingFornecedor as unknown as React.ComponentProps<
+              typeof FornecedorForm
+            >['fornecedor']
+          }
         />
 
         <FornecedorDetailDialog

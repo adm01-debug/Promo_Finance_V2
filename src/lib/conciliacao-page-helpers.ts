@@ -8,6 +8,7 @@ import {
   converterContasReceberParaLancamentos,
 } from '@/lib/transaction-matcher';
 import type { ImportReport } from '@/components/conciliacao/RelatorioImportacaoDialog';
+import { toLocalDate } from '@/lib/formatters';
 
 export interface TransacaoImportada extends TransacaoOFX {
   conciliada: boolean;
@@ -124,7 +125,12 @@ export async function carregarTransacoesBanco(
 
     return (data || []).map((t) => ({
       id: t.id,
-      data: new Date(t.data),
+      // `transacoes_bancarias.data` é DATE: o PostgREST devolve "2026-09-13",
+      // e `new Date` interpreta isso como meia-noite UTC. Em Brasília (UTC-3)
+      // o extrato inteiro aparecia um dia antes da data real — numa tela de
+      // conciliação, onde a data é o critério de casamento, isso não é
+      // cosmético. `toLocalDate` ancora a data-pura na meia-noite local.
+      data: toLocalDate(t.data),
       descricao: t.descricao || '',
       valor: Number(t.valor),
       tipo: t.tipo === 'receita' ? ('credito' as const) : ('debito' as const),
@@ -242,6 +248,7 @@ export async function aplicarConciliacoesAutomaticas(params: {
 
           // Registrar log de erro de conciliação no banco
           if (selectedBanco) {
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
             await supabase.from('webhooks_log').insert({
               event_type: 'reconciliation.failed',
               status: 'error',
@@ -291,10 +298,13 @@ export function filtrarTransacoes(params: {
     if (filters.tipo !== 'todos' && t.tipo !== filters.tipo) return false;
 
     if (filters.periodoInicio) {
-      if (t.data < new Date(filters.periodoInicio)) return false;
+      if (t.data < toLocalDate(filters.periodoInicio)) return false;
     }
     if (filters.periodoFim) {
-      const end = new Date(filters.periodoFim);
+      // Mesmo fuso dos dois lados da comparação: `t.data` agora é meia-noite
+      // local, e um `new Date` cru aqui deslocaria o limite superior em 3h,
+      // excluindo do filtro as transações do próprio dia final.
+      const end = toLocalDate(filters.periodoFim);
       end.setHours(23, 59, 59);
       if (t.data > end) return false;
     }

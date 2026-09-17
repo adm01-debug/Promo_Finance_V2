@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format, endOfMonth } from 'date-fns';
+import { mustSucceed } from '@/lib/supabase-write';
 
 export type TipoRetencao = 'irrf' | 'csrf' | 'pis_cofins_csll' | 'inss' | 'iss' | 'cbs' | 'ibs';
 export type StatusRetencao = 'pendente' | 'recolhido' | 'compensado' | 'cancelado';
@@ -107,10 +108,7 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
   const { data: darfs = [], isLoading: isLoadingDarfs } = useQuery({
     queryKey: ['darfs', empresaId, competencia],
     queryFn: async () => {
-      let query = supabase
-        .from('darfs')
-        .select('*')
-        .order('data_vencimento', { ascending: true });
+      let query = supabase.from('darfs').select('*').order('data_vencimento', { ascending: true });
 
       if (empresaId) {
         query = query.eq('empresa_id', empresaId);
@@ -171,56 +169,63 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
 
   // Gerar DARF consolidado
   const gerarDARF = useMutation({
-    mutationFn: async ({ 
-      empresaId, 
-      competencia, 
+    mutationFn: async ({
+      empresaId,
+      competencia,
       tipoRetencao,
-      retencoesIds 
-    }: { 
-      empresaId: string; 
-      competencia: string; 
+      retencoesIds,
+    }: {
+      empresaId: string;
+      competencia: string;
       tipoRetencao: TipoRetencao;
       retencoesIds: string[];
     }) => {
-      // Buscar retenções selecionadas
-      const retencoesSelecionadas = retencoes.filter(r => retencoesIds.includes(r.id));
-      
-      if (retencoesSelecionadas.length === 0) {
+      // A lista precisa ser normalizada antes de virar critério de contagem:
+      // um id repetido faria a função contar menos disponíveis do que pedidas
+      // e acusar lote parcial sem haver problema. A função deduplica de novo
+      // do lado do servidor; aqui a normalização serve à checagem local.
+      const idsUnicos = Array.from(new Set(retencoesIds));
+
+      if (idsUnicos.length === 0) {
         throw new Error('Nenhuma retenção selecionada');
       }
 
-      const valorPrincipal = retencoesSelecionadas.reduce((sum, r) => sum + r.valor_retido, 0);
+      // Id selecionado que sumiu da lista carregada: emitir a guia com ele em
+      // `retencoes_ids` criaria um DARF apontando para retenção inexistente.
+      // A função repete a checagem sobre o estado real do banco; esta aqui só
+      // antecipa o erro com uma mensagem que o usuário entende.
+      const retencoesSelecionadas = retencoes.filter((r) => idsUnicos.includes(r.id));
+      if (retencoesSelecionadas.length !== idsUnicos.length) {
+        throw new Error(
+          'Parte das retenções selecionadas não está mais disponível. Recarregue a lista e tente novamente.'
+        );
+      }
+
       const codigoReceita = CODIGOS_RECEITA[tipoRetencao];
 
       // Calcular data de vencimento (último dia útil do mês seguinte)
       const [ano, mes] = competencia.split('-').map(Number);
       const dataVencimento = format(endOfMonth(new Date(ano, mes, 1)), 'yyyy-MM-dd');
 
-      const { data: darf, error } = await supabase
-        .from('darfs')
-        .insert({
-          empresa_id: empresaId,
-          codigo_receita: codigoReceita.codigo,
-          descricao_receita: codigoReceita.descricao,
-          competencia,
-          valor_principal: valorPrincipal,
-          valor_multa: 0,
-          valor_juros: 0,
-          valor_total: valorPrincipal,
-          data_vencimento: dataVencimento,
-          status: 'gerado',
-          retencoes_ids: retencoesIds,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Marcar retenções como DARF gerado
-      await supabase
-        .from('retencoes_fonte')
-        .update({ darf_gerado: true })
-        .in('id', retencoesIds);
+      // Passo único. Antes eram duas requisições — insert do DARF e depois
+      // `update ... in(ids)` nas retenções — e o PostgREST abre uma transação
+      // por requisição: falhar entre elas deixava a guia emitida com as
+      // retenções ainda pendentes, que voltariam ao DARF seguinte
+      // (recolhimento em duplicidade). A função grava as duas coisas na mesma
+      // transação, soma `valor_retido` no servidor (o cliente somava de uma
+      // lista já filtrada pelo RLS) e exige `darf_gerado = false` em todas,
+      // o que bloqueia a dupla inclusão na origem.
+      const darf = await mustSucceed(
+        supabase.rpc('gerar_darf_retencoes', {
+          p_empresa_id: empresaId,
+          p_competencia: competencia,
+          p_codigo_receita: codigoReceita.codigo,
+          p_descricao_receita: codigoReceita.descricao,
+          p_data_vencimento: dataVencimento,
+          p_retencoes_ids: idsUnicos,
+        }),
+        'gerar o DARF das retenções'
+      );
 
       return darf;
     },
@@ -237,36 +242,33 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
   // Registrar pagamento de DARF
   const pagarDARF = useMutation({
     mutationFn: async ({ darfId, dataPagamento }: { darfId: string; dataPagamento: string }) => {
-      const { data, error } = await supabase
-        .from('darfs')
-        .update({ 
-          status: 'pago',
-          data_pagamento: dataPagamento,
-        })
-        .eq('id', darfId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Atualizar retenções vinculadas
-      const darf = darfs.find(d => d.id === darfId);
-      if (darf?.retencoes_ids?.length) {
-        await supabase
-          .from('retencoes_fonte')
-          .update({ 
-            status: 'recolhido',
-            data_recolhimento: dataPagamento,
-          })
-          .in('id', darf.retencoes_ids);
-      }
-
-      return data;
+      // Passo único. Antes eram duas requisições — pagar o DARF e depois
+      // marcar as retenções — cada uma na sua própria transação: falhar entre
+      // elas deixava a guia paga com as retenções ainda pendentes, que
+      // reapareciam no DARF seguinte. A função grava as duas na mesma
+      // transação, lê `retencoes_ids` da linha travada (não do cache filtrado
+      // por empresa/competência), deduplica os ids herdados de guias antigas e
+      // confere o ROW_COUNT da marcação.
+      //
+      // O UPDATE da guia exige `status IS DISTINCT FROM 'pago'`: um segundo
+      // clique não regrava a data de pagamento, ele falha com `darf_nao_pagavel`.
+      return await mustSucceed(
+        supabase.rpc('pagar_darf_retencoes', {
+          p_darf_id: darfId,
+          p_data_pagamento: dataPagamento,
+        }),
+        'registrar o pagamento do DARF'
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['retencoes-fonte'] });
       queryClient.invalidateQueries({ queryKey: ['darfs'] });
       toast.success('Pagamento registrado');
+    },
+    // Sem este handler a mutação rejeitava sem dizer nada ao usuário: o DARF
+    // aparecia como não pago e não havia sinal do porquê.
+    onError: (error) => {
+      toast.error('Erro ao registrar pagamento do DARF: ' + error.message);
     },
   });
 
@@ -284,19 +286,25 @@ export function useRetencoesFonte(empresaId?: string, competencia?: string) {
   };
 
   // Resumo por tipo
-  const resumoPorTipo = retencoes.reduce((acc, r) => {
-    if (!acc[r.tipo_retencao]) {
-      acc[r.tipo_retencao] = { total: 0, pendente: 0, recolhido: 0, count: 0 };
-    }
-    acc[r.tipo_retencao].total += r.valor_retido;
-    acc[r.tipo_retencao].count++;
-    if (r.status === 'pendente') acc[r.tipo_retencao].pendente += r.valor_retido;
-    if (r.status === 'recolhido') acc[r.tipo_retencao].recolhido += r.valor_retido;
-    return acc;
-  }, {} as Record<TipoRetencao, { total: number; pendente: number; recolhido: number; count: number }>);
+  const resumoPorTipo = retencoes.reduce(
+    (acc, r) => {
+      if (!acc[r.tipo_retencao]) {
+        acc[r.tipo_retencao] = { total: 0, pendente: 0, recolhido: 0, count: 0 };
+      }
+      acc[r.tipo_retencao].total += r.valor_retido;
+      acc[r.tipo_retencao].count++;
+      if (r.status === 'pendente') acc[r.tipo_retencao].pendente += r.valor_retido;
+      if (r.status === 'recolhido') acc[r.tipo_retencao].recolhido += r.valor_retido;
+      return acc;
+    },
+    {} as Record<
+      TipoRetencao,
+      { total: number; pendente: number; recolhido: number; count: number }
+    >
+  );
 
   // Retenções pendentes próximas do vencimento
-  const retencoesCriticas = retencoes.filter(r => {
+  const retencoesCriticas = retencoes.filter((r) => {
     if (r.status !== 'pendente') return false;
     const diasParaVencer = Math.ceil(
       (new Date(r.data_vencimento).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)

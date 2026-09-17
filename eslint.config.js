@@ -3,6 +3,7 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
+import noFloatingSupabaseWrite from "./eslint-rules/no-floating-supabase-write.js";
 
 export default tseslint.config(
   {
@@ -32,10 +33,23 @@ export default tseslint.config(
     plugins: {
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
+      local: { rules: { "no-floating-supabase-write": noFloatingSupabaseWrite } },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+
+      // ─── Integridade de escrita ────────────────────────────────────────────────────────────────────────────────────────────
+      // O cliente do Supabase não lança: descartar o resultado de um
+      // insert/update/delete/upsert/rpc faz a falha sumir e o `toast.success`
+      // logo abaixo disparar sobre estado parcial. Consuma com `mustSucceed`,
+      // `bestEffort` (src/lib/supabase-write.ts) ou desestruture `{ error }`.
+      //
+      // As ocorrências herdadas carregam `eslint-disable-next-line` com o
+      // número da etapa que as corrige. Como `lint` roda com
+      // `--report-unused-disable-directives`, um disable que sobra depois da
+      // correção reprova o lint — a lista se esvazia sozinha.
+      "local/no-floating-supabase-write": "error",
 
       // ─── Fonte única de configuração ───────────────────────────────────────────────────────────────────────────────────────
       // Nenhum arquivo pode ler `import.meta.env.VITE_*` diretamente.

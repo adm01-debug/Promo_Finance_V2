@@ -1,13 +1,40 @@
 -- Fix Security Definer Views (change to SECURITY INVOKER)
-ALTER VIEW public.vw_contas_pagar_painel SET (security_invoker = on);
-ALTER VIEW public.vw_contas_receber_painel SET (security_invoker = on);
-ALTER VIEW public.vw_dre_mensal SET (security_invoker = on);
-ALTER VIEW public.vw_dso_aging SET (security_invoker = on);
-ALTER VIEW public.vw_fluxo_caixa SET (security_invoker = on);
-ALTER VIEW public.vw_fluxo_caixa_diario SET (security_invoker = on);
-ALTER VIEW public.vw_gastos_centro_custo SET (security_invoker = on);
-ALTER VIEW public.vw_metricas_cobranca SET (security_invoker = on);
-ALTER VIEW public.vw_saldos_contas SET (security_invoker = on);
+-- Guard de replay (mesmo padrão de 20260317125502): no replay do zero algumas
+-- destas views ainda não existem neste ponto — a criação guardada em
+-- 20260317125441 pula enquanto as colunas de plano_contas não foram adicionadas
+-- (só aparecem entre 20260518164611 e 20260519160631). As views que ficarem
+-- para trás aqui recebem security_invoker em 20260827101000_hardening_views_pii_rpcs.
+DO $$
+BEGIN
+  IF to_regclass('public.vw_contas_pagar_painel') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_contas_pagar_painel SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_contas_receber_painel') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_contas_receber_painel SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_dre_mensal') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_dre_mensal SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_dso_aging') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_dso_aging SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_fluxo_caixa') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_fluxo_caixa SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_fluxo_caixa_diario') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_fluxo_caixa_diario SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_gastos_centro_custo') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_gastos_centro_custo SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_metricas_cobranca') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_metricas_cobranca SET (security_invoker = on)';
+  END IF;
+  IF to_regclass('public.vw_saldos_contas') IS NOT NULL THEN
+    EXECUTE 'ALTER VIEW public.vw_saldos_contas SET (security_invoker = on)';
+  END IF;
+END
+$$;
 
 -- Ensure critical tables with RLS enabled have at least a basic policy
 DO $$

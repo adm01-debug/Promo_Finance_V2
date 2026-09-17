@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useRecentItems } from '@/hooks/useRecentItems';
 import { useState } from 'react';
-import { useUserEmpresas, getCurrentEmpresaId, setCurrentEmpresaId } from '@/hooks/useUserEmpresas';
+import { useEmpresaScope } from '@/contexts/useEmpresaScope';
 
 interface RecentAndFavoritesProps {
   collapsed: boolean;
@@ -22,9 +22,9 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   const [isRecentOpen, setIsRecentOpen] = useState(true);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(true);
   const [isEmpresasOpen, setIsEmpresasOpen] = useState(true);
-  const { data: vinculos = [] } = useUserEmpresas();
-  const currentEmpresaId = getCurrentEmpresaId();
-
+  // Escopo reativo: a leitura crua de localStorage não re-renderizava o
+  // switcher na troca de empresa, deixando o marcador na empresa anterior.
+  const { availableEmpresas: vinculos, currentEmpresaId, focusEmpresa } = useEmpresaScope();
 
   if (collapsed) return null;
 
@@ -44,13 +44,13 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
             <span className="flex-1 text-left">Empresas do Grupo</span>
             <motion.div
               animate={{ rotate: isEmpresasOpen ? 180 : 0 }}
-              transition={{ duration: 0.4, ease: "backOut" }}
+              transition={{ duration: 0.4, ease: 'backOut' }}
               className="opacity-40 group-hover:opacity-100"
             >
               <ChevronDown className="h-3.5 w-3.5" />
             </motion.div>
           </button>
-          
+
           <AnimatePresence initial={false}>
             {isEmpresasOpen && (
               <motion.div
@@ -61,10 +61,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                 className="overflow-hidden"
               >
                 <div className="space-y-1 pl-2">
-                  {vinculos.map(v => (
+                  {vinculos.map((v) => (
                     <button
                       key={v.empresa_id}
-                      onClick={() => setCurrentEmpresaId(v.empresa_id)}
+                      onClick={() => focusEmpresa(v.empresa_id)}
                       className={cn(
                         'w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium group/comp',
                         currentEmpresaId === v.empresa_id
@@ -72,7 +72,9 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                           : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
                       )}
                     >
-                      <span className="truncate">{v.empresa.nome_fantasia || v.empresa.razao_social}</span>
+                      <span className="truncate">
+                        {v.empresa.nome_fantasia || v.empresa.razao_social}
+                      </span>
                       {currentEmpresaId === v.empresa_id && (
                         <CheckCircle className="h-3 w-3 text-success shrink-0" />
                       )}
@@ -98,13 +100,13 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
             <span className="flex-1 text-left">Favoritos</span>
             <motion.div
               animate={{ rotate: isFavoritesOpen ? 180 : 0 }}
-              transition={{ duration: 0.4, ease: "backOut" }}
+              transition={{ duration: 0.4, ease: 'backOut' }}
               className="opacity-40 group-hover:opacity-100"
             >
               <ChevronDown className="h-3.5 w-3.5" />
             </motion.div>
           </button>
-          
+
           <AnimatePresence initial={false}>
             {isFavoritesOpen && (
               <motion.div
@@ -115,7 +117,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                 className="overflow-hidden"
               >
                 <div className="space-y-0.5 pl-2">
-                  {favoriteItems.map(item => (
+                  {favoriteItems.map((item) => (
                     <div key={item.path} className="flex items-center gap-1 group/item">
                       <NavLink
                         to={item.path}
@@ -159,7 +161,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
               <span>Recentes</span>
               <motion.div
                 animate={{ rotate: isRecentOpen ? 180 : 0 }}
-                transition={{ duration: 0.4, ease: "backOut" }}
+                transition={{ duration: 0.4, ease: 'backOut' }}
                 className="opacity-40 group-hover:opacity-100"
               >
                 <ChevronDown className="h-3.5 w-3.5" />
@@ -175,7 +177,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
               <X className="h-3 w-3" />
             </Button>
           </div>
-          
+
           <AnimatePresence initial={false}>
             {isRecentOpen && (
               <motion.div
@@ -186,7 +188,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                 className="overflow-hidden"
               >
                 <div className="space-y-0.5 pl-2">
-                  {recentItems.map(item => (
+                  {recentItems.map((item) => (
                     <div key={item.path} className="flex items-center gap-1 group/item">
                       <NavLink
                         to={item.path}

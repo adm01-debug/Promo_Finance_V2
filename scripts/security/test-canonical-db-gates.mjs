@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 export const EXPECTED_PROJECT_REF = "bwwbeyolnnzppeuhgkcd";
@@ -193,13 +194,67 @@ export function normalizeRolesCsv(value) {
     .join(",");
 }
 
-export function evaluateRequiredMigrations(rows, required = REQUIRED_MIGRATIONS) {
+/**
+ * Versões de migration ADICIONADAS pelo próprio PR (arquivos novos em relação à
+ * base de merge).
+ *
+ * Existe por causa de um deadlock estrutural: este gate valida
+ * `REQUIRED_MIGRATIONS` contra o banco canônico AO VIVO, mas uma migration nova
+ * só chega à produção DEPOIS do merge. Um PR que adicione a migration e a
+ * inscreva na lista não conseguia passar no próprio gate — ficava bloqueado
+ * para sempre (foi o que travou o PR #79).
+ *
+ * Migrations nessa condição são "pendentes esperadas", não "ausentes".
+ * Fora de um PR (sem base de merge) o conjunto é vazio e nada muda.
+ */
+export function pendingPrMigrations(env = process.env, runGit = defaultRunGit) {
+  const baseRef = env.GITHUB_BASE_REF;
+  if (!baseRef) return new Set();
+
+  try {
+    const saida = runGit([
+      "diff",
+      "--name-only",
+      "--diff-filter=A",
+      `origin/${baseRef}...HEAD`,
+      "--",
+      "supabase/migrations/",
+    ]);
+    const versoes = saida
+      .split("\n")
+      .map((linha) => linha.trim())
+      .filter(Boolean)
+      .map((caminho) => caminho.split("/").pop() ?? "")
+      .map((arquivo) => arquivo.match(/^(\d{14})_/)?.[1])
+      .filter(Boolean);
+    return new Set(versoes);
+  } catch {
+    // Sem git utilizável, preferimos o comportamento estrito (nada é perdoado)
+    // a arriscar deixar passar uma migration realmente ausente.
+    return new Set();
+  }
+}
+
+function defaultRunGit(args) {
+  return execFileSync("git", args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+}
+
+export function evaluateRequiredMigrations(rows, required = REQUIRED_MIGRATIONS, pendentesDoPr = new Set()) {
   const present = new Set(rows.map((row) => String(row.version)));
   const missing = required.filter((version) => !present.has(version));
-  if (missing.length > 0) {
-    throw new Error(`Migrations obrigatórias ausentes no canônico: ${missing.join(", ")}.`);
+
+  const esperadas = missing.filter((version) => pendentesDoPr.has(version));
+  const ausentes = missing.filter((version) => !pendentesDoPr.has(version));
+
+  if (ausentes.length > 0) {
+    throw new Error(`Migrations obrigatórias ausentes no canônico: ${ausentes.join(", ")}.`);
   }
-  return { checked: required.length };
+  if (esperadas.length > 0) {
+    console.warn(
+      `[canonical-db-gates] Migrations introduzidas por este PR e ainda não aplicadas ao canônico (esperado): ${esperadas.join(", ")}.`,
+    );
+  }
+  return { checked: required.length, pendingFromPr: esperadas };
 }
 
 export function evaluateFunctionPrivileges(functionRows, grantRows, expected = EXPECTED_FUNCTION_PRIVILEGES) {
@@ -504,7 +559,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
 
   const summary = {
     projectRef,
-    migrations: evaluateRequiredMigrations(migrationRows),
+    migrations: evaluateRequiredMigrations(migrationRows, REQUIRED_MIGRATIONS, pendingPrMigrations(env)),
     functions: evaluateFunctionPrivileges(functionRows, functionGrantRows),
     fixedPolicies: evaluateFixedPolicies(fixedPolicyRows),
     literalTruePolicies: evaluateLiteralTruePolicies(

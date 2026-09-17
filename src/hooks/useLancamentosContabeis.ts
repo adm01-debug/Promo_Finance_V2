@@ -5,6 +5,7 @@ import type { ParsedLancamento } from '@/lib/lancamentos-csv-importer';
 import { createAdaptiveChunkController } from '@/lib/adaptive-chunk';
 import { createConcurrencyLimiter } from '@/lib/concurrency-limiter';
 import { createImportCheckpoint, clearImportCheckpoint } from '@/lib/import-checkpoint';
+import { mustSucceed } from '@/lib/supabase-write';
 
 export interface LancamentoContabilInput {
   empresa_id: string;
@@ -142,6 +143,24 @@ const DEFAULT_CONCURRENCY = 6;
 const CONCURRENCY_MIN = 1;
 const CONCURRENCY_MAX = 16;
 
+/**
+ * O que chega no `catch` de um passo da importação raramente é um `Error`: o
+ * PostgREST rejeita com um objeto simples `{ code, message, details }`. Testar
+ * só por `instanceof Error` reduzia toda falha de banco a "Erro desconhecido"
+ * no relatório — justamente onde o operador precisa saber o que houve.
+ */
+function mensagemDoErro(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string' && e) return e;
+  if (e && typeof e === 'object') {
+    const { message, code } = e as { message?: unknown; code?: unknown };
+    if (typeof message === 'string' && message) {
+      return typeof code === 'string' && code ? `${message} (${code})` : message;
+    }
+  }
+  return 'Erro desconhecido';
+}
+
 export function useImportLancamentosLote() {
   const qc = useQueryClient();
   return useMutation({
@@ -205,13 +224,30 @@ export function useImportLancamentosLote() {
           // Persiste imediatamente — falha/crash após este ponto pula a ref.
           checkpoint?.confirm(l.ref);
         } catch (e) {
-          // Compensação: remove cabeçalho órfão
+          // Compensação: remove cabeçalho órfão. O resultado do delete era
+          // descartado — um rollback que falhava em silêncio deixava no razão
+          // um lançamento com `valor_total` e nenhuma partida, ou seja, um
+          // lançamento desbalanceado que nenhuma tela acusa.
+          let mensagem = mensagemDoErro(e);
           if (lancId) {
-            await supabase.from('lancamentos_contabeis').delete().eq('id', lancId);
+            try {
+              await mustSucceed(
+                supabase.from('lancamentos_contabeis').delete().eq('id', lancId).select('id'),
+                'remover o cabeçalho órfão do lançamento',
+                { exigirLinhas: true }
+              );
+            } catch (erroRollback) {
+              // Não relança: as demais refs do lote ainda precisam ser
+              // processadas. Mas a falha entra na mensagem do relatório, que é
+              // o único lugar onde o operador pode vê-la.
+              mensagem +=
+                ` | ATENÇÃO: o cabeçalho ${lancId} ficou no razão sem partidas e precisa ` +
+                `ser removido manualmente (${mensagemDoErro(erroRollback)})`;
+            }
           }
           result.falhas.push({
             ref: l.ref,
-            error: e instanceof Error ? e.message : 'Erro desconhecido',
+            error: mensagem,
             ...ctx,
           });
         } finally {

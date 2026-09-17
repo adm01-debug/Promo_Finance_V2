@@ -20,10 +20,10 @@ async function sendDeviceAlertEmail(userId: string, email: string, deviceInfo: D
         browser: deviceInfo.browser,
         os: deviceInfo.os,
         deviceType: deviceInfo.deviceType,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-    
+
     if (error) {
       logger.error('Error sending device alert email:', error);
     } else {
@@ -40,42 +40,43 @@ function generateDeviceFingerprint(): DeviceInfo {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const language = navigator.language;
   const platform = navigator.platform;
-  
+
   const fingerprintData = `${userAgent}|${screenResolution}|${timezone}|${language}|${platform}`;
-  
+
   let hash = 0;
   for (let i = 0; i < fingerprintData.length; i++) {
     const char = fingerprintData.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   const fingerprint = Math.abs(hash).toString(36);
-  
+
   let browser = 'Unknown';
   if (userAgent.includes('Firefox')) browser = 'Firefox';
   else if (userAgent.includes('Edg')) browser = 'Edge';
   else if (userAgent.includes('Chrome')) browser = 'Chrome';
   else if (userAgent.includes('Safari')) browser = 'Safari';
   else if (userAgent.includes('Opera') || userAgent.includes('OPR')) browser = 'Opera';
-  
+
   let os = 'Unknown';
   if (userAgent.includes('Windows')) os = 'Windows';
   else if (userAgent.includes('Mac')) os = 'macOS';
   else if (userAgent.includes('Linux')) os = 'Linux';
   else if (userAgent.includes('Android')) os = 'Android';
-  else if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) os = 'iOS';
-  
+  else if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad'))
+    os = 'iOS';
+
   let deviceType = 'Desktop';
   if (/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
     deviceType = /iPad|Tablet/i.test(userAgent) ? 'Tablet' : 'Mobile';
   }
-  
+
   return {
     fingerprint,
     browser,
     os,
     deviceType,
-    userAgent
+    userAgent,
   };
 }
 
@@ -87,29 +88,30 @@ export function useDeviceDetection() {
     setIsChecking(true);
     try {
       const deviceInfo = generateDeviceFingerprint();
-      
+
       const { data: existingDevice, error: checkError } = await supabase
         .from('dispositivos_conhecidos')
         .select('id, last_seen_at')
         .eq('user_id', userId)
         .eq('device_fingerprint', deviceInfo.fingerprint)
         .maybeSingle();
-      
+
       if (checkError) {
         logger.error('[useDeviceDetection] Error checking device:', checkError);
         return false;
       }
-      
+
       if (existingDevice) {
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
         await supabase
           .from('dispositivos_conhecidos')
           .update({ last_seen_at: new Date().toISOString() })
           .eq('id', existingDevice.id);
-        
+
         setIsNewDevice(false);
         return false;
       }
-      
+
       const { data: newDevice, error: insertError } = await supabase
         .from('dispositivos_conhecidos')
         .insert({
@@ -118,45 +120,44 @@ export function useDeviceDetection() {
           user_agent: deviceInfo.userAgent,
           browser: deviceInfo.browser,
           os: deviceInfo.os,
-          device_type: deviceInfo.deviceType
+          device_type: deviceInfo.deviceType,
         })
         .select('id')
         .single();
-      
+
       if (insertError) {
         logger.error('[useDeviceDetection] Error registering device:', insertError);
         return false;
       }
-      
-      await supabase
-        .from('new_device_alerts')
-        .insert({
-          user_id: userId,
-          device_id: newDevice.id,
-          user_agent: deviceInfo.userAgent
-        });
-      
+
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+      await supabase.from('new_device_alerts').insert({
+        user_id: userId,
+        device_id: newDevice.id,
+        user_agent: deviceInfo.userAgent,
+      });
+
       setIsNewDevice(true);
-      
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('email')
         .eq('id', userId)
         .maybeSingle();
-      
+
       if (profile?.email) {
         sendDeviceAlertEmail(userId, profile.email, deviceInfo);
       }
-      
+
       toast.warning('Novo dispositivo detectado', {
         description: `Login de ${deviceInfo.browser} no ${deviceInfo.os}. Se não foi você, altere sua senha imediatamente.`,
         duration: 10000,
         action: {
           label: 'Ver dispositivos',
-          onClick: () => window.location.href = '/seguranca'
-        }
+          onClick: () => (window.location.href = '/seguranca'),
+        },
       });
-      
+
       return true;
     } catch (error: unknown) {
       logger.error('[useDeviceDetection] Device detection error:', error);
@@ -172,26 +173,23 @@ export function useDeviceDetection() {
       .select('*')
       .eq('user_id', userId)
       .order('last_seen_at', { ascending: false });
-    
+
     if (error) {
       logger.error('[useDeviceDetection] Error fetching devices:', error);
       return [];
     }
-    
+
     return data || [];
   }, []);
 
   const removeDevice = useCallback(async (deviceId: string) => {
-    const { error } = await supabase
-      .from('dispositivos_conhecidos')
-      .delete()
-      .eq('id', deviceId);
-    
+    const { error } = await supabase.from('dispositivos_conhecidos').delete().eq('id', deviceId);
+
     if (error) {
       toast.error('Erro ao remover dispositivo');
       return false;
     }
-    
+
     toast.success('Dispositivo removido');
     return true;
   }, []);
@@ -201,12 +199,12 @@ export function useDeviceDetection() {
       .from('dispositivos_conhecidos')
       .update({ is_trusted: trusted })
       .eq('id', deviceId);
-    
+
     if (error) {
       toast.error('Erro ao atualizar dispositivo');
       return false;
     }
-    
+
     toast.success(trusted ? 'Dispositivo marcado como confiável' : 'Dispositivo desmarcado');
     return true;
   }, []);
@@ -217,6 +215,6 @@ export function useDeviceDetection() {
     checkDevice,
     getKnownDevices,
     removeDevice,
-    trustDevice
+    trustDevice,
   };
 }

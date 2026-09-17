@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 import { toISOLocal } from '@/lib/formatters';
+import { mustSucceed } from '@/lib/supabase-write';
 
 export interface NFeParsed {
   chaveAcesso: string;
@@ -237,11 +238,62 @@ export function useImportacaoXMLNFe(empresaId: string) {
           const cbsCalculado = nfe.valorProdutos * (aliquotas.cbs / 100);
           const ibsCalculado = nfe.valorProdutos * (aliquotas.ibs / 100);
 
-          const { data: nfInserted, error: nfError } = await supabase
-            .from('notas_fiscais')
-            .insert([
-              {
-                empresa_id: empresaId,
+          const competencia = `${nfe.dataEmissao.getFullYear()}-${String(nfe.dataEmissao.getMonth() + 1).padStart(2, '0')}`;
+
+          // Nota e créditos numa transação só. Antes eram duas requisições, e
+          // o PostgREST abre uma transação por requisição: se o insert dos
+          // créditos falhasse, a nota já estava gravada e `chave_acesso` é
+          // UNIQUE — a reimportação batia em 23505 e a nota ficava sem crédito
+          // para sempre. Havia um delete compensatório para isso, que por sua
+          // vez também podia falhar. Com a função, falhar no crédito desfaz a
+          // nota pelo próprio ROLLBACK: não existe estado intermediário a
+          // compensar, nem mensagem de "remova manualmente".
+          //
+          // A função valida cada chave do payload contra
+          // `information_schema.columns` e levanta
+          // `colunas_inexistentes_em_notas_fiscais` — deriva de schema falha
+          // alto em vez de descartar o campo em silêncio.
+          const creditos: Array<{
+            tipo_tributo: string;
+            valor_credito: number;
+            saldo_disponivel: number;
+            data_origem: string;
+            competencia_origem: string;
+            status: string;
+          }> = [];
+
+          // `data_origem` é DATE. `toISOString()` convertia para UTC: uma nota
+          // emitida à noite no fim do mês virava o dia 1º do mês seguinte,
+          // divergindo do `competencia_origem` logo acima, que usa os getters
+          // locais.
+          const creditoBase = {
+            data_origem: toISOLocal(nfe.dataEmissao),
+            competencia_origem: competencia,
+            status: 'disponivel',
+          };
+
+          if (cbsCalculado > 0) {
+            creditos.push({
+              ...creditoBase,
+              tipo_tributo: 'CBS',
+              valor_credito: cbsCalculado,
+              saldo_disponivel: cbsCalculado,
+            });
+          }
+
+          if (ibsCalculado > 0) {
+            creditos.push({
+              ...creditoBase,
+              tipo_tributo: 'IBS',
+              valor_credito: ibsCalculado,
+              saldo_disponivel: ibsCalculado,
+            });
+          }
+
+          await mustSucceed(
+            supabase.rpc('registrar_nfe_com_creditos', {
+              p_empresa_id: empresaId,
+              p_nota: {
                 numero: nfe.numero,
                 serie: nfe.serie || '1',
                 cliente_nome: nfe.nomeEmitente,
@@ -255,45 +307,16 @@ export function useImportacaoXMLNFe(empresaId: string) {
                 status: 'autorizada',
                 created_by: userData.user.id,
               },
-            ])
-            .select()
-            .single();
+              p_creditos: creditos,
+            }),
+            `registrar a nota ${nfe.numero} e seus créditos de CBS/IBS`
+          );
 
-          if (nfError) throw nfError;
-
-          const competencia = `${nfe.dataEmissao.getFullYear()}-${String(nfe.dataEmissao.getMonth() + 1).padStart(2, '0')}`;
-
-          if (cbsCalculado > 0) {
-            await supabase.from('creditos_tributarios').insert({
-              empresa_id: empresaId,
-              tipo_tributo: 'CBS',
-              // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios (types.ts canônico):
-              // tipo_credito, valor_base, aliquota, documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
-              valor_credito: cbsCalculado,
-              saldo_disponivel: cbsCalculado,
-              data_origem: nfe.dataEmissao.toISOString(),
-              competencia_origem: competencia,
-              nota_fiscal_id: nfInserted.id,
-              status: 'disponivel',
-            });
-            totalCBS += cbsCalculado;
-          }
-
-          if (ibsCalculado > 0) {
-            await supabase.from('creditos_tributarios').insert({
-              empresa_id: empresaId,
-              tipo_tributo: 'IBS',
-              // TODO(2026-08-14): campos removidos — não existem em creditos_tributarios (types.ts canônico):
-              // tipo_credito, valor_base, aliquota, documento_tipo/numero/chave, fornecedor_cnpj/nome, created_by
-              valor_credito: ibsCalculado,
-              saldo_disponivel: ibsCalculado,
-              data_origem: nfe.dataEmissao.toISOString(),
-              competencia_origem: competencia,
-              nota_fiscal_id: nfInserted.id,
-              status: 'disponivel',
-            });
-            totalIBS += ibsCalculado;
-          }
+          // Os totais só sobem depois do crédito confirmado. Antes, o
+          // incremento acontecia mesmo com o insert falhando em silêncio: o
+          // resumo da importação anunciava crédito que não existia no banco.
+          totalCBS += cbsCalculado;
+          totalIBS += ibsCalculado;
 
           processadas[i] = { ...nfe, status: 'importado' };
           sucesso++;

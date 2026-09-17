@@ -13,12 +13,60 @@ import {
   evaluateLiteralTruePolicies,
   evaluatePerformanceAlertConstraint,
   evaluateRequiredMigrations,
+  pendingPrMigrations,
   runCanonicalDbGates,
 } from "./test-canonical-db-gates.mjs";
 
 test("evaluateRequiredMigrations falha quando uma migration obrigatória some", () => {
   const rows = REQUIRED_MIGRATIONS.slice(0, -1).map((version) => ({ version }));
   assert.throws(() => evaluateRequiredMigrations(rows), /20260912100000/);
+});
+
+test("evaluateRequiredMigrations tolera migration introduzida pelo próprio PR", () => {
+  // Deadlock original: a migration nova só chega ao canônico depois do merge,
+  // então o PR que a adiciona não conseguia passar no próprio gate.
+  // Fixture sintética: a versão NÃO pode constar em REQUIRED_MIGRATIONS —
+  // 20260912100000 passou a ser obrigatória (PR #79) e quebrava a premissa.
+  const novaVersao = "20269999000000";
+  const required = [...REQUIRED_MIGRATIONS, novaVersao];
+  const rows = REQUIRED_MIGRATIONS.map((version) => ({ version }));
+
+  assert.throws(() => evaluateRequiredMigrations(rows, required), /20269999000000/);
+
+  const resultado = evaluateRequiredMigrations(rows, required, new Set([novaVersao]));
+  assert.deepEqual(resultado.pendingFromPr, [novaVersao]);
+});
+
+test("evaluateRequiredMigrations ainda falha para migration ausente que o PR não introduziu", () => {
+  const novaVersao = "20269999000000";
+  const required = [...REQUIRED_MIGRATIONS, novaVersao];
+  // Remove explicitamente a versão citada — o antigo slice(0, -1) quebrava
+  // quando 20260912100000 passou a ser a última da lista (PR #79).
+  const rows = REQUIRED_MIGRATIONS.filter((version) => version !== "20260826050000").map(
+    (version) => ({ version }),
+  );
+
+  // O PR introduz a nova, mas 20260826050000 sumiu do canônico: isso é falha real.
+  assert.throws(
+    () => evaluateRequiredMigrations(rows, required, new Set([novaVersao])),
+    /20260826050000/,
+  );
+});
+
+test("pendingPrMigrations extrai versões dos arquivos adicionados pelo PR", () => {
+  const fakeGit = () =>
+    [
+      "supabase/migrations/20260912100000_revoke_anon_admin_observability_rpcs.sql",
+      "supabase/migrations/20260913120000_outra.sql",
+      "supabase/migrations/README.md",
+    ].join("\n");
+
+  const versoes = pendingPrMigrations({ GITHUB_BASE_REF: "main" }, fakeGit);
+  assert.deepEqual([...versoes].sort(), ["20260912100000", "20260913120000"]);
+});
+
+test("pendingPrMigrations é vazio fora de um PR", () => {
+  assert.equal(pendingPrMigrations({}, () => "").size, 0);
 });
 
 test("evaluateFunctionPrivileges rejeita fail-open por PUBLIC e ausência de função", () => {

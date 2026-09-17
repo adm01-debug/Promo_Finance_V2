@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { mustSucceed } from '@/lib/supabase-write';
 import { addMonths, format } from 'date-fns';
 
 export interface AcordoParcelamento {
@@ -194,19 +195,28 @@ export function useAcordosParcelamento() {
 
       if (error) throw error;
 
-      // Verificar se todas as parcelas foram pagas
-      const { data: parcelas } = await supabase
-        .from('parcelas_acordo')
-        .select('status')
-        .eq('acordo_id', data.acordo_id);
+      // O erro deste select era descartado, e a expressão errava nos dois
+      // sentidos: com `parcelas` undefined (select falhou), `?.every` devolve
+      // undefined e o acordo nunca era quitado; com um array vazio — o que a
+      // RLS produz quando as parcelas estão fora do escopo — `[].every()`
+      // devolve `true` e o acordo era quitado sem parcela alguma paga.
+      const parcelas = await mustSucceed(
+        supabase.from('parcelas_acordo').select('status').eq('acordo_id', data.acordo_id),
+        'conferir as parcelas restantes do acordo'
+      );
 
-      const todasPagas = parcelas?.every((p) => p.status === 'pago');
+      const todasPagas = parcelas.length > 0 && parcelas.every((p) => p.status === 'pago');
 
       if (todasPagas) {
-        await supabase
-          .from('acordos_parcelamento')
-          .update({ status: 'quitado' })
-          .eq('id', data.acordo_id);
+        await mustSucceed(
+          supabase
+            .from('acordos_parcelamento')
+            .update({ status: 'quitado' })
+            .eq('id', data.acordo_id)
+            .select('id'),
+          'quitar o acordo de parcelamento',
+          { exigirLinhas: true }
+        );
       }
 
       return data;
@@ -223,20 +233,29 @@ export function useAcordosParcelamento() {
 
   const cancelarAcordoMutation = useMutation({
     mutationFn: async (acordoId: string) => {
-      // Cancelar parcelas pendentes
-      await supabase
-        .from('parcelas_acordo')
-        .update({ status: 'cancelado' })
-        .eq('acordo_id', acordoId)
-        .eq('status', 'pendente');
+      // Sem `exigirLinhas` de propósito: um acordo com todas as parcelas já
+      // pagas não tem nenhuma pendente para cancelar, e zero linhas aqui é o
+      // resultado correto. O que precisava ser verificado é o erro.
+      await mustSucceed(
+        supabase
+          .from('parcelas_acordo')
+          .update({ status: 'cancelado' })
+          .eq('acordo_id', acordoId)
+          .eq('status', 'pendente'),
+        'cancelar as parcelas pendentes do acordo'
+      );
 
-      // Cancelar acordo
-      const { error } = await supabase
-        .from('acordos_parcelamento')
-        .update({ status: 'cancelado' })
-        .eq('id', acordoId);
-
-      if (error) throw error;
+      // Aqui, ao contrário, zero linhas é bug: significa acordo inexistente ou
+      // fora do escopo da empresa, e o toast de sucesso mentiria.
+      await mustSucceed(
+        supabase
+          .from('acordos_parcelamento')
+          .update({ status: 'cancelado' })
+          .eq('id', acordoId)
+          .select('id'),
+        'cancelar o acordo de parcelamento',
+        { exigirLinhas: true }
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['acordos-parcelamento'] });

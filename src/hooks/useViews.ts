@@ -33,14 +33,13 @@ export function useDREMensal(empresaId?: string) {
 }
 
 // Hook para vw_fluxo_caixa (projeção por título)
-export function useFluxoCaixaView() {
+export function useFluxoCaixaView(empresaId?: string) {
   return useQuery({
-    queryKey: ['views', 'fluxo-caixa'],
+    queryKey: ['views', 'fluxo-caixa', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_fluxo_caixa')
-        .select('*')
-        .order('dia', { ascending: true });
+      let query = supabase.from('vw_fluxo_caixa').select('*').order('dia', { ascending: true });
+      if (empresaId) query = query.eq('empresa_id', empresaId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -53,7 +52,10 @@ export function useFluxoCaixaDiario(empresaId?: string) {
   return useQuery({
     queryKey: ['views', 'fluxo-caixa-diario', empresaId],
     queryFn: async () => {
-      let query = supabase.from('vw_fluxo_caixa_diario').select('*').order('dia', { ascending: true });
+      let query = supabase
+        .from('vw_fluxo_caixa_diario')
+        .select('*')
+        .order('dia', { ascending: true });
       if (empresaId) query = query.eq('empresa_id', empresaId);
       const { data, error } = await query;
       if (error) throw error;
@@ -79,14 +81,16 @@ export function useDSOAging(empresaId?: string) {
 }
 
 // Hook para vw_gastos_centro_custo
-export function useGastosCentroCusto() {
+export function useGastosCentroCusto(empresaId?: string) {
   return useQuery({
-    queryKey: ['views', 'gastos-centro-custo'],
+    queryKey: ['views', 'gastos-centro-custo', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('vw_gastos_centro_custo')
         .select('*')
         .order('total_gasto', { ascending: false });
+      if (empresaId) query = query.eq('empresa_id', empresaId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -110,18 +114,19 @@ export function useMetricasCobranca(empresaId?: string) {
 }
 
 // Hook para vw_transferencias_painel
-export function useTransferenciasPainel() {
+export function useTransferenciasPainel(empresaId?: string) {
   return useQuery({
-    queryKey: ['views', 'transferencias-painel'],
+    queryKey: ['views', 'transferencias-painel', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('vw_transferencias_painel' as never)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
+      if (empresaId) query = query.eq('empresa_id', empresaId);
+      const { data, error } = await query;
       if (error) throw error;
       return (data ?? []) as Record<string, unknown>[];
-
     },
     staleTime: STALE_TIMES.financial,
   });

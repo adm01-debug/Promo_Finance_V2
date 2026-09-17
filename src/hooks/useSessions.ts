@@ -175,6 +175,7 @@ export function useSessions() {
 
   const updateLastActivity = async (sessionId: string) => {
     try {
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase
         .from('user_sessions')
         .update({ last_active: new Date().toISOString() })
