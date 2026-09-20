@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Paperclip, Download, FileText, Loader2, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { mustSucceed } from '@/lib/supabase-write';
+import { logger } from '@/lib/logger';
+import { caminhoNoStorage, BUCKET_FINANCEIRO as BUCKET } from '@/lib/storage-path';
 
 interface AnexoListProps {
   entidadeId: string;
@@ -24,7 +27,7 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
         .select('*')
         .eq('entidade_id', entidadeId)
         .eq('entidade_tipo', entidadeTipo);
-      
+
       if (error) throw error;
       return data || [];
     },
@@ -47,24 +50,37 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
         if (uploadError) throw uploadError;
 
         // 2. Get Signed URL (or public if bucket is public, but we prefer private)
-        const { data: { publicUrl } } = supabase.storage
-          .from('financeiro')
-          .getPublicUrl(filePath);
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from('financeiro').getPublicUrl(filePath);
 
         // 3. Save to Database
-        const { error: dbError } = await supabase
-          .from('anexos_financeiros')
-          .insert({
-            entidade_id: entidadeId,
-            entidade_tipo: entidadeTipo,
-            nome_arquivo: file.name,
-            mime_type: file.type,
-            tamanho_bytes: file.size,
-            url: publicUrl,
-            url_publica: publicUrl,
-          });
-
-        if (dbError) throw dbError;
+        try {
+          await mustSucceed(
+            supabase.from('anexos_financeiros').insert({
+              entidade_id: entidadeId,
+              entidade_tipo: entidadeTipo,
+              nome_arquivo: file.name,
+              mime_type: file.type,
+              tamanho_bytes: file.size,
+              url: publicUrl,
+              url_publica: publicUrl,
+            }),
+            'registrar o anexo'
+          );
+        } catch (erroBanco) {
+          // O arquivo já está no bucket. Sem a linha, ele fica invisível na
+          // tela e ninguém mais o remove — mas segue baixável por quem tiver a
+          // URL. Desfazer o upload é o que mantém as duas pontas coerentes.
+          const { error: erroLimpeza } = await supabase.storage.from(BUCKET).remove([filePath]);
+          if (erroLimpeza) {
+            logger.error('Falha ao remover arquivo órfão do storage', {
+              filePath,
+              erro: erroLimpeza.message,
+            });
+          }
+          throw erroBanco;
+        }
       } finally {
         setUploading(false);
       }
@@ -75,30 +91,48 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
     },
     onError: (e) => {
       toast.error('Falha no upload: ' + e.message);
-    }
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (anexo: { id: string; storage_path?: string | null }) => {
-      // 1. Remove from Storage
-      const { error: storageError } = await supabase.storage
-        .from('financeiro')
-        .remove([anexo.storage_path ?? '']);
-      
-      if (storageError) console.error('Error removing from storage:', storageError);
+    mutationFn: async (anexo: { id: string; url?: string | null; nome_arquivo?: string }) => {
+      const caminho = caminhoNoStorage(anexo.url);
 
-      // 2. Remove from Database
-      const { error: dbError } = await supabase
-        .from('anexos_financeiros')
-        .delete()
-        .eq('id', anexo.id);
+      // Storage primeiro, de propósito. Na ordem inversa, a falha do storage
+      // deixaria um arquivo sem nenhuma linha apontando para ele: invisível,
+      // permanente e ainda baixável por quem tiver a URL. Nesta ordem, a falha
+      // do banco deixa uma linha sem arquivo — visível e reprocessável, já que
+      // remover um objeto que não existe mais não é erro no Storage.
+      if (caminho) {
+        const { error: erroStorage } = await supabase.storage.from(BUCKET).remove([caminho]);
+        // Antes este erro era só `console.error` e a linha era apagada mesmo
+        // assim. O arquivo ficava órfão no bucket, sem ponteiro para removê-lo.
+        if (erroStorage) {
+          throw new Error(`Falha ao remover o arquivo do storage: ${erroStorage.message}`);
+        }
+      }
 
-      if (dbError) throw dbError;
+      await mustSucceed(
+        supabase.from('anexos_financeiros').delete().eq('id', anexo.id).select('id'),
+        'remover o anexo',
+        { exigirLinhas: true }
+      );
+
+      // Linha cuja URL não permite localizar o objeto: a remoção do registro
+      // vale, mas o usuário precisa saber que o arquivo pode ter ficado lá.
+      if (!caminho) {
+        toast.warning(
+          `Registro removido, mas o arquivo de "${anexo.nome_arquivo ?? 'anexo'}" pode ter permanecido no armazenamento.`
+        );
+      }
+    },
+    onError: (e) => {
+      toast.error('Falha ao remover anexo: ' + e.message);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['anexos', entidadeTipo, entidadeId] });
       toast.success('Anexo removido');
-    }
+    },
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +154,12 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  if (isLoading) return <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin" /> Carregando anexos...</div>;
+  if (isLoading)
+    return (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Loader2 className="h-3 w-3 animate-spin" /> Carregando anexos...
+      </div>
+    );
 
   return (
     <div className="space-y-3">
@@ -138,15 +177,19 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
               onChange={handleFileChange}
               disabled={uploading}
             />
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="h-7 text-[10px] gap-1.5"
               asChild
               disabled={uploading}
             >
               <label htmlFor="file-upload" className="cursor-pointer">
-                {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
+                {uploading ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Plus className="h-3 w-3" />
+                )}
                 Anexar Arquivo
               </label>
             </Button>
@@ -160,10 +203,10 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
             Nenhum comprovante anexado.
           </p>
         )}
-        
+
         {anexos.map((anexo) => (
-          <div 
-            key={anexo.id} 
+          <div
+            key={anexo.id}
             className="group flex items-center justify-between p-2.5 rounded-xl bg-card/5 border border-white/5 hover:border-white/10 transition-all"
           >
             <div className="flex items-center gap-3 min-w-0">
@@ -172,20 +215,27 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold truncate">{anexo.nome_arquivo}</p>
-                <p className="text-[10px] text-muted-foreground">{formatSize(anexo.tamanho_bytes)}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {formatSize(anexo.tamanho_bytes)}
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                asChild
+              >
                 <a href={anexo.url_publica} target="_blank" rel="noopener noreferrer">
                   <Download className="h-4 w-4" />
                 </a>
               </Button>
               {!readonly && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   onClick={() => deleteMutation.mutate(anexo)}
                 >

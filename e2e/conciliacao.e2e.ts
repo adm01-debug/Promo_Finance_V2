@@ -8,12 +8,14 @@ test.describe('Conciliação Bancária E2E', () => {
     await conciliacaoPage.waitForLoad();
   });
 
-  test('deve realizar upload de arquivo OFX e encontrar matches por valor e data', async ({ page }) => {
+  test('deve realizar upload de arquivo OFX e encontrar matches por valor e data', async ({
+    page,
+  }) => {
     const conciliacaoPage = new ConciliacaoPage(page);
-    
+
     // 1. Abrir modal de importação
     await conciliacaoPage.openImportModal();
-    
+
     // 2. Mock de um arquivo OFX
     const ofxContent = `
 OFXHEADER:100
@@ -65,22 +67,22 @@ NEWFILEUID:NONE
     const filePayload = {
       name: 'extrato.ofx',
       mimeType: 'application/x-ofx',
-      buffer: Buffer.from(ofxContent)
+      buffer: Buffer.from(ofxContent),
     };
-    
+
     await page.setInputFiles('input[type="file"]', filePayload);
-    
+
     // 4. Verificar se o relatório de importação apareceu
     await expect(page.getByText(/Relatório de Importação/i)).toBeVisible({ timeout: 10000 });
     await expect(page.getByText(/1 transações encontradas/i)).toBeVisible();
-    
+
     // 5. Fechar relatório e verificar match na lista
     await page.getByRole('button', { name: /Entendido/i }).click();
-    
+
     // 6. Verificar se a transação aparece na fila de sugestões IA
     await expect(page.getByText(/Fila de Sugestões/i)).toBeVisible();
     await expect(page.getByText(/PAGAMENTO TESTE E2E/i)).toBeVisible();
-    
+
     // 7. Validar se o valor está correto
     await expect(page.getByText(/R\$ 1\.500,50/i)).toBeVisible();
   });
@@ -90,7 +92,7 @@ NEWFILEUID:NONE
     // O hook useConciliacaoPage já tem essa lógica de emitir toast.warning
     const conciliacaoPage = new ConciliacaoPage(page);
     await conciliacaoPage.openImportModal();
-    
+
     const ofxDivergente = `
 <OFX>
   <BANKMSGSRSV1>
@@ -115,9 +117,9 @@ NEWFILEUID:NONE
     await page.setInputFiles('input[type="file"]', {
       name: 'divergente.ofx',
       mimeType: 'application/x-ofx',
-      buffer: Buffer.from(ofxDivergente)
+      buffer: Buffer.from(ofxDivergente),
     });
-    
+
     // Verificar alerta de divergência
     await expect(page.getByText(/Divergência de Saldo Detectada/i)).toBeVisible();
   });
@@ -126,11 +128,15 @@ NEWFILEUID:NONE
     // Verificar se o seletor de bancos existe e tem opções
     await page.getByRole('combobox', { name: /banco/i }).click();
     const options = page.getByRole('option');
-    await expect(options.count()).toBeGreaterThan(0);
-    
+    // `expect(options.count())` sem `await` compara uma Promise pendente com 0:
+    // o matcher síncrono do Playwright rejeita `Promise > 0` e o teste era
+    // estruturalmente inaprovável. `not.toHaveCount(0)` ainda espera pelas
+    // opções aparecerem, em vez de ler a contagem uma vez só.
+    await expect(options).not.toHaveCount(0);
+
     // Selecionar a primeira conta
     await options.first().click();
-    
+
     // Verificar se o dashboard por empresa (múltiplos CNPJs) carrega corretamente
     await page.getByRole('tab', { name: /Dashboard/i }).click();
     await expect(page.getByText(/Progresso da Conciliação/i)).toBeVisible();

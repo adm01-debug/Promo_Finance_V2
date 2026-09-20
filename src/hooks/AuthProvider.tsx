@@ -8,7 +8,13 @@ import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { broadcastSsoSlo, subscribeSsoSlo } from '@/lib/sso-sync';
 import { runAuthCleanup } from '@/lib/auth-cleanup';
 import { setSloFailure } from '@/lib/sso-slo-state';
-import { AuthContext, type AppRole, type RawAppRole, type AuthContextType, type Profile } from './useAuth';
+import {
+  AuthContext,
+  type AppRole,
+  type RawAppRole,
+  type AuthContextType,
+  type Profile,
+} from './useAuth';
 
 const ROLE_PRIORITY: Record<AppRole, number> = {
   admin: 4,
@@ -50,7 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [roleAtual, setRoleAtual] = useState<AppRole | null>(null);
-  const [currentEmpresaId, setCurrentEmpresaIdState] = useState<string | null>(getCurrentEmpresaId());
+  const [currentEmpresaId, setCurrentEmpresaIdState] = useState<string | null>(
+    getCurrentEmpresaId()
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -127,39 +135,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       timers.add(t);
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!mounted) return;
-        setSession(session);
-        setUser(session?.user ?? null);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      setSession(session);
+      setUser(session?.user ?? null);
 
-        if (session?.user) {
-          safeTimeout(() => {
-            fetchProfile(session.user.id);
-            fetchRoleForEmpresa(session.user.id, getCurrentEmpresaId());
-          });
+      if (session?.user) {
+        safeTimeout(() => {
+          fetchProfile(session.user.id);
+          fetchRoleForEmpresa(session.user.id, getCurrentEmpresaId());
+        });
 
-          if (event === 'SIGNED_IN') {
-            const provider = (session.user.app_metadata as Record<string, unknown> | undefined)?.provider as string | undefined;
-            const ssoProviderId = (session.user.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
-            const isSaml = provider === 'sso:saml' || provider?.startsWith('sso');
-            if (isSaml && ssoProviderId) {
-              safeTimeout(() => {
-                supabase.functions.invoke('sso-callback', {
+        if (event === 'SIGNED_IN') {
+          const provider = (session.user.app_metadata as Record<string, unknown> | undefined)
+            ?.provider as string | undefined;
+          const ssoProviderId = (session.user.user_metadata as Record<string, unknown> | undefined)
+            ?.sso_provider_id as string | undefined;
+          const isSaml = provider === 'sso:saml' || provider?.startsWith('sso');
+          if (isSaml && ssoProviderId) {
+            safeTimeout(() => {
+              supabase.functions
+                .invoke('sso-callback', {
                   body: { kind: 'saml-finalize', provider_id: ssoProviderId },
-                }).catch((err) => logger.warn('[useAuth] saml-finalize falhou', err));
-              });
-            }
+                })
+                .catch((err) => logger.warn('[useAuth] saml-finalize falhou', err));
+            });
           }
-        } else {
-          setProfile(null);
-          setRole(null);
-          setRoleAtual(null);
         }
-
-        setIsLoading(false);
+      } else {
+        setProfile(null);
+        setRole(null);
+        setRoleAtual(null);
       }
-    );
+
+      setIsLoading(false);
+    });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
@@ -205,7 +217,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (async () => {
         try {
           await supabase.auth.signOut({ scope: 'local' });
-        } catch { /* noop */ }
+        } catch {
+          /* noop */
+        }
         await runAuthCleanup(queryClient);
         window.location.replace('/auth?slo=ok&from=tab-sync');
       })();
@@ -213,7 +227,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, [queryClient]);
   const signOut = async () => {
-    const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
+    const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)
+      ?.sso_provider_id as string | undefined;
     let ssoLogoutUrl: string | null = null;
     let providerNome = 'SSO';
     let providerLogoutFailed = false;
@@ -235,7 +250,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (e) {
         providerLogoutFailed = true;
-        providerErrorMessage = e instanceof Error ? e.message : 'Falha de rede ao contatar sso-logout';
+        providerErrorMessage =
+          e instanceof Error ? e.message : 'Falha de rede ao contatar sso-logout';
         logger.warn('[useAuth] SSO logout falhou — seguindo com logout local', e);
       }
 
@@ -244,29 +260,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const ts = broadcastSsoSlo(providerNome);
         // Marca esta aba para que ela não reaja ao próprio broadcast.
         sessionStorage.setItem('sso-slo-toast-shown', String(ts));
-      } catch { /* noop */ }
+      } catch {
+        /* noop */
+      }
       toast.loading(`Encerrando sessão SSO via ${providerNome}…`, { id: 'sso-slo' });
     }
 
     // Best-effort: marca a sessão atual como revogada no banco antes do signOut.
     if (user) {
       try {
-        await (supabase.from('user_sessions') as unknown as {
-          update: (v: Record<string, unknown>) => {
-            eq: (c: string, v: unknown) => {
-              eq: (c: string, v: unknown) => {
-                eq: (c: string, v: unknown) => Promise<unknown>;
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+        await (
+          supabase.from('user_sessions') as unknown as {
+            update: (v: Record<string, unknown>) => {
+              eq: (
+                c: string,
+                v: unknown
+              ) => {
+                eq: (
+                  c: string,
+                  v: unknown
+                ) => {
+                  eq: (c: string, v: unknown) => Promise<unknown>;
+                };
               };
             };
-          };
-        })
+          }
+        )
           .update({ revoked: true, revoked_at: new Date().toISOString() })
           .eq('user_id', user.id)
           .eq('is_current', true)
           .eq('revoked', false);
-
-
-
       } catch (e) {
         logger.warn('[useAuth] Falha ao revogar user_session — seguindo', e);
       }
@@ -295,8 +319,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         reason: localCleanupFailed
           ? 'local_cleanup_failed'
           : providerLogoutFailed
-          ? 'provider_logout_failed'
-          : 'unknown',
+            ? 'provider_logout_failed'
+            : 'unknown',
         providerNome: ssoProviderId ? providerNome : null,
         providerId: ssoProviderId ?? null,
         message: localErrorMessage ?? providerErrorMessage,
@@ -329,15 +353,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     isAdmin: effectiveRole === 'admin',
     isFinanceiro: effectiveRole === 'financeiro' || effectiveRole === 'admin',
-    isOperacional: effectiveRole === 'operacional' || effectiveRole === 'financeiro' || effectiveRole === 'admin',
+    isOperacional:
+      effectiveRole === 'operacional' ||
+      effectiveRole === 'financeiro' ||
+      effectiveRole === 'admin',
     hasRole,
     signOut,
     refreshProfile,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

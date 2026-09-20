@@ -17,17 +17,17 @@ export function usePushNotifications() {
   const fetchVapidKey = useCallback(async () => {
     try {
       const { data, error } = await supabase.functions.invoke('get-vapid-key');
-      
+
       if (error) {
         logger.error('Error fetching VAPID key:', error);
         return null;
       }
-      
+
       if (data?.vapidPublicKey) {
         setVapidPublicKey(data.vapidPublicKey);
         return data.vapidPublicKey;
       }
-      
+
       return null;
     } catch (error: unknown) {
       logger.error('Error fetching VAPID key:', error);
@@ -49,15 +49,16 @@ export function usePushNotifications() {
 
   useEffect(() => {
     const checkSupport = async () => {
-      const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+      const supported =
+        'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
       setIsSupported(supported);
-      
+
       if (supported) {
         setPermission(Notification.permission);
         await fetchVapidKey();
         await checkSubscription();
       }
-      
+
       setIsLoading(false);
     };
 
@@ -71,9 +72,9 @@ export function usePushNotifications() {
 
     try {
       const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+        scope: '/',
       });
-      
+
       logger.debug('Service Worker registrado:', registration);
       return registration;
     } catch (error: unknown) {
@@ -91,7 +92,7 @@ export function usePushNotifications() {
     try {
       const result = await Notification.requestPermission();
       setPermission(result);
-      
+
       if (result === 'granted') {
         toast.success('Permissão para notificações concedida!');
         return true;
@@ -99,7 +100,7 @@ export function usePushNotifications() {
         toast.error('Permissão para notificações negada');
         return false;
       }
-      
+
       return false;
     } catch (error: unknown) {
       logger.error('Erro ao solicitar permissão:', error);
@@ -131,7 +132,7 @@ export function usePushNotifications() {
       if (!keyToUse) {
         keyToUse = await fetchVapidKey();
       }
-      
+
       if (!keyToUse) {
         toast.error('Chave VAPID não configurada. Contate o administrador.');
         setIsLoading(false);
@@ -147,7 +148,7 @@ export function usePushNotifications() {
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: applicationServerKey.buffer as ArrayBuffer
+        applicationServerKey: applicationServerKey.buffer as ArrayBuffer,
       });
 
       const p256dhKey = subscription.getKey('p256dh');
@@ -158,26 +159,30 @@ export function usePushNotifications() {
       }
 
       // Save subscription to database
-      const { error } = await supabaseDyn.from('push_subscriptions').upsert({
-        user_id: user.id,
-        endpoint: subscription.endpoint,
-        p256dh: arrayBufferToBase64(p256dhKey),
-        auth: arrayBufferToBase64(authKey),
-        ativo: true,
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,endpoint'
-      });
+      const { error } = await supabaseDyn.from('push_subscriptions').upsert(
+        {
+          user_id: user.id,
+          endpoint: subscription.endpoint,
+          p256dh: arrayBufferToBase64(p256dhKey),
+          auth: arrayBufferToBase64(authKey),
+          ativo: true,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'user_id,endpoint',
+        }
+      );
 
       if (error) {
         logger.error('Error saving subscription:', error);
         // Try without onConflict
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
         await supabaseDyn.from('push_subscriptions').insert({
           user_id: user.id,
           endpoint: subscription.endpoint,
           p256dh: arrayBufferToBase64(p256dhKey),
           auth: arrayBufferToBase64(authKey),
-          ativo: true
+          ativo: true,
         });
       }
 
@@ -205,6 +210,7 @@ export function usePushNotifications() {
 
         // Remove from database
         if (user) {
+          // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
           await supabaseDyn
             .from('push_subscriptions')
             .delete()
@@ -240,8 +246,8 @@ export function usePushNotifications() {
           body: 'Esta é uma notificação de teste do sistema de segurança',
           tag: 'test-notification',
           prioridade: 'media',
-          data: { url: '/configuracoes' }
-        }
+          data: { url: '/configuracoes' },
+        },
       });
 
       if (error) {
@@ -255,9 +261,9 @@ export function usePushNotifications() {
         icon: '/favicon.ico',
         badge: '/favicon.ico',
         tag: 'test-notification',
-        requireInteraction: false
+        requireInteraction: false,
       });
-      
+
       toast.success('Notificação de teste enviada!');
     } catch (error: unknown) {
       logger.error('Erro ao enviar notificação de teste:', error);
@@ -266,35 +272,38 @@ export function usePushNotifications() {
   }, [isSubscribed, user]);
 
   // Function to send security alert push notification
-  const sendSecurityPushNotification = useCallback(async (
-    title: string,
-    body: string,
-    prioridade: 'baixa' | 'media' | 'alta' | 'critica' = 'alta',
-    data?: Record<string, unknown>
-  ) => {
-    try {
-      const { error } = await supabase.functions.invoke('send-push-notification', {
-        body: {
-          userId: user?.id,
-          title: `🔒 ${title}`,
-          body,
-          tag: 'security-alert',
-          prioridade,
-          data: data || { url: '/seguranca' }
-        }
-      });
+  const sendSecurityPushNotification = useCallback(
+    async (
+      title: string,
+      body: string,
+      prioridade: 'baixa' | 'media' | 'alta' | 'critica' = 'alta',
+      data?: Record<string, unknown>
+    ) => {
+      try {
+        const { error } = await supabase.functions.invoke('send-push-notification', {
+          body: {
+            userId: user?.id,
+            title: `🔒 ${title}`,
+            body,
+            tag: 'security-alert',
+            prioridade,
+            data: data || { url: '/seguranca' },
+          },
+        });
 
-      if (error) {
-        logger.error('Error sending security push:', error);
+        if (error) {
+          logger.error('Error sending security push:', error);
+          return false;
+        }
+
+        return true;
+      } catch (error: unknown) {
+        logger.error('Error sending security push notification:', error);
         return false;
       }
-
-      return true;
-    } catch (error: unknown) {
-      logger.error('Error sending security push notification:', error);
-      return false;
-    }
-  }, [user]);
+    },
+    [user]
+  );
 
   return {
     isSupported,
@@ -306,16 +315,14 @@ export function usePushNotifications() {
     sendTestNotification,
     sendSecurityPushNotification,
     requestPermission,
-    vapidPublicKey
+    vapidPublicKey,
   };
 }
 
 // Helper functions
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);

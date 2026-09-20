@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { invokeEdge, handleEdgeError } from '@/lib/edge-function-error';
+import { logger } from '@/lib/logger';
 
 export interface SugestaoContaPagar {
   conta_pagar_id: string;
@@ -26,11 +27,21 @@ export function useSugestoesContaPagar(nfeId: string | null) {
     enabled: !!nfeId,
     staleTime: 30_000,
     queryFn: async (): Promise<SugestaoContaPagar[]> => {
-      const data = await invokeNfeProxy<SugestaoContaPagar[] | null>({
-        action: 'suggest',
-        nfeId,
-      });
-      return data ?? [];
+      const data = await invokeNfeProxy<unknown>({ action: 'suggest', nfeId });
+      // `?? []` só cobria null/undefined. Qualquer outro formato passava direto
+      // para `sugestoes.map` no `NfeVinculoDialog` e o TypeError levava a
+      // página inteira de NF-e Recebidas para o ErrorBoundary — o usuário
+      // perdia a lista, não só as sugestões. A Etapa 31 reproduziu isso com o
+      // proxy respondendo `{ ok: true }`.
+      if (data == null) return [];
+      if (!Array.isArray(data)) {
+        logger.warn('nfe-vinculo-proxy: "suggest" devolveu payload fora do formato de lista', {
+          tipo: typeof data,
+          chaves: typeof data === 'object' ? Object.keys(data as object) : undefined,
+        });
+        return [];
+      }
+      return data as SugestaoContaPagar[];
     },
   });
 }
@@ -47,7 +58,9 @@ export function useVincularNfe() {
         contaPagarId: v.contaPagarId,
       }),
     onSuccess: (data) => {
-      toast.success(data.already_linked ? 'NFe já estava vinculada.' : 'NFe vinculada à conta a pagar.');
+      toast.success(
+        data.already_linked ? 'NFe já estava vinculada.' : 'NFe vinculada à conta a pagar.'
+      );
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
       qc.invalidateQueries({ queryKey: ['contas-pagar'] });
     },
@@ -83,7 +96,9 @@ export function useCriarContaDaNfe() {
       }),
     onSuccess: (data) => {
       toast.success(
-        data.already_linked ? 'NFe já possuía conta vinculada.' : 'Conta a pagar criada e vinculada à NFe.',
+        data.already_linked
+          ? 'NFe já possuía conta vinculada.'
+          : 'Conta a pagar criada e vinculada à NFe.'
       );
       qc.invalidateQueries({ queryKey: ['nfe-recebidas'] });
       qc.invalidateQueries({ queryKey: ['contas-pagar'] });

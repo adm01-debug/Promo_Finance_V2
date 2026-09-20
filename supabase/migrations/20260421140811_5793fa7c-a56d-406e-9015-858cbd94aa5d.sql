@@ -19,6 +19,13 @@ CREATE INDEX IF NOT EXISTS idx_saved_filters_default
 
 ALTER TABLE public.saved_filters ENABLE ROW LEVEL SECURITY;
 
+-- Idempotência de replay: a tabela e policies já existem desde 20241231000000
+-- (recriar sem DROP quebrava o replay do zero — Supabase Preview do PR #88).
+DROP POLICY IF EXISTS "Users can view own filters" ON public.saved_filters;
+DROP POLICY IF EXISTS "Users can insert own filters" ON public.saved_filters;
+DROP POLICY IF EXISTS "Users can update own filters" ON public.saved_filters;
+DROP POLICY IF EXISTS "Users can delete own filters" ON public.saved_filters;
+
 CREATE POLICY "Users can view own filters" ON public.saved_filters
   FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own filters" ON public.saved_filters
@@ -28,6 +35,7 @@ CREATE POLICY "Users can update own filters" ON public.saved_filters
 CREATE POLICY "Users can delete own filters" ON public.saved_filters
   FOR DELETE USING (auth.uid() = user_id);
 
+DROP TRIGGER IF EXISTS trigger_saved_filters_updated_at ON public.saved_filters;
 CREATE TRIGGER trigger_saved_filters_updated_at
   BEFORE UPDATE ON public.saved_filters
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
@@ -47,6 +55,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trigger_single_default_filter ON public.saved_filters;
 CREATE TRIGGER trigger_single_default_filter
   BEFORE INSERT OR UPDATE OF is_default ON public.saved_filters
   FOR EACH ROW

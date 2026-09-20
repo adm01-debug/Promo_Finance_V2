@@ -236,6 +236,7 @@ export function useAuthPage() {
           toast.error(error.message);
         }
       } else {
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
         await supabase.rpc('reset_failed_attempts', { _email: email });
         await logLoginAttempt(email, true);
 

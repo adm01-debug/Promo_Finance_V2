@@ -1,106 +1,108 @@
 import { test, expect } from '@playwright/test';
+import {
+  CHAVES_ACESSO,
+  makeNfe,
+  makeSugestaoContaPagar,
+  makeSugestoesResponse,
+  mockEdgeFunctions,
+  mockPostgrest,
+} from './fixtures/nfe';
+import { EMPRESA_OFFLINE, autenticarOffline } from './fixtures/sessao';
 
 /**
- * E2E smoke do fluxo NF-e:
+ * E2E do fluxo NF-e:
  *  1) Upload do certificado A1 (página CertificadosDigitais)
  *  2) Listagem de NF-e recebidas com filtros
  *  3) Manifestação (abrir menu e disparar evento SEFAZ)
  *  4) Vincular NF-e a conta a pagar
  *
- * Observação: SEFAZ real não é acionado — as mutations são interceptadas
- * via route mocking para validar o encadeamento de UI ponta a ponta,
- * de forma determinística e sem dependência de certificado válido.
+ * Gate bloqueante desde a Etapa 31 (`playwright.financeiro.config.ts`).
+ * SEFAZ real não é acionado e nem o Supabase: `autenticarOffline` semeia a
+ * sessão e intercepta a rede, então o veredito depende só do código da UI.
  */
 
 test.describe('Fluxo NF-e (upload → manifestar → vincular financeiro)', () => {
-  // ---------- Mocks compartilhados ----------
   test.beforeEach(async ({ page }) => {
-    // Uma NF-e pendente e sem vínculo para a listagem.
-    const nfeRow = {
-      id: 'nfe-1',
-      chave_acesso: '35240612345678000199550010000000011000000019',
-      numero: '1',
-      serie: '1',
-      cnpj_emitente: '12.345.678/0001-99',
-      razao_emitente: 'Fornecedor Teste LTDA',
-      uf_emitente: 'SP',
-      data_emissao: new Date().toISOString(),
-      valor_total: 1234.56,
-      manifestacao_status: 'pendente',
-      conta_pagar_id: null,
-      xml_path: null,
-    };
-
-    // Intercepta chamadas PostgREST/RPC (Supabase) para tornar o teste offline.
-    await page.route('**/rest/v1/**', async (route) => {
-      const url = route.request().url();
-      if (url.includes('nfe_recebidas')) {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([nfeRow]),
-        });
-      }
-      if (url.includes('empresas_certificados')) {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([]),
-        });
-      }
-      if (url.includes('contas_pagar')) {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([]),
-        });
-      }
-      return route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+    await mockPostgrest(page, {
+      nfes: [
+        makeNfe({
+          id: 'nfe-1',
+          chave_acesso: CHAVES_ACESSO.PADRAO,
+          razao_emitente: 'Fornecedor Teste LTDA',
+          data_emissao: new Date().toISOString(),
+        }),
+      ],
     });
-
-    await page.route('**/functions/v1/**', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ ok: true }),
-      });
-    });
+    await mockEdgeFunctions(page);
+    await autenticarOffline(page);
   });
 
   test('upload de certificado A1 valida campos obrigatórios', async ({ page }) => {
     await page.goto('/tributario/certificados-digitais');
 
+    // `{ level: 1 }`: a aba renderiza um <h3> "Certificados Digitais A1" além
+    // do <h1> da página, e o seletor sem nível casava com os dois.
     await expect(
-      page.getByRole('heading', { name: /certificados digitais/i }),
+      page.getByRole('heading', { level: 1, name: /certificados digitais/i })
     ).toBeVisible({ timeout: 15_000 });
 
-    // Botão Enviar existe e começa desabilitado sem arquivo/senha.
-    const enviar = page.getByRole('button', { name: /enviar/i }).first();
-    await expect(enviar).toBeVisible();
+    await page.getByRole('button', { name: /novo certificado/i }).click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
 
-    // Simula seleção de arquivo .pfx (in-memory) — não dispara upload real
-    // porque as chamadas de rede estão mockadas.
-    const fileInput = page.locator('input[type="file"]').first();
-    await fileInput.setInputFiles({
-      name: 'certificado.pfx',
-      mimeType: 'application/x-pkcs12',
-      buffer: Buffer.from('fake-pfx-bytes-for-e2e-only'),
-    });
+    // São três campos obrigatórios — empresa, arquivo e senha. O teste
+    // preenche um de cada vez para provar que nenhum sozinho libera o envio.
+    const enviar = dialog.getByRole('button', { name: /enviar/i });
+    await expect(enviar).toBeDisabled();
 
-    // Preenche senha
-    const senha = page.locator('input[type="password"]').first();
-    await senha.fill('senha-teste');
+    // Arquivo .pfx in-memory: nenhum upload real acontece, a rede está mockada.
+    await dialog
+      .locator('input[type="file"]')
+      .first()
+      .setInputFiles({
+        name: 'certificado.pfx',
+        mimeType: 'application/x-pkcs12',
+        buffer: Buffer.from('fake-pfx-bytes-for-e2e-only'),
+      });
+    await expect(enviar).toBeDisabled();
 
-    // Botão fica habilitado após preencher.
+    await dialog.locator('input[type="password"]').first().fill('senha-teste');
+    // Ainda falta a empresa: é o campo que o teste anterior não preenchia e,
+    // por isso, media o botão errado (fora do diálogo, que nem estava aberto).
+    await expect(enviar).toBeDisabled();
+
+    await dialog.getByRole('combobox').first().click();
+    await page.getByRole('option', { name: new RegExp(EMPRESA_OFFLINE.razao_social, 'i') }).click();
+
     await expect(enviar).toBeEnabled();
   });
 
   test('lista NF-e recebidas, permite manifestar e vincular financeiro', async ({ page }) => {
+    const sugestao = makeSugestaoContaPagar();
+    // Handler próprio: o proxy multiplexa ações no corpo do POST, e o que se
+    // quer verificar é justamente qual ação a UI dispara em cada clique.
+    const vinculos: Array<{ action: string; contaPagarId?: string }> = [];
+    await mockEdgeFunctions(page, {
+      'nfe-vinculo-proxy': async (route) => {
+        const corpo = route.request().postDataJSON() as { action: string; contaPagarId?: string };
+        vinculos.push({ action: corpo.action, contaPagarId: corpo.contaPagarId });
+        const payload =
+          corpo.action === 'suggest'
+            ? makeSugestoesResponse([sugestao])
+            : { data: { ok: true, already_linked: false, conta_pagar_id: corpo.contaPagarId } };
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(payload),
+        });
+      },
+    });
+
     await page.goto('/tributario/nfe-recebidas');
 
-    await expect(
-      page.getByRole('heading', { name: /nf-e recebidas/i }),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /nf-e recebidas/i })).toBeVisible({
+      timeout: 15_000,
+    });
 
     // Filtros presentes
     await expect(page.getByPlaceholder(/buscar por cnpj/i)).toBeVisible();
@@ -119,17 +121,31 @@ test.describe('Fluxo NF-e (upload → manifestar → vincular financeiro)', () =
     await cienciaItem.click();
 
     // Fecha o menu voltando ao estado pós-clique — UI não deve quebrar.
-    await expect(
-      page.getByRole('heading', { name: /nf-e recebidas/i }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /nf-e recebidas/i })).toBeVisible();
 
     // Ação de vincular financeiro disponível na linha
     const vincular = page.getByRole('button', { name: /^vincular$/i }).first();
     await expect(vincular).toBeVisible();
     await vincular.click();
 
-    // Diálogo/painel de vínculo abre (heurística: qualquer dialog ARIA)
+    // O diálogo de vínculo lista as candidatas ranqueadas pela RPC
+    // `nfe_suggest_contas_pagar`. Checar só "algum dialog abriu" não distinguia
+    // o diálogo renderizado do ErrorBoundary que a página exibia quando o
+    // payload não era uma lista — a Etapa 31 flagrou exatamente esse caso.
     const dialog = page.getByRole('dialog');
-    await expect(dialog.first()).toBeVisible({ timeout: 5_000 });
+    await expect(dialog).toBeVisible({ timeout: 5_000 });
+    await expect(
+      dialog.getByRole('heading', { name: /vincular nf-e a conta a pagar/i })
+    ).toBeVisible();
+
+    await expect(dialog.getByText(sugestao.descricao)).toBeVisible();
+    await expect(dialog.getByText(`Score ${sugestao.score}`)).toBeVisible();
+    await expect(dialog.getByText(/nenhuma conta a pagar em aberto/i)).toHaveCount(0);
+
+    // Confirma o vínculo: o proxy recebe `action: 'link'` com a conta escolhida.
+    await dialog.getByRole('button', { name: /^vincular$/i }).click();
+    await expect(page.getByText(/nfe vinculada à conta a pagar/i)).toBeVisible({ timeout: 5_000 });
+    expect(vinculos.map((v) => v.action)).toEqual(['suggest', 'link']);
+    expect(vinculos[1].contaPagarId).toBe(sugestao.conta_pagar_id);
   });
 });

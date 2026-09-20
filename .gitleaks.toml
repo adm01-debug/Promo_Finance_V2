@@ -1,0 +1,56 @@
+# Varredura de segredos — Etapa 12 do plano de 50 etapas.
+#
+# Antes desta configuracao nada no repositorio detectava credencial commitada:
+# a unica mencao a gitleaks era uma anotacao orfa em vitest.config.ts. Rodando
+# a ferramenta retroativamente sobre os 7500 commits, ela encontra exatamente
+# os vazamentos das Etapas 1 e 2 (migrate-helper/index.ts e
+# compare-schemas/index.ts) — ou seja, este gate teria evitado ambos.
+#
+# Uso:
+#   gitleaks git   --baseline-path .gitleaks-baseline.json --redact   # historico
+#   gitleaks git   --staged --redact                                  # pre-commit
+#   gitleaks dir . --baseline-path .gitleaks-baseline.json --redact   # working tree
+#
+# Para liberar um falso positivo pontual, prefira o comentario `gitleaks:allow`
+# na propria linha: fica visivel na revisao, ao contrario de uma regra aqui.
+
+title = "Promo Finance V2"
+
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Artefatos nao versionados
+# ---------------------------------------------------------------------------
+# Relevante apenas para `gitleaks dir`, que le o disco e nao o indice do git:
+# sem isto a varredura local acusa o bundle e o .env da maquina do dev.
+[[allowlists]]
+description = "Build, dependencias, relatorios e .env locais (nao versionados)"
+paths = [
+  '''^dist/''',
+  '''^dist-ssr/''',
+  '''^node_modules/''',
+  '''^coverage/''',
+  '''^playwright-report/''',
+  '''^test-results/''',
+  '''^graphify-out/''',
+  '''^\.env($|\.)''',
+]
+
+# ---------------------------------------------------------------------------
+# Falsos positivos confirmados
+# ---------------------------------------------------------------------------
+# Escopo minimo de proposito: casam o VALOR do segredo, nao o caminho. Um
+# segredo de verdade nos mesmos arquivos continua sendo detectado.
+[[allowlists]]
+description = "Nome da cache do service worker (API_CACHE_NAME), nao credencial"
+targetRules = ["generic-api-key"]
+regexes = ['''^promo-brindes-api-v\d+$''']
+
+[[allowlists]]
+description = "Placeholders de documentacao e fixtures de teste"
+regexes = [
+  '''YOUR_[A-Z_]*(KEY|TOKEN|SECRET)''',
+  '''^(CHANGEME|EXAMPLE|PLACEHOLDER|REDACTED|xxx+)$''',
+  '''^sb_(publishable|secret)_test_[A-Za-z0-9_]+$''',
+]

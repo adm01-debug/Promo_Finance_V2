@@ -5,7 +5,7 @@
  * classic "shows the previous day in BRT" bug when displaying dates that
  * Supabase returns as bare ISO date strings.
  */
-const toLocalDate = (input: Date | string): Date => {
+export const toLocalDate = (input: Date | string): Date => {
   if (input instanceof Date) return input;
   const s = String(input);
   // Bare YYYY-MM-DD → midnight local time

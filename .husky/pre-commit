@@ -7,3 +7,23 @@
 # Chama o lint-staged local diretamente via node (sem `npx`) para não depender
 # de `bash`, que pode não estar no PATH do Git em alguns ambientes Windows.
 node node_modules/lint-staged/bin/lint-staged.js
+
+# Varredura de segredos no que está efetivamente staged, depois do lint-staged
+# para enxergar o conteúdo final (prettier/eslint --fix reescrevem arquivos).
+#
+# Sem gitleaks instalado o hook AVISA e segue: bloquear por falta de ferramenta
+# de dev só ensina o time a usar --no-verify, e o gate que de fato vale é o job
+# secret-scan do CI, que roda sempre. Instale com:
+#   brew install gitleaks | apt install gitleaks | https://github.com/gitleaks/gitleaks/releases
+if command -v gitleaks >/dev/null 2>&1; then
+  echo "[pre-commit] gitleaks (staged)..."
+  gitleaks git --staged --no-banner --redact --baseline-path .gitleaks-baseline.json || {
+    echo "[pre-commit] Segredo detectado no que você está commitando."
+    echo "[pre-commit] Se for falso positivo, anote a linha com 'gitleaks:allow'."
+    echo "[pre-commit] Emergência: git commit --no-verify (o CI ainda vai reprovar)."
+    exit 1
+  }
+else
+  echo "[pre-commit] gitleaks ausente — varredura de segredos pulada localmente."
+  echo "[pre-commit] O job secret-scan do CI continua valendo. Instale: https://github.com/gitleaks/gitleaks/releases"
+fi

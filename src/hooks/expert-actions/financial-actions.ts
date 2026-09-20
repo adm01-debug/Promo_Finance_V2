@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { mustSucceed, bestEffort } from '@/lib/supabase-write';
 import { formatCurrency, todayISOLocal } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -71,27 +72,46 @@ export async function aprovarPagamento(
     return { success: false, message: `Solicitação ${id} não encontrada ou já processada` };
   }
 
-  const { error: updateError } = await supabase
-    .from('solicitacoes_aprovacao')
-    .update({ status: 'aprovado', aprovado_por: user?.id, aprovado_em: new Date().toISOString() })
-    .eq('id', solicitacao.id);
+  // Sem usuário não há quem aprovar: gravar `aprovado_por: undefined` deixaria a
+  // aprovação sem responsável, que é o dado auditável desta operação.
+  if (!user?.id) {
+    return { success: false, message: 'Sessão expirada. Faça login novamente para aprovar.' };
+  }
 
-  if (updateError) throw updateError;
+  // A função também barra este caso (`solicitacao_sem_conta_pagar`), mas aqui
+  // ainda dá para explicar o problema em português em vez de devolver o código.
+  if (!solicitacao.conta_pagar_id) {
+    return {
+      success: false,
+      message: `Solicitação ${id} não está vinculada a uma conta a pagar.`,
+    };
+  }
 
-  await supabase
-    .from('contas_pagar')
-    // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts canônico)
-    .update({ aprovado_por: user?.id })
-    .eq('id', solicitacao.conta_pagar_id);
+  // Passo único. Antes eram dois UPDATEs em requisições separadas: o PostgREST
+  // abre uma transação por requisição, então uma falha entre elas deixava a
+  // conta com aprovador e a solicitação ainda pendente, ou o inverso. A função
+  // faz as duas gravações na mesma transação e trava a solicitação com
+  // `FOR UPDATE`, o que também serializa dois aprovadores clicando junto.
+  // É SECURITY INVOKER: o RLS continua sendo quem decide o que é visível.
+  const aprovacao = await mustSucceed(
+    supabase.rpc('aprovar_solicitacao_pagamento', { p_solicitacao_id: solicitacao.id }),
+    'aprovar a solicitação de pagamento'
+  );
 
   queryClient.invalidateQueries({ queryKey: ['solicitacoes-aprovacao'] });
   queryClient.invalidateQueries({ queryKey: ['solicitacoes-pendentes'] });
   queryClient.invalidateQueries({ queryKey: ['aprovacoes-pendentes-count'] });
   toast.success('Pagamento aprovado com sucesso!');
 
+  // O nome vem do retorno da função, lido dentro da transação. O `solicitacao`
+  // carregado antes é um retrato anterior à aprovação.
+  const fornecedor =
+    (aprovacao as { fornecedor_nome?: string } | null)?.fornecedor_nome ??
+    solicitacao.contas_pagar?.fornecedor_nome;
+
   return {
     success: true,
-    message: `Pagamento para "${solicitacao.contas_pagar?.fornecedor_nome}" aprovado com sucesso!`,
+    message: `Pagamento para "${fornecedor}" aprovado com sucesso!`,
   };
 }
 
@@ -190,13 +210,19 @@ export async function agendarCobranca(contaId: string): Promise<ActionResult> {
     .eq('id', contaId);
   if (error) throw error;
 
-  await supabase.from('historico_cobranca').insert({
-    conta_receber_id: contaId,
-    // TODO(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);
-    // etapa_anterior preservada em metadata (Json)
-    etapa: proximaEtapa,
-    metadata: { etapa_anterior: etapaAtual },
-  });
+  // Acessório: a etapa da cobrança já avançou acima. Perder a linha de histórico
+  // abre um buraco na timeline, mas abortar aqui reportaria falha de uma operação
+  // que de fato aconteceu. Registra e segue.
+  await bestEffort(
+    supabase.from('historico_cobranca').insert({
+      conta_receber_id: contaId,
+      // TODO(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);
+      // etapa_anterior preservada em metadata (Json)
+      etapa: proximaEtapa,
+      metadata: { etapa_anterior: etapaAtual },
+    }),
+    'registrar o histórico de cobrança'
+  );
 
   toast.success(`Cobrança avançada para ${proximaEtapa}!`);
   return {

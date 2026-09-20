@@ -58,12 +58,24 @@ serve(async (req) => {
       throw fetchError;
     }
 
+    // Sem relatorioId a função executa o LOTE global de relatórios agendados,
+    // atravessando todos os tenants. Isso só pode partir do cron interno —
+    // um usuário autenticado enviando corpo vazio pulava o guard inteiro.
+    if (!relatorioId && guard.dados.origem !== 'interna') {
+      return new Response(
+        JSON.stringify({ error: 'relatorio_id obrigatório para chamadas de usuário' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // relatorios_agendados.empresa_id não é checado pela query acima (client
     // service_role ignora RLS). Sem isto, um usuário autenticado que
     // descubra/adivinhe o UUID de um relatorio_id de outra empresa consegue
     // disparar a geração/gravação do relatório dela (IDOR).
     if (relatorioId && guard.dados.origem === 'usuario') {
-      const empresaIds = [...new Set((relatoriosParaExecutar ?? []).map((r) => r.empresa_id).filter(Boolean))];
+      const empresaIds = [
+        ...new Set((relatoriosParaExecutar ?? []).map((r) => r.empresa_id).filter(Boolean)),
+      ];
       if (empresaIds.length > 0) {
         const { data: vinculos } = await supabase
           .from('user_empresas')

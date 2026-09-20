@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { toastApprovalSuccess } from '@/lib/toast-confetti';
+import { mustSucceed } from '@/lib/supabase-write';
 
 export interface ConfiguracaoAprovacao {
   id: string;
@@ -293,33 +294,22 @@ export const useAprovarSolicitacao = () => {
 
   return useMutation({
     mutationFn: async (solicitacaoId: string) => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error('Usuário não autenticado');
-
-      // Update solicitacao
-      const { data: solicitacao, error: solError } = await supabase
-        .from('solicitacoes_aprovacao')
-        .update({
-          status: 'aprovado',
-          aprovado_por: userData.user.id,
-          aprovado_em: new Date().toISOString(),
-        })
-        .eq('id', solicitacaoId)
-        .select('conta_pagar_id')
-        .single();
-
-      if (solError) throw solError;
-
-      // Update conta_pagar with approval info
-      const { error: cpError } = await supabase
-        .from('contas_pagar')
-        // TODO(2026-08-14): aprovado_em removido — coluna não existe em contas_pagar (types.ts)
-        .update({ aprovado_por: userData.user.id })
-        .eq('id', solicitacao.conta_pagar_id);
-
-      if (cpError) throw cpError;
-
-      return solicitacao;
+      // Antes eram dois UPDATEs em requisições separadas, nesta ordem:
+      // encerrava a solicitação e só então gravava o aprovador na conta. Uma
+      // falha no segundo passo deixava a solicitação aprovada e a conta sem
+      // aprovador — e, como já não estava pendente, não havia o que
+      // reprocessar pela tela. Pior: `conta_pagar_id` nulo fazia
+      // `.eq('id', null)` devolver `error: null` sem tocar em linha alguma,
+      // e a aprovação era celebrada com confete sobre nada.
+      //
+      // A função faz as duas gravações na mesma transação, verifica o
+      // ROW_COUNT de cada uma e trava a solicitação com `FOR UPDATE`, o que
+      // serializa dois aprovadores clicando ao mesmo tempo. É SECURITY
+      // INVOKER: o RLS continua decidindo o que cada usuário alcança.
+      return await mustSucceed(
+        supabase.rpc('aprovar_solicitacao_pagamento', { p_solicitacao_id: solicitacaoId }),
+        'aprovar a solicitação de pagamento'
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['solicitacoes-aprovacao'] });

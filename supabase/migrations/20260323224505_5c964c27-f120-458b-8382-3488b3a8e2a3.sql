@@ -20,14 +20,26 @@ BEGIN
   IF to_regclass('public.vw_gastos_centro_custo') IS NOT NULL THEN
     EXECUTE 'REVOKE SELECT ON public.vw_gastos_centro_custo FROM anon';
   END IF;
+  IF to_regclass('public.vw_transferencias_painel') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_transferencias_painel FROM anon';
+  END IF;
+  IF to_regclass('public.vw_saldos_contas') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_saldos_contas FROM anon';
+  END IF;
+  IF to_regclass('public.vw_fluxo_caixa') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_fluxo_caixa FROM anon';
+  END IF;
+  IF to_regclass('public.vw_fluxo_caixa_diario') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_fluxo_caixa_diario FROM anon';
+  END IF;
+  IF to_regclass('public.vw_metricas_cobranca') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_metricas_cobranca FROM anon';
+  END IF;
+  IF to_regclass('public.vw_webhooks_recentes') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_webhooks_recentes FROM anon';
+  END IF;
 END
 $$;
-REVOKE SELECT ON public.vw_transferencias_painel FROM anon;
-REVOKE SELECT ON public.vw_saldos_contas FROM anon;
-REVOKE SELECT ON public.vw_fluxo_caixa FROM anon;
-REVOKE SELECT ON public.vw_fluxo_caixa_diario FROM anon;
-REVOKE SELECT ON public.vw_metricas_cobranca FROM anon;
-REVOKE SELECT ON public.vw_webhooks_recentes FROM anon;
 
 -- 2. Restrict ponto_funcionarios to admin only
 DROP POLICY IF EXISTS "Admin/financeiro can view ponto_funcionarios" ON public.ponto_funcionarios;

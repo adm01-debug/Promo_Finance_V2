@@ -23,9 +23,10 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "type-check": "tsc --noEmit",
+    "type-check:e2e": "tsc -p tsconfig.e2e.json",
     "test": "vitest",
     "test:run": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run",
-    "test:changed": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --passWithNoTests",
+    "test:changed": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --changed origin/main --passWithNoTests",
     "test:coverage": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
@@ -37,7 +38,9 @@
     "db:seed": "supabase db seed",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build:types": "tsc && vite build"
+    "build:types": "tsc && vite build",
+    "scan:secrets": "gitleaks git --no-banner --redact --baseline-path .gitleaks-baseline.json",
+    "scan:secrets:tree": "gitleaks dir . --no-banner --redact --baseline-path .gitleaks-baseline.json"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",

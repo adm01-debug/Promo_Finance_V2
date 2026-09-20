@@ -1,32 +1,37 @@
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-import { logger } from "@/lib/logger";
-import {
-  validateSharing,
-  SavedFilterSharingError,
-} from "@/hooks/savedFiltersValidation";
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
+import { logger } from '@/lib/logger';
+import { validateSharing, SavedFilterSharingError } from '@/hooks/savedFiltersValidation';
 
 /**
  * Busca papéis ativos no tenant (empresa) consultando user_empresas.
  * É a fonte de verdade para "papéis válidos para compartilhar dentro deste tenant".
  */
 async function fetchTenantRoles(empresaId: string): Promise<string[]> {
-  const { data, error } = await (supabase as unknown as {
-    from: (t: string) => {
-      select: (c: string) => {
-        eq: (k: string, v: unknown) => {
-          eq: (k: string, v: unknown) => Promise<{ data: { role: string }[] | null; error: { message: string } | null }>;
+  const { data, error } = await (
+    supabase as unknown as {
+      from: (t: string) => {
+        select: (c: string) => {
+          eq: (
+            k: string,
+            v: unknown
+          ) => {
+            eq: (
+              k: string,
+              v: unknown
+            ) => Promise<{ data: { role: string }[] | null; error: { message: string } | null }>;
+          };
         };
       };
-    };
-  })
-    .from("user_empresas")
-    .select("role")
-    .eq("empresa_id", empresaId)
-    .eq("ativo", true);
+    }
+  )
+    .from('user_empresas')
+    .select('role')
+    .eq('empresa_id', empresaId)
+    .eq('ativo', true);
   if (error) throw new Error(error.message);
   const set = new Set<string>();
   (data ?? []).forEach((r) => {
@@ -40,32 +45,33 @@ async function fetchTenantRoles(empresaId: string): Promise<string[]> {
  * Falhas de auditoria nunca derrubam a operação principal.
  */
 async function logSavedFilterAudit(params: {
-  action: "UPDATE" | "INSERT";
+  action: 'UPDATE' | 'INSERT';
   filterId: string;
   details: string;
   oldData?: Record<string, unknown>;
   newData?: Record<string, unknown>;
 }) {
   try {
-    await supabase.rpc("log_audit", {
+    // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+    await supabase.rpc('log_audit', {
       p_action: params.action,
-      p_table_name: "saved_filters",
+      p_table_name: 'saved_filters',
       p_record_id: params.filterId,
       p_old_data: params.oldData ? JSON.stringify(params.oldData) : null,
       p_new_data: params.newData ? JSON.stringify(params.newData) : null,
       p_details: params.details,
     });
   } catch (err) {
-    logger.warn("[saved-filters] audit log falhou", err);
+    logger.warn('[saved-filters] audit log falhou', err);
   }
 }
 
-export type AppRole = "admin" | "financeiro" | "operacional" | "visualizador";
+export type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
 export interface SavedFilterPayload<T = unknown> {
   v: 1;
   filters: T;
-  sort?: { key: string; dir: "asc" | "desc" };
+  sort?: { key: string; dir: 'asc' | 'desc' };
   columns?: string[];
 }
 
@@ -91,19 +97,19 @@ export interface SavedFilterRow<T = unknown> {
 export function useSavedFilters<T = unknown>(entityType: string) {
   const qc = useQueryClient();
   const { user, currentEmpresaId } = useAuth();
-  const queryKey = ["saved-filters", entityType, user?.id];
+  const queryKey = ['saved-filters', entityType, user?.id];
 
   const list = useQuery({
     queryKey,
     enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabaseDyn
-        .from("saved_filters")
-        .select("*")
-        .eq("entity_type", entityType)
-        .order("is_default", { ascending: false })
-        .order("is_shared", { ascending: true })
-        .order("name", { ascending: true });
+        .from('saved_filters')
+        .select('*')
+        .eq('entity_type', entityType)
+        .order('is_default', { ascending: false })
+        .order('is_shared', { ascending: true })
+        .order('name', { ascending: true });
       if (error) throw error;
       return (data ?? []) as unknown as SavedFilterRow<T>[];
     },
@@ -118,17 +124,12 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       sharedWithRoles?: AppRole[];
       empresaId?: string | null;
     }) => {
-      if (!user) throw new Error("Sessão expirada");
+      if (!user) throw new Error('Sessão expirada');
       const wantsShared = input.isShared ?? false;
-      const targetEmpresa = wantsShared
-        ? input.empresaId ?? currentEmpresaId ?? null
-        : null;
+      const targetEmpresa = wantsShared ? (input.empresaId ?? currentEmpresaId ?? null) : null;
 
       // Carrega papéis do tenant alvo (se houver) para validação cruzada.
-      const tenantRoles =
-        wantsShared && targetEmpresa
-          ? await fetchTenantRoles(targetEmpresa)
-          : [];
+      const tenantRoles = wantsShared && targetEmpresa ? await fetchTenantRoles(targetEmpresa) : [];
 
       const normalized = validateSharing({
         isShared: wantsShared,
@@ -137,44 +138,39 @@ export function useSavedFilters<T = unknown>(entityType: string) {
         tenantRoles,
       });
 
-      const { error } = await supabaseDyn
-        .from("saved_filters")
-        .upsert(
-          {
-            user_id: user.id,
-            created_by: user.id,
-            entity_type: entityType,
-            name: input.name,
-            filters: input.payload,
-            is_default: input.isDefault ?? false,
-            is_shared: normalized.isShared,
-            empresa_id: normalized.empresaId,
-            shared_with_roles: normalized.sharedWithRoles,
-          },
-          { onConflict: "user_id,entity_type,name" },
-        );
+      const { error } = await supabaseDyn.from('saved_filters').upsert(
+        {
+          user_id: user.id,
+          created_by: user.id,
+          entity_type: entityType,
+          name: input.name,
+          filters: input.payload,
+          is_default: input.isDefault ?? false,
+          is_shared: normalized.isShared,
+          empresa_id: normalized.empresaId,
+          shared_with_roles: normalized.sharedWithRoles,
+        },
+        { onConflict: 'user_id,entity_type,name' }
+      );
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Preset salvo");
+      toast.success('Preset salvo');
       qc.invalidateQueries({ queryKey });
     },
     onError: (e: Error) => {
-      const prefix = e instanceof SavedFilterSharingError ? "Validação" : "Erro ao salvar";
+      const prefix = e instanceof SavedFilterSharingError ? 'Validação' : 'Erro ao salvar';
       toast.error(`${prefix}: ${e.message}`);
     },
   });
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabaseDyn
-        .from("saved_filters")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabaseDyn.from('saved_filters').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Preset removido");
+      toast.success('Preset removido');
       qc.invalidateQueries({ queryKey });
     },
     onError: (e: Error) => toast.error(`Erro ao remover: ${e.message}`),
@@ -183,9 +179,9 @@ export function useSavedFilters<T = unknown>(entityType: string) {
   const setDefault = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabaseDyn
-        .from("saved_filters")
+        .from('saved_filters')
         .update({ is_default: true })
-        .eq("id", id);
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -202,14 +198,10 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       sharedWithRoles: AppRole[];
       empresaId?: string | null;
     }) => {
-      const targetEmpresa = input.isShared
-        ? input.empresaId ?? currentEmpresaId ?? null
-        : null;
+      const targetEmpresa = input.isShared ? (input.empresaId ?? currentEmpresaId ?? null) : null;
 
       const tenantRoles =
-        input.isShared && targetEmpresa
-          ? await fetchTenantRoles(targetEmpresa)
-          : [];
+        input.isShared && targetEmpresa ? await fetchTenantRoles(targetEmpresa) : [];
 
       const normalized = validateSharing({
         isShared: input.isShared,
@@ -234,25 +226,25 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       };
 
       const { error } = await supabaseDyn
-        .from("saved_filters")
+        .from('saved_filters')
         .update(newSnapshot)
-        .eq("id", input.id);
+        .eq('id', input.id);
       if (error) throw error;
 
       await logSavedFilterAudit({
-        action: "UPDATE",
+        action: 'UPDATE',
         filterId: input.id,
-        details: `Compartilhamento atualizado para filtro "${previous?.name ?? input.id}" (entity=${entityType}); shared=${normalized.isShared}; roles=[${normalized.sharedWithRoles.join(",")}]; empresa=${normalized.empresaId ?? "—"}; user=${user?.id ?? "—"}`,
+        details: `Compartilhamento atualizado para filtro "${previous?.name ?? input.id}" (entity=${entityType}); shared=${normalized.isShared}; roles=[${normalized.sharedWithRoles.join(',')}]; empresa=${normalized.empresaId ?? '—'}; user=${user?.id ?? '—'}`,
         oldData: oldSnapshot,
         newData: newSnapshot,
       });
     },
     onSuccess: () => {
-      toast.success("Compartilhamento atualizado");
+      toast.success('Compartilhamento atualizado');
       qc.invalidateQueries({ queryKey });
     },
     onError: (e: Error) => {
-      const prefix = e instanceof SavedFilterSharingError ? "Validação" : "Erro";
+      const prefix = e instanceof SavedFilterSharingError ? 'Validação' : 'Erro';
       toast.error(`${prefix}: ${e.message}`);
     },
   });
@@ -261,17 +253,17 @@ export function useSavedFilters<T = unknown>(entityType: string) {
   const duplicate = useMutation({
     mutationFn: async (input: { sourceId: string; newName?: string }) => {
       const source = (list.data ?? []).find((f) => f.id === input.sourceId);
-      const { data, error } = await supabase.rpc("duplicate_saved_filter", {
+      const { data, error } = await supabase.rpc('duplicate_saved_filter', {
         _source_id: input.sourceId,
-        _new_name: input.newName ?? "",
+        _new_name: input.newName ?? '',
       });
       if (error) throw error;
       const newId = data as string;
 
       await logSavedFilterAudit({
-        action: "INSERT",
+        action: 'INSERT',
         filterId: newId,
-        details: `Filtro duplicado a partir de "${source?.name ?? input.sourceId}" (entity=${entityType}); origem_user=${source?.user_id ?? "—"}; origem_empresa=${source?.empresa_id ?? "—"}; origem_roles=[${(source?.shared_with_roles ?? []).join(",")}]; novo_user=${user?.id ?? "—"}; novo_nome=${input.newName ?? `${source?.name ?? ""} (cópia)`}`,
+        details: `Filtro duplicado a partir de "${source?.name ?? input.sourceId}" (entity=${entityType}); origem_user=${source?.user_id ?? '—'}; origem_empresa=${source?.empresa_id ?? '—'}; origem_roles=[${(source?.shared_with_roles ?? []).join(',')}]; novo_user=${user?.id ?? '—'}; novo_nome=${input.newName ?? `${source?.name ?? ''} (cópia)`}`,
         oldData: source
           ? {
               source_id: source.id,
@@ -286,7 +278,7 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       return newId;
     },
     onSuccess: () => {
-      toast.success("Filtro duplicado para sua biblioteca");
+      toast.success('Filtro duplicado para sua biblioteca');
       qc.invalidateQueries({ queryKey });
     },
     onError: (e: Error) => toast.error(`Erro ao duplicar: ${e.message}`),

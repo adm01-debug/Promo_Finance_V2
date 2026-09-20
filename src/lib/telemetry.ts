@@ -73,6 +73,7 @@ async function flushQueues(): Promise<void> {
         severity: p.severity ?? 'error',
         metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
       }));
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase.from('frontend_error_logs').insert(rows);
     }
 
@@ -88,6 +89,7 @@ async function flushQueues(): Promise<void> {
         user_agent: navigator.userAgent,
         navigation_type: (m as Metric & { navigationType?: string }).navigationType || 'navigate',
       }));
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase.from('frontend_performance_logs').insert(rows);
     }
   } catch (err) {

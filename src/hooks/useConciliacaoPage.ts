@@ -88,6 +88,7 @@ export function useConciliacaoPage() {
           // Registrar divergência no banco para o painel de auditoria
           if (selectedBanco) {
             const { data: userData } = await supabase.auth.getUser();
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
             await supabase.from('divergencias_conciliacao').insert({
               conta_bancaria_id: selectedBanco,
               tipo_divergencia: 'saldo_final',
@@ -100,6 +101,7 @@ export function useConciliacaoPage() {
             // Adicionar alerta automático no sistema
             // TODO(2026-08-14): status/metadata removidos — não existem em alertas (types.ts canônico);
             // cast `as never` removido (anti-padrão)
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
             await supabase.from('alertas').insert({
               empresa_id: contasBancarias?.find((c) => c.id === selectedBanco)?.empresa_id,
               tipo: 'divergencia_conciliacao',
@@ -111,16 +113,14 @@ export function useConciliacaoPage() {
         }
       }
 
-      const novasTransacoes = extrato.transacoes.map(
-        (t: TransacaoOFX): TransacaoExtrato => ({
-          id: t.id,
-          data: t.data,
-          descricao: t.descricao,
-          valor: t.valor,
-          tipo: t.tipo,
-          conciliada: false,
-        })
-      );
+      const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX): TransacaoExtrato => ({
+        id: t.id,
+        data: t.data,
+        descricao: t.descricao,
+        valor: t.valor,
+        tipo: t.tipo,
+        conciliada: false,
+      }));
 
       let savedCount = extrato.transacoes.length;
       let duplicateCount = 0;

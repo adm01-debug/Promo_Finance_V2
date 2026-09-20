@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database, Json } from '@/integrations/supabase/types';
@@ -6,7 +5,10 @@ import { toast } from 'sonner';
 import { useAuth } from './useAuth';
 import { logger } from '@/lib/logger';
 
-type AppRole = Extract<Database['public']['Enums']['app_role'], 'admin' | 'financeiro' | 'operacional' | 'visualizador'>;
+type AppRole = Extract<
+  Database['public']['Enums']['app_role'],
+  'admin' | 'financeiro' | 'operacional' | 'visualizador'
+>;
 type RawAppRole = Database['public']['Enums']['app_role'];
 type ProvisionedVia = 'manual' | 'sso' | 'scim';
 
@@ -51,7 +53,9 @@ const ROLE_ALIASES: Partial<Record<RawAppRole, AppRole>> = {
 };
 
 function normalizeProvisionedVia(value: string): ProvisionedVia {
-  return PROVISIONING_MODES.includes(value as ProvisionedVia) ? (value as ProvisionedVia) : 'manual';
+  return PROVISIONING_MODES.includes(value as ProvisionedVia)
+    ? (value as ProvisionedVia)
+    : 'manual';
 }
 
 function normalizeRole(value: RawAppRole): AppRole | null {
@@ -83,7 +87,9 @@ export function useUserEmpresas() {
       if (!user) return [];
       const { data, error } = await supabase
         .from('user_empresas')
-        .select('id, empresa_id, role, is_default, provisioned_via, ativo, empresa:empresas(id,razao_social,nome_fantasia,cnpj)')
+        .select(
+          'id, empresa_id, role, is_default, provisioned_via, ativo, empresa:empresas(id,razao_social,nome_fantasia,cnpj)'
+        )
         .eq('user_id', user.id)
         .eq('ativo', true)
         .order('is_default', { ascending: false });
@@ -105,7 +111,6 @@ export function useUserEmpresas() {
   });
 }
 
-
 const STORAGE_KEY = 'pf:current-empresa-id';
 
 export function getCurrentEmpresaId(): string | null {
@@ -116,21 +121,24 @@ export async function setCurrentEmpresaId(id: string) {
   if (previousId === id) return;
 
   localStorage.setItem(STORAGE_KEY, id);
-  
+
   // Registrar auditoria de troca de empresa
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
       const { data: empresa } = await supabase
         .from('empresas')
         .select('nome_fantasia, razao_social')
         .eq('id', id)
         .maybeSingle();
-      
+
       const nomeEmpresa = empresa?.nome_fantasia || empresa?.razao_social || 'Desconhecida';
 
       // Use safe RPC call with fallback
       try {
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
         await supabase.rpc('registrar_auditoria_config', {
           _tipo_acao: 'troca_empresa',
           _empresa_id: id,
@@ -139,8 +147,8 @@ export async function setCurrentEmpresaId(id: string) {
             new_empresa_id: id,
             new_empresa_nome: nomeEmpresa,
             timestamp: new Date().toISOString(),
-            context: 'EmpresaSwitcher QuickSwitch'
-          } satisfies Json
+            context: 'EmpresaSwitcher QuickSwitch',
+          } satisfies Json,
         });
       } catch (rpcErr) {
         logger.warn('[useUserEmpresas] Auditoria de troca de empresa indisponível', rpcErr);
@@ -151,9 +159,9 @@ export async function setCurrentEmpresaId(id: string) {
         description: 'Os dados foram sincronizados para a nova empresa.',
         action: {
           label: 'Ver Log',
-          onClick: () => window.location.href = '/audit-logs'
+          onClick: () => (window.location.href = '/audit-logs'),
         },
-        duration: 5000
+        duration: 5000,
       });
     }
   } catch (err) {
@@ -161,17 +169,21 @@ export async function setCurrentEmpresaId(id: string) {
   }
 
   // Notificar outras partes do sistema para manter filtros sincronizados
-  window.dispatchEvent(new CustomEvent('current-empresa-changed', { 
-    detail: id,
-    bubbles: true,
-    composed: true
-  }));
+  window.dispatchEvent(
+    new CustomEvent('current-empresa-changed', {
+      detail: id,
+      bubbles: true,
+      composed: true,
+    })
+  );
 
-  window.dispatchEvent(new CustomEvent('sync-financial-filters', { 
-    detail: { empresaId: id },
-    bubbles: true,
-    composed: true
-  }));
+  window.dispatchEvent(
+    new CustomEvent('sync-financial-filters', {
+      detail: { empresaId: id },
+      bubbles: true,
+      composed: true,
+    })
+  );
 }
 
 export function useDefinirEmpresaPadrao() {

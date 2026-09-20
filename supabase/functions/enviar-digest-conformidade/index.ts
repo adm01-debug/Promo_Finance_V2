@@ -16,8 +16,9 @@
  *  - header `x-cron-secret` conferido contra `integration_secrets`;
  *  - JWT de usuário com papel `admin`.
  */
+import { empresasDoUsuario, exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { corsHeaders } from "../_shared/cors.ts";
+import { corsHeaders } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
 
 import { construirDigest, type AlertaDigest } from '../_shared/obrigacoes/digest.ts';
@@ -38,7 +39,10 @@ const BodySchema = z.object({
   /** Ignora as preferências e envia um digest único aos administradores. */
   forcarGlobal: z.boolean().default(false),
   /** Competência exibida no cabeçalho (AAAA-MM). */
-  competencia: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional(),
+  competencia: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+    .optional(),
   /** Severidade mínima incluída no digest. */
   severidadeMinima: z.enum(['baixa', 'media', 'alta', 'critica']).default('media'),
   /** Quando true, não envia e não marca alertas — apenas devolve a prévia. */
@@ -56,9 +60,7 @@ const json = (body: unknown, status = 200) =>
   });
 
 /** E-mails dos administradores — fallback quando não há preferências. */
-async function destinatariosAdmin(
-  admin: ReturnType<typeof createClient>,
-): Promise<string[]> {
+async function destinatariosAdmin(admin: ReturnType<typeof createClient>): Promise<string[]> {
   const { data: adminRoles } = await admin.from('user_roles').select('user_id').eq('role', 'admin');
   const adminIds = (adminRoles ?? []).map((r) => r.user_id as string);
   if (adminIds.length === 0) return [];
@@ -69,7 +71,6 @@ async function destinatariosAdmin(
     .not('email', 'is', null);
   return [...new Set((perfis ?? []).map((p) => String(p.email)).filter((e) => e.includes('@')))];
 }
-
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -84,6 +85,8 @@ Deno.serve(async (req: Request) => {
     // ---- Autorização -------------------------------------------------------
     const cronSecret = req.headers.get('x-cron-secret');
     let autorizado = false;
+    let origem: 'interna' | 'usuario' = 'interna';
+    let userId: string | null = null;
 
     if (cronSecret) {
       const { data: segredo } = await admin
@@ -106,6 +109,8 @@ Deno.serve(async (req: Request) => {
       });
       if (roleErr) return json({ error: 'Falha ao validar papel', details: roleErr.message }, 500);
       if (isAdmin !== true) return json({ error: 'Requer papel admin' }, 403);
+      origem = 'usuario';
+      userId = userData.user.id;
       autorizado = true;
     }
 
@@ -114,6 +119,26 @@ Deno.serve(async (req: Request) => {
     const parsed = BodySchema.safeParse(raw ?? {});
     if (!parsed.success) return json({ error: parsed.error.flatten().fieldErrors }, 400);
     const { empresaId, competencia, severidadeMinima, dryRun, limite, forcarGlobal } = parsed.data;
+
+    // `has_role('admin')` é global — não diz de qual empresa o usuário é admin.
+    // Sem o recorte abaixo, o admin de um tenant recebia no digest os alertas
+    // de conformidade de todos os demais. O cron interno segue irrestrito.
+    let empresasPermitidas: string[] | null = null;
+    if (origem === 'usuario' && userId) {
+      if (empresaId) {
+        // Empresa declarada: precisa ser uma das do usuário.
+        const escopo = await exigirVinculoEmpresa(userId, empresaId);
+        if (!escopo.ok) return escopo.resposta;
+        empresasPermitidas = [escopo.dados.empresaId];
+      } else {
+        // Sem empresa declarada o digest cobre todas as do usuário — nunca
+        // as dos demais tenants.
+        const vinculadas = await empresasDoUsuario(userId);
+        if (vinculadas === null) return json({ error: 'Falha ao validar vínculo de empresa' }, 500);
+        if (vinculadas.length === 0) return json({ error: 'Usuário sem empresa vinculada' }, 403);
+        empresasPermitidas = vinculadas;
+      }
+    }
 
     // ---- Alertas pendentes -------------------------------------------------
     let query = admin
@@ -125,6 +150,7 @@ Deno.serve(async (req: Request) => {
       .order('created_at', { ascending: false })
       .limit(limite);
     if (empresaId) query = query.eq('empresa_id', empresaId);
+    else if (empresasPermitidas) query = query.in('empresa_id', empresasPermitidas);
 
     const { data: linhas, error: alertasErr } = await query;
     if (alertasErr) {
@@ -132,7 +158,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const relevantes = (linhas ?? []).filter(
-      (l) => PESO[String(l.prioridade ?? 'baixa')] <= PESO[severidadeMinima],
+      (l) => PESO[String(l.prioridade ?? 'baixa')] <= PESO[severidadeMinima]
     );
 
     if (relevantes.length === 0) {
@@ -157,7 +183,7 @@ Deno.serve(async (req: Request) => {
         empresaNome: nomes.get(String(l.empresa_id)) || 'Empresa não identificada',
         tipo: tipo[1] ?? 'score_baixo',
         severidade: String(l.prioridade ?? 'baixa'),
-        competencia: tipo[2] ?? (competencia ?? ''),
+        competencia: tipo[2] ?? competencia ?? '',
         titulo: String(l.titulo ?? 'Alerta de conformidade'),
         mensagem: String(l.mensagem ?? l.descricao ?? ''),
         valor: l.valor === null || l.valor === undefined ? null : Number(l.valor),
@@ -193,7 +219,6 @@ Deno.serve(async (req: Request) => {
       ultimoDiaDoMes: new Date(Date.UTC(anoLocal, mesLocal, 0)).getUTCDate(),
     };
 
-
     interface Envio {
       readonly email: string;
       readonly userId: string | null;
@@ -204,7 +229,7 @@ Deno.serve(async (req: Request) => {
     let envios: Envio[] = [];
     let ignorados: readonly { userId: string; motivo: string }[] = [];
 
-    if (explicitos.length > 0 || forcarGlobal) {
+    if (explicitos.length > 0 || (forcarGlobal && origem === 'interna')) {
       let destinatarios = explicitos;
       if (destinatarios.length === 0) {
         destinatarios = await destinatariosAdmin(admin);
@@ -214,7 +239,9 @@ Deno.serve(async (req: Request) => {
     } else {
       const { data: prefsRaw, error: prefsErr } = await admin
         .from('user_digest_preferences')
-        .select('user_id,ativo,frequencia,dia_semana,dia_mes,hora_envio,severidade_minima,tipos_ignorados,empresas_filtro,email_alternativo,max_alertas,ultimo_hash')
+        .select(
+          'user_id,ativo,frequencia,dia_semana,dia_mes,hora_envio,severidade_minima,tipos_ignorados,empresas_filtro,email_alternativo,max_alertas,ultimo_hash'
+        )
         .eq('ativo', true);
       if (prefsErr) {
         return json({ error: 'Falha ao ler preferências', details: prefsErr.message }, 500);
@@ -272,7 +299,12 @@ Deno.serve(async (req: Request) => {
     }
 
     if (envios.length === 0) {
-      return json({ success: true, enviados: 0, motivo: 'nenhum destinatário elegível', ignorados });
+      return json({
+        success: true,
+        enviados: 0,
+        motivo: 'nenhum destinatário elegível',
+        ignorados,
+      });
     }
 
     // ---- Envio -------------------------------------------------------------
@@ -282,10 +314,7 @@ Deno.serve(async (req: Request) => {
     const falhas: { email: string; detalhe: string }[] = [];
     const idPorChave = new Map<string, string>();
     for (const l of relevantes) {
-      idPorChave.set(
-        `${String(l.empresa_id)}|${String(l.tipo)}|${String(l.titulo)}`,
-        String(l.id),
-      );
+      idPorChave.set(`${String(l.empresa_id)}|${String(l.tipo)}|${String(l.titulo)}`, String(l.id));
     }
 
     // Trilha de auditoria: uma linha por destinatário e por ciclo de execução.
@@ -301,7 +330,8 @@ Deno.serve(async (req: Request) => {
         empresas.add(a.empresaId);
         multa += typeof a.valor === 'number' && Number.isFinite(a.valor) ? Math.max(0, a.valor) : 0;
         const atual = ORDEM_SEV[String(a.severidade)] ?? 0;
-        if (atual > 0 && (sev === null || atual > (ORDEM_SEV[sev] ?? 0))) sev = String(a.severidade);
+        if (atual > 0 && (sev === null || atual > (ORDEM_SEV[sev] ?? 0)))
+          sev = String(a.severidade);
       }
       return {
         total_alertas: alertasEnvio.length,
@@ -324,7 +354,6 @@ Deno.serve(async (req: Request) => {
     }
 
     for (const envio of envios) {
-
       const digest = construirDigest(envio.alertas, {
         remetenteNome: 'Hub Tributário',
         urlBase: Deno.env.get('APP_PUBLIC_URL') ?? undefined,
@@ -376,8 +405,10 @@ Deno.serve(async (req: Request) => {
       });
 
       for (const a of envio.alertas) {
-        const id = idPorChave.get(`${a.empresaId}|${PREFIXO_ALERTA}:${a.tipo}:${a.competencia}|${a.titulo}`)
-          ?? idPorChave.get(`${a.empresaId}|${PREFIXO_ALERTA}:${a.tipo}|${a.titulo}`);
+        const id =
+          idPorChave.get(
+            `${a.empresaId}|${PREFIXO_ALERTA}:${a.tipo}:${a.competencia}|${a.titulo}`
+          ) ?? idPorChave.get(`${a.empresaId}|${PREFIXO_ALERTA}:${a.tipo}|${a.titulo}`);
         if (id) idsEnviados.add(id);
       }
 
@@ -396,7 +427,6 @@ Deno.serve(async (req: Request) => {
       if (logErr) logErro = logErr.message;
     }
 
-
     // ---- Idempotência: marca somente o que foi efetivamente enviado --------
     if (idsEnviados.size > 0) {
       const { error: updErr } = await admin
@@ -406,7 +436,7 @@ Deno.serve(async (req: Request) => {
       if (updErr) {
         return json(
           { error: 'E-mail enviado, mas falhou ao marcar alertas', details: updErr.message },
-          500,
+          500
         );
       }
     }
@@ -421,10 +451,8 @@ Deno.serve(async (req: Request) => {
       falhas,
       ignorados,
     });
-
   } catch (erro) {
     const mensagem = erro instanceof Error ? erro.message : 'Erro desconhecido';
     return json({ error: 'Erro inesperado', details: mensagem }, 500);
   }
 });
-

@@ -201,16 +201,17 @@ export function useManagedFilters<T extends AnyFilters>(
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(async () => {
         try {
-          await supabase
-            .from('user_active_filters')
-            .upsert(
-              [{
+          // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+          await supabase.from('user_active_filters').upsert(
+            [
+              {
                 user_id: user.id,
                 entity_type: entityType,
                 payload: { v: PAYLOAD_VERSION, filters: next } as never,
-              }],
-              { onConflict: 'user_id,entity_type' }
-            );
+              },
+            ],
+            { onConflict: 'user_id,entity_type' }
+          );
         } catch (e) {
           logger.warn('[useManagedFilters] supabase upsert failed', { entityType, e });
         }
@@ -244,10 +245,7 @@ export function useManagedFilters<T extends AnyFilters>(
   // ---- Snapshot / clear / restore ----
   const performClear = useCallback(async (): Promise<ClearSnapshot<T>> => {
     const localEntries: ClearSnapshot<T>['localEntries'] = [];
-    const allLocalKeys = [
-      ...(localStorageKey ? [localStorageKey] : []),
-      ...extraLocalStorageKeys,
-    ];
+    const allLocalKeys = [...(localStorageKey ? [localStorageKey] : []), ...extraLocalStorageKeys];
     for (const k of allLocalKeys) {
       try {
         localEntries.push({ key: k, value: window.localStorage.getItem(k) });
@@ -283,6 +281,7 @@ export function useManagedFilters<T extends AnyFilters>(
     }
     if (user?.id) {
       try {
+        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
         await supabase
           .from('user_active_filters')
           .delete()
@@ -311,12 +310,15 @@ export function useManagedFilters<T extends AnyFilters>(
       // Supabase
       if (user?.id && snap.remoteRow) {
         try {
+          // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
           await supabase.from('user_active_filters').upsert(
-            [{
-              user_id: user.id,
-              entity_type: entityType,
-              payload: snap.remoteRow.payload as never,
-            }],
+            [
+              {
+                user_id: user.id,
+                entity_type: entityType,
+                payload: snap.remoteRow.payload as never,
+              },
+            ],
             { onConflict: 'user_id,entity_type' }
           );
         } catch (e) {

@@ -3,6 +3,7 @@
 // Auditoria: logs estruturados + persistência em audit_logs por chamada.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { auditedRpc, beginAudit, finalizeAudit, withCorrelation } from '../_shared/proxy-audit.ts';
+import { VALIDATION_ERROR_CODE, normalizeValidationFields } from '../_shared/contract-response.ts';
 import { ConciliacaoProxySchema, validatePayload } from '../_shared/validation.ts';
 import type { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
@@ -56,9 +57,17 @@ export function createHandler(deps: HandlerDeps) {
 
     const parsed = validatePayload(ConciliacaoProxySchema, raw, 'conciliacao-proxy');
     if (!parsed.success) {
+      // 422 com o envelope `{code, message, fields}`, igual às demais funções.
+      // `createValidationErrorResponse` monta a própria `Response` e perderia o
+      // header de correlação e o `finalizeAudit` do `json()` local, então o
+      // corpo é montado com os mesmos helpers e sai pelo caminho auditado.
       return json(
-        400,
-        { error: parsed.error, details: parsed.details },
+        422,
+        {
+          code: VALIDATION_ERROR_CODE,
+          message: 'Payload inválido',
+          fields: normalizeValidationFields(parsed.details ?? parsed.error),
+        },
         { reason: 'schema_violation' }
       );
     }
@@ -68,6 +77,10 @@ export function createHandler(deps: HandlerDeps) {
       if (payload.action === 'confirmar') {
         const ajuste = Number.isFinite(payload.ajusteCentavos) ? Number(payload.ajusteCentavos) : 0;
 
+        // Overload de 6 argumentos: aplica os metadados de compensação dentro da
+        // mesma transação que confirma a conciliação. Antes o cliente fazia esse
+        // UPDATE depois, numa segunda requisição — se ela falhasse, a transação
+        // ficava confirmada sem nenhum registro do porquê do ajuste.
         await auditedRpc(
           ctx,
           deps.admin,
@@ -78,6 +91,7 @@ export function createHandler(deps: HandlerDeps) {
             p_conta_pagar_id: payload.contaPagarId ?? null,
             p_conta_receber_id: payload.contaReceberId ?? null,
             p_ajuste_centavos: ajuste,
+            p_metadados: payload.metadados ?? {},
           },
           'confirmar'
         );

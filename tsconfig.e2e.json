@@ -1,0 +1,31 @@
+{
+  // Type-check da infraestrutura de teste — `e2e/`, `scripts/` e os configs do
+  // Playwright.
+  //
+  // `tsconfig.json` tem `include: ["src"]` e `exclude: ["e2e", ...]`, então
+  // `bun run type-check` nunca olhou para nada disto. O Playwright transpila as
+  // specs com esbuild, que apaga tipos sem verificá-los: um `CNPJS.EMITENTE`
+  // que não existe vira `undefined` em silêncio e a asserção passa a comparar
+  // com nada. Com o gate financeiro virando bloqueante, a fixture que o
+  // sustenta precisa ser verificada como código de produção.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  },
+  "include": ["e2e", "scripts/**/*.ts", "playwright.config.ts", "playwright.*.config.ts"],
+  // Dois arquivos rodam fora do runtime Node e trazem globais próprios:
+  // `audit-env.ts` é Deno (`Deno.env`) e `test-rpc-runtime.evaluate.test.ts`
+  // importa `bun:test`. Type-checá-los aqui exigiria carregar os dois conjuntos
+  // de tipos só para acomodar dois arquivos — cada um é verificado pelo seu
+  // próprio runtime no CI.
+  "exclude": [
+    "node_modules",
+    "dist",
+    "scripts/ci/audit-env.ts",
+    "scripts/security/test-rpc-runtime.evaluate.test.ts"
+  ]
+}

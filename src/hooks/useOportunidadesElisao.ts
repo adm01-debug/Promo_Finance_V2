@@ -13,7 +13,6 @@ import {
 import { toast } from 'sonner';
 import { validarConsistenciaNcmCst } from '@/lib/tributario/validador-ncm-cst';
 
-
 interface UseElisaoOptions {
   empresaId?: string;
   contexto?: Partial<ContextoEmpresa>;
@@ -117,7 +116,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
   // Análise em memória (sempre fresca)
   const relatorio: RelatorioElisao = useMemo(
     () => analisarOportunidadesElisao(contextoCalculado),
-    [contextoCalculado],
+    [contextoCalculado]
   );
 
   // Persiste oportunidades aplicáveis na tabela oportunidades_elisao
@@ -126,6 +125,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
       if (!empresaId) throw new Error('Selecione uma empresa antes de salvar.');
 
       // Limpa oportunidades anteriores em status "identificada" para evitar duplicatas
+      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase
         .from('oportunidades_elisao')
         .delete()
@@ -162,10 +162,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
 
   const atualizarStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from('oportunidades_elisao')
-        .update({ status })
-        .eq('id', id);
+      const { error } = await supabase.from('oportunidades_elisao').update({ status }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -184,74 +181,91 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
     persistirOportunidades,
     atualizarStatus,
     temHistoricoSuficiente: historicoFat.length >= 12,
-    
+
     // Alertas automáticos
-    alertas: useQuery({
-      queryKey: ['elisao-alertas', empresaId],
-      queryFn: async () => {
-        if (!empresaId) return [];
-        const { data, error } = await supabase
-          .from('elisao_alertas')
-          .select('*')
-          .eq('empresa_id', empresaId)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
-      },
-      enabled: !!empresaId,
-    }).data || [],
+    alertas:
+      useQuery({
+        queryKey: ['elisao-alertas', empresaId],
+        queryFn: async () => {
+          if (!empresaId) return [];
+          const { data, error } = await supabase
+            .from('elisao_alertas')
+            .select('*')
+            .eq('empresa_id', empresaId)
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          return data || [];
+        },
+        enabled: !!empresaId,
+      }).data || [],
 
     // Créditos para Auditoria
-    creditosAuditoria: useQuery({
-      queryKey: ['elisao-creditos-auditoria', empresaId],
-      queryFn: async () => {
-        if (!empresaId) return [];
-        const { data, error } = await supabase
-          .from('elisao_creditos_auditoria')
-          .select('*, nota:notas_fiscais_ocr(*), regra:elisao_regras_creditos(*)')
-          .eq('empresa_id', empresaId)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        
-        // Auto-validação de consistência
-        return (data || []).map(c => {
-          if (c.score_confianca === null || c.score_confianca === 100) {
-            const v = validarConsistenciaNcmCst(c.ncm, c.cst_csosn);
-            return { ...c, score_confianca: v.score, divergencias_detectadas: [...(Array.isArray(c.divergencias_detectadas) ? c.divergencias_detectadas : []), ...v.divergencias] };
-          }
-          return c;
-        });
+    creditosAuditoria:
+      useQuery({
+        queryKey: ['elisao-creditos-auditoria', empresaId],
+        queryFn: async () => {
+          if (!empresaId) return [];
+          const { data, error } = await supabase
+            .from('elisao_creditos_auditoria')
+            .select('*, nota:notas_fiscais_ocr(*), regra:elisao_regras_creditos(*)')
+            .eq('empresa_id', empresaId)
+            .order('created_at', { ascending: false });
+          if (error) throw error;
 
-      },
-      enabled: !!empresaId,
-    }).data || [],
+          // Auto-validação de consistência
+          return (data || []).map((c) => {
+            if (c.score_confianca === null || c.score_confianca === 100) {
+              const v = validarConsistenciaNcmCst(c.ncm, c.cst_csosn);
+              return {
+                ...c,
+                score_confianca: v.score,
+                divergencias_detectadas: [
+                  ...(Array.isArray(c.divergencias_detectadas) ? c.divergencias_detectadas : []),
+                  ...v.divergencias,
+                ],
+              };
+            }
+            return c;
+          });
+        },
+        enabled: !!empresaId,
+      }).data || [],
 
     // Tarefas Acionáveis (Bitrix Sync)
-    tarefasAcionaveis: useQuery({
-      queryKey: ['elisao-tarefas-acionaveis', empresaId],
-      queryFn: async () => {
-        if (!empresaId) return [];
-        const { data, error } = await supabase
-          .from('elisao_tarefas_acionaveis')
-          .select('*')
-          .eq('empresa_id', empresaId)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
-      },
-      enabled: !!empresaId,
-    }).data || [],
+    tarefasAcionaveis:
+      useQuery({
+        queryKey: ['elisao-tarefas-acionaveis', empresaId],
+        queryFn: async () => {
+          if (!empresaId) return [];
+          const { data, error } = await supabase
+            .from('elisao_tarefas_acionaveis')
+            .select('*')
+            .eq('empresa_id', empresaId)
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          return data || [];
+        },
+        enabled: !!empresaId,
+      }).data || [],
 
     // Mutações para Aprovação e Sincronização
     decidirCredito: useMutation({
-      mutationFn: async ({ id, status, motivo }: { id: string; status: 'aprovado' | 'rejeitado'; motivo?: string }) => {
+      mutationFn: async ({
+        id,
+        status,
+        motivo,
+      }: {
+        id: string;
+        status: 'aprovado' | 'rejeitado';
+        motivo?: string;
+      }) => {
         const { error } = await supabase
           .from('elisao_creditos_auditoria')
-          .update({ 
-            status_aprovacao: status, 
+          .update({
+            status_aprovacao: status,
             motivo_rejeicao: motivo,
             aprovador_id: user?.id,
-            data_aprovacao: new Date().toISOString()
+            data_aprovacao: new Date().toISOString(),
           })
           .eq('id', id);
         if (error) throw error;
@@ -265,13 +279,14 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
             .single();
 
           if (credito) {
+            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
             await supabase.from('elisao_tarefas_acionaveis').insert({
               empresa_id: credito.empresa_id,
               titulo: `Recuperação de Crédito - NCM ${credito.ncm}`,
               descricao: `Recuperação de crédito aprovada na auditoria.\nMetodologia: ${credito.metodologia_aplicada}\nNCM: ${credito.ncm}`,
               valor_envolvido: credito.valor_credito_calculado,
               tipo_oportunidade: 'credito_tributario',
-              status: 'pendente'
+              status: 'pendente',
             });
           }
         }
@@ -287,7 +302,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
     sincronizarBitrix: useMutation({
       mutationFn: async (tarefaId: string) => {
         const { data, error } = await supabase.functions.invoke('bitrix24-sync', {
-          body: { action: 'sync_elisao_task', params: { id: tarefaId } }
+          body: { action: 'sync_elisao_task', params: { id: tarefaId } },
         });
         if (error) throw error;
         return data;

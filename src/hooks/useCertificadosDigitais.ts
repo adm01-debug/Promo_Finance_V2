@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { invokeEdge } from '@/lib/edge-function-error';
 
 export interface CertificadoDigital {
   id: string;
@@ -57,27 +58,12 @@ export function useUploadCertificado() {
   return useMutation({
     mutationFn: async (input: UploadCertificadoInput) => {
       const pfx_base64 = await fileToBase64(input.file);
-      const { data, error } = await supabase.functions.invoke('nfe-upload-certificado', {
-        body: {
-          empresa_id: input.empresa_id,
-          pfx_base64,
-          password: input.password,
-          ambiente: input.ambiente,
-          uf: input.uf,
-        },
-      });
-      if (error) {
-        const ctx = (error as { context?: Response }).context;
-        if (ctx && typeof ctx.text === 'function') {
-          try {
-            const t = await ctx.text();
-            throw new Error(t || error.message);
-          } catch { /* noop */ }
-        }
-        throw new Error(error.message);
-      }
-      if (data?.error) throw new Error(String(data.error));
-      return data as {
+      // `invokeEdge` lê o corpo da resposta não-2xx e extrai `error`/`message`.
+      // A versão anterior tentava fazer isso à mão, mas o `throw` com o texto
+      // do corpo estava DENTRO do próprio `try`, então o `catch { /* noop */ }`
+      // logo abaixo o engolia: o usuário nunca via o motivo devolvido pela
+      // função — só "Edge Function returned a non-2xx status code".
+      return await invokeEdge<{
         ok: boolean;
         cert_id: string;
         cnpj: string;
@@ -85,10 +71,18 @@ export function useUploadCertificado() {
         valido_de: string | null;
         valido_ate: string;
         ambiente: 'homologacao' | 'producao';
-      };
+      }>('nfe-upload-certificado', {
+        empresa_id: input.empresa_id,
+        pfx_base64,
+        password: input.password,
+        ambiente: input.ambiente,
+        uf: input.uf,
+      });
     },
     onSuccess: (res) => {
-      toast.success(`Certificado do CNPJ ${res.cnpj} cadastrado. Válido até ${new Date(res.valido_ate).toLocaleDateString('pt-BR')}`);
+      toast.success(
+        `Certificado do CNPJ ${res.cnpj} cadastrado. Válido até ${new Date(res.valido_ate).toLocaleDateString('pt-BR')}`
+      );
       qc.invalidateQueries({ queryKey: ['certificados-digitais'] });
     },
     onError: (err: Error) => {
@@ -101,10 +95,7 @@ export function useToggleCertificado() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await supabase
-        .from('empresas_certificados')
-        .update({ ativo })
-        .eq('id', id);
+      const { error } = await supabase.from('empresas_certificados').update({ ativo }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {

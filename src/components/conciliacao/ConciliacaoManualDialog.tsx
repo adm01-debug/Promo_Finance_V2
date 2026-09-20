@@ -1,5 +1,13 @@
 import { useState, useMemo } from 'react';
-import { Search, Link2, Calendar, DollarSign, ArrowRight, AlertTriangle, RefreshCw } from 'lucide-react';
+import {
+  Search,
+  Link2,
+  Calendar,
+  DollarSign,
+  ArrowRight,
+  AlertTriangle,
+  RefreshCw,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -19,6 +27,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useConciliacao } from '@/hooks/useConciliacao';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { haptic } from '@/lib/haptic-feedback';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 import { logger } from '@/lib/logger';
 import { aprenderRegra } from '@/hooks/useRegrasConciliacao';
@@ -50,18 +59,18 @@ export function ConciliacaoManualDialog({
   const [selectedLancamento, setSelectedLancamento] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { confirmarConciliacao } = useConciliacao();
-  const { celebrateReconciliation, error: showError } = useCelebrations();
+  const { error: showError } = useCelebrations();
 
   // Filter lancamentos by type matching transaction type
   const lancamentosFiltrados = useMemo(() => {
     if (!transacao) return [];
-    
+
     // credito = receita (receber), debito = despesa (pagar)
     const tipoFiltro = transacao.tipo === 'credito' ? 'receber' : 'pagar';
-    
+
     return lancamentos
-      .filter(l => l.tipo === tipoFiltro)
-      .filter(l => {
+      .filter((l) => l.tipo === tipoFiltro)
+      .filter((l) => {
         if (!search) return true;
         const searchLower = search.toLowerCase();
         return (
@@ -83,16 +92,16 @@ export function ConciliacaoManualDialog({
 
   const handleConfirmar = async () => {
     if (!transacao || !selectedLancamento) return;
-    
-    const lancamento = lancamentos.find(l => l.id === selectedLancamento);
+
+    const lancamento = lancamentos.find((l) => l.id === selectedLancamento);
     if (!lancamento) return;
 
     setIsLoading(true);
     try {
       const tipo = lancamento.tipo;
-      
+
       const valorDiff = Math.abs(transacao.valor) - lancamento.valor;
-      const isWithinPennyTolerance = Math.abs(valorDiff) <= 0.50; // TOLERANCIA_CENTAVOS
+      const isWithinPennyTolerance = Math.abs(valorDiff) <= 0.5; // TOLERANCIA_CENTAVOS
 
       await confirmarConciliacao.mutateAsync({
         transacaoId: transacao.id,
@@ -100,7 +109,7 @@ export function ConciliacaoManualDialog({
         contaReceberId: tipo === 'receber' ? lancamento.id : undefined,
         ajusteCentavos: isWithinPennyTolerance ? valorDiff : 0,
       });
-      
+
       // O aprendizado é auxiliar: a conciliação já foi confirmada no banco e
       // não pode ser apresentada como falha caso esse enriquecimento falhe.
       try {
@@ -108,8 +117,13 @@ export function ConciliacaoManualDialog({
       } catch (error: unknown) {
         logger.warn('[ConciliacaoManualDialog] Não foi possível aprender regra:', error);
       }
-      
-      celebrateReconciliation(1);
+
+      // O toast e o confete de sucesso saem do `onSuccess` de
+      // `confirmarConciliacao` — que vale para TODOS os caminhos (manual,
+      // split, lote). Celebrar aqui também empilhava dois "Conciliação
+      // Concluída!" idênticos e disparava confete em dobro a cada baixa.
+      // O retorno tátil, que a mutation não dava, segue sendo emitido.
+      haptic('success');
       onSuccess(transacao.id, lancamento.id, tipo);
       onOpenChange(false);
       setSelectedLancamento(null);
@@ -122,7 +136,7 @@ export function ConciliacaoManualDialog({
     }
   };
 
-  const selectedDetails = lancamentos.find(l => l.id === selectedLancamento);
+  const selectedDetails = lancamentos.find((l) => l.id === selectedLancamento);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -150,11 +164,14 @@ export function ConciliacaoManualDialog({
                     {formatDate(transacao.data)}
                   </div>
                 </div>
-                <p className={cn(
-                  "text-lg font-bold",
-                  transacao.tipo === 'credito' ? "text-success" : "text-destructive"
-                )}>
-                  {transacao.tipo === 'credito' ? '+' : '-'}{formatCurrency(transacao.valor)}
+                <p
+                  className={cn(
+                    'text-lg font-bold',
+                    transacao.tipo === 'credito' ? 'text-success' : 'text-destructive'
+                  )}
+                >
+                  {transacao.tipo === 'credito' ? '+' : '-'}
+                  {formatCurrency(transacao.valor)}
                 </p>
               </div>
             </div>
@@ -176,7 +193,9 @@ export function ConciliacaoManualDialog({
                 <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
                 <div className="text-xs">
                   <p className="font-bold">Nenhuma correspondência encontrada!</p>
-                  <p className="text-muted-foreground">Reprocesse a busca ou crie uma reclassificação de contingência abaixo.</p>
+                  <p className="text-muted-foreground">
+                    Reprocesse a busca ou crie uma reclassificação de contingência abaixo.
+                  </p>
                 </div>
               </div>
             )}
@@ -205,10 +224,10 @@ export function ConciliacaoManualDialog({
                         key={lancamento.id}
                         htmlFor={lancamento.id}
                         className={cn(
-                          "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
+                          'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all',
                           selectedLancamento === lancamento.id
-                            ? "border-primary bg-primary/5"
-                            : "hover:bg-muted/50"
+                            ? 'border-primary bg-primary/5'
+                            : 'hover:bg-muted/50'
                         )}
                       >
                         <RadioGroupItem value={lancamento.id} id={lancamento.id} />
@@ -216,32 +235,40 @@ export function ConciliacaoManualDialog({
                           <div className="flex items-center gap-2">
                             <p className="font-medium truncate">{lancamento.descricao}</p>
                             {isExactMatch && (
-                              <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-xs">
+                              <Badge
+                                variant="outline"
+                                className="bg-success/10 text-success border-success/20 text-xs"
+                              >
                                 Valor exato
                               </Badge>
                             )}
                             {!isExactMatch && isCloseMatch && (
-                              <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 text-xs">
+                              <Badge
+                                variant="outline"
+                                className="bg-warning/10 text-warning border-warning/20 text-xs"
+                              >
                                 ~{formatCurrency(valorDiff)}
                               </Badge>
                             )}
                           </div>
-                            <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                              <span>{lancamento.entidade}</span>
-                              <span className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {formatDate(lancamento.dataVencimento)}
-                              </span>
-                            </div>
+                          <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                            <span>{lancamento.entidade}</span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {formatDate(lancamento.dataVencimento)}
+                            </span>
                           </div>
-                          <p className={cn(
-                            "font-semibold",
-                            lancamento.tipo === 'receber' ? "text-success" : "text-destructive"
-                          )}>
-                            {formatCurrency(lancamento.valor)}
-                          </p>
-                        </Label>
-                      );
+                        </div>
+                        <p
+                          className={cn(
+                            'font-semibold',
+                            lancamento.tipo === 'receber' ? 'text-success' : 'text-destructive'
+                          )}
+                        >
+                          {formatCurrency(lancamento.valor)}
+                        </p>
+                      </Label>
+                    );
                   })
                 )}
               </RadioGroup>
@@ -271,8 +298,8 @@ export function ConciliacaoManualDialog({
             Cancelar
           </Button>
           {lancamentosFiltrados.length === 0 && (
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               onClick={() => {
                 toast.info('Abrindo reprocessamento manual...');
                 setSearch('');
@@ -282,10 +309,7 @@ export function ConciliacaoManualDialog({
               <RefreshCw className="h-4 w-4" /> Reprocessar Busca
             </Button>
           )}
-          <Button
-            onClick={handleConfirmar}
-            disabled={!selectedLancamento || isLoading}
-          >
+          <Button onClick={handleConfirmar} disabled={!selectedLancamento || isLoading}>
             {isLoading ? 'Conciliando...' : 'Confirmar Conciliação'}
           </Button>
         </DialogFooter>
