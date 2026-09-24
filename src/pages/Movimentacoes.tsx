@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { List as FixedSizeList, type RowComponentProps } from 'react-window';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,11 +12,77 @@ import { EmptyState } from '@/components/ui/empty-state';
 import {
   ArrowUpCircle, ArrowDownCircle, Search, TrendingUp, TrendingDown, DollarSign, Calendar,
 } from 'lucide-react';
-import { useMovimentacoes } from '@/hooks/useFinancialOperations';
+import { useMovimentacoes, type Movimentacao } from '@/hooks/useFinancialOperations';
 import { formatCurrency } from '@/lib/formatters';
 import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion } from 'framer-motion';
+
+// Acima disso, virtualizamos: renderizar centenas de <TableRow> de uma vez
+// degrada o DOM (E-024). Abaixo, a tabela simples já é barata o bastante.
+const VIRTUALIZE_THRESHOLD = 60;
+const ROW_HEIGHT = 57;
+
+// Larguras fixas para alinhar o cabeçalho estático com as linhas virtualizadas
+// (cada linha virtualizada é sua própria mini-tabela `table-fixed`, mesmo
+// padrão usado em src/pages/ContasPagar/components/List.tsx).
+const COL_WIDTHS = {
+  data: 'w-[110px]',
+  tipo: 'w-[130px]',
+  origem: 'w-[130px]',
+  valor: 'w-[160px]',
+  conciliada: 'w-[110px]',
+};
+
+function MovimentacaoRow({ mov }: { mov: Movimentacao }) {
+  return (
+    <TableRow data-highlight-id={mov.id}>
+      <TableCell className={`whitespace-nowrap ${COL_WIDTHS.data}`}>
+        {format(parseISO(mov.data_movimentacao), 'dd/MM/yyyy', { locale: ptBR })}
+      </TableCell>
+      <TableCell className={COL_WIDTHS.tipo}>
+        {mov.tipo === 'entrada' ? (
+          <Badge variant="outline" className="bg-success/10 text-success border-success/30 gap-1">
+            <ArrowDownCircle className="h-3 w-3" /> Entrada
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30 gap-1">
+            <ArrowUpCircle className="h-3 w-3" /> Saída
+          </Badge>
+        )}
+      </TableCell>
+      <TableCell className="max-w-[300px] truncate">{mov.descricao}</TableCell>
+      <TableCell className={COL_WIDTHS.origem}>
+        <Badge variant="secondary" className="text-xs capitalize">
+          {mov.origem || 'manual'}
+        </Badge>
+      </TableCell>
+      <TableCell className={`text-right font-mono font-semibold ${COL_WIDTHS.valor} ${mov.tipo === 'entrada' ? 'text-success' : 'text-destructive'}`}>
+        {mov.tipo === 'entrada' ? '+' : '-'}{formatCurrency(mov.valor)}
+      </TableCell>
+      <TableCell className={COL_WIDTHS.conciliada}>
+        {mov.conciliada ? (
+          <Badge variant="outline" className="bg-success/10 text-success text-xs">Sim</Badge>
+        ) : (
+          <Badge variant="outline" className="text-xs">Não</Badge>
+        )}
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function VirtualRow({ index, style, items }: RowComponentProps<{ items: Movimentacao[] }>) {
+  const mov = items[index];
+  return (
+    <div style={style} className="border-b border-border/50">
+      <Table className="table-fixed min-w-[900px]">
+        <TableBody>
+          <MovimentacaoRow mov={mov} />
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
 
 export default function Movimentacoes() {
   const [search, setSearch] = useState('');
@@ -139,54 +206,35 @@ export default function Movimentacoes() {
               <EmptyState icon={DollarSign} title="Nenhuma movimentação" description="Sem movimentações no período selecionado" />
             ) : (
               <div className="overflow-x-auto">
-                <Table>
+                <Table className="table-fixed min-w-[900px]">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Tipo</TableHead>
+                      <TableHead className={COL_WIDTHS.data}>Data</TableHead>
+                      <TableHead className={COL_WIDTHS.tipo}>Tipo</TableHead>
                       <TableHead>Descrição</TableHead>
-                      <TableHead>Origem</TableHead>
-                      <TableHead className="text-right">Valor</TableHead>
-                      <TableHead>Conciliada</TableHead>
+                      <TableHead className={COL_WIDTHS.origem}>Origem</TableHead>
+                      <TableHead className={`text-right ${COL_WIDTHS.valor}`}>Valor</TableHead>
+                      <TableHead className={COL_WIDTHS.conciliada}>Conciliada</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
-                    {filtered.map(mov => (
-                      <TableRow key={mov.id} data-highlight-id={mov.id}>
-                        <TableCell className="whitespace-nowrap">
-                          {format(parseISO(mov.data_movimentacao), 'dd/MM/yyyy', { locale: ptBR })}
-                        </TableCell>
-                        <TableCell>
-                          {mov.tipo === 'entrada' ? (
-                            <Badge variant="outline" className="bg-success/10 text-success border-success/30 gap-1">
-                              <ArrowDownCircle className="h-3 w-3" /> Entrada
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30 gap-1">
-                              <ArrowUpCircle className="h-3 w-3" /> Saída
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="max-w-[300px] truncate">{mov.descricao}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="text-xs capitalize">
-                            {mov.origem || 'manual'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className={`text-right font-mono font-semibold ${mov.tipo === 'entrada' ? 'text-success' : 'text-destructive'}`}>
-                          {mov.tipo === 'entrada' ? '+' : '-'}{formatCurrency(mov.valor)}
-                        </TableCell>
-                        <TableCell>
-                          {mov.conciliada ? (
-                            <Badge variant="outline" className="bg-success/10 text-success text-xs">Sim</Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-xs">Não</Badge>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
+                  {filtered.length <= VIRTUALIZE_THRESHOLD && (
+                    <TableBody>
+                      {filtered.map(mov => (
+                        <MovimentacaoRow key={mov.id} mov={mov} />
+                      ))}
+                    </TableBody>
+                  )}
                 </Table>
+                {filtered.length > VIRTUALIZE_THRESHOLD && (
+                  <FixedSizeList
+                    rowCount={filtered.length}
+                    rowHeight={ROW_HEIGHT}
+                    style={{ height: Math.min(640, filtered.length * ROW_HEIGHT), width: '100%' }}
+                    className="min-w-[900px] custom-scrollbar"
+                    rowComponent={VirtualRow}
+                    rowProps={{ items: filtered }}
+                  />
+                )}
               </div>
             )}
           </CardContent>

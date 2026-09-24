@@ -63,7 +63,18 @@ export default function ContasPagar() {
 
   const bulkActions = [
     { id: 'mark-paid', label: 'Marcar como Pago', icon: <CheckCircle2 className="h-4 w-4" />, variant: 'default' as const, onClick: logic.handleBulkMarkAsPaid },
-    { id: 'cancel', label: 'Cancelar', icon: <XCircle className="h-4 w-4" />, variant: 'destructive' as const, onClick: logic.handleBulkCancel },
+    {
+      id: 'cancel',
+      label: 'Cancelar',
+      icon: <XCircle className="h-4 w-4" />,
+      variant: 'destructive' as const,
+      onClick: logic.handleBulkCancel,
+      confirm: {
+        title: `Cancelar ${logic.selectedCount} conta(s) a pagar`,
+        description: `Esta ação marca ${logic.selectedCount} conta(s) selecionada(s) como cancelada(s) e não pode ser desfeita automaticamente.`,
+        confirmLabel: 'Cancelar contas',
+      },
+    },
   ];
 
   const headerActions = (

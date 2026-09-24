@@ -15,6 +15,7 @@ import { DivergenciasConciliacaoPanel } from '@/components/conciliacao/Divergenc
 import { ConciliacaoRetroativaPanel } from '@/components/conciliacao/ConciliacaoRetroativaPanel';
 import { ConciliacaoAuditPanel } from '@/components/conciliacao/ConciliacaoAuditPanel';
 import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
+import { ConciliacaoIgnorarDialogs } from './ConciliacaoIgnorarDialogs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -65,8 +66,10 @@ export default function Conciliacao() {
     showSugestoesFila, setShowSugestoesFila,
     handleImportSuccess, handleConfirmarMatch, handleRejeitarMatch,
     handleConciliarManual, handleManualSuccess, handleSplitSuccess,
-    handleConciliar, handleIgnorar,
-    handleBulkConciliar, handleBulkIgnorar,
+    handleConciliar, handleIgnorar, confirmarIgnorar,
+    ignorarDialogOpen, setIgnorarDialogOpen, isIgnorando,
+    handleBulkConciliar, handleBulkIgnorar, confirmarBulkIgnorar,
+    bulkIgnorarDialogOpen, setBulkIgnorarDialogOpen, isBulkIgnorando,
     toggleSelect, toggleSelectAll,
     handleDesfazerConciliacao,
   } = useConciliacaoPage();
@@ -399,11 +402,22 @@ export default function Conciliacao() {
           if (selectedTransacaoSplit) handleSplitSuccess(selectedTransacaoSplit.id);
         }}
       />
-      <RelatorioImportacaoDialog 
-        open={showReportDialog} 
-        onOpenChange={setShowReportDialog} 
-        report={importReport} 
+      <RelatorioImportacaoDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        report={importReport}
         onIrParaConciliacao={() => {}}
+      />
+      <ConciliacaoIgnorarDialogs
+        ignorarDialogOpen={ignorarDialogOpen}
+        setIgnorarDialogOpen={setIgnorarDialogOpen}
+        isIgnorando={isIgnorando}
+        confirmarIgnorar={confirmarIgnorar}
+        bulkIgnorarDialogOpen={bulkIgnorarDialogOpen}
+        setBulkIgnorarDialogOpen={setBulkIgnorarDialogOpen}
+        isBulkIgnorando={isBulkIgnorando}
+        confirmarBulkIgnorar={confirmarBulkIgnorar}
+        selectedCount={selectedIds.size}
       />
     </MainLayout>
   );

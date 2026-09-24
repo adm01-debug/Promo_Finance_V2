@@ -3,6 +3,7 @@
 // Busca configs em n8n_workflow_configs (enabled + faixa de risco compatível),
 // envia webhook a cada uma com retry/backoff e loga em n8n_dispatch_logs.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { segredosIguais } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -79,7 +80,7 @@ Deno.serve(async (req) => {
 
   try {
     const expected = Deno.env.get("N8N_DISPATCH_SECRET");
-    if (!expected || req.headers.get("x-n8n-secret") !== expected) {
+    if (!expected || !segredosIguais(req.headers.get("x-n8n-secret"), expected)) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
