@@ -210,15 +210,30 @@ export function useAcordosParcelamento() {
       const todasPagas = parcelas.length > 0 && parcelas.every((p) => p.status === 'pago');
 
       if (todasPagas) {
-        await mustSucceed(
+        const [acordoQuitado] = await mustSucceed(
           supabase
             .from('acordos_parcelamento')
             .update({ status: 'quitado' })
             .eq('id', data.acordo_id)
-            .select('id'),
+            .select('id, contas_receber_ids'),
           'quitar o acordo de parcelamento',
           { exigirLinhas: true }
         );
+
+        // Acordo quitado: as contas originais saem de "em_acordo" e passam a
+        // refletir o pagamento — senão ficam em_acordo pra sempre e telas/
+        // relatórios que filtram por status = 'recebido' nunca veem o valor.
+        const contasParaQuitar = acordoQuitado.contas_receber_ids ?? [];
+        if (contasParaQuitar.length > 0) {
+          const { error: quitarError } = await supabase
+            .from('contas_receber')
+            .update({ status: 'recebido', data_recebimento: new Date().toISOString().slice(0, 10) })
+            .in('id', contasParaQuitar)
+            .eq('status', 'em_acordo');
+
+          if (quitarError)
+            logger.error('Erro ao marcar contas do acordo quitado como recebidas:', quitarError);
+        }
       }
 
       return data;
