@@ -7,6 +7,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { validatePayload, createErrorResponse, AsaasProxySchema, corsHeaders } from '../_shared/validation.ts'
 import { withRetry, createCircuitBreaker } from '../_shared/resilience.ts'
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts'
+import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts'
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3'
 const asaasCB = createCircuitBreaker('asaas')
@@ -125,12 +126,42 @@ export const handler = async (req: Request) => {
       return null
     }
 
+    // Vínculo de tenant (achado A-009): asaas-proxy roda com service_role e
+    // até aqui só provava "é financeiro/admin de ALGUMA empresa", nunca "é
+    // financeiro/admin DAQUELA empresa dona do recurso". As ações que movem
+    // dinheiro ou tocam cobrança/cliente exigem empresa_id validado contra
+    // user_empresas antes de qualquer chamada à API do Asaas.
+    const empresaDoPagamento = async (asaasId: string): Promise<string | null> => {
+      const { data: pagamento } = await supabase
+        .from('asaas_payments')
+        .select('empresa_id')
+        .eq('asaas_id', asaasId)
+        .maybeSingle()
+      return pagamento?.empresa_id ?? null
+    }
+    const empresaDoClienteAsaas = async (asaasId: string): Promise<string | null> => {
+      const { data: clienteAsaas } = await supabase
+        .from('asaas_customers')
+        .select('empresa_id')
+        .eq('asaas_id', asaasId)
+        .maybeSingle()
+      return clienteAsaas?.empresa_id ?? null
+    }
+    const exigirEmpresaDoRecurso = async (empresaId: string | null): Promise<Response | null> => {
+      if (!empresaId) return err('Recurso não encontrado', 404)
+      const vinculo = await exigirVinculoEmpresa(user.id, empresaId)
+      if (!vinculo.ok) return vinculo.resposta
+      return null
+    }
+
     let result: any
 
     switch (action) {
       // ===== CLIENTES =====
       case 'criar_cliente': {
         if (!data?.empresa_id || !data?.nome || !data?.cpf_cnpj) return err('empresa_id, nome e cpf_cnpj são obrigatórios')
+        const vinculoErrCriarCliente = await exigirEmpresaDoRecurso(data.empresa_id)
+        if (vinculoErrCriarCliente) return vinculoErrCriarCliente
 
         result = await asaasFetch('/customers', ASAAS_API_KEY, {
           method: 'POST',
@@ -169,6 +200,8 @@ export const handler = async (req: Request) => {
 
       case 'editar_cliente': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        const vinculoErrEditarCliente = await exigirEmpresaDoRecurso(await empresaDoClienteAsaas(data.asaas_id))
+        if (vinculoErrEditarCliente) return vinculoErrEditarCliente
         const updatePayload: any = {}
         if (data.nome) updatePayload.name = data.nome
         if (data.email) updatePayload.email = data.email
@@ -196,6 +229,8 @@ export const handler = async (req: Request) => {
 
       case 'excluir_cliente': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        const vinculoErrExcluirCliente = await exigirEmpresaDoRecurso(await empresaDoClienteAsaas(data.asaas_id))
+        if (vinculoErrExcluirCliente) return vinculoErrExcluirCliente
         result = await asaasFetch(`/customers/${data.asaas_id}`, ASAAS_API_KEY, { method: 'DELETE' })
         const errRespDel = checkErrors(result)
         if (errRespDel) return errRespDel
@@ -217,6 +252,8 @@ export const handler = async (req: Request) => {
       case 'criar_cobranca': {
         if (!data?.empresa_id || !data?.asaas_customer_id || !data?.valor || !data?.data_vencimento)
           return err('empresa_id, asaas_customer_id, valor e data_vencimento são obrigatórios')
+        const vinculoErrCriarCobranca = await exigirEmpresaDoRecurso(data.empresa_id)
+        if (vinculoErrCriarCobranca) return vinculoErrCriarCobranca
 
         const billingTypeMap: Record<string, string> = {
           boleto: 'BOLETO', pix: 'PIX', credit_card: 'CREDIT_CARD', debit_card: 'DEBIT_CARD',
@@ -323,12 +360,16 @@ export const handler = async (req: Request) => {
 
       case 'consultar_cobranca': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        const vinculoErrConsultar = await exigirEmpresaDoRecurso(await empresaDoPagamento(data.asaas_id))
+        if (vinculoErrConsultar) return vinculoErrConsultar
         result = await asaasFetch(`/payments/${data.asaas_id}`, ASAAS_API_KEY)
         break
       }
 
       case 'cancelar_cobranca': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        const vinculoErrCancelar = await exigirEmpresaDoRecurso(await empresaDoPagamento(data.asaas_id))
+        if (vinculoErrCancelar) return vinculoErrCancelar
         result = await asaasFetch(`/payments/${data.asaas_id}`, ASAAS_API_KEY, { method: 'DELETE' })
         const errCancel = checkErrors(result)
         if (errCancel) return errCancel
@@ -339,6 +380,8 @@ export const handler = async (req: Request) => {
       // ===== ESTORNO =====
       case 'estornar_cobranca': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        const vinculoErrEstornar = await exigirEmpresaDoRecurso(await empresaDoPagamento(data.asaas_id))
+        if (vinculoErrEstornar) return vinculoErrEstornar
         const refundPayload: any = {}
         if (data.valor) refundPayload.value = data.valor // estorno parcial
         if (data.descricao) refundPayload.description = data.descricao
@@ -357,6 +400,8 @@ export const handler = async (req: Request) => {
       // ===== SEGUNDA VIA =====
       case 'segunda_via_boleto': {
         if (!data?.asaas_id || !data?.nova_data_vencimento) return err('asaas_id e nova_data_vencimento são obrigatórios')
+        const vinculoErrSegundaVia = await exigirEmpresaDoRecurso(await empresaDoPagamento(data.asaas_id))
+        if (vinculoErrSegundaVia) return vinculoErrSegundaVia
         result = await asaasFetch(`/payments/${data.asaas_id}`, ASAAS_API_KEY, {
           method: 'POST',
           body: JSON.stringify({ dueDate: data.nova_data_vencimento }),
@@ -379,6 +424,8 @@ export const handler = async (req: Request) => {
       // ===== PIX QR CODE =====
       case 'pix_qrcode': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        const vinculoErrPixQr = await exigirEmpresaDoRecurso(await empresaDoPagamento(data.asaas_id))
+        if (vinculoErrPixQr) return vinculoErrPixQr
         result = await asaasFetch(`/payments/${data.asaas_id}/pixQrCode`, ASAAS_API_KEY)
         break
       }
@@ -386,6 +433,8 @@ export const handler = async (req: Request) => {
       // ===== LINHA DIGITÁVEL =====
       case 'boleto_linha_digitavel': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        const vinculoErrLinhaDigitavel = await exigirEmpresaDoRecurso(await empresaDoPagamento(data.asaas_id))
+        if (vinculoErrLinhaDigitavel) return vinculoErrLinhaDigitavel
         result = await asaasFetch(`/payments/${data.asaas_id}/identificationField`, ASAAS_API_KEY)
         break
       }
@@ -434,8 +483,10 @@ export const handler = async (req: Request) => {
 
       // ===== TRANSFERÊNCIAS PIX =====
       case 'transferir_pix': {
-        if (!data?.valor || !data?.chave_pix || !data?.idempotency_key) 
-          return err('valor, chave_pix e idempotency_key são obrigatórios')
+        if (!data?.valor || !data?.chave_pix || !data?.idempotency_key || !data?.empresa_id)
+          return err('empresa_id, valor, chave_pix e idempotency_key são obrigatórios')
+        const vinculoErrPix = await exigirEmpresaDoRecurso(data.empresa_id)
+        if (vinculoErrPix) return vinculoErrPix
         
         // Verificar se já existe uma transferência com esta chave de idempotência
         const { data: existing } = await supabase
@@ -876,6 +927,14 @@ export const handler = async (req: Request) => {
       case 'aceitar_sugestao_conciliacao': {
         if (!data?.suggestion_id) return err('suggestion_id é obrigatório')
         if (!data?.conta_id) return err('conta_id é obrigatório')
+
+        const { data: contaParaConciliar } = await supabase
+          .from('contas_receber')
+          .select('empresa_id')
+          .eq('id', data.conta_id)
+          .maybeSingle()
+        const vinculoErrConciliacao = await exigirEmpresaDoRecurso(contaParaConciliar?.empresa_id ?? null)
+        if (vinculoErrConciliacao) return vinculoErrConciliacao
 
         // Atualização transacional: sugestão + conta a receber. As duas
         // escritas ocorrem sob service_role para eliminar a necessidade de
