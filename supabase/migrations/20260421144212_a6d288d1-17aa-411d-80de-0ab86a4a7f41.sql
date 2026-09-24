@@ -46,20 +46,43 @@ CREATE INDEX IF NOT EXISTS idx_anomalias_centro_custo
   WHERE centro_custo_id IS NOT NULL;
 
 -- 3. Backfill best-effort
-UPDATE public.anomalias_detectadas a
-SET centro_custo_id = cp.centro_custo_id
-FROM public.contas_pagar cp
-WHERE a.entidade_tipo = 'conta_pagar'
-  AND a.centro_custo_id IS NULL
-  AND a.entidade_id IS NOT NULL
-  AND a.entidade_id::uuid = cp.id
-  AND cp.centro_custo_id IS NOT NULL;
+-- Guarda por information_schema (checagem dinamica, nao IF NOT EXISTS de coluna):
+-- no replay do zero (Supabase Preview), esta migration roda ANTES da que cria
+-- contas_pagar.centro_custo_id (20260518164611) -- a coluna so existe porque foi
+-- adicionada por uma migration posterior, mesmo com este arquivo tendo timestamp
+-- mais antigo. Em producao a coluna ja existe e o backfill roda normalmente (efeito
+-- identico); sem esta guarda, o Preview falha com
+-- “column cp.centro_custo_id does not exist”.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'contas_pagar' AND column_name = 'centro_custo_id'
+  ) THEN
+    UPDATE public.anomalias_detectadas a
+    SET centro_custo_id = cp.centro_custo_id
+    FROM public.contas_pagar cp
+    WHERE a.entidade_tipo = 'conta_pagar'
+      AND a.centro_custo_id IS NULL
+      AND a.entidade_id IS NOT NULL
+      AND a.entidade_id::uuid = cp.id
+      AND cp.centro_custo_id IS NOT NULL;
+  END IF;
+END $$;
 
-UPDATE public.anomalias_detectadas a
-SET centro_custo_id = m.centro_custo_id
-FROM public.movimentacoes m
-WHERE a.entidade_tipo = 'movimentacao'
-  AND a.centro_custo_id IS NULL
-  AND a.entidade_id IS NOT NULL
-  AND a.entidade_id::uuid = m.id
-  AND m.centro_custo_id IS NOT NULL;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'movimentacoes' AND column_name = 'centro_custo_id'
+  ) THEN
+    UPDATE public.anomalias_detectadas a
+    SET centro_custo_id = m.centro_custo_id
+    FROM public.movimentacoes m
+    WHERE a.entidade_tipo = 'movimentacao'
+      AND a.centro_custo_id IS NULL
+      AND a.entidade_id IS NOT NULL
+      AND a.entidade_id::uuid = m.id
+      AND m.centro_custo_id IS NOT NULL;
+  END IF;
+END $$;

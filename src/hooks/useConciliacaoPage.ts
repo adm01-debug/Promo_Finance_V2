@@ -22,6 +22,7 @@ import {
   useFiltrosConciliacaoPersistidos,
   useTransacoesBancariasSelecionadas,
 } from './useConciliacaoPageState';
+import { useConciliacaoIgnorarActions } from './useConciliacaoIgnorarActions';
 
 export function useConciliacaoPage() {
   const { currentBankAccountId } = useGlobalFinancialFilter();
@@ -41,7 +42,7 @@ export function useConciliacaoPage() {
   const [selectedTransacaoSplit, setSelectedTransacaoSplit] = useState<TransacaoExtrato | null>(
     null
   );
-  const [transacoes, setTransacoes] = useTransacoesBancariasSelecionadas(selectedBanco);
+  const { transacoes, setTransacoes, ...query } = useTransacoesBancariasSelecionadas(selectedBanco);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
   const [filters, setFilters] = useFiltrosConciliacaoPersistidos();
@@ -113,14 +114,16 @@ export function useConciliacaoPage() {
         }
       }
 
-      const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX): TransacaoExtrato => ({
-        id: t.id,
-        data: t.data,
-        descricao: t.descricao,
-        valor: t.valor,
-        tipo: t.tipo,
-        conciliada: false,
-      }));
+      const novasTransacoes = extrato.transacoes.map(
+        (t: TransacaoOFX): TransacaoExtrato => ({
+          id: t.id,
+          data: t.data,
+          descricao: t.descricao,
+          valor: t.valor,
+          tipo: t.tipo,
+          conciliada: false,
+        })
+      );
 
       let savedCount = extrato.transacoes.length;
       let duplicateCount = 0;
@@ -269,23 +272,18 @@ export function useConciliacaoPage() {
     setShowManualDialog(true);
   }, []);
 
-  const handleIgnorar = useCallback(
-    async (id: string) => {
-      try {
-        const { error } = await supabase
-          .from('transacoes_bancarias')
-          .update({ conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' })
-          .eq('id', id);
-
-        if (error) throw error;
-        setTransacoes((prev) => prev.filter((t) => t.id !== id));
-        toast.info('Transação marcada como ignorada');
-      } catch {
-        toast.error('Erro ao ignorar transação');
-      }
-    },
-    [setTransacoes]
-  );
+  const {
+    ignorarDialogOpen,
+    setIgnorarDialogOpen,
+    isIgnorando,
+    handleIgnorar,
+    confirmarIgnorar,
+    bulkIgnorarDialogOpen,
+    setBulkIgnorarDialogOpen,
+    isBulkIgnorando,
+    handleBulkIgnorar,
+    confirmarBulkIgnorar,
+  } = useConciliacaoIgnorarActions({ setTransacoes, selectedIds, setSelectedIds });
 
   const handleDesfazerConciliacao = useCallback(
     async (transacaoId: string) => {
@@ -309,41 +307,6 @@ export function useConciliacaoPage() {
     // positivo visual; o operador deve abrir a conciliação de cada item.
     toast.warning('Selecione o lançamento de cada transação para confirmar a conciliação.');
   }, [selectedIds.size]);
-
-  const handleBulkIgnorar = useCallback(async () => {
-    const ids = [...selectedIds];
-    if (ids.length === 0) return;
-
-    const resultados = await Promise.allSettled(
-      ids.map(async (id) => {
-        const { error } = await supabase
-          .from('transacoes_bancarias')
-          .update({ conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' })
-          .eq('id', id);
-        if (error) throw error;
-        return id;
-      })
-    );
-
-    const persistidos = new Set(
-      resultados.flatMap((resultado) => (resultado.status === 'fulfilled' ? [resultado.value] : []))
-    );
-    const falhas = ids.length - persistidos.size;
-
-    if (persistidos.size > 0) {
-      setTransacoes((prev) => prev.filter((t) => !persistidos.has(t.id)));
-    }
-    setSelectedIds(new Set(ids.filter((id) => !persistidos.has(id))));
-
-    if (persistidos.size > 0) {
-      toast.success(`${persistidos.size} transações ignoradas e persistidas`);
-    }
-    if (falhas > 0) {
-      toast.error(
-        `${falhas} transações não foram ignoradas; a seleção foi preservada para nova tentativa.`
-      );
-    }
-  }, [selectedIds, setTransacoes]);
 
   const handleSplitSuccess = useCallback(
     (transacaoId: string) => {
@@ -426,6 +389,7 @@ export function useConciliacaoPage() {
     selectedTransacaoSplit,
     setSelectedTransacaoSplit,
     transacoes,
+    transacoesQuery: query,
     transacoesImportadas,
     extratoImportado,
     filters,
@@ -438,6 +402,12 @@ export function useConciliacaoPage() {
     isProcessingImport,
     showSugestoesFila,
     setShowSugestoesFila,
+    ignorarDialogOpen,
+    setIgnorarDialogOpen,
+    isIgnorando,
+    bulkIgnorarDialogOpen,
+    setBulkIgnorarDialogOpen,
+    isBulkIgnorando,
     // Data
     contasBancarias,
     lancamentosSistema,
@@ -457,8 +427,10 @@ export function useConciliacaoPage() {
     handleManualSuccess,
     handleConciliar,
     handleIgnorar,
+    confirmarIgnorar,
     handleBulkConciliar,
     handleBulkIgnorar,
+    confirmarBulkIgnorar,
     handleSplitSuccess,
     toggleSelect,
     toggleSelectAll,

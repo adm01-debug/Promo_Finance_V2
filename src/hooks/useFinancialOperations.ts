@@ -38,26 +38,58 @@ export interface MovimentacaoInput {
   observacoes?: string;
 }
 
+// Antes: `.limit(500)` fixo — além de truncar silenciosamente resultados
+// maiores, a tela ainda renderizava as até 500 linhas inteiras no DOM de uma
+// vez (E-024). Aqui paginamos via `range()` em páginas de 1000 (o teto por
+// requisição do PostgREST) até esgotar o filtro ou atingir o teto de
+// segurança; a virtualização da lista fica a cargo de quem consome o hook
+// (ver src/pages/Movimentacoes.tsx).
+const MOVIMENTACOES_PAGE_SIZE = 1000;
+export const MOVIMENTACOES_SAFETY_CAP = 5000;
+
+export interface MovimentacoesResult {
+  items: Movimentacao[];
+  // true quando o teto de segurança foi atingido — `items` NÃO contém todas
+  // as movimentações do período/filtro selecionado, e qualquer total agregado
+  // calculado sobre `items` (saldo, entradas, saídas) está incompleto.
+  truncated: boolean;
+}
+
 export function useMovimentacoes(
   contaBancariaId?: string,
   filters?: { startDate?: string; endDate?: string }
 ) {
   return useQuery({
     queryKey: ['movimentacoes', contaBancariaId, filters],
-    queryFn: async () => {
-      let query = supabase
-        .from('movimentacoes')
-        .select('*')
-        .is('deleted_at', null)
-        .order('data_movimentacao', { ascending: false });
+    queryFn: async (): Promise<MovimentacoesResult> => {
+      const todas: Movimentacao[] = [];
+      let offset = 0;
+      let truncated = false;
 
-      // TODO(2026-08-14): filtro por conta_bancaria_id removido — coluna não existe em movimentacoes (types.ts canônico)
-      if (filters?.startDate) query = query.gte('data_movimentacao', filters.startDate);
-      if (filters?.endDate) query = query.lte('data_movimentacao', filters.endDate);
+      while (offset < MOVIMENTACOES_SAFETY_CAP) {
+        let query = supabase
+          .from('movimentacoes')
+          .select('*')
+          .is('deleted_at', null)
+          .order('data_movimentacao', { ascending: false });
 
-      const { data, error } = await query.limit(500);
-      if (error) throw error;
-      return (data ?? []) as Movimentacao[];
+        // TODO(2026-08-14): filtro por conta_bancaria_id removido — coluna não existe em movimentacoes (types.ts canônico)
+        if (filters?.startDate) query = query.gte('data_movimentacao', filters.startDate);
+        if (filters?.endDate) query = query.lte('data_movimentacao', filters.endDate);
+
+        const pageEnd = Math.min(offset + MOVIMENTACOES_PAGE_SIZE, MOVIMENTACOES_SAFETY_CAP) - 1;
+        const { data, error } = await query.range(offset, pageEnd);
+        if (error) throw error;
+
+        const pagina = (data ?? []) as Movimentacao[];
+        todas.push(...pagina);
+
+        if (pagina.length < pageEnd - offset + 1) break; // última página
+        offset += MOVIMENTACOES_PAGE_SIZE;
+        if (offset >= MOVIMENTACOES_SAFETY_CAP) truncated = true;
+      }
+
+      return { items: todas, truncated };
     },
     staleTime: 2 * 60 * 1000,
   });

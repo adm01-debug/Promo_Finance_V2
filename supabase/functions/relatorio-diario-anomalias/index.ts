@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { getAppBaseUrl } from "../_shared/app-url.ts";
 
 const _RelAnomSchema = z.object({
   destinatarios: z.array(z.string().email()).optional(),
@@ -118,7 +119,7 @@ serve(async (req) => {
 
     // App URL pública (para deep links). Cai para preview se não houver custom.
     const appUrl =
-      Deno.env.get("APP_PUBLIC_URL") ??
+      getAppBaseUrl() ||
       "https://project-promofinance-harmony.lovable.app";
 
     const linkAnomalia = (id: string) =>

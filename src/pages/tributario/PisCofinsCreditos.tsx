@@ -22,8 +22,8 @@ import {
   type NaturezaCredito,
   type NaturezaReceita,
 } from '@/lib/tributario/pis-cofins';
+import { formatCurrency } from '@/lib/formatters';
 
-const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 4 })}%`;
 
 const NATUREZAS_RECEITA = Object.keys(LABEL_RECEITA) as NaturezaReceita[];
@@ -54,9 +54,9 @@ function MemoriaTable({ linhas }: { linhas: LinhaMemoria[] }) {
           {linhas.map((l, i) => (
             <TableRow key={`${l.rubrica}-${i}`}>
               <TableCell>{l.rubrica}</TableCell>
-              <TableCell className="text-right tabular-nums">{brl(l.base)}</TableCell>
+              <TableCell className="text-right tabular-nums">{formatCurrency(l.base)}</TableCell>
               <TableCell className="text-right tabular-nums">{l.aliquota ? pct(l.aliquota) : '—'}</TableCell>
-              <TableCell className="text-right font-medium tabular-nums">{brl(l.valor)}</TableCell>
+              <TableCell className="text-right font-medium tabular-nums">{formatCurrency(l.valor)}</TableCell>
               <TableCell className="text-xs text-muted-foreground">{l.fundamento}</TableCell>
             </TableRow>
           ))}
@@ -116,17 +116,17 @@ export default function PisCofinsCreditos() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Receita bruta ajustada</CardDescription>
-              <CardTitle className="text-2xl tabular-nums">{brl(resultado.receitaBruta)}</CardTitle>
+              <CardTitle className="text-2xl tabular-nums">{formatCurrency(resultado.receitaBruta)}</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
-              Tributada: {brl(resultado.receitaTributada)}
+              Tributada: {formatCurrency(resultado.receitaTributada)}
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Créditos apropriados</CardDescription>
               <CardTitle className="text-2xl tabular-nums">
-                {brl(resultado.pis.creditoPeriodo + resultado.cofins.creditoPeriodo)}
+                {formatCurrency(resultado.pis.creditoPeriodo + resultado.cofins.creditoPeriodo)}
               </CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
@@ -136,10 +136,10 @@ export default function PisCofinsCreditos() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Total a recolher</CardDescription>
-              <CardTitle className="text-2xl tabular-nums text-primary">{brl(resultado.totalARecolher)}</CardTitle>
+              <CardTitle className="text-2xl tabular-nums text-primary">{formatCurrency(resultado.totalARecolher)}</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
-              PIS {brl(resultado.pis.aRecolher)} · COFINS {brl(resultado.cofins.aRecolher)}
+              PIS {formatCurrency(resultado.pis.aRecolher)} · COFINS {formatCurrency(resultado.cofins.aRecolher)}
             </CardContent>
           </Card>
           <Card>
@@ -148,7 +148,7 @@ export default function PisCofinsCreditos() {
               <CardTitle className="text-2xl tabular-nums">{pct(resultado.cargaEfetiva)}</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
-              Saldo credor: {brl(resultado.pis.saldoCredorFinal + resultado.cofins.saldoCredorFinal)}
+              Saldo credor: {formatCurrency(resultado.pis.saldoCredorFinal + resultado.cofins.saldoCredorFinal)}
             </CardContent>
           </Card>
         </div>

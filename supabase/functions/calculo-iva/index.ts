@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { CalculoIvaSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { exigirUsuario } from "../_shared/auth-guard.ts";
 
 
 // Alíquotas de transição da Reforma Tributária (P7)
@@ -19,6 +20,9 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
+    const guard = await exigirUsuario(req);
+    if (!guard.ok) return guard.resposta;
+
     const rawBody = await req.json();
     const validation = validatePayload(CalculoIvaSchema, rawBody, "calculo-iva");
     if (!validation.success) {
