@@ -255,12 +255,17 @@ export default function Cobrancas() {
                   </p>
                   <Button
                     className="w-full gap-2 rounded-xl"
-                    disabled={!currentEmpresaId}
+                    disabled={!currentEmpresaId || !selectedDevedor}
                     onClick={() => setAcordoDialogOpen(true)}
                   >
                     <Plus className="h-4 w-4" />
                     Novo Acordo Proativo
                   </Button>
+                  {!selectedDevedor && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      Selecione um devedor na lista ao lado para criar um acordo.
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -272,6 +277,7 @@ export default function Cobrancas() {
         <AcordoParcelamentoDialog
           open={acordoDialogOpen}
           onOpenChange={setAcordoDialogOpen}
+          contasReceberId={selectedDevedor?.conta_ids}
           clienteNome={selectedDevedor?.cliente_nome}
           valorTotal={selectedDevedor?.valor_total}
           empresaId={currentEmpresaId}
