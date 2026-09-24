@@ -118,19 +118,19 @@ export const createCircuitBreaker = (serviceName: string) => new CircuitBreaker(
  * Executes a function with a timeout.
  */
 export async function withTimeout<T>(
-  fn: () => Promise<T>,
+  fn: (signal: AbortSignal) => Promise<T>,
   timeoutMs: number = 10000
 ): Promise<T> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const result = await fn();
+    const result = await fn(controller.signal);
     clearTimeout(id);
     return result;
   } catch (err) {
     clearTimeout(id);
-    if (err instanceof DOMException && err.name === 'AbortError') {
+    if (controller.signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) {
       throw new Error(`Operation timed out after ${timeoutMs}ms`);
     }
     throw err;

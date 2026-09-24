@@ -5,24 +5,26 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 import { validatePayload, createErrorResponse, AsaasProxySchema, corsHeaders } from '../_shared/validation.ts'
-import { withRetry, createCircuitBreaker } from '../_shared/resilience.ts'
+import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts'
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts'
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts'
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3'
 const asaasCB = createCircuitBreaker('asaas')
+const ASAAS_FETCH_TIMEOUT_MS = 10000
 
 async function asaasFetch(path: string, apiKey: string, options: RequestInit = {}) {
   return await asaasCB.run(async () => {
     return await withRetry(async () => {
-      const response = await fetch(`${ASAAS_BASE_URL}${path}`, {
+      const response = await withTimeout((signal) => fetch(`${ASAAS_BASE_URL}${path}`, {
         ...options,
         headers: {
           'Content-Type': 'application/json',
           'access_token': apiKey,
           ...(options.headers || {}),
         },
-      })
+        signal,
+      }), ASAAS_FETCH_TIMEOUT_MS)
       
       const contentType = response.headers.get('content-type') || ''
       if (!contentType.includes('application/json')) {
