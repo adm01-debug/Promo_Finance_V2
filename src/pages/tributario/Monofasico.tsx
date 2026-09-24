@@ -18,6 +18,7 @@ import {
   calcularMixMonofasico, calcularRecuperacaoRetroativa,
   type ItemMonofasico, type PosicaoCadeia, type RegimeApuracaoPisCofins,
 } from '@/lib/tributario/monofasico';
+import { formatCurrency } from '@/lib/formatters';
 
 const REGIMES: { value: RegimeApuracaoPisCofins; label: string }[] = [
   { value: 'presumido', label: 'Lucro Presumido (cumulativo 3,65%)' },
@@ -26,8 +27,6 @@ const REGIMES: { value: RegimeApuracaoPisCofins; label: string }[] = [
 ];
 
 const ITENS_INICIAIS: ItemMonofasico[] = [{ ncm: '3004.10.00', receita: 1_000_000 }];
-
-const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function MonofasicoPage() {
   const [itens, setItens] = useState<ItemMonofasico[]>(ITENS_INICIAIS);
@@ -141,11 +140,11 @@ export default function MonofasicoPage() {
             <CardContent className="space-y-2 text-sm">
               <p>
                 Crédito mensal médio:{' '}
-                <span className="font-semibold tabular-nums">{brl(recuperacao.creditoMensalMedio)}</span>
+                <span className="font-semibold tabular-nums">{formatCurrency(recuperacao.creditoMensalMedio)}</span>
               </p>
               <p>
                 Total recuperável em {recuperacao.meses} meses:{' '}
-                <span className="font-semibold tabular-nums text-success">{brl(recuperacao.totalRecuperavel)}</span>
+                <span className="font-semibold tabular-nums text-success">{formatCurrency(recuperacao.totalRecuperavel)}</span>
               </p>
               <ul className="list-inside list-disc text-muted-foreground">
                 {recuperacao.observacoes.map((o) => <li key={o}>{o}</li>)}

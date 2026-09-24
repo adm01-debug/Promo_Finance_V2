@@ -251,6 +251,29 @@ Deno.serve(async (req) => {
   }
 
   const admin = makeAdminClient();
+
+  // Vínculo de tenant: sem isso, qualquer usuário autenticado manifesta NFe de
+  // QUALQUER empresa, assinando com o certificado digital dela (achado A-010).
+  // Checagem fica aqui (não dentro de executeManifestacao) para não acoplar a
+  // função pura, testada por unit tests com admin stub, a uma tabela que o
+  // stub não modela.
+  const { data: nfeParaVinculo, error: nfeVinculoErr } = await admin
+    .from("nfe_recebidas")
+    .select("empresa_id")
+    .eq("chave_acesso", body.chave_acesso)
+    .maybeSingle();
+  if (nfeVinculoErr || !nfeParaVinculo?.empresa_id) {
+    return json(404, { error: "nfe_nao_encontrada" });
+  }
+  const { data: vinculoEmpresa, error: vinculoErr } = await admin
+    .from("user_empresas")
+    .select("id")
+    .eq("user_id", userData.user.id)
+    .eq("empresa_id", nfeParaVinculo.empresa_id)
+    .eq("ativo", true)
+    .maybeSingle();
+  if (vinculoErr) return json(500, { error: "erro_autorizacao" });
+  if (!vinculoEmpresa) return json(403, { error: "sem_permissao_empresa" });
   try {
     const result = await executeManifestacao(admin, body);
     return json(200, result);

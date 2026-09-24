@@ -42,6 +42,21 @@ describe('useConciliacaoPage — seleção, lote, filtros e KPIs', () => {
     expect(result.current.transacoes.every((item) => !item.conciliada)).toBe(true);
   });
 
+  it('handleBulkIgnorar só abre a confirmação — não persiste antes da confirmação (E-022)', async () => {
+    const { result } = await mountWith([
+      transacao('a', 'receita'),
+      transacao('b', 'receita', false, 20),
+    ]);
+    act(() => {
+      result.current.toggleSelect('a');
+      result.current.toggleSelect('b');
+    });
+    act(() => result.current.handleBulkIgnorar());
+    expect(result.current.bulkIgnorarDialogOpen).toBe(true);
+    expect(mocks.supabase.updates.transacoes_bancarias ?? []).toHaveLength(0);
+    expect(result.current.transacoes).toHaveLength(2);
+  });
+
   it('remove em lote somente após cada persistência confirmada', async () => {
     const { result } = await mountWith([
       transacao('a', 'receita'),
@@ -51,11 +66,13 @@ describe('useConciliacaoPage — seleção, lote, filtros e KPIs', () => {
       result.current.toggleSelect('a');
       result.current.toggleSelect('b');
     });
-    await act(async () => result.current.handleBulkIgnorar());
+    act(() => result.current.handleBulkIgnorar());
+    await act(async () => result.current.confirmarBulkIgnorar());
     expect(mocks.supabase.updates.transacoes_bancarias).toHaveLength(2);
     expect(mocks.toasts.success).toHaveBeenCalledWith('2 transações ignoradas e persistidas');
     expect(result.current.transacoes).toHaveLength(0);
     expect(result.current.selectedIds.size).toBe(0);
+    expect(result.current.bulkIgnorarDialogOpen).toBe(false);
   });
 
   it('alterna a seleção de todos os pendentes e a seleção individual', async () => {

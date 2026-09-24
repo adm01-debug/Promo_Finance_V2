@@ -52,8 +52,11 @@ function extrairBearer(req: Request): string | null {
  * Comparação de segredos em tempo constante-ish sobre o comprimento do
  * candidato. Não protege contra oracle de tamanho — e não precisa: os segredos
  * aqui têm tamanho fixo conhecido.
+ *
+ * Exportada para reuso por webhooks/funções que hoje comparam segredos com
+ * `!==` (short-circuit, vazamento de timing) — ver E-020.
  */
-function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
+export function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
   if (!a || !b || a.length !== b.length) return false;
   let diff = 0;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);

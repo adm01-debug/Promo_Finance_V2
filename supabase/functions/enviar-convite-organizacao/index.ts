@@ -10,6 +10,7 @@
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
+import { getAppBaseUrl } from '../_shared/app-url.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -112,7 +113,7 @@ Deno.serve(async (req) => {
     }
 
     const resendKey = Deno.env.get('RESEND_API_KEY');
-    const baseUrl = (origin ?? Deno.env.get('APP_BASE_URL') ?? '').replace(/\/+$/, '');
+    const baseUrl = (origin ?? getAppBaseUrl()).replace(/\/+$/, '');
     const link = `${baseUrl}/convite/${convite.token}`;
 
     if (!resendKey) {

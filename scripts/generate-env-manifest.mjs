@@ -14,6 +14,7 @@ const frontend = [
   { name: 'VITE_SUPABASE_PROJECT_ID',     scope: 'frontend', required: true,  dest: 'vercel',   consumers: ['src/config/env.ts'] },
   { name: 'VITE_BLING_CLIENT_ID',         scope: 'frontend', required: false, dest: 'vercel',   consumers: ['src/hooks/bling/useOAuth.ts'] },
   { name: 'VITE_VAPID_PUBLIC_KEY',        scope: 'frontend', required: false, dest: 'vercel',   consumers: ['src/hooks/useWebPushSubscription.ts'] },
+  { name: 'VITE_SENTRY_DSN',              scope: 'frontend', required: false, dest: 'vercel',   consumers: ['src/config/env.ts', 'src/lib/error-tracking.ts'] },
 ];
 
 // Edge functions — extrair Deno.env.get de supabase/functions/*/index.ts

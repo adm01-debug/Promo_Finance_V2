@@ -1,14 +1,32 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-   Upload, FileText, CheckCircle2, AlertTriangle, Search,
-   SplitSquareHorizontal, Link2, Unlink, Calendar,
-   TrendingUp, TrendingDown, Check, MoreHorizontal,
-   BarChart3, Zap, History, Keyboard, Database, Clock,
-   Shield, Brain
- } from 'lucide-react';
+  Upload,
+  FileText,
+  CheckCircle2,
+  AlertTriangle,
+  Search,
+  SplitSquareHorizontal,
+  Link2,
+  Unlink,
+  Calendar,
+  TrendingUp,
+  TrendingDown,
+  Check,
+  MoreHorizontal,
+  BarChart3,
+  Zap,
+  History,
+  Keyboard,
+  Database,
+  Clock,
+  Shield,
+  Brain,
+  RefreshCw,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DivergenciasConciliacaoPanel } from '@/components/conciliacao/DivergenciasConciliacaoPanel';
@@ -16,7 +34,13 @@ import { ConciliacaoRetroativaPanel } from '@/components/conciliacao/Conciliacao
 import { ConciliacaoAuditPanel } from '@/components/conciliacao/ConciliacaoAuditPanel';
 import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -28,7 +52,12 @@ import { ConciliacaoSplitDialog } from '@/components/conciliacao/ConciliacaoSpli
 import { RelatorioImportacaoDialog } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
-import { CONCILIACAO_COLUMNS, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/conciliacao-toolbar.constants';
+import {
+  CONCILIACAO_COLUMNS,
+  CONCILIACAO_DEFAULT_SORT,
+  CONCILIACAO_DEFAULT_VISIBLE,
+  type ConciliacaoSort,
+} from '@/components/conciliacao/conciliacao-toolbar.constants';
 import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu.utils';
 import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
 import { useSavedFilterAlertsConciliacao } from '@/hooks/useSavedFilterAlerts';
@@ -44,30 +73,65 @@ import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher
 import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
 import { containerVariants, itemVariants } from './conciliacao-variants';
 import { ConciliacaoToolbarHost } from './ConciliacaoToolbarHost';
-
+import { ConciliacaoIgnorarDialogs } from './ConciliacaoIgnorarDialogs';
 
 export default function Conciliacao() {
   const {
-    mainTab, setMainTab, statusTab, setStatusTab,
-    selectedBanco, searchTerm, setSearchTerm,
-    showImportDialog, setShowImportDialog,
-    showManualDialog, setShowManualDialog,
-    showSplitDialog, setShowSplitDialog,
-    selectedTransacaoManual, setSelectedTransacaoManual,
-    selectedTransacaoSplit, setSelectedTransacaoSplit,
+    mainTab,
+    setMainTab,
+    statusTab,
+    setStatusTab,
+    selectedBanco,
+    searchTerm,
+    setSearchTerm,
+    showImportDialog,
+    setShowImportDialog,
+    showManualDialog,
+    setShowManualDialog,
+    showSplitDialog,
+    setShowSplitDialog,
+    selectedTransacaoManual,
+    setSelectedTransacaoManual,
+    selectedTransacaoSplit,
+    setSelectedTransacaoSplit,
+    transacoesQuery,
     transacoesImportadas,
-    filters, setFilters, selectedIds, setSelectedIds,
-    showReportDialog, setShowReportDialog,
+    filters,
+    setFilters,
+    selectedIds,
+    setSelectedIds,
+    showReportDialog,
+    setShowReportDialog,
     importReport,
     lancamentosSistema,
-    filteredTransacoes, exportData,
-    totalTransacoes, conciliadas, pendentes, percentualConciliado,
-    showSugestoesFila, setShowSugestoesFila,
-    handleImportSuccess, handleConfirmarMatch, handleRejeitarMatch,
-    handleConciliarManual, handleManualSuccess, handleSplitSuccess,
-    handleConciliar, handleIgnorar,
-    handleBulkConciliar, handleBulkIgnorar,
-    toggleSelect, toggleSelectAll,
+    filteredTransacoes,
+    exportData,
+    totalTransacoes,
+    conciliadas,
+    pendentes,
+    percentualConciliado,
+    showSugestoesFila,
+    setShowSugestoesFila,
+    handleImportSuccess,
+    handleConfirmarMatch,
+    handleRejeitarMatch,
+    handleConciliarManual,
+    handleManualSuccess,
+    handleSplitSuccess,
+    handleConciliar,
+    handleIgnorar,
+    confirmarIgnorar,
+    ignorarDialogOpen,
+    setIgnorarDialogOpen,
+    isIgnorando,
+    handleBulkConciliar,
+    handleBulkIgnorar,
+    confirmarBulkIgnorar,
+    bulkIgnorarDialogOpen,
+    setBulkIgnorarDialogOpen,
+    isBulkIgnorando,
+    toggleSelect,
+    toggleSelectAll,
     handleDesfazerConciliacao,
   } = useConciliacaoPage();
 
@@ -90,10 +154,14 @@ export default function Conciliacao() {
     setBootstrapped(true);
   }, [defaultFilter, bootstrapped, setFilters]);
 
-  const handleLoadPreset = (preset: { id: string; payload: SavedFilterPayload<ConciliacaoFilterState> }) => {
+  const handleLoadPreset = (preset: {
+    id: string;
+    payload: SavedFilterPayload<ConciliacaoFilterState>;
+  }) => {
     if (preset.payload.filters) setFilters(preset.payload.filters);
     if (preset.payload.sort) setSort(preset.payload.sort as ConciliacaoSort);
-    if (preset.payload.columns) setVisibleCols(mergeLockedColumns(preset.payload.columns, CONCILIACAO_COLUMNS));
+    if (preset.payload.columns)
+      setVisibleCols(mergeLockedColumns(preset.payload.columns, CONCILIACAO_COLUMNS));
     setActivePresetId(preset.id);
   };
   const handleClearPreset = () => setActivePresetId(null);
@@ -124,15 +192,25 @@ export default function Conciliacao() {
 
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
+      >
         {/* Page Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        >
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div>
               <h1 className="text-display-md text-foreground">Conciliação Bancária</h1>
-              <p className="text-muted-foreground mt-1">Reconcilie transações bancárias com lançamentos do sistema</p>
+              <p className="text-muted-foreground mt-1">
+                Reconcilie transações bancárias com lançamentos do sistema
+              </p>
             </div>
-            
+
             <div className="flex items-center gap-3 bg-card/5 p-2 rounded-2xl border border-white/10 backdrop-blur-sm">
               <EmpresaScopeBar />
               <div className="w-px h-6 bg-card/10 mx-1" />
@@ -140,29 +218,43 @@ export default function Conciliacao() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowSugestoesFila(!showSugestoesFila)} 
-              className={cn("gap-2 border-accent/50", showSugestoesFila && "bg-accent/10")}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSugestoesFila(!showSugestoesFila)}
+              className={cn('gap-2 border-accent/50', showSugestoesFila && 'bg-accent/10')}
             >
               <Zap className="h-4 w-4 text-accent" />
-              Fila de Sugestões {transacoesImportadas.length > 0 && `(${transacoesImportadas.length})`}
+              Fila de Sugestões{' '}
+              {transacoesImportadas.length > 0 && `(${transacoesImportadas.length})`}
             </Button>
-            
-            <ConciliacaoExport transacoes={exportData.transacoes} stats={exportData.stats} filters={filters} />
+
+            <ConciliacaoExport
+              transacoes={exportData.transacoes}
+              stats={exportData.stats}
+              filters={filters}
+            />
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" onClick={() => setShowImportDialog(true)} className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25">
-                  <Upload className="h-4 w-4" />Importar Extrato
+                <Button
+                  size="sm"
+                  onClick={() => setShowImportDialog(true)}
+                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+                >
+                  <Upload className="h-4 w-4" />
+                  Importar Extrato
                 </Button>
               </TooltipTrigger>
-              <TooltipContent><p className="flex items-center gap-1"><Keyboard className="h-3 w-3" /> Ctrl+I</p></TooltipContent>
+              <TooltipContent>
+                <p className="flex items-center gap-1">
+                  <Keyboard className="h-3 w-3" /> Ctrl+I
+                </p>
+              </TooltipContent>
             </Tooltip>
-            <ImportarExtratoDialog 
-              open={showImportDialog} 
-              onOpenChange={setShowImportDialog} 
-              onImportSuccess={handleImportSuccess} 
+            <ImportarExtratoDialog
+              open={showImportDialog}
+              onOpenChange={setShowImportDialog}
+              onImportSuccess={handleImportSuccess}
               contaBancariaId={selectedBanco}
             />
           </div>
@@ -174,10 +266,21 @@ export default function Conciliacao() {
             <Card className="card-base border-primary/20">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-foreground">Progresso da Conciliação</span>
+                  <span className="text-sm font-medium text-foreground">
+                    Progresso da Conciliação
+                  </span>
                   <div className="flex items-center gap-3">
-                    <Badge variant={percentualConciliado === 100 ? 'default' : 'secondary'} className={cn(percentualConciliado === 100 && "bg-success text-success-foreground")}>{percentualConciliado.toFixed(1)}%</Badge>
-                    <span className="text-xs text-muted-foreground">{conciliadas}/{totalTransacoes} transações · {pendentes} pendentes</span>
+                    <Badge
+                      variant={percentualConciliado === 100 ? 'default' : 'secondary'}
+                      className={cn(
+                        percentualConciliado === 100 && 'bg-success text-success-foreground'
+                      )}
+                    >
+                      {percentualConciliado.toFixed(1)}%
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {conciliadas}/{totalTransacoes} transações · {pendentes} pendentes
+                    </span>
                   </div>
                 </div>
                 <Progress value={percentualConciliado} className="h-2" />
@@ -190,19 +293,45 @@ export default function Conciliacao() {
         <motion.div variants={itemVariants}>
           <Tabs value={mainTab} onValueChange={setMainTab}>
             <TabsList className="w-full justify-start">
-              <TabsTrigger value="conciliacao" className="gap-2"><Link2 className="h-4 w-4" />Conciliação</TabsTrigger>
-              <TabsTrigger value="dashboard" className="gap-2"><BarChart3 className="h-4 w-4" />Dashboard</TabsTrigger>
+              <TabsTrigger value="conciliacao" className="gap-2">
+                <Link2 className="h-4 w-4" />
+                Conciliação
+              </TabsTrigger>
+              <TabsTrigger value="dashboard" className="gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Dashboard
+              </TabsTrigger>
               <TabsTrigger value="regras" className="gap-2 relative">
                 <Zap className="h-4 w-4" />
                 Regras
-                <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 bg-primary text-[8px]">New</Badge>
+                <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 bg-primary text-[8px]">
+                  New
+                </Badge>
               </TabsTrigger>
-              <TabsTrigger value="extrato" className="gap-2"><Database className="h-4 w-4" />Extrato</TabsTrigger>
-              <TabsTrigger value="sessoes" className="gap-2"><History className="h-4 w-4" />Sessões</TabsTrigger>
-              <TabsTrigger value="divergencias" className="gap-2"><AlertTriangle className="h-4 w-4" />Divergências</TabsTrigger>
-              <TabsTrigger value="auditoria" className="gap-2"><Shield className="h-4 w-4" />Auditoria</TabsTrigger>
-              <TabsTrigger value="retroativo" className="gap-2"><Clock className="h-4 w-4" />Retroativo</TabsTrigger>
-              <TabsTrigger value="configuracoes" className="gap-2"><Keyboard className="h-4 w-4" />Ajustes</TabsTrigger>
+              <TabsTrigger value="extrato" className="gap-2">
+                <Database className="h-4 w-4" />
+                Extrato
+              </TabsTrigger>
+              <TabsTrigger value="sessoes" className="gap-2">
+                <History className="h-4 w-4" />
+                Sessões
+              </TabsTrigger>
+              <TabsTrigger value="divergencias" className="gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                Divergências
+              </TabsTrigger>
+              <TabsTrigger value="auditoria" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Auditoria
+              </TabsTrigger>
+              <TabsTrigger value="retroativo" className="gap-2">
+                <Clock className="h-4 w-4" />
+                Retroativo
+              </TabsTrigger>
+              <TabsTrigger value="configuracoes" className="gap-2">
+                <Keyboard className="h-4 w-4" />
+                Ajustes
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="conciliacao" className="space-y-4 mt-4">
@@ -211,8 +340,20 @@ export default function Conciliacao() {
                   <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                     <Tabs value={statusTab} onValueChange={setStatusTab}>
                       <TabsList>
-                        <TabsTrigger value="pendentes" className="gap-2"><AlertTriangle className="h-4 w-4" />Pendentes<Badge variant="secondary" className="ml-1">{pendentes}</Badge></TabsTrigger>
-                        <TabsTrigger value="conciliadas" className="gap-2"><CheckCircle2 className="h-4 w-4" />Conciliadas<Badge variant="secondary" className="ml-1">{conciliadas}</Badge></TabsTrigger>
+                        <TabsTrigger value="pendentes" className="gap-2">
+                          <AlertTriangle className="h-4 w-4" />
+                          Pendentes
+                          <Badge variant="secondary" className="ml-1">
+                            {pendentes}
+                          </Badge>
+                        </TabsTrigger>
+                        <TabsTrigger value="conciliadas" className="gap-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Conciliadas
+                          <Badge variant="secondary" className="ml-1">
+                            {conciliadas}
+                          </Badge>
+                        </TabsTrigger>
                         <TabsTrigger value="todas">Todas</TabsTrigger>
                       </TabsList>
                     </Tabs>
@@ -233,21 +374,41 @@ export default function Conciliacao() {
                 </CardContent>
               </Card>
 
-              {showSugestoesFila && transacoesImportadas.length > 0 && lancamentosSistema.length > 0 && (
-                <SugestoesMatchIA transacoes={transacoesImportadas} lancamentos={lancamentosSistema} onConfirmarMatch={handleConfirmarMatch} onRejeitarMatch={handleRejeitarMatch} onConciliarManual={handleConciliarManual} />
-              )}
+              {showSugestoesFila &&
+                transacoesImportadas.length > 0 &&
+                lancamentosSistema.length > 0 && (
+                  <SugestoesMatchIA
+                    transacoes={transacoesImportadas}
+                    lancamentos={lancamentosSistema}
+                    onConfirmarMatch={handleConfirmarMatch}
+                    onRejeitarMatch={handleRejeitarMatch}
+                    onConciliarManual={handleConciliarManual}
+                  />
+                )}
 
               {statusTab === 'pendentes' && (
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={selectedIds.size > 0 && selectedIds.size === filteredTransacoes.filter(t => !t.conciliada).length} onChange={toggleSelectAll} />
-                    <span className="text-sm text-muted-foreground">{selectedIds.size > 0 ? `${selectedIds.size} selecionadas` : 'Selecionar todas'}</span>
+                    <Checkbox
+                      checked={
+                        selectedIds.size > 0 &&
+                        selectedIds.size === filteredTransacoes.filter((t) => !t.conciliada).length
+                      }
+                      onChange={toggleSelectAll}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {selectedIds.size > 0
+                        ? `${selectedIds.size} selecionadas`
+                        : 'Selecionar todas'}
+                    </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3 bg-accent/5 px-3 py-1.5 rounded-full border border-accent/20">
                     <div className="flex items-center gap-1.5">
                       <Brain className="h-3.5 w-3.5 text-accent" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-accent">Confiança Alpha IA</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                        Confiança Alpha IA
+                      </span>
                     </div>
                     <div className="h-2 w-24 bg-accent/20 rounded-full overflow-hidden">
                       <div className="h-full bg-accent animate-pulse" style={{ width: '94%' }} />
@@ -263,51 +424,106 @@ export default function Conciliacao() {
                     const isCredito = transacao.tipo === 'credito';
                     const isSelected = selectedIds.has(transacao.id);
                     return (
-                      <motion.div key={transacao.id} data-highlight-id={transacao.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -100 }} transition={{ delay: Math.min(index * 0.02, 0.3) }}>
-                        <Card className={cn("card-base transition-all hover:shadow-md", transacao.conciliada && "opacity-70", isSelected && "ring-2 ring-primary/50 bg-primary/5")}>
+                      <motion.div
+                        key={transacao.id}
+                        data-highlight-id={transacao.id}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -100 }}
+                        transition={{ delay: Math.min(index * 0.02, 0.3) }}
+                      >
+                        <Card
+                          className={cn(
+                            'card-base transition-all hover:shadow-md',
+                            transacao.conciliada && 'opacity-70',
+                            isSelected && 'ring-2 ring-primary/50 bg-primary/5'
+                          )}
+                        >
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">
-                              {!transacao.conciliada && <Checkbox checked={isSelected} onChange={() => toggleSelect(transacao.id)} className="flex-shrink-0" />}
+                              {!transacao.conciliada && (
+                                <Checkbox
+                                  checked={isSelected}
+                                  onChange={() => toggleSelect(transacao.id)}
+                                  className="flex-shrink-0"
+                                />
+                              )}
                               {showCol('tipo') && (
-                                <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0", isCredito ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
-                                  {isCredito ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                                <div
+                                  className={cn(
+                                    'h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0',
+                                    isCredito
+                                      ? 'bg-success/10 text-success'
+                                      : 'bg-destructive/10 text-destructive'
+                                  )}
+                                >
+                                  {isCredito ? (
+                                    <TrendingUp className="h-5 w-5" />
+                                  ) : (
+                                    <TrendingDown className="h-5 w-5" />
+                                  )}
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">{transacao.descricao}</p>
+                                <p className="font-medium text-sm truncate">
+                                  {transacao.descricao}
+                                </p>
                                 {showCol('data') && (
                                   <div className="flex flex-col gap-1 mt-1">
                                     <div className="flex items-center gap-2">
                                       <Calendar className="h-3 w-3 text-muted-foreground" />
-                                      <span className="text-xs text-muted-foreground">{formatDate(transacao.data)}</span>
+                                      <span className="text-xs text-muted-foreground">
+                                        {formatDate(transacao.data)}
+                                      </span>
                                     </div>
-                                    {transacao.compensacao_valor !== undefined && transacao.compensacao_valor !== 0 && (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 w-fit">
-                                            <SplitSquareHorizontal className="h-3 w-3 text-amber-500" />
-                                            <span className="text-[10px] font-bold text-amber-500">Compensação: {formatCurrency(transacao.compensacao_valor)}</span>
-                                          </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <div className="text-xs space-y-1">
-                                            <p><span className="font-bold">Motivo:</span> {transacao.compensacao_motivo}</p>
-                                            <p><span className="font-bold">Regra:</span> {transacao.compensacao_regra}</p>
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    )}
+                                    {transacao.compensacao_valor !== undefined &&
+                                      transacao.compensacao_valor !== 0 && (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 w-fit">
+                                              <SplitSquareHorizontal className="h-3 w-3 text-amber-500" />
+                                              <span className="text-[10px] font-bold text-amber-500">
+                                                Compensação:{' '}
+                                                {formatCurrency(transacao.compensacao_valor)}
+                                              </span>
+                                            </div>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <div className="text-xs space-y-1">
+                                              <p>
+                                                <span className="font-bold">Motivo:</span>{' '}
+                                                {transacao.compensacao_motivo}
+                                              </p>
+                                              <p>
+                                                <span className="font-bold">Regra:</span>{' '}
+                                                {transacao.compensacao_regra}
+                                              </p>
+                                            </div>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      )}
                                   </div>
                                 )}
                               </div>
                               {showCol('valor') && (
                                 <div className="text-right">
-                                  <p className={cn("font-bold text-sm", isCredito ? "text-success" : "text-destructive")}>
-                                    {isCredito ? '+' : '-'}{formatCurrency(transacao.valor)}
+                                  <p
+                                    className={cn(
+                                      'font-bold text-sm',
+                                      isCredito ? 'text-success' : 'text-destructive'
+                                    )}
+                                  >
+                                    {isCredito ? '+' : '-'}
+                                    {formatCurrency(transacao.valor)}
                                   </p>
                                   {transacao.conciliada && (
-                                    <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20 h-4">
-                                      <Check className="h-2.5 w-2.5 mr-1" />Conciliada
+                                    <Badge
+                                      variant="outline"
+                                      className="text-[10px] bg-success/10 text-success border-success/20 h-4"
+                                    >
+                                      <Check className="h-2.5 w-2.5 mr-1" />
+                                      Conciliada
                                     </Badge>
                                   )}
                                 </div>
@@ -315,30 +531,61 @@ export default function Conciliacao() {
                               <div className="flex items-center gap-1 ml-4">
                                 {!transacao.conciliada ? (
                                   <>
-                                    <Button size="sm" onClick={() => handleConciliar(transacao)} className="h-8 gap-2 bg-success hover:bg-success/90">
-                                      <Link2 className="h-4 w-4" />Conciliar
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleConciliar(transacao)}
+                                      className="h-8 gap-2 bg-success hover:bg-success/90"
+                                    >
+                                      <Link2 className="h-4 w-4" />
+                                      Conciliar
                                     </Button>
                                     <DropdownMenu>
                                       <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                          <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => { setSelectedTransacaoManual(transacao); setShowManualDialog(true); }} className="gap-2">
-                                          <FileText className="h-4 w-4" />Conciliação Manual
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setSelectedTransacaoManual(transacao);
+                                            setShowManualDialog(true);
+                                          }}
+                                          className="gap-2"
+                                        >
+                                          <FileText className="h-4 w-4" />
+                                          Conciliação Manual
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => { setSelectedTransacaoSplit(transacao); setShowSplitDialog(true); }} className="gap-2">
-                                          <SplitSquareHorizontal className="h-4 w-4" />Conciliação com Split
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setSelectedTransacaoSplit(transacao);
+                                            setShowSplitDialog(true);
+                                          }}
+                                          className="gap-2"
+                                        >
+                                          <SplitSquareHorizontal className="h-4 w-4" />
+                                          Conciliação com Split
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={() => handleIgnorar(transacao.id)} className="gap-2 text-destructive">
-                                          <Unlink className="h-4 w-4" />Ignorar Transação
+                                        <DropdownMenuItem
+                                          onClick={() => handleIgnorar(transacao.id)}
+                                          className="gap-2 text-destructive"
+                                        >
+                                          <Unlink className="h-4 w-4" />
+                                          Ignorar Transação
                                         </DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </>
                                 ) : (
-                                  <Button variant="ghost" size="sm" onClick={() => handleDesfazerConciliacao(transacao.id)} className="h-8 gap-2 text-muted-foreground hover:text-destructive">
-                                    <Unlink className="h-4 w-4" />Estornar
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDesfazerConciliacao(transacao.id)}
+                                    className="h-8 gap-2 text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Unlink className="h-4 w-4" />
+                                    Estornar
                                   </Button>
                                 )}
                               </div>
@@ -350,60 +597,129 @@ export default function Conciliacao() {
                   })}
                 </AnimatePresence>
 
-                {sortedTransacoes.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-background/40 rounded-3xl border border-dashed border-white/10">
-                    <Search className="h-12 w-12 mb-4 opacity-20" />
-                    <p className="text-lg font-medium">Nenhuma transação encontrada</p>
-                    <p className="text-sm">Ajuste os filtros ou importe um novo extrato</p>
+                {transacoesQuery.isLoading && (
+                  <div className="space-y-2" role="status" aria-live="polite">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton key={i} className="h-20 w-full rounded-3xl" />
+                    ))}
                   </div>
                 )}
+
+                {!transacoesQuery.isLoading && transacoesQuery.isError && (
+                  <div className="flex flex-col items-center justify-center py-20 text-center bg-background/40 rounded-3xl border border-dashed border-destructive/30">
+                    <AlertTriangle className="h-12 w-12 mb-4 text-destructive/60" />
+                    <p className="text-lg font-medium text-destructive">
+                      Erro ao carregar transações bancárias
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Verifique sua conexão e tente novamente.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => transacoesQuery.refetch()}
+                      className="gap-2"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      Tentar novamente
+                    </Button>
+                  </div>
+                )}
+
+                {!transacoesQuery.isLoading &&
+                  !transacoesQuery.isError &&
+                  sortedTransacoes.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-background/40 rounded-3xl border border-dashed border-white/10">
+                      <Search className="h-12 w-12 mb-4 opacity-20" />
+                      <p className="text-lg font-medium">Nenhuma transação encontrada</p>
+                      <p className="text-sm">Ajuste os filtros ou importe um novo extrato</p>
+                    </div>
+                  )}
               </div>
             </TabsContent>
 
-            <TabsContent value="dashboard" className="mt-4"><ConciliacaoDashboard /></TabsContent>
-            <TabsContent value="regras" className="mt-4"><RegrasConciliacaoPanel /></TabsContent>
-            <TabsContent value="extrato" className="mt-4"><ExtratoBancarioPanel contaBancariaId={selectedBanco} /></TabsContent>
-            <TabsContent value="sessoes" className="mt-4"><SessoesConciliacaoPanel /></TabsContent>
-            <TabsContent value="divergencias" className="mt-4"><DivergenciasConciliacaoPanel /></TabsContent>
-            <TabsContent value="auditoria" className="mt-4"><ConciliacaoAuditPanel /></TabsContent>
-            <TabsContent value="retroativo" className="mt-4"><ConciliacaoRetroativaPanel /></TabsContent>
-            <TabsContent value="configuracoes" className="mt-4"><ConfiguracaoConciliacaoPanel /></TabsContent>
+            <TabsContent value="dashboard" className="mt-4">
+              <ConciliacaoDashboard />
+            </TabsContent>
+            <TabsContent value="regras" className="mt-4">
+              <RegrasConciliacaoPanel />
+            </TabsContent>
+            <TabsContent value="extrato" className="mt-4">
+              <ExtratoBancarioPanel contaBancariaId={selectedBanco} />
+            </TabsContent>
+            <TabsContent value="sessoes" className="mt-4">
+              <SessoesConciliacaoPanel />
+            </TabsContent>
+            <TabsContent value="divergencias" className="mt-4">
+              <DivergenciasConciliacaoPanel />
+            </TabsContent>
+            <TabsContent value="auditoria" className="mt-4">
+              <ConciliacaoAuditPanel />
+            </TabsContent>
+            <TabsContent value="retroativo" className="mt-4">
+              <ConciliacaoRetroativaPanel />
+            </TabsContent>
+            <TabsContent value="configuracoes" className="mt-4">
+              <ConfiguracaoConciliacaoPanel />
+            </TabsContent>
           </Tabs>
         </motion.div>
       </motion.div>
 
       {/* Bulk Actions Bar */}
-      <BulkActionsBar 
-        selectedCount={selectedIds.size} 
+      <BulkActionsBar
+        selectedCount={selectedIds.size}
         actions={[
-          { id: 'conciliar', label: 'Conciliar Selecionadas', icon: <Link2 className="h-4 w-4" />, onClick: handleBulkConciliar },
-          { id: 'ignorar', label: 'Ignorar Selecionadas', icon: <Unlink className="h-4 w-4" />, variant: 'destructive', onClick: handleBulkIgnorar }
-        ]} 
-        onClear={() => setSelectedIds(new Set())} 
+          {
+            id: 'conciliar',
+            label: 'Conciliar Selecionadas',
+            icon: <Link2 className="h-4 w-4" />,
+            onClick: handleBulkConciliar,
+          },
+          {
+            id: 'ignorar',
+            label: 'Ignorar Selecionadas',
+            icon: <Unlink className="h-4 w-4" />,
+            variant: 'destructive',
+            onClick: handleBulkIgnorar,
+          },
+        ]}
+        onClear={() => setSelectedIds(new Set())}
       />
 
       {/* Dialogs */}
-      <ConciliacaoManualDialog 
-        open={showManualDialog} 
-        onOpenChange={setShowManualDialog} 
-        transacao={selectedTransacaoManual} 
+      <ConciliacaoManualDialog
+        open={showManualDialog}
+        onOpenChange={setShowManualDialog}
+        transacao={selectedTransacaoManual}
         lancamentos={lancamentosSistema}
         onSuccess={handleManualSuccess}
       />
-      <ConciliacaoSplitDialog 
-        open={showSplitDialog} 
-        onOpenChange={setShowSplitDialog} 
-        transacao={selectedTransacaoSplit} 
+      <ConciliacaoSplitDialog
+        open={showSplitDialog}
+        onOpenChange={setShowSplitDialog}
+        transacao={selectedTransacaoSplit}
         lancamentos={lancamentosSistema}
         onSuccess={() => {
           if (selectedTransacaoSplit) handleSplitSuccess(selectedTransacaoSplit.id);
         }}
       />
-      <RelatorioImportacaoDialog 
-        open={showReportDialog} 
-        onOpenChange={setShowReportDialog} 
-        report={importReport} 
+      <RelatorioImportacaoDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        report={importReport}
         onIrParaConciliacao={() => {}}
+      />
+      <ConciliacaoIgnorarDialogs
+        ignorarDialogOpen={ignorarDialogOpen}
+        setIgnorarDialogOpen={setIgnorarDialogOpen}
+        isIgnorando={isIgnorando}
+        confirmarIgnorar={confirmarIgnorar}
+        bulkIgnorarDialogOpen={bulkIgnorarDialogOpen}
+        setBulkIgnorarDialogOpen={setBulkIgnorarDialogOpen}
+        isBulkIgnorando={isBulkIgnorando}
+        confirmarBulkIgnorar={confirmarBulkIgnorar}
+        selectedCount={selectedIds.size}
       />
     </MainLayout>
   );

@@ -131,6 +131,7 @@ export function useCreateContaPagar() {
     },
     onError: (error: Error) => {
       logger.error('Error creating conta pagar:', error);
+      toast.error('Erro ao salvar conta a pagar');
       sounds.error();
     },
   });
@@ -152,6 +153,7 @@ export function useUpdateContaPagar() {
     },
     onError: (error: Error) => {
       logger.error('Error updating conta pagar:', error);
+      toast.error('Erro ao salvar conta a pagar');
       sounds.error();
     },
   });
