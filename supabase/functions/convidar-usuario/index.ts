@@ -7,6 +7,7 @@ import {
 } from '../_shared/auth-guard.ts';
 import { corsHeaders, jsonComCors, respostaPreflight } from '../_shared/cors.ts';
 import { checkRateLimit, rateLimitResponse, type RateLimitOptions, type RateLimitResult } from '../_shared/rate-limit.ts';
+import { getAppBaseUrl } from '../_shared/app-url.ts';
 
 const PapelSchema = z.enum(['admin', 'financeiro', 'operacional', 'visualizador']);
 const ConviteSchema = z.object({
@@ -169,7 +170,7 @@ export function createHandler(
 export const handler = createHandler({
   exigirPapel,
   clientDeServico: clientDeServico as unknown as () => ClienteConvite,
-  appBaseUrl: () => Deno.env.get('APP_BASE_URL'),
+  appBaseUrl: () => getAppBaseUrl() || undefined,
   registrarErro: (mensagem, contexto) => console.error(mensagem, contexto),
   verificarRateLimit: checkRateLimit,
 });

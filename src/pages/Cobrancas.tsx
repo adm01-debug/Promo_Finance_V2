@@ -31,6 +31,7 @@ import { ReguaCobrancaVisual } from '@/components/cobranca/ReguaCobrancaVisual';
 import { MetricasPorCanal } from '@/components/cobranca/MetricasPorCanal';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
 import { CustomerDeepScore } from '@/components/cobranca/CustomerDeepScore';
+import { AcordoParcelamentoDialog } from '@/components/cobranca/AcordoParcelamentoDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -51,13 +52,14 @@ const etapasRegua = [
 ];
 
 export default function Cobrancas() {
-  const { user } = useAuth();
+  const { user, currentEmpresaId } = useAuth();
   const { data: kpis, isLoading: loadingKpis } = useCobrancaKPIs();
   const { data: agingData, isLoading: loadingAging } = useAgingData();
   const { data: topDevedores, isLoading: loadingDevedores } = useTopDevedores(10);
   const { data: etapasCount } = useEtapasCobranca();
   
   const [selectedDevedor, setSelectedDevedor] = useState<TopDevedor | null>(null);
+  const [acordoDialogOpen, setAcordoDialogOpen] = useState(false);
 
   const getEtapaCount = (etapaId: string) => {
     return etapasCount?.find(e => e.etapa === etapaId)?.count || 0;
@@ -251,7 +253,11 @@ export default function Cobrancas() {
                   <p className="text-sm text-muted-foreground">
                     Crie acordos de parcelamento para clientes em atraso, com descontos e condições especiais.
                   </p>
-                  <Button className="w-full gap-2 rounded-xl">
+                  <Button
+                    className="w-full gap-2 rounded-xl"
+                    disabled={!currentEmpresaId}
+                    onClick={() => setAcordoDialogOpen(true)}
+                  >
                     <Plus className="h-4 w-4" />
                     Novo Acordo Proativo
                   </Button>
@@ -261,6 +267,16 @@ export default function Cobrancas() {
           </TabsContent>
         </Tabs>
       </motion.div>
+
+      {currentEmpresaId && (
+        <AcordoParcelamentoDialog
+          open={acordoDialogOpen}
+          onOpenChange={setAcordoDialogOpen}
+          clienteNome={selectedDevedor?.cliente_nome}
+          valorTotal={selectedDevedor?.valor_total}
+          empresaId={currentEmpresaId}
+        />
+      )}
     </MainLayout>
   );
 }
