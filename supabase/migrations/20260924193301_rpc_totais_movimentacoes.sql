@@ -27,4 +27,4 @@ AS $$
 $$;
 
 COMMENT ON FUNCTION obter_totais_movimentacoes IS
-  'Agregação server-side dos totais de Movimentações (Entradas/Saídas/Saldo) — evita que os cards fiquem errados quando o período tem mais linhas do que o safety cap do fetch client-side. SECURITY INVOKER: respeita a RLS de movimentacoes por empresa.';
+  'Agregação server-side dos totais de Movimentações (Entradas/Saídas/Saldo) — evita que os cards fiquem errados quando o período tem mais linhas do que o safety cap do fetch client-side. SECURITY INVOKER: respeita a RLS de movimentacoes por empresa.'
