@@ -1,9 +1,10 @@
 import React from 'react';
 import { List as FixedSizeList, type RowComponentProps } from 'react-window';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
 import { Table, TableBody, TableHeader } from '@/components/ui/table';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, AlertTriangle } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 type ContaPagar = Database['public']['Tables']['contas_pagar']['Row'];
@@ -31,6 +32,9 @@ interface ApprovalStatus {
 interface ContasPagarListProps {
   contas: ContaPagar[];
   isLoading: boolean;
+  isError?: boolean;
+  error?: unknown;
+  onRetry?: () => void;
   isAllSelected: boolean;
   selectAll: (checked: boolean) => void;
   isSelected: (id: string) => boolean;
@@ -49,6 +53,9 @@ interface ContasPagarListProps {
 export const ContasPagarList: React.FC<ContasPagarListProps> = ({
   contas,
   isLoading,
+  isError,
+  error,
+  onRetry,
   isAllSelected,
   selectAll,
   isSelected,
@@ -67,6 +74,22 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
     return (
       <div className="p-12 text-center text-muted-foreground animate-pulse">
         Carregando inteligência financeira...
+      </div>
+    );
+  }
+
+  if (isError) {
+    const message = error instanceof Error ? error.message : undefined;
+    return (
+      <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
+        <AlertTriangle className="h-12 w-12 text-destructive/40" />
+        <div className="text-center space-y-1">
+          <p className="text-sm text-destructive">Erro ao carregar contas a pagar</p>
+          {message && <p className="text-xs text-muted-foreground">{message}</p>}
+        </div>
+        <Button variant="outline" size="sm" onClick={() => onRetry?.()}>
+          Tentar novamente
+        </Button>
       </div>
     );
   }

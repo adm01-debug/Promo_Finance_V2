@@ -21,10 +21,12 @@ import {
   Clock,
   Shield,
   Brain,
+  RefreshCw,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DivergenciasConciliacaoPanel } from '@/components/conciliacao/DivergenciasConciliacaoPanel';
@@ -91,6 +93,7 @@ export default function Conciliacao() {
     setSelectedTransacaoManual,
     selectedTransacaoSplit,
     setSelectedTransacaoSplit,
+    transacoesQuery,
     transacoesImportadas,
     filters,
     setFilters,
@@ -585,13 +588,44 @@ export default function Conciliacao() {
                   })}
                 </AnimatePresence>
 
-                {sortedTransacoes.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-background/40 rounded-3xl border border-dashed border-white/10">
-                    <Search className="h-12 w-12 mb-4 opacity-20" />
-                    <p className="text-lg font-medium">Nenhuma transação encontrada</p>
-                    <p className="text-sm">Ajuste os filtros ou importe um novo extrato</p>
+                {transacoesQuery.isLoading && (
+                  <div className="space-y-2" role="status" aria-live="polite">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton key={i} className="h-20 w-full rounded-3xl" />
+                    ))}
                   </div>
                 )}
+
+                {!transacoesQuery.isLoading && transacoesQuery.isError && (
+                  <div className="flex flex-col items-center justify-center py-20 text-center bg-background/40 rounded-3xl border border-dashed border-destructive/30">
+                    <AlertTriangle className="h-12 w-12 mb-4 text-destructive/60" />
+                    <p className="text-lg font-medium text-destructive">
+                      Erro ao carregar transações bancárias
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Verifique sua conexão e tente novamente.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => transacoesQuery.refetch()}
+                      className="gap-2"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      Tentar novamente
+                    </Button>
+                  </div>
+                )}
+
+                {!transacoesQuery.isLoading &&
+                  !transacoesQuery.isError &&
+                  sortedTransacoes.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-background/40 rounded-3xl border border-dashed border-white/10">
+                      <Search className="h-12 w-12 mb-4 opacity-20" />
+                      <p className="text-lg font-medium">Nenhuma transação encontrada</p>
+                      <p className="text-sm">Ajuste os filtros ou importe um novo extrato</p>
+                    </div>
+                  )}
               </div>
             </TabsContent>
 

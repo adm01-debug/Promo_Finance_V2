@@ -203,6 +203,9 @@ export default function ContasPagar() {
               <ContasPagarList
                 contas={logic.sortedContas}
                 isLoading={logic.isLoading}
+                isError={logic.isError}
+                error={logic.error}
+                onRetry={logic.refetchContas}
                 isAllSelected={logic.isAllSelected}
                 selectAll={logic.selectAll}
                 isSelected={logic.isSelected}

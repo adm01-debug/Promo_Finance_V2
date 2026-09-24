@@ -74,7 +74,11 @@ export function useContasPagarLogic() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const { data: paginatedResult, isLoading } = useContasPagarPaginated({
+  const {
+    data: paginatedResult,
+    isLoading,
+    ...paginatedQuery
+  } = useContasPagarPaginated({
     page: currentPage,
     pageSize,
     search: debouncedSearch,
@@ -459,6 +463,9 @@ export function useContasPagarLogic() {
     totalCount,
     totalPages,
     isLoading,
+    isError: paginatedQuery.isError,
+    error: paginatedQuery.error,
+    refetchContas: paginatedQuery.refetch,
     profilesMap,
     historicoAprovacaoPorConta,
     empresas,

@@ -41,7 +41,7 @@ export function useConciliacaoPage() {
   const [selectedTransacaoSplit, setSelectedTransacaoSplit] = useState<TransacaoExtrato | null>(
     null
   );
-  const [transacoes, setTransacoes] = useTransacoesBancariasSelecionadas(selectedBanco);
+  const { transacoes, setTransacoes, ...query } = useTransacoesBancariasSelecionadas(selectedBanco);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
   const [filters, setFilters] = useFiltrosConciliacaoPersistidos();
@@ -428,6 +428,7 @@ export function useConciliacaoPage() {
     selectedTransacaoSplit,
     setSelectedTransacaoSplit,
     transacoes,
+    transacoesQuery: query,
     transacoesImportadas,
     extratoImportado,
     filters,
