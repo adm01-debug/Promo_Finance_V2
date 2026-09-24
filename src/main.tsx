@@ -1,38 +1,51 @@
-import "./lib/console-guard";
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
-import "./i18n";
+import './lib/console-guard';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import './i18n';
 
-import "./styles/high-contrast.css";
-import { logger } from "@/lib/logger";
-import { initTelemetry } from "@/lib/telemetry";
+import './styles/high-contrast.css';
+import { logger } from '@/lib/logger';
+import { initTelemetry } from '@/lib/telemetry';
+import { initSentry } from '@/lib/error-tracking';
+import { env } from '@/config/env';
 
-// Inicializa telemetria de erros frontend (window.onerror + unhandledrejection)
+// Inicializa telemetria de erros frontend (window.onerror + unhandledrejection).
+// Persiste em frontend_error_logs/frontend_performance_logs (Supabase) —
+// funciona independente do Sentry estar configurado ou não.
 initTelemetry();
+
+// Sentry é complementar à telemetria interna acima: dá UI de triagem, alerta
+// e agrupamento de erro que a tabela crua não dá. Sem VITE_SENTRY_DSN
+// configurada no ambiente, initSentry() não faz nada (fallback de console).
+initSentry(env.SENTRY_DSN, import.meta.env.MODE);
 
 // Registro do Service Worker adiado para `requestIdleCallback` para não
 // competir com o carregamento crítico (LCP/FID). Fallback para setTimeout
 // em browsers sem suporte (Safari < 16.4).
 if ('serviceWorker' in navigator) {
   const registerSW = () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker
+      .register('/sw.js')
       .then((registration) => logger.info('SW registered:', registration.scope))
       .catch((error: unknown) => logger.warn('SW registration failed:', error));
   };
   const schedule = (cb: () => void) => {
-    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => void }).requestIdleCallback;
+    const ric = (
+      window as unknown as {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => void;
+      }
+    ).requestIdleCallback;
     if (typeof ric === 'function') ric(cb, { timeout: 4000 });
     else setTimeout(cb, 2500);
   };
   window.addEventListener('load', () => schedule(registerSW), { once: true });
 }
 
-
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error(
-    '[promo-finance] Elemento #root não encontrado no index.html — não é possível montar a aplicação.',
+    '[promo-finance] Elemento #root não encontrado no index.html — não é possível montar a aplicação.'
   );
 }
 
@@ -40,14 +53,14 @@ if (!rootElement) {
 // árvore React. Se falhar (URL/anon key erradas, projeto pausado, offline
 // total), renderiza tela de erro em vez de app quebrado silencioso.
 (async () => {
-  const { verifySupabaseHealth } = await import("@/integrations/supabase/client");
+  const { verifySupabaseHealth } = await import('@/integrations/supabase/client');
   const health = await verifySupabaseHealth();
   if (!health.ok) {
-    logger.warn("[boot] Supabase health-check falhou", health);
+    logger.warn('[boot] Supabase health-check falhou', health);
     // Só bloqueia se claramente não é offline transitório: status 401/403/404
     // indicam configuração incorreta; ausência de status (network) deixa passar
     // para não quebrar PWA offline.
-    const isConfigError = typeof health.status === "number" && health.status >= 400;
+    const isConfigError = typeof health.status === 'number' && health.status >= 400;
     if (isConfigError) {
       rootElement.innerHTML = `
         <div style="max-width:640px;margin:80px auto;padding:24px;font-family:system-ui,sans-serif;color:var(--t0,#0f172a)">
@@ -61,4 +74,3 @@ if (!rootElement) {
   }
   createRoot(rootElement).render(<App />);
 })();
-

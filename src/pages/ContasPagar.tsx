@@ -62,7 +62,13 @@ export default function ContasPagar() {
   useHighlightFromUrl('highlight', (logic.sortedContas?.length ?? 0) > 0);
 
   const bulkActions = [
-    { id: 'mark-paid', label: 'Marcar como Pago', icon: <CheckCircle2 className="h-4 w-4" />, variant: 'default' as const, onClick: logic.handleBulkMarkAsPaid },
+    {
+      id: 'mark-paid',
+      label: 'Marcar como Pago',
+      icon: <CheckCircle2 className="h-4 w-4" />,
+      variant: 'default' as const,
+      onClick: logic.handleBulkMarkAsPaid,
+    },
     {
       id: 'cancel',
       label: 'Cancelar',
@@ -85,8 +91,8 @@ export default function ContasPagar() {
       <div className="flex items-center gap-3">
         <CategorizacaoLoteButton
           despesas={logic.sortedContas
-            .filter(c => !c.categoria)
-            .map(c => ({
+            .filter((c) => !c.categoria)
+            .map((c) => ({
               id: c.id,
               descricao: c.descricao,
               valor: c.valor,
@@ -99,19 +105,15 @@ export default function ContasPagar() {
           filename="contas_pagar"
           title="Relatório de Contas a Pagar"
         />
-        <Button 
-          size="lg" 
+        <Button
+          size="lg"
           variant="outline"
           className="premium-button bg-transparent border-white/10 hover:bg-destructive/10 hover:text-destructive"
           onClick={() => navigate('/contas-pagar/bloqueios')}
         >
           <ShieldAlert className="h-5 w-5" /> Auditoria
         </Button>
-        <Button 
-          size="lg" 
-          className="premium-button"
-          onClick={() => logic.setFormOpen(true)}
-        >
+        <Button size="lg" className="premium-button" onClick={() => logic.setFormOpen(true)}>
           <Plus className="h-5 w-5" /> Novo Registro
         </Button>
       </div>
@@ -123,13 +125,21 @@ export default function ContasPagar() {
       <div className="relative min-h-screen">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-5%] right-[-10%] w-[60%] h-[60%] rounded-full bg-destructive/5 blur-[120px] animate-pulse" />
-          <div className="absolute bottom-[10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-primary/5 blur-[100px] animate-pulse" style={{ animationDelay: '3s' }} />
+          <div
+            className="absolute bottom-[10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-primary/5 blur-[100px] animate-pulse"
+            style={{ animationDelay: '3s' }}
+          />
         </div>
 
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-12 pb-32">
-          <PageHeader 
-            title="Contas a Pagar" 
-            subtitle="Sincronize fluxos de saída e otimize relações estratégicas com fornecedores." 
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="relative z-10 space-y-12 pb-32"
+        >
+          <PageHeader
+            title="Contas a Pagar"
+            subtitle="Sincronize fluxos de saída e otimize relações estratégicas com fornecedores."
             badge="Payables Optimization"
             showEmpresaSwitcher
             actions={headerActions}
@@ -153,7 +163,11 @@ export default function ContasPagar() {
 
           <div className="space-y-6">
             <motion.div variants={itemVariants}>
-              <QuickDateFilters value={logic.filterType} onChange={logic.handleFilterChange} showOverdue />
+              <QuickDateFilters
+                value={logic.filterType}
+                onChange={logic.handleFilterChange}
+                showOverdue
+              />
             </motion.div>
 
             <motion.div variants={itemVariants}>
@@ -188,12 +202,15 @@ export default function ContasPagar() {
                 pageSize: logic.pageSize,
                 totalItems: logic.totalCount,
                 onPageChange: logic.setCurrentPage,
-                onPageSizeChange: logic.handlePageSizeChange
+                onPageSizeChange: logic.handlePageSizeChange,
               }}
             >
               <ContasPagarList
                 contas={logic.sortedContas}
                 isLoading={logic.isLoading}
+                isError={logic.isError}
+                error={logic.error}
+                onRetry={logic.refetchContas}
                 isAllSelected={logic.isAllSelected}
                 selectAll={logic.selectAll}
                 isSelected={logic.isSelected}
@@ -210,26 +227,32 @@ export default function ContasPagar() {
                 onSolicitarAprovacao={logic.abrirModalAprovacao}
                 getApprovalStatus={logic.getApprovalStatus}
                 historicoAprovacaoPorConta={logic.historicoAprovacaoPorConta}
-                profilesMap={logic.profilesMap as unknown as React.ComponentProps<typeof ContasPagarList>['profilesMap']}
+                profilesMap={
+                  logic.profilesMap as unknown as React.ComponentProps<
+                    typeof ContasPagarList
+                  >['profilesMap']
+                }
                 valorMinimoAprovacao={logic.valorMinimoAprovacao}
                 getRowAnimation={logic.getRowAnimation}
               />
             </StandardTableCard>
           </motion.div>
 
-          <ContaPagarForm 
-            open={logic.formOpen} 
+          <ContaPagarForm
+            open={logic.formOpen}
             onOpenChange={(open) => {
               logic.setFormOpen(open);
               if (!open) logic.setEditingConta(null);
             }}
-            conta={logic.editingConta as unknown as React.ComponentProps<typeof ContaPagarForm>['conta']}
+            conta={
+              logic.editingConta as unknown as React.ComponentProps<typeof ContaPagarForm>['conta']
+            }
           />
 
-          <RegistrarPagamentoDialog 
-            conta={logic.selectedConta} 
-            open={logic.pagamentoDialogOpen} 
-            onOpenChange={logic.setPagamentoDialogOpen} 
+          <RegistrarPagamentoDialog
+            conta={logic.selectedConta}
+            open={logic.pagamentoDialogOpen}
+            onOpenChange={logic.setPagamentoDialogOpen}
           />
 
           <SolicitarAprovacaoDialog
