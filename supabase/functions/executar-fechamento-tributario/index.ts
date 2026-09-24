@@ -160,6 +160,7 @@ Deno.serve(async (req) => {
     const { count: pendentes } = await admin
       .from('transacoes_bancarias')
       .select('*', { count: 'exact', head: true })
+      .eq('empresa_id', body.empresa_id)
       .gte('data', inicio)
       .lte('data', fim)
       .eq('conciliada', false);
