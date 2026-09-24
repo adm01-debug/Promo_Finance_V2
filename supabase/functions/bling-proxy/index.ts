@@ -37,6 +37,33 @@ Deno.serve(async (req) => {
     }
     const { action, ...params } = validation.data;
 
+    // Etapa E-007 (PLANO_100.md): acoes destrutivas do Bling exigiam apenas sessao
+    // valida, sem checagem de role (A-012 em AUDITORIA.md). Mesmo padrao de RBAC ja
+    // usado em asaas-proxy: exige admin ou financeiro antes de excluir/cancelar/baixar.
+    const ACOES_DESTRUTIVAS = new Set([
+      "excluir_produtos",
+      "excluir_conta_pagar",
+      "excluir_conta_receber",
+      "cancelar_nfe",
+      "estornar_contas_nfe",
+      "baixa_conta_pagar",
+      "excluir_bordero",
+    ]);
+    if (ACOES_DESTRUTIVAS.has(action)) {
+      const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const adminClient = createClient(supabaseUrl, serviceRoleKey);
+      const { data: roleData } = await adminClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .in("role", ["admin", "financeiro"])
+        .limit(1)
+        .maybeSingle();
+      if (!roleData) {
+        return jsonResponse({ error: "Sem permissao para executar esta acao" }, 403);
+      }
+    }
+
 
     // --- OAuth Actions ---
     if (action === "oauth_callback") {
