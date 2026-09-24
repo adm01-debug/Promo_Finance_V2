@@ -141,14 +141,45 @@ export function initSentry(dsn: string | undefined, environment: string) {
     // num SPA interno), mas só 10% das transações de performance para não
     // gerar volume/custo desnecessário no plano do Sentry.
     tracesSampleRate: 0.1,
-    integrations: [Sentry.browserTracingIntegration()],
+    // Forma de função: acrescenta o tracing às integrações PADRÃO do SDK
+    // (GlobalHandlers, Breadcrumbs, Dedupe, LinkedErrors etc.) em vez de
+    // substituí-las — passar um array literal aqui desliga a autocaptura
+    // padrão de erros não tratados (window.onerror/unhandledrejection).
+    integrations: (defaultIntegrations) => [
+      ...defaultIntegrations,
+      Sentry.browserTracingIntegration(),
+    ],
+    // Nunca deixa a autocaptura padrão do SDK coletar query string de URL —
+    // pode carregar CPF/CNPJ ou termo de busca digitado pelo usuário (ex.
+    // busca de clientes/fornecedores). Aplica-se a spans de tracing,
+    // breadcrumbs de fetch/XHR e request data uniformemente.
+    dataCollection: {
+      urlQueryParams: false,
+    },
     beforeSend(event) {
       // Nunca deixa vazar payload de request/response completo (pode conter
       // dado financeiro) — só stack trace e mensagem.
       if (event.request) delete event.request.data;
+      // `extra` é preenchido por call-sites (reportEdgeError, withErrorTracking
+      // etc.) que podem incluir corpo de resposta HTTP ou argumentos de função
+      // com dado de negócio (valores, CPF/CNPJ). Sem forma de sanitizar o
+      // conteúdo genericamente aqui, a opção segura é não enviar `extra`
+      // nenhum ao Sentry — só stack trace, mensagem e tags estruturadas.
+      if (event.extra) delete event.extra;
       return event;
     },
   });
+
+  // Sentry.init() nunca lança em DSN malformada — o SDK loga um aviso e
+  // fica inerte (client não é criado). Sem essa checagem, sentryInitialized
+  // ficaria true e o errorTracker pararia de cair no fallback de console,
+  // fazendo os erros desaparecerem silenciosamente (nem console, nem Sentry).
+  if (!Sentry.getClient()) {
+    console.warn(
+      '[ErrorTracker] Sentry.init() não criou um client (DSN provavelmente inválida) — mantendo fallback de console.'
+    );
+    return;
+  }
 
   sentryInitialized = true;
 }
