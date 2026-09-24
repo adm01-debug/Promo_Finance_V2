@@ -668,6 +668,11 @@ export const handler = async (req: Request) => {
       // ===== LINKS DE PAGAMENTO =====
       case 'criar_link_pagamento': {
         if (!data?.nome || !data?.valor) return err('nome e valor são obrigatórios')
+        // Asaas não amarra paymentLinks a empresa — sem empresa_id aqui não há
+        // como listar_links_pagamento filtrar depois (espelho local abaixo).
+        if (!data?.empresa_id) return err('empresa_id é obrigatório')
+        const vinculoErrCriarLink = await exigirEmpresaDoRecurso(data.empresa_id)
+        if (vinculoErrCriarLink) return vinculoErrCriarLink
         const linkPayload: any = {
           name: data.nome,
           value: data.valor,
@@ -690,6 +695,17 @@ export const handler = async (req: Request) => {
         })
         const errLink = checkErrors(result)
         if (errLink) return errLink
+        if (result?.id) {
+          const { error: linkMirrorError } = await supabase.from('asaas_payment_links').insert({
+            asaas_link_id: result.id,
+            empresa_id: data.empresa_id,
+            nome: data.nome,
+            valor: data.valor,
+            url: result.url ?? null,
+            created_by: user.id,
+          })
+          if (linkMirrorError) console.error('Erro ao espelhar link de pagamento:', linkMirrorError)
+        }
         break
       }
 
@@ -701,6 +717,23 @@ export const handler = async (req: Request) => {
         if (data?.limit) params.set('limit', data.limit || '20')
         if (data?.active !== undefined) params.set('active', String(data.active))
         result = await asaasFetch(`/paymentLinks?${params}`, ASAAS_API_KEY)
+        if (Array.isArray(result?.data)) {
+          const linkIds = Array.from(new Set(
+            result.data.map((link: { id?: string }) => link.id).filter(Boolean)
+          )) as string[]
+          let empresaPorLink = new Map<string, string>()
+          if (linkIds.length > 0) {
+            const { data: linksLocais } = await supabase
+              .from('asaas_payment_links')
+              .select('asaas_link_id, empresa_id')
+              .in('asaas_link_id', linkIds)
+            empresaPorLink = new Map((linksLocais ?? []).map((l: { asaas_link_id: string; empresa_id: string }) => [l.asaas_link_id, l.empresa_id]))
+          }
+          result.data = result.data.filter((link: { id?: string }) => {
+            const empresaLink = link.id ? empresaPorLink.get(link.id) : undefined
+            return !!empresaLink && escopoListarLinks.dados.empresaIds.includes(empresaLink)
+          })
+        }
         break
       }
 
@@ -1111,4 +1144,3 @@ export const handler = async (req: Request) => {
 if (import.meta.main) {
   Deno.serve(handler)
 }
-

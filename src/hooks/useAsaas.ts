@@ -235,7 +235,10 @@ export function useAsaas(empresaId?: string) {
   });
 
   const criarLinkPagamento = useMutation({
-    mutationFn: (payload: Record<string, unknown>) => invokeAsaas<{ url?: string }>('criar_link_pagamento', payload),
+    mutationFn: (payload: Record<string, unknown>) => {
+      if (!empresaId) throw new Error('Empresa não identificada');
+      return invokeAsaas<{ url?: string }>('criar_link_pagamento', { ...payload, empresa_id: empresaId });
+    },
     onSuccess: () => {
       toast.success('Link de pagamento criado!');
     },

@@ -37,7 +37,7 @@ export function LinksListPanel({ empresaId }: Props) {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('asaas-proxy', {
-        body: { action: 'listar_links_pagamento', data: { limit: '50' } },
+        body: { action: 'listar_links_pagamento', data: { limit: '50', empresa_id: empresaId } },
       });
       if (error) throw error;
       setLinks(data?.data || []);
