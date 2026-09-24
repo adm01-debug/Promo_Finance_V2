@@ -73,6 +73,7 @@ import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher
 import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
 import { containerVariants, itemVariants } from './conciliacao-variants';
 import { ConciliacaoToolbarHost } from './ConciliacaoToolbarHost';
+import { ConciliacaoIgnorarDialogs } from './ConciliacaoIgnorarDialogs';
 
 export default function Conciliacao() {
   const {
@@ -119,8 +120,16 @@ export default function Conciliacao() {
     handleSplitSuccess,
     handleConciliar,
     handleIgnorar,
+    confirmarIgnorar,
+    ignorarDialogOpen,
+    setIgnorarDialogOpen,
+    isIgnorando,
     handleBulkConciliar,
     handleBulkIgnorar,
+    confirmarBulkIgnorar,
+    bulkIgnorarDialogOpen,
+    setBulkIgnorarDialogOpen,
+    isBulkIgnorando,
     toggleSelect,
     toggleSelectAll,
     handleDesfazerConciliacao,
@@ -700,6 +709,17 @@ export default function Conciliacao() {
         onOpenChange={setShowReportDialog}
         report={importReport}
         onIrParaConciliacao={() => {}}
+      />
+      <ConciliacaoIgnorarDialogs
+        ignorarDialogOpen={ignorarDialogOpen}
+        setIgnorarDialogOpen={setIgnorarDialogOpen}
+        isIgnorando={isIgnorando}
+        confirmarIgnorar={confirmarIgnorar}
+        bulkIgnorarDialogOpen={bulkIgnorarDialogOpen}
+        setBulkIgnorarDialogOpen={setBulkIgnorarDialogOpen}
+        isBulkIgnorando={isBulkIgnorando}
+        confirmarBulkIgnorar={confirmarBulkIgnorar}
+        selectedCount={selectedIds.size}
       />
     </MainLayout>
   );

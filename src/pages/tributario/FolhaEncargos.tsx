@@ -14,8 +14,8 @@ import {
   ALIQUOTAS_CPRB, FAP_MAXIMO, FAP_MINIMO, TABELA_FPAS,
   calcularEncargosPatronais, compararDesoneracaoFolha, type GrauRisco,
 } from '@/lib/tributario/folha';
+import { formatCurrency } from '@/lib/formatters';
 
-const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 3 })}%`;
 
 const GRAUS: { value: GrauRisco; label: string }[] = [
@@ -117,9 +117,9 @@ export default function FolhaEncargosPage() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {[
               { titulo: 'RAT ajustado', valor: pct(encargos.ratAjustado), nota: `RAT ${pct(encargos.ratNominal)} × FAP ${encargos.fap.toFixed(4)}` },
-              { titulo: 'Total INSS patronal', valor: brl(encargos.totalInss), nota: 'CPP + RAT + Terceiros' },
-              { titulo: 'FGTS', valor: brl(encargos.fgts), nota: '8% da remuneração de empregados' },
-              { titulo: 'Encargos sobre a folha', valor: pct(encargos.percentualSobreFolha), nota: brl(encargos.totalEncargos) },
+              { titulo: 'Total INSS patronal', valor: formatCurrency(encargos.totalInss), nota: 'CPP + RAT + Terceiros' },
+              { titulo: 'FGTS', valor: formatCurrency(encargos.fgts), nota: '8% da remuneração de empregados' },
+              { titulo: 'Encargos sobre a folha', valor: pct(encargos.percentualSobreFolha), nota: formatCurrency(encargos.totalEncargos) },
             ].map((card) => (
               <Card key={card.titulo}>
                 <CardHeader className="pb-2">
@@ -156,9 +156,9 @@ export default function FolhaEncargosPage() {
                     {encargos.linhas.map((l) => (
                       <TableRow key={l.rubrica}>
                         <TableCell>{l.rubrica}</TableCell>
-                        <TableCell className="text-right tabular-nums">{brl(l.base)}</TableCell>
+                        <TableCell className="text-right tabular-nums">{formatCurrency(l.base)}</TableCell>
                         <TableCell className="text-right tabular-nums">{pct(l.aliquota)}</TableCell>
-                        <TableCell className="text-right font-medium tabular-nums">{brl(l.valor)}</TableCell>
+                        <TableCell className="text-right font-medium tabular-nums">{formatCurrency(l.valor)}</TableCell>
                         <TableCell className="text-xs text-muted-foreground">{l.fundamento}</TableCell>
                       </TableRow>
                     ))}
@@ -200,16 +200,16 @@ export default function FolhaEncargosPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="rounded-md border border-border p-4">
                   <p className="text-xs text-muted-foreground">Folha onerada</p>
-                  <p className="text-xl font-semibold tabular-nums">{brl(desoneracao.totalOnerado)}</p>
+                  <p className="text-xl font-semibold tabular-nums">{formatCurrency(desoneracao.totalOnerado)}</p>
                 </div>
                 <div className="rounded-md border border-border p-4">
                   <p className="text-xs text-muted-foreground">Folha desonerada (CPRB)</p>
-                  <p className="text-xl font-semibold tabular-nums">{brl(desoneracao.totalDesonerado)}</p>
+                  <p className="text-xl font-semibold tabular-nums">{formatCurrency(desoneracao.totalDesonerado)}</p>
                 </div>
                 <div className="rounded-md border border-border p-4">
                   <p className="text-xs text-muted-foreground">Resultado</p>
                   <p className="text-xl font-semibold tabular-nums">
-                    {brl(Math.abs(desoneracao.economia))}
+                    {formatCurrency(Math.abs(desoneracao.economia))}
                   </p>
                   <Badge variant="outline" className={desoneracao.recomendacao === 'cprb' ? 'border-success/40 text-success' : 'text-muted-foreground'}>
                     {desoneracao.recomendacao === 'cprb' ? 'CPRB é mais vantajosa' : 'Manter folha onerada'}

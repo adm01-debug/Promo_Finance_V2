@@ -89,7 +89,18 @@ export default function ContasReceber() {
 
   const bulkActions = [
     { id: 'mark-received', label: 'Marcar como Recebido', icon: <CheckCircle2 className="h-4 w-4" />, variant: 'default' as const, onClick: handleBulkMarkAsReceived },
-    { id: 'cancel', label: 'Cancelar', icon: <XCircle className="h-4 w-4" />, variant: 'destructive' as const, onClick: handleBulkCancel },
+    {
+      id: 'cancel',
+      label: 'Cancelar',
+      icon: <XCircle className="h-4 w-4" />,
+      variant: 'destructive' as const,
+      onClick: handleBulkCancel,
+      confirm: {
+        title: `Cancelar ${selectedCount} conta(s) a receber`,
+        description: `Esta ação marca ${selectedCount} conta(s) selecionada(s) como cancelada(s) e não pode ser desfeita automaticamente.`,
+        confirmLabel: 'Cancelar contas',
+      },
+    },
   ];
 
   const colCount = 9 + (empresas.length > 1 ? 1 : 0) + 1;

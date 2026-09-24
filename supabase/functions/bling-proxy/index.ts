@@ -1,10 +1,11 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { BlingProxySchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-import { withRetry, createCircuitBreaker } from "../_shared/resilience.ts";
+import { withRetry, createCircuitBreaker, withTimeout } from "../_shared/resilience.ts";
 
 const BLING_API_BASE = "https://api.bling.com.br/Api/v3";
 const BLING_AUTH_BASE = "https://www.bling.com.br/Api/v3/oauth";
 const blingCB = createCircuitBreaker('bling');
+const BLING_FETCH_TIMEOUT_MS = 10000;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -553,7 +554,7 @@ async function blingFetch(
       // Rate limit safety
       await new Promise((r) => setTimeout(r, 350));
 
-      const res = await fetch(url, opts);
+      const res = await withTimeout((signal) => fetch(url, { ...opts, signal }), BLING_FETCH_TIMEOUT_MS);
       const contentType = res.headers.get("content-type") || "";
 
       // Handle server errors and rate limits for retry
