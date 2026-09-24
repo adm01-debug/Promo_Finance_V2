@@ -45,7 +45,15 @@ export interface MovimentacaoInput {
 // segurança; a virtualização da lista fica a cargo de quem consome o hook
 // (ver src/pages/Movimentacoes.tsx).
 const MOVIMENTACOES_PAGE_SIZE = 1000;
-const MOVIMENTACOES_SAFETY_CAP = 5000;
+export const MOVIMENTACOES_SAFETY_CAP = 5000;
+
+export interface MovimentacoesResult {
+  items: Movimentacao[];
+  // true quando o teto de segurança foi atingido — `items` NÃO contém todas
+  // as movimentações do período/filtro selecionado, e qualquer total agregado
+  // calculado sobre `items` (saldo, entradas, saídas) está incompleto.
+  truncated: boolean;
+}
 
 export function useMovimentacoes(
   contaBancariaId?: string,
@@ -53,9 +61,10 @@ export function useMovimentacoes(
 ) {
   return useQuery({
     queryKey: ['movimentacoes', contaBancariaId, filters],
-    queryFn: async () => {
+    queryFn: async (): Promise<MovimentacoesResult> => {
       const todas: Movimentacao[] = [];
       let offset = 0;
+      let truncated = false;
 
       while (offset < MOVIMENTACOES_SAFETY_CAP) {
         let query = supabase
@@ -77,9 +86,10 @@ export function useMovimentacoes(
 
         if (pagina.length < pageEnd - offset + 1) break; // última página
         offset += MOVIMENTACOES_PAGE_SIZE;
+        if (offset >= MOVIMENTACOES_SAFETY_CAP) truncated = true;
       }
 
-      return todas;
+      return { items: todas, truncated };
     },
     staleTime: 2 * 60 * 1000,
   });
