@@ -1,6 +1,8 @@
-/* eslint-disable no-console -- fallback tracker usa console quando Sentry não está disponível */
-// Error tracking utilities
-// Ready for Sentry integration when API key is provided
+/* eslint-disable no-console -- fallback tracker usa console quando Sentry não está inicializado */
+// Error tracking utilities — integração real com @sentry/react.
+// Sentry só é inicializado se VITE_SENTRY_DSN estiver configurada (ver initSentry
+// em src/main.tsx); sem DSN, cai no fallback de console sem quebrar nada.
+import * as Sentry from '@sentry/react';
 
 interface ErrorContext {
   userId?: string;
@@ -9,23 +11,17 @@ interface ErrorContext {
   tags?: Record<string, string>;
 }
 
-// Type-safe window access for Sentry
-interface WindowWithSentry extends Window {
-  Sentry?: {
-    captureException: (error: Error, context?: unknown) => void;
-    captureMessage: (message: string, level?: string) => void;
-    setUser: (user: { id: string; email?: string; name?: string } | null) => void;
-    addBreadcrumb: (breadcrumb: { category: string; message: string; data?: Record<string, unknown>; level?: string }) => void;
-  };
-}
-
-declare const window: WindowWithSentry;
+let sentryInitialized = false;
 
 interface ErrorTracker {
   captureException: (error: Error, context?: ErrorContext) => void;
   captureMessage: (message: string, level?: 'info' | 'warning' | 'error') => void;
   setUser: (user: { id: string; email?: string; name?: string } | null) => void;
-  addBreadcrumb: (breadcrumb: { category: string; message: string; data?: Record<string, unknown> }) => void;
+  addBreadcrumb: (breadcrumb: {
+    category: string;
+    message: string;
+    data?: Record<string, unknown>;
+  }) => void;
 }
 
 // Console-based fallback tracker for development
@@ -37,7 +33,8 @@ const consoleTracker: ErrorTracker = {
     }
   },
   captureMessage: (message, level = 'info') => {
-    const logFn = level === 'error' ? console.error : level === 'warning' ? console.warn : console.info;
+    const logFn =
+      level === 'error' ? console.error : level === 'warning' ? console.warn : console.info;
     logFn(`[ErrorTracker] ${level.toUpperCase()}: ${message}`);
   },
   setUser: (user) => {
@@ -54,11 +51,11 @@ const consoleTracker: ErrorTracker = {
   },
 };
 
-// Sentry tracker (to be initialized when key is available)
+// Sentry tracker — delega para o SDK @sentry/react quando initSentry() já rodou.
 const sentryTracker: ErrorTracker = {
   captureException: (error, context) => {
-    if (window.Sentry) {
-      window.Sentry.captureException(error, {
+    if (sentryInitialized) {
+      Sentry.captureException(error, {
         user: context?.userId ? { id: context.userId, email: context.email } : undefined,
         extra: context?.extra,
         tags: context?.tags,
@@ -68,21 +65,21 @@ const sentryTracker: ErrorTracker = {
     }
   },
   captureMessage: (message, level = 'info') => {
-    if (window.Sentry) {
-      window.Sentry.captureMessage(message, level);
+    if (sentryInitialized) {
+      Sentry.captureMessage(message, level);
     } else {
       consoleTracker.captureMessage(message, level);
     }
   },
   setUser: (user) => {
-    if (window.Sentry) {
-      window.Sentry.setUser(user);
+    if (sentryInitialized) {
+      Sentry.setUser(user);
     }
     consoleTracker.setUser(user);
   },
   addBreadcrumb: (breadcrumb) => {
-    if (window.Sentry) {
-      window.Sentry.addBreadcrumb({
+    if (sentryInitialized) {
+      Sentry.addBreadcrumb({
         category: breadcrumb.category,
         message: breadcrumb.message,
         data: breadcrumb.data,
@@ -93,11 +90,10 @@ const sentryTracker: ErrorTracker = {
   },
 };
 
-// Export the appropriate tracker
-export const errorTracker: ErrorTracker = 
-  typeof window !== 'undefined' && window.Sentry 
-    ? sentryTracker 
-    : consoleTracker;
+// errorTracker é uma indireção estável (objeto único, nunca reatribuído) que
+// checa sentryInitialized a cada chamada — assim funciona corretamente mesmo
+// que initSentry() rode depois do import (ordem de inicialização do app).
+export const errorTracker: ErrorTracker = sentryTracker;
 
 // Utility function to wrap async functions with error tracking
 export function withErrorTracking<TArgs extends unknown[], TResult>(
@@ -125,9 +121,34 @@ export function reportErrorToTracker(error: Error, componentStack?: string) {
   });
 }
 
-// Initialize Sentry (call this when you have the DSN)
-export function initSentry(_dsn: string, _environment: string = 'production') {
-  // This would be called when Sentry is set up
-  // The actual Sentry initialization script would need to be added to index.html
-  if (import.meta.env.DEV) console.info('[ErrorTracker] Ready for Sentry initialization with DSN');
+/**
+ * Inicializa o Sentry. Chamado em src/main.tsx no boot da aplicação.
+ * Sem `dsn` (VITE_SENTRY_DSN não configurada no ambiente), não faz nada —
+ * errorTracker continua caindo no fallback de console, sem quebrar a app.
+ */
+export function initSentry(dsn: string | undefined, environment: string) {
+  if (!dsn) {
+    if (import.meta.env.DEV)
+      console.info('[ErrorTracker] VITE_SENTRY_DSN ausente — usando fallback de console.');
+    return;
+  }
+  if (sentryInitialized) return;
+
+  Sentry.init({
+    dsn,
+    environment,
+    // Amostragem conservadora: captura 100% dos erros (não são muitos eventos
+    // num SPA interno), mas só 10% das transações de performance para não
+    // gerar volume/custo desnecessário no plano do Sentry.
+    tracesSampleRate: 0.1,
+    integrations: [Sentry.browserTracingIntegration()],
+    beforeSend(event) {
+      // Nunca deixa vazar payload de request/response completo (pode conter
+      // dado financeiro) — só stack trace e mensagem.
+      if (event.request) delete event.request.data;
+      return event;
+    },
+  });
+
+  sentryInitialized = true;
 }
