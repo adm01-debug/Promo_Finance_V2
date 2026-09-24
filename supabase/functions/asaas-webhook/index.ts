@@ -4,6 +4,7 @@ import { createLogger } from '../_shared/logger.ts'
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
 import { processWithIdempotency, RetryableError, serviceClient } from '../_shared/webhook-idempotency.ts'
 import { createValidationErrorResponse } from '../_shared/contract-response.ts'
+import { segredosIguais } from '../_shared/auth-guard.ts'
 
 const logger = createLogger('asaas-webhook')
 
@@ -23,7 +24,7 @@ export const handler = async (req: Request) => {
       return createErrorResponse('Webhook não configurado', 503)
     }
     const receivedToken = req.headers.get('asaas-access-token')
-    if (receivedToken !== WEBHOOK_TOKEN) {
+    if (!segredosIguais(receivedToken, WEBHOOK_TOKEN)) {
       logger.error('Token de webhook inválido', { ip_origem, correlation_id })
       return createErrorResponse('Token inválido', 403)
     }

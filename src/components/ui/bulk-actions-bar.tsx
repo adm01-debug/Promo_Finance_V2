@@ -1,8 +1,16 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Loader2 } from 'lucide-react';
 import { Button } from './button';
 import { Progress } from './progress';
+import { ConfirmDialog } from './confirm-dialog';
 import { cn } from '@/lib/utils';
+
+interface BulkActionConfirm {
+  title: string;
+  description: string;
+  confirmLabel?: string;
+}
 
 interface BulkAction {
   id: string;
@@ -10,6 +18,12 @@ interface BulkAction {
   icon: React.ReactNode;
   variant?: 'default' | 'destructive' | 'outline';
   onClick: () => void;
+  /**
+   * Quando presente, o clique abre um ConfirmDialog em vez de disparar
+   * `onClick` direto — para ações destrutivas em lote (ex.: cancelar,
+   * ignorar) onde um clique acidental afeta vários registros de uma vez.
+   */
+  confirm?: BulkActionConfirm;
 }
 
 interface BulkActionsBarProps {
@@ -29,6 +43,21 @@ export function BulkActionsBar({
   onClear,
   className,
 }: BulkActionsBarProps) {
+  const [pendingAction, setPendingAction] = useState<BulkAction | null>(null);
+
+  const handleActionClick = (action: BulkAction) => {
+    if (action.confirm) {
+      setPendingAction(action);
+      return;
+    }
+    action.onClick();
+  };
+
+  const handleConfirmPendingAction = () => {
+    pendingAction?.onClick();
+    setPendingAction(null);
+  };
+
   return (
     <AnimatePresence>
       {selectedCount > 0 && (
@@ -88,7 +117,7 @@ export function BulkActionsBar({
                   key={action.id}
                   variant={action.variant || 'outline'}
                   size="sm"
-                  onClick={action.onClick}
+                  onClick={() => handleActionClick(action)}
                   className="gap-2 text-xs md:text-sm"
                 >
                   {action.icon}
@@ -114,6 +143,15 @@ export function BulkActionsBar({
           </Button>
         </motion.div>
       )}
+      <ConfirmDialog
+        open={pendingAction !== null}
+        onOpenChange={(open) => { if (!open) setPendingAction(null); }}
+        title={pendingAction?.confirm?.title ?? ''}
+        description={pendingAction?.confirm?.description}
+        confirmLabel={pendingAction?.confirm?.confirmLabel ?? 'Confirmar'}
+        variant={pendingAction?.variant === 'destructive' ? 'danger' : 'default'}
+        onConfirm={handleConfirmPendingAction}
+      />
     </AnimatePresence>
   );
 }

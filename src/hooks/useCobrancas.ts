@@ -30,6 +30,7 @@ export interface TopDevedor {
   dias_atraso: number;
   score: number | null;
   qtd_titulos: number;
+  conta_ids: string[];
 }
 
 export interface CobrancaKPIs {
@@ -248,10 +249,12 @@ export function useTopDevedores(limit: number = 10) {
             dias_atraso: 0,
             score: conta.clientes?.score || null,
             qtd_titulos: 0,
+            conta_ids: [],
           };
         }
         acc[key].valor_total += (conta.valor || 0) - (conta.valor_recebido || 0);
         acc[key].qtd_titulos += 1;
+        acc[key].conta_ids.push(conta.id);
         const diasAtraso = differenceInDays(new Date(), parseISO(conta.data_vencimento));
         if (diasAtraso > acc[key].dias_atraso) {
           acc[key].dias_atraso = diasAtraso;

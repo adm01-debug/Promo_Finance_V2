@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateContract } from "../_shared/contract-validator.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
+import { exigirUsuario } from "../_shared/auth-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -91,7 +94,28 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Etapa E-008 (PLANO_100.md): endpoint de IA sem autenticacao nem rate limit
+  // (A-011 em AUDITORIA.md). Mesmo padrao replicado de categorizar-despesa.
+  const guard = await exigirUsuario(req);
+  if (!guard.ok) return guard.resposta;
+
   try {
+    // Rate limit: 30 req/min por IP (endpoint de IA com custo)
+    const ip = (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0].trim();
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (supabaseUrl && serviceRoleKey) {
+      const supa = createClient(supabaseUrl, serviceRoleKey);
+      const rl = await checkRateLimit(supa, {
+        endpoint: "conciliacao-ia",
+        ip,
+        limit: 30,
+        windowSeconds: 60,
+        userAgent: req.headers.get("user-agent"),
+      });
+      if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
+    }
+
     const body = await req.json();
     const validation = await validateContract(ConciliacaoInputSchema, body);
     

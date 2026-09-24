@@ -40,72 +40,95 @@ export const handler = async (req: Request) => {
 
     console.log("Iniciando processamento da fila de cobranças...")
 
-    // 1. Buscar itens pendentes na fila
-    const { data: fila, error: filaError } = await supabase
-      .from('fila_cobrancas')
-      .select('*')
-      .eq('status', 'pendente')
-      .limit(20)
+    // 1. Reivindicar itens pendentes de forma atomica: a RPC processar_fila_cobrancas
+    // usa FOR UPDATE SKIP LOCKED, eliminando a corrida do SELECT+UPDATE manual anterior
+    // em que duas invocacoes concorrentes podiam pegar e enviar a mesma cobranca duas
+    // vezes (Etapa E-010, PLANO_100.md; A-018 em AUDITORIA.md).
+    const { data: fila, error: filaError } = await supabase.rpc('processar_fila_cobrancas', {
+      p_limite: 20,
+    })
 
     if (filaError) throw filaError
 
     const results = []
 
-    for (const item of fila) {
-      try {
-        // Marcar como processando
-        await supabase.from('fila_cobrancas').update({ status: 'processando' }).eq('id', item.id)
+    if (fila && fila.length > 0) {
+      const filaIds = fila.map((item: any) => item.fila_id)
 
-        let success = false
-        const canal = item.canal?.toLowerCase()
+      // A RPC devolve apenas fila_id/canal/destinatario/mensagem/cliente_nome/etapa/
+      // conta_receber_id (ver migration 20260317001356). empresa_id, cliente_id e
+      // tentativas nao fazem parte do retorno; buscamos aqui para preencher a
+      // auditoria em execucoes_cobranca. Seguro: essas linhas ja estao reservadas
+      // com status='processando' por esta chamada, sem corrida com outra invocacao.
+      const { data: detalhesFila, error: detalhesError } = await supabase
+        .from('fila_cobrancas')
+        .select('id, empresa_id, cliente_id, tentativas')
+        .in('id', filaIds)
 
-        if (canal === 'email' && item.destinatario) {
-          await supabase.functions.invoke('enviar-alerta-email', {
-            body: {
-              tipo: 'vencimento',
-              destinatario: item.destinatario,
-              dados: {
-                titulo: `Cobrança: ${item.etapa}`,
-                mensagem: item.mensagem_renderizada,
-                urlAcao: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/cobrancas`
+      if (detalhesError) throw detalhesError
+
+      const detalhesPorId = new Map((detalhesFila || []).map((d: any) => [d.id, d]))
+
+      for (const item of fila) {
+        try {
+          const canal = item.canal?.toLowerCase()
+          let erroEnvio: string | null = `Canal ${canal} sem destinatário configurado`
+
+          if (canal === 'email' && item.destinatario) {
+            const { error } = await supabase.functions.invoke('enviar-alerta-email', {
+              body: {
+                tipo: 'vencimento',
+                destinatario: item.destinatario,
+                dados: {
+                  titulo: `Cobrança: ${item.etapa}`,
+                  mensagem: item.mensagem,
+                  urlAcao: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/cobrancas`
+                }
               }
-            }
+            })
+            erroEnvio = error?.message ?? null
+          } else if (canal === 'whatsapp' && item.destinatario) {
+            const { error } = await supabase.functions.invoke('whatsapp-ia-proativo', {
+              body: {
+                phone: item.destinatario,
+                message: item.mensagem
+              }
+            })
+            erroEnvio = error?.message ?? null
+          }
+
+          // Etapa E-009 (PLANO_100.md; A-013 em AUDITORIA.md): functions.invoke() nao
+          // lanca excecao em erro HTTP -- so marcamos sucesso quando nao houver erro.
+          const success = erroEnvio === null
+          const detalheItem = detalhesPorId.get(item.fila_id)
+
+          // 2. Mover para execuções (log)
+          await supabase.from('execucoes_cobranca').insert({
+            empresa_id: detalheItem?.empresa_id ?? null,
+            conta_receber_id: item.conta_receber_id,
+            cliente_id: detalheItem?.cliente_id ?? null,
+            cliente_nome: item.cliente_nome,
+            etapa: item.etapa,
+            canal: item.canal,
+            destinatario: item.destinatario,
+            mensagem: item.mensagem,
+            status: success ? 'enviado' : 'falhou',
+            provider: canal === 'email' ? 'resend' : 'whatsapp-ia',
+            erro_mensagem: erroEnvio
           })
-          success = true
-        } else if (canal === 'whatsapp' && item.destinatario) {
-          await supabase.functions.invoke('whatsapp-ia-proativo', {
-            body: {
-              phone: item.destinatario,
-              message: item.mensagem_renderizada
-            }
-          })
-          success = true
+
+          // 3. Atualizar status na fila
+          await supabase.from('fila_cobrancas').update({
+            status: success ? 'enviado' : 'falhou',
+            tentativas: (detalheItem?.tentativas || 0) + 1,
+            erro_mensagem: erroEnvio
+          }).eq('id', item.fila_id)
+
+          results.push({ id: item.fila_id, success })
+        } catch (e) {
+          console.error(`Falha ao processar item ${item.fila_id}:`, e)
+          await supabase.from('fila_cobrancas').update({ status: 'falhou', erro: e.message }).eq('id', item.fila_id)
         }
-
-        // 2. Mover para execuções (log)
-        await supabase.from('execucoes_cobranca').insert({
-          empresa_id: item.empresa_id,
-          conta_receber_id: item.conta_receber_id,
-          cliente_id: item.cliente_id,
-          cliente_nome: item.cliente_nome,
-          etapa: item.etapa,
-          canal: item.canal,
-          destinatario: item.destinatario,
-          mensagem: item.mensagem_renderizada,
-          status: success ? 'enviado' : 'falhou',
-          provider: canal === 'email' ? 'resend' : 'whatsapp-ia'
-        })
-
-        // 3. Atualizar status na fila
-        await supabase.from('fila_cobrancas').update({ 
-          status: success ? 'enviado' : 'falhou',
-          tentativas: (item.tentativas || 0) + 1
-        }).eq('id', item.id)
-
-        results.push({ id: item.id, success })
-      } catch (e) {
-        console.error(`Falha ao processar item ${item.id}:`, e)
-        await supabase.from('fila_cobrancas').update({ status: 'falhou', erro: e.message }).eq('id', item.id)
       }
     }
 
