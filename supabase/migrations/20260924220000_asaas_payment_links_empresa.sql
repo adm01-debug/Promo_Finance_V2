@@ -19,13 +19,19 @@ CREATE INDEX IF NOT EXISTS idx_asaas_payment_links_empresa ON public.asaas_payme
 
 ALTER TABLE public.asaas_payment_links ENABLE ROW LEVEL SECURITY;
 
+-- empresa_acessivel(empresa_id) é obrigatório aqui: sem ele, qualquer
+-- admin/financeiro de QUALQUER empresa lê/insere links de QUALQUER outra
+-- empresa via PostgREST direto (mesmo padrão de vazamento que este PR
+-- corrige na edge function, mas reintroduzido na RLS). Mesmo padrão de
+-- asaas_customers/asaas_payments e da correção "Grupo C"
+-- (20260902200000_fix_rls_cross_tenant_leak_grupo_c.sql).
 CREATE POLICY "Admins e financeiro podem ver links de pagamento ASAAS"
   ON public.asaas_payment_links FOR SELECT TO authenticated
-  USING (public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]));
+  USING (public.has_any_role((SELECT auth.uid()), ARRAY['admin', 'financeiro']::app_role[]) AND public.empresa_acessivel(empresa_id));
 
 CREATE POLICY "Admins e financeiro podem inserir links de pagamento ASAAS"
   ON public.asaas_payment_links FOR INSERT TO authenticated
-  WITH CHECK (public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]));
+  WITH CHECK (public.has_any_role((SELECT auth.uid()), ARRAY['admin', 'financeiro']::app_role[]) AND public.empresa_acessivel(empresa_id));
 
 CREATE POLICY "Service role full access asaas_payment_links"
   ON public.asaas_payment_links FOR ALL TO service_role
