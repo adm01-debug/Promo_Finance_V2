@@ -154,11 +154,13 @@ export function useAcordosParcelamento() {
 
       if (parcelasError) throw parcelasError;
 
-      // Atualizar contas a receber originais como "em acordo"
+      // Atualizar contas a receber originais como "em acordo": status dedicado,
+      // não só observações — é o que executar-regua-cobranca filtra para
+      // parar de cobrar automaticamente uma conta já negociada.
       if (data.contas_receber_ids.length > 0) {
         const { error: updateError } = await supabase
           .from('contas_receber')
-          .update({ observacoes: `Em acordo: ${numeroData}` })
+          .update({ status: 'em_acordo', observacoes: `Em acordo: ${numeroData}` })
           .in('id', data.contas_receber_ids);
 
         if (updateError) logger.error('Erro ao atualizar contas:', updateError);
@@ -247,15 +249,28 @@ export function useAcordosParcelamento() {
 
       // Aqui, ao contrário, zero linhas é bug: significa acordo inexistente ou
       // fora do escopo da empresa, e o toast de sucesso mentiria.
-      await mustSucceed(
+      const [acordoCancelado] = await mustSucceed(
         supabase
           .from('acordos_parcelamento')
           .update({ status: 'cancelado' })
           .eq('id', acordoId)
-          .select('id'),
+          .select('id, contas_receber_ids'),
         'cancelar o acordo de parcelamento',
         { exigirLinhas: true }
       );
+
+      // Acordo cancelado: a conta volta a ser cobrada pela régua automática.
+      const contasParaReverter = acordoCancelado.contas_receber_ids ?? [];
+      if (contasParaReverter.length > 0) {
+        const { error: revertError } = await supabase
+          .from('contas_receber')
+          .update({ status: 'pendente' })
+          .in('id', contasParaReverter)
+          .eq('status', 'em_acordo');
+
+        if (revertError)
+          logger.error('Erro ao reverter status das contas do acordo cancelado:', revertError);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['acordos-parcelamento'] });
