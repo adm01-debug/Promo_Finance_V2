@@ -491,11 +491,12 @@ export const handler = async (req: Request) => {
       }
 
       case 'listar_assinaturas': {
+        let escopoListarAssinaturas: Awaited<ReturnType<typeof exigirVinculoEmpresa>> | null = null
         if (data?.customer) {
           const vinculoErrListarAssinaturas = await exigirEmpresaDoRecurso(await empresaDoClienteAsaas(data.customer))
           if (vinculoErrListarAssinaturas) return vinculoErrListarAssinaturas
         } else {
-          const escopoListarAssinaturas = await exigirVinculoEmpresa(user.id, data?.empresa_id)
+          escopoListarAssinaturas = await exigirVinculoEmpresa(user.id, data?.empresa_id)
           if (!escopoListarAssinaturas.ok) return escopoListarAssinaturas.resposta
         }
         const params = new URLSearchParams()
@@ -503,6 +504,28 @@ export const handler = async (req: Request) => {
         if (data?.offset) params.set('offset', data.offset || '0')
         if (data?.limit) params.set('limit', data.limit || '20')
         result = await asaasFetch(`/subscriptions?${params}`, ASAAS_API_KEY)
+        // Sem customer explicito (ja validado por exigirEmpresaDoRecurso acima), a
+        // conta ASAAS e compartilhada entre empresas e o endpoint devolve TODAS as
+        // assinaturas -- precisa filtrar pos-fetch pelo mesmo cruzamento local que
+        // listar_clientes ja usa (asaas_customers.asaas_id -> empresa_id).
+        if (escopoListarAssinaturas && escopoListarAssinaturas.ok && Array.isArray(result?.data)) {
+          const customerIdsAssinaturas = Array.from(new Set(
+            result.data.map((sub: { customer?: string }) => sub.customer).filter(Boolean)
+          )) as string[]
+          let empresaPorCustomerAssinaturas = new Map<string, string>()
+          if (customerIdsAssinaturas.length > 0) {
+            const { data: clientesAssinaturas } = await supabase
+              .from('asaas_customers')
+              .select('asaas_id, empresa_id')
+              .in('asaas_id', customerIdsAssinaturas)
+            empresaPorCustomerAssinaturas = new Map((clientesAssinaturas ?? []).map((c: { asaas_id: string; empresa_id: string }) => [c.asaas_id, c.empresa_id]))
+          }
+          const empresaIdsAssinaturas = escopoListarAssinaturas.dados.empresaIds
+          result.data = result.data.filter((sub: { customer?: string }) => {
+            const empresaSub = sub.customer ? empresaPorCustomerAssinaturas.get(sub.customer) : undefined
+            return !!empresaSub && empresaIdsAssinaturas.includes(empresaSub)
+          })
+        }
         break
       }
 
@@ -741,6 +764,23 @@ export const handler = async (req: Request) => {
         if (data?.offset) params.set('offset', data.offset || '0')
         if (data?.limit) params.set('limit', data.limit || '20')
         result = await asaasFetch(`/anticipations?${params}`, ASAAS_API_KEY)
+        if (Array.isArray(result?.data)) {
+          const paymentIdsAntecipacoes = Array.from(new Set(
+            result.data.map((ant: { payment?: string }) => ant.payment).filter(Boolean)
+          )) as string[]
+          let empresaPorPaymentAntecipacoes = new Map<string, string>()
+          if (paymentIdsAntecipacoes.length > 0) {
+            const { data: pagamentosAntecipacoes } = await supabase
+              .from('asaas_payments')
+              .select('asaas_id, empresa_id')
+              .in('asaas_id', paymentIdsAntecipacoes)
+            empresaPorPaymentAntecipacoes = new Map((pagamentosAntecipacoes ?? []).map((p: { asaas_id: string; empresa_id: string }) => [p.asaas_id, p.empresa_id]))
+          }
+          result.data = result.data.filter((ant: { payment?: string }) => {
+            const empresaAnt = ant.payment ? empresaPorPaymentAntecipacoes.get(ant.payment) : undefined
+            return !!empresaAnt && escopoListarAntecipacoes.dados.empresaIds.includes(empresaAnt)
+          })
+        }
         break
       }
 
