@@ -157,6 +157,14 @@ export const handler = async (req: Request) => {
         .maybeSingle()
       return transferencia?.empresa_id ?? null
     }
+    const empresaDoLinkPagamento = async (asaasLinkId: string): Promise<string | null> => {
+      const { data: link } = await supabase
+        .from('asaas_payment_links')
+        .select('empresa_id')
+        .eq('asaas_link_id', asaasLinkId)
+        .maybeSingle()
+      return link?.empresa_id ?? null
+    }
     const exigirEmpresaDoRecurso = async (empresaId: string | null): Promise<Response | null> => {
       if (!empresaId) return err('Recurso não encontrado', 404)
       const vinculo = await exigirVinculoEmpresa(user.id, empresaId)
@@ -739,20 +747,20 @@ export const handler = async (req: Request) => {
 
       case 'excluir_link_pagamento': {
         if (!data?.id) return err('id é obrigatório')
-        if (!data?.empresa_id) return err('empresa_id é obrigatório')
-        // Links de pagamento não têm dono rastreável no Asaas nem são
-        // espelhados localmente com empresa_id (criar_link_pagamento não
-        // persiste nada em tabela própria) — exigir e validar empresa_id
-        // aqui é a melhor barreira disponível sem uma migration nova, e
-        // a exclusão fica registrada na auditoria para rastreabilidade.
-        const vinculoErrExcluirLink = await exigirEmpresaDoRecurso(data.empresa_id)
+        // Valida contra o DONO real do link no espelho local (asaas_payment_links),
+        // nunca contra um empresa_id enviado pelo cliente: um empresa_id próprio
+        // do chamador sempre passaria em exigirEmpresaDoRecurso mesmo apontando
+        // para um link de outra empresa (IDOR). Link sem espelho (criado antes
+        // desta tabela existir, ou cujo insert de espelho falhou) nega por padrão.
+        const empresaLinkExcluir = await empresaDoLinkPagamento(data.id)
+        const vinculoErrExcluirLink = await exigirEmpresaDoRecurso(empresaLinkExcluir)
         if (vinculoErrExcluirLink) return vinculoErrExcluirLink
         result = await asaasFetch(`/paymentLinks/${data.id}`, ASAAS_API_KEY, { method: 'DELETE' })
         const errExcluirLink = checkErrors(result)
         if (errExcluirLink) return errExcluirLink
         await supabase.from('asaas_audit_trail').insert({
           action: 'PAYMENT_LINK_DELETED',
-          details: { asaas_link_id: data.id, empresa_id: data.empresa_id },
+          details: { asaas_link_id: data.id, empresa_id: empresaLinkExcluir },
           user_id: user.id,
         })
         break
