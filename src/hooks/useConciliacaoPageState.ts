@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   INITIAL_FILTERS,
   type ConciliacaoFilterState,
@@ -58,27 +59,61 @@ export function useContaBancariaSelecionada(currentBankAccountId: string | null 
   return [selectedBanco, setSelectedBanco] as const;
 }
 
+type TransacoesUpdater = TransacaoExtrato[] | ((prev: TransacaoExtrato[]) => TransacaoExtrato[]);
+
+/**
+ * Busca as transações bancárias da conta selecionada via TanStack Query.
+ *
+ * Antes (E-016), isso era `useEffect` + `useState` local: `setTransacoes([])`
+ * disparava antes do fetch terminar, então a tela piscava "Nenhuma transação
+ * encontrada" a cada troca de conta — mesmo quando a conta tinha centenas de
+ * transações — e uma falha na busca deixava a lista vazia sem sinalizar erro.
+ * `useQuery` chaveado por `selectedBanco` resolve as duas coisas: expõe
+ * `isLoading`/`isFetching`/`isError` para a tela distinguir carregando, vazio
+ * real e erro, e cada conta bancária tem seu próprio cache — trocar de conta
+ * não herda dados da conta anterior.
+ */
 export function useTransacoesBancariasSelecionadas(selectedBanco: string) {
-  const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
+  const queryClient = useQueryClient();
+  const queryKey = ['conciliacao', 'transacoes-banco', selectedBanco] as const;
 
-  useEffect(() => {
-    let consultaAtiva = true;
-    setTransacoes([]);
+  const query = useQuery<TransacaoExtrato[]>({
+    queryKey,
+    queryFn: async () => {
+      const rows = await carregarTransacoesBanco(selectedBanco);
+      // `carregarTransacoesBanco` já notifica o erro (toast) e retorna `null`
+      // em vez de lançar. Relançamos aqui para que `useQuery` marque
+      // `isError` — sem isso a tela nunca distingue erro de lista vazia.
+      if (rows === null) {
+        throw new Error('Erro ao carregar transações bancárias');
+      }
+      return rows;
+    },
+    enabled: !!selectedBanco,
+    // Opt-out do `placeholderData: previousData` global (queryClient.ts): aqui
+    // trocar de conta deve mostrar o estado de carregamento, não a lista da
+    // conta anterior enquanto a nova busca termina.
+    placeholderData: undefined,
+  });
 
-    if (!selectedBanco) {
-      return () => {
-        consultaAtiva = false;
-      };
-    }
+  const setTransacoes = useCallback(
+    (updater: TransacoesUpdater) => {
+      queryClient.setQueryData<TransacaoExtrato[]>(queryKey, (prev) => {
+        const base = prev ?? [];
+        return typeof updater === 'function' ? updater(base) : updater;
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- queryKey é derivada de selectedBanco, já listado
+    [queryClient, selectedBanco]
+  );
 
-    carregarTransacoesBanco(selectedBanco).then((rows) => {
-      if (consultaAtiva && rows) setTransacoes(rows);
-    });
-
-    return () => {
-      consultaAtiva = false;
-    };
-  }, [selectedBanco]);
-
-  return [transacoes, setTransacoes] as const;
+  return {
+    transacoes: query.data ?? [],
+    setTransacoes,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isError: query.isError,
+    error: query.error,
+    refetch: query.refetch,
+  };
 }

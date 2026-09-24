@@ -9,7 +9,6 @@ import {
   FileText,
   PieChart,
   Palette,
-  Globe,
   Bell,
   Settings,
   Settings2,
@@ -166,7 +165,6 @@ const navGroups: NavGroup[] = [
       { label: 'Organizações & Equipes', icon: Users, href: '/organizacoes', highlight: true },
 
       { label: 'Integrações Hub', icon: Zap, href: '/integracoes', highlight: true },
-      { label: 'Portal do Cliente', icon: Globe, href: '/portal-cliente', highlight: true },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
       { label: 'Preferências', icon: Settings2, href: '/configuracoes/preferencias' },
       { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },

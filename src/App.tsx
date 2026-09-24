@@ -150,7 +150,6 @@ const CustomFieldsAdmin = lazy(() => import('./pages/admin/CustomFieldsAdmin'));
 const StatusPage = lazy(() => import('./pages/StatusPage'));
 const Compras = lazy(() => import('./pages/Compras'));
 const Integracoes = lazy(() => import('./pages/Integracoes'));
-const PortalCliente = lazy(() => import('./pages/PortalCliente'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 
@@ -175,7 +174,6 @@ function AppRoutes() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/contador/:token" element={<ContadorReadonly />} />
             <Route path="/status" element={<StatusPage />} />
-            <Route path="/portal-cliente" element={<PortalCliente />} />
             <Route path="/design-system-debug" element={<DesignSystemDebug />} />
             {import.meta.env.DEV && <Route path="/__especimes" element={<Especimes />} />}
             <Route path="/theme-diagnostics" element={<ThemeDiagnostics />} />

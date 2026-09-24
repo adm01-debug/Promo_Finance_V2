@@ -4,15 +4,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import { 
-  useContasPagar, 
-  useContasPagarPaginated, 
-  useCentrosCusto, 
-  useEmpresas, 
-  useContasBancarias, 
+import {
+  useContasPagar,
+  useContasPagarPaginated,
+  useCentrosCusto,
+  useEmpresas,
+  useContasBancarias,
   useDeleteContaPagar,
   useUpdateContaPagar,
-  ContaPagar 
+  ContaPagar,
 } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,7 +23,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
 
-import { subMonths, isSameDay, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
+import {
+  subMonths,
+  isSameDay,
+  startOfMonth,
+  endOfMonth,
+  parseISO,
+  isWithinInterval,
+} from 'date-fns';
 type ContaPagarType = ContaPagar;
 
 export function useContasPagarLogic() {
@@ -52,10 +59,10 @@ export function useContasPagarLogic() {
     const handleSync = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (!detail) return;
-      
+
       const { empresaId } = detail;
       if (empresaId && empresaId !== 'all') {
-        setAdvancedFilters(prev => ({ ...prev, empresaId }));
+        setAdvancedFilters((prev) => ({ ...prev, empresaId }));
         setCurrentPage(1);
       }
     };
@@ -67,7 +74,11 @@ export function useContasPagarLogic() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const { data: paginatedResult, isLoading } = useContasPagarPaginated({
+  const {
+    data: paginatedResult,
+    isLoading,
+    ...paginatedQuery
+  } = useContasPagarPaginated({
     page: currentPage,
     pageSize,
     search: debouncedSearch,
@@ -101,7 +112,9 @@ export function useContasPagarLogic() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('solicitacoes_aprovacao')
-        .select('id, conta_pagar_id, status, motivo_rejeicao, aprovado_em, aprovado_por, solicitado_em, solicitado_por, observacoes')
+        .select(
+          'id, conta_pagar_id, status, motivo_rejeicao, aprovado_em, aprovado_por, solicitado_em, solicitado_por, observacoes'
+        )
         .order('solicitado_em', { ascending: false });
       if (error) throw error;
       return data || [];
@@ -112,28 +125,32 @@ export function useContasPagarLogic() {
   const { data: profiles = [] } = useQuery({
     queryKey: ['profiles-aprovadores'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email');
+      const { data, error } = await supabase.from('profiles').select('id, full_name, email');
       if (error) throw error;
       return data || [];
     },
   });
 
   // Maps
-  const profilesMap = useMemo(() => new Map(profiles.map(p => [p.id, p])), [profiles]);
-  const aprovacaoStatusMap = useMemo(() => 
-    new Map(solicitacoesAprovacao.filter(s => s.status === 'pendente' || s.status === 'rejeitada').map(s => [s.conta_pagar_id, s.status])),
+  const profilesMap = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
+  const aprovacaoStatusMap = useMemo(
+    () =>
+      new Map(
+        solicitacoesAprovacao
+          .filter((s) => s.status === 'pendente' || s.status === 'rejeitada')
+          .map((s) => [s.conta_pagar_id, s.status])
+      ),
     [solicitacoesAprovacao]
   );
-  const historicoAprovacaoPorConta = useMemo(() => 
-    solicitacoesAprovacao.reduce((acc, s) => {
-      if (!acc.has(s.conta_pagar_id)) {
-        acc.set(s.conta_pagar_id, []);
-      }
-      acc.get(s.conta_pagar_id)!.push(s);
-      return acc;
-    }, new Map<string, typeof solicitacoesAprovacao>()),
+  const historicoAprovacaoPorConta = useMemo(
+    () =>
+      solicitacoesAprovacao.reduce((acc, s) => {
+        if (!acc.has(s.conta_pagar_id)) {
+          acc.set(s.conta_pagar_id, []);
+        }
+        acc.get(s.conta_pagar_id)!.push(s);
+        return acc;
+      }, new Map<string, typeof solicitacoesAprovacao>()),
     [solicitacoesAprovacao]
   );
 
@@ -143,21 +160,34 @@ export function useContasPagarLogic() {
   const startOfPrevMonth = startOfMonth(subMonths(today, 1));
   const endOfPrevMonth = endOfMonth(subMonths(today, 1));
 
-  const totalPagar = allContas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum, 0);
-  const totalVencido = allContas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
-  const totalPagoMes = allContas.filter(c => {
-    if (c.status !== 'pago' || !c.data_pagamento) return false;
-    const dataPag = parseISO(c.data_pagamento);
-    return dataPag.getMonth() === today.getMonth() && dataPag.getFullYear() === today.getFullYear();
-  }).reduce((sum, c) => sum + (c.valor_pago || 0), 0);
+  const totalPagar = allContas.reduce(
+    (sum, c) =>
+      c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum,
+    0
+  );
+  const totalVencido = allContas
+    .filter((c) => c.status === 'vencido')
+    .reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
+  const totalPagoMes = allContas
+    .filter((c) => {
+      if (c.status !== 'pago' || !c.data_pagamento) return false;
+      const dataPag = parseISO(c.data_pagamento);
+      return (
+        dataPag.getMonth() === today.getMonth() && dataPag.getFullYear() === today.getFullYear()
+      );
+    })
+    .reduce((sum, c) => sum + (c.valor_pago || 0), 0);
 
-  const totalPagoMesAnterior = allContas.filter(c => {
-    if (c.status !== 'pago' || !c.data_pagamento) return false;
-    const dataPag = parseISO(c.data_pagamento);
-    return isWithinInterval(dataPag, { start: startOfPrevMonth, end: endOfPrevMonth });
-  }).reduce((sum, c) => sum + (c.valor_pago || 0), 0) || totalPagoMes * 0.95;
+  const totalPagoMesAnterior =
+    allContas
+      .filter((c) => {
+        if (c.status !== 'pago' || !c.data_pagamento) return false;
+        const dataPag = parseISO(c.data_pagamento);
+        return isWithinInterval(dataPag, { start: startOfPrevMonth, end: endOfPrevMonth });
+      })
+      .reduce((sum, c) => sum + (c.valor_pago || 0), 0) || totalPagoMes * 0.95;
 
-  const venceHoje = allContas.filter(c => {
+  const venceHoje = allContas.filter((c) => {
     return isSameDay(parseISO(c.data_vencimento), today) && c.status === 'pendente';
   }).length;
 
@@ -166,16 +196,20 @@ export function useContasPagarLogic() {
     return valor >= configuracao.valor_minimo_aprovacao;
   };
 
-  const contasPendentesAprovacao = allContas.filter(c => {
+  const contasPendentesAprovacao = allContas.filter((c) => {
     const precisaAprovacao = requerAprovacao(c.valor);
     const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
     const naoAprovado = !c.aprovado_por && precisaAprovacao;
-    return (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) && c.status !== 'pago' && c.status !== 'cancelado';
+    return (
+      (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) &&
+      c.status !== 'pago' &&
+      c.status !== 'cancelado'
+    );
   });
 
   const countPendentesAprovacao = contasPendentesAprovacao.length;
 
-  const aprovacoesUrgentes = contasPendentesAprovacao.filter(c => {
+  const aprovacoesUrgentes = contasPendentesAprovacao.filter((c) => {
     const dataVenc = new Date(c.data_vencimento);
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -188,13 +222,16 @@ export function useContasPagarLogic() {
   const valorAprovacoesUrgentes = aprovacoesUrgentes.reduce((sum, c) => sum + c.valor, 0);
 
   // Filtering
-  const filteredContas = filterByDate(contas).filter(c => {
+  const filteredContas = filterByDate(contas).filter((c) => {
     let matchesAprovacao = true;
     if (aprovacaoFilter === 'pendente_aprovacao') {
       const precisaAprovacao = requerAprovacao(c.valor);
       const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
       const naoAprovado = !c.aprovado_por && precisaAprovacao;
-      matchesAprovacao = (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) && c.status !== 'pago' && c.status !== 'cancelado';
+      matchesAprovacao =
+        (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) &&
+        c.status !== 'pago' &&
+        c.status !== 'cancelado';
     } else if (aprovacaoFilter === 'aprovado') {
       matchesAprovacao = !!c.aprovado_por;
     } else if (aprovacaoFilter === 'rejeitado') {
@@ -234,7 +271,10 @@ export function useContasPagarLogic() {
     const precisaAprovacao = requerAprovacao(conta.valor);
     const temSolicitacaoPendente = aprovacaoStatusMap.get(conta.id) === 'pendente';
     const naoAprovado = !conta.aprovado_por && precisaAprovacao;
-    const pendente = (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(conta.id))) && conta.status !== 'pago' && conta.status !== 'cancelado';
+    const pendente =
+      (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(conta.id))) &&
+      conta.status !== 'pago' &&
+      conta.status !== 'cancelado';
 
     if (!pendente) return 999;
 
@@ -351,20 +391,26 @@ export function useContasPagarLogic() {
   };
 
   const handleBulkMarkAsPaid = () => {
-    bulkActionsHook.executeBulkAction(async (id) => {
-      await updateMutation.mutateAsync({
-        id,
-        status: 'pago',
-        data_pagamento: todayISOLocal(),
-        valor_pago: sortedContas.find(c => c.id === id)?.valor || 0
-      });
-    }, { showProgress: true });
+    bulkActionsHook.executeBulkAction(
+      async (id) => {
+        await updateMutation.mutateAsync({
+          id,
+          status: 'pago',
+          data_pagamento: todayISOLocal(),
+          valor_pago: sortedContas.find((c) => c.id === id)?.valor || 0,
+        });
+      },
+      { showProgress: true }
+    );
   };
 
   const handleBulkCancel = () => {
-    bulkActionsHook.executeBulkAction(async (id) => {
-      await updateMutation.mutateAsync({ id, status: 'cancelado' });
-    }, { showProgress: true });
+    bulkActionsHook.executeBulkAction(
+      async (id) => {
+        await updateMutation.mutateAsync({ id, status: 'cancelado' });
+      },
+      { showProgress: true }
+    );
   };
 
   const getApprovalStatus = (conta: ContaPagarType) => {
@@ -373,7 +419,12 @@ export function useContasPagarLogic() {
     const estaAprovado = !!conta.aprovado_por;
     const temSolicitacaoPendente = aprovacaoStatus === 'pendente';
     const foiRejeitado = aprovacaoStatus === 'rejeitada';
-    const aguardandoSolicitacao = precisaAprovacao && !estaAprovado && !aprovacaoStatus && conta.status !== 'pago' && conta.status !== 'cancelado';
+    const aguardandoSolicitacao =
+      precisaAprovacao &&
+      !estaAprovado &&
+      !aprovacaoStatus &&
+      conta.status !== 'pago' &&
+      conta.status !== 'cancelado';
 
     return {
       precisaAprovacao,
@@ -412,6 +463,9 @@ export function useContasPagarLogic() {
     totalCount,
     totalPages,
     isLoading,
+    isError: paginatedQuery.isError,
+    error: paginatedQuery.error,
+    refetchContas: paginatedQuery.refetch,
     profilesMap,
     historicoAprovacaoPorConta,
     empresas,
