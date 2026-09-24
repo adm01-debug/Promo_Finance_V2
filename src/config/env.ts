@@ -16,6 +16,7 @@
  *  - VITE_SUPABASE_PROJECT_ID     → ref do projeto (sem .supabase.co)
  *  - VITE_BLING_CLIENT_ID         → app OAuth do Bling
  *  - VITE_VAPID_PUBLIC_KEY        → par VAPID gerado em 2026-09-05
+ *  - VITE_SENTRY_DSN              → observabilidade de erro do frontend (opcional)
  */
 
 import { z } from 'zod';
@@ -57,6 +58,10 @@ const envSchema = z.object({
     .string()
     .min(80, 'VITE_VAPID_PUBLIC_KEY parece inválida (muito curta)')
     .optional(),
+
+  /** DSN do Sentry (observabilidade de erro do frontend). Opcional — sem ela,
+   * errorTracker cai no fallback de console (ver src/lib/error-tracking.ts). */
+  SENTRY_DSN: z.string().url('VITE_SENTRY_DSN deve ser uma URL válida').optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -72,6 +77,7 @@ function loadEnv(): Env {
     SUPABASE_PROJECT_ID: import.meta.env.VITE_SUPABASE_PROJECT_ID,
     BLING_CLIENT_ID: import.meta.env.VITE_BLING_CLIENT_ID || undefined,
     VAPID_PUBLIC_KEY: import.meta.env.VITE_VAPID_PUBLIC_KEY || undefined,
+    SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || undefined,
   };
 
   const result = envSchema.safeParse(raw);
@@ -82,7 +88,7 @@ function loadEnv(): Env {
       .join('\n');
     throw new Error(
       `[promo-finance] Configuração de ambiente inválida:\n${issues}\n\n` +
-        `Veja src/config/env.ts e .env.example para referência.`,
+        `Veja src/config/env.ts e .env.example para referência.`
     );
   }
 
