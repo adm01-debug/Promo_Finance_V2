@@ -35,7 +35,7 @@
 | Frontend | Vite 6, React 18, TypeScript, Tailwind, shadcn/ui, TanStack Query |
 | Backend  | Supabase Cloud (Postgres + RLS + Auth + Edge Functions Deno)      |
 | Testes   | Vitest + Testing Library, Playwright E2E                          |
-| Deploy   | Lovable Cloud                                                     |
+| Deploy   | Vercel (time `juca1`) — merge em `main` dispara deploy automático |
 | URL prod | https://app.promo-finance.com                                     |
 
 ## 3. Edge Functions (105 funcoes Deno — principais abaixo)
