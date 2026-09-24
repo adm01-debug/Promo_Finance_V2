@@ -1,16 +1,25 @@
 import React from 'react';
 import { List as FixedSizeList, type RowComponentProps } from 'react-window';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
 import { Table, TableBody, TableHeader } from '@/components/ui/table';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, AlertTriangle } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 type ContaPagar = Database['public']['Tables']['contas_pagar']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type SolicitacaoAprovacao = Pick<
   Database['public']['Tables']['solicitacoes_aprovacao']['Row'],
-  'id' | 'conta_pagar_id' | 'status' | 'solicitado_em' | 'solicitado_por' | 'aprovado_em' | 'aprovado_por' | 'motivo_rejeicao' | 'observacoes'
+  | 'id'
+  | 'conta_pagar_id'
+  | 'status'
+  | 'solicitado_em'
+  | 'solicitado_por'
+  | 'aprovado_em'
+  | 'aprovado_por'
+  | 'motivo_rejeicao'
+  | 'observacoes'
 >;
 
 interface ApprovalStatus {
@@ -23,6 +32,9 @@ interface ApprovalStatus {
 interface ContasPagarListProps {
   contas: ContaPagar[];
   isLoading: boolean;
+  isError?: boolean;
+  error?: unknown;
+  onRetry?: () => void;
   isAllSelected: boolean;
   selectAll: (checked: boolean) => void;
   isSelected: (id: string) => boolean;
@@ -41,6 +53,9 @@ interface ContasPagarListProps {
 export const ContasPagarList: React.FC<ContasPagarListProps> = ({
   contas,
   isLoading,
+  isError,
+  error,
+  onRetry,
   isAllSelected,
   selectAll,
   isSelected,
@@ -56,7 +71,27 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
   getRowAnimation,
 }) => {
   if (isLoading) {
-    return <div className="p-12 text-center text-muted-foreground animate-pulse">Carregando inteligência financeira...</div>;
+    return (
+      <div className="p-12 text-center text-muted-foreground animate-pulse">
+        Carregando inteligência financeira...
+      </div>
+    );
+  }
+
+  if (isError) {
+    const message = error instanceof Error ? error.message : undefined;
+    return (
+      <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
+        <AlertTriangle className="h-12 w-12 text-destructive/40" />
+        <div className="text-center space-y-1">
+          <p className="text-sm text-destructive">Erro ao carregar contas a pagar</p>
+          {message && <p className="text-xs text-muted-foreground">{message}</p>}
+        </div>
+        <Button variant="outline" size="sm" onClick={() => onRetry?.()}>
+          Tentar novamente
+        </Button>
+      </div>
+    );
   }
 
   if (contas.length === 0) {
@@ -108,19 +143,33 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
         <TableHeader>
           <tr className="bg-card/[0.02] border-b border-white/5">
             <th className="w-16 p-6 text-center">
-              <Checkbox 
+              <Checkbox
                 checked={isAllSelected}
                 onChange={() => selectAll(!isAllSelected)}
                 aria-label="Selecionar todos"
               />
             </th>
-            <th className="w-[300px] p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Supplier / Entity</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Internal Reference</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Gross Value</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Maturity Horizon</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Operational Unit</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Governance</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Ledger Status</th>
+            <th className="w-[300px] p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Supplier / Entity
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Internal Reference
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Gross Value
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Maturity Horizon
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Operational Unit
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">
+              Governance
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">
+              Ledger Status
+            </th>
             <th className="w-20 p-6"></th>
           </tr>
         </TableHeader>
@@ -133,9 +182,6 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
         rowComponent={Row}
         rowProps={{}}
       />
-
-
-
     </div>
   );
 };
