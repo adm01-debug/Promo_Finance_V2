@@ -10,7 +10,15 @@ type ContaPagar = Database['public']['Tables']['contas_pagar']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type SolicitacaoAprovacao = Pick<
   Database['public']['Tables']['solicitacoes_aprovacao']['Row'],
-  'id' | 'conta_pagar_id' | 'status' | 'solicitado_em' | 'solicitado_por' | 'aprovado_em' | 'aprovado_por' | 'motivo_rejeicao' | 'observacoes'
+  | 'id'
+  | 'conta_pagar_id'
+  | 'status'
+  | 'solicitado_em'
+  | 'solicitado_por'
+  | 'aprovado_em'
+  | 'aprovado_por'
+  | 'motivo_rejeicao'
+  | 'observacoes'
 >;
 
 interface ApprovalStatus {
@@ -56,7 +64,11 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
   getRowAnimation,
 }) => {
   if (isLoading) {
-    return <div className="p-12 text-center text-muted-foreground animate-pulse">Carregando inteligência financeira...</div>;
+    return (
+      <div className="p-12 text-center text-muted-foreground animate-pulse">
+        Carregando inteligência financeira...
+      </div>
+    );
   }
 
   if (contas.length === 0) {
@@ -108,19 +120,33 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
         <TableHeader>
           <tr className="bg-card/[0.02] border-b border-white/5">
             <th className="w-16 p-6 text-center">
-              <Checkbox 
+              <Checkbox
                 checked={isAllSelected}
                 onChange={() => selectAll(!isAllSelected)}
                 aria-label="Selecionar todos"
               />
             </th>
-            <th className="w-[300px] p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Supplier / Entity</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Internal Reference</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Gross Value</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Maturity Horizon</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Operational Unit</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Governance</th>
-            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Ledger Status</th>
+            <th className="w-[300px] p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Supplier / Entity
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Internal Reference
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Gross Value
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Maturity Horizon
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">
+              Operational Unit
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">
+              Governance
+            </th>
+            <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">
+              Ledger Status
+            </th>
             <th className="w-20 p-6"></th>
           </tr>
         </TableHeader>
@@ -133,9 +159,6 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
         rowComponent={Row}
         rowProps={{}}
       />
-
-
-
     </div>
   );
 };

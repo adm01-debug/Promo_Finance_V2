@@ -113,14 +113,16 @@ export function useConciliacaoPage() {
         }
       }
 
-      const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX): TransacaoExtrato => ({
-        id: t.id,
-        data: t.data,
-        descricao: t.descricao,
-        valor: t.valor,
-        tipo: t.tipo,
-        conciliada: false,
-      }));
+      const novasTransacoes = extrato.transacoes.map(
+        (t: TransacaoOFX): TransacaoExtrato => ({
+          id: t.id,
+          data: t.data,
+          descricao: t.descricao,
+          valor: t.valor,
+          tipo: t.tipo,
+          conciliada: false,
+        })
+      );
 
       let savedCount = extrato.transacoes.length;
       let duplicateCount = 0;
