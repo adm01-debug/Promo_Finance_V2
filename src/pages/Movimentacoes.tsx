@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { List as FixedSizeList, type RowComponentProps } from 'react-window';
+import { useSearchParams } from 'react-router-dom';
+import { List as FixedSizeList, useListRef, type RowComponentProps } from 'react-window';
 import { supabase } from '@/integrations/supabase/client';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -136,6 +137,9 @@ export default function Movimentacoes() {
 
   useHighlightFromUrl('highlight', !isLoading && (movimentacoes?.length ?? 0) > 0);
 
+  const [searchParams] = useSearchParams();
+  const listRef = useListRef(null);
+
   const filtered = useMemo(() => {
     if (!movimentacoes) return [];
     return movimentacoes.filter((m) => {
@@ -144,6 +148,20 @@ export default function Movimentacoes() {
       return matchSearch && matchTipo;
     });
   }, [movimentacoes, search, tipoFilter]);
+
+  // A virtualização só monta as linhas visíveis; useHighlightFromUrl procura
+  // o elemento no DOM via querySelector e, se o alvo não estiver entre as
+  // ~12 linhas iniciais renderizadas, nunca acha — mesmo com o dado
+  // carregado — e mostra "Item não encontrado" por engano. Faz o scroll até
+  // o índice do item na lista virtualizada antes do primeiro attempt do hook.
+  useEffect(() => {
+    if (filtered.length <= VIRTUALIZE_THRESHOLD) return;
+    const highlightId = searchParams.get('highlight');
+    if (!highlightId) return;
+    const index = filtered.findIndex((m) => m.id === highlightId);
+    if (index === -1) return;
+    listRef.current?.scrollToRow({ index, align: 'center' });
+  }, [filtered, searchParams, listRef]);
 
   // Soma no banco sobre o período inteiro — o array `movimentacoes` acima
   // fica truncado em MOVIMENTACOES_SAFETY_CAP, e somar só o que chegou ao
@@ -198,8 +216,8 @@ export default function Movimentacoes() {
             <AlertDescription>
               Esta tela mostra apenas as {MOVIMENTACOES_SAFETY_CAP.toLocaleString('pt-BR')}{' '}
               movimentações mais recentes do período selecionado — estreite o intervalo de datas
-              para ver a lista completa. Os totais de entradas, saídas e saldo abaixo já
-              consideram o período inteiro, calculados no banco.
+              para ver a lista completa. Os totais de entradas, saídas e saldo abaixo já consideram
+              o período inteiro, calculados no banco.
             </AlertDescription>
           </Alert>
         )}
@@ -341,6 +359,7 @@ export default function Movimentacoes() {
                 </Table>
                 {filtered.length > VIRTUALIZE_THRESHOLD && (
                   <FixedSizeList
+                    listRef={listRef}
                     rowCount={filtered.length}
                     rowHeight={ROW_HEIGHT}
                     style={{ height: Math.min(640, filtered.length * ROW_HEIGHT), width: '100%' }}
