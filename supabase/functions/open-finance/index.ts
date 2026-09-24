@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { validateContract } from "../_shared/contract-validator.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { exigirVinculoEmpresa } from "../_shared/auth-guard.ts";
 
 const _OFSchema = z.object({
   action: z.string().min(1),
@@ -103,17 +104,40 @@ serve(async (req) => {
         );
         break;
 
-      case "import_transactions":
+      case "import_transactions": {
+        const contaBancariaId = params?.conta_bancaria_id;
+        if (!contaBancariaId) {
+          throw new Error("ID da conta bancária do sistema é obrigatório");
+        }
+
+        // Etapa E-012 (PLANO_100.md): a conta bancária de destino não era validada
+        // contra o vínculo empresa↔usuário antes da gravação via service_role,
+        // permitindo IDOR entre tenants (A-015 em AUDITORIA.md).
+        const { data: contaBancariaAlvo, error: contaBancariaError } = await supabase
+          .from("contas_bancarias")
+          .select("empresa_id")
+          .eq("id", contaBancariaId)
+          .maybeSingle();
+        if (contaBancariaError || !contaBancariaAlvo?.empresa_id) {
+          return new Response(
+            JSON.stringify({ error: "Conta bancária não encontrada" }),
+            { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        const vinculo = await exigirVinculoEmpresa(user.id, contaBancariaAlvo.empresa_id);
+        if (!vinculo.ok) return vinculo.resposta;
+
         result = await importTransactionsToSystem(
           supabase,
           user.id,
           params?.consent_id,
           params?.account_id,
-          params?.conta_bancaria_id,
+          contaBancariaId,
           params?.start_date,
           params?.end_date
         );
         break;
+      }
 
       case "refresh_token":
         result = await refreshAccessToken(supabase, user.id, params?.consent_id);
