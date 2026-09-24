@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { List as FixedSizeList, type RowComponentProps } from 'react-window';
+import { supabase } from '@/integrations/supabase/client';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -143,14 +145,34 @@ export default function Movimentacoes() {
     });
   }, [movimentacoes, search, tipoFilter]);
 
-  const totalEntradas = useMemo(
-    () => filtered.filter((m) => m.tipo === 'entrada').reduce((s, m) => s + (m.valor || 0), 0),
-    [filtered]
-  );
-  const totalSaidas = useMemo(
-    () => filtered.filter((m) => m.tipo === 'saida').reduce((s, m) => s + (m.valor || 0), 0),
-    [filtered]
-  );
+  // Soma no banco sobre o período inteiro — o array `movimentacoes` acima
+  // fica truncado em MOVIMENTACOES_SAFETY_CAP, e somar só o que chegou ao
+  // cliente fica errado em empresas com mais movimentações que o cap.
+  // Cast manual: RPC nova, ainda não presente no types.ts gerado (mesmo
+  // padrão de src/hooks/usePixTemplates.ts e useWebAuthn.ts).
+  const { data: totais } = useQuery({
+    queryKey: ['movimentacoes-totais', startDate, endDate, tipoFilter, search],
+    queryFn: async () => {
+      const rpc = supabase.rpc as unknown as (
+        fn: 'obter_totais_movimentacoes',
+        args: { p_start: string; p_end: string; p_tipo: string | null; p_search: string | null }
+      ) => Promise<{
+        data: { total_entradas: number; total_saidas: number }[] | null;
+        error: { message: string } | null;
+      }>;
+      const { data, error } = await rpc('obter_totais_movimentacoes', {
+        p_start: startDate,
+        p_end: endDate,
+        p_tipo: tipoFilter,
+        p_search: search || null,
+      });
+      if (error) throw new Error(error.message);
+      return data?.[0] ?? { total_entradas: 0, total_saidas: 0 };
+    },
+  });
+
+  const totalEntradas = totais?.total_entradas ?? 0;
+  const totalSaidas = totais?.total_saidas ?? 0;
   const saldo = totalEntradas - totalSaidas;
 
   return (
@@ -175,9 +197,9 @@ export default function Movimentacoes() {
             </AlertTitle>
             <AlertDescription>
               Esta tela mostra apenas as {MOVIMENTACOES_SAFETY_CAP.toLocaleString('pt-BR')}{' '}
-              movimentações mais recentes do período selecionado. Os totais de entradas, saídas e
-              saldo abaixo estão incompletos — estreite o intervalo de datas para ver o período
-              inteiro.
+              movimentações mais recentes do período selecionado — estreite o intervalo de datas
+              para ver a lista completa. Os totais de entradas, saídas e saldo abaixo já
+              consideram o período inteiro, calculados no banco.
             </AlertDescription>
           </Alert>
         )}
