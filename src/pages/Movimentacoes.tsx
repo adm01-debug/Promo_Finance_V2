@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
-import { List as FixedSizeList, type RowComponentProps } from 'react-window';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { List as FixedSizeList, useListRef, type RowComponentProps } from 'react-window';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -134,6 +135,9 @@ export default function Movimentacoes() {
 
   useHighlightFromUrl('highlight', !isLoading && (movimentacoes?.length ?? 0) > 0);
 
+  const [searchParams] = useSearchParams();
+  const listRef = useListRef(null);
+
   const filtered = useMemo(() => {
     if (!movimentacoes) return [];
     return movimentacoes.filter((m) => {
@@ -142,6 +146,20 @@ export default function Movimentacoes() {
       return matchSearch && matchTipo;
     });
   }, [movimentacoes, search, tipoFilter]);
+
+  // A virtualização só monta as linhas visíveis; useHighlightFromUrl procura
+  // o elemento no DOM via querySelector e, se o alvo não estiver entre as
+  // ~12 linhas iniciais renderizadas, nunca acha — mesmo com o dado
+  // carregado — e mostra "Item não encontrado" por engano. Faz o scroll até
+  // o índice do item na lista virtualizada antes do primeiro attempt do hook.
+  useEffect(() => {
+    if (filtered.length <= VIRTUALIZE_THRESHOLD) return;
+    const highlightId = searchParams.get('highlight');
+    if (!highlightId) return;
+    const index = filtered.findIndex((m) => m.id === highlightId);
+    if (index === -1) return;
+    listRef.current?.scrollToRow({ index, align: 'center' });
+  }, [filtered, searchParams, listRef]);
 
   const totalEntradas = useMemo(
     () => filtered.filter((m) => m.tipo === 'entrada').reduce((s, m) => s + (m.valor || 0), 0),
@@ -319,6 +337,7 @@ export default function Movimentacoes() {
                 </Table>
                 {filtered.length > VIRTUALIZE_THRESHOLD && (
                   <FixedSizeList
+                    listRef={listRef}
                     rowCount={filtered.length}
                     rowHeight={ROW_HEIGHT}
                     style={{ height: Math.min(640, filtered.length * ROW_HEIGHT), width: '100%' }}
