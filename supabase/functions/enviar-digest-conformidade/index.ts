@@ -23,6 +23,7 @@ import { z } from '../_shared/zod.ts';
 
 import { construirDigest, type AlertaDigest } from '../_shared/obrigacoes/digest.ts';
 import { hashAlertas, planejarEnvios } from '../_shared/obrigacoes/preferencias-digest.ts';
+import { getAppBaseUrl } from '../_shared/app-url.ts';
 
 /** Prefixo gravado na coluna `tipo` pelo job de snapshots. */
 const PREFIXO_ALERTA = 'conformidade';
@@ -356,7 +357,7 @@ Deno.serve(async (req: Request) => {
     for (const envio of envios) {
       const digest = construirDigest(envio.alertas, {
         remetenteNome: 'Hub Tributário',
-        urlBase: Deno.env.get('APP_PUBLIC_URL') ?? undefined,
+        urlBase: getAppBaseUrl() || undefined,
         competenciaReferencia: competencia,
       });
 

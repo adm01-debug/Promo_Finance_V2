@@ -46,7 +46,6 @@ export function useContasPagarLogic() {
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingConta, setDeletingConta] = useState<ContaPagarType | null>(null);
-  const [isDeleting] = useState(false);
 
   useEffect(() => {
     const handleSync = (e: Event) => {
@@ -403,7 +402,6 @@ export function useContasPagarLogic() {
     pageSize,
     deleteDialogOpen,
     deletingConta,
-    isDeleting,
     filterType,
 
     // Data

@@ -1,11 +1,12 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { resolveClaim, resolveClaimArray } from './claims.ts';
+import { getAppBaseUrl } from '../_shared/app-url.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
-const PUBLIC_APP_URL = Deno.env.get('PUBLIC_APP_URL') ?? '';
+const PUBLIC_APP_URL = getAppBaseUrl();
 
 type Admin = SupabaseClient;
 
