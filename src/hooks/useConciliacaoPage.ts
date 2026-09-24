@@ -41,7 +41,7 @@ export function useConciliacaoPage() {
   const [selectedTransacaoSplit, setSelectedTransacaoSplit] = useState<TransacaoExtrato | null>(
     null
   );
-  const [transacoes, setTransacoes] = useTransacoesBancariasSelecionadas(selectedBanco);
+  const { transacoes, setTransacoes, ...query } = useTransacoesBancariasSelecionadas(selectedBanco);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
   const [filters, setFilters] = useFiltrosConciliacaoPersistidos();
@@ -113,14 +113,16 @@ export function useConciliacaoPage() {
         }
       }
 
-      const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX): TransacaoExtrato => ({
-        id: t.id,
-        data: t.data,
-        descricao: t.descricao,
-        valor: t.valor,
-        tipo: t.tipo,
-        conciliada: false,
-      }));
+      const novasTransacoes = extrato.transacoes.map(
+        (t: TransacaoOFX): TransacaoExtrato => ({
+          id: t.id,
+          data: t.data,
+          descricao: t.descricao,
+          valor: t.valor,
+          tipo: t.tipo,
+          conciliada: false,
+        })
+      );
 
       let savedCount = extrato.transacoes.length;
       let duplicateCount = 0;
@@ -426,6 +428,7 @@ export function useConciliacaoPage() {
     selectedTransacaoSplit,
     setSelectedTransacaoSplit,
     transacoes,
+    transacoesQuery: query,
     transacoesImportadas,
     extratoImportado,
     filters,

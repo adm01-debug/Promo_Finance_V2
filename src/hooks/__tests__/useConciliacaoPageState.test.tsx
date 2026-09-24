@@ -5,6 +5,7 @@ import {
   useTransacoesBancariasSelecionadas,
 } from '../useConciliacaoPageState';
 import type { TransacaoExtrato } from '../conciliacaoPage.types';
+import { wrapper } from './use-conciliacao-test-utils';
 
 const mocks = vi.hoisted(() => ({ carregarTransacoesBanco: vi.fn() }));
 
@@ -59,18 +60,56 @@ describe('useTransacoesBancariasSelecionadas', () => {
 
     const { result, rerender } = renderHook(
       ({ conta }) => useTransacoesBancariasSelecionadas(conta),
-      { initialProps: { conta: 'conta-a' } }
+      { initialProps: { conta: 'conta-a' }, wrapper }
     );
     await waitFor(() => expect(mocks.carregarTransacoesBanco).toHaveBeenCalledWith('conta-a'));
 
     rerender({ conta: 'conta-b' });
     await waitFor(() => expect(mocks.carregarTransacoesBanco).toHaveBeenCalledWith('conta-b'));
-    expect(result.current[0]).toEqual([]);
+    expect(result.current.transacoes).toEqual([]);
 
     await act(async () => resolverContaA!([transacaoAntiga]));
-    expect(result.current[0]).toEqual([]);
+    // A conta-a mudou de query key: sua resposta tardia atualiza apenas o
+    // cache dela e não vaza para o que a conta ativa (conta-b) exibe.
+    expect(result.current.transacoes).toEqual([]);
 
     await act(async () => resolverContaB!([transacaoAtual]));
-    await waitFor(() => expect(result.current[0]).toEqual([transacaoAtual]));
+    await waitFor(() => expect(result.current.transacoes).toEqual([transacaoAtual]));
+  });
+
+  it('expõe isLoading/isError e permite tentar novamente após falha', async () => {
+    mocks.carregarTransacoesBanco.mockResolvedValueOnce(null);
+
+    const { result } = renderHook(() => useTransacoesBancariasSelecionadas('conta-c'), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.transacoes).toEqual([]);
+
+    const transacaoRetry: TransacaoExtrato = {
+      id: 'transacao-retry',
+      data: new Date('2026-09-20'),
+      descricao: 'Recuperada no retry',
+      valor: 42,
+      tipo: 'debito',
+      conciliada: false,
+    };
+    mocks.carregarTransacoesBanco.mockResolvedValueOnce([transacaoRetry]);
+
+    await act(async () => {
+      await result.current.refetch();
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(false));
+    expect(result.current.transacoes).toEqual([transacaoRetry]);
+  });
+
+  it('não consulta quando nenhuma conta está selecionada', () => {
+    const { result } = renderHook(() => useTransacoesBancariasSelecionadas(''), { wrapper });
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.transacoes).toEqual([]);
+    expect(mocks.carregarTransacoesBanco).not.toHaveBeenCalled();
   });
 });

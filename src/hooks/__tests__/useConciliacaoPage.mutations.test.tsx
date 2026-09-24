@@ -59,7 +59,7 @@ describe('useConciliacaoPage — desfazer e ignorar', () => {
     vi.mocked(mocks.mutations.desfazerConciliacao.mutateAsync).mockResolvedValue(undefined);
     const { result } = await mountWithRows([linha('tx-c', 'receita', true, 40)]);
     await act(async () => result.current.handleDesfazerConciliacao('tx-c'));
-    expect(result.current.transacoes[0].conciliada).toBe(false);
+    await waitFor(() => expect(result.current.transacoes[0].conciliada).toBe(false));
   });
 
   it('preserva conciliação se o desfazer falhar', async () => {
@@ -89,6 +89,6 @@ describe('useConciliacaoPage — desfazer e ignorar', () => {
       payload: { conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' },
       filters: { id: 'tx-f' },
     });
-    expect(result.current.transacoes).toHaveLength(0);
+    await waitFor(() => expect(result.current.transacoes).toHaveLength(0));
   });
 });
