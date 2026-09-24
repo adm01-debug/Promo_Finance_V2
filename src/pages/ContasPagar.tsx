@@ -267,7 +267,6 @@ export default function ContasPagar() {
             description={`Confirmar a remoção definitiva da obrigação "${logic.deletingConta?.descricao}" no valor de ${logic.deletingConta?.valor ? formatCurrency(logic.deletingConta.valor) : ''}?`}
             confirmLabel="Confirmar Purge"
             variant="danger"
-            isLoading={logic.isDeleting}
             onConfirm={logic.handleDeleteConta}
           />
 
