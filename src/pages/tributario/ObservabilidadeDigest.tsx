@@ -48,8 +48,8 @@ import {
   ultimasFalhas,
   type SituacaoEnvioDigest,
 } from '@/lib/tributario/obrigacoes/observabilidade-digest';
+import { formatCurrency } from '@/lib/formatters';
 
-const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const dataHora = (iso: string | null) =>
   iso ? new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
 
@@ -168,7 +168,7 @@ export default function ObservabilidadeDigest() {
               <CardContent>
                 <p className="text-3xl font-bold">{resumo.destinatariosUnicos}</p>
                 <p className="text-xs text-muted-foreground">
-                  {resumo.totalAlertas} alertas · {brl(resumo.multaTotal)} em risco
+                  {resumo.totalAlertas} alertas · {formatCurrency(resumo.multaTotal)} em risco
                 </p>
               </CardContent>
             </Card>

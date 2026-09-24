@@ -71,24 +71,36 @@ describe('useConciliacaoPage — desfazer e ignorar', () => {
     expect(result.current.transacoes[0].conciliada).toBe(true);
   });
 
+  it('handleIgnorar só abre a confirmação — não persiste antes da confirmação (E-022)', async () => {
+    const { result } = await mountWithRows([linha('tx-g', 'despesa', false, 80)]);
+    act(() => result.current.handleIgnorar('tx-g'));
+    expect(result.current.ignorarDialogOpen).toBe(true);
+    expect(mocks.supabase.updates.transacoes_bancarias ?? []).toHaveLength(0);
+    expect(result.current.transacoes).toHaveLength(1);
+  });
+
   it('mantém a transação visível quando ignorar não persistir', async () => {
     mocks.supabase.updateResp.transacoes_bancarias = {
       data: null,
       error: { message: 'permission denied' },
     };
     const { result } = await mountWithRows([linha('tx-e', 'despesa', false, 60)]);
-    await act(async () => result.current.handleIgnorar('tx-e'));
+    act(() => result.current.handleIgnorar('tx-e'));
+    await act(async () => result.current.confirmarIgnorar());
     expect(mocks.toasts.error).toHaveBeenCalledWith('Erro ao ignorar transação');
     expect(result.current.transacoes).toHaveLength(1);
+    expect(result.current.ignorarDialogOpen).toBe(false);
   });
 
-  it('remove apenas a transação cuja ação ignorar foi persistida', async () => {
+  it('remove apenas a transação cuja ação ignorar foi confirmada e persistida', async () => {
     const { result } = await mountWithRows([linha('tx-f', 'despesa', false, 70)]);
-    await act(async () => result.current.handleIgnorar('tx-f'));
+    act(() => result.current.handleIgnorar('tx-f'));
+    await act(async () => result.current.confirmarIgnorar());
     expect(mocks.supabase.updates.transacoes_bancarias?.[0]).toMatchObject({
       payload: { conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' },
       filters: { id: 'tx-f' },
     });
     await waitFor(() => expect(result.current.transacoes).toHaveLength(0));
+    expect(result.current.ignorarDialogOpen).toBe(false);
   });
 });

@@ -23,8 +23,8 @@ import {
   type LinhaMemoriaIrpj,
   type PeriodoApuracao,
 } from '@/lib/tributario/irpj-csll';
+import { formatCurrency } from '@/lib/formatters';
 
-const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%`;
 const num = (v: string) => {
   const parsed = Number(v.replace(/\./g, '').replace(',', '.'));
@@ -66,7 +66,7 @@ function MemoriaTable({ linhas }: { linhas: readonly LinhaMemoriaIrpj[] }) {
           {linhas.map((l, i) => (
             <TableRow key={`${l.rubrica}-${i}`}>
               <TableCell>{l.rubrica}</TableCell>
-              <TableCell className="text-right font-medium tabular-nums">{brl(l.valor)}</TableCell>
+              <TableCell className="text-right font-medium tabular-nums">{formatCurrency(l.valor)}</TableCell>
               <TableCell className="text-xs text-muted-foreground">{l.fundamento}</TableCell>
             </TableRow>
           ))}
@@ -164,19 +164,19 @@ export default function IrpjCsllLucroReal() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>IRPJ a recolher</CardDescription>
-              <CardTitle className="text-2xl tabular-nums">{brl(resultado.totalIrpj)}</CardTitle>
+              <CardTitle className="text-2xl tabular-nums">{formatCurrency(resultado.totalIrpj)}</CardTitle>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>CSLL a recolher</CardDescription>
-              <CardTitle className="text-2xl tabular-nums">{brl(resultado.totalCsll)}</CardTitle>
+              <CardTitle className="text-2xl tabular-nums">{formatCurrency(resultado.totalCsll)}</CardTitle>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Total do período</CardDescription>
-              <CardTitle className="text-2xl tabular-nums text-primary">{brl(resultado.totalARecolher)}</CardTitle>
+              <CardTitle className="text-2xl tabular-nums text-primary">{formatCurrency(resultado.totalARecolher)}</CardTitle>
             </CardHeader>
           </Card>
           <Card>
@@ -331,10 +331,10 @@ export default function IrpjCsllLucroReal() {
                   </div>
 
                   <div className="grid gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-4">
-                    <div>Lucro real: <strong className="tabular-nums">{brl(resultado.periodos[idx]?.lucroReal ?? 0)}</strong></div>
-                    <div>Base CSLL: <strong className="tabular-nums">{brl(resultado.periodos[idx]?.baseCsll ?? 0)}</strong></div>
-                    <div>IRPJ: <strong className="tabular-nums">{brl(resultado.periodos[idx]?.irpjARecolher ?? 0)}</strong></div>
-                    <div>CSLL: <strong className="tabular-nums">{brl(resultado.periodos[idx]?.csllARecolher ?? 0)}</strong></div>
+                    <div>Lucro real: <strong className="tabular-nums">{formatCurrency(resultado.periodos[idx]?.lucroReal ?? 0)}</strong></div>
+                    <div>Base CSLL: <strong className="tabular-nums">{formatCurrency(resultado.periodos[idx]?.baseCsll ?? 0)}</strong></div>
+                    <div>IRPJ: <strong className="tabular-nums">{formatCurrency(resultado.periodos[idx]?.irpjARecolher ?? 0)}</strong></div>
+                    <div>CSLL: <strong className="tabular-nums">{formatCurrency(resultado.periodos[idx]?.csllARecolher ?? 0)}</strong></div>
                   </div>
                 </CardContent>
               </Card>
@@ -377,11 +377,11 @@ export default function IrpjCsllLucroReal() {
                       {resultado.periodos.map((p) => (
                         <TableRow key={p.rotulo}>
                           <TableCell>{p.rotulo}</TableCell>
-                          <TableCell className="text-right tabular-nums">{brl(p.compensacaoPrejuizo)}</TableCell>
-                          <TableCell className="text-right tabular-nums">{brl(p.compensacaoBaseNegativa)}</TableCell>
-                          <TableCell className="text-right tabular-nums">{brl(p.prejuizoGerado)}</TableCell>
-                          <TableCell className="text-right tabular-nums">{brl(p.saldoFinal.prejuizoFiscal)}</TableCell>
-                          <TableCell className="text-right tabular-nums">{brl(p.saldoFinal.baseNegativaCsll)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{formatCurrency(p.compensacaoPrejuizo)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{formatCurrency(p.compensacaoBaseNegativa)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{formatCurrency(p.prejuizoGerado)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{formatCurrency(p.saldoFinal.prejuizoFiscal)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{formatCurrency(p.saldoFinal.baseNegativaCsll)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

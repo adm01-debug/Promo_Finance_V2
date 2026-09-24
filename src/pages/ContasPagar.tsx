@@ -75,6 +75,11 @@ export default function ContasPagar() {
       icon: <XCircle className="h-4 w-4" />,
       variant: 'destructive' as const,
       onClick: logic.handleBulkCancel,
+      confirm: {
+        title: `Cancelar ${logic.selectedCount} conta(s) a pagar`,
+        description: `Esta ação marca ${logic.selectedCount} conta(s) selecionada(s) como cancelada(s) e não pode ser desfeita automaticamente.`,
+        confirmLabel: 'Cancelar contas',
+      },
     },
   ];
 
