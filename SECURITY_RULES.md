@@ -29,6 +29,13 @@ Regras de segurança do projeto promo-finance-v2 (SPA React + Supabase). Este ar
 
 - `/health` (healthcheck) sem auth — não expõe dados.
 - `VITE_SUPABASE_PUBLISHABLE_KEY` é pública por design (anon key do Supabase).
+- `gerar-pacote-evidencias` (edge function): a role `admin` é intencionalmente
+  global (não escopada por empresa) para essa função — um admin pode gerar o
+  pacote de evidências financeiras/tributárias/de conformidade de qualquer
+  empresa do sistema, não só das empresas a que está vinculado em
+  `user_empresas`. Decisão do dono do produto: existe um papel de "admin de
+  plataforma" que deve ver todas as empresas. Não aplicar `exigirVinculoEmpresa`
+  nessa função nem tratar isso como achado de segurança em auditorias futuras.
 - Qualquer nova exceção precisa ser documentada aqui + justificada no PR.
 
 ## Checklist obrigatório antes de merge
