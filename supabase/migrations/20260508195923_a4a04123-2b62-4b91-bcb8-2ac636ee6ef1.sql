@@ -5,9 +5,18 @@ ON public.contas_pagar (fornecedor_id, valor, data_vencimento, numero_documento)
 WHERE (status != 'cancelado' AND fornecedor_id IS NOT NULL AND numero_documento IS NOT NULL);
 
 -- Also add one for cases where supplier is identified by name only (legacy/import)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_pagar_name_prevent_duplicates 
-ON public.contas_pagar (fornecedor_nome, valor, data_vencimento, numero_documento) 
-WHERE (status != 'cancelado' AND fornecedor_id IS NULL AND numero_documento IS NOT NULL);
+-- fornecedor_nome só é criada pela migration 20260518190420 (timestamp mais
+-- recente que este arquivo) -- em replay do zero (Supabase Preview) essa
+-- coluna ainda não existe aqui. Em produção a coluna já existe há muito
+-- tempo, então o IF EXISTS abaixo é sempre verdadeiro e roda igual.
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='contas_pagar' AND column_name='fornecedor_nome') THEN
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_pagar_name_prevent_duplicates
+        ON public.contas_pagar (fornecedor_nome, valor, data_vencimento, numero_documento)
+        WHERE (status != 'cancelado' AND fornecedor_id IS NULL AND numero_documento IS NOT NULL);
+    END IF;
+END $$;
 
 -- Prevent duplicate billing in contas_receber
 CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_receber_prevent_duplicates 
