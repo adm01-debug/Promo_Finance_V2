@@ -1,6 +1,6 @@
 // PANEL: Gerenciar Links de Pagamento ASAAS
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -33,11 +33,11 @@ export function LinksListPanel({ empresaId }: Props) {
   const [loading, setLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-  const fetchLinks = async () => {
+  const fetchLinks = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('asaas-proxy', {
-        body: { action: 'listar_links_pagamento', data: { limit: '50' } },
+        body: { action: 'listar_links_pagamento', data: { limit: '50', empresa_id: empresaId } },
       });
       if (error) throw error;
       setLinks(data?.data || []);
@@ -46,11 +46,11 @@ export function LinksListPanel({ empresaId }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [empresaId]);
 
   useEffect(() => {
     if (empresaId) fetchLinks();
-  }, [empresaId]);
+  }, [empresaId, fetchLinks]);
 
   const handleDelete = async () => {
     if (!deleteConfirm) return;
