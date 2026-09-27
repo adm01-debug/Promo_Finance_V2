@@ -11,6 +11,13 @@ on:
       - 'package.json'
   workflow_dispatch:
 
+# Cancela a run anterior no mesmo PR/branch quando novo push chega —
+# o grafo é reconstruído do zero a cada run, então runs intermediárias
+# desperdiçam ~13 minutos de runner em paralelo (11 perfis × 1 min).
+concurrency:
+  group: graphify-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

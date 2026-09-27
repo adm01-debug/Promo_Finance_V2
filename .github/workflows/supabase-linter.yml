@@ -39,6 +39,12 @@ on:
       - '.github/workflows/supabase-linter.yml'
   workflow_dispatch: {}
 
+# Cancela runs anteriores do mesmo branch — o estado do banco não muda entre
+# pushes, então rodar o linter em dois commits intermediários é desperdício.
+concurrency:
+  group: supabase-linter-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   supabase-linter:
     name: Supabase DB Linter

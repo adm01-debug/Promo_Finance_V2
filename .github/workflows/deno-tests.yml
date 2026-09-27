@@ -2,9 +2,13 @@ name: Deno Edge Function Tests
 
 on:
   push:
-    branches: ["**"]
+    # Roda só em branches permanentes. PRs já disparam pull_request abaixo,
+    # então limitar push evita o duplo-trigger (push + PR) em toda branch de
+    # feature — economiza ~2 runs × ~8 min por push.
+    branches: [main, master, develop]
   pull_request:
-    branches: ["**"]
+    types: [opened, synchronize, reopened]
+    branches: [main, master, develop]
   workflow_dispatch:
 
 # Cancela runs anteriores no mesmo branch para economizar minutos.
@@ -116,7 +120,6 @@ jobs:
             --allow-env \
             --allow-read \
             --allow-net=0.0.0.0:8000,127.0.0.1,localhost \
-            --no-check \
             --ignore=supabase/functions/sso-test-login/index.test.ts \
             supabase/functions/
 

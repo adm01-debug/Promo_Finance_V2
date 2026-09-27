@@ -7,6 +7,12 @@ on:
     types: [opened, synchronize, reopened]
     branches: [ main, master, develop ]
 
+# Cancela runs anteriores do mesmo branch/PR para economizar minutos de runner.
+# Em pushes para main usamos o SHA para nunca cancelar duas merges distintas.
+concurrency:
+  group: ci-${{ github.ref }}-${{ github.event_name == 'push' && github.sha || 'pr' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   secret-scan:
     name: Varredura de segredos (gitleaks)
@@ -74,7 +80,10 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Security scan
-        run: bun audit || echo "::warning::bun audit reported vulnerabilities — see logs"
+        # Bloqueante: vulnerabilidades conhecidas em dependências diretas
+        # devem ser corrigidas antes do merge, não apenas registradas.
+        # Em caso de falsa positivo documentado, use `bun audit --ignore`.
+        run: bun audit
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
