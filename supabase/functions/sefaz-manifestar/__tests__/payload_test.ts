@@ -187,7 +187,7 @@ Deno.test("payload: envelope contém chave, CNPJ autor e tpEvento corretos", asy
   assert(certSel, "esperava select em empresas_certificados");
   assertEquals(
     certSel.filters.sort(),
-    [["ambiente", "homologacao"], ["ativo", true], ["cnpj", CNPJ]].sort(),
+    (["ambiente", "homologacao"], ["ativo", true], ["cnpj", CNPJ]] as [string, unknown][]).sort(),
   );
   assertEquals(certSel.gte.length, 1);
   assertEquals(certSel.gte[0][0], "valido_ate");
