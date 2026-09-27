@@ -38,6 +38,8 @@ jobs:
       PROD_PROJECT_REF: ${{ vars.PROD_PROJECT_REF }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -60,11 +62,15 @@ jobs:
 
       - name: Preparar flags
         id: flags
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          REFRESH_BASELINE: ${{ inputs.refresh_baseline }}
+          ONLY_INTEGRITY: ${{ inputs.only_integrity }}
         run: |
           FLAGS=""
-          ${{ inputs.dry_run }}         && FLAGS="$FLAGS --dry-run"        || true
-          ${{ !inputs.refresh_baseline }} && FLAGS="$FLAGS --skip-baseline" || true
-          ${{ inputs.only_integrity }}  && FLAGS="$FLAGS --only-integrity" || true
+          [ "$DRY_RUN" = "true" ]        && FLAGS="$FLAGS --dry-run"        || true
+          [ "$REFRESH_BASELINE" = "true" ] || FLAGS="$FLAGS --skip-baseline"
+          [ "$ONLY_INTEGRITY" = "true" ]  && FLAGS="$FLAGS --only-integrity" || true
           echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
 
       - name: Executar staging-migrate

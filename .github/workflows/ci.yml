@@ -2,10 +2,10 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ main, master, develop ]
+    branches: [ main ]
 
 # Cancela runs anteriores do mesmo branch/PR para economizar minutos de runner.
 # Em pushes para main usamos o SHA para nunca cancelar duas merges distintas.
@@ -28,6 +28,7 @@ jobs:
           # A varredura cobre o histórico inteiro, não só o diff: força-push e
           # rebase podem trazer de volta um segredo já removido da ponta.
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Instalar gitleaks
         env:
@@ -70,6 +71,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -278,8 +281,12 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: ci-error-logs
-          path: "*.log"
+          path: |
+            test-results/
+            playwright-report/
+            coverage/
           retention-days: 7
+          if-no-files-found: ignore
 
   # ---------------------------------------------------------------------------
   # Gate E2E crítico: somente cenários que hoje provam as correções reais.
@@ -292,6 +299,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -350,6 +359,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -415,6 +426,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -465,6 +478,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
