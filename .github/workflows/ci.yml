@@ -558,6 +558,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.ENABLE_PRODUCTION_SIMULATION_AUDIT == 'true'
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Trigger Simulation Audit
         run: |
