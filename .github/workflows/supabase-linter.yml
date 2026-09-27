@@ -81,6 +81,11 @@ jobs:
         with:
           version: 2.22.6
 
+      - name: Inicializar lint.json
+        # Etapa 44: garante que o artefato sempre existe, mesmo se um gate live
+        # falhar antes do step "Run Supabase linter". O step de lint sobrescreve.
+        run: echo '{"results":[]}' > lint.json
+
       - name: Preflight dos gates live do Supabase
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

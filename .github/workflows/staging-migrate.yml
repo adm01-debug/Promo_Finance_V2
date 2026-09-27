@@ -67,9 +67,9 @@ jobs:
           ONLY_INTEGRITY: ${{ inputs.only_integrity }}
         run: |
           FLAGS=""
-          [ "$DRY_RUN" = "true" ]        && FLAGS="$FLAGS --dry-run"        || true
-          [ "$REFRESH_BASELINE" = "true" ] || FLAGS="$FLAGS --skip-baseline"
-          [ "$ONLY_INTEGRITY" = "true" ]  && FLAGS="$FLAGS --only-integrity" || true
+          if [ "$DRY_RUN" = "true" ]; then FLAGS="$FLAGS --dry-run"; fi
+          if [ "$REFRESH_BASELINE" != "true" ]; then FLAGS="$FLAGS --skip-baseline"; fi
+          if [ "$ONLY_INTEGRITY" = "true" ]; then FLAGS="$FLAGS --only-integrity"; fi
           echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
 
       - name: Executar staging-migrate

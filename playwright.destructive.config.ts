@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// Etapa 67: fuso fixo — mesma razão do playwright.critical.config.ts.
+process.env.TZ = 'America/Sao_Paulo';
+
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:8080';
 const chromiumExecutablePath =
   process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || process.env.CHROMIUM_EXECUTABLE_PATH;

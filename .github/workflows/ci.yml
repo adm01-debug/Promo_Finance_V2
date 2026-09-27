@@ -46,6 +46,27 @@ jobs:
           sudo tar -xzf "$arquivo" -C /usr/local/bin gitleaks
           gitleaks version
 
+      - name: Gate baseline só encolhe (etapa 49)
+        # Impede que PRs adicionem novas entradas ao baseline — o baseline só
+        # pode encolher (segredos remediados), nunca crescer (novos segredos
+        # suprimidos). Um novo segredo real deve ser removido do código; um
+        # falso positivo deve ser documentado como exceção com justificativa.
+        run: |
+          set -euo pipefail
+          baseline_count=$(jq '.leaks | length' .gitleaks-baseline.json)
+          # Obtém a contagem na ponta de main para comparar
+          git fetch --depth=1 origin main 2>/dev/null || true
+          if git show origin/main:.gitleaks-baseline.json >/dev/null 2>&1; then
+            main_count=$(git show origin/main:.gitleaks-baseline.json | jq '.leaks | length')
+            if [ "$baseline_count" -gt "$main_count" ]; then
+              echo "::error::Baseline de segredos CRESCEU: main=$main_count PR=$baseline_count (+$((baseline_count - main_count))). Remova o(s) segredo(s) do código; não os suprima no baseline."
+              exit 1
+            fi
+            echo "Baseline: PR=$baseline_count main=$main_count — OK (sem crescimento)"
+          else
+            echo "Branch main sem baseline ainda — pulando comparação."
+          fi
+
       - name: Varredura de segredos
         # --redact impede que um segredo recém-detectado seja impresso no log
         # público do build, que é exatamente onde ele não pode acabar.
@@ -82,18 +103,8 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          persist-credentials: false
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
-        with:
-          # Versão gerenciada via .bun-version na raiz do repositório.
-          bun-version-file: .bun-version
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      # Etapa 27: composite action elimina bloco checkout+bun+cache repetido 5x.
+      - uses: ./.github/actions/setup-bun
 
       - name: Security scan
         # Bloqueante: vulnerabilidades conhecidas em dependências diretas
@@ -133,8 +144,14 @@ jobs:
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
         run: node scripts/security/test-lint-function-repairs.mjs
 
+      - name: Format check
+        # Etapa 45: format:check garante que todo código committed segue o Prettier.
+        # Husky só formata o staged; este gate pega o diff inteiro da PR.
+        run: bun run format:check
+
       - name: Lint check
-        run: bun run lint
+        # Etapa 46: lint:strict bloqueia warnings acumulados.
+        run: bun run lint:strict
 
       - name: Preflight dos gates com DATABASE_URL
         id: db_url_preflight
@@ -274,7 +291,21 @@ jobs:
         run: bun run type-check:e2e
 
       - name: Unit & Integration Tests
-        run: bun run test:run
+        # Etapa 61: reporter JUnit exporta XML para download/integração com
+        # ferramentas de análise (SonarCloud, Codecov, dashboards de equipe).
+        # O reporter verbose continua visível no log; o junit vai para arquivo.
+        run: |
+          mkdir -p test-results
+          bun run test:run -- --reporter=verbose --reporter=junit --outputFile.junit=test-results/junit.xml
+
+      - name: Publicar resultados JUnit
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: junit-test-results
+          path: test-results/junit.xml
+          retention-days: 30
+          if-no-files-found: warn
 
       - name: Coverage check
         run: bun run test:coverage
@@ -294,6 +325,44 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+
+      - name: Gate de tamanho de bundle (etapa 50)
+        # Impede regressão silenciosa de bundle: nenhum chunk JS individual
+        # pode ultrapassar 600 KB (gzip off). Chunks grandes degradam LCP e
+        # indicam import acidental de dep pesada. Ajuste o threshold em
+        # scripts/ci/bundle-size-threshold.json se uma dep legítima exigir.
+        run: |
+          set -euo pipefail
+          THRESHOLD_KB=600
+          THRESHOLD_BYTES=$((THRESHOLD_KB * 1024))
+          FAIL=0
+          while IFS= read -r -d '' chunk; do
+            size=$(stat -c%s "$chunk")
+            name=$(basename "$chunk")
+            if [ "$size" -gt "$THRESHOLD_BYTES" ]; then
+              echo "::error::Chunk muito grande: $name ($((size / 1024)) KB > ${THRESHOLD_KB} KB)"
+              FAIL=1
+            else
+              echo "  OK  $name  ($((size / 1024)) KB)"
+            fi
+          done < <(find dist/assets -name "*.js" -print0 2>/dev/null)
+          [ "$FAIL" -eq 0 ] || exit 1
+          echo "✅ Todos os chunks JS dentro do limite de ${THRESHOLD_KB} KB."
+
+      - name: Gate env.manifest.json atualizado (etapa 48)
+        # Garante que env.manifest.json reflita o estado atual das envs do código.
+        # Se alguém adicionar/remover uma variável de ambiente e não rodar o
+        # gerador, este gate reprova o CI. Execute: node scripts/generate-env-manifest.mjs
+        run: |
+          set -euo pipefail
+          node scripts/generate-env-manifest.mjs --check 2>/dev/null || \
+            node scripts/generate-env-manifest.mjs
+          if ! git diff --exit-code env.manifest.json > /dev/null 2>&1; then
+            echo "::error::env.manifest.json está desatualizado. Execute 'node scripts/generate-env-manifest.mjs' e commite o resultado."
+            git diff env.manifest.json
+            exit 1
+          fi
+          echo "✅ env.manifest.json atualizado."
 
       - name: Upload Error Logs
         if: failure()
@@ -317,32 +386,8 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          persist-credentials: false
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
-        with:
-          bun-version-file: .bun-version
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: Preflight E2E crítico
         env:
@@ -368,6 +413,17 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           CI: true
 
+      - name: Publicar artefatos de falha E2E crítico (etapa 62)
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: e2e-critical-falhas
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # ---------------------------------------------------------------------------
   # Fluxo destrutivo de logout real — cenário único, isolado e bloqueante.
   # ---------------------------------------------------------------------------
@@ -377,32 +433,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          persist-credentials: false
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
-        with:
-          bun-version-file: .bun-version
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache-destructive
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache-destructive.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache-destructive.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: Preflight E2E destrutivo
         env:
@@ -428,6 +460,17 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           CI: true
 
+      - name: Publicar artefatos de falha E2E destrutivo (etapa 62)
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: e2e-destructive-falhas
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # ---------------------------------------------------------------------------
   # Gate E2E financeiro: telas de dinheiro, 100% offline.
   #
@@ -444,32 +487,8 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          persist-credentials: false
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
-        with:
-          bun-version-file: .bun-version
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache-financeiro
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache-financeiro.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache-financeiro.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: E2E financeiro obrigatório
         run: bunx playwright test --config=playwright.financeiro.config.ts --project=chromium --reporter=list
@@ -496,32 +515,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          persist-credentials: false
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
-        with:
-          bun-version-file: .bun-version
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache-quarantine
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache-quarantine.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache-quarantine.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: Montar lista da quarentena
         run: |
