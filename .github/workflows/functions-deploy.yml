@@ -9,12 +9,110 @@ on:
         type: choice
         default: convidar-usuario
         options:
-          - convidar-usuario
+          - aceitar-convite
+          - analise-fluxo-ia
+          - analise-preditiva
+          - analyze-document
           - api-keys-manage
+          - asaas-proxy
+          - asaas-webhook
+          - benchmarking-setorial
+          - bitrix24-sync
+          - bitrix24-webhook
+          - bling-proxy
+          - bling-webhook
+          - calcular-health-score-operacional
+          - calcular-slo-metrics-diario
+          - calculo-iva
+          - categorizar-despesa
+          - ci-security-gate-log
+          - cnpja-lookup
+          - comparar-benchmark-setorial
           - compare-schemas
+          - conciliacao-ia
+          - conciliacao-proxy
+          - consulta-tributaria
+          - contabilizar-evento
+          - convidar-contador
+          - convidar-usuario
+          - copilot-global
+          - copilot-tributario
+          - decidir-regime
           - detectar-anomalias-financeiras
+          - digest-silenciamentos-erro
+          - enviar-alerta-email
+          - enviar-bitrix24-tributario
+          - enviar-convite-organizacao
+          - enviar-digest-conformidade
+          - enviar-relatorios-tributarios-agendados
+          - executar-analise-preditiva
+          - executar-fechamento-tributario
+          - executar-regua-cobranca
+          - executar-relatorios
+          - expert-agent
+          - exportar-sped-contribuicoes
+          - external-data
+          - gerar-acoes-recomendadas
+          - gerar-alertas
+          - gerar-alertas-dispatcher
+          - gerar-alertas-tributarios
+          - gerar-dre-tributaria
+          - gerar-heatmap-tributario
+          - gerar-pacote-evidencias
+          - gerar-pdf-tributario
+          - gerar-relatorio-anual
+          - gerar-resumo-executivo-semanal
+          - gerar-resumo-financeiro-diario
+          - gerar-snapshots-conformidade
+          - gerar-sped-ecd
+          - gerar-sped-ecf
+          - get-mapbox-token
+          - get-vapid-key
+          - health
+          - insights-relatorio
+          - log-sped-bitrix24
+          - mcp-query
+          - monitorar-erros-frontend
+          - n8n-callback
+          - n8n-dispatch
+          - nfe-upload-certificado
+          - nfe-vinculo-proxy
+          - notify-performance-alert
+          - notify-saved-filter
+          - open-finance
+          - overlay-rejeicoes-auditoria
+          - prever-carga-tributaria
+          - processar-fila-cobrancas
+          - processar-nf-ocr
+          - processar-solicitacao-lgpd
+          - projecao-reforma
+          - relatorio-diario-anomalias
+          - scim-server
+          - sefaz-dfe-dispatcher
+          - sefaz-dfe-puxar
+          - sefaz-manifestar
+          - send-device-alert
           - send-push-notification
+          - simular-presumido
+          - simular-real
+          - simular-simples
+          - sincronizar-anomalia-bitrix24
+          - sso-callback
+          - sso-generate-metadata
+          - sso-initiate
+          - sso-logout
+          - sso-test-login
+          - sso-validate-config
+          - sync-profile-to-bitrix
+          - validar-token-contador
+          - validate-ip-geo
+          - verificar-conformidade-fiscal
+          - webhook-replay
+          - webhook-retry-worker
           - webhook-simulator
+          - whatsapp-ai-analyzer
+          - whatsapp-ia-proativo
+          - whatsapp-webhook
 
 permissions:
   contents: read
