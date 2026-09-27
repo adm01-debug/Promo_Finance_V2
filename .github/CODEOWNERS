@@ -1,0 +1,20 @@
+# CODEOWNERS — revisão automática por área
+#
+# Todas as mudanças exigem revisão do dono do repositório.
+* @adm01-debug
+
+# Workflows de CI/CD — revisão obrigatória
+.github/workflows/ @adm01-debug
+.github/dependabot.yml @adm01-debug
+
+# Migrations de banco — revisão obrigatória (DDL em produção)
+supabase/migrations/ @adm01-debug
+
+# Edge Functions críticas — autenticação, autorização, financeiro
+supabase/functions/_shared/ @adm01-debug
+supabase/functions/mcp-query/ @adm01-debug
+supabase/functions/convidar-usuario/ @adm01-debug
+
+# Scripts de segurança e CI
+scripts/security/ @adm01-debug
+scripts/ci/ @adm01-debug
