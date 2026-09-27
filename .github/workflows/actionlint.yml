@@ -54,13 +54,13 @@ jobs:
 
       - name: Instalar zizmor
         env:
-          ZIZMOR_VERSION: "1.9.0"
-          ZIZMOR_SHA256: "e5c98fa5beadfe7f8df00ae08b3e75ff7eb00c7cb10cf5a02b5c5bae4cd85e9e"
+          ZIZMOR_VERSION: "1.30.1"
+          ZIZMOR_SHA256: "e65324f4430c2717591937edcec90ccbefaf14c174f8ec9415e03ca875b46e1a"
         run: |
           set -euo pipefail
-          arquivo="zizmor-x86_64-unknown-linux-musl.tar.gz"
+          arquivo="zizmor-x86_64-unknown-linux-gnu.tar.gz"
           curl -sSfL -o "$arquivo" \
-            "https://github.com/woodruffw/zizmor/releases/download/v${ZIZMOR_VERSION}/${arquivo}"
+            "https://github.com/zizmorcore/zizmor/releases/download/v${ZIZMOR_VERSION}/${arquivo}"
           echo "${ZIZMOR_SHA256}  ${arquivo}" | sha256sum -c -
           sudo tar -xzf "$arquivo" -C /usr/local/bin zizmor
           zizmor --version
