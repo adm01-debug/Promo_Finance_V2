@@ -83,7 +83,7 @@ jobs:
       - name: Publicar SARIF no Code Scanning
         # Envia para GitHub Security → Code scanning alerts (sempre, mesmo sem achados)
         if: always()
-        uses: github/codeql-action/upload-sarif@28deaed4a8e2e5ec09e15a4fe47ffc84ca4faeff # v3.28.1
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: gitleaks.sarif
           category: gitleaks
@@ -103,7 +103,10 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # Etapa 27: composite action elimina bloco checkout+bun+cache repetido 5x.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      # Etapa 27: composite action elimina bloco bun+cache repetido 5x.
       - uses: ./.github/actions/setup-bun
 
       - name: Security scan
@@ -386,6 +389,9 @@ jobs:
     timeout-minutes: 25
 
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 
@@ -433,6 +439,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 
@@ -487,6 +496,9 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 
@@ -515,6 +527,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 
