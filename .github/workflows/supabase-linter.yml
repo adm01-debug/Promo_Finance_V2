@@ -45,6 +45,9 @@ concurrency:
   group: supabase-linter-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   supabase-linter:
     name: Supabase DB Linter
@@ -128,11 +131,11 @@ jobs:
                 .results[]? as $routine
                 | $routine.issues[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\($routine.function // "desconhecida")] \(.message // "erro sem detalhe")"
+                | "- [\($routine.function // \"desconhecida\")] \(.message // \"erro sem detalhe\")"  
               else
                 .[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\(.name // .function // "desconhecida")] \(.description // .message // "erro sem detalhe")"
+                | "- [\(.name // .function // \"desconhecida\")] \(.description // .message // \"erro sem detalhe\")"
               end
             ' lint.json
             exit "$lint_exit"
@@ -152,11 +155,11 @@ jobs:
                 .results[]? as $routine
                 | $routine.issues[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\($routine.function // "desconhecida")] \(.message // "erro sem detalhe")"
+                | "- [\($routine.function // \"desconhecida\")] \(.message // \"erro sem detalhe\")"
               else
                 .[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\(.name // .function // "desconhecida")] \(.description // .message // "erro sem detalhe")"
+                | "- [\(.name // .function // \"desconhecida\")] \(.description // .message // \"erro sem detalhe\")"
               end
             ' lint.json
             exit 1
