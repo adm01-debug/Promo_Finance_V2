@@ -142,7 +142,7 @@ jobs:
       - name: Preparar Supabase CLI
         uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
         with:
-          version: latest
+          version: 2.22.6
 
       - name: Validar credenciais e contrato de implantação
         run: |
