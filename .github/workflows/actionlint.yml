@@ -42,7 +42,7 @@ jobs:
       - name: Instalar actionlint
         env:
           ACTIONLINT_VERSION: "1.7.7"
-          ACTIONLINT_SHA256: "023070a287cd9f57a89d91cc8dc5099ee25cf7db24df3e04d8ec36a68b35b64a"
+          ACTIONLINT_SHA256: "023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757"
         run: |
           set -euo pipefail
           arquivo="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
