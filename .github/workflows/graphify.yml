@@ -1,6 +1,18 @@
 name: Graphify — mapas privados
 
 on:
+  push:
+    # Etapa 98: reconstruir o mapa de conhecimento automaticamente após cada
+    # merge em main. Sem esse trigger o grafo fica desatualizado até a próxima
+    # PR que toque nesses paths — podendo ficar dias stale em semanas sem PR.
+    branches: [main]
+    paths:
+      - 'scripts/graphify/**'
+      - '.github/workflows/graphify.yml'
+      - 'src/**'
+      - 'supabase/functions/**'
+      - 'supabase/migrations/**'
+      - 'package.json'
   pull_request:
     paths:
       - 'scripts/graphify/**'

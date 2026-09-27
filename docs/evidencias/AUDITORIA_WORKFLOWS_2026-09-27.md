@@ -67,7 +67,7 @@ plano de 100 etapas gerado em 2026-09-27.
 - ✅ Etapa 21: `SECURITY.md` criado
 - ⏳ Etapa 22: environment `copilot` (requer decisão Joaquim)
 
-### Fase 3 — Custo e feedback (etapas 23-25, 26, 31, 34, 35, 36)
+### Fase 3 — Custo e feedback (etapas 23-25, 26, 31, 34, 35, 36, 48, 49, 50, 61, 62, 67, 98)
 - ✅ Etapa 23: `concurrency: cancel-in-progress: true` em 3 workflows
 - ✅ Etapa 24: `e2e-quarantine` como non-blocking
 - ✅ Etapa 25: test:run + coverage unificados
@@ -76,6 +76,13 @@ plano de 100 etapas gerado em 2026-09-27.
 - ✅ Etapa 34: runner `ubuntu-latest` (já ok — ubuntu-24.04 não disponível)
 - ✅ Etapa 35: timeout-minutes adicionado ao post-merge-audit
 - ✅ Etapa 36: este documento
+- ✅ Etapa 48: Gate `env.manifest.json` up-to-date no quality-gate
+- ✅ Etapa 49: Gate baseline gitleaks só encolhe (nunca cresce) no secret-scan
+- ✅ Etapa 50: Bundle size gate — nenhum chunk JS > 600 KB após build
+- ✅ Etapa 61: JUnit XML reporter em Unit & Integration Tests + upload artifact
+- ✅ Etapa 62: Upload de trace/screenshot em falha para e2e-critical e e2e-destructive
+- ✅ Etapa 67: `process.env.TZ = 'America/Sao_Paulo'` em playwright.critical e playwright.destructive
+- ✅ Etapa 98: Trigger `push: [main]` adicionado ao workflow graphify (sync pós-merge)
 
 ### Fase 4 — Banco e gates (etapas 44, 45, 46, 47)
 - ✅ Etapa 44: stub `lint.json` no supabase-linter
