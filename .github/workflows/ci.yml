@@ -92,7 +92,16 @@ jobs:
           # Versão gerenciada via .bun-version na raiz do repositório.
           bun-version-file: .bun-version
 
+      - name: Cache node_modules
+        id: bun-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
       - name: Install dependencies
+        if: steps.bun-cache.outputs.cache-hit != 'true'
         run: bun install --frozen-lockfile
 
       - name: Security scan
@@ -133,8 +142,14 @@ jobs:
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
         run: node scripts/security/test-lint-function-repairs.mjs
 
+      - name: Format check
+        # Etapa 45: format:check garante que todo código committed segue o Prettier.
+        # Husky só formata o staged; este gate pega o diff inteiro da PR.
+        run: bun run format:check
+
       - name: Lint check
-        run: bun run lint
+        # Etapa 46: lint:strict bloqueia warnings acumulados.
+        run: bun run lint:strict
 
       - name: Preflight dos gates com DATABASE_URL
         id: db_url_preflight
@@ -326,7 +341,16 @@ jobs:
         with:
           bun-version-file: .bun-version
 
+      - name: Cache node_modules
+        id: bun-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
       - name: Install dependencies
+        if: steps.bun-cache.outputs.cache-hit != 'true'
         run: bun install --frozen-lockfile
 
       - name: Cache Playwright browsers
@@ -386,7 +410,16 @@ jobs:
         with:
           bun-version-file: .bun-version
 
+      - name: Cache node_modules
+        id: bun-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
       - name: Install dependencies
+        if: steps.bun-cache.outputs.cache-hit != 'true'
         run: bun install --frozen-lockfile
 
       - name: Cache Playwright browsers
@@ -453,7 +486,16 @@ jobs:
         with:
           bun-version-file: .bun-version
 
+      - name: Cache node_modules
+        id: bun-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
       - name: Install dependencies
+        if: steps.bun-cache.outputs.cache-hit != 'true'
         run: bun install --frozen-lockfile
 
       - name: Cache Playwright browsers
@@ -505,7 +547,16 @@ jobs:
         with:
           bun-version-file: .bun-version
 
+      - name: Cache node_modules
+        id: bun-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
       - name: Install dependencies
+        if: steps.bun-cache.outputs.cache-hit != 'true'
         run: bun install --frozen-lockfile
 
       - name: Cache Playwright browsers
