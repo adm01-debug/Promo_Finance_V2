@@ -1,5 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// Etapa 67: fuso fixo para reproduzir o que o usuário brasileiro vê.
+// Datas DATE puras ("2026-09-13") são interpretadas como meia-noite UTC;
+// em UTC-3 isso exibe o dia anterior — bug invisível sem fuso explícito.
+process.env.TZ = 'America/Sao_Paulo';
+
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:8080';
 const chromiumExecutablePath =
   process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || process.env.CHROMIUM_EXECUTABLE_PATH;
@@ -19,7 +24,8 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL,
-    trace: 'off',
+    // Etapa 62: trace on-first-retry permite debug pós-falha sem overhead em runs normais.
+    trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'off',
     actionTimeout: 10000,

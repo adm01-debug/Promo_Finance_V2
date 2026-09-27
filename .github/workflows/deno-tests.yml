@@ -2,13 +2,13 @@ name: Deno Edge Function Tests
 
 on:
   push:
-    # Roda só em branches permanentes. PRs já disparam pull_request abaixo,
+    # Roda só em main. PRs já disparam pull_request abaixo,
     # então limitar push evita o duplo-trigger (push + PR) em toda branch de
     # feature — economiza ~2 runs × ~8 min por push.
-    branches: [main, master, develop]
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [main, master, develop]
+    branches: [main]
   workflow_dispatch:
 
 # Cancela runs anteriores no mesmo branch para economizar minutos.
@@ -21,12 +21,14 @@ permissions:
 
 jobs:
   unit-tests:
-    name: Unit tests (offline, determinísticos)
+    name: Unit tests (offline, deterministic)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Deno
         uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2
@@ -40,7 +42,7 @@ jobs:
           path: |
             ~/.cache/deno
             ~/.deno
-          key: deno-${{ runner.os }}-${{ hashFiles('supabase/functions/**/*.ts') }}
+          key: deno-${{ runner.os }}-${{ hashFiles('deno.lock') }}
           restore-keys: |
             deno-${{ runner.os }}-
 
@@ -137,6 +139,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Deno
         uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2
@@ -149,7 +153,7 @@ jobs:
           path: |
             ~/.cache/deno
             ~/.deno
-          key: deno-${{ runner.os }}-${{ hashFiles('supabase/functions/**/*.ts') }}
+          key: deno-${{ runner.os }}-${{ hashFiles('deno.lock') }}
           restore-keys: |
             deno-${{ runner.os }}-
 

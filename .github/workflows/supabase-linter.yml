@@ -56,6 +56,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Gate offline do banco canônico
         run: node --test scripts/security/test-canonical-db-gates.test.mjs
@@ -77,7 +79,12 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
         with:
-          version: latest
+          version: 2.22.6
+
+      - name: Inicializar lint.json
+        # Etapa 44: garante que o artefato sempre existe, mesmo se um gate live
+        # falhar antes do step "Run Supabase linter". O step de lint sobrescreve.
+        run: echo '{"results":[]}' > lint.json
 
       - name: Preflight dos gates live do Supabase
         env:

@@ -1,0 +1,78 @@
+name: Workflow Linter (actionlint + zizmor)
+
+# Gate estático dos próprios arquivos de workflow.
+# Captura expressões injetáveis, outputs inválidos, condicionais erradas,
+# e riscos de supply chain antes que cheguem ao runner.
+#
+# actionlint: validação estrutural e semântica do YAML de workflow
+# zizmor:     análise de segurança específica para GitHub Actions
+#             (detecção de script injection, permissões excessivas etc.)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actionlint.yaml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actionlint.yaml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: actionlint-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-workflows:
+    name: Lint GitHub Actions workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Instalar actionlint
+        env:
+          ACTIONLINT_VERSION: "1.7.7"
+          ACTIONLINT_SHA256: "023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757"
+        run: |
+          set -euo pipefail
+          arquivo="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -sSfL -o "$arquivo" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${arquivo}"
+          echo "${ACTIONLINT_SHA256}  ${arquivo}" | sha256sum -c -
+          sudo tar -xzf "$arquivo" -C /usr/local/bin actionlint
+          actionlint --version
+
+      - name: Instalar zizmor
+        env:
+          ZIZMOR_VERSION: "1.30.1"
+          ZIZMOR_SHA256: "e65324f4430c2717591937edcec90ccbefaf14c174f8ec9415e03ca875b46e1a"
+        run: |
+          set -euo pipefail
+          arquivo="zizmor-x86_64-unknown-linux-gnu.tar.gz"
+          curl -sSfL -o "$arquivo" \
+            "https://github.com/zizmorcore/zizmor/releases/download/v${ZIZMOR_VERSION}/${arquivo}"
+          echo "${ZIZMOR_SHA256}  ${arquivo}" | sha256sum -c -
+          sudo tar -xzf "$arquivo" -C /usr/local/bin zizmor
+          zizmor --version
+
+      - name: actionlint
+        # shellcheck integrado: valida os blocos `run:` como shell scripts
+        run: actionlint -shellcheck shellcheck .github/workflows/*.yml
+
+      - name: zizmor
+        # Pedantic expõe todos os níveis; --min-severity high falha só no crítico
+        run: |
+          zizmor --min-severity high .github/workflows/*.yml || {
+            echo "::error::zizmor encontrou riscos de segurança de alta severidade."
+            exit 1
+          }
