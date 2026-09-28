@@ -142,10 +142,11 @@ jobs:
             --output available \
             SUPABASE_DB_PASSWORD
 
-      - name: Warn when linter skipped (missing password)
+      - name: Fail when linter skipped (missing password)
         if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available != 'true'
         run: |
-          echo "::warning::SUPABASE_DB_PASSWORD não configurado — supabase db lint pulado. Configure o secret para habilitar a verificação completa de RLS/GRANT."
+          echo "::error::SUPABASE_DB_PASSWORD não configurado — impossível executar supabase db lint em PR com mudanças de banco. Configure o secret para habilitar a verificação completa de RLS/GRANT."
+          exit 1
 
       - name: Run Supabase linter (fail on ERROR)
         if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available == 'true'
