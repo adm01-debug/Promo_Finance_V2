@@ -55,9 +55,12 @@ jobs:
 
       - name: Detect DB file changes
         id: filter
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch origin "${{ github.base_ref }}" --depth=1 2>/dev/null || true
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git fetch origin "$BASE_REF" --depth=1 2>/dev/null || true
             changed=$(git diff --name-only FETCH_HEAD 2>/dev/null || true)
             if echo "$changed" | grep -qE '^(supabase/migrations/|supabase/functions/|scripts/security/|scripts/ci/require-env\.sh|supabase/config\.toml|\.github/workflows/supabase-linter\.yml)'; then
               relevant=true
