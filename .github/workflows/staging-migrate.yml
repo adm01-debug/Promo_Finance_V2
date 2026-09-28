@@ -73,7 +73,9 @@ jobs:
           echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
 
       - name: Executar staging-migrate
-        run: bash scripts/staging-migrate.sh ${{ steps.flags.outputs.flags }}
+        env:
+          STAGING_FLAGS: ${{ steps.flags.outputs.flags }}
+        run: bash scripts/staging-migrate.sh $STAGING_FLAGS
 
       - name: Upload logs
         if: always()

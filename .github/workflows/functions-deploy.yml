@@ -154,9 +154,11 @@ jobs:
           bash scripts/security/test-functions-deploy.sh
 
       - name: Implantar somente a função aprovada
+        env:
+          FUNCTION_NAME: ${{ inputs.function_name }}
         run: |
           set -euo pipefail
-          bash scripts/migrate-functions.sh --only "${{ inputs.function_name }}"
+          bash scripts/migrate-functions.sh --only "$FUNCTION_NAME"
 
       - name: Registrar evidência do deploy
         if: always()

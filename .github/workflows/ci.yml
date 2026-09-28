@@ -593,20 +593,27 @@ jobs:
 
       - name: Publicar resumo da quarentena
         if: always()
+        env:
+          RESULT_QUALITY_GATE: ${{ needs.quality-gate.result }}
+          RESULT_E2E_CRITICAL: ${{ needs.e2e-critical.result }}
+          RESULT_E2E_DESTRUCTIVE: ${{ needs.e2e-destructive.result }}
+          RESULT_E2E_FINANCEIRO: ${{ needs.e2e-financeiro.result }}
+          QUARANTINE_SPECS_COUNT: ${{ steps.quarantine_specs.outputs.count }}
+          QUARANTINE_RUN_OUTCOME: ${{ steps.quarantine_run.outcome }}
         run: |
           {
             echo "## E2E Quarantine"
             echo
             echo "- Natureza: não bloqueante"
-            echo "- Resultado do quality-gate: ${{ needs.quality-gate.result }}"
-            echo "- Resultado do e2e-critical: ${{ needs.e2e-critical.result }}"
-            echo "- Resultado do e2e-destructive: ${{ needs.e2e-destructive.result }}"
-            echo "- Resultado do e2e-financeiro: ${{ needs.e2e-financeiro.result }}"
-            echo "- Specs listadas: ${{ steps.quarantine_specs.outputs.count }}"
-            if [ "${{ steps.quarantine_specs.outputs.count }}" = "0" ]; then
+            echo "- Resultado do quality-gate: $RESULT_QUALITY_GATE"
+            echo "- Resultado do e2e-critical: $RESULT_E2E_CRITICAL"
+            echo "- Resultado do e2e-destructive: $RESULT_E2E_DESTRUCTIVE"
+            echo "- Resultado do e2e-financeiro: $RESULT_E2E_FINANCEIRO"
+            echo "- Specs listadas: $QUARANTINE_SPECS_COUNT"
+            if [ "$QUARANTINE_SPECS_COUNT" = "0" ]; then
               echo "- Resultado: nenhuma spec elegível para quarentena"
             else
-              echo "- Resultado do step: ${{ steps.quarantine_run.outcome }}"
+              echo "- Resultado do step: $QUARANTINE_RUN_OUTCOME"
               echo
               echo "### Arquivos executados"
               sed 's/^/- `/' quarantine-specs.txt | sed 's/$/`/'
