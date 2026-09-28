@@ -1,14 +1,11 @@
-title = "Promo Finance V2 — gitleaks configuration"
+title = "Promo Finance V2 – gitleaks configuration"
 
-# Extends the default ruleset without replacing it.
 [extend]
 useDefault = true
 
-# ─── Global allowlist ───────────────────────────────────────────────────────
-# Suprime falsos positivos documentados. Cada entrada deve ter justificativa.
-# NUNCA use allowlist para suprimir credenciais reais — remova do código.
 [allowlist]
 description = "SHA hashes em workflow files nao sao segredos"
+condition = "AND"
 # SHA pins de GitHub Actions (40 hex) e checksums SHA256 de binarios (64 hex)
 # acionam regras de alta entropia, mas nao sao credenciais operacionais.
 paths = [
