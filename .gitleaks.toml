@@ -3,7 +3,7 @@ title = "Promo Finance V2 – gitleaks configuration"
 [extend]
 useDefault = true
 
-[allowlist]
+[[allowlists]]
 description = "SHA hashes em workflow files nao sao segredos"
 condition = "AND"
 # SHA pins de GitHub Actions (40 hex) e checksums SHA256 de binarios (64 hex)
@@ -15,4 +15,14 @@ paths = [
 regexes = [
   '''(?i)^[0-9a-f]{40}$''',
   '''(?i)^[0-9a-f]{64}$''',
+]
+
+[[allowlists]]
+description = "public/sw.js — promo-brindes-api-v2 eh identificador de cache de Service Worker, nao credencial (generic-api-key false positive confirmado)"
+targetRules = ["generic-api-key"]
+paths = [
+  '''public/sw\.js''',
+]
+regexes = [
+  '''promo-brindes-api-v2''',
 ]
