@@ -1,1 +1,1 @@
-SELECT placeholder_v20260722193655 FROM (VALUES (NULL::int)) t(placeholder_v20260722193655) LIMIT 0;
+-- placeholder prod-only: 20260722193655
