@@ -20,6 +20,7 @@ regexes = [
 [[allowlists]]
 description = "public/sw.js — promo-brindes-api-v2 eh identificador de cache de Service Worker, nao credencial (generic-api-key false positive confirmado)"
 targetRules = ["generic-api-key"]
+condition = "AND"
 paths = [
   '''public/sw\.js''',
 ]
