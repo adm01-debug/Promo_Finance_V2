@@ -53,9 +53,18 @@ const edge = [...edgeSet].sort().map(name => ({
   dest: autoProvided.has(name) ? 'supabase_auto' : 'supabase_vault',
 }));
 
-// CI — secrets referenciados no ci.yml
-const ciYml = readFileSync('.github/workflows/ci.yml', 'utf8');
-const ciSet = new Set([...ciYml.matchAll(/secrets\.([A-Z0-9_]+)/g)].map(m => m[1]));
+// CI — secrets referenciados em todos os workflows do repositório
+const ciWorkflows = [
+  '.github/workflows/ci.yml',
+  '.github/workflows/supabase-linter.yml',
+];
+const ciSet = new Set();
+for (const wf of ciWorkflows) {
+  try {
+    const src = readFileSync(wf, 'utf8');
+    for (const m of src.matchAll(/secrets\.([A-Z0-9_]+)/g)) ciSet.add(m[1]);
+  } catch { /* workflow ausente — ignorar */ }
+}
 const ci = [...ciSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
 
 const freshVars = [...frontend, ...edge, ...ci];

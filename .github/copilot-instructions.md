@@ -41,4 +41,6 @@ NF-e/SEFAZ/SPED, Tributário (Simples/Presumido/Real), Cobrança (Asaas),
 Relatórios/DRE, Integrações (Bling ERP, Bitrix24 CRM, WhatsApp IA).
 
 Empresas geridas no mesmo banco Supabase — isolamento garantido por RLS
-(`organizacao_id` em todas as tabelas multi-tenant).
+(`empresa_id` na maioria das tabelas; `empresa_acessivel(empresa_id)` nas policies;
+`organizacao_id` existe mas é restrito ao subsistema de organizações — não usar em
+queries, policies ou migrations financeiras onde a chave correta é `empresa_id`).

@@ -29,6 +29,7 @@ concurrency:
 permissions:
   contents: read
   security-events: write  # publicar SARIF no Code Scanning
+  actions: read            # obrigatório em repos privados para CodeQL completar
 
 jobs:
   analyze:
