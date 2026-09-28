@@ -46,7 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           arquivo="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
-          curl -sSfL -o "$arquivo" \
+          curl -sSfL --proto '=https' --tlsv1.2 -o "$arquivo" \
             "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${arquivo}"
           echo "${ACTIONLINT_SHA256}  ${arquivo}" | sha256sum -c -
           sudo tar -xzf "$arquivo" -C /usr/local/bin actionlint
@@ -59,7 +59,7 @@ jobs:
         run: |
           set -euo pipefail
           arquivo="zizmor-x86_64-unknown-linux-gnu.tar.gz"
-          curl -sSfL -o "$arquivo" \
+          curl -sSfL --proto '=https' --tlsv1.2 -o "$arquivo" \
             "https://github.com/zizmorcore/zizmor/releases/download/v${ZIZMOR_VERSION}/${arquivo}"
           echo "${ZIZMOR_SHA256}  ${arquivo}" | sha256sum -c -
           sudo tar -xzf "$arquivo" -C /usr/local/bin zizmor
