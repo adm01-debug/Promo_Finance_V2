@@ -1,1 +1,1 @@
-select 1; -- prod-only migration 20260728131052: applied before git tracking, no-op for preview
+SELECT '20260728131052' AS placeholder_version;
