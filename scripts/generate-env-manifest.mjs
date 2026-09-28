@@ -28,10 +28,20 @@ const frontend = [
 const funcsDir = 'supabase/functions';
 const edgeSet = new Set();
 for (const dir of readdirSync(funcsDir)) {
-  if (dir === '_shared') continue;
+  if (dir === '_shared') {
+    // Scan _shared/*.ts (exceto arquivos _test.ts) — contém helpers usados por todas as funções
+    try {
+      for (const f of readdirSync(`${funcsDir}/_shared`)) {
+        if (!f.endsWith('.ts') || f.endsWith('_test.ts')) continue;
+        const t = readFileSync(`${funcsDir}/_shared/${f}`, 'utf8');
+        for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+      }
+    } catch { /* _shared ausente */ }
+    continue;
+  }
   try {
     const t = readFileSync(`${funcsDir}/${dir}/index.ts`, 'utf8');
-    for (const m of t.matchAll(/Deno\.env\.get\(['"]([ A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+    for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
   } catch { /* pasta sem index.ts */ }
 }
 const autoProvided = new Set([
