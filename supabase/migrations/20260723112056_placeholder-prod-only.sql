@@ -1,1 +1,1 @@
-SELECT '20260723112056' AS placeholder_version;
+SELECT placeholder_v20260723112056 FROM (VALUES (NULL::int)) t(placeholder_v20260723112056) LIMIT 0;
