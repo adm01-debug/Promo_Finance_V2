@@ -147,16 +147,16 @@ jobs:
 
           if [ "$lint_exit" -ne 0 ]; then
             echo "::error::Supabase linter detectou ERROR(s) de segurança/RLS/GRANT."
-            jq -r '
+            jq -r --arg f "desconhecida" --arg m "erro sem detalhe" '
               if type == "object" then
                 .results[]? as $routine
                 | $routine.issues[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\($routine.function // \"desconhecida\")] \(.message // \"erro sem detalhe\")"  
+                | "- [\($routine.function // $f)] \(.message // $m)"
               else
                 .[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\(.name // .function // \"desconhecida\")] \(.description // .message // \"erro sem detalhe\")"
+                | "- [\(.name // .function // $f)] \(.description // .message // $m)"
               end
             ' lint.json
             exit "$lint_exit"
@@ -171,16 +171,16 @@ jobs:
             | select(((.level // "") | ascii_downcase) == "error")
           ' lint.json >/dev/null; then
             echo "::error::Supabase linter retornou ERROR no JSON com exit code zero."
-            jq -r '
+            jq -r --arg f "desconhecida" --arg m "erro sem detalhe" '
               if type == "object" then
                 .results[]? as $routine
                 | $routine.issues[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\($routine.function // \"desconhecida\")] \(.message // \"erro sem detalhe\")"
+                | "- [\($routine.function // $f)] \(.message // $m)"
               else
                 .[]?
                 | select(((.level // "") | ascii_downcase) == "error")
-                | "- [\(.name // .function // \"desconhecida\")] \(.description // .message // \"erro sem detalhe\")"
+                | "- [\(.name // .function // $f)] \(.description // .message // $m)"
               end
             ' lint.json
             exit 1
