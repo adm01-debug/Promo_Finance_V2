@@ -9,11 +9,6 @@ inputs:
     description: Unique suffix for the cache step ID (prevents job-level conflicts)
     default: 'pw'
 
-outputs:
-  cache-hit:
-    description: Whether the Playwright browser cache was restored
-    value: ${{ steps.pw-cache.outputs.cache-hit }}
-
 runs:
   using: composite
   steps:

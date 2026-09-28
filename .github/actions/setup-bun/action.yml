@@ -3,11 +3,6 @@ description: >
   Setup-bun (via .bun-version) + node_modules cache + conditional install.
   Deve ser chamado APÓS actions/checkout no workflow chamador.
 
-outputs:
-  cache-hit:
-    description: Whether the node_modules cache was restored
-    value: ${{ steps.bun-cache.outputs.cache-hit }}
-
 runs:
   using: composite
   steps:
