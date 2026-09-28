@@ -1,0 +1,2 @@
+-- no-op: version registered in schema_migrations to anchor position before 20260518153331
+-- The actual DROP FUNCTION IF EXISTS get_cron_jobs() is in migration 20260518153331
