@@ -51,18 +51,27 @@ jobs:
         # pode encolher (segredos remediados), nunca crescer (novos segredos
         # suprimidos). Um novo segredo real deve ser removido do código; um
         # falso positivo deve ser documentado como exceção com justificativa.
+        # Compara o CONJUNTO de fingerprints (não a contagem) para detectar
+        # substituição de entradas históricas por novas supressões.
         run: |
           set -euo pipefail
-          baseline_count=$(jq 'length' .gitleaks-baseline.json)
-          # Obtém a contagem na ponta de main para comparar
           git fetch --depth=1 origin main 2>/dev/null || true
           if git show origin/main:.gitleaks-baseline.json >/dev/null 2>&1; then
-            main_count=$(git show origin/main:.gitleaks-baseline.json | jq 'length')
-            if [ "$baseline_count" -gt "$main_count" ]; then
-              echo "::error::Baseline de segredos CRESCEU: main=$main_count PR=$baseline_count (+$((baseline_count - main_count))). Remova o(s) segredo(s) do código; não os suprima no baseline."
+            # Extrai e ordena fingerprints de ambas as versões
+            jq -r '.[].Fingerprint' .gitleaks-baseline.json | sort > /tmp/pr_fps.txt
+            git show origin/main:.gitleaks-baseline.json | jq -r '.[].Fingerprint' | sort > /tmp/main_fps.txt
+            pr_count=$(wc -l < /tmp/pr_fps.txt)
+            main_count=$(wc -l < /tmp/main_fps.txt)
+            # Fingerprints na PR ausentes em main → nova supressão detectada
+            comm -23 /tmp/pr_fps.txt /tmp/main_fps.txt > /tmp/new_fps.txt
+            new_count=$(wc -l < /tmp/new_fps.txt)
+            if [ "$new_count" -gt 0 ]; then
+              echo "::error::Baseline tem ${new_count} nova(s) supressão(ões) ausentes em main (substituição detectada mesmo sem crescimento de contagem)."
+              sed 's/^/  + /' /tmp/new_fps.txt
+              echo "Remova o(s) segredo(s) do código; não os suprima no baseline."
               exit 1
             fi
-            echo "Baseline: PR=$baseline_count main=$main_count — OK (sem crescimento)"
+            echo "Baseline: PR=${pr_count} entradas, main=${main_count} — conjunto PR ⊆ main — OK"
           else
             echo "Branch main sem baseline ainda — pulando comparação."
           fi
