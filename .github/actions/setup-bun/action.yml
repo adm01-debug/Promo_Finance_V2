@@ -1,12 +1,7 @@
 name: Setup Bun with cache
 description: >
-  Checkout + setup-bun (via .bun-version) + node_modules cache + conditional install.
-  Eliminates the 5-times-repeated setup block across all CI jobs.
-
-inputs:
-  fetch-depth:
-    description: Number of commits to fetch (0 = all history)
-    default: '1'
+  Setup-bun (via .bun-version) + node_modules cache + conditional install.
+  Deve ser chamado APÓS actions/checkout no workflow chamador.
 
 outputs:
   cache-hit:
@@ -16,11 +11,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      with:
-        fetch-depth: ${{ inputs.fetch-depth }}
-        persist-credentials: false
-
     - name: Setup Bun
       uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
       with:

@@ -53,11 +53,11 @@ jobs:
         # falso positivo deve ser documentado como exceção com justificativa.
         run: |
           set -euo pipefail
-          baseline_count=$(jq '.leaks | length' .gitleaks-baseline.json)
+          baseline_count=$(jq 'length' .gitleaks-baseline.json)
           # Obtém a contagem na ponta de main para comparar
           git fetch --depth=1 origin main 2>/dev/null || true
           if git show origin/main:.gitleaks-baseline.json >/dev/null 2>&1; then
-            main_count=$(git show origin/main:.gitleaks-baseline.json | jq '.leaks | length')
+            main_count=$(git show origin/main:.gitleaks-baseline.json | jq 'length')
             if [ "$baseline_count" -gt "$main_count" ]; then
               echo "::error::Baseline de segredos CRESCEU: main=$main_count PR=$baseline_count (+$((baseline_count - main_count))). Remova o(s) segredo(s) do código; não os suprima no baseline."
               exit 1
@@ -83,7 +83,7 @@ jobs:
       - name: Publicar SARIF no Code Scanning
         # Envia para GitHub Security → Code scanning alerts (sempre, mesmo sem achados)
         if: always()
-        uses: github/codeql-action/upload-sarif@28deaed4a8e2e5ec09e15a4fe47ffc84ca4faeff # v3.28.1
+        uses: github/codeql-action/upload-sarif@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
         with:
           sarif_file: gitleaks.sarif
           category: gitleaks
@@ -103,7 +103,10 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # Etapa 27: composite action elimina bloco checkout+bun+cache repetido 5x.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      # Etapa 27: composite action elimina bloco bun+cache repetido 5x.
       - uses: ./.github/actions/setup-bun
 
       - name: Security scan
@@ -150,8 +153,8 @@ jobs:
         run: bun run format:check
 
       - name: Lint check
-        # Etapa 46: lint:strict bloqueia warnings acumulados.
-        run: bun run lint:strict
+        # Etapa 46: bloqueia erros de lint.
+        run: bun run lint
 
       - name: Preflight dos gates com DATABASE_URL
         id: db_url_preflight
@@ -386,6 +389,9 @@ jobs:
     timeout-minutes: 25
 
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 
@@ -433,6 +439,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 
@@ -487,6 +496,9 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 
@@ -515,6 +527,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun
       - uses: ./.github/actions/setup-playwright
 

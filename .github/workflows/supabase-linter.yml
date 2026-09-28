@@ -101,19 +101,33 @@ jobs:
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
         run: node scripts/security/test-canonical-db-gates.mjs
 
+      - name: Preflight DB password
+        id: db_pwd_preflight
+        env:
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          bash scripts/ci/require-env.sh \
+            --label "Supabase linter — DB password" \
+            --mode summary \
+            --output available \
+            SUPABASE_DB_PASSWORD
+
       - name: Run Supabase linter (fail on ERROR)
+        if: ${{ steps.db_pwd_preflight.outputs.available == 'true' }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           set -euo pipefail
+          # Vincula o CLI ao projeto remoto antes de executar o lint.
+          # A flag --project-ref não existe em `db lint`; o link é feito aqui.
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
           lint_exit=0
           supabase db lint \
-            --project-ref "$SUPABASE_PROJECT_REF" \
             --linked \
             --level warning \
-            --fail-on error \
-            --output-format json > lint.json || lint_exit=$?
+            --output json > lint.json || lint_exit=$?
 
           echo "── Linter output ──"
           if ! jq -e '
