@@ -41,10 +41,10 @@ export async function runLoadTest(url: string, options: {
         } else {
           failedRequests++;
         }
-      } catch (err) {
+      } catch (err: unknown) {
         totalRequests++;
         failedRequests++;
-        console.error(`Request failed: ${err.message}`);
+        console.error(`Request failed: ${err instanceof Error ? err.message : String(err)}`);
       }
     }
   };

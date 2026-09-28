@@ -1,6 +1,18 @@
 name: Graphify — mapas privados
 
 on:
+  push:
+    # Etapa 98: reconstruir o mapa de conhecimento automaticamente após cada
+    # merge em main. Sem esse trigger o grafo fica desatualizado até a próxima
+    # PR que toque nesses paths — podendo ficar dias stale em semanas sem PR.
+    branches: [main]
+    paths:
+      - 'scripts/graphify/**'
+      - '.github/workflows/graphify.yml'
+      - 'src/**'
+      - 'supabase/functions/**'
+      - 'supabase/migrations/**'
+      - 'package.json'
   pull_request:
     paths:
       - 'scripts/graphify/**'
@@ -11,6 +23,13 @@ on:
       - 'package.json'
   workflow_dispatch:
 
+# Cancela a run anterior no mesmo PR/branch quando novo push chega —
+# o grafo é reconstruído do zero a cada run, então runs intermediárias
+# desperdiçam ~13 minutos de runner em paralelo (11 perfis × 1 min).
+concurrency:
+  group: graphify-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -19,10 +38,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.11'
       - name: Testar filtros e simular falhas
@@ -60,10 +79,10 @@ jobs:
           - finance-contabilidade
           - finance-tributario
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.11'
       - name: Instalar ferramenta de desenvolvimento fixada

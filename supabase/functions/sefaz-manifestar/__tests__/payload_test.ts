@@ -185,10 +185,12 @@ Deno.test("payload: envelope contém chave, CNPJ autor e tpEvento corretos", asy
   // Certificado consultado com filtros corretos (cnpj + ambiente + ativo + valido_ate)
   const certSel = selects.find((s) => s.table === "empresas_certificados")!;
   assert(certSel, "esperava select em empresas_certificados");
-  assertEquals(
-    certSel.filters.sort(),
-    [["ambiente", "homologacao"], ["ativo", true], ["cnpj", CNPJ]].sort(),
-  );
+  const expectedCertFilters: [string, unknown][] = [
+    ["ambiente", "homologacao"],
+    ["ativo", true],
+    ["cnpj", CNPJ],
+  ];
+  assertEquals(certSel.filters.sort(), expectedCertFilters.sort());
   assertEquals(certSel.gte.length, 1);
   assertEquals(certSel.gte[0][0], "valido_ate");
 
