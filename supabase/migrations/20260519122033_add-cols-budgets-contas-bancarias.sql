@@ -8,3 +8,6 @@ ADD COLUMN IF NOT EXISTS valor_total NUMERIC;
 
 ALTER TABLE public.contas_bancarias
 ADD COLUMN IF NOT EXISTS nome TEXT;
+
+ALTER TABLE public.solicitacoes_aprovacao
+ADD COLUMN IF NOT EXISTS entidade_tipo TEXT;
