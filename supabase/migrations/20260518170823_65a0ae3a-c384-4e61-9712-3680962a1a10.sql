@@ -129,6 +129,9 @@ BEGIN
 END;
 $$;
 
+-- Drop existing get_cron_run_history (may exist with different return type from earlier migration)
+DROP FUNCTION IF EXISTS public.get_cron_run_history(text, integer);
+
 -- Implement get_cron_run_history
 CREATE OR REPLACE FUNCTION public.get_cron_run_history(p_job_name text DEFAULT NULL, p_limit int DEFAULT 100)
 RETURNS jsonb
