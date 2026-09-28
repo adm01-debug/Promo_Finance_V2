@@ -1,2 +1,3 @@
--- no-op: version registered in schema_migrations to anchor position before 20260728110753
--- The actual DROP FUNCTION IF EXISTS get_cron_jobs() is in migration 20260728110753
+-- no-op: versao registrada em schema_migrations do Preview em execucao anterior;
+-- conteudo (DROP FUNCTION) foi movido para arquivo subsequente.
+SELECT 1;
