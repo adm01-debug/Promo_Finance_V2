@@ -62,7 +62,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
-            git fetch "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BASE_REF" --depth=1 2>/dev/null
+            git -c "http.https://github.com/.extraHeader=Authorization: token ${GITHUB_TOKEN}" \
+              fetch "https://github.com/${GITHUB_REPOSITORY}.git" "$BASE_REF" --depth=1 2>/dev/null
             changed=$(git diff --name-only FETCH_HEAD)
             if echo "$changed" | grep -qE '^(supabase/migrations/|supabase/functions/|scripts/security/|scripts/ci/require-env\.sh|supabase/config\.toml|\.github/workflows/supabase-linter\.yml)'; then
               relevant=true
