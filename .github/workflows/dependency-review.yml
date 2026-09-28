@@ -1,0 +1,41 @@
+name: Dependency Review
+
+# Bloqueia PRs que introduzem dependência nova com vulnerabilidade conhecida
+# (CVE) ou com licença proibida. Roda apenas em pull_request porque o contexto
+# de diff (base → head) só existe nesse evento.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: dep-review-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write  # permite que a action comente na PR
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@38ecb5b593bf0eb19e335c03f97670f792489a8b # v4
+        with:
+          # Bloquear qualquer vulnerabilidade (low → critical)
+          fail-on-severity: low
+          # Licenças permissivas aprovadas; copyleft ou proprietárias bloqueiam
+          allow-licenses: >-
+            MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC,
+            0BSD, Unlicense, CC0-1.0, BlueOak-1.0.0, Python-2.0,
+            LGPL-2.1, LGPL-3.0, MPL-2.0
+          # Comentar no PR com o resumo dos achados
+          comment-summary-in-pr: always

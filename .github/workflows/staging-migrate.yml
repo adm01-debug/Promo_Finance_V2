@@ -20,6 +20,9 @@ concurrency:
   group: staging-migrate
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   migrate:
     runs-on: ubuntu-latest
@@ -34,42 +37,51 @@ jobs:
       REQUIRED_SECRETS: ${{ vars.REQUIRED_SECRETS }}
       PROD_PROJECT_REF: ${{ vars.PROD_PROJECT_REF }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
-          bun-version: latest
+          bun-version-file: .bun-version
 
       - name: Instalar utilitários
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client jq gettext-base curl
 
-      - name: Instalar Supabase CLI
-        run: |
-          curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz \
-            | sudo tar -xz -C /usr/local/bin supabase
-          supabase --version
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.22.6
 
       - name: bun install
         run: bun install --frozen-lockfile
 
       - name: Preparar flags
         id: flags
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          REFRESH_BASELINE: ${{ inputs.refresh_baseline }}
+          ONLY_INTEGRITY: ${{ inputs.only_integrity }}
         run: |
           FLAGS=""
-          ${{ inputs.dry_run }}         && FLAGS="$FLAGS --dry-run"        || true
-          ${{ !inputs.refresh_baseline }} && FLAGS="$FLAGS --skip-baseline" || true
-          ${{ inputs.only_integrity }}  && FLAGS="$FLAGS --only-integrity" || true
+          if [ "$DRY_RUN" = "true" ]; then FLAGS="$FLAGS --dry-run"; fi
+          if [ "$REFRESH_BASELINE" != "true" ]; then FLAGS="$FLAGS --skip-baseline"; fi
+          if [ "$ONLY_INTEGRITY" = "true" ]; then FLAGS="$FLAGS --only-integrity"; fi
           echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
 
       - name: Executar staging-migrate
-        run: bash scripts/staging-migrate.sh ${{ steps.flags.outputs.flags }}
+        env:
+          STAGING_FLAGS: ${{ steps.flags.outputs.flags }}
+        run: |
+          # shellcheck disable=SC2086
+          bash scripts/staging-migrate.sh $STAGING_FLAGS
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: staging-migrate-logs
           path: |

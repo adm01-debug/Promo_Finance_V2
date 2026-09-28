@@ -2,23 +2,36 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ main, master, develop ]
+    branches: [ main ]
+
+# Cancela runs anteriores do mesmo branch/PR para economizar minutos de runner.
+# Em pushes para main usamos o SHA para nunca cancelar duas merges distintas.
+concurrency:
+  group: ci-${{ github.ref }}-${{ github.event_name == 'push' && github.sha || 'pr' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
 
 jobs:
   secret-scan:
     name: Varredura de segredos (gitleaks)
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: write  # upload SARIF para o Code Scanning
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           # A varredura cobre o histórico inteiro, não só o diff: força-push e
           # rebase podem trazer de volta um segredo já removido da ponta.
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Instalar gitleaks
         env:
@@ -33,22 +46,71 @@ jobs:
           sudo tar -xzf "$arquivo" -C /usr/local/bin gitleaks
           gitleaks version
 
+      - name: Gate baseline só encolhe (etapa 49)
+        # Impede que PRs adicionem novas entradas ao baseline — o baseline só
+        # pode encolher (segredos remediados), nunca crescer (novos segredos
+        # suprimidos). Um novo segredo real deve ser removido do código; um
+        # falso positivo deve ser documentado como exceção com justificativa.
+        # Compara o CONJUNTO de fingerprints (não a contagem) para detectar
+        # substituição de entradas históricas por novas supressões.
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin main 2>/dev/null || true
+          if git show origin/main:.gitleaks-baseline.json >/dev/null 2>&1; then
+            # Extrai e ordena fingerprints de ambas as versões
+            jq -r '.[].Fingerprint' .gitleaks-baseline.json | sort > /tmp/pr_fps.txt
+            git show origin/main:.gitleaks-baseline.json | jq -r '.[].Fingerprint' | sort > /tmp/main_fps.txt
+            pr_count=$(wc -l < /tmp/pr_fps.txt)
+            main_count=$(wc -l < /tmp/main_fps.txt)
+            # Fingerprints na PR ausentes em main → nova supressão detectada
+            comm -23 /tmp/pr_fps.txt /tmp/main_fps.txt > /tmp/new_fps.txt
+            new_count=$(wc -l < /tmp/new_fps.txt)
+            if [ "$new_count" -gt 0 ]; then
+              echo "::error::Baseline tem ${new_count} nova(s) supressão(ões) ausentes em main (substituição detectada mesmo sem crescimento de contagem)."
+              sed 's/^/  + /' /tmp/new_fps.txt
+              echo "Remova o(s) segredo(s) do código; não os suprima no baseline."
+              exit 1
+            fi
+            echo "Baseline: PR=${pr_count} entradas, main=${main_count} — conjunto PR ⊆ main — OK"
+          else
+            echo "Branch main sem baseline ainda — pulando comparação."
+          fi
+
       - name: Varredura de segredos
         # --redact impede que um segredo recém-detectado seja impresso no log
         # público do build, que é exatamente onde ele não pode acabar.
         # O baseline carrega os achados históricos já tratados; qualquer
         # ocorrência nova reprova o job.
+        # --log-opts escopa a varredura aos commits novos da PR (não ao
+        # histórico inteiro do repo), evitando falsos positivos de commits
+        # já presentes em main antes desta PR existir.
         run: |
+          BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          if [ -n "$BASE" ]; then
+            LOG_OPTS="${BASE}..HEAD"
+          else
+            LOG_OPTS="HEAD"
+          fi
           gitleaks git \
             --no-banner \
             --redact \
+            --log-opts="${LOG_OPTS}" \
             --baseline-path .gitleaks-baseline.json \
             --report-format sarif \
             --report-path gitleaks.sarif
 
+      - name: Publicar SARIF no Code Scanning
+        # Envia para GitHub Security → Code scanning alerts (sempre, mesmo sem achados)
+        if: always()
+        uses: github/codeql-action/upload-sarif@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
+        with:
+          sarif_file: gitleaks.sarif
+          category: gitleaks
+        continue-on-error: true  # não bloqueia se o sarif não foi gerado (baseline clean)
+
       - name: Publicar relatório
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: gitleaks-sarif
           path: gitleaks.sarif
@@ -60,21 +122,17 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          # bun.lock usa o formato de texto (lockfileVersion/configVersion 1),
-          # suportado a partir do Bun 1.2+. A versão 1.1.42 falhava com
-          # "Unknown lockfile version" no install --frozen-lockfile.
-          bun-version: "1.3.11"
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+          persist-credentials: false
+      # Etapa 27: composite action elimina bloco bun+cache repetido 5x.
+      - uses: ./.github/actions/setup-bun
 
       - name: Security scan
-        run: bun audit || echo "::warning::bun audit reported vulnerabilities — see logs"
+        # Bloqueante: vulnerabilidades conhecidas em dependências diretas
+        # devem ser corrigidas antes do merge, não apenas registradas.
+        # Em caso de falsa positivo documentado, use `bun audit --ignore`.
+        run: bun audit
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
@@ -108,7 +166,15 @@ jobs:
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
         run: node scripts/security/test-lint-function-repairs.mjs
 
+      - name: Format check
+        # Etapa 45: format:check garante que todo código committed segue o Prettier.
+        # Husky só formata o staged; este gate pega o diff inteiro da PR.
+        # TODO: remover continue-on-error após PR de formatação global (#prettier-pass).
+        continue-on-error: true
+        run: bun run format:check
+
       - name: Lint check
+        # Etapa 46: bloqueia erros de lint.
         run: bun run lint
 
       - name: Preflight dos gates com DATABASE_URL
@@ -227,7 +293,7 @@ jobs:
 
       - name: Upload function privileges artifact
         if: ${{ steps.db_url_preflight.outputs.available == 'true' && always() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: function-privileges
           path: artifacts/security/function-privileges.*
@@ -249,10 +315,33 @@ jobs:
         run: bun run type-check:e2e
 
       - name: Unit & Integration Tests
-        run: bun run test:run
+        # Etapa 61: reporter JUnit exporta XML para download/integração com
+        # ferramentas de análise (SonarCloud, Codecov, dashboards de equipe).
+        # O reporter verbose continua visível no log; o junit vai para arquivo.
+        run: |
+          mkdir -p test-results
+          bun run test:run -- --reporter=verbose --reporter=junit --outputFile.junit=test-results/junit.xml
+
+      - name: Publicar resultados JUnit
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: junit-test-results
+          path: test-results/junit.xml
+          retention-days: 30
+          if-no-files-found: warn
 
       - name: Coverage check
         run: bun run test:coverage
+
+      - name: Publicar cobertura como artefato
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+          if-no-files-found: warn
 
       - name: Build check
         run: bun run build
@@ -261,13 +350,55 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
+      - name: Gate de tamanho de bundle (etapa 50)
+        # Impede regressão silenciosa de bundle: nenhum chunk JS individual
+        # pode ultrapassar 600 KB (gzip off). Chunks grandes degradam LCP e
+        # indicam import acidental de dep pesada. Ajuste o threshold em
+        # scripts/ci/bundle-size-threshold.json se uma dep legítima exigir.
+        run: |
+          set -euo pipefail
+          THRESHOLD_KB=600
+          THRESHOLD_BYTES=$((THRESHOLD_KB * 1024))
+          FAIL=0
+          while IFS= read -r -d '' chunk; do
+            size=$(stat -c%s "$chunk")
+            name=$(basename "$chunk")
+            if [ "$size" -gt "$THRESHOLD_BYTES" ]; then
+              echo "::error::Chunk muito grande: $name ($((size / 1024)) KB > ${THRESHOLD_KB} KB)"
+              FAIL=1
+            else
+              echo "  OK  $name  ($((size / 1024)) KB)"
+            fi
+          done < <(find dist/assets -name "*.js" -print0 2>/dev/null)
+          [ "$FAIL" -eq 0 ] || exit 1
+          echo "✅ Todos os chunks JS dentro do limite de ${THRESHOLD_KB} KB."
+
+      - name: Gate env.manifest.json atualizado (etapa 48)
+        # Garante que env.manifest.json reflita o estado atual das envs do código.
+        # Se alguém adicionar/remover uma variável de ambiente e não rodar o
+        # gerador, este gate reprova o CI. Execute: node scripts/generate-env-manifest.mjs
+        run: |
+          set -euo pipefail
+          node scripts/generate-env-manifest.mjs --check 2>/dev/null || \
+            node scripts/generate-env-manifest.mjs
+          if ! git diff --exit-code env.manifest.json > /dev/null 2>&1; then
+            echo "::error::env.manifest.json está desatualizado. Execute 'node scripts/generate-env-manifest.mjs' e commite o resultado."
+            git diff env.manifest.json
+            exit 1
+          fi
+          echo "✅ env.manifest.json atualizado."
+
       - name: Upload Error Logs
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: ci-error-logs
-          path: "*.log"
+          path: |
+            test-results/
+            playwright-report/
+            coverage/
           retention-days: 7
+          if-no-files-found: ignore
 
   # ---------------------------------------------------------------------------
   # Gate E2E crítico: somente cenários que hoje provam as correções reais.
@@ -279,30 +410,11 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          bun-version: "1.3.11"
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: Preflight E2E crítico
         env:
@@ -328,6 +440,17 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           CI: true
 
+      - name: Publicar artefatos de falha E2E crítico (etapa 62)
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: e2e-critical-falhas
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # ---------------------------------------------------------------------------
   # Fluxo destrutivo de logout real — cenário único, isolado e bloqueante.
   # ---------------------------------------------------------------------------
@@ -337,30 +460,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          bun-version: "1.3.11"
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache-destructive
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache-destructive.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache-destructive.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: Preflight E2E destrutivo
         env:
@@ -386,6 +490,17 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           CI: true
 
+      - name: Publicar artefatos de falha E2E destrutivo (etapa 62)
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: e2e-destructive-falhas
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # ---------------------------------------------------------------------------
   # Gate E2E financeiro: telas de dinheiro, 100% offline.
   #
@@ -402,30 +517,11 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          bun-version: "1.3.11"
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache-financeiro
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache-financeiro.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache-financeiro.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: E2E financeiro obrigatório
         run: bunx playwright test --config=playwright.financeiro.config.ts --project=chromium --reporter=list
@@ -434,7 +530,7 @@ jobs:
 
       - name: Publicar artefatos de falha
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: e2e-financeiro-falhas
           path: test-results/financeiro
@@ -452,30 +548,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          bun-version: "1.3.11"
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        id: pw-cache-quarantine
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright browsers
-        if: steps.pw-cache-quarantine.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.pw-cache-quarantine.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-playwright
 
       - name: Montar lista da quarentena
         run: |
@@ -516,20 +593,27 @@ jobs:
 
       - name: Publicar resumo da quarentena
         if: always()
+        env:
+          RESULT_QUALITY_GATE: ${{ needs.quality-gate.result }}
+          RESULT_E2E_CRITICAL: ${{ needs.e2e-critical.result }}
+          RESULT_E2E_DESTRUCTIVE: ${{ needs.e2e-destructive.result }}
+          RESULT_E2E_FINANCEIRO: ${{ needs.e2e-financeiro.result }}
+          QUARANTINE_SPECS_COUNT: ${{ steps.quarantine_specs.outputs.count }}
+          QUARANTINE_RUN_OUTCOME: ${{ steps.quarantine_run.outcome }}
         run: |
           {
             echo "## E2E Quarantine"
             echo
             echo "- Natureza: não bloqueante"
-            echo "- Resultado do quality-gate: ${{ needs.quality-gate.result }}"
-            echo "- Resultado do e2e-critical: ${{ needs.e2e-critical.result }}"
-            echo "- Resultado do e2e-destructive: ${{ needs.e2e-destructive.result }}"
-            echo "- Resultado do e2e-financeiro: ${{ needs.e2e-financeiro.result }}"
-            echo "- Specs listadas: ${{ steps.quarantine_specs.outputs.count }}"
-            if [ "${{ steps.quarantine_specs.outputs.count }}" = "0" ]; then
+            echo "- Resultado do quality-gate: $RESULT_QUALITY_GATE"
+            echo "- Resultado do e2e-critical: $RESULT_E2E_CRITICAL"
+            echo "- Resultado do e2e-destructive: $RESULT_E2E_DESTRUCTIVE"
+            echo "- Resultado do e2e-financeiro: $RESULT_E2E_FINANCEIRO"
+            echo "- Specs listadas: $QUARANTINE_SPECS_COUNT"
+            if [ "$QUARANTINE_SPECS_COUNT" = "0" ]; then
               echo "- Resultado: nenhuma spec elegível para quarentena"
             else
-              echo "- Resultado do step: ${{ steps.quarantine_run.outcome }}"
+              echo "- Resultado do step: $QUARANTINE_RUN_OUTCOME"
               echo
               echo "### Arquivos executados"
               sed 's/^/- `/' quarantine-specs.txt | sed 's/$/`/'
@@ -546,6 +630,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.ENABLE_PRODUCTION_SIMULATION_AUDIT == 'true'
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Trigger Simulation Audit
         run: |

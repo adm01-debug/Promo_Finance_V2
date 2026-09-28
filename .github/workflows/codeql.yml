@@ -1,0 +1,58 @@
+name: CodeQL Analysis
+
+# Analisa o TypeScript/JavaScript com o mecanismo de análise semântica do
+# GitHub. Detecta injection, path traversal, XSS e ~75 outras classes de
+# vulnerabilidade que grep e ESLint não pegam.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'supabase/functions/**'
+      - '.github/workflows/codeql.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'supabase/functions/**'
+      - '.github/workflows/codeql.yml'
+  schedule:
+    # Toda segunda-feira às 03:17 UTC — fora dos horários de pico do runner.
+    - cron: '17 3 * * 1'
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write  # publicar SARIF no Code Scanning
+  actions: read            # obrigatório em repos privados para CodeQL completar
+
+jobs:
+  analyze:
+    name: Analyze TypeScript
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
+        with:
+          languages: javascript-typescript
+          # security-and-quality cobre as queries padrão de segurança + code quality
+          queries: security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
+        with:
+          category: /language:javascript-typescript

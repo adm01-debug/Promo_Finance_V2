@@ -1,0 +1,28 @@
+name: Setup Playwright with cache
+description: >
+  Playwright browser cache + conditional install. Must be called AFTER setup-bun.
+  Etapa 27: extraída do bloco repetido 4× nos jobs E2E.
+  Etapa 28: install-deps não é executado em cache hit (ubuntu-latest já possui as libs do sistema).
+
+inputs:
+  cache-id:
+    description: Unique suffix for the cache step ID (prevents job-level conflicts)
+    default: 'pw'
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Playwright browsers
+      id: pw-cache
+      uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+      with:
+        path: ~/.cache/ms-playwright
+        key: pw-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+    - name: Install Playwright browsers
+      # Instala binário + deps do sistema apenas quando o cache falha.
+      # Etapa 28: em cache hit o ubuntu-latest já tem as libs necessárias;
+      # não rodar install-deps poupa ~30s por job E2E.
+      if: steps.pw-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: ./node_modules/.bin/playwright install --with-deps chromium
