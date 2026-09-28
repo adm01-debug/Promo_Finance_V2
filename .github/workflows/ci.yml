@@ -81,10 +81,20 @@ jobs:
         # público do build, que é exatamente onde ele não pode acabar.
         # O baseline carrega os achados históricos já tratados; qualquer
         # ocorrência nova reprova o job.
+        # --log-opts escopa a varredura aos commits novos da PR (não ao
+        # histórico inteiro do repo), evitando falsos positivos de commits
+        # já presentes em main antes desta PR existir.
         run: |
+          BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          if [ -n "$BASE" ]; then
+            LOG_OPTS="${BASE}..HEAD"
+          else
+            LOG_OPTS="HEAD"
+          fi
           gitleaks git \
             --no-banner \
             --redact \
+            --log-opts="${LOG_OPTS}" \
             --baseline-path .gitleaks-baseline.json \
             --report-format sarif \
             --report-path gitleaks.sarif
