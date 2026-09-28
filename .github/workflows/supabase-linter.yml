@@ -7,6 +7,9 @@ name: Supabase Linter (RLS/GRANT gate)
 # Requer o secret SUPABASE_ACCESS_TOKEN (Personal Access Token) e um project ref
 # canônico em `vars.VITE_SUPABASE_PROJECT_ID`. A falta de qualquer um reprova o
 # workflow; o banco nunca é dado como validado por ausência de credencial.
+#
+# O job sempre completa com sucesso em PRs que não tocam arquivos do banco,
+# satisfazendo o gate obrigatório sem bloquear PRs de frontend/docs.
 
 on:
   push:
@@ -25,18 +28,9 @@ on:
       - '.github/workflows/supabase-linter.yml'
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'supabase/migrations/**'
-      - 'supabase/functions/**'
-      - 'scripts/ci/require-env.sh'
-      - 'scripts/security/test-canonical-db-gates.mjs'
-      - 'scripts/security/test-canonical-db-gates.test.mjs'
-      - 'scripts/security/test-migration-replay-safety.sh'
-      - 'scripts/security/test-supabase-config.py'
-      - 'supabase/config.toml'
-      - 'scripts/security/test-lint-function-repairs.mjs'
-      - 'scripts/security/check-view-replay-order.mjs'
-      - '.github/workflows/supabase-linter.yml'
+    # Sem filtro paths: — precisa sempre disparar para satisfazer gate obrigatório.
+    # O job detecta internamente se arquivos do banco foram alterados e pula
+    # o lint quando não há mudanças relevantes.
   workflow_dispatch: {}
 
 # Cancela runs anteriores do mesmo branch — o estado do banco não muda entre
@@ -59,34 +53,67 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Detect DB file changes
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1 2>/dev/null || true
+            changed=$(git diff --name-only FETCH_HEAD 2>/dev/null || true)
+            relevant=false
+            while IFS= read -r f; do
+              case "$f" in
+                supabase/migrations/*|supabase/functions/*|scripts/security/*|\
+scripts/ci/require-env.sh|supabase/config.toml|\
+.github/workflows/supabase-linter.yml)
+                  relevant=true; break;;
+              esac
+            done <<< "$changed"
+          else
+            relevant=true
+          fi
+          echo "relevant=$relevant" >> "$GITHUB_OUTPUT"
+          if [ "$relevant" = "true" ]; then
+            echo "::notice::Mudanças no banco detectadas — lint será executado."
+          else
+            echo "::notice::Sem mudanças no banco — lint pulado. Job completa com sucesso."
+          fi
+
       - name: Gate offline do banco canônico
+        if: steps.filter.outputs.relevant == 'true'
         run: node --test scripts/security/test-canonical-db-gates.test.mjs
 
       - name: Replay safety das migrations críticas
+        if: steps.filter.outputs.relevant == 'true'
         run: bash scripts/security/test-migration-replay-safety.sh
 
       - name: Ordem de replay de views (CREATE VIEW nu)
+        if: steps.filter.outputs.relevant == 'true'
         # Falha se CREATE VIEW fora de guard DO $$ referenciar coluna criada depois
         # (mesma classe que quebrava Supabase Preview: "column pc.tipo does not exist")
         run: node scripts/security/check-view-replay-order.mjs
 
       - name: Integridade do Supabase config
+        if: steps.filter.outputs.relevant == 'true'
         run: python3 scripts/security/test-supabase-config.py
 
       - name: Gate estático do reparo SQL
+        if: steps.filter.outputs.relevant == 'true'
         run: node scripts/security/test-lint-function-repairs.mjs
 
       - name: Setup Supabase CLI
+        if: steps.filter.outputs.relevant == 'true'
         uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
         with:
           version: 2.22.6
 
       - name: Inicializar lint.json
+        if: steps.filter.outputs.relevant == 'true'
         # Etapa 44: garante que o artefato sempre existe, mesmo se um gate live
         # falhar antes do step "Run Supabase linter". O step de lint sobrescreve.
         run: echo '{"results":[]}' > lint.json
 
       - name: Preflight dos gates live do Supabase
+        if: steps.filter.outputs.relevant == 'true'
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
@@ -96,12 +123,14 @@ jobs:
             SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
 
       - name: Gate live do banco canônico
+        if: steps.filter.outputs.relevant == 'true'
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
         run: node scripts/security/test-canonical-db-gates.mjs
 
       - name: Preflight DB password
+        if: steps.filter.outputs.relevant == 'true'
         id: db_pwd_preflight
         env:
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
@@ -112,8 +141,13 @@ jobs:
             --output available \
             SUPABASE_DB_PASSWORD
 
+      - name: Warn when linter skipped (missing password)
+        if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available != 'true'
+        run: |
+          echo "::warning::SUPABASE_DB_PASSWORD não configurado — supabase db lint pulado. Configure o secret para habilitar a verificação completa de RLS/GRANT."
+
       - name: Run Supabase linter (fail on ERROR)
-        if: ${{ steps.db_pwd_preflight.outputs.available == 'true' }}
+        if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available == 'true'
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
@@ -151,11 +185,11 @@ jobs:
               if type == "object" then
                 .results[]? as $routine
                 | $routine.issues[]?
-                | select(((.level // "") | ascii_downcase) == "error")
+                | select((.level // "") | ascii_downcase == "error")
                 | "- [\($routine.function // $f)] \(.message // $m)"
               else
                 .[]?
-                | select(((.level // "") | ascii_downcase) == "error")
+                | select((.level // "") | ascii_downcase == "error")
                 | "- [\(.name // .function // $f)] \(.description // .message // $m)"
               end
             ' lint.json
@@ -168,18 +202,18 @@ jobs:
             else
               .[]?
             end
-            | select(((.level // "") | ascii_downcase) == "error")
+            | select((.level // "") | ascii_downcase == "error")
           ' lint.json >/dev/null; then
             echo "::error::Supabase linter retornou ERROR no JSON com exit code zero."
             jq -r --arg f "desconhecida" --arg m "erro sem detalhe" '
               if type == "object" then
                 .results[]? as $routine
                 | $routine.issues[]?
-                | select(((.level // "") | ascii_downcase) == "error")
+                | select((.level // "") | ascii_downcase == "error")
                 | "- [\($routine.function // $f)] \(.message // $m)"
               else
                 .[]?
-                | select(((.level // "") | ascii_downcase) == "error")
+                | select((.level // "") | ascii_downcase == "error")
                 | "- [\(.name // .function // $f)] \(.description // .message // $m)"
               end
             ' lint.json

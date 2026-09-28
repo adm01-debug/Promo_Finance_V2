@@ -4,8 +4,15 @@
  * Gera env.manifest.json a partir das fontes reais (env.ts + edge functions + ci.yml).
  * Rodar após adicionar/remover qualquer variável de ambiente.
  * O manifesto gerado é a fonte autoritativa para o audit-env.ts e para o assertSupabaseEnv.
+ *
+ * Modos:
+ *   node scripts/generate-env-manifest.mjs           — regenera em disco (atualiza `generated`)
+ *   node scripts/generate-env-manifest.mjs --check   — compara com o arquivo em disco;
+ *     exit 0 se as variáveis batem, exit 1 se diferirem (ignora o campo `generated`)
  */
 import { readFileSync, writeFileSync, readdirSync } from 'fs';
+
+const CHECK_MODE = process.argv.includes('--check');
 
 // Frontend vars — lidos de src/config/env.ts (fonte de verdade)
 const frontend = [
@@ -24,7 +31,7 @@ for (const dir of readdirSync(funcsDir)) {
   if (dir === '_shared') continue;
   try {
     const t = readFileSync(`${funcsDir}/${dir}/index.ts`, 'utf8');
-    for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]/g)) edgeSet.add(m[1]);
+    for (const m of t.matchAll(/Deno\.env\.get\(['"]([ A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
   } catch { /* pasta sem index.ts */ }
 }
 const autoProvided = new Set([
@@ -41,11 +48,39 @@ const ciYml = readFileSync('.github/workflows/ci.yml', 'utf8');
 const ciSet = new Set([...ciYml.matchAll(/secrets\.([A-Z0-9_]+)/g)].map(m => m[1]));
 const ci = [...ciSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
 
+const freshVars = [...frontend, ...edge, ...ci];
+
+if (CHECK_MODE) {
+  let existing;
+  try {
+    existing = JSON.parse(readFileSync('env.manifest.json', 'utf8'));
+  } catch {
+    console.error('✗ env.manifest.json não encontrado — execute sem --check para gerar.');
+    process.exit(1);
+  }
+  // Compara apenas `vars` (ignora `generated` que muda com a data de execução)
+  const onDisk = JSON.stringify(existing.vars ?? []);
+  const inMemory = JSON.stringify(freshVars);
+  if (onDisk === inMemory) {
+    console.log('✓ env.manifest.json em dia (vars sem alteração).');
+    process.exit(0);
+  } else {
+    console.error('✗ env.manifest.json desatualizado — execute: node scripts/generate-env-manifest.mjs');
+    const diskNames = (existing.vars ?? []).map(v => v.name);
+    const freshNames = freshVars.map(v => v.name);
+    const added = freshNames.filter(n => !diskNames.includes(n));
+    const removed = diskNames.filter(n => !freshNames.includes(n));
+    if (added.length) console.error('  Novas vars não registradas:', added.join(', '));
+    if (removed.length) console.error('  Vars removidas do código:', removed.join(', '));
+    process.exit(1);
+  }
+}
+
 const manifest = {
   generated: new Date().toISOString().split('T')[0],
   version: '1.1.0',
   description: 'Inventário autoritativo de variáveis de ambiente. NÃO editar manualmente — execute: node scripts/generate-env-manifest.mjs',
-  vars: [...frontend, ...edge, ...ci],
+  vars: freshVars,
 };
 
 writeFileSync('env.manifest.json', JSON.stringify(manifest, null, 2) + '\n');

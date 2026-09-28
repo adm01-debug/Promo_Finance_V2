@@ -42,7 +42,7 @@ Após a rotação, atualizar os GitHub Secrets correspondentes e verificar
 
 O `.gitleaks-baseline.json` contém 23 achados historicizados (19 JWTs, 4 API keys)
 em migrations e edge functions. Cada entrada documentada foi avaliada e as
-credenciais foram rotacionadas. **Nenhuma nova entrada deve ser adicionada ao
+credenciais aguardam rotação. **Nenhuma nova entrada deve ser adicionada ao
 baseline sem rotação prévia.**
 
 ## Contato

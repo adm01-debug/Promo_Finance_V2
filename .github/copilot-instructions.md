@@ -7,7 +7,7 @@ Stack: Vite 6 + React 18 + TypeScript + Tailwind + shadcn/ui + Supabase Cloud.
 
 ### Banco de dados
 - Projeto Supabase: `bwwbeyolnnzppeuhgkcd`
-- **Nunca** `supabase_apply_migration` — usar DDL direto via `supabase_db_query`
+- **Nunca** `supabase_apply_migration` — usar `supabase_db_query` DDL + arquivo em `supabase/migrations/`
 - Toda migration = arquivo em `supabase/migrations/` com timestamp YYYYMMDDHHmmss
 - `CREATE INDEX` simples (não `CONCURRENTLY` — falha no gateway transacional)
 - Views com `security_invoker = true` (padrão desde hardening P15+)
