@@ -75,7 +75,9 @@ jobs:
       - name: Executar staging-migrate
         env:
           STAGING_FLAGS: ${{ steps.flags.outputs.flags }}
-        run: bash scripts/staging-migrate.sh $STAGING_FLAGS
+        run: |
+          # shellcheck disable=SC2086
+          bash scripts/staging-migrate.sh $STAGING_FLAGS
 
       - name: Upload logs
         if: always()
