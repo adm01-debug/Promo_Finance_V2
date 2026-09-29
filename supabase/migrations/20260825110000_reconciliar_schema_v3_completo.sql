@@ -4533,7 +4533,25 @@ CREATE OR REPLACE TRIGGER trg_normalizar_tipo_partida BEFORE INSERT OR UPDATE ON
 
 CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();
 
+CREATE OR REPLACE FUNCTION public.invalidate_old_tokens() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public', 'pg_catalog'
+    AS $$
+BEGIN
+    RETURN NEW;
+END;
+$$;
+
 CREATE OR REPLACE TRIGGER trg_invalidate_old_tokens AFTER INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.invalidate_old_tokens();
+
+CREATE OR REPLACE FUNCTION public.set_token_expiration() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public', 'pg_catalog'
+    AS $$
+BEGIN
+    RETURN NEW;
+END;
+$$;
 
 CREATE OR REPLACE TRIGGER trg_set_token_expiration BEFORE INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.set_token_expiration();
 
