@@ -4388,6 +4388,15 @@ CREATE OR REPLACE TRIGGER set_updated_at_358c32867d1f3b611c3b BEFORE UPDATE ON p
 
 CREATE OR REPLACE TRIGGER set_updated_at_750f942dec954ad99332 BEFORE UPDATE ON public.asaas_transfers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+CREATE OR REPLACE FUNCTION public.sanitize_auth_log_metadata() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public', 'pg_catalog'
+    AS $$
+BEGIN
+    RETURN NEW;
+END;
+$$;
+
 CREATE OR REPLACE TRIGGER sanitize_auth_log_metadata_trigger BEFORE INSERT ON public.auth_logs FOR EACH ROW EXECUTE FUNCTION public.sanitize_auth_log_metadata();
 
 CREATE OR REPLACE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
