@@ -1,7 +1,12 @@
 -- Item 24: Automação de retenção e manutenção via pg_cron
 -- Todas as tarefas chamam funções SQL internas (sem HTTP), portanto podem viver em migração.
 
-CREATE EXTENSION IF NOT EXISTS pg_cron;
+DO $$
+BEGIN
+  CREATE EXTENSION IF NOT EXISTS pg_cron;
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'pg_cron CREATE EXTENSION ignorado em Preview: %', SQLERRM;
+END $$;
 
 -- Helper: agenda ou reagenda job idempotentemente
 DO $$
