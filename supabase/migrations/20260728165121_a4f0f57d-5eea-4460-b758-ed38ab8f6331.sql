@@ -66,6 +66,7 @@ REVOKE EXECUTE ON FUNCTION public.gerar_alertas_vencimento() FROM PUBLIC, anon, 
 GRANT EXECUTE ON FUNCTION public.gerar_alertas_vencimento() TO service_role;
 
 -- ============ Detecção de duplicidades financeiras ============
+DROP FUNCTION IF EXISTS public.detectar_duplicidades_financeiras(uuid, text);
 CREATE OR REPLACE FUNCTION public.detectar_duplicidades_financeiras(
   p_empresa_id uuid,
   p_tabela text DEFAULT 'contas_pagar'
