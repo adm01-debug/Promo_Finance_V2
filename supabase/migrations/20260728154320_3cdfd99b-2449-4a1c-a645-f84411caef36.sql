@@ -100,7 +100,7 @@ CREATE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_i
 
 -- ============================================================
 
-CREATE TABLE public.oportunidades_elisao (
+CREATE TABLE IF NOT EXISTS public.oportunidades_elisao (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   estrategia_codigo TEXT NOT NULL REFERENCES public.estrategias_elisao(codigo) ON UPDATE CASCADE,
