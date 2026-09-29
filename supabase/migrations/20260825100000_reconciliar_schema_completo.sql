@@ -4480,6 +4480,8 @@ END $$;
 
 -- FASE 4: Funcoes ausentes
 
+SET check_function_bodies = off;
+
 DO $OUTER$ BEGIN
 CREATE OR REPLACE FUNCTION public.auditar_acessos_cross_tenant(_horas integer DEFAULT 1) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
@@ -7302,6 +7304,7 @@ EXCEPTION WHEN undefined_table THEN NULL;
          WHEN undefined_object THEN NULL;
 END $OUTER$;
 
+RESET check_function_bodies;
 
 --
 
