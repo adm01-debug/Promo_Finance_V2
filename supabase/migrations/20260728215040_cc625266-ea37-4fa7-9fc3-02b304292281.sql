@@ -132,24 +132,26 @@ BEGIN
 END $$;
 
 -- Filhos: herdam o escopo do registro-pai
+-- spec[i][1]=child table, spec[i][2]=condition, spec[i][3]=parent table (must also exist)
 DO $$
 DECLARE
   spec text[][] := ARRAY[
-    ARRAY['lalamove_stops','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))'],
-    ARRAY['lalamove_status_history','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))'],
-    ARRAY['bitrix24_sync','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))'],
-    ARRAY['active_tracking','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))'],
-    ARRAY['tracking_events','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))'],
-    ARRAY['driver_locations','EXISTS (SELECT 1 FROM public.active_tracking a JOIN public.lalamove_orders o ON o.id = a.order_id WHERE a.id = tracking_id AND public.empresa_membro_ativo(o.empresa_id))'],
-    ARRAY['driver_incidents','EXISTS (SELECT 1 FROM public.drivers d WHERE d.id = driver_id AND public.empresa_membro_ativo(d.empresa_id))'],
-    ARRAY['driver_evaluations','EXISTS (SELECT 1 FROM public.drivers d WHERE d.id = driver_id AND public.empresa_membro_ativo(d.empresa_id))'],
-    ARRAY['driver_approval_queue','EXISTS (SELECT 1 FROM public.drivers d WHERE d.id = driver_id AND public.empresa_membro_ativo(d.empresa_id))'],
-    ARRAY['alerts_sent','EXISTS (SELECT 1 FROM public.alerts a WHERE a.id = alert_id AND public.empresa_membro_ativo(a.empresa_id))']
+    ARRAY['lalamove_stops','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))','lalamove_orders'],
+    ARRAY['lalamove_status_history','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))','lalamove_orders'],
+    ARRAY['bitrix24_sync','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))','lalamove_orders'],
+    ARRAY['active_tracking','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))','lalamove_orders'],
+    ARRAY['tracking_events','EXISTS (SELECT 1 FROM public.lalamove_orders o WHERE o.id = order_id AND public.empresa_membro_ativo(o.empresa_id))','lalamove_orders'],
+    ARRAY['driver_locations','EXISTS (SELECT 1 FROM public.active_tracking a JOIN public.lalamove_orders o ON o.id = a.order_id WHERE a.id = tracking_id AND public.empresa_membro_ativo(o.empresa_id))','lalamove_orders'],
+    ARRAY['driver_incidents','EXISTS (SELECT 1 FROM public.drivers d WHERE d.id = driver_id AND public.empresa_membro_ativo(d.empresa_id))','drivers'],
+    ARRAY['driver_evaluations','EXISTS (SELECT 1 FROM public.drivers d WHERE d.id = driver_id AND public.empresa_membro_ativo(d.empresa_id))','drivers'],
+    ARRAY['driver_approval_queue','EXISTS (SELECT 1 FROM public.drivers d WHERE d.id = driver_id AND public.empresa_membro_ativo(d.empresa_id))','drivers'],
+    ARRAY['alerts_sent','EXISTS (SELECT 1 FROM public.alerts a WHERE a.id = alert_id AND public.empresa_membro_ativo(a.empresa_id))','alerts']
   ];
   i int;
 BEGIN
   FOR i IN 1 .. array_length(spec,1) LOOP
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=spec[i][1]) THEN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=spec[i][1])
+      AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=spec[i][3]) THEN
       EXECUTE format($f$
         CREATE POLICY %1$s_tenant_select ON public.%1$I FOR SELECT TO authenticated USING (%2$s);
         CREATE POLICY %1$s_tenant_insert ON public.%1$I FOR INSERT TO authenticated WITH CHECK (%2$s);
