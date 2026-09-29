@@ -81,23 +81,52 @@ $$;
 
 -- historico_conciliacao_ia (via contas_pagar / contas_receber / sessoes_conciliacao)
 DROP POLICY IF EXISTS historico_conciliacao_ia_role_select ON public.historico_conciliacao_ia;
-CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia
-  FOR SELECT TO authenticated
-  USING (
-    (public.has_role((SELECT auth.uid()), 'admin'::app_role)
-     OR public.has_role((SELECT auth.uid()), 'financeiro'::app_role))
-    AND (
-      EXISTS (SELECT 1 FROM public.contas_receber cr
-              WHERE cr.id = historico_conciliacao_ia.conta_receber_id
-                AND public.empresa_acessivel(cr.empresa_id))
-      OR EXISTS (SELECT 1 FROM public.contas_pagar cp
-              WHERE cp.id = historico_conciliacao_ia.conta_pagar_id
-                AND public.empresa_acessivel(cp.empresa_id))
-      OR EXISTS (SELECT 1 FROM public.sessoes_conciliacao s
-              WHERE s.id = historico_conciliacao_ia.sessao_id
-                AND (s.user_id = (SELECT auth.uid()) OR public.empresa_acessivel(s.empresa_id)))
-    )
-  );
+DROP POLICY IF EXISTS historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'historico_conciliacao_ia' AND column_name = 'sessao_id'
+  ) THEN
+    EXECUTE '
+      CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia
+        FOR SELECT TO authenticated
+        USING (
+          (public.has_role((SELECT auth.uid()), ''admin''::app_role)
+           OR public.has_role((SELECT auth.uid()), ''financeiro''::app_role))
+          AND (
+            EXISTS (SELECT 1 FROM public.contas_receber cr
+                    WHERE cr.id = historico_conciliacao_ia.conta_receber_id
+                      AND public.empresa_acessivel(cr.empresa_id))
+            OR EXISTS (SELECT 1 FROM public.contas_pagar cp
+                    WHERE cp.id = historico_conciliacao_ia.conta_pagar_id
+                      AND public.empresa_acessivel(cp.empresa_id))
+            OR EXISTS (SELECT 1 FROM public.sessoes_conciliacao s
+                    WHERE s.id = historico_conciliacao_ia.sessao_id
+                      AND (s.user_id = (SELECT auth.uid()) OR public.empresa_acessivel(s.empresa_id)))
+          )
+        )
+    ';
+  ELSE
+    EXECUTE '
+      CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia
+        FOR SELECT TO authenticated
+        USING (
+          (public.has_role((SELECT auth.uid()), ''admin''::app_role)
+           OR public.has_role((SELECT auth.uid()), ''financeiro''::app_role))
+          AND (
+            EXISTS (SELECT 1 FROM public.contas_receber cr
+                    WHERE cr.id = historico_conciliacao_ia.conta_receber_id
+                      AND public.empresa_acessivel(cr.empresa_id))
+            OR EXISTS (SELECT 1 FROM public.contas_pagar cp
+                    WHERE cp.id = historico_conciliacao_ia.conta_pagar_id
+                      AND public.empresa_acessivel(cp.empresa_id))
+          )
+        )
+    ';
+  END IF;
+END;
+$$;
 
 -- parcelas_acordo (via acordos_parcelamento)
 DROP POLICY IF EXISTS parcelas_acordo_admin_write ON public.parcelas_acordo;
