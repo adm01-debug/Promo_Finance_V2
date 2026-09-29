@@ -35,8 +35,11 @@ CREATE TABLE IF NOT EXISTS public.acessos_suspeitos (
 --
 
 
-ALTER TABLE ONLY public.acessos_suspeitos
+DO $$ BEGIN
+  ALTER TABLE ONLY public.acessos_suspeitos
     ADD CONSTRAINT acessos_suspeitos_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -101,8 +104,11 @@ CREATE TABLE IF NOT EXISTS public.auditoria_tributaria (
 --
 
 
-ALTER TABLE ONLY public.auditoria_tributaria
+DO $$ BEGIN
+  ALTER TABLE ONLY public.auditoria_tributaria
     ADD CONSTRAINT auditoria_tributaria_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -188,8 +194,11 @@ ALTER TABLE ONLY public.benchmarks_setoriais
 --
 
 
-ALTER TABLE ONLY public.benchmarks_setoriais
+DO $$ BEGIN
+  ALTER TABLE ONLY public.benchmarks_setoriais
     ADD CONSTRAINT benchmarks_setoriais_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -248,8 +257,11 @@ CREATE TABLE IF NOT EXISTS public.bitrix_oauth_tokens (
 --
 
 
-ALTER TABLE ONLY public.bitrix_oauth_tokens
+DO $$ BEGIN
+  ALTER TABLE ONLY public.bitrix_oauth_tokens
     ADD CONSTRAINT bitrix_oauth_tokens_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -312,8 +324,11 @@ CREATE TABLE IF NOT EXISTS public.bling_sync_logs (
 --
 
 
-ALTER TABLE ONLY public.bling_sync_logs
+DO $$ BEGIN
+  ALTER TABLE ONLY public.bling_sync_logs
     ADD CONSTRAINT bling_sync_logs_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -372,8 +387,11 @@ CREATE TABLE IF NOT EXISTS public.bling_tokens (
 --
 
 
-ALTER TABLE ONLY public.bling_tokens
+DO $$ BEGIN
+  ALTER TABLE ONLY public.bling_tokens
     ADD CONSTRAINT bling_tokens_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -430,8 +448,11 @@ CREATE TABLE IF NOT EXISTS public.bling_webhook_events (
 --
 
 
-ALTER TABLE ONLY public.bling_webhook_events
+DO $$ BEGIN
+  ALTER TABLE ONLY public.bling_webhook_events
     ADD CONSTRAINT bling_webhook_events_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -498,8 +519,11 @@ CREATE TABLE IF NOT EXISTS public.catalogos_fiscais_cargas (
 --
 
 
-ALTER TABLE ONLY public.catalogos_fiscais_cargas
+DO $$ BEGIN
+  ALTER TABLE ONLY public.catalogos_fiscais_cargas
     ADD CONSTRAINT catalogos_fiscais_cargas_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -572,8 +596,11 @@ ALTER TABLE ONLY public.catalogos_tributarios_health_history
 --
 
 
-ALTER TABLE ONLY public.catalogos_tributarios_health_history
+DO $$ BEGIN
+  ALTER TABLE ONLY public.catalogos_tributarios_health_history
     ADD CONSTRAINT catalogos_tributarios_health_history_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -622,8 +649,11 @@ CREATE TABLE IF NOT EXISTS public.cnpja_cache (
 --
 
 
-ALTER TABLE ONLY public.cnpja_cache
+DO $$ BEGIN
+  ALTER TABLE ONLY public.cnpja_cache
     ADD CONSTRAINT cnpja_cache_pkey PRIMARY KEY (cnpj);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -684,8 +714,11 @@ CREATE TABLE IF NOT EXISTS public.convites_contador (
 --
 
 
-ALTER TABLE ONLY public.convites_contador
+DO $$ BEGIN
+  ALTER TABLE ONLY public.convites_contador
     ADD CONSTRAINT convites_contador_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -768,8 +801,11 @@ CREATE TABLE IF NOT EXISTS public.elisao_simulacoes_regime (
 --
 
 
-ALTER TABLE ONLY public.elisao_simulacoes_regime
+DO $$ BEGIN
+  ALTER TABLE ONLY public.elisao_simulacoes_regime
     ADD CONSTRAINT elisao_simulacoes_regime_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -844,8 +880,11 @@ ALTER TABLE ONLY public.estrategias_elisao
 --
 
 
-ALTER TABLE ONLY public.estrategias_elisao
+DO $$ BEGIN
+  ALTER TABLE ONLY public.estrategias_elisao
     ADD CONSTRAINT estrategias_elisao_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -908,8 +947,11 @@ CREATE TABLE IF NOT EXISTS public.eventos_contabilizacao_log (
 --
 
 
-ALTER TABLE ONLY public.eventos_contabilizacao_log
+DO $$ BEGIN
+  ALTER TABLE ONLY public.eventos_contabilizacao_log
     ADD CONSTRAINT eventos_contabilizacao_log_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -974,8 +1016,11 @@ CREATE TABLE IF NOT EXISTS public.frontend_error_alert_state (
 --
 
 
-ALTER TABLE ONLY public.frontend_error_alert_state
+DO $$ BEGIN
+  ALTER TABLE ONLY public.frontend_error_alert_state
     ADD CONSTRAINT frontend_error_alert_state_pkey PRIMARY KEY (assinatura);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1027,8 +1072,11 @@ CREATE TABLE IF NOT EXISTS public.frontend_error_silence_digest_log (
 --
 
 
-ALTER TABLE ONLY public.frontend_error_silence_digest_log
+DO $$ BEGIN
+  ALTER TABLE ONLY public.frontend_error_silence_digest_log
     ADD CONSTRAINT frontend_error_silence_digest_log_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1079,8 +1127,11 @@ CREATE TABLE IF NOT EXISTS public.glossario_tributario (
 --
 
 
-ALTER TABLE ONLY public.glossario_tributario
+DO $$ BEGIN
+  ALTER TABLE ONLY public.glossario_tributario
     ADD CONSTRAINT glossario_tributario_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1149,8 +1200,11 @@ CREATE TABLE IF NOT EXISTS public.index_usage_snapshots (
 --
 
 
-ALTER TABLE ONLY public.index_usage_snapshots
+DO $$ BEGIN
+  ALTER TABLE ONLY public.index_usage_snapshots
     ADD CONSTRAINT index_usage_snapshots_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1201,8 +1255,11 @@ CREATE TABLE IF NOT EXISTS public.indices_uso_excecoes (
 --
 
 
-ALTER TABLE ONLY public.indices_uso_excecoes
+DO $$ BEGIN
+  ALTER TABLE ONLY public.indices_uso_excecoes
     ADD CONSTRAINT indices_uso_excecoes_pkey PRIMARY KEY (index_name);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1259,8 +1316,11 @@ CREATE TABLE IF NOT EXISTS public.operacoes_icms (
 --
 
 
-ALTER TABLE ONLY public.operacoes_icms
+DO $$ BEGIN
+  ALTER TABLE ONLY public.operacoes_icms
     ADD CONSTRAINT operacoes_icms_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1338,8 +1398,11 @@ CREATE TABLE IF NOT EXISTS public.overlay_rejeicoes_auditoria (
 --
 
 
-ALTER TABLE ONLY public.overlay_rejeicoes_auditoria
+DO $$ BEGIN
+  ALTER TABLE ONLY public.overlay_rejeicoes_auditoria
     ADD CONSTRAINT overlay_rejeicoes_auditoria_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1433,8 +1496,11 @@ CREATE TABLE IF NOT EXISTS public.projecoes_reforma (
 --
 
 
-ALTER TABLE ONLY public.projecoes_reforma
+DO $$ BEGIN
+  ALTER TABLE ONLY public.projecoes_reforma
     ADD CONSTRAINT projecoes_reforma_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1512,8 +1578,11 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
 --
 
 
-ALTER TABLE ONLY public.regras_contabilizacao_automatica
+DO $$ BEGIN
+  ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1596,8 +1665,11 @@ CREATE TABLE IF NOT EXISTS public.retencao_politicas (
 --
 
 
-ALTER TABLE ONLY public.retencao_politicas
+DO $$ BEGIN
+  ALTER TABLE ONLY public.retencao_politicas
     ADD CONSTRAINT retencao_politicas_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1655,8 +1727,11 @@ CREATE TABLE IF NOT EXISTS public.saved_filter_subscriptions (
 --
 
 
-ALTER TABLE ONLY public.saved_filter_subscriptions
+DO $$ BEGIN
+  ALTER TABLE ONLY public.saved_filter_subscriptions
     ADD CONSTRAINT saved_filter_subscriptions_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1726,8 +1801,11 @@ CREATE TABLE IF NOT EXISTS public.scim_operations_log (
 --
 
 
-ALTER TABLE ONLY public.scim_operations_log
+DO $$ BEGIN
+  ALTER TABLE ONLY public.scim_operations_log
     ADD CONSTRAINT scim_operations_log_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1793,8 +1871,11 @@ CREATE TABLE IF NOT EXISTS public.security_alerts (
 --
 
 
-ALTER TABLE ONLY public.security_alerts
+DO $$ BEGIN
+  ALTER TABLE ONLY public.security_alerts
     ADD CONSTRAINT security_alerts_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1861,8 +1942,11 @@ CREATE TABLE IF NOT EXISTS public.simulacao_tributos_detalhados (
 --
 
 
-ALTER TABLE ONLY public.simulacao_tributos_detalhados
+DO $$ BEGIN
+  ALTER TABLE ONLY public.simulacao_tributos_detalhados
     ADD CONSTRAINT simulacao_tributos_detalhados_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -1941,8 +2025,11 @@ CREATE TABLE IF NOT EXISTS public.simulacoes (
 --
 
 
-ALTER TABLE ONLY public.simulacoes
+DO $$ BEGIN
+  ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -2021,8 +2108,11 @@ CREATE TABLE IF NOT EXISTS public.slo_metrics_diarias (
 --
 
 
-ALTER TABLE ONLY public.slo_metrics_diarias
+DO $$ BEGIN
+  ALTER TABLE ONLY public.slo_metrics_diarias
     ADD CONSTRAINT slo_metrics_diarias_pkey PRIMARY KEY (data);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -2072,8 +2162,11 @@ ALTER TABLE ONLY public.sso_role_mappings
 --
 
 
-ALTER TABLE ONLY public.sso_role_mappings
+DO $$ BEGIN
+  ALTER TABLE ONLY public.sso_role_mappings
     ADD CONSTRAINT sso_role_mappings_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -2142,8 +2235,11 @@ CREATE TABLE IF NOT EXISTS public.sso_sandbox_runs (
 --
 
 
-ALTER TABLE ONLY public.sso_sandbox_runs
+DO $$ BEGIN
+  ALTER TABLE ONLY public.sso_sandbox_runs
     ADD CONSTRAINT sso_sandbox_runs_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
@@ -2212,8 +2308,11 @@ ALTER TABLE ONLY public.sso_user_groups
 --
 
 
-ALTER TABLE ONLY public.sso_user_groups
+DO $$ BEGIN
+  ALTER TABLE ONLY public.sso_user_groups
     ADD CONSTRAINT sso_user_groups_pkey PRIMARY KEY (id);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+END $$;
 
 
 --
