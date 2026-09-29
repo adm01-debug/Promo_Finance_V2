@@ -6136,7 +6136,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
-SET check_function_bodies = off;
+IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='lalamove_uapi_sessions') THEN
 CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -6151,6 +6151,7 @@ CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_t
   WHERE s.is_active = true
   LIMIT 1;
 $$;
+END IF;
 EXCEPTION WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
          WHEN undefined_object THEN NULL;
