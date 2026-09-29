@@ -6141,15 +6141,8 @@ CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_t
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  SELECT 
-    s.access_token,
-    s.refresh_token,
-    s.user_fid,
-    EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 AS token_age_hours,
-    EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 > 20 AS needs_refresh
-  FROM public.lalamove_uapi_sessions s
-  WHERE s.is_active = true
-  LIMIT 1;
+  SELECT NULL::text, NULL::text, NULL::text, NULL::numeric, NULL::boolean WHERE false
+
 $$;
 END IF;
 EXCEPTION WHEN undefined_table THEN NULL;
