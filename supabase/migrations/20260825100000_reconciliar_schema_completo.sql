@@ -138,8 +138,11 @@ CREATE INDEX IF NOT EXISTS idx_auditoria_tributaria_empresa_id ON public.auditor
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.auditoria_tributaria
     ADD CONSTRAINT auditoria_tributaria_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -851,8 +854,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.convites_contador
     ADD CONSTRAINT convites_contador_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -937,8 +943,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.elisao_simulacoes_regime
     ADD CONSTRAINT elisao_simulacoes_regime_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1106,8 +1115,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_eventos_contab_sucesso ON public.eventos_co
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.eventos_contabilizacao_log
     ADD CONSTRAINT eventos_contabilizacao_log_regra_id_fkey FOREIGN KEY (regra_id) REFERENCES public.regras_contabilizacao_automatica(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1539,8 +1551,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.operacoes_icms
     ADD CONSTRAINT operacoes_icms_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1751,8 +1766,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.projecoes_reforma
     ADD CONSTRAINT projecoes_reforma_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1846,22 +1864,31 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_conta_credito_id_fkey FOREIGN KEY (conta_credito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_conta_debito_id_fkey FOREIGN KEY (conta_debito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2027,8 +2054,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.saved_filter_subscriptions
     ADD CONSTRAINT saved_filter_subscriptions_saved_filter_id_fkey FOREIGN KEY (saved_filter_id) REFERENCES public.saved_filters(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2259,8 +2289,11 @@ CREATE INDEX IF NOT EXISTS idx_sim_trib_sim ON public.simulacao_tributos_detalha
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacao_tributos_detalhados
     ADD CONSTRAINT simulacao_tributos_detalhados_simulacao_id_fkey FOREIGN KEY (simulacao_id) REFERENCES public.simulacoes(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2357,15 +2390,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_executada_por_fkey FOREIGN KEY (executada_por) REFERENCES auth.users(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2508,8 +2547,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_role_mappings
     ADD CONSTRAINT sso_role_mappings_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2587,8 +2629,11 @@ CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_created ON public.sso_sandbox_ru
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_sandbox_runs
     ADD CONSTRAINT sso_sandbox_runs_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2674,8 +2719,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_user_groups
     ADD CONSTRAINT sso_user_groups_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7715,36 +7763,51 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_folha_pagamento_empresa_ano_mes ON public.f
 
 -- FASE 5d: Constraints ausentes em tabelas comuns
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alert_configurations
     ADD CONSTRAINT alert_configurations_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alertas
     ADD CONSTRAINT alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7817,8 +7880,11 @@ ALTER TABLE ONLY public.audit_logs
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bitrix24_activities
     ADD CONSTRAINT bitrix24_activities_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7848,8 +7914,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.elisao_creditos_auditoria
     ADD CONSTRAINT elisao_creditos_auditoria_nota_id_fkey FOREIGN KEY (nota_id) REFERENCES public.notas_fiscais_ocr(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7922,8 +7991,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.plano_contas
     ADD CONSTRAINT plano_contas_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.plano_contas(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7953,8 +8025,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.risk_rules
     ADD CONSTRAINT risk_rules_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7984,8 +8059,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.solicitacoes_lgpd
     ADD CONSTRAINT solicitacoes_lgpd_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -8003,22 +8081,31 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_anomalia_preferences
     ADD CONSTRAINT user_anomalia_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_digest_preferences
     ADD CONSTRAINT user_digest_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_roles
     ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
