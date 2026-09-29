@@ -237,6 +237,7 @@ ALTER TABLE ONLY public.benchmarks_setoriais
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -770,6 +771,7 @@ ALTER TABLE ONLY public.catalogos_tributarios_health_history
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -944,6 +946,7 @@ ALTER TABLE ONLY public.convites_contador
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -1154,6 +1157,7 @@ ALTER TABLE ONLY public.estrategias_elisao
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -1499,6 +1503,7 @@ ALTER TABLE ONLY public.glossario_tributario
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -1602,6 +1607,7 @@ ALTER TABLE ONLY public.index_usage_snapshots
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -1856,6 +1862,7 @@ ALTER TABLE ONLY public.overlay_rejeicoes_auditoria
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -2000,6 +2007,7 @@ ALTER TABLE ONLY public.projecoes_reforma
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -2091,6 +2099,7 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -2243,6 +2252,7 @@ ALTER TABLE ONLY public.retencao_politicas
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -2325,6 +2335,7 @@ ALTER TABLE ONLY public.saved_filter_subscriptions
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -2878,6 +2889,7 @@ ALTER TABLE ONLY public.sso_role_mappings
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -3077,6 +3089,7 @@ ALTER TABLE ONLY public.sso_user_groups
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10346,6 +10359,7 @@ ALTER TABLE ONLY public.aliquotas_interestaduais
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10358,6 +10372,7 @@ ALTER TABLE ONLY public.aliquotas_internas_uf
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10370,6 +10385,7 @@ ALTER TABLE ONLY public.aliquotas_iss_municipal
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10382,6 +10398,7 @@ ALTER TABLE ONLY public.api_keys
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10394,6 +10411,7 @@ ALTER TABLE ONLY public.api_keys
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10430,6 +10448,7 @@ ALTER TABLE ONLY public.bitrix24_stage_mappings
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10442,6 +10461,7 @@ ALTER TABLE ONLY public.conformidade_snapshots
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10467,6 +10487,7 @@ ALTER TABLE ONLY public.entregas_obrigacoes
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10479,6 +10500,7 @@ ALTER TABLE ONLY public.faixas_simples_nacional
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10491,6 +10513,7 @@ ALTER TABLE ONLY public.fechamentos_tributarios
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10514,6 +10537,7 @@ ALTER TABLE ONLY public.integration_secrets
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10526,6 +10550,7 @@ ALTER TABLE ONLY public.kpis_operacionais
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10551,6 +10576,7 @@ ALTER TABLE ONLY public.protocolos_st_ncms
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10563,6 +10589,7 @@ ALTER TABLE ONLY public.protocolos_st_ufs
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10588,6 +10615,7 @@ ALTER TABLE ONLY public.saved_filters
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10600,6 +10628,7 @@ ALTER TABLE ONLY public.scim_setup_checklist
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
@@ -10625,6 +10654,7 @@ ALTER TABLE ONLY public.user_active_filters
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;
          WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
 END $$;
 
 
