@@ -45,13 +45,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_acessos_suspeitos_created ON public.acessos_suspeitos USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_acessos_suspeitos_empresa_id ON public.acessos_suspeitos USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -123,19 +131,31 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_auditoria_trib_criado ON public.auditoria_tributaria USING btree (criado_em DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_auditoria_trib_entidade ON public.auditoria_tributaria USING btree (entidade_tipo, entidade_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_auditoria_tributaria_empresa_id ON public.auditoria_tributaria USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -233,7 +253,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_benchmarks_lookup ON public.benchmarks_setoriais USING btree (regime, cnae_prefix);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -317,7 +341,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_bitrix_tokens_created ON public.bitrix_oauth_tokens USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -399,13 +427,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_bling_sync_logs_created ON public.bling_sync_logs USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_bling_sync_logs_modulo ON public.bling_sync_logs USING btree (modulo);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -477,7 +513,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_bling_tokens_created ON public.bling_tokens USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -553,19 +593,31 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_created ON public.bling_webhook_events USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_processed ON public.bling_webhook_events USING btree (processed);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_bling_webhook_events_resource ON public.bling_webhook_events USING btree (module, resource_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -639,7 +691,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS catalogos_fiscais_cargas_checksum_key ON publi
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS catalogos_fiscais_cargas_last_updated_idx ON public.catalogos_fiscais_cargas USING btree (last_updated DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -798,7 +854,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_cnpja_cache_expires ON public.cnpja_cache USING btree (expires_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -890,7 +950,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_convites_contador_empresa ON public.convites_contador USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -997,7 +1061,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_elisao_sim_empresa ON public.elisao_simulacoes_regime USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1102,7 +1170,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_estrategias_ativo ON public.estrategias_elisao USING btree (ativo);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1190,7 +1262,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_eventos_contab_empresa ON public.eventos_contabilizacao_log USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1274,7 +1350,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_fe_alert_state_ultimo ON public.frontend_error_alert_state USING btree (ultimo_alerta_em DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1345,7 +1425,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_fe_silence_digest_executado ON public.frontend_error_silence_digest_log USING btree (executado_em DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1421,7 +1505,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributario USING btree (categoria, termo);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1520,7 +1608,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_index_usage_snapshots_idx_date ON public.index_usage_snapshots USING btree (index_name, snapshot_date DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1647,13 +1739,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_op_icms_empresa ON public.operacoes_icms USING btree (empresa_id, data_operacao DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_op_icms_rota ON public.operacoes_icms USING btree (uf_origem, uf_destino);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1762,13 +1862,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_abertas ON public.overlay_rejeicoes_auditoria USING btree (resolvido_em) WHERE (resolvido_em IS NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_catalogo ON public.overlay_rejeicoes_auditoria USING btree (catalogo, referencia DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -1999,7 +2107,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_regras_contab_lookup ON public.regras_contabilizacao_automatica USING btree (empresa_id, tipo_evento, ativo, prioridade);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -2307,19 +2419,31 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_scim_operations_log_empresa_id ON public.scim_operations_log USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_scim_ops_created ON public.scim_operations_log USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_scim_ops_token ON public.scim_operations_log USING btree (token_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -2386,19 +2510,31 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_security_alerts_created_at ON public.security_alerts USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_security_alerts_resolved ON public.security_alerts USING btree (resolved) WHERE (resolved = false);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_security_alerts_type ON public.security_alerts USING btree (type);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -2466,13 +2602,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sim_trib_regime ON public.simulacao_tributos_detalhados USING btree (simulacao_id, regime);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sim_trib_sim ON public.simulacao_tributos_detalhados USING btree (simulacao_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -2564,13 +2708,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sim_empresa_data ON public.simulacoes USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sim_hash ON public.simulacoes USING btree (hash_inputs);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -2742,7 +2894,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sso_role_mappings_provider ON public.sso_role_mappings USING btree (provider_id, ordem);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -2836,13 +2992,21 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_batch ON public.sso_sandbox_runs USING btree (batch_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_created ON public.sso_sandbox_runs USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -2929,7 +3093,11 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sso_user_groups_user ON public.sso_user_groups USING btree (user_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -9176,535 +9344,891 @@ CREATE UNIQUE INDEX IF NOT EXISTS aliq_iss_mun_geral_unq ON public.aliquotas_iss
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_05_severity_created_at_idx ON public.frontend_error_logs_2026_05 USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_06_severity_created_at_idx ON public.frontend_error_logs_2026_06 USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_07_severity_created_at_idx ON public.frontend_error_logs_2026_07 USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_08_severity_created_at_idx ON public.frontend_error_logs_2026_08 USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_09_severity_created_at_idx ON public.frontend_error_logs_2026_09 USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS frontend_error_logs_2026_10_severity_created_at_idx ON public.frontend_error_logs_2026_10 USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS frontend_error_logs_default_severity_created_at_idx ON public.frontend_error_logs_default USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_alertas_empresa_id ON public.alertas USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_alertas_preditivos_empresa_id ON public.alertas_preditivos USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_aliq_iss_item ON public.aliquotas_iss_municipal USING btree (item_lista_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_aliq_iss_mun ON public.aliquotas_iss_municipal USING btree (codigo_ibge, vigente_de DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_aliquotas_iss_municipal_vigencia ON public.aliquotas_iss_municipal USING btree (vigente_de, vigente_ate);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_api_keys_empresa ON public.api_keys USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_asaas_customers_empresa_id ON public.asaas_customers USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_asaas_payments_empresa_id ON public.asaas_payments USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_asaas_reconciliation_suggestions_empresa_id ON public.asaas_reconciliation_suggestions USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_asaas_transfers_empresa_id ON public.asaas_transfers USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_auditoria_financeira_empresa_id ON public.auditoria_financeira USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_beneficios_uf ON public.beneficios_fiscais USING btree (uf);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_centros_custo_empresa_id ON public.centros_custo USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_clientes_empresa_id ON public.clientes USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_cnaes_anexo ON public.cnaes USING btree (anexo_simples);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_conciliacoes_empresa_id ON public.conciliacoes USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_configuracoes_duplicidade_empresa_id ON public.configuracoes_duplicidade USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_contas_receber_bitrix_deal ON public.contas_receber USING btree (bitrix_deal_id) WHERE (bitrix_deal_id IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_convites_organizacao_id ON public.convites USING btree (organizacao_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_cred_aud_empresa ON public.elisao_creditos_auditoria USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_cred_aud_status ON public.elisao_creditos_auditoria USING btree (empresa_id, status_aprovacao);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_digest_envios_log_created_at ON public.digest_envios_log USING btree (created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_digest_envios_log_email ON public.digest_envios_log USING btree (email, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_digest_envios_log_execucao ON public.digest_envios_log USING btree (execucao_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_digest_envios_log_situacao ON public.digest_envios_log USING btree (situacao, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_divergencias_conciliacao_empresa_id ON public.divergencias_conciliacao USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_elisao_alertas_empresa ON public.elisao_alertas USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_empresas_certificados_criado_por ON public.empresas_certificados USING btree (criado_por) WHERE (criado_por IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_frontend_error_logs_sev_created ON ONLY public.frontend_error_logs USING btree (severity, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_historico_analises_preditivas_empresa_id ON public.historico_analises_preditivas USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_incentivos_empresa ON public.incentivos_fiscais USING btree (empresa_id, ativo);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_integrity_alerts_resolved_created ON public.integrity_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_itens_lista_iss_vigencia ON public.itens_lista_iss USING btree (vigente_de, vigente_ate);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_logs_conciliacao_retroativa_empresa_id ON public.logs_conciliacao_retroativa USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_n8n_dispatch_logs_config_id ON public.n8n_dispatch_logs USING btree (config_id) WHERE (config_id IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_n8n_workflow_configs_created_by ON public.n8n_workflow_configs USING btree (created_by) WHERE (created_by IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_ncms_mono ON public.ncms USING btree (monofasico_pis_cofins);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_ncms_st ON public.ncms USING btree (sujeito_st);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_ncms_vigencia ON public.ncms USING btree (vigente_de, vigente_ate);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_negativacoes_empresa_id ON public.negativacoes USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_nf_ocr_empresa ON public.notas_fiscais_ocr USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_nfe_eventos_created_by ON public.nfe_eventos USING btree (created_by) WHERE (created_by IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_operacoes_trib_competencia ON public.operacoes_tributaveis USING btree (empresa_id, competencia);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_operacoes_trib_nota_fiscal ON public.operacoes_tributaveis USING btree (nota_fiscal_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_oport_empresa ON public.oportunidades_elisao USING btree (empresa_id, aplicavel);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_oport_status ON public.oportunidades_elisao USING btree (empresa_id, status);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_pag_recorr_empresa ON public.pagamentos_recorrentes USING btree (empresa_id, ativo);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_pag_recorr_proxima ON public.pagamentos_recorrentes USING btree (proxima_geracao) WHERE ativo;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_pedidos_compra_empresa_id ON public.pedidos_compra USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_perf_alerts_open ON public.performance_alerts USING btree (created_at DESC) WHERE (resolved_at IS NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_perf_alerts_resolved_created ON public.performance_alerts USING btree (created_at) WHERE (resolved_at IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_pix_templates_empresa_id ON public.pix_templates USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_pix_templates_uso ON public.pix_templates USING btree (ativo, uso_count DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_profiles_empresa_id ON public.profiles USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_protestos_empresa_id ON public.protestos USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_protocolos_st_ncms_ncm ON public.protocolos_st_ncms USING btree (ncm_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_protocolos_st_ncms_protocolo ON public.protocolos_st_ncms USING btree (protocolo_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_protocolos_st_ncms_vigencia ON public.protocolos_st_ncms USING btree (vigente_de, vigente_ate);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_protocolos_st_ufs_protocolo ON public.protocolos_st_ufs USING btree (protocolo_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_regimes_simulados_ajustes_aplicados ON public.regimes_simulados USING gin (ajustes_aplicados);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_regras_conciliacao_empresa_id ON public.regras_conciliacao USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_regua_cobranca_empresa_id ON public.regua_cobranca USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_rel_trib_agend_proximo ON public.relatorios_tributarios_agendados USING btree (ativo, proximo_envio_em);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_relatorios_agendados_empresa_id ON public.relatorios_agendados USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_relatorios_tributarios_agendados_empresa_id ON public.relatorios_tributarios_agendados USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_retencoes_fonte_competencia ON public.retencoes_fonte USING btree (empresa_id, competencia);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_risk_rules_empresa ON public.risk_rules USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sessoes_conciliacao_empresa_id ON public.sessoes_conciliacao USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_solicitacoes_lgpd_empresa_id ON public.solicitacoes_lgpd USING btree (empresa_id, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_sped_arq_empresa_tipo_ano ON public.sped_contabil_arquivos USING btree (empresa_id, tipo, ano_calendario, created_at DESC);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_tarefas_elisao_empresa ON public.elisao_tarefas_acionaveis USING btree (empresa_id, prazo);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_templates_cobranca_empresa_id ON public.templates_cobranca USING btree (empresa_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_ufs_vigencia ON public.ufs USING btree (vigente_de, vigente_ate);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_user_digest_preferences_ativo ON public.user_digest_preferences USING btree (ativo, frequencia, hora_envio);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS idx_webhooks_log_dlq_id ON public.webhooks_log USING btree (dlq_id) WHERE (dlq_id IS NOT NULL);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS lancamentos_contabeis_empresa_comp_idx ON public.lancamentos_contabeis USING btree (empresa_id, competencia);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS lancamentos_contabeis_empresa_data_idx ON public.lancamentos_contabeis USING btree (empresa_id, data_lancamento);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_idx ON public.partidas_contabeis USING btree (conta_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS partidas_contabeis_conta_lanc_idx ON public.partidas_contabeis USING btree (conta_id, lancamento_id) INCLUDE (tipo, valor);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS plano_contas_codigo_referencial_idx ON public.plano_contas USING btree (empresa_id, codigo_referencial);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
@@ -9716,7 +10240,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS plano_contas_empresa_codigo_uidx ON public.pla
 --
 
 
+DO $$ BEGIN
 CREATE INDEX IF NOT EXISTS plano_contas_parent_idx ON public.plano_contas USING btree (parent_id);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $$;
 
 
 --
