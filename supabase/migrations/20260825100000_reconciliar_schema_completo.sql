@@ -10823,7 +10823,7 @@ END $VBLOCK$;
 
 --
 
-DROP VIEW IF EXISTS public.mv_benchmark_setorial CASCADE;
+DROP MATERIALIZED VIEW IF EXISTS public.mv_benchmark_setorial CASCADE;
 
 DO $VBLOCK$ BEGIN
 CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
