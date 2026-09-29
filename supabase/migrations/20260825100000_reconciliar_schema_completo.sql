@@ -10400,8 +10400,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.audit_logs
     ADD CONSTRAINT audit_logs_pkey1 PRIMARY KEY (id, created_at);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -10493,8 +10497,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.frontend_error_logs
     ADD CONSTRAINT frontend_error_logs_pkey1 PRIMARY KEY (id, created_at);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
