@@ -14,6 +14,13 @@ CREATE TABLE IF NOT EXISTS public.glossario_tributario (
 );
 CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributario(categoria, termo);
 
+-- Migração anterior (20260509) criou a tabela com menos colunas; adicionar se ausentes
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS sigla TEXT;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS exemplo TEXT;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS ordem INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS ativo BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE public.glossario_tributario ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+
 GRANT SELECT ON public.glossario_tributario TO authenticated;
 GRANT ALL ON public.glossario_tributario TO service_role;
 ALTER TABLE public.glossario_tributario ENABLE ROW LEVEL SECURITY;
