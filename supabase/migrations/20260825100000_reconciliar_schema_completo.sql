@@ -72,6 +72,7 @@ DO $$ BEGIN
 CREATE POLICY acessos_suspeitos_tenant_select ON public.acessos_suspeitos FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -144,6 +145,7 @@ ALTER TABLE ONLY public.auditoria_tributaria
     ADD CONSTRAINT auditoria_tributaria_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -154,6 +156,7 @@ DO $$ BEGIN
 CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -237,6 +240,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -247,6 +251,7 @@ DO $$ BEGIN
 CREATE POLICY benchmarks_admin_write ON public.benchmarks_setoriais TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -257,6 +262,7 @@ DO $$ BEGIN
 CREATE POLICY benchmarks_select ON public.benchmarks_setoriais FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -315,6 +321,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -330,6 +337,7 @@ DO $$ BEGIN
 CREATE POLICY bitrix_oauth_tokens_service_role_only ON public.bitrix_oauth_tokens TO service_role USING (true) WITH CHECK (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -404,6 +412,7 @@ DO $$ BEGIN
 CREATE POLICY bling_sync_logs_insert ON public.bling_sync_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -414,6 +423,7 @@ DO $$ BEGIN
 CREATE POLICY bling_sync_logs_select ON public.bling_sync_logs FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -467,6 +477,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_bling_tokens_updated_at BEFORE UPDATE ON public.bling_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -482,6 +493,7 @@ DO $$ BEGIN
 CREATE POLICY bling_tokens_service_role_only ON public.bling_tokens TO service_role USING (true) WITH CHECK (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -556,6 +568,7 @@ DO $$ BEGIN
 CREATE POLICY bling_webhook_events_admin_select ON public.bling_webhook_events FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -623,6 +636,7 @@ DO $$ BEGIN
   CREATE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.catalogos_fiscais_cargas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -633,6 +647,7 @@ DO $$ BEGIN
 CREATE POLICY "Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -704,6 +719,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.catalogos_tributarios_health_history FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -714,6 +730,7 @@ DO $$ BEGIN
 CREATE POLICY "admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history FOR SELECT TO authenticated USING (( SELECT public.has_role(auth.uid(), 'admin'::public.app_role) AS has_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -774,6 +791,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_cnpja_cache_updated_at BEFORE UPDATE ON public.cnpja_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -789,6 +807,7 @@ DO $$ BEGIN
 CREATE POLICY cnpja_cache_service_role_only ON public.cnpja_cache TO service_role USING (true) WITH CHECK (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -868,6 +887,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_convites_contador_updated_at BEFORE UPDATE ON public.convites_contador FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -879,6 +899,7 @@ ALTER TABLE ONLY public.convites_contador
     ADD CONSTRAINT convites_contador_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -894,6 +915,7 @@ DO $$ BEGIN
 CREATE POLICY convites_contador_revogar ON public.convites_contador FOR UPDATE TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -904,6 +926,7 @@ DO $$ BEGIN
 CREATE POLICY convites_contador_select ON public.convites_contador FOR SELECT TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -961,6 +984,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -972,6 +996,7 @@ ALTER TABLE ONLY public.elisao_simulacoes_regime
     ADD CONSTRAINT elisao_simulacoes_regime_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -982,6 +1007,7 @@ DO $$ BEGIN
 CREATE POLICY elisao_sim_regime_acesso ON public.elisao_simulacoes_regime TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1060,6 +1086,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_estrategias_updated_at BEFORE UPDATE ON public.estrategias_elisao FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1075,6 +1102,7 @@ DO $$ BEGIN
 CREATE POLICY estrategias_select_authenticated ON public.estrategias_elisao FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1085,6 +1113,7 @@ DO $$ BEGIN
 CREATE POLICY estrategias_write_admin ON public.estrategias_elisao TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1149,6 +1178,7 @@ ALTER TABLE ONLY public.eventos_contabilizacao_log
     ADD CONSTRAINT eventos_contabilizacao_log_regra_id_fkey FOREIGN KEY (regra_id) REFERENCES public.regras_contabilizacao_automatica(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1159,6 +1189,7 @@ DO $$ BEGIN
 CREATE POLICY eventos_contab_select ON public.eventos_contabilizacao_log FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1222,6 +1253,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1232,6 +1264,7 @@ DO $$ BEGIN
 CREATE POLICY fe_alert_state_admin_select ON public.frontend_error_alert_state FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1289,6 +1322,7 @@ DO $$ BEGIN
 CREATE POLICY fe_silence_digest_admin_select ON public.frontend_error_silence_digest_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1363,6 +1397,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1373,6 +1408,7 @@ DO $$ BEGIN
 CREATE POLICY glossario_admin ON public.glossario_tributario TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1383,6 +1419,7 @@ DO $$ BEGIN
 CREATE POLICY glossario_leitura ON public.glossario_tributario FOR SELECT TO authenticated USING (ativo);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1456,6 +1493,7 @@ DO $$ BEGIN
 CREATE POLICY "Somente admins leem snapshots de índices" ON public.index_usage_snapshots FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1505,6 +1543,7 @@ DO $$ BEGIN
 CREATE POLICY "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1585,6 +1624,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_icms FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1596,6 +1636,7 @@ ALTER TABLE ONLY public.operacoes_icms
     ADD CONSTRAINT operacoes_icms_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1611,6 +1652,7 @@ DO $$ BEGIN
 CREATE POLICY operacoes_icms_acesso ON public.operacoes_icms TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1694,6 +1736,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_rejeicoes_auditoria FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1704,6 +1747,7 @@ DO $$ BEGIN
 CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1714,6 +1758,7 @@ DO $$ BEGIN
 CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1724,6 +1769,7 @@ DO $$ BEGIN
 CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1734,6 +1780,7 @@ DO $$ BEGIN
 CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1808,6 +1855,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_proj_reforma_updated_at BEFORE UPDATE ON public.projecoes_reforma FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1819,6 +1867,7 @@ ALTER TABLE ONLY public.projecoes_reforma
     ADD CONSTRAINT projecoes_reforma_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1834,6 +1883,7 @@ DO $$ BEGIN
 CREATE POLICY projecoes_reforma_acesso ON public.projecoes_reforma TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1909,6 +1959,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_regras_contab_updated_at BEFORE UPDATE ON public.regras_contabilizacao_automatica FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1920,6 +1971,7 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1931,6 +1983,7 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_conta_credito_id_fkey FOREIGN KEY (conta_credito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1942,6 +1995,7 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regras_contabilizacao_automatica_conta_debito_id_fkey FOREIGN KEY (conta_debito_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1952,6 +2006,7 @@ DO $$ BEGIN
 CREATE POLICY regras_contab_select ON public.regras_contabilizacao_automatica FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -1962,6 +2017,7 @@ DO $$ BEGIN
 CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2029,6 +2085,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2044,6 +2101,7 @@ DO $$ BEGIN
 CREATE POLICY retencao_politicas_admin_select ON public.retencao_politicas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2107,6 +2165,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_saved_filter_subs_updated_at BEFORE UPDATE ON public.saved_filter_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2118,6 +2177,7 @@ ALTER TABLE ONLY public.saved_filter_subscriptions
     ADD CONSTRAINT saved_filter_subscriptions_saved_filter_id_fkey FOREIGN KEY (saved_filter_id) REFERENCES public.saved_filters(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2133,6 +2193,7 @@ DO $$ BEGIN
 CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2212,6 +2273,7 @@ DO $$ BEGIN
 CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2289,6 +2351,7 @@ DO $$ BEGIN
 CREATE POLICY security_alerts_admin_all ON public.security_alerts TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2357,6 +2420,7 @@ ALTER TABLE ONLY public.simulacao_tributos_detalhados
     ADD CONSTRAINT simulacao_tributos_detalhados_simulacao_id_fkey FOREIGN KEY (simulacao_id) REFERENCES public.simulacoes(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2371,6 +2435,7 @@ CREATE POLICY sim_trib_acesso ON public.simulacao_tributos_detalhados TO authent
   WHERE ((s.id = simulacao_tributos_detalhados.simulacao_id) AND public.empresa_acessivel(s.empresa_id)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2450,6 +2515,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_simulacoes_updated_at BEFORE UPDATE ON public.simulacoes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2461,6 +2527,7 @@ ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2472,6 +2539,7 @@ ALTER TABLE ONLY public.simulacoes
     ADD CONSTRAINT simulacoes_executada_por_fkey FOREIGN KEY (executada_por) REFERENCES auth.users(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2487,6 +2555,7 @@ DO $$ BEGIN
 CREATE POLICY simulacoes_acesso ON public.simulacoes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2540,6 +2609,7 @@ DO $$ BEGIN
 CREATE POLICY slo_metrics_admin_select ON public.slo_metrics_diarias FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2612,6 +2682,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_sso_role_mappings_updated_at BEFORE UPDATE ON public.sso_role_mappings FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2623,6 +2694,7 @@ ALTER TABLE ONLY public.sso_role_mappings
     ADD CONSTRAINT sso_role_mappings_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2638,6 +2710,7 @@ DO $$ BEGIN
 CREATE POLICY sso_role_mappings_admin ON public.sso_role_mappings TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2707,6 +2780,7 @@ ALTER TABLE ONLY public.sso_sandbox_runs
     ADD CONSTRAINT sso_sandbox_runs_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2722,6 +2796,7 @@ DO $$ BEGIN
 CREATE POLICY sso_sandbox_runs_admin ON public.sso_sandbox_runs TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND (created_by = auth.uid())));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2789,6 +2864,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_sso_user_groups_updated_at BEFORE UPDATE ON public.sso_user_groups FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2800,6 +2876,7 @@ ALTER TABLE ONLY public.sso_user_groups
     ADD CONSTRAINT sso_user_groups_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.sso_providers(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -2815,6 +2892,7 @@ DO $$ BEGIN
 CREATE POLICY sso_user_groups_select ON public.sso_user_groups FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -6974,6 +7052,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_alert_configurations_set_empresa BEFORE INSERT ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -6984,6 +7063,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_alertas_set_empresa BEFORE INSERT ON public.alertas FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -6994,6 +7074,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_alerts_set_empresa BEFORE INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7004,6 +7085,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_aliq_inter_updated_at BEFORE UPDATE ON public.aliquotas_interestaduais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7014,6 +7096,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_aliq_internas_updated_at BEFORE UPDATE ON public.aliquotas_internas_uf FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7024,6 +7107,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_aliq_iss_updated_at BEFORE UPDATE ON public.aliquotas_iss_municipal FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7034,6 +7118,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_api_keys_updated_at BEFORE UPDATE ON public.api_keys FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7044,6 +7129,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7054,6 +7140,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_conformidade_snapshots_updated_at BEFORE UPDATE ON public.conformidade_snapshots FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7064,6 +7151,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7074,6 +7162,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7084,6 +7173,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7094,6 +7184,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7104,6 +7195,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_empresas_unica_padrao BEFORE INSERT OR UPDATE OF is_padrao, ativo ON public.empresas FOR EACH ROW EXECUTE FUNCTION public.empresas_unica_padrao();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7114,6 +7206,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_entregas_obrigacoes_updated_at BEFORE UPDATE ON public.entregas_obrigacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7124,6 +7217,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_faixas_simples_updated_at BEFORE UPDATE ON public.faixas_simples_nacional FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7134,6 +7228,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_fechamentos_updated_at BEFORE UPDATE ON public.fechamentos_tributarios FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7144,6 +7239,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7154,6 +7250,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7164,6 +7261,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON public.integration_secrets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7174,6 +7272,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7184,6 +7283,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_kpis_operacionais_updated_at BEFORE UPDATE ON public.kpis_operacionais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7194,6 +7294,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_lancamento_contabil_before_update BEFORE UPDATE ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_update();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7204,6 +7305,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7214,6 +7316,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7224,6 +7327,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.pagamentos_recorrentes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7234,6 +7338,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7244,6 +7349,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_pix_template_sync_legacy BEFORE INSERT OR UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7254,6 +7360,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_pix_templates_updated_at BEFORE UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7264,6 +7371,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_planos_acao_updated_at BEFORE UPDATE ON public.planos_acao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7274,6 +7382,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_sync_regime_empresa AFTER INSERT OR UPDATE ON public.regimes_tributarios FOR EACH ROW EXECUTE FUNCTION public.sync_regime_tributario_empresa();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7284,6 +7393,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7294,6 +7404,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_risk_rules_set_empresa BEFORE INSERT ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7304,6 +7415,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_saved_filters_updated_at BEFORE UPDATE ON public.saved_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7314,6 +7426,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_scim_checklist_updated_at BEFORE UPDATE ON public.scim_setup_checklist FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7324,6 +7437,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_solicitacoes_lgpd_set_empresa BEFORE INSERT ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7334,6 +7448,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_solicitacoes_lgpd_updated_at BEFORE UPDATE ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7344,6 +7459,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_sped_arquivos_updated_at BEFORE UPDATE ON public.sped_contabil_arquivos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7354,6 +7470,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_user_active_filters_updated_at BEFORE UPDATE ON public.user_active_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7364,6 +7481,7 @@ DO $$ BEGIN
   CREATE TRIGGER tr_user_digest_preferences_updated_at BEFORE UPDATE ON public.user_digest_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7374,6 +7492,7 @@ DO $$ BEGIN
   CREATE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.auto_vincular_empresa_padrao();
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7385,6 +7504,7 @@ DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_delete ON public.alert_configurations FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7395,6 +7515,7 @@ DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_insert ON public.alert_configurations FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7405,6 +7526,7 @@ DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_select ON public.alert_configurations FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7415,6 +7537,7 @@ DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_update ON public.alert_configurations FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7425,6 +7548,7 @@ DO $$ BEGIN
 CREATE POLICY alertas_owner_delete ON public.alertas FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7435,6 +7559,7 @@ DO $$ BEGIN
 CREATE POLICY alertas_owner_insert ON public.alertas FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7445,6 +7570,7 @@ DO $$ BEGIN
 CREATE POLICY alertas_owner_select ON public.alertas FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7455,6 +7581,7 @@ DO $$ BEGIN
 CREATE POLICY alertas_owner_update ON public.alertas FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7465,6 +7592,7 @@ DO $$ BEGIN
 CREATE POLICY alerts_tenant_delete ON public.alerts FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7475,6 +7603,7 @@ DO $$ BEGIN
 CREATE POLICY alerts_tenant_insert ON public.alerts FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7485,6 +7614,7 @@ DO $$ BEGIN
 CREATE POLICY alerts_tenant_select ON public.alerts FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7495,6 +7625,7 @@ DO $$ BEGIN
 CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7507,6 +7638,7 @@ CREATE POLICY alerts_sent_tenant_delete ON public.alerts_sent FOR DELETE TO auth
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7519,6 +7651,7 @@ CREATE POLICY alerts_sent_tenant_insert ON public.alerts_sent FOR INSERT TO auth
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7531,6 +7664,7 @@ CREATE POLICY alerts_sent_tenant_select ON public.alerts_sent FOR SELECT TO auth
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7545,6 +7679,7 @@ CREATE POLICY alerts_sent_tenant_update ON public.alerts_sent FOR UPDATE TO auth
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7555,6 +7690,7 @@ DO $$ BEGIN
 CREATE POLICY aliq_inter_select_authenticated ON public.aliquotas_interestaduais FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7565,6 +7701,7 @@ DO $$ BEGIN
 CREATE POLICY aliq_inter_write_admin ON public.aliquotas_interestaduais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7575,6 +7712,7 @@ DO $$ BEGIN
 CREATE POLICY aliq_internas_select_authenticated ON public.aliquotas_internas_uf FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7585,6 +7723,7 @@ DO $$ BEGIN
 CREATE POLICY aliq_internas_write_admin ON public.aliquotas_internas_uf TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7595,6 +7734,7 @@ DO $$ BEGIN
 CREATE POLICY aliq_iss_select_authenticated ON public.aliquotas_iss_municipal FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7605,6 +7745,7 @@ DO $$ BEGIN
 CREATE POLICY aliq_iss_write_admin ON public.aliquotas_iss_municipal TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7615,6 +7756,7 @@ DO $$ BEGIN
 CREATE POLICY anomalias_detectadas_tenant_rw ON public.anomalias_detectadas TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7625,6 +7767,7 @@ DO $$ BEGIN
 CREATE POLICY api_keys_delete ON public.api_keys FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7635,6 +7778,7 @@ DO $$ BEGIN
 CREATE POLICY api_keys_select ON public.api_keys FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7645,6 +7789,7 @@ DO $$ BEGIN
 CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7657,6 +7802,7 @@ CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail FOR SELECT T
   WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7667,6 +7813,7 @@ DO $$ BEGIN
 CREATE POLICY asaas_config_tenant_rw ON public.asaas_config TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7677,6 +7824,7 @@ DO $$ BEGIN
 CREATE POLICY asaas_customers_tenant_rw ON public.asaas_customers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7687,6 +7835,7 @@ DO $$ BEGIN
 CREATE POLICY asaas_payments_tenant_rw ON public.asaas_payments TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7697,6 +7846,7 @@ DO $$ BEGIN
 CREATE POLICY asaas_reconciliation_suggestions_tenant_rw ON public.asaas_reconciliation_suggestions TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7711,6 +7861,7 @@ CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue TO authenticated 
   WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7721,6 +7872,7 @@ DO $$ BEGIN
 CREATE POLICY asaas_transfers_tenant_rw ON public.asaas_transfers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7731,6 +7883,7 @@ DO $$ BEGIN
 CREATE POLICY audit_logs_insert_self_attributed ON public.audit_logs FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email'::text))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7741,6 +7894,7 @@ DO $$ BEGIN
 CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7751,6 +7905,7 @@ DO $$ BEGIN
 CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7763,6 +7918,7 @@ CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FO
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7775,6 +7931,7 @@ CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FO
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7787,6 +7944,7 @@ CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FO
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7801,6 +7959,7 @@ CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FO
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7811,6 +7970,7 @@ DO $$ BEGIN
 CREATE POLICY centros_custo_tenant_rw ON public.centros_custo TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7821,6 +7981,7 @@ DO $$ BEGIN
 CREATE POLICY cnaes_select_authenticated ON public.cnaes FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7831,6 +7992,7 @@ DO $$ BEGIN
 CREATE POLICY cnaes_write_admin ON public.cnaes TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7841,6 +8003,7 @@ DO $$ BEGIN
 CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7851,6 +8014,7 @@ DO $$ BEGIN
 CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7863,6 +8027,7 @@ CREATE POLICY conformidade_snapshots_empresa_insert ON public.conformidade_snaps
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7875,6 +8040,7 @@ CREATE POLICY conformidade_snapshots_empresa_select ON public.conformidade_snaps
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7889,6 +8055,7 @@ CREATE POLICY conformidade_snapshots_empresa_update ON public.conformidade_snaps
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7899,6 +8066,7 @@ DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7909,6 +8077,7 @@ DO $$ BEGIN
 CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7919,6 +8088,7 @@ DO $$ BEGIN
 CREATE POLICY contas_receber_tenant_rw ON public.contas_receber TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7929,6 +8099,7 @@ DO $$ BEGIN
 CREATE POLICY darfs_tenant_rw ON public.darfs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7939,6 +8110,7 @@ DO $$ BEGIN
 CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.digest_envios_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7949,6 +8121,7 @@ DO $$ BEGIN
 CREATE POLICY elisao_alertas_acesso ON public.elisao_alertas TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7959,6 +8132,7 @@ DO $$ BEGIN
 CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7969,6 +8143,7 @@ DO $$ BEGIN
 CREATE POLICY creditos_auditoria_insert ON public.elisao_creditos_auditoria FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7979,6 +8154,7 @@ DO $$ BEGIN
 CREATE POLICY creditos_auditoria_select ON public.elisao_creditos_auditoria FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7989,6 +8165,7 @@ DO $$ BEGIN
 CREATE POLICY regras_creditos_admin ON public.elisao_regras_creditos TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -7999,6 +8176,7 @@ DO $$ BEGIN
 CREATE POLICY regras_creditos_leitura ON public.elisao_regras_creditos FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8009,6 +8187,7 @@ DO $$ BEGIN
 CREATE POLICY tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8019,6 +8198,7 @@ DO $$ BEGIN
 CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8031,6 +8211,7 @@ CREATE POLICY entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes F
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8043,6 +8224,7 @@ CREATE POLICY entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes F
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8057,6 +8239,7 @@ CREATE POLICY entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes F
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8067,6 +8250,7 @@ DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8077,6 +8261,7 @@ DO $$ BEGIN
 CREATE POLICY faixas_simples_select_authenticated ON public.faixas_simples_nacional FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8087,6 +8272,7 @@ DO $$ BEGIN
 CREATE POLICY faixas_simples_write_admin ON public.faixas_simples_nacional TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8097,6 +8283,7 @@ DO $$ BEGIN
 CREATE POLICY fechamentos_insert ON public.fechamentos_tributarios FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8107,6 +8294,7 @@ DO $$ BEGIN
 CREATE POLICY fechamentos_select ON public.fechamentos_tributarios FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8117,6 +8305,7 @@ DO $$ BEGIN
 CREATE POLICY fechamentos_update ON public.fechamentos_tributarios FOR UPDATE TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8127,6 +8316,7 @@ DO $$ BEGIN
 CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8143,6 +8333,7 @@ CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_concili
   WHERE ((s.id = historico_conciliacao_ia.sessao_id) AND ((s.user_id = ( SELECT auth.uid() AS uid)) OR public.empresa_acessivel(s.empresa_id))))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8153,6 +8344,7 @@ DO $$ BEGIN
 CREATE POLICY incentivos_fiscais_acesso ON public.incentivos_fiscais TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8163,6 +8355,7 @@ DO $$ BEGIN
 CREATE POLICY integration_secrets_no_client_access ON public.integration_secrets AS RESTRICTIVE TO authenticated, anon USING (false) WITH CHECK (false);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8173,6 +8366,7 @@ DO $$ BEGIN
 CREATE POLICY itens_iss_select_authenticated ON public.itens_lista_iss FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8183,6 +8377,7 @@ DO $$ BEGIN
 CREATE POLICY itens_iss_write_admin ON public.itens_lista_iss TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8193,6 +8388,7 @@ DO $$ BEGIN
 CREATE POLICY kpis_operacionais_owner ON public.kpis_operacionais TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8207,6 +8403,7 @@ CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis TO
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8217,6 +8414,7 @@ DO $$ BEGIN
 CREATE POLICY logs_baixa_insert_owner ON public.logs_baixa_automatica FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8227,6 +8425,7 @@ DO $$ BEGIN
 CREATE POLICY logs_baixa_select_owner ON public.logs_baixa_automatica FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8237,6 +8436,7 @@ DO $$ BEGIN
 CREATE POLICY logs_retro_insert_owner ON public.logs_conciliacao_retroativa FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8247,6 +8447,7 @@ DO $$ BEGIN
 CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8257,6 +8458,7 @@ DO $$ BEGIN
 CREATE POLICY ncms_select_authenticated ON public.ncms FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8267,6 +8469,7 @@ DO $$ BEGIN
 CREATE POLICY ncms_write_admin ON public.ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8277,6 +8480,7 @@ DO $$ BEGIN
 CREATE POLICY negativacoes_tenant_rw ON public.negativacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8287,6 +8491,7 @@ DO $$ BEGIN
 CREATE POLICY notas_fiscais_ocr_acesso ON public.notas_fiscais_ocr TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8297,6 +8502,7 @@ DO $$ BEGIN
 CREATE POLICY oportunidades_elisao_acesso ON public.oportunidades_elisao TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8307,6 +8513,7 @@ DO $$ BEGIN
 CREATE POLICY pagamentos_recorrentes_acesso ON public.pagamentos_recorrentes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8321,6 +8528,7 @@ CREATE POLICY parcelas_acordo_tenant_write ON public.parcelas_acordo TO authenti
   WHERE ((a.id = parcelas_acordo.acordo_id) AND public.empresa_acessivel(a.empresa_id))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8331,6 +8539,7 @@ DO $$ BEGIN
 CREATE POLICY per_dcomp_acesso ON public.per_dcomp TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8341,6 +8550,7 @@ DO $$ BEGIN
 CREATE POLICY pix_templates_tenant_rw ON public.pix_templates TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8351,6 +8561,7 @@ DO $$ BEGIN
 CREATE POLICY planos_acao_owner ON public.planos_acao TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8361,6 +8572,7 @@ DO $$ BEGIN
 CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8371,6 +8583,7 @@ DO $$ BEGIN
 CREATE POLICY protestos_tenant_rw ON public.protestos TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8381,6 +8594,7 @@ DO $$ BEGIN
 CREATE POLICY protocolos_st_select_authenticated ON public.protocolos_st FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8391,6 +8605,7 @@ DO $$ BEGIN
 CREATE POLICY protocolos_st_write_admin ON public.protocolos_st TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8401,6 +8616,7 @@ DO $$ BEGIN
 CREATE POLICY protocolos_st_ncms_select_authenticated ON public.protocolos_st_ncms FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8411,6 +8627,7 @@ DO $$ BEGIN
 CREATE POLICY protocolos_st_ncms_write_admin ON public.protocolos_st_ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8421,6 +8638,7 @@ DO $$ BEGIN
 CREATE POLICY protocolos_st_ufs_select_authenticated ON public.protocolos_st_ufs FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8431,6 +8649,7 @@ DO $$ BEGIN
 CREATE POLICY protocolos_st_ufs_write_admin ON public.protocolos_st_ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8441,6 +8660,7 @@ DO $$ BEGIN
 CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8455,6 +8675,7 @@ CREATE POLICY regua_cobranca_etapas_tenant_write ON public.regua_cobranca_etapas
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND public.empresa_acessivel(r.empresa_id))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8465,6 +8686,7 @@ DO $$ BEGIN
 CREATE POLICY rel_trib_agend_all ON public.relatorios_tributarios_agendados TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8475,6 +8697,7 @@ DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_delete ON public.risk_rules FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8485,6 +8708,7 @@ DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_insert ON public.risk_rules FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8495,6 +8719,7 @@ DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_select ON public.risk_rules FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8505,6 +8730,7 @@ DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8515,6 +8741,7 @@ DO $$ BEGIN
 CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8527,6 +8754,7 @@ CREATE POLICY saved_filters_select ON public.saved_filters FOR SELECT TO authent
   WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8537,6 +8765,7 @@ DO $$ BEGIN
 CREATE POLICY scim_checklist_own ON public.scim_setup_checklist TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8547,6 +8776,7 @@ DO $$ BEGIN
 CREATE POLICY lgpd_owner_insert ON public.solicitacoes_lgpd FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8557,6 +8787,7 @@ DO $$ BEGIN
 CREATE POLICY lgpd_scoped_select ON public.solicitacoes_lgpd FOR SELECT TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8567,6 +8798,7 @@ DO $$ BEGIN
 CREATE POLICY lgpd_scoped_update ON public.solicitacoes_lgpd FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8577,6 +8809,7 @@ DO $$ BEGIN
 CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8587,6 +8820,7 @@ DO $$ BEGIN
 CREATE POLICY sped_arquivos_insert ON public.sped_contabil_arquivos FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8597,6 +8831,7 @@ DO $$ BEGIN
 CREATE POLICY sped_arquivos_select ON public.sped_contabil_arquivos FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8607,6 +8842,7 @@ DO $$ BEGIN
 CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos FOR UPDATE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8617,6 +8853,7 @@ DO $$ BEGIN
 CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8627,6 +8864,7 @@ DO $$ BEGIN
 CREATE POLICY ufs_select_authenticated ON public.ufs FOR SELECT TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8637,6 +8875,7 @@ DO $$ BEGIN
 CREATE POLICY ufs_write_admin ON public.ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8647,6 +8886,7 @@ DO $$ BEGIN
 CREATE POLICY user_active_filters_owner ON public.user_active_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8657,6 +8897,7 @@ DO $$ BEGIN
 CREATE POLICY "Admins visualizam preferencias de digest" ON public.user_digest_preferences FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8667,6 +8908,7 @@ DO $$ BEGIN
 CREATE POLICY "Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -8677,6 +8919,7 @@ DO $$ BEGIN
 CREATE POLICY "Users can update their challenges" ON public.webauthn_challenges FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9266,6 +9509,7 @@ ALTER TABLE ONLY public.alert_configurations
     ADD CONSTRAINT alert_configurations_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9277,6 +9521,7 @@ ALTER TABLE ONLY public.alertas
     ADD CONSTRAINT alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9288,6 +9533,7 @@ ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9299,6 +9545,7 @@ ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9310,6 +9557,7 @@ ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9388,6 +9636,7 @@ ALTER TABLE ONLY public.bitrix24_activities
     ADD CONSTRAINT bitrix24_activities_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9423,6 +9672,7 @@ ALTER TABLE ONLY public.elisao_creditos_auditoria
     ADD CONSTRAINT elisao_creditos_auditoria_nota_id_fkey FOREIGN KEY (nota_id) REFERENCES public.notas_fiscais_ocr(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9501,6 +9751,7 @@ ALTER TABLE ONLY public.plano_contas
     ADD CONSTRAINT plano_contas_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.plano_contas(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9536,6 +9787,7 @@ ALTER TABLE ONLY public.risk_rules
     ADD CONSTRAINT risk_rules_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9571,6 +9823,7 @@ ALTER TABLE ONLY public.solicitacoes_lgpd
     ADD CONSTRAINT solicitacoes_lgpd_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9594,6 +9847,7 @@ ALTER TABLE ONLY public.user_anomalia_preferences
     ADD CONSTRAINT user_anomalia_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9605,6 +9859,7 @@ ALTER TABLE ONLY public.user_digest_preferences
     ADD CONSTRAINT user_digest_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
@@ -9616,6 +9871,7 @@ ALTER TABLE ONLY public.user_roles
     ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
 END $$;
 
 
