@@ -226,7 +226,10 @@ CREATE INDEX IF NOT EXISTS idx_benchmarks_lookup ON public.benchmarks_setoriais 
 --
 
 
-CREATE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_setoriais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -298,7 +301,10 @@ CREATE INDEX IF NOT EXISTS idx_bitrix_tokens_created ON public.bitrix_oauth_toke
 --
 
 
-CREATE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -443,7 +449,10 @@ CREATE INDEX IF NOT EXISTS idx_bling_tokens_created ON public.bling_tokens USING
 --
 
 
-CREATE TRIGGER trg_bling_tokens_updated_at BEFORE UPDATE ON public.bling_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_bling_tokens_updated_at BEFORE UPDATE ON public.bling_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -593,7 +602,10 @@ CREATE INDEX IF NOT EXISTS catalogos_fiscais_cargas_last_updated_idx ON public.c
 --
 
 
-CREATE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.catalogos_fiscais_cargas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.catalogos_fiscais_cargas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -668,7 +680,10 @@ END $$;
 --
 
 
-CREATE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.catalogos_tributarios_health_history FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.catalogos_tributarios_health_history FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -733,7 +748,10 @@ CREATE INDEX IF NOT EXISTS idx_cnpja_cache_expires ON public.cnpja_cache USING b
 --
 
 
-CREATE TRIGGER trg_cnpja_cache_updated_at BEFORE UPDATE ON public.cnpja_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_cnpja_cache_updated_at BEFORE UPDATE ON public.cnpja_cache FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -821,7 +839,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_convite_contador_ativo ON public.convites_c
 --
 
 
-CREATE TRIGGER trg_convites_contador_updated_at BEFORE UPDATE ON public.convites_contador FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_convites_contador_updated_at BEFORE UPDATE ON public.convites_contador FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -904,7 +925,10 @@ CREATE INDEX IF NOT EXISTS idx_elisao_sim_empresa ON public.elisao_simulacoes_re
 --
 
 
-CREATE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -993,7 +1017,10 @@ CREATE INDEX IF NOT EXISTS idx_estrategias_ativo ON public.estrategias_elisao US
 --
 
 
-CREATE TRIGGER trg_estrategias_updated_at BEFORE UPDATE ON public.estrategias_elisao FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_estrategias_updated_at BEFORE UPDATE ON public.estrategias_elisao FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1144,7 +1171,10 @@ CREATE INDEX IF NOT EXISTS idx_fe_alert_state_ultimo ON public.frontend_error_al
 --
 
 
-CREATE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1278,7 +1308,10 @@ CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributari
 --
 
 
-CREATE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1491,7 +1524,10 @@ CREATE INDEX IF NOT EXISTS idx_op_icms_rota ON public.operacoes_icms USING btree
 --
 
 
-CREATE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_icms FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_operacoes_icms_updated_at BEFORE UPDATE ON public.operacoes_icms FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1590,7 +1626,10 @@ CREATE INDEX IF NOT EXISTS idx_overlay_rejeicoes_catalogo ON public.overlay_reje
 --
 
 
-CREATE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_rejeicoes_auditoria FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_rejeicoes_auditoria FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1695,7 +1734,10 @@ END $$;
 --
 
 
-CREATE TRIGGER trg_proj_reforma_updated_at BEFORE UPDATE ON public.projecoes_reforma FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_proj_reforma_updated_at BEFORE UPDATE ON public.projecoes_reforma FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1786,7 +1828,10 @@ CREATE INDEX IF NOT EXISTS idx_regras_contab_lookup ON public.regras_contabiliza
 --
 
 
-CREATE TRIGGER trg_regras_contab_updated_at BEFORE UPDATE ON public.regras_contabilizacao_automatica FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_regras_contab_updated_at BEFORE UPDATE ON public.regras_contabilizacao_automatica FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1887,7 +1932,10 @@ END $$;
 --
 
 
-CREATE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1959,7 +2007,10 @@ END $$;
 --
 
 
-CREATE TRIGGER trg_saved_filter_subs_updated_at BEFORE UPDATE ON public.saved_filter_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_saved_filter_subs_updated_at BEFORE UPDATE ON public.saved_filter_subscriptions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2286,7 +2337,10 @@ CREATE INDEX IF NOT EXISTS idx_sim_hash ON public.simulacoes USING btree (hash_i
 --
 
 
-CREATE TRIGGER trg_simulacoes_updated_at BEFORE UPDATE ON public.simulacoes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_simulacoes_updated_at BEFORE UPDATE ON public.simulacoes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2433,7 +2487,10 @@ CREATE INDEX IF NOT EXISTS idx_sso_role_mappings_provider ON public.sso_role_map
 --
 
 
-CREATE TRIGGER trg_sso_role_mappings_updated_at BEFORE UPDATE ON public.sso_role_mappings FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_sso_role_mappings_updated_at BEFORE UPDATE ON public.sso_role_mappings FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2595,7 +2652,10 @@ CREATE INDEX IF NOT EXISTS idx_sso_user_groups_user ON public.sso_user_groups US
 --
 
 
-CREATE TRIGGER trg_sso_user_groups_updated_at BEFORE UPDATE ON public.sso_user_groups FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_sso_user_groups_updated_at BEFORE UPDATE ON public.sso_user_groups FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -5516,247 +5576,370 @@ $$;
 
 -- FASE 5a: Triggers ausentes em tabelas comuns
 
-CREATE TRIGGER trg_alert_configurations_set_empresa BEFORE INSERT ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+DO $$ BEGIN
+  CREATE TRIGGER trg_alert_configurations_set_empresa BEFORE INSERT ON public.alert_configurations FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_alertas_set_empresa BEFORE INSERT ON public.alertas FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+DO $$ BEGIN
+  CREATE TRIGGER trg_alertas_set_empresa BEFORE INSERT ON public.alertas FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_alerts_set_empresa BEFORE INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+DO $$ BEGIN
+  CREATE TRIGGER trg_alerts_set_empresa BEFORE INSERT ON public.alerts FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_aliq_inter_updated_at BEFORE UPDATE ON public.aliquotas_interestaduais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_aliq_inter_updated_at BEFORE UPDATE ON public.aliquotas_interestaduais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_aliq_internas_updated_at BEFORE UPDATE ON public.aliquotas_internas_uf FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_aliq_internas_updated_at BEFORE UPDATE ON public.aliquotas_internas_uf FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_aliq_iss_updated_at BEFORE UPDATE ON public.aliquotas_iss_municipal FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_aliq_iss_updated_at BEFORE UPDATE ON public.aliquotas_iss_municipal FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_api_keys_updated_at BEFORE UPDATE ON public.api_keys FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_api_keys_updated_at BEFORE UPDATE ON public.api_keys FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_conformidade_snapshots_updated_at BEFORE UPDATE ON public.conformidade_snapshots FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $$ BEGIN
+  CREATE TRIGGER trg_conformidade_snapshots_updated_at BEFORE UPDATE ON public.conformidade_snapshots FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.elisao_alertas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_tarefas_elisao_updated_at BEFORE UPDATE ON public.elisao_tarefas_acionaveis FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_empresas_unica_padrao BEFORE INSERT OR UPDATE OF is_padrao, ativo ON public.empresas FOR EACH ROW EXECUTE FUNCTION public.empresas_unica_padrao();
+DO $$ BEGIN
+  CREATE TRIGGER trg_empresas_unica_padrao BEFORE INSERT OR UPDATE OF is_padrao, ativo ON public.empresas FOR EACH ROW EXECUTE FUNCTION public.empresas_unica_padrao();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_entregas_obrigacoes_updated_at BEFORE UPDATE ON public.entregas_obrigacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $$ BEGIN
+  CREATE TRIGGER trg_entregas_obrigacoes_updated_at BEFORE UPDATE ON public.entregas_obrigacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_faixas_simples_updated_at BEFORE UPDATE ON public.faixas_simples_nacional FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_faixas_simples_updated_at BEFORE UPDATE ON public.faixas_simples_nacional FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_fechamentos_updated_at BEFORE UPDATE ON public.fechamentos_tributarios FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_fechamentos_updated_at BEFORE UPDATE ON public.fechamentos_tributarios FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();
+DO $$ BEGIN
+  CREATE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON public.integration_secrets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $$ BEGIN
+  CREATE TRIGGER trg_integration_secrets_updated_at BEFORE UPDATE ON public.integration_secrets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_itens_iss_updated_at BEFORE UPDATE ON public.itens_lista_iss FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_kpis_operacionais_updated_at BEFORE UPDATE ON public.kpis_operacionais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_kpis_operacionais_updated_at BEFORE UPDATE ON public.kpis_operacionais FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_lancamento_contabil_before_update BEFORE UPDATE ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_update();
+DO $$ BEGIN
+  CREATE TRIGGER trg_lancamento_contabil_before_update BEFORE UPDATE ON public.lancamentos_contabeis FOR EACH ROW EXECUTE FUNCTION public.lancamento_contabil_before_update();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_nf_ocr_updated_at BEFORE UPDATE ON public.notas_fiscais_ocr FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.pagamentos_recorrentes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.pagamentos_recorrentes FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_pix_template_sync_legacy BEFORE INSERT OR UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
+DO $$ BEGIN
+  CREATE TRIGGER trg_pix_template_sync_legacy BEFORE INSERT OR UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_pix_templates_updated_at BEFORE UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_pix_templates_updated_at BEFORE UPDATE ON public.pix_templates FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_planos_acao_updated_at BEFORE UPDATE ON public.planos_acao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_planos_acao_updated_at BEFORE UPDATE ON public.planos_acao FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_sync_regime_empresa AFTER INSERT OR UPDATE ON public.regimes_tributarios FOR EACH ROW EXECUTE FUNCTION public.sync_regime_tributario_empresa();
+DO $$ BEGIN
+  CREATE TRIGGER trg_sync_regime_empresa AFTER INSERT OR UPDATE ON public.regimes_tributarios FOR EACH ROW EXECUTE FUNCTION public.sync_regime_tributario_empresa();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_risk_rules_set_empresa BEFORE INSERT ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+DO $$ BEGIN
+  CREATE TRIGGER trg_risk_rules_set_empresa BEFORE INSERT ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_default();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_saved_filters_updated_at BEFORE UPDATE ON public.saved_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_saved_filters_updated_at BEFORE UPDATE ON public.saved_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_scim_checklist_updated_at BEFORE UPDATE ON public.scim_setup_checklist FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_scim_checklist_updated_at BEFORE UPDATE ON public.scim_setup_checklist FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_solicitacoes_lgpd_set_empresa BEFORE INSERT ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+DO $$ BEGIN
+  CREATE TRIGGER trg_solicitacoes_lgpd_set_empresa BEFORE INSERT ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.set_empresa_id_from_profile();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_solicitacoes_lgpd_updated_at BEFORE UPDATE ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_solicitacoes_lgpd_updated_at BEFORE UPDATE ON public.solicitacoes_lgpd FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_sped_arquivos_updated_at BEFORE UPDATE ON public.sped_contabil_arquivos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_sped_arquivos_updated_at BEFORE UPDATE ON public.sped_contabil_arquivos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_user_active_filters_updated_at BEFORE UPDATE ON public.user_active_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_user_active_filters_updated_at BEFORE UPDATE ON public.user_active_filters FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER tr_user_digest_preferences_updated_at BEFORE UPDATE ON public.user_digest_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+DO $$ BEGIN
+  CREATE TRIGGER tr_user_digest_preferences_updated_at BEFORE UPDATE ON public.user_digest_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
-CREATE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.auto_vincular_empresa_padrao();
+DO $$ BEGIN
+  CREATE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.auto_vincular_empresa_padrao();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
