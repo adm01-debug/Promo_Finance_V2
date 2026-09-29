@@ -66,7 +66,8 @@ INSERT INTO public.glossario_tributario (termo, sigla, categoria, significado, b
 ('Escrituração Contábil Fiscal','ECF','Obrigações','Obrigação anual que substitui a DIPJ e integra a contabilidade ao LALUR/LACS.','IN RFB 2.004/2021',27),
 ('EFD-Contribuições','','Obrigações','Escrituração digital mensal de PIS/COFINS e da contribuição previdenciária sobre a receita bruta.','IN RFB 1.252/2012',28),
 ('Pedido de Restituição e Declaração de Compensação','PER/DCOMP','Créditos','Instrumento eletrônico para restituir, ressarcir ou compensar créditos federais.','IN RFB 2.055/2021',29),
-('Elisão Fiscal','','Planejamento','Redução lícita da carga tributária por escolha de estruturas e regimes antes da ocorrência do fato gerador.','CTN, art. 116, parágrafo único',30);
+('Elisão Fiscal','','Planejamento','Redução lícita da carga tributária por escolha de estruturas e regimes antes da ocorrência do fato gerador.','CTN, art. 116, parágrafo único',30)
+ON CONFLICT (termo) DO NOTHING;
 
 -- ============ INCENTIVOS FISCAIS ============
 CREATE TABLE IF NOT EXISTS public.incentivos_fiscais (
