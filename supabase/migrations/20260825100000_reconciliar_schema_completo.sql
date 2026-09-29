@@ -199,8 +199,12 @@ CREATE TABLE IF NOT EXISTS public.benchmarks_setoriais (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.benchmarks_setoriais
     ADD CONSTRAINT benchmark_unico UNIQUE (cnae_prefix, regime, vigencia_inicio);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -643,8 +647,12 @@ CREATE TABLE IF NOT EXISTS public.catalogos_tributarios_health_history (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.catalogos_tributarios_health_history
     ADD CONSTRAINT catalogos_health_history_dia_key UNIQUE (dia);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -790,8 +798,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.convites_contador
     ADD CONSTRAINT convites_contador_token_hash_key UNIQUE (token_hash);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -954,8 +966,12 @@ CREATE TABLE IF NOT EXISTS public.estrategias_elisao (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.estrategias_elisao
     ADD CONSTRAINT estrategias_elisao_codigo_key UNIQUE (codigo);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1245,8 +1261,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.glossario_tributario
     ADD CONSTRAINT glossario_tributario_termo_key UNIQUE (termo);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1327,8 +1347,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.index_usage_snapshots
     ADD CONSTRAINT index_usage_snapshots_unico UNIQUE (snapshot_date, schema_name, index_name);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1543,8 +1567,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.overlay_rejeicoes_auditoria
     ADD CONSTRAINT overlay_rejeicoes_unicidade UNIQUE (catalogo, identificador, campo, motivo, referencia);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1656,8 +1684,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.projecoes_reforma
     ADD CONSTRAINT uq_proj_emp_ano UNIQUE (empresa_id, ano);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1727,8 +1759,12 @@ CREATE TABLE IF NOT EXISTS public.regras_contabilizacao_automatica (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.regras_contabilizacao_automatica
     ADD CONSTRAINT regra_nome_unico_empresa UNIQUE (empresa_id, nome);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1840,8 +1876,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.retencao_politicas
     ADD CONSTRAINT retencao_politicas_tabela_key UNIQUE (tabela);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1908,8 +1948,12 @@ END $$;
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.saved_filter_subscriptions
     ADD CONSTRAINT saved_filter_subscriptions_unique UNIQUE (saved_filter_id, user_id);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2362,8 +2406,12 @@ CREATE TABLE IF NOT EXISTS public.sso_role_mappings (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_role_mappings
     ADD CONSTRAINT sso_role_mapping_unico UNIQUE (provider_id, idp_group);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2520,8 +2568,12 @@ CREATE TABLE IF NOT EXISTS public.sso_user_groups (
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.sso_user_groups
     ADD CONSTRAINT sso_user_group_unico UNIQUE (user_id, provider_id);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7502,36 +7554,56 @@ ALTER TABLE ONLY public.alerts
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.aliquotas_interestaduais
     ADD CONSTRAINT aliquotas_interestaduais_unq UNIQUE (uf_origem, uf_destino, vigente_de);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.aliquotas_internas_uf
     ADD CONSTRAINT aliquotas_internas_uf_unq UNIQUE (uf, categoria_produto, vigente_de);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.aliquotas_iss_municipal
     ADD CONSTRAINT aliq_iss_mun_unq UNIQUE (codigo_ibge, item_lista_id, vigente_de);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.api_keys
     ADD CONSTRAINT api_keys_hash_unico UNIQUE (key_hash);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.api_keys
     ADD CONSTRAINT api_keys_nome_unico_por_empresa UNIQUE (empresa_id, name);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7551,15 +7623,23 @@ ALTER TABLE ONLY public.bitrix24_activities
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.bitrix24_stage_mappings
     ADD CONSTRAINT bitrix24_stage_mappings_lalamove_status_key UNIQUE (lalamove_status);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.conformidade_snapshots
     ADD CONSTRAINT conformidade_snapshots_unica UNIQUE (empresa_id, competencia);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7572,22 +7652,34 @@ ALTER TABLE ONLY public.elisao_creditos_auditoria
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.entregas_obrigacoes
     ADD CONSTRAINT entregas_obrigacoes_unica UNIQUE (empresa_id, obrigacao_id, competencia);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.faixas_simples_nacional
     ADD CONSTRAINT faixas_simples_unq UNIQUE (anexo, faixa, vigente_de);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.fechamentos_tributarios
     ADD CONSTRAINT fechamento_unico UNIQUE (empresa_id, ano, mes);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7600,15 +7692,23 @@ ALTER TABLE ONLY public.frontend_error_logs
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.integration_secrets
     ADD CONSTRAINT integration_secrets_chave_key UNIQUE (chave);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.kpis_operacionais
     ADD CONSTRAINT kpis_operacionais_unique UNIQUE (user_id, nome);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7621,15 +7721,23 @@ ALTER TABLE ONLY public.plano_contas
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.protocolos_st_ncms
     ADD CONSTRAINT protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.protocolos_st_ufs
     ADD CONSTRAINT protocolos_st_ufs_unq UNIQUE (protocolo_id, uf);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7642,15 +7750,23 @@ ALTER TABLE ONLY public.risk_rules
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.saved_filters
     ADD CONSTRAINT saved_filters_unique UNIQUE (user_id, entity_type, name);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.scim_setup_checklist
     ADD CONSTRAINT scim_checklist_unico UNIQUE (user_id, item_key);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -7663,8 +7779,12 @@ ALTER TABLE ONLY public.solicitacoes_lgpd
 --
 
 
+DO $$ BEGIN
 ALTER TABLE ONLY public.user_active_filters
     ADD CONSTRAINT user_active_filters_unique UNIQUE (user_id, entity_type);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
