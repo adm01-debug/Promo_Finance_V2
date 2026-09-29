@@ -4483,6 +4483,7 @@ END $$;
 SET check_function_bodies = off;
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.auditar_acessos_cross_tenant(_horas integer DEFAULT 1) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -4647,6 +4648,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.auto_vincular_empresa_padrao() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -4674,6 +4676,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.backfill_empresa_id(_dry_run boolean DEFAULT false) RETURNS TABLE(tabela text, estrategia text, registros_ajustados bigint, pendentes bigint)
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -4809,6 +4812,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.capture_index_usage_snapshot() RETURNS integer
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -4853,6 +4857,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.claim_frontend_error_alerts(p_window_minutes integer DEFAULT 15, p_threshold integer DEFAULT 10, p_cooldown_minutes integer DEFAULT 60, p_limit integer DEFAULT 20) RETURNS TABLE(assinatura text, exemplo_mensagem text, severity text, ocorrencias bigint, usuarios_afetados bigint, urls_distintas bigint, primeira_ocorrencia timestamp with time zone, ultima_ocorrencia timestamp with time zone, is_nova boolean)
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -4927,6 +4932,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.claim_silenciamentos_digest(p_horas integer DEFAULT 168, p_min_intervalo_horas integer DEFAULT 144) RETURNS TABLE(assinatura text, severity text, exemplo_mensagem text, silenciado_ate timestamp with time zone, horas_restantes numeric, ja_expirou boolean, alertas_enviados integer)
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -4989,6 +4995,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.close_stale_integrity_alerts(p_hour timestamp with time zone, p_domains text[], p_grace interval DEFAULT '00:00:00'::interval) RETURNS integer
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -5034,6 +5041,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.definir_empresa_padrao(_empresa_id uuid) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -5072,6 +5080,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.delete_cron_job(job_id bigint) RETURNS boolean
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'cron'
@@ -5102,6 +5111,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.detectar_duplicidades_financeiras(p_empresa_id uuid, p_tabela text DEFAULT 'contas_pagar'::text) RETURNS TABLE(entidade_tipo text, contraparte_id uuid, numero_documento text, valor numeric, data_vencimento date, ocorrencias bigint, valor_total numeric, ids uuid[])
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5154,6 +5164,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.duplicate_saved_filter(_source_id uuid, _new_name text DEFAULT ''::text) RETURNS uuid
     LANGUAGE plpgsql
     SET search_path TO 'public'
@@ -5199,6 +5210,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.empresa_membro_ativo(_empresa_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5222,6 +5234,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.empresa_padrao_id() RETURNS uuid
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5244,6 +5257,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.empresas_unica_padrao() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -5279,6 +5293,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.escalate_stale_integrity_alerts(p_age interval DEFAULT '24:00:00'::interval) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -5350,6 +5365,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.fe_error_signature(p_message text) RETURNS text
     LANGUAGE sql IMMUTABLE
     SET search_path TO 'public'
@@ -5369,6 +5385,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.fn_balancete(p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_nivel_max integer DEFAULT NULL::integer) RETURNS TABLE(conta_id uuid, codigo text, nome text, tipo text, natureza text, nivel integer, aceita_lancamento boolean, saldo_anterior numeric, debitos numeric, creditos numeric, saldo_final numeric)
     LANGUAGE sql STABLE
     SET search_path TO 'public'
@@ -5431,6 +5448,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.fn_indices_contabeis(p_empresa_id uuid, p_data_inicio date, p_data_fim date) RETURNS TABLE(ativo_total numeric, ativo_circulante numeric, ativo_nao_circulante numeric, realizavel_lp numeric, imobilizado numeric, disponibilidades numeric, clientes numeric, estoques numeric, passivo_circulante numeric, passivo_nao_circulante numeric, fornecedores numeric, patrimonio_liquido numeric, receita_bruta numeric, deducoes_receita numeric, receita_liquida numeric, cmv numeric, lucro_liquido numeric, dias_periodo integer)
     LANGUAGE sql STABLE
     SET search_path TO 'public'
@@ -5498,6 +5516,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.fn_livro_razao(p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_conta_id uuid DEFAULT NULL::uuid) RETURNS TABLE(conta_id uuid, codigo text, nome text, saldo_anterior numeric, lancamento_id uuid, data_lancamento date, numero_lancamento bigint, historico text, debito numeric, credito numeric, saldo_corrido numeric)
     LANGUAGE sql STABLE
     SET search_path TO 'public'
@@ -5556,6 +5575,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.frontend_error_logs_sanitize() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -5597,6 +5617,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_25_policies_sem_tenant() RETURNS TABLE(tabela text, policy_name text, cmd text, vinculo text)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5649,6 +5670,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_27_secdef_sem_search_path() RETURNS TABLE(funcao text, argumentos text, motivo text)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5715,6 +5737,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_30_views_inseguras() RETURNS TABLE(objeto text, tipo text, motivo text)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5756,6 +5779,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_31_tenant_sem_indice() RETURNS TABLE(tabela text, motivo text)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5784,6 +5808,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_32_pii_sem_mascara() RETURNS TABLE(objeto text, coluna text, motivo text)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -5808,6 +5833,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_33_indices_redundantes() RETURNS TABLE(tabela text, indice_redundante text, indice_equivalente text, motivo text)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -5855,6 +5881,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_34_indices_nao_utilizados(_min_dias integer DEFAULT 30) RETURNS TABLE(tabela text, indice text, dias_observados integer, tamanho_kb bigint)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -5898,6 +5925,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.gate_35_tabelas_sem_retencao() RETURNS TABLE(tabela text, coluna_temporal text, tamanho text)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -6085,6 +6113,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_acessos_suspeitos(_horas integer DEFAULT 168, _somente_abertos boolean DEFAULT true) RETURNS SETOF public.acessos_suspeitos
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -6107,6 +6136,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -6131,6 +6161,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_catalogos_tributarios_history(_dias integer DEFAULT 30) RETURNS TABLE(dia date, criticos integer, avisos integer, infos integer, total_invariantes integer, saudavel boolean)
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -6160,6 +6191,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_cobertura_fiscal_uf() RETURNS jsonb
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -6242,6 +6274,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_frontend_error_groups(p_desde timestamp with time zone DEFAULT (now() - '7 days'::interval), p_severity text DEFAULT NULL::text, p_limit integer DEFAULT 50) RETURNS TABLE(assinatura text, exemplo_mensagem text, severity text, ocorrencias bigint, usuarios_afetados bigint, urls_distintas bigint, primeira_ocorrencia timestamp with time zone, ultima_ocorrencia timestamp with time zone)
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -6335,6 +6368,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_retencao_politicas_status() RETURNS TABLE(tabela text, coluna text, dias integer, filtro text, motivo text, ativo boolean, isenta boolean, tem_politica boolean, total_linhas bigint, linhas_vencidas bigint, registro_mais_antigo timestamp with time zone, atualizado_em timestamp with time zone)
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -6473,6 +6507,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_ultima_carga_fiscal() RETURNS jsonb
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -6502,6 +6537,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.increment_pix_template_uso(p_template_id uuid) RETURNS void
     LANGUAGE plpgsql
     SET search_path TO 'public'
@@ -6522,6 +6558,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.internal_job_secret() RETURNS text
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -6538,6 +6575,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.mascarar_chave_pix(_valor text) RETURNS text
     LANGUAGE sql IMMUTABLE
     SET search_path TO 'public'
@@ -6558,6 +6596,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.pix_template_sync_legacy() RETURNS trigger
     LANGUAGE plpgsql
     SET search_path TO 'public'
@@ -6583,6 +6622,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.pode_ver_dado_sensivel() RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
@@ -6601,6 +6641,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.provisionar_usuario(_user_id uuid) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -6712,6 +6753,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.provisionar_usuario_atual() RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -6735,6 +6777,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.purge_old_rows(p_table regclass, p_column text, p_days integer, p_where text DEFAULT NULL::text, p_batch integer DEFAULT 10000, p_max_batches integer DEFAULT 50) RETURNS bigint
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -6909,6 +6952,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.resolve_integrity_alert(p_alert_id uuid) RETURNS boolean
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -6941,6 +6985,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.set_empresa_id_default() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -6975,6 +7020,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.set_empresa_id_from_profile() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -6999,6 +7045,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.silenciar_alerta_erro_frontend(p_assinatura text, p_horas integer DEFAULT 24, p_motivo text DEFAULT NULL::text) RETURNS public.frontend_error_alert_state
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -7057,6 +7104,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.sync_regime_tributario_empresa() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -7084,6 +7132,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.toggle_cron_job(job_id bigint, is_active boolean) RETURNS boolean
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'cron'
@@ -7114,6 +7163,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.trigger_bitrix24_sync() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -7156,6 +7206,7 @@ END $OUTER$;
 
 
 DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.watch_cron_failures(p_lookback_minutes integer DEFAULT 90, p_stale_hours integer DEFAULT 36) RETURNS jsonb
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public', 'cron', 'pg_catalog'
