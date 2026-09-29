@@ -1,5 +1,5 @@
 -- ============ GLOSSÁRIO TRIBUTÁRIO ============
-CREATE TABLE public.glossario_tributario (
+CREATE TABLE IF NOT EXISTS public.glossario_tributario (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   termo TEXT NOT NULL UNIQUE,
   sigla TEXT,
@@ -12,17 +12,20 @@ CREATE TABLE public.glossario_tributario (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_glossario_categoria ON public.glossario_tributario(categoria, termo);
+CREATE INDEX IF NOT EXISTS idx_glossario_categoria ON public.glossario_tributario(categoria, termo);
 
 GRANT SELECT ON public.glossario_tributario TO authenticated;
 GRANT ALL ON public.glossario_tributario TO service_role;
 ALTER TABLE public.glossario_tributario ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "glossario_leitura" ON public.glossario_tributario;
 CREATE POLICY "glossario_leitura" ON public.glossario_tributario
   FOR SELECT TO authenticated USING (ativo);
+DROP POLICY IF EXISTS "glossario_admin" ON public.glossario_tributario;
 CREATE POLICY "glossario_admin" ON public.glossario_tributario
   FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
+DROP TRIGGER IF EXISTS trg_glossario_updated_at ON public.glossario_tributario;
 CREATE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tributario
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
@@ -59,7 +62,7 @@ INSERT INTO public.glossario_tributario (termo, sigla, categoria, significado, b
 ('Elisão Fiscal','','Planejamento','Redução lícita da carga tributária por escolha de estruturas e regimes antes da ocorrência do fato gerador.','CTN, art. 116, parágrafo único',30);
 
 -- ============ INCENTIVOS FISCAIS ============
-CREATE TABLE public.incentivos_fiscais (
+CREATE TABLE IF NOT EXISTS public.incentivos_fiscais (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   nome TEXT NOT NULL,
@@ -77,18 +80,20 @@ CREATE TABLE public.incentivos_fiscais (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT incentivo_periodo_valido CHECK (ano_fim >= ano_inicio)
 );
-CREATE INDEX idx_incentivos_empresa ON public.incentivos_fiscais(empresa_id, ativo);
+CREATE INDEX IF NOT EXISTS idx_incentivos_empresa ON public.incentivos_fiscais(empresa_id, ativo);
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.incentivos_fiscais TO authenticated;
 GRANT ALL ON public.incentivos_fiscais TO service_role;
 ALTER TABLE public.incentivos_fiscais ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "incentivos_fiscais_acesso" ON public.incentivos_fiscais;
 CREATE POLICY "incentivos_fiscais_acesso" ON public.incentivos_fiscais FOR ALL TO authenticated
   USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+DROP TRIGGER IF EXISTS trg_incentivos_updated_at ON public.incentivos_fiscais;
 CREATE TRIGGER trg_incentivos_updated_at BEFORE UPDATE ON public.incentivos_fiscais
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- ============ PER/DCOMP ============
-CREATE TABLE public.per_dcomp (
+CREATE TABLE IF NOT EXISTS public.per_dcomp (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   tipo TEXT NOT NULL CHECK (tipo IN ('per','dcomp')),
@@ -117,13 +122,15 @@ CREATE TABLE public.per_dcomp (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_per_dcomp_empresa ON public.per_dcomp(empresa_id, created_at DESC);
-CREATE INDEX idx_per_dcomp_status ON public.per_dcomp(empresa_id, status);
+CREATE INDEX IF NOT EXISTS idx_per_dcomp_empresa ON public.per_dcomp(empresa_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_per_dcomp_status ON public.per_dcomp(empresa_id, status);
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.per_dcomp TO authenticated;
 GRANT ALL ON public.per_dcomp TO service_role;
 ALTER TABLE public.per_dcomp ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "per_dcomp_acesso" ON public.per_dcomp;
 CREATE POLICY "per_dcomp_acesso" ON public.per_dcomp FOR ALL TO authenticated
   USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+DROP TRIGGER IF EXISTS trg_per_dcomp_updated_at ON public.per_dcomp;
 CREATE TRIGGER trg_per_dcomp_updated_at BEFORE UPDATE ON public.per_dcomp
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
