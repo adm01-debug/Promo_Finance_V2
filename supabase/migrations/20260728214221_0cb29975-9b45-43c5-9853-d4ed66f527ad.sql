@@ -1,31 +1,83 @@
 -- asaas_audit_trail (via asaas_payments)
 DROP POLICY IF EXISTS asaas_audit_admin_select ON public.asaas_audit_trail;
 DROP POLICY IF EXISTS asaas_audit_admin_delete ON public.asaas_audit_trail;
-CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail
-  FOR SELECT TO authenticated
-  USING (
-    public.has_role((SELECT auth.uid()), 'admin'::app_role)
-    AND EXISTS (SELECT 1 FROM public.asaas_payments p
-                WHERE p.id = asaas_audit_trail.asaas_payment_id
-                  AND public.empresa_acessivel(p.empresa_id))
-  );
+DROP POLICY IF EXISTS asaas_audit_tenant_select ON public.asaas_audit_trail;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'asaas_audit_trail' AND column_name = 'asaas_payment_id'
+  ) THEN
+    EXECUTE '
+      CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail
+        FOR SELECT TO authenticated
+        USING (
+          public.has_role((SELECT auth.uid()), ''admin''::app_role)
+          AND EXISTS (SELECT 1 FROM public.asaas_payments p
+                      WHERE p.id = asaas_audit_trail.asaas_payment_id
+                        AND public.empresa_acessivel(p.empresa_id))
+        )
+    ';
+  ELSE
+    EXECUTE '
+      CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail
+        FOR SELECT TO authenticated
+        USING (
+          public.has_role((SELECT auth.uid()), ''admin''::app_role)
+          AND EXISTS (SELECT 1 FROM public.asaas_payments p
+                      WHERE p.id = asaas_audit_trail.payment_id
+                        AND public.empresa_acessivel(p.empresa_id))
+        )
+    ';
+  END IF;
+END;
+$$;
 
 -- asaas_sync_queue (via asaas_payments)
 DROP POLICY IF EXISTS asaas_sync_admin_all ON public.asaas_sync_queue;
-CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue
-  FOR ALL TO authenticated
-  USING (
-    public.has_role((SELECT auth.uid()), 'admin'::app_role)
-    AND EXISTS (SELECT 1 FROM public.asaas_payments p
-                WHERE p.id = asaas_sync_queue.asaas_payment_id
-                  AND public.empresa_acessivel(p.empresa_id))
-  )
-  WITH CHECK (
-    public.has_role((SELECT auth.uid()), 'admin'::app_role)
-    AND EXISTS (SELECT 1 FROM public.asaas_payments p
-                WHERE p.id = asaas_sync_queue.asaas_payment_id
-                  AND public.empresa_acessivel(p.empresa_id))
-  );
+DROP POLICY IF EXISTS asaas_sync_tenant_all ON public.asaas_sync_queue;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'asaas_sync_queue' AND column_name = 'asaas_payment_id'
+  ) THEN
+    EXECUTE '
+      CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue
+        FOR ALL TO authenticated
+        USING (
+          public.has_role((SELECT auth.uid()), ''admin''::app_role)
+          AND EXISTS (SELECT 1 FROM public.asaas_payments p
+                      WHERE p.id = asaas_sync_queue.asaas_payment_id
+                        AND public.empresa_acessivel(p.empresa_id))
+        )
+        WITH CHECK (
+          public.has_role((SELECT auth.uid()), ''admin''::app_role)
+          AND EXISTS (SELECT 1 FROM public.asaas_payments p
+                      WHERE p.id = asaas_sync_queue.asaas_payment_id
+                        AND public.empresa_acessivel(p.empresa_id))
+        )
+    ';
+  ELSE
+    EXECUTE '
+      CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue
+        FOR ALL TO authenticated
+        USING (
+          public.has_role((SELECT auth.uid()), ''admin''::app_role)
+          AND EXISTS (SELECT 1 FROM public.asaas_payments p
+                      WHERE p.id = asaas_sync_queue.payment_id
+                        AND public.empresa_acessivel(p.empresa_id))
+        )
+        WITH CHECK (
+          public.has_role((SELECT auth.uid()), ''admin''::app_role)
+          AND EXISTS (SELECT 1 FROM public.asaas_payments p
+                      WHERE p.id = asaas_sync_queue.payment_id
+                        AND public.empresa_acessivel(p.empresa_id))
+        )
+    ';
+  END IF;
+END;
+$$;
 
 -- historico_conciliacao_ia (via contas_pagar / contas_receber / sessoes_conciliacao)
 DROP POLICY IF EXISTS historico_conciliacao_ia_role_select ON public.historico_conciliacao_ia;
