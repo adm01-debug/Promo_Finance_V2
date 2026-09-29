@@ -73,6 +73,7 @@ CREATE POLICY acessos_suspeitos_tenant_select ON public.acessos_suspeitos FOR SE
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -146,6 +147,7 @@ ALTER TABLE ONLY public.auditoria_tributaria
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -157,6 +159,7 @@ CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria FOR SE
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -241,6 +244,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -252,6 +256,7 @@ CREATE POLICY benchmarks_admin_write ON public.benchmarks_setoriais TO authentic
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -263,6 +268,7 @@ CREATE POLICY benchmarks_select ON public.benchmarks_setoriais FOR SELECT TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -322,6 +328,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -338,6 +345,7 @@ CREATE POLICY bitrix_oauth_tokens_service_role_only ON public.bitrix_oauth_token
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -413,6 +421,7 @@ CREATE POLICY bling_sync_logs_insert ON public.bling_sync_logs FOR INSERT TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -424,6 +433,7 @@ CREATE POLICY bling_sync_logs_select ON public.bling_sync_logs FOR SELECT TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -478,6 +488,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -494,6 +505,7 @@ CREATE POLICY bling_tokens_service_role_only ON public.bling_tokens TO service_r
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -569,6 +581,7 @@ CREATE POLICY bling_webhook_events_admin_select ON public.bling_webhook_events F
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -637,6 +650,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -648,6 +662,7 @@ CREATE POLICY "Admins leem cargas de catalogos fiscais" ON public.catalogos_fisc
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -720,6 +735,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -731,6 +747,7 @@ CREATE POLICY "admins leem historico saude fiscal" ON public.catalogos_tributari
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -792,6 +809,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -808,6 +826,7 @@ CREATE POLICY cnpja_cache_service_role_only ON public.cnpja_cache TO service_rol
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -888,6 +907,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -900,6 +920,7 @@ ALTER TABLE ONLY public.convites_contador
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -916,6 +937,7 @@ CREATE POLICY convites_contador_revogar ON public.convites_contador FOR UPDATE T
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -927,6 +949,7 @@ CREATE POLICY convites_contador_select ON public.convites_contador FOR SELECT TO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -985,6 +1008,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -997,6 +1021,7 @@ ALTER TABLE ONLY public.elisao_simulacoes_regime
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1008,6 +1033,7 @@ CREATE POLICY elisao_sim_regime_acesso ON public.elisao_simulacoes_regime TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1087,6 +1113,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1103,6 +1130,7 @@ CREATE POLICY estrategias_select_authenticated ON public.estrategias_elisao FOR 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1114,6 +1142,7 @@ CREATE POLICY estrategias_write_admin ON public.estrategias_elisao TO authentica
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1179,6 +1208,7 @@ ALTER TABLE ONLY public.eventos_contabilizacao_log
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1190,6 +1220,7 @@ CREATE POLICY eventos_contab_select ON public.eventos_contabilizacao_log FOR SEL
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1254,6 +1285,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1265,6 +1297,7 @@ CREATE POLICY fe_alert_state_admin_select ON public.frontend_error_alert_state F
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1323,6 +1356,7 @@ CREATE POLICY fe_silence_digest_admin_select ON public.frontend_error_silence_di
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1398,6 +1432,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1409,6 +1444,7 @@ CREATE POLICY glossario_admin ON public.glossario_tributario TO authenticated US
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1420,6 +1456,7 @@ CREATE POLICY glossario_leitura ON public.glossario_tributario FOR SELECT TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1494,6 +1531,7 @@ CREATE POLICY "Somente admins leem snapshots de índices" ON public.index_usage_
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1544,6 +1582,7 @@ CREATE POLICY "Somente admins gerenciam exceções de índice" ON public.indices
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1625,6 +1664,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1637,6 +1677,7 @@ ALTER TABLE ONLY public.operacoes_icms
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1653,6 +1694,7 @@ CREATE POLICY operacoes_icms_acesso ON public.operacoes_icms TO authenticated US
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1737,6 +1779,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1748,6 +1791,7 @@ CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeic
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1759,6 +1803,7 @@ CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1770,6 +1815,7 @@ CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_a
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1781,6 +1827,7 @@ CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1856,6 +1903,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1868,6 +1916,7 @@ ALTER TABLE ONLY public.projecoes_reforma
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1884,6 +1933,7 @@ CREATE POLICY projecoes_reforma_acesso ON public.projecoes_reforma TO authentica
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1960,6 +2010,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1972,6 +2023,7 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1984,6 +2036,7 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -1996,6 +2049,7 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2007,6 +2061,7 @@ CREATE POLICY regras_contab_select ON public.regras_contabilizacao_automatica FO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2018,6 +2073,7 @@ CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica TO 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2086,6 +2142,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2102,6 +2159,7 @@ CREATE POLICY retencao_politicas_admin_select ON public.retencao_politicas FOR S
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2166,6 +2224,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2178,6 +2237,7 @@ ALTER TABLE ONLY public.saved_filter_subscriptions
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2194,6 +2254,7 @@ CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscripti
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2274,6 +2335,7 @@ CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log FOR
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2352,6 +2414,7 @@ CREATE POLICY security_alerts_admin_all ON public.security_alerts TO authenticat
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2421,6 +2484,7 @@ ALTER TABLE ONLY public.simulacao_tributos_detalhados
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2436,6 +2500,7 @@ CREATE POLICY sim_trib_acesso ON public.simulacao_tributos_detalhados TO authent
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2516,6 +2581,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2528,6 +2594,7 @@ ALTER TABLE ONLY public.simulacoes
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2540,6 +2607,7 @@ ALTER TABLE ONLY public.simulacoes
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2556,6 +2624,7 @@ CREATE POLICY simulacoes_acesso ON public.simulacoes TO authenticated USING (pub
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2610,6 +2679,7 @@ CREATE POLICY slo_metrics_admin_select ON public.slo_metrics_diarias FOR SELECT 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2683,6 +2753,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2695,6 +2766,7 @@ ALTER TABLE ONLY public.sso_role_mappings
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2711,6 +2783,7 @@ CREATE POLICY sso_role_mappings_admin ON public.sso_role_mappings TO authenticat
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2781,6 +2854,7 @@ ALTER TABLE ONLY public.sso_sandbox_runs
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2797,6 +2871,7 @@ CREATE POLICY sso_sandbox_runs_admin ON public.sso_sandbox_runs TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2865,6 +2940,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2877,6 +2953,7 @@ ALTER TABLE ONLY public.sso_user_groups
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -2893,6 +2970,7 @@ CREATE POLICY sso_user_groups_select ON public.sso_user_groups FOR SELECT TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7053,6 +7131,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7064,6 +7143,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7075,6 +7155,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7086,6 +7167,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7097,6 +7179,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7108,6 +7191,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7119,6 +7203,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7130,6 +7215,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7141,6 +7227,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7152,6 +7239,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7163,6 +7251,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7174,6 +7263,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7185,6 +7275,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7196,6 +7287,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7207,6 +7299,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7218,6 +7311,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7229,6 +7323,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7240,6 +7335,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7251,6 +7347,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7262,6 +7359,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7273,6 +7371,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7284,6 +7383,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7295,6 +7395,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7306,6 +7407,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7317,6 +7419,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7328,6 +7431,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7339,6 +7443,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7350,6 +7455,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7361,6 +7467,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7372,6 +7479,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7383,6 +7491,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7394,6 +7503,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7405,6 +7515,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7416,6 +7527,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7427,6 +7539,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7438,6 +7551,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7449,6 +7563,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7460,6 +7575,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7471,6 +7587,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7482,6 +7599,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7493,6 +7611,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7505,6 +7624,7 @@ CREATE POLICY alert_configurations_tenant_delete ON public.alert_configurations 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7516,6 +7636,7 @@ CREATE POLICY alert_configurations_tenant_insert ON public.alert_configurations 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7527,6 +7648,7 @@ CREATE POLICY alert_configurations_tenant_select ON public.alert_configurations 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7538,6 +7660,7 @@ CREATE POLICY alert_configurations_tenant_update ON public.alert_configurations 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7549,6 +7672,7 @@ CREATE POLICY alertas_owner_delete ON public.alertas FOR DELETE TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7560,6 +7684,7 @@ CREATE POLICY alertas_owner_insert ON public.alertas FOR INSERT TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7571,6 +7696,7 @@ CREATE POLICY alertas_owner_select ON public.alertas FOR SELECT TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7582,6 +7708,7 @@ CREATE POLICY alertas_owner_update ON public.alertas FOR UPDATE TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7593,6 +7720,7 @@ CREATE POLICY alerts_tenant_delete ON public.alerts FOR DELETE TO authenticated 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7604,6 +7732,7 @@ CREATE POLICY alerts_tenant_insert ON public.alerts FOR INSERT TO authenticated 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7615,6 +7744,7 @@ CREATE POLICY alerts_tenant_select ON public.alerts FOR SELECT TO authenticated 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7626,6 +7756,7 @@ CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7639,6 +7770,7 @@ CREATE POLICY alerts_sent_tenant_delete ON public.alerts_sent FOR DELETE TO auth
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7652,6 +7784,7 @@ CREATE POLICY alerts_sent_tenant_insert ON public.alerts_sent FOR INSERT TO auth
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7665,6 +7798,7 @@ CREATE POLICY alerts_sent_tenant_select ON public.alerts_sent FOR SELECT TO auth
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7680,6 +7814,7 @@ CREATE POLICY alerts_sent_tenant_update ON public.alerts_sent FOR UPDATE TO auth
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7691,6 +7826,7 @@ CREATE POLICY aliq_inter_select_authenticated ON public.aliquotas_interestaduais
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7702,6 +7838,7 @@ CREATE POLICY aliq_inter_write_admin ON public.aliquotas_interestaduais TO authe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7713,6 +7850,7 @@ CREATE POLICY aliq_internas_select_authenticated ON public.aliquotas_internas_uf
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7724,6 +7862,7 @@ CREATE POLICY aliq_internas_write_admin ON public.aliquotas_internas_uf TO authe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7735,6 +7874,7 @@ CREATE POLICY aliq_iss_select_authenticated ON public.aliquotas_iss_municipal FO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7746,6 +7886,7 @@ CREATE POLICY aliq_iss_write_admin ON public.aliquotas_iss_municipal TO authenti
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7757,6 +7898,7 @@ CREATE POLICY anomalias_detectadas_tenant_rw ON public.anomalias_detectadas TO a
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7768,6 +7910,7 @@ CREATE POLICY api_keys_delete ON public.api_keys FOR DELETE TO authenticated USI
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7779,6 +7922,7 @@ CREATE POLICY api_keys_select ON public.api_keys FOR SELECT TO authenticated USI
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7790,6 +7934,7 @@ CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7803,6 +7948,7 @@ CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail FOR SELECT T
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7814,6 +7960,7 @@ CREATE POLICY asaas_config_tenant_rw ON public.asaas_config TO authenticated USI
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7825,6 +7972,7 @@ CREATE POLICY asaas_customers_tenant_rw ON public.asaas_customers TO authenticat
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7836,6 +7984,7 @@ CREATE POLICY asaas_payments_tenant_rw ON public.asaas_payments TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7847,6 +7996,7 @@ CREATE POLICY asaas_reconciliation_suggestions_tenant_rw ON public.asaas_reconci
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7862,6 +8012,7 @@ CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue TO authenticated 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7873,6 +8024,7 @@ CREATE POLICY asaas_transfers_tenant_rw ON public.asaas_transfers TO authenticat
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7884,6 +8036,7 @@ CREATE POLICY audit_logs_insert_self_attributed ON public.audit_logs FOR INSERT 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7895,6 +8048,7 @@ CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR S
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7906,6 +8060,7 @@ CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticat
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7919,6 +8074,7 @@ CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7932,6 +8088,7 @@ CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7945,6 +8102,7 @@ CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7960,6 +8118,7 @@ CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7971,6 +8130,7 @@ CREATE POLICY centros_custo_tenant_rw ON public.centros_custo TO authenticated U
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7982,6 +8142,7 @@ CREATE POLICY cnaes_select_authenticated ON public.cnaes FOR SELECT TO authentic
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -7993,6 +8154,7 @@ CREATE POLICY cnaes_write_admin ON public.cnaes TO authenticated USING (public.h
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8004,6 +8166,7 @@ CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovaca
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8015,6 +8178,7 @@ CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplic
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8028,6 +8192,7 @@ CREATE POLICY conformidade_snapshots_empresa_insert ON public.conformidade_snaps
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8041,6 +8206,7 @@ CREATE POLICY conformidade_snapshots_empresa_select ON public.conformidade_snaps
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8056,6 +8222,7 @@ CREATE POLICY conformidade_snapshots_empresa_update ON public.conformidade_snaps
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8067,6 +8234,7 @@ CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8078,6 +8246,7 @@ CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar TO authenticated USI
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8089,6 +8258,7 @@ CREATE POLICY contas_receber_tenant_rw ON public.contas_receber TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8100,6 +8270,7 @@ CREATE POLICY darfs_tenant_rw ON public.darfs TO authenticated USING ((public.ha
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8111,6 +8282,7 @@ CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.diges
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8122,6 +8294,7 @@ CREATE POLICY elisao_alertas_acesso ON public.elisao_alertas TO authenticated US
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8133,6 +8306,7 @@ CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditori
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8144,6 +8318,7 @@ CREATE POLICY creditos_auditoria_insert ON public.elisao_creditos_auditoria FOR 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8155,6 +8330,7 @@ CREATE POLICY creditos_auditoria_select ON public.elisao_creditos_auditoria FOR 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8166,6 +8342,7 @@ CREATE POLICY regras_creditos_admin ON public.elisao_regras_creditos TO authenti
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8177,6 +8354,7 @@ CREATE POLICY regras_creditos_leitura ON public.elisao_regras_creditos FOR SELEC
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8188,6 +8366,7 @@ CREATE POLICY tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis TO authe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8199,6 +8378,7 @@ CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados TO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8212,6 +8392,7 @@ CREATE POLICY entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes F
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8225,6 +8406,7 @@ CREATE POLICY entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes F
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8240,6 +8422,7 @@ CREATE POLICY entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes F
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8251,6 +8434,7 @@ CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8262,6 +8446,7 @@ CREATE POLICY faixas_simples_select_authenticated ON public.faixas_simples_nacio
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8273,6 +8458,7 @@ CREATE POLICY faixas_simples_write_admin ON public.faixas_simples_nacional TO au
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8284,6 +8470,7 @@ CREATE POLICY fechamentos_insert ON public.fechamentos_tributarios FOR INSERT TO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8295,6 +8482,7 @@ CREATE POLICY fechamentos_select ON public.fechamentos_tributarios FOR SELECT TO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8306,6 +8494,7 @@ CREATE POLICY fechamentos_update ON public.fechamentos_tributarios FOR UPDATE TO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8317,6 +8506,7 @@ CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8334,6 +8524,7 @@ CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_concili
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8345,6 +8536,7 @@ CREATE POLICY incentivos_fiscais_acesso ON public.incentivos_fiscais TO authenti
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8356,6 +8548,7 @@ CREATE POLICY integration_secrets_no_client_access ON public.integration_secrets
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8367,6 +8560,7 @@ CREATE POLICY itens_iss_select_authenticated ON public.itens_lista_iss FOR SELEC
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8378,6 +8572,7 @@ CREATE POLICY itens_iss_write_admin ON public.itens_lista_iss TO authenticated U
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8389,6 +8584,7 @@ CREATE POLICY kpis_operacionais_owner ON public.kpis_operacionais TO authenticat
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8404,6 +8600,7 @@ CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis TO
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8415,6 +8612,7 @@ CREATE POLICY logs_baixa_insert_owner ON public.logs_baixa_automatica FOR INSERT
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8426,6 +8624,7 @@ CREATE POLICY logs_baixa_select_owner ON public.logs_baixa_automatica FOR SELECT
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8437,6 +8636,7 @@ CREATE POLICY logs_retro_insert_owner ON public.logs_conciliacao_retroativa FOR 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8448,6 +8648,7 @@ CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa FOR 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8459,6 +8660,7 @@ CREATE POLICY ncms_select_authenticated ON public.ncms FOR SELECT TO authenticat
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8470,6 +8672,7 @@ CREATE POLICY ncms_write_admin ON public.ncms TO authenticated USING (public.has
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8481,6 +8684,7 @@ CREATE POLICY negativacoes_tenant_rw ON public.negativacoes TO authenticated USI
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8492,6 +8696,7 @@ CREATE POLICY notas_fiscais_ocr_acesso ON public.notas_fiscais_ocr TO authentica
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8503,6 +8708,7 @@ CREATE POLICY oportunidades_elisao_acesso ON public.oportunidades_elisao TO auth
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8514,6 +8720,7 @@ CREATE POLICY pagamentos_recorrentes_acesso ON public.pagamentos_recorrentes TO 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8529,6 +8736,7 @@ CREATE POLICY parcelas_acordo_tenant_write ON public.parcelas_acordo TO authenti
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8540,6 +8748,7 @@ CREATE POLICY per_dcomp_acesso ON public.per_dcomp TO authenticated USING (publi
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8551,6 +8760,7 @@ CREATE POLICY pix_templates_tenant_rw ON public.pix_templates TO authenticated U
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8562,6 +8772,7 @@ CREATE POLICY planos_acao_owner ON public.planos_acao TO authenticated USING ((u
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8573,6 +8784,7 @@ CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais TO authent
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8584,6 +8796,7 @@ CREATE POLICY protestos_tenant_rw ON public.protestos TO authenticated USING ((p
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8595,6 +8808,7 @@ CREATE POLICY protocolos_st_select_authenticated ON public.protocolos_st FOR SEL
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8606,6 +8820,7 @@ CREATE POLICY protocolos_st_write_admin ON public.protocolos_st TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8617,6 +8832,7 @@ CREATE POLICY protocolos_st_ncms_select_authenticated ON public.protocolos_st_nc
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8628,6 +8844,7 @@ CREATE POLICY protocolos_st_ncms_write_admin ON public.protocolos_st_ncms TO aut
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8639,6 +8856,7 @@ CREATE POLICY protocolos_st_ufs_select_authenticated ON public.protocolos_st_ufs
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8650,6 +8868,7 @@ CREATE POLICY protocolos_st_ufs_write_admin ON public.protocolos_st_ufs TO authe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8661,6 +8880,7 @@ CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8676,6 +8896,7 @@ CREATE POLICY regua_cobranca_etapas_tenant_write ON public.regua_cobranca_etapas
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8687,6 +8908,7 @@ CREATE POLICY rel_trib_agend_all ON public.relatorios_tributarios_agendados TO a
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8698,6 +8920,7 @@ CREATE POLICY risk_rules_tenant_delete ON public.risk_rules FOR DELETE TO authen
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8709,6 +8932,7 @@ CREATE POLICY risk_rules_tenant_insert ON public.risk_rules FOR INSERT TO authen
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8720,6 +8944,7 @@ CREATE POLICY risk_rules_tenant_select ON public.risk_rules FOR SELECT TO authen
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8731,6 +8956,7 @@ CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authen
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8742,6 +8968,7 @@ CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8755,6 +8982,7 @@ CREATE POLICY saved_filters_select ON public.saved_filters FOR SELECT TO authent
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8766,6 +8994,7 @@ CREATE POLICY scim_checklist_own ON public.scim_setup_checklist TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8777,6 +9006,7 @@ CREATE POLICY lgpd_owner_insert ON public.solicitacoes_lgpd FOR INSERT TO authen
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8788,6 +9018,7 @@ CREATE POLICY lgpd_scoped_select ON public.solicitacoes_lgpd FOR SELECT TO authe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8799,6 +9030,7 @@ CREATE POLICY lgpd_scoped_update ON public.solicitacoes_lgpd FOR UPDATE TO authe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8810,6 +9042,7 @@ CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos FOR DE
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8821,6 +9054,7 @@ CREATE POLICY sped_arquivos_insert ON public.sped_contabil_arquivos FOR INSERT T
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8832,6 +9066,7 @@ CREATE POLICY sped_arquivos_select ON public.sped_contabil_arquivos FOR SELECT T
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8843,6 +9078,7 @@ CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos FOR UP
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8854,6 +9090,7 @@ CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca TO authe
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8865,6 +9102,7 @@ CREATE POLICY ufs_select_authenticated ON public.ufs FOR SELECT TO authenticated
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8876,6 +9114,7 @@ CREATE POLICY ufs_write_admin ON public.ufs TO authenticated USING (public.has_r
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8887,6 +9126,7 @@ CREATE POLICY user_active_filters_owner ON public.user_active_filters TO authent
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8898,6 +9138,7 @@ CREATE POLICY "Admins visualizam preferencias de digest" ON public.user_digest_p
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8909,6 +9150,7 @@ CREATE POLICY "Usuarios gerenciam suas preferencias de digest" ON public.user_di
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -8920,6 +9162,7 @@ CREATE POLICY "Users can update their challenges" ON public.webauthn_challenges 
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9510,6 +9753,7 @@ ALTER TABLE ONLY public.alert_configurations
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9522,6 +9766,7 @@ ALTER TABLE ONLY public.alertas
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9534,6 +9779,7 @@ ALTER TABLE ONLY public.alerts
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9546,6 +9792,7 @@ ALTER TABLE ONLY public.alerts
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9558,6 +9805,7 @@ ALTER TABLE ONLY public.alerts
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9637,6 +9885,7 @@ ALTER TABLE ONLY public.bitrix24_activities
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9673,6 +9922,7 @@ ALTER TABLE ONLY public.elisao_creditos_auditoria
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9752,6 +10002,7 @@ ALTER TABLE ONLY public.plano_contas
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9788,6 +10039,7 @@ ALTER TABLE ONLY public.risk_rules
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9824,6 +10076,7 @@ ALTER TABLE ONLY public.solicitacoes_lgpd
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9848,6 +10101,7 @@ ALTER TABLE ONLY public.user_anomalia_preferences
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9860,6 +10114,7 @@ ALTER TABLE ONLY public.user_digest_preferences
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
@@ -9872,6 +10127,7 @@ ALTER TABLE ONLY public.user_roles
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
 END $$;
 
 
