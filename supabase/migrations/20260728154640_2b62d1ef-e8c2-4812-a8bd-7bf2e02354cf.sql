@@ -244,6 +244,7 @@ CREATE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulaco
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- ===== RPC: potencial de elisão consolidado =====
+DROP FUNCTION IF EXISTS public.calcular_potencial_elisao(UUID);
 CREATE OR REPLACE FUNCTION public.calcular_potencial_elisao(p_empresa_id UUID)
 RETURNS TABLE (
   tipo_oportunidade TEXT,
