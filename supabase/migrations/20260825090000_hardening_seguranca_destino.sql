@@ -83,8 +83,16 @@ DO $$ BEGIN
 END $$;
 
 -- 6. Mover extensões de 'public' para 'extensions' -------------------------
-ALTER EXTENSION pg_stat_statements SET SCHEMA extensions;
-ALTER EXTENSION pg_trgm         SET SCHEMA extensions;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
+    EXECUTE 'ALTER EXTENSION pg_stat_statements SET SCHEMA extensions';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm') THEN
+    EXECUTE 'ALTER EXTENSION pg_trgm SET SCHEMA extensions';
+  END IF;
+END $$;
 DROP VIEW IF EXISTS public.pg_stat_statements;
 DROP VIEW IF EXISTS public.pg_stat_statements_info;
 
