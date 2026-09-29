@@ -10702,6 +10702,7 @@ END $$;
 -- FASE 6: Views ausentes/alteradas
 DROP VIEW IF EXISTS public.drivers_safe_view CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.drivers_safe_view WITH (security_invoker='on') AS
  SELECT id,
     name,
@@ -10739,12 +10740,18 @@ CREATE VIEW public.drivers_safe_view WITH (security_invoker='on') AS
             ELSE '***RESTRITO***'::text
         END AS phone
    FROM public.drivers;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.estrategias_elisao_catalogo CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.estrategias_elisao_catalogo WITH (security_invoker='true') AS
  SELECT id,
     codigo,
@@ -10760,12 +10767,18 @@ CREATE VIEW public.estrategias_elisao_catalogo WITH (security_invoker='true') AS
     created_at,
     updated_at
    FROM public.estrategias_elisao;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.extratos_bancarios_importados CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.extratos_bancarios_importados WITH (security_invoker='true') AS
  SELECT id,
     user_id,
@@ -10786,21 +10799,33 @@ CREATE VIEW public.extratos_bancarios_importados WITH (security_invoker='true') 
     conciliado,
     created_at
    FROM public.extrato_bancario;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.mcp_probe CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.mcp_probe AS
  SELECT 1 AS probe,
     CURRENT_TIMESTAMP AS ts;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.mv_benchmark_setorial CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
  WITH carga AS (
          SELECT vw_tributario_dashboard.regime_tributario AS regime,
@@ -10820,12 +10845,18 @@ CREATE MATERIALIZED VIEW public.mv_benchmark_setorial AS
    FROM carga
   GROUP BY regime
   WITH NO DATA;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.orders_operator_view CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.orders_operator_view WITH (security_invoker='on') AS
  SELECT id,
     lalamove_id,
@@ -10867,12 +10898,18 @@ CREATE VIEW public.orders_operator_view WITH (security_invoker='on') AS
     created_at,
     updated_at
    FROM public.lalamove_orders;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.orders_safe_view CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.orders_safe_view WITH (security_invoker='on') AS
  SELECT id,
     lalamove_id,
@@ -10914,12 +10951,18 @@ CREATE VIEW public.orders_safe_view WITH (security_invoker='on') AS
     created_at,
     updated_at
    FROM public.lalamove_orders;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.v_sefaz_observability CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.v_sefaz_observability WITH (security_invoker='true') AS
  SELECT c.cnpj,
     c.ambiente,
@@ -10942,12 +10985,18 @@ CREATE VIEW public.v_sefaz_observability WITH (security_invoker='true') AS
      LEFT JOIN LATERAL ( SELECT count(*) AS open_alerts
            FROM public.integrity_alerts ia
           WHERE ((ia.domain = 'nfe_sefaz'::text) AND (ia.resolved_at IS NULL) AND ((ia.metadata ->> 'cnpj'::text) = c.cnpj))) a ON (true));
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.v_table_bloat CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.v_table_bloat WITH (security_invoker='true') AS
  SELECT schemaname,
     relname AS table_name,
@@ -10970,12 +11019,18 @@ CREATE VIEW public.v_table_bloat WITH (security_invoker='true') AS
     autoanalyze_count
    FROM pg_stat_user_tables
   WHERE (schemaname = 'public'::name);
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_auditoria_tributaria_recente CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_auditoria_tributaria_recente WITH (security_invoker='true') AS
  SELECT a.id,
     a.empresa_id,
@@ -10994,12 +11049,18 @@ CREATE VIEW public.vw_auditoria_tributaria_recente WITH (security_invoker='true'
      LEFT JOIN public.profiles p ON ((p.user_id = a.user_id)))
   ORDER BY a.criado_em DESC
  LIMIT 500;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_contas_pagar_painel CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_contas_pagar_painel WITH (security_invoker='on') AS
  SELECT cp.id,
     cp.descricao,
@@ -11042,12 +11103,18 @@ CREATE VIEW public.vw_contas_pagar_painel WITH (security_invoker='on') AS
      LEFT JOIN public.fornecedores f ON ((cp.fornecedor_id = f.id)))
      LEFT JOIN public.centros_custo cc ON ((cp.centro_custo_id = cc.id)))
      LEFT JOIN public.contas_bancarias cb ON ((cp.conta_bancaria_id = cb.id)));
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_contas_receber_painel CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_contas_receber_painel WITH (security_invoker='on') AS
  SELECT cr.id,
     cr.descricao,
@@ -11096,12 +11163,18 @@ CREATE VIEW public.vw_contas_receber_painel WITH (security_invoker='on') AS
      LEFT JOIN public.clientes cl ON ((cr.cliente_id = cl.id)))
      LEFT JOIN public.centros_custo cc ON ((cr.centro_custo_id = cc.id)))
      LEFT JOIN public.contas_bancarias cb ON ((cr.conta_bancaria_id = cb.id)));
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_dre_mensal CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_dre_mensal WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -11112,12 +11185,18 @@ CREATE VIEW public.vw_dre_mensal WITH (security_invoker='on') AS
     15000.00 AS despesas_operacionais,
     5000.00 AS ebitda
    FROM public.empresas;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_dso_aging CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_dso_aging WITH (security_invoker='on') AS
  SELECT id AS empresa_id,
     45 AS dso_atual,
@@ -11126,12 +11205,18 @@ CREATE VIEW public.vw_dso_aging WITH (security_invoker='on') AS
     1500.00 AS vencido_31_60,
     1000.00 AS vencido_61_plus
    FROM public.empresas;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_fluxo_caixa CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_fluxo_caixa WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -11140,12 +11225,18 @@ CREATE VIEW public.vw_fluxo_caixa WITH (security_invoker='on') AS
     1500.00 AS saidas_previstas,
     500.00 AS saldo_projetado
    FROM public.empresas;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_fluxo_caixa_diario CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_fluxo_caixa_diario WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -11154,36 +11245,54 @@ CREATE VIEW public.vw_fluxo_caixa_diario WITH (security_invoker='on') AS
     1200.00 AS saidas_reais,
     1300.00 AS saldo_final
    FROM public.empresas;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_gastos_centro_custo CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_gastos_centro_custo WITH (security_invoker='on') AS
  SELECT id AS centro_custo_id,
     nome AS nome_centro_custo,
     empresa_id,
     0.0 AS total_gasto
    FROM public.centros_custo;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_metricas_cobranca CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_metricas_cobranca WITH (security_invoker='on') AS
  SELECT id AS empresa_id,
     15.5 AS taxa_inadimplencia,
     120 AS ticket_medio,
     500 AS total_cobrancas_mes
    FROM public.empresas;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_rpc_hotspots CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_rpc_hotspots WITH (security_invoker='true') AS
  SELECT function_name,
     date_trunc('hour'::text, called_at) AS bucket_hour,
@@ -11197,12 +11306,18 @@ CREATE VIEW public.vw_rpc_hotspots WITH (security_invoker='true') AS
    FROM public.rpc_observability_metrics
   WHERE (called_at >= (now() - '7 days'::interval))
   GROUP BY function_name, (date_trunc('hour'::text, called_at));
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_rpc_slow_calls CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_rpc_slow_calls WITH (security_invoker='true') AS
  SELECT id,
     function_name,
@@ -11218,12 +11333,18 @@ CREATE VIEW public.vw_rpc_slow_calls WITH (security_invoker='true') AS
   WHERE (called_at >= (now() - '24:00:00'::interval))
   ORDER BY duration_ms DESC
  LIMIT 200;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_saldos_contas CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_saldos_contas WITH (security_invoker='on') AS
  SELECT gen_random_uuid() AS id,
     id AS empresa_id,
@@ -11231,12 +11352,18 @@ CREATE VIEW public.vw_saldos_contas WITH (security_invoker='on') AS
     1000.00 AS saldo_atual,
     now() AS ultima_atualizacao
    FROM public.empresas;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_transferencias_painel CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_transferencias_painel WITH (security_invoker='true') AS
  SELECT t.id,
     t.empresa_id,
@@ -11254,12 +11381,18 @@ CREATE VIEW public.vw_transferencias_painel WITH (security_invoker='true') AS
     t.updated_at
    FROM (public.asaas_transfers t
      LEFT JOIN public.empresas e ON ((e.id = t.empresa_id)));
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_tributario_dashboard CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_tributario_dashboard WITH (security_invoker='true') AS
  SELECT e.id AS empresa_id,
     e.razao_social,
@@ -11276,12 +11409,18 @@ CREATE VIEW public.vw_tributario_dashboard WITH (security_invoker='true') AS
     at_.status AS status_apuracao
    FROM (public.empresas e
      JOIN public.apuracoes_tributarias at_ ON ((at_.empresa_id = e.id)));
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
 
 DROP VIEW IF EXISTS public.vw_webhooks_recentes CASCADE;
 
+DO $VBLOCK$ BEGIN
 CREATE VIEW public.vw_webhooks_recentes WITH (security_invoker='true') AS
  SELECT id,
     source,
@@ -11294,6 +11433,11 @@ CREATE VIEW public.vw_webhooks_recentes WITH (security_invoker='true') AS
    FROM public.webhooks_log
   ORDER BY created_at DESC
  LIMIT 100;
+EXCEPTION WHEN undefined_table THEN NULL;
+         WHEN undefined_function THEN NULL;
+         WHEN undefined_object THEN NULL;
+         WHEN undefined_column THEN NULL;
+END $VBLOCK$;
 
 
 --
