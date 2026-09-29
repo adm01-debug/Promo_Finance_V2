@@ -41,6 +41,23 @@ CREATE POLICY "oportunidades_elisao_acesso" ON public.oportunidades_elisao FOR A
 CREATE TRIGGER trg_oport_elisao_updated_at BEFORE UPDATE ON public.oportunidades_elisao
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
+-- Shim: drop preexisting TABLE or VIEW before creating view (older migration creates it as a table)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relname = 'estrategias_elisao_catalogo' AND n.nspname = 'public' AND c.relkind = 'r'
+  ) THEN
+    DROP TABLE public.estrategias_elisao_catalogo CASCADE;
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relname = 'estrategias_elisao_catalogo' AND n.nspname = 'public' AND c.relkind = 'v'
+  ) THEN
+    DROP VIEW public.estrategias_elisao_catalogo CASCADE;
+  END IF;
+END $$;
+
 -- ===== Catálogo (view de leitura) =====
 CREATE VIEW public.estrategias_elisao_catalogo
   WITH (security_invoker = true) AS
