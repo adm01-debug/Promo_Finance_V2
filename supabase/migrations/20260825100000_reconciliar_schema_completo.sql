@@ -68,7 +68,10 @@ ALTER TABLE public.acessos_suspeitos ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY acessos_suspeitos_tenant_select ON public.acessos_suspeitos FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -139,7 +142,10 @@ ALTER TABLE ONLY public.auditoria_tributaria
 --
 
 
+DO $$ BEGIN
 CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -216,13 +222,19 @@ CREATE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benchmarks_seto
 --
 
 
+DO $$ BEGIN
 CREATE POLICY benchmarks_admin_write ON public.benchmarks_setoriais TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY benchmarks_select ON public.benchmarks_setoriais FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -284,7 +296,10 @@ ALTER TABLE public.bitrix_oauth_tokens ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix_oauth_tokens_service_role_only ON public.bitrix_oauth_tokens TO service_role USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -351,13 +366,19 @@ ALTER TABLE public.bling_sync_logs ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_sync_logs_insert ON public.bling_sync_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_sync_logs_select ON public.bling_sync_logs FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'operacional'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -414,7 +435,10 @@ ALTER TABLE public.bling_tokens ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_tokens_service_role_only ON public.bling_tokens TO service_role USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -481,7 +505,10 @@ ALTER TABLE public.bling_webhook_events ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bling_webhook_events_admin_select ON public.bling_webhook_events FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -547,7 +574,10 @@ CREATE TRIGGER set_updated_at_catalogos_fiscais_cargas BEFORE UPDATE ON public.c
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -612,7 +642,10 @@ CREATE TRIGGER trg_catalogos_health_history_updated_at BEFORE UPDATE ON public.c
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history FOR SELECT TO authenticated USING (( SELECT public.has_role(auth.uid(), 'admin'::public.app_role) AS has_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -676,7 +709,10 @@ ALTER TABLE public.cnpja_cache ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY cnpja_cache_service_role_only ON public.cnpja_cache TO service_role USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -761,13 +797,19 @@ ALTER TABLE public.convites_contador ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY convites_contador_revogar ON public.convites_contador FOR UPDATE TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY convites_contador_select ON public.convites_contador FOR SELECT TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -830,7 +872,10 @@ ALTER TABLE ONLY public.elisao_simulacoes_regime
 --
 
 
+DO $$ BEGIN
 CREATE POLICY elisao_sim_regime_acesso ON public.elisao_simulacoes_regime TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -907,13 +952,19 @@ ALTER TABLE public.estrategias_elisao ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY estrategias_select_authenticated ON public.estrategias_elisao FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY estrategias_write_admin ON public.estrategias_elisao TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -976,7 +1027,10 @@ ALTER TABLE ONLY public.eventos_contabilizacao_log
 --
 
 
+DO $$ BEGIN
 CREATE POLICY eventos_contab_select ON public.eventos_contabilizacao_log FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1038,7 +1092,10 @@ CREATE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_er
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fe_alert_state_admin_select ON public.frontend_error_alert_state FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1088,7 +1145,10 @@ CREATE INDEX IF NOT EXISTS idx_fe_silence_digest_executado ON public.frontend_er
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fe_silence_digest_admin_select ON public.frontend_error_silence_digest_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1156,13 +1216,19 @@ CREATE TRIGGER trg_glossario_updated_at BEFORE UPDATE ON public.glossario_tribut
 --
 
 
+DO $$ BEGIN
 CREATE POLICY glossario_admin ON public.glossario_tributario TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY glossario_leitura ON public.glossario_tributario FOR SELECT TO authenticated USING (ativo);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1223,7 +1289,10 @@ CREATE INDEX IF NOT EXISTS idx_index_usage_snapshots_idx_date ON public.index_us
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Somente admins leem snapshots de índices" ON public.index_usage_snapshots FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1265,7 +1334,10 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1356,7 +1428,10 @@ ALTER TABLE public.operacoes_icms ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY operacoes_icms_acesso ON public.operacoes_icms TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1433,25 +1508,37 @@ CREATE TRIGGER trg_overlay_rejeicoes_updated_at BEFORE UPDATE ON public.overlay_
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1531,7 +1618,10 @@ ALTER TABLE public.projecoes_reforma ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY projecoes_reforma_acesso ON public.projecoes_reforma TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1621,13 +1711,19 @@ ALTER TABLE ONLY public.regras_contabilizacao_automatica
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_contab_select ON public.regras_contabilizacao_automatica FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1693,7 +1789,10 @@ ALTER TABLE public.retencao_politicas ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY retencao_politicas_admin_select ON public.retencao_politicas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1762,7 +1861,10 @@ ALTER TABLE public.saved_filter_subscriptions ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1834,7 +1936,10 @@ ALTER TABLE public.scim_operations_log ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1904,7 +2009,10 @@ ALTER TABLE public.security_alerts ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY security_alerts_admin_all ON public.security_alerts TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -1971,11 +2079,14 @@ ALTER TABLE ONLY public.simulacao_tributos_detalhados
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sim_trib_acesso ON public.simulacao_tributos_detalhados TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.simulacoes s
   WHERE ((s.id = simulacao_tributos_detalhados.simulacao_id) AND public.empresa_acessivel(s.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.simulacoes s
   WHERE ((s.id = simulacao_tributos_detalhados.simulacao_id) AND public.empresa_acessivel(s.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2072,7 +2183,10 @@ ALTER TABLE public.simulacoes ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY simulacoes_acesso ON public.simulacoes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2118,7 +2232,10 @@ END $$;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY slo_metrics_admin_select ON public.slo_metrics_diarias FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2196,7 +2313,10 @@ ALTER TABLE public.sso_role_mappings ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sso_role_mappings_admin ON public.sso_role_mappings TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2269,7 +2389,10 @@ ALTER TABLE public.sso_sandbox_runs ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sso_sandbox_runs_admin ON public.sso_sandbox_runs TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND (created_by = auth.uid())));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -2342,7 +2465,10 @@ ALTER TABLE public.sso_user_groups ENABLE ROW LEVEL SECURITY;
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sso_user_groups_select ON public.sso_user_groups FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
@@ -5486,474 +5612,688 @@ CREATE TRIGGER trg_auto_vincular_empresa_padrao AFTER INSERT ON public.user_role
 
 -- FASE 5b: Policies ausentes em tabelas comuns
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_delete ON public.alert_configurations FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_insert ON public.alert_configurations FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_select ON public.alert_configurations FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alert_configurations_tenant_update ON public.alert_configurations FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_delete ON public.alertas FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_insert ON public.alertas FOR INSERT TO authenticated WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_select ON public.alertas FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alertas_owner_update ON public.alertas FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK (((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_delete ON public.alerts FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_insert ON public.alerts FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_select ON public.alerts FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_delete ON public.alerts_sent FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_insert ON public.alerts_sent FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_select ON public.alerts_sent FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY alerts_sent_tenant_update ON public.alerts_sent FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.alerts a
   WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_inter_select_authenticated ON public.aliquotas_interestaduais FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_inter_write_admin ON public.aliquotas_interestaduais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_internas_select_authenticated ON public.aliquotas_internas_uf FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_internas_write_admin ON public.aliquotas_internas_uf TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_iss_select_authenticated ON public.aliquotas_iss_municipal FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY aliq_iss_write_admin ON public.aliquotas_iss_municipal TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY anomalias_detectadas_tenant_rw ON public.anomalias_detectadas TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY api_keys_delete ON public.api_keys FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY api_keys_select ON public.api_keys FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_config_tenant_rw ON public.asaas_config TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_customers_tenant_rw ON public.asaas_customers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_payments_tenant_rw ON public.asaas_payments TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_reconciliation_suggestions_tenant_rw ON public.asaas_reconciliation_suggestions TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_sync_tenant_all ON public.asaas_sync_queue TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
   WHERE ((p.id = asaas_sync_queue.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY asaas_transfers_tenant_rw ON public.asaas_transfers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY audit_logs_insert_self_attributed ON public.audit_logs FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email'::text))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY centros_custo_tenant_rw ON public.centros_custo TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY cnaes_select_authenticated ON public.cnaes FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY cnaes_write_admin ON public.cnaes TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY configuracoes_duplicidade_tenant_rw ON public.configuracoes_duplicidade TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_empresa_insert ON public.conformidade_snapshots FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_empresa_select ON public.conformidade_snapshots FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_empresa_update ON public.conformidade_snapshots FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY conformidade_snapshots_tenant_rw ON public.conformidade_snapshots TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY contas_pagar_tenant_rw ON public.contas_pagar TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY contas_receber_tenant_rw ON public.contas_receber TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY darfs_tenant_rw ON public.darfs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.digest_envios_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY elisao_alertas_acesso ON public.elisao_alertas TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY creditos_auditoria_delete_admin ON public.elisao_creditos_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY creditos_auditoria_insert ON public.elisao_creditos_auditoria FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY creditos_auditoria_select ON public.elisao_creditos_auditoria FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_creditos_admin ON public.elisao_regras_creditos TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regras_creditos_leitura ON public.elisao_regras_creditos FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY empresas_certificados_tenant_rw ON public.empresas_certificados TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_empresa_insert ON public.entregas_obrigacoes FOR INSERT TO authenticated WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_empresa_select ON public.entregas_obrigacoes FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_empresa_update ON public.entregas_obrigacoes FOR UPDATE TO authenticated USING ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY entregas_obrigacoes_tenant_rw ON public.entregas_obrigacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY faixas_simples_select_authenticated ON public.faixas_simples_nacional FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY faixas_simples_write_admin ON public.faixas_simples_nacional TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fechamentos_insert ON public.fechamentos_tributarios FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fechamentos_select ON public.fechamentos_tributarios FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fechamentos_update ON public.fechamentos_tributarios FOR UPDATE TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia FOR SELECT TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND ((EXISTS ( SELECT 1
    FROM public.contas_receber cr
   WHERE ((cr.id = historico_conciliacao_ia.conta_receber_id) AND public.empresa_acessivel(cr.empresa_id)))) OR (EXISTS ( SELECT 1
@@ -5961,332 +6301,490 @@ CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_concili
   WHERE ((cp.id = historico_conciliacao_ia.conta_pagar_id) AND public.empresa_acessivel(cp.empresa_id)))) OR (EXISTS ( SELECT 1
    FROM public.sessoes_conciliacao s
   WHERE ((s.id = historico_conciliacao_ia.sessao_id) AND ((s.user_id = ( SELECT auth.uid() AS uid)) OR public.empresa_acessivel(s.empresa_id))))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY incentivos_fiscais_acesso ON public.incentivos_fiscais TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY integration_secrets_no_client_access ON public.integration_secrets AS RESTRICTIVE TO authenticated, anon USING (false) WITH CHECK (false);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY itens_iss_select_authenticated ON public.itens_lista_iss FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY itens_iss_write_admin ON public.itens_lista_iss TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY kpis_operacionais_owner ON public.kpis_operacionais TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))) WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_baixa_insert_owner ON public.logs_baixa_automatica FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_baixa_select_owner ON public.logs_baixa_automatica FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_retro_insert_owner ON public.logs_conciliacao_retroativa FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ncms_select_authenticated ON public.ncms FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ncms_write_admin ON public.ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY negativacoes_tenant_rw ON public.negativacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY notas_fiscais_ocr_acesso ON public.notas_fiscais_ocr TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY oportunidades_elisao_acesso ON public.oportunidades_elisao TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY pagamentos_recorrentes_acesso ON public.pagamentos_recorrentes TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY parcelas_acordo_tenant_write ON public.parcelas_acordo TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND (EXISTS ( SELECT 1
    FROM public.acordos_parcelamento a
   WHERE ((a.id = parcelas_acordo.acordo_id) AND public.empresa_acessivel(a.empresa_id)))))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND (EXISTS ( SELECT 1
    FROM public.acordos_parcelamento a
   WHERE ((a.id = parcelas_acordo.acordo_id) AND public.empresa_acessivel(a.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY per_dcomp_acesso ON public.per_dcomp TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY pix_templates_tenant_rw ON public.pix_templates TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY planos_acao_owner ON public.planos_acao TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protestos_tenant_rw ON public.protestos TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_select_authenticated ON public.protocolos_st FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_write_admin ON public.protocolos_st TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ncms_select_authenticated ON public.protocolos_st_ncms FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ncms_write_admin ON public.protocolos_st_ncms TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ufs_select_authenticated ON public.protocolos_st_ufs FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY protocolos_st_ufs_write_admin ON public.protocolos_st_ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regua_cobranca_tenant_rw ON public.regua_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY regua_cobranca_etapas_tenant_write ON public.regua_cobranca_etapas TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.regua_cobranca r
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND public.empresa_acessivel(r.empresa_id)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.regua_cobranca r
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND public.empresa_acessivel(r.empresa_id))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY rel_trib_agend_all ON public.relatorios_tributarios_agendados TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_delete ON public.risk_rules FOR DELETE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_insert ON public.risk_rules FOR INSERT TO authenticated WITH CHECK ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_select ON public.risk_rules FOR SELECT TO authenticated USING (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY saved_filters_select ON public.saved_filters FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR (is_shared AND (empresa_id IS NOT NULL) AND public.empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1
    FROM public.user_roles ur
   WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY scim_checklist_own ON public.scim_setup_checklist TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY lgpd_owner_insert ON public.solicitacoes_lgpd FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY lgpd_scoped_select ON public.solicitacoes_lgpd FOR SELECT TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY lgpd_scoped_update ON public.solicitacoes_lgpd FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_delete_admin ON public.sped_contabil_arquivos FOR DELETE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_insert ON public.sped_contabil_arquivos FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_select ON public.sped_contabil_arquivos FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY sped_arquivos_update_admin ON public.sped_contabil_arquivos FOR UPDATE TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY templates_cobranca_tenant_rw ON public.templates_cobranca TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ufs_select_authenticated ON public.ufs FOR SELECT TO authenticated USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY ufs_write_admin ON public.ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY user_active_filters_owner ON public.user_active_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Admins visualizam preferencias de digest" ON public.user_digest_preferences FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
 
 
+DO $$ BEGIN
 CREATE POLICY "Users can update their challenges" ON public.webauthn_challenges FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 --
