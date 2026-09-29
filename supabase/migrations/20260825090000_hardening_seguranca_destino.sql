@@ -107,7 +107,14 @@ ALTER ROLE authenticator SET idle_in_transaction_session_timeout = '10s';
 ALTER ROLE service_role  SET statement_timeout = '60s';
 ALTER ROLE service_role  SET lock_timeout      = '10s';
 ALTER ROLE service_role  SET idle_in_transaction_session_timeout = '30s';
-ALTER ROLE supabase_admin SET statement_timeout = '0';
+DO $$
+BEGIN
+  EXECUTE 'ALTER ROLE supabase_admin SET statement_timeout = ''0''';
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    RAISE NOTICE 'Sem privilégio para ALTER ROLE supabase_admin; mantido como está nesta réplica.';
+END
+$$;
 DO $$
 BEGIN
   EXECUTE 'ALTER DATABASE postgres SET idle_in_transaction_session_timeout = ''15min''';
