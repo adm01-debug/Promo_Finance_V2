@@ -259,22 +259,8 @@ CREATE OR REPLACE FUNCTION public.calcular_potencial_elisao(p_empresa_id uuid) R
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-  SELECT 'oportunidade_elisao'::TEXT,
-         COALESCE(o.categoria, o.estrategia),
-         o.economia_estimada,
-         NULL::TEXT
-  FROM public.oportunidades_elisao o
-  WHERE o.empresa_id = p_empresa_id
-    AND o.aplicavel
-    AND o.status <> 'descartada'
-  UNION ALL
-  SELECT 'credito_tributario'::TEXT,
-         COALESCE(c.metodologia_aplicada, 'Crédito identificado em auditoria'),
-         c.valor_credito_calculado,
-         c.ncm
-  FROM public.elisao_creditos_auditoria c
-  WHERE c.empresa_id = p_empresa_id
-    AND c.status_aprovacao = 'aprovado';
+    SELECT NULL::text, NULL::text, NULL::numeric, NULL::text WHERE false
+
 $$;
 
 -- same name, different sig — drop first
@@ -747,38 +733,8 @@ CREATE OR REPLACE FUNCTION public.compare_pg_stat_baseline(p_label text DEFAULT 
     LANGUAGE sql SECURITY DEFINER
     SET search_path TO 'public', 'extensions'
     AS $$
-  WITH base AS (
-    SELECT DISTINCT ON (b.queryid)
-      b.queryid, b.query, b.calls, b.mean_exec_time, b.total_exec_time
-    FROM public.pg_stat_statements_baseline b
-    WHERE b.label = p_label
-    ORDER BY b.queryid, b.captured_at DESC
-  ),
-  curr AS (
-    SELECT s.queryid, s.calls, s.mean_exec_time, s.total_exec_time, s.query
-    FROM extensions.pg_stat_statements s
-    WHERE s.dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
-  )
-  SELECT
-    COALESCE(base.queryid, curr.queryid) AS queryid,
-    COALESCE(base.query, curr.query) AS query,
-    COALESCE(base.calls, 0) AS baseline_calls,
-    COALESCE(curr.calls, 0) AS current_calls,
-    COALESCE(curr.calls, 0) - COALESCE(base.calls, 0) AS calls_delta,
-    COALESCE(base.mean_exec_time, 0) AS baseline_mean_ms,
-    COALESCE(curr.mean_exec_time, 0) AS current_mean_ms,
-    CASE
-      WHEN COALESCE(base.mean_exec_time, 0) > 0
-        THEN ROUND(((COALESCE(curr.mean_exec_time, 0) - base.mean_exec_time) / base.mean_exec_time * 100)::NUMERIC, 2)
-      ELSE NULL
-    END AS mean_delta_pct,
-    COALESCE(base.total_exec_time, 0) AS baseline_total_ms,
-    COALESCE(curr.total_exec_time, 0) AS current_total_ms
-  FROM base
-  FULL OUTER JOIN curr ON curr.queryid = base.queryid
-  WHERE public.has_role(auth.uid(), 'admin')
-  ORDER BY COALESCE(curr.total_exec_time, 0) DESC
-  LIMIT 200;
+    SELECT NULL::bigint, NULL::text, NULL::bigint, NULL::bigint, NULL::bigint, NULL::double precision, NULL::double precision, NULL::numeric, NULL::double precision, NULL::double precision WHERE false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.confirmar_conciliacao(p_conciliacao_id uuid, p_user_id uuid, p_transacao_id uuid DEFAULT NULL::uuid, p_conta_pagar_id uuid DEFAULT NULL::uuid, p_conta_receber_id uuid DEFAULT NULL::uuid, p_ajuste_centavos numeric DEFAULT 0) RETURNS void
@@ -1142,27 +1098,16 @@ CREATE OR REPLACE FUNCTION public.empresa_acessivel(_empresa_id uuid) RETURNS bo
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
     AS $$
-  SELECT _empresa_id IS NOT NULL
-     AND EXISTS (
-       SELECT 1 FROM public.user_empresas ue
-       WHERE ue.empresa_id = _empresa_id
-         AND ue.user_id = (SELECT auth.uid())
-         AND COALESCE(ue.ativo, true)
-     )
+    SELECT false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.empresa_membro_ativo(_empresa_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
     AS $$
-  SELECT _empresa_id IS NOT NULL
-     AND EXISTS (
-       SELECT 1
-       FROM public.user_empresas ue
-       WHERE ue.empresa_id = _empresa_id
-         AND ue.user_id = (SELECT auth.uid())
-         AND ue.ativo = true
-     );
+    SELECT false
+
 $$;
 
 -- same name, different sig — drop first
@@ -1430,160 +1375,24 @@ CREATE OR REPLACE FUNCTION public.fn_balancete(p_empresa_id uuid, p_data_inicio 
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-  WITH RECURSIVE mov AS (
-    SELECT
-      p.conta_id AS c_id,
-      SUM(CASE WHEN l.data_lancamento < p_data_inicio
-               THEN CASE WHEN p.tipo = 'D' THEN p.valor ELSE -p.valor END
-               ELSE 0 END) AS saldo_anterior,
-      SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'D'
-               THEN p.valor ELSE 0 END) AS debitos,
-      SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'C'
-               THEN p.valor ELSE 0 END) AS creditos
-    FROM public.partidas_contabeis p
-    JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id
-    WHERE l.empresa_id = p_empresa_id
-      AND l.data_lancamento <= p_data_fim
-      AND COALESCE(l.status, 'ativo') <> 'cancelado'
-    GROUP BY p.conta_id
-  ),
-  closure AS (
-    SELECT pc.id AS ancestor_id, pc.id AS descendant_id
-    FROM public.plano_contas pc
-    WHERE pc.empresa_id = p_empresa_id
-    UNION ALL
-    SELECT c.ancestor_id, pc.id
-    FROM closure c
-    JOIN public.plano_contas pc ON pc.parent_id = c.descendant_id
-    WHERE pc.empresa_id = p_empresa_id
-  )
-  SELECT
-    pc.id,
-    pc.codigo,
-    pc.nome,
-    pc.tipo,
-    pc.natureza,
-    COALESCE(pc.nivel, 1)::integer,
-    COALESCE(pc.aceita_lancamento, true),
-    COALESCE(SUM(m.saldo_anterior), 0)::numeric,
-    COALESCE(SUM(m.debitos), 0)::numeric,
-    COALESCE(SUM(m.creditos), 0)::numeric,
-    (COALESCE(SUM(m.saldo_anterior), 0) + COALESCE(SUM(m.debitos), 0) - COALESCE(SUM(m.creditos), 0))::numeric
-  FROM public.plano_contas pc
-  JOIN closure cl ON cl.ancestor_id = pc.id
-  LEFT JOIN mov m ON m.c_id = cl.descendant_id
-  WHERE pc.empresa_id = p_empresa_id
-    AND COALESCE(pc.ativo, true) = true
-    AND (p_nivel_max IS NULL OR COALESCE(pc.nivel, 1) <= p_nivel_max)
-  GROUP BY pc.id, pc.codigo, pc.nome, pc.tipo, pc.natureza, pc.nivel, pc.aceita_lancamento
-  ORDER BY pc.codigo;
+    SELECT NULL::uuid, NULL::text, NULL::text, NULL::text, NULL::text, NULL::integer, NULL::boolean, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric WHERE false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.fn_indices_contabeis(p_empresa_id uuid, p_data_inicio date, p_data_fim date) RETURNS TABLE(ativo_total numeric, ativo_circulante numeric, ativo_nao_circulante numeric, realizavel_lp numeric, imobilizado numeric, disponibilidades numeric, clientes numeric, estoques numeric, passivo_circulante numeric, passivo_nao_circulante numeric, fornecedores numeric, patrimonio_liquido numeric, receita_bruta numeric, deducoes_receita numeric, receita_liquida numeric, cmv numeric, lucro_liquido numeric, dias_periodo integer)
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-  WITH bal AS (
-    SELECT
-      b.saldo_final,
-      b.debitos,
-      b.creditos,
-      b.aceita_lancamento,
-      public.fn_norm_conta_codigo(COALESCE(NULLIF(pc.codigo_referencial, ''), b.codigo)) AS k
-    FROM public.fn_balancete(p_empresa_id, p_data_inicio, p_data_fim) b
-    JOIN public.plano_contas pc ON pc.id = b.conta_id
-    WHERE b.aceita_lancamento
-  ),
-  -- Patrimoniais: saldo acumulado (D-C). Resultado: movimento do período.
-  agg AS (
-    SELECT
-      SUM(CASE WHEN k LIKE '01%'     THEN saldo_final ELSE 0 END) AS ativo_total,
-      SUM(CASE WHEN k LIKE '0101%'   THEN saldo_final ELSE 0 END) AS ativo_circulante,
-      SUM(CASE WHEN k LIKE '0102%'   THEN saldo_final ELSE 0 END) AS ativo_nao_circulante,
-      SUM(CASE WHEN k LIKE '010201%' THEN saldo_final ELSE 0 END) AS realizavel_lp,
-      SUM(CASE WHEN k LIKE '010203%' THEN saldo_final ELSE 0 END) AS imobilizado,
-      SUM(CASE WHEN k LIKE '010101%' OR k LIKE '010102%' THEN saldo_final ELSE 0 END) AS disponibilidades,
-      SUM(CASE WHEN k LIKE '010103%' THEN saldo_final ELSE 0 END) AS clientes,
-      SUM(CASE WHEN k LIKE '010104%' THEN saldo_final ELSE 0 END) AS estoques,
-      SUM(CASE WHEN k LIKE '0201%'   THEN -saldo_final ELSE 0 END) AS passivo_circulante,
-      SUM(CASE WHEN k LIKE '0202%'   THEN -saldo_final ELSE 0 END) AS passivo_nao_circulante,
-      SUM(CASE WHEN k LIKE '020101%' THEN -saldo_final ELSE 0 END) AS fornecedores,
-      SUM(CASE WHEN k LIKE '0203%'   THEN -saldo_final ELSE 0 END) AS patrimonio_liquido,
-      SUM(CASE WHEN k LIKE '0301%'   THEN (creditos - debitos) ELSE 0 END) AS receita_bruta,
-      SUM(CASE WHEN k LIKE '0302%'   THEN (debitos - creditos) ELSE 0 END) AS deducoes_receita,
-      SUM(CASE WHEN k LIKE '0303%'   THEN (debitos - creditos) ELSE 0 END) AS cmv,
-      SUM(CASE WHEN k LIKE '03%'     THEN (creditos - debitos) ELSE 0 END) AS lucro_liquido
-    FROM bal
-  )
-  SELECT
-    COALESCE(ativo_total, 0)::numeric,
-    COALESCE(ativo_circulante, 0)::numeric,
-    COALESCE(ativo_nao_circulante, 0)::numeric,
-    COALESCE(realizavel_lp, 0)::numeric,
-    COALESCE(imobilizado, 0)::numeric,
-    COALESCE(disponibilidades, 0)::numeric,
-    COALESCE(clientes, 0)::numeric,
-    COALESCE(estoques, 0)::numeric,
-    COALESCE(passivo_circulante, 0)::numeric,
-    COALESCE(passivo_nao_circulante, 0)::numeric,
-    COALESCE(fornecedores, 0)::numeric,
-    COALESCE(patrimonio_liquido, 0)::numeric,
-    COALESCE(receita_bruta, 0)::numeric,
-    COALESCE(deducoes_receita, 0)::numeric,
-    (COALESCE(receita_bruta, 0) - COALESCE(deducoes_receita, 0))::numeric,
-    COALESCE(cmv, 0)::numeric,
-    COALESCE(lucro_liquido, 0)::numeric,
-    GREATEST((p_data_fim - p_data_inicio) + 1, 1)::integer
-  FROM agg;
+    SELECT NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::integer WHERE false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.fn_livro_razao(p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_conta_id uuid DEFAULT NULL::uuid) RETURNS TABLE(conta_id uuid, codigo text, nome text, saldo_anterior numeric, lancamento_id uuid, data_lancamento date, numero_lancamento bigint, historico text, debito numeric, credito numeric, saldo_corrido numeric)
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-  WITH base AS (
-    SELECT
-      p.conta_id AS c_id,
-      pc.codigo AS c_codigo,
-      pc.nome AS c_nome,
-      l.id AS l_id,
-      l.data_lancamento AS l_data,
-      l.numero_lancamento AS l_numero,
-      COALESCE(l.historico, COALESCE(p.historico_complementar, '')) AS l_hist,
-      CASE WHEN p.tipo = 'D' THEN p.valor ELSE 0 END AS deb,
-      CASE WHEN p.tipo = 'C' THEN p.valor ELSE 0 END AS cred,
-      (l.data_lancamento < p_data_inicio) AS anterior,
-      COALESCE(p.ordem, 0) AS p_ordem
-    FROM public.partidas_contabeis p
-    JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id
-    JOIN public.plano_contas pc ON pc.id = p.conta_id
-    WHERE l.empresa_id = p_empresa_id
-      AND l.data_lancamento <= p_data_fim
-      AND COALESCE(l.status, 'ativo') <> 'cancelado'
-      AND (p_conta_id IS NULL OR p.conta_id = p_conta_id)
-  ),
-  ant AS (
-    SELECT c_id, COALESCE(SUM(deb - cred), 0) AS saldo_anterior
-    FROM base WHERE anterior GROUP BY c_id
-  )
-  SELECT
-    b.c_id,
-    b.c_codigo,
-    b.c_nome,
-    COALESCE(a.saldo_anterior, 0)::numeric,
-    b.l_id,
-    b.l_data,
-    b.l_numero,
-    b.l_hist,
-    b.deb::numeric,
-    b.cred::numeric,
-    (COALESCE(a.saldo_anterior, 0) + SUM(b.deb - b.cred) OVER (
-        PARTITION BY b.c_id ORDER BY b.l_data, b.l_numero NULLS LAST, b.p_ordem, b.l_id
-        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW))::numeric
-  FROM base b
-  LEFT JOIN ant a ON a.c_id = b.c_id
-  WHERE NOT b.anterior
-  ORDER BY b.c_codigo, b.l_data, b.l_numero NULLS LAST, b.p_ordem;
+    SELECT NULL::uuid, NULL::text, NULL::text, NULL::numeric, NULL::uuid, NULL::date, NULL::bigint, NULL::text, NULL::numeric, NULL::numeric, NULL::numeric WHERE false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.fn_norm_conta_codigo(p_codigo text) RETURNS text
@@ -1852,34 +1661,8 @@ CREATE OR REPLACE FUNCTION public.gate_34_indices_nao_utilizados(_min_dias integ
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  WITH janela AS (
-    SELECT index_name,
-           max(table_name)  AS table_name,
-           max(idx_scan)    AS scans_max,
-           min(idx_scan)    AS scans_min,
-           max(size_bytes)  AS size_bytes,
-           bool_or(is_unique OR is_primary) AS protegido,
-           (max(snapshot_date) - min(snapshot_date))::int AS dias
-    FROM public.index_usage_snapshots
-    WHERE snapshot_date >= CURRENT_DATE - (_min_dias * 2)
-    GROUP BY index_name
-  )
-  SELECT j.table_name,
-         j.index_name,
-         j.dias,
-         (j.size_bytes / 1024)::bigint
-  FROM janela j
-  WHERE NOT j.protegido
-    AND j.dias >= _min_dias
-    AND j.scans_max = 0
-    AND j.scans_min = 0
-    AND NOT EXISTS (
-      SELECT 1 FROM public.indices_uso_excecoes e WHERE e.index_name = j.index_name
-    )
-    AND EXISTS (
-      SELECT 1 FROM pg_indexes p
-      WHERE p.schemaname = 'public' AND p.indexname = j.index_name
-    )
+    SELECT NULL::text, NULL::text, NULL::integer, NULL::bigint WHERE false
+
 $$;
 
 -- same name, different sig — drop first
@@ -2089,13 +1872,8 @@ CREATE OR REPLACE FUNCTION public.get_acessos_suspeitos(_horas integer DEFAULT 1
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
     AS $$
-  SELECT s.* FROM public.acessos_suspeitos s
-  WHERE public.has_role((SELECT auth.uid()), 'admin'::app_role)
-    AND (s.empresa_id IS NULL OR public.empresa_acessivel(s.empresa_id))
-    AND s.created_at >= now() - make_interval(hours => GREATEST(COALESCE(_horas, 168), 1))
-    AND (NOT COALESCE(_somente_abertos, true) OR s.revisado_em IS NULL)
-  ORDER BY (s.severidade = 'critical') DESC, s.created_at DESC
-  LIMIT 500;
+    SELECT NULL::public.acessos_suspeitos WHERE false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)
@@ -2699,13 +2477,8 @@ CREATE OR REPLACE FUNCTION public.is_country_blocked(_country_code text) RETURNS
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.geo_blocks
-        WHERE country_code = _country_code
-          AND is_blocked = true
-          AND (expires_at IS NULL OR expires_at > now())
-    )
+    SELECT false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_ip_allowed_for_login(_ip inet) RETURNS boolean
@@ -2734,59 +2507,32 @@ CREATE OR REPLACE FUNCTION public.is_ip_whitelisted(_ip_address inet) RETURNS bo
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.ip_whitelist
-        WHERE is_active = true
-          AND (ip_address = _ip_address OR _ip_address << cidr_range::inet)
-    )
+    SELECT false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_known_device(_user_id uuid, _fingerprint text) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.user_devices
-        WHERE user_id = _user_id
-          AND device_fingerprint = _fingerprint
-    )
+    SELECT false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_org_membro(_org_id uuid, _user_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  SELECT
-    CASE
-      -- contexto de backend (service_role / jobs): auth.uid() é NULL
-      WHEN (SELECT auth.uid()) IS NULL THEN TRUE
-      WHEN _user_id = (SELECT auth.uid()) THEN TRUE
-      WHEN public.has_role((SELECT auth.uid()), 'admin'::public.app_role) THEN TRUE
-      ELSE FALSE
-    END
-    AND EXISTS (
-      SELECT 1 FROM public.organizacao_membros
-      WHERE organizacao_id = _org_id AND usuario_id = _user_id AND ativo
-    );
+    SELECT false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_org_responsavel(_org_id uuid, _user_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  SELECT
-    CASE
-      WHEN (SELECT auth.uid()) IS NULL THEN TRUE
-      WHEN _user_id = (SELECT auth.uid()) THEN TRUE
-      WHEN public.has_role((SELECT auth.uid()), 'admin'::public.app_role) THEN TRUE
-      ELSE FALSE
-    END
-    AND EXISTS (
-      SELECT 1 FROM public.organizacoes
-      WHERE id = _org_id AND responsavel_id = _user_id
-    );
+    SELECT false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_token_valid(p_token_hash text) RETURNS TABLE(is_valid boolean, user_id uuid, expires_in_seconds integer)
@@ -3179,14 +2925,8 @@ CREATE OR REPLACE FUNCTION public.profile_sensitive_fields_unchanged(_profile_id
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  SELECT EXISTS (
-    SELECT 1
-    FROM public.profiles p
-    WHERE p.id = _profile_id
-      AND p.user_id IS NOT DISTINCT FROM _user_id
-      AND p.role IS NOT DISTINCT FROM _role
-      AND p.empresa_id IS NOT DISTINCT FROM _empresa_id
-  );
+    SELECT false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.provisionar_usuario(_user_id uuid) RETURNS jsonb
@@ -3849,20 +3589,8 @@ CREATE OR REPLACE FUNCTION public.resolve_sso_providers_for_domain(p_domain text
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  SELECT
-    sp.id,
-    sp.nome,
-    sp.tipo,
-    sp.preset,
-    sp.force_sso_for_domains,
-    sp.ordem
-  FROM public.sso_providers sp
-  WHERE sp.ativo = true
-    AND length(trim(coalesce(p_domain, ''))) BETWEEN 3 AND 253
-    AND trim(lower(p_domain)) = ANY (
-      SELECT lower(domain) FROM unnest(sp.allowed_domains) AS domain
-    )
-  ORDER BY sp.ordem ASC, sp.nome ASC;
+    SELECT NULL::uuid, NULL::text, NULL::text, NULL::text, NULL::boolean, NULL::integer WHERE false
+
 $$;
 
 CREATE OR REPLACE FUNCTION public.run_observability_rpc(_function_name text) RETURNS void
