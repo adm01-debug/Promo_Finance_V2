@@ -3,6 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import JSZip from 'https://esm.sh/jszip@3.10.1';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const _EvidBodySchema = z.object({
   periodo_inicio: z.string().min(1),
@@ -13,11 +14,6 @@ const _EvidBodySchema = z.object({
   // empresa_id — é trilha de plataforma, não de tenant.
   empresa_id: z.string().uuid().optional(),
 });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 type Escopo = 'financeiro' | 'tributario' | 'sistema' | 'conformidade';
 
@@ -279,6 +275,8 @@ async function autenticar(req: Request) {
 }
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   const auth = await autenticar(req);

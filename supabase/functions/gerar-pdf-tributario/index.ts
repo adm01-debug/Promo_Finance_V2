@@ -6,13 +6,9 @@ import autoTable from 'https://esm.sh/jspdf-autotable@3.8.2';
 import { createLogger } from '../_shared/observability.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
+import { getRequestId } from '../_shared/correlation.ts';
 const PdfTributarioBodySchema = z.object({
   empresaId: z.string().uuid(),
   anoReferencia: z.number().int().min(2020).max(2100),
@@ -30,11 +26,13 @@ const formatBRL = (n: number) =>
 const formatPct = (n: number) => `${n.toFixed(2)}%`;
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const logger = createLogger('gerar-pdf-tributario');
+  const logger = createLogger('gerar-pdf-tributario', getRequestId(req));
   const t0 = Date.now();
   logger.info('fn_start');
 

@@ -1,0 +1,149 @@
+/**
+ * console-persist — tee de console.* para edge_function_logs
+ *
+ * Importado como side-effect por _shared/cors.ts (e, portanto, por toda Edge
+ * Function que importa o módulo CORS). Intercepta console.log/info/warn/error
+ * e persiste os argumentos em `edge_function_logs`, mantendo a saída normal
+ * do console para os logs nativos do runtime.
+ *
+ * Com isso as funções que ainda usam console.* passam a ter rastro
+ * persistente consultável, sem reescrever os ~56 handlers existentes.
+ * request_id só é preenchido no caminho explícito via createLogger() do
+ * observability.ts — este tee não conhece o Request.
+ *
+ * Salvaguardas:
+ * - ignora o próprio echo estruturado do EdgeLogger (linha JSON com shape
+ *   {function_name, level, event}) para não duplicar inserts;
+ * - nunca lança exceção (observabilidade não pode derrubar a função);
+ * - no-op em DENO_TESTING e quando SUPABASE_URL/SERVICE_ROLE_KEY ausentes.
+ */
+
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+
+interface ConsoleLogRow {
+  function_name: string;
+  level: 'info' | 'warn' | 'error';
+  event: string;
+  context?: Record<string, unknown>;
+}
+
+// O nome da função não é derivável de um módulo compartilhado; o runtime da
+// Supabase pode expô-lo por env em algumas versões. Na dúvida, 'console-tee'
+// identifica a origem do registro (e o context.raw traz a mensagem completa).
+const FUNCTION_NAME =
+  Deno.env.get('SUPABASE_FUNCTION_NAME') ?? Deno.env.get('EDGE_FUNCTION_NAME') ?? 'console-tee';
+
+const originais = {
+  log: console.log.bind(console),
+  info: console.info.bind(console),
+  warn: console.warn.bind(console),
+  error: console.error.bind(console),
+};
+
+const buffer: ConsoleLogRow[] = [];
+let agendado: Promise<void> | null = null;
+let inserindo = false;
+
+function ehEchoEstruturado(arg: unknown): boolean {
+  if (typeof arg !== 'string') return false;
+  const s = arg.trim();
+  if (!s.startsWith('{')) return false;
+  try {
+    const parsed = JSON.parse(s) as Record<string, unknown>;
+    return (
+      typeof parsed['function_name'] === 'string' &&
+      typeof parsed['level'] === 'string' &&
+      typeof parsed['event'] === 'string'
+    );
+  } catch {
+    return false;
+  }
+}
+
+function serializar(arg: unknown): unknown {
+  if (arg instanceof Error) {
+    return { name: arg.name, message: arg.message, stack: arg.stack };
+  }
+  if (typeof arg === 'bigint') return arg.toString();
+  if (typeof arg === 'function') return `[fn ${arg.name || 'anon'}]`;
+  return arg;
+}
+
+function agendarFlush(): void {
+  if (Deno.env.get('DENO_TESTING')) return;
+  if (buffer.length >= 10) {
+    void flush();
+    return;
+  }
+  if (!agendado) {
+    agendado = new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        try {
+          await flush();
+        } finally {
+          agendado = null;
+          resolve();
+        }
+      }, 2000);
+    });
+    // Mantém a microtask viva além do response quando o runtime suporta
+    const edgeRuntime = (globalThis as Record<string, unknown>)['EdgeRuntime'] as
+      | { waitUntil?: (p: Promise<unknown>) => void }
+      | undefined;
+    edgeRuntime?.waitUntil?.(agendado);
+  }
+}
+
+let client: SupabaseClient | null | undefined;
+
+async function flush(): Promise<void> {
+  if (inserindo || buffer.length === 0) return;
+  const url = Deno.env.get('SUPABASE_URL');
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!url || !key) {
+    buffer.length = 0;
+    return;
+  }
+  inserindo = true;
+  try {
+    if (client === undefined) client = createClient(url, key);
+    const rows = buffer.splice(0, buffer.length);
+    await client?.from('edge_function_logs').insert(rows);
+  } catch (err) {
+    originais.error(
+      '[console-persist] flush falhou:',
+      err instanceof Error ? err.message : String(err)
+    );
+  } finally {
+    inserindo = false;
+  }
+}
+
+function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unknown[]) => void) {
+  return (...args: unknown[]) => {
+    original(...args);
+    try {
+      if (args.length === 1 && ehEchoEstruturado(args[0])) return;
+      const event = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(serializar(a))))
+        .join(' ')
+        .slice(0, 2000);
+      buffer.push({
+        function_name: FUNCTION_NAME,
+        level,
+        event,
+        context: { raw: args.map(serializar) },
+      });
+      agendarFlush();
+    } catch {
+      // nunca propagar
+    }
+  };
+}
+
+if (!Deno.env.get('DENO_TESTING')) {
+  console.log = interceptar('info', originais.log);
+  console.info = interceptar('info', originais.info);
+  console.warn = interceptar('warn', originais.warn);
+  console.error = interceptar('error', originais.error);
+}

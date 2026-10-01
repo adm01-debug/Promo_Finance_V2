@@ -1,20 +1,16 @@
 // Edge Function: sincronizar-anomalia-bitrix24
 // Cria/atualiza uma Tarefa no Bitrix24 quando uma anomalia é revisada
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
-const _SyncAnomSchema = z.object({
-  anomaliaId: z.string().uuid(),
-  evento: z.enum(["confirmada","falso_positivo","parecer","reaberta"]),
-}).passthrough();
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+const _SyncAnomSchema = z
+  .object({
+    anomaliaId: z.string().uuid(),
+    evento: z.enum(['confirmada', 'falso_positivo', 'parecer', 'reaberta']),
+  })
+  .passthrough();
 
 type Evento = 'confirmada' | 'falso_positivo' | 'parecer' | 'reaberta';
 
@@ -38,7 +34,7 @@ async function bitrixCall(
   token: string,
   method: string,
   params: Record<string, unknown> | unknown[],
-  attempt = 0,
+  attempt = 0
 ): Promise<Record<string, unknown>> {
   const url = `https://${domain}/rest/${method}.json?auth=${token}`;
   const res = await fetch(url, {
@@ -73,14 +69,20 @@ function statusBitrix(evento: Evento): number {
 
 function eventoLabel(e: Evento): string {
   switch (e) {
-    case 'confirmada': return 'Confirmada como problema real';
-    case 'falso_positivo': return 'Marcada como falso positivo';
-    case 'parecer': return 'Parecer atualizado';
-    case 'reaberta': return 'Reaberta para investigação';
+    case 'confirmada':
+      return 'Confirmada como problema real';
+    case 'falso_positivo':
+      return 'Marcada como falso positivo';
+    case 'parecer':
+      return 'Parecer atualizado';
+    case 'reaberta':
+      return 'Reaberta para investigação';
   }
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -100,8 +102,7 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsErr } =
-      await supabaseAuth.auth.getClaims(token);
+    const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
     if (claimsErr || !claimsData?.claims) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
@@ -114,10 +115,10 @@ Deno.serve(async (req) => {
     if (!_v.success) return _v.response;
     const body = _v.data as unknown as ReqBody;
     if (!body.anomaliaId || !body.evento) {
-      return new Response(
-        JSON.stringify({ error: 'Campos obrigatórios ausentes' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const domain = Deno.env.get('BITRIX24_DOMAIN');
@@ -125,7 +126,7 @@ Deno.serve(async (req) => {
     if (!domain || !bitrixToken) {
       return new Response(
         JSON.stringify({ success: false, skipped: true, reason: 'Bitrix24 não configurado' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -138,10 +139,10 @@ Deno.serve(async (req) => {
       .eq('id', body.anomaliaId)
       .maybeSingle();
     if (anomErr || !anomalia) {
-      return new Response(
-        JSON.stringify({ error: 'Anomalia não encontrada' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return new Response(JSON.stringify({ error: 'Anomalia não encontrada' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const tipoLabel = TIPO_LABEL[anomalia.tipo_anomalia] ?? anomalia.tipo_anomalia;
@@ -213,10 +214,10 @@ Deno.serve(async (req) => {
 
     const taskUrl = `https://${domain}/company/personal/user/0/tasks/task/view/${taskId}/`;
 
-    return new Response(
-      JSON.stringify({ success: true, taskId, taskUrl, action }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    return new Response(JSON.stringify({ success: true, taskId, taskUrl, action }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erro desconhecido';
     return new Response(JSON.stringify({ error: msg }), {

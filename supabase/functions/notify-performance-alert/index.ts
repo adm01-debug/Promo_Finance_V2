@@ -5,13 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna, type ChamadaInterna } from '../_shared/auth-guard.ts';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 const alertShape = z
   .object({
@@ -49,6 +43,8 @@ type AlertPayload = z.infer<typeof alertShape>;
 
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
+    const corsHeaders = corsHeadersPara(req);
+
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
     if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 

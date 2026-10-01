@@ -6,15 +6,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { verify as verifyJwt } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
+import { getRequestId } from '../_shared/correlation.ts';
 const _TokenSchema = z.object({ token: z.string().min(10) });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type',
-};
 
 async function sha256Hex(input: string): Promise<string> {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
@@ -29,14 +26,16 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
     new TextEncoder().encode(secret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign', 'verify'],
+    ['sign', 'verify']
   );
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const log = createLogger('validar-token-contador');
+  const log = createLogger('validar-token-contador', getRequestId(req));
   const startedAt = Date.now();
 
   try {
@@ -99,13 +98,19 @@ Deno.serve(async (req) => {
 
     if (!empresa) return json({ error: 'Empresa não encontrada' }, 404);
 
-    log.info('fn_success', { duration_ms: Date.now() - startedAt, context: { empresa_id: empresaId } });
+    log.info('fn_success', {
+      duration_ms: Date.now() - startedAt,
+      context: { empresa_id: empresaId },
+    });
 
-    return json({
-      success: true,
-      empresa,
-      convite: { email: convite.email, expires_at: convite.expires_at },
-    }, 200);
+    return json(
+      {
+        success: true,
+        empresa,
+        convite: { email: convite.email, expires_at: convite.expires_at },
+      },
+      200
+    );
   } catch (err) {
     log.error('fn_failure', {
       error_message: err instanceof Error ? err.message : String(err),

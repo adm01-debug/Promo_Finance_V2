@@ -20,21 +20,20 @@ export interface EdgeLogger {
   flush: () => Promise<void>;
 }
 
-export function createLogger(functionName: string): EdgeLogger {
+export function createLogger(functionName: string, requestId?: string): EdgeLogger {
   const buffer: LogEntry[] = [];
   const startedAt = Date.now();
 
-  const push = (
-    level: 'info' | 'warn' | 'error',
-    event: string,
-    extra?: Partial<LogEntry>
-  ) => {
+  const push = (level: 'info' | 'warn' | 'error', event: string, extra?: Partial<LogEntry>) => {
     const entry: LogEntry = {
       function_name: functionName,
       level,
       event,
       ...extra,
     };
+    if (requestId) {
+      entry.context = { request_id: requestId, ...(extra?.context ?? {}) };
+    }
     buffer.push(entry);
     // Console também (compatibilidade com supabase logs)
     try {

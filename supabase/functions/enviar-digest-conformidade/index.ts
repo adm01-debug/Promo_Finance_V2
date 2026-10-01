@@ -128,7 +128,7 @@ Deno.serve(async (req: Request) => {
     if (origem === 'usuario' && userId) {
       if (empresaId) {
         // Empresa declarada: precisa ser uma das do usuário.
-        const escopo = await exigirVinculoEmpresa(userId, empresaId);
+        const escopo = await exigirVinculoEmpresa(userId, empresaId, req);
         if (!escopo.ok) return escopo.resposta;
         empresasPermitidas = [escopo.dados.empresaId];
       } else {

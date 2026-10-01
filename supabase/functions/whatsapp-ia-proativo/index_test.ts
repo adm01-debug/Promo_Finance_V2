@@ -260,7 +260,11 @@ Deno.test(
       (await response.json()).whatsapp_link,
       'https://wa.me/5511999999999?text=mensagem%20de%20teste'
     );
-    assertEquals(response.headers.get('access-control-allow-origin'), '*');
+    // A allowlist CORS devolve a origem primária para requisições sem Origin
+    assertEquals(
+      response.headers.get('access-control-allow-origin'),
+      'https://app.promo-finance.com'
+    );
     assertEquals(calls, { ai: 0, auth: 1, client: 1, rateLimit: 1 });
   }
 );

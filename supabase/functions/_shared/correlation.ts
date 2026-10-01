@@ -19,3 +19,8 @@ export function getRequestId(req: Request): string {
 export function correlationResponseHeaders(requestId: string): Record<string, string> {
   return { [CORRELATION_HEADER]: requestId };
 }
+
+/** Headers para propagar o request-id em chamadas fn→fn (invoke/fetch). */
+export function correlationHeaders(requestId: string): Record<string, string> {
+  return { [CORRELATION_HEADER]: requestId };
+}

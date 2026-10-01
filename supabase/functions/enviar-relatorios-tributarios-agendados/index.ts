@@ -6,6 +6,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { PDFDocument, StandardFonts, rgb } from 'https://esm.sh/pdf-lib@1.17.1';
 import { createLogger } from '../_shared/observability.ts';
 import { exigirChamadaInterna, corsHeadersComSegredo } from '../_shared/auth-guard.ts';
+import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 
 const corsHeaders = corsHeadersComSegredo;
 
@@ -101,10 +102,11 @@ async function enviarEmail(
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  const requestId = getRequestId(req);
   const guard = await exigirChamadaInterna(req, 'relatorios_tributarios_cron');
   if (!guard.ok) return guard.resposta;
 
-  const logger = createLogger('enviar-relatorios-tributarios-agendados');
+  const logger = createLogger('enviar-relatorios-tributarios-agendados', requestId);
   const t0 = Date.now();
   logger.info('fn_start');
 
@@ -138,6 +140,7 @@ Deno.serve(async (req) => {
         const { data: relatorio, error: relErr } = await sb.functions.invoke(
           'gerar-relatorio-anual',
           {
+            headers: correlationHeaders(requestId),
             body: { empresa_id: ag.empresa_id, ano: ag.ano },
           }
         );

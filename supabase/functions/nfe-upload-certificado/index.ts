@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
     // empresa, não nesta. Sem o vínculo explícito, o admin da empresa A poderia
     // sobrescrever o certificado A1 e a senha da empresa B — a credencial que
     // assina NF-e perante a SEFAZ.
-    const escopo = await exigirVinculoEmpresa(user.id, empresa_id);
+    const escopo = await exigirVinculoEmpresa(user.id, empresa_id, req);
     if (!escopo.ok) return escopo.resposta;
 
     // Decodifica o .pfx

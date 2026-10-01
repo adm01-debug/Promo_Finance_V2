@@ -4,7 +4,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
+import { getRequestId } from '../_shared/correlation.ts';
 const _BxTribSchema = z.object({
   empresaId: z.string().uuid(),
   signedUrl: z.string().url(),
@@ -14,12 +16,6 @@ const _BxTribSchema = z.object({
   economiaAnual: z.number(),
   dealId: z.string().optional(),
 });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
 
 interface ReqBody {
   empresaId: string;
@@ -64,11 +60,12 @@ async function bitrixCall(
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const logger = createLogger('enviar-bitrix24-tributario');
+  const logger = createLogger('enviar-bitrix24-tributario', getRequestId(req));
   const t0 = Date.now();
   logger.info('fn_start');
 

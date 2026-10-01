@@ -3,20 +3,21 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
+import { getRequestId } from '../_shared/correlation.ts';
 const CopilotTributarioBodySchema = z.object({
-  messages: z.array(z.object({
-    role: z.enum(['system', 'user', 'assistant']),
-    content: z.string().max(20000),
-  })).min(1).max(50),
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(['system', 'user', 'assistant']),
+        content: z.string().max(20000),
+      })
+    )
+    .min(1)
+    .max(50),
   empresa_id: z.string().uuid().optional(),
 });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
 
 const SYSTEM_PROMPT = `Você é o **Copilot Tributário Lovable**, especialista sênior em:
 - Reforma Tributária brasileira (EC 132/23, LC 214/25)
@@ -41,8 +42,9 @@ interface ChatMessage {
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  const log = createLogger('copilot-tributario');
+  const log = createLogger('copilot-tributario', getRequestId(req));
   const t0 = Date.now();
 
   try {
@@ -72,10 +74,7 @@ Deno.serve(async (req: Request) => {
 
     // RBAC
     const admin = createClient(supaUrl, serviceKey);
-    const { data: roleData } = await admin
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id);
+    const { data: roleData } = await admin.from('user_roles').select('role').eq('user_id', user.id);
     const roles = (roleData ?? []).map((r) => r.role);
     const allowed = roles.some((r) => ['admin', 'financeiro', 'visualizador'].includes(r));
     if (!allowed) {
@@ -92,7 +91,6 @@ Deno.serve(async (req: Request) => {
     if (!validation.success) return validation.response;
     const messages = validation.data.messages;
     const empresaId = validation.data.empresa_id;
-
 
     // Contexto rico opcional
     let contextoSistema = '';
@@ -119,10 +117,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         stream: true,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT + contextoSistema },
-          ...messages,
-        ],
+        messages: [{ role: 'system', content: SYSTEM_PROMPT + contextoSistema }, ...messages],
       }),
     });
 
@@ -132,7 +127,7 @@ Deno.serve(async (req: Request) => {
         await log.flush();
         return new Response(
           JSON.stringify({ error: 'Limite de requisições atingido. Tente em alguns segundos.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       if (aiResp.status === 402) {
@@ -140,7 +135,7 @@ Deno.serve(async (req: Request) => {
         await log.flush();
         return new Response(
           JSON.stringify({ error: 'Créditos Lovable AI esgotados. Adicione fundos na Workspace.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       const txt = await aiResp.text();

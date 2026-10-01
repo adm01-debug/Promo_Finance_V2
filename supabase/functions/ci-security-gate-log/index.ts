@@ -6,6 +6,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 const bodySchema = z.object({
   git_sha: z.string().optional(),
@@ -30,13 +31,6 @@ const bodySchema = z.object({
     .max(500),
 });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-ci-gate-secret, x-supabase-client-platform',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
 type FailurePayload = z.infer<typeof bodySchema>['failures'][number];
 type RequestBody = z.infer<typeof bodySchema>;
 
@@ -50,6 +44,7 @@ export interface HandlerDeps {
 
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
+    const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
     if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 

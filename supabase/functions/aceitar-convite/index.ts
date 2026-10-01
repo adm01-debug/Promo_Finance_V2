@@ -4,15 +4,13 @@
 // possui vínculo (e portanto não passa nas policies de RLS de leitura).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform',
-};
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 const BodySchema = z.object({
-  token: z.string().trim().regex(/^[a-f0-9]{64}$/, 'Token inválido'),
+  token: z
+    .string()
+    .trim()
+    .regex(/^[a-f0-9]{64}$/, 'Token inválido'),
 });
 
 type OrgPapel = 'RESPONSAVEL' | 'ADMIN' | 'MEMBRO' | 'LEITOR';
@@ -27,6 +25,7 @@ function json(payload: unknown, status = 200): Response {
 const normalizarEmail = (email: string) => email.trim().toLowerCase();
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
@@ -47,7 +46,10 @@ Deno.serve(async (req) => {
 
     const parsed = BodySchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
-      return json({ error: 'Requisição inválida', detalhes: parsed.error.flatten().fieldErrors }, 400);
+      return json(
+        { error: 'Requisição inválida', detalhes: parsed.error.flatten().fieldErrors },
+        400
+      );
     }
 
     // Cliente privilegiado: leitura do convite + escrita do vínculo.
@@ -72,7 +74,7 @@ Deno.serve(async (req) => {
     if (!emailUsuario || emailUsuario !== normalizarEmail(convite.email_convidado)) {
       return json(
         { error: 'Este convite foi emitido para outro e-mail. Entre com a conta convidada.' },
-        403,
+        403
       );
     }
     if (convite.papel_proposto === 'RESPONSAVEL') {

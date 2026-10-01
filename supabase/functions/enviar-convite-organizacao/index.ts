@@ -11,12 +11,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform',
-};
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 const BodySchema = z.object({
   convite_id: z.string().uuid(),
@@ -46,6 +41,7 @@ function escapeHtml(value: string): string {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
@@ -77,7 +73,9 @@ Deno.serve(async (req) => {
 
     const { data: convite, error: conviteError } = await admin
       .from('convites')
-      .select('id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em')
+      .select(
+        'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em'
+      )
       .eq('id', convite_id)
       .maybeSingle();
 

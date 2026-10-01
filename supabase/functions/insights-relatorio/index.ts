@@ -4,19 +4,16 @@ import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { z } from '../_shared/zod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const InsightsRelatorioBodySchema = z.object({
   dados: z.unknown(),
   contexto: z.string().max(500).optional(),
 });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version, x-request-id',
-};
-
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

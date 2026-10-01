@@ -3,6 +3,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const CopilotGlobalBodySchema = z.object({
   contexto_pagina: z.string().max(64).optional(),
@@ -18,11 +19,6 @@ const CopilotGlobalBodySchema = z.object({
     .max(50)
     .optional(),
 });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -147,6 +143,7 @@ async function executeTool(name: string, sb: ReturnType<typeof createClient>, us
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
