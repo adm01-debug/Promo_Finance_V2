@@ -200,8 +200,10 @@ const EMPRESA_ID_DO_CORPO =
 const AUTENTICA_USUARIO = /exigirUsuario\(|exigirPapel\(|exigirInternaOuUsuario\(/;
 
 /** Verifica o vinculo usuario<->empresa, via helper ou consulta direta. */
+// exigirAlgumPapel NÃO entra aqui: verifica papel global, não vínculo com a
+// empresa. Funções que aceitam empresa_id do corpo precisam de guarda de tenant.
 const GUARDA_DE_TENANT =
-  /exigirVinculoEmpresa|exigirUsuarioComEmpresa|exigirAdminOuVinculo|exigirAlgumPapel|empresasDoUsuario|user_empresas|empresa_acessivel/;
+  /exigirVinculoEmpresa|exigirUsuarioComEmpresa|exigirAdminOuVinculo|empresasDoUsuario|user_empresas|empresa_acessivel/;
 
 async function lerFuncoes(): Promise<Array<{ nome: string; fonte: string }>> {
   const funcoes: Array<{ nome: string; fonte: string }> = [];
