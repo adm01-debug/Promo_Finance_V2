@@ -201,7 +201,7 @@ const AUTENTICA_USUARIO = /exigirUsuario\(|exigirPapel\(|exigirInternaOuUsuario\
 
 /** Verifica o vinculo usuario<->empresa, via helper ou consulta direta. */
 const GUARDA_DE_TENANT =
-  /exigirVinculoEmpresa|exigirUsuarioComEmpresa|empresasDoUsuario|user_empresas|empresa_acessivel/;
+  /exigirVinculoEmpresa|exigirUsuarioComEmpresa|exigirAdminOuVinculo|exigirAlgumPapel|empresasDoUsuario|user_empresas|empresa_acessivel/;
 
 async function lerFuncoes(): Promise<Array<{ nome: string; fonte: string }>> {
   const funcoes: Array<{ nome: string; fonte: string }> = [];
@@ -247,11 +247,9 @@ const DESVIO_HAS_ROLE_CONHECIDO: readonly string[] = [
   'calcular-health-score-operacional',
   'comparar-benchmark-setorial',
   'contabilizar-evento',
-  'gerar-acoes-recomendadas',
   'gerar-dre-tributaria',
   'gerar-heatmap-tributario',
   'gerar-pdf-tributario',
-  'gerar-resumo-executivo-semanal',
   'prever-carga-tributaria',
 ];
 

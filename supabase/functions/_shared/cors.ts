@@ -43,7 +43,8 @@ const BASE_HEADERS: Record<string, string> = {
     'x-supabase-client-platform, x-supabase-client-platform-version, ' +
     'x-supabase-client-platform-runtime, x-supabase-client-platform-runtime-version, ' +
     'x-supabase-client-runtime, x-supabase-client-runtime-version, ' +
-    'x-request-id, x-correlation-id, x-cron-secret, x-internal-secret, x-mcp-secret',
+    'x-request-id, x-correlation-id, x-cron-secret, x-internal-secret, x-mcp-secret, ' +
+    'x-n8n-secret',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
   'Access-Control-Max-Age': '86400',
 };

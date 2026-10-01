@@ -40,6 +40,9 @@ const originais = {
   error: console.error.bind(console),
 };
 
+// Teto do buffer: em falhas persistentes descartamos o excedente mais novo
+// em vez de deixar a fila crescer até estourar a memória do isolado.
+const LIMITE_BUFFER = 200;
 const buffer: ConsoleLogRow[] = [];
 let agendado: Promise<void> | null = null;
 let inserindo = false;
@@ -105,11 +108,18 @@ async function flush(): Promise<void> {
     return;
   }
   inserindo = true;
+  const rows = buffer.splice(0, buffer.length);
   try {
     if (client === undefined) client = createClient(url, key);
-    const rows = buffer.splice(0, buffer.length);
-    await client?.from('edge_function_logs').insert(rows);
+    const { error } = (await client?.from('edge_function_logs').insert(rows)) ?? {};
+    if (error) {
+      // Falha transitória (rede, RLS, restart): recoloca o lote na fila para a
+      // próxima rodada em vez de perder os registros definitivamente.
+      buffer.unshift(...rows.slice(0, Math.max(0, LIMITE_BUFFER - buffer.length)));
+      originais.error('[console-persist] insert falhou:', error.message);
+    }
   } catch (err) {
+    buffer.unshift(...rows.slice(0, Math.max(0, LIMITE_BUFFER - buffer.length)));
     originais.error(
       '[console-persist] flush falhou:',
       err instanceof Error ? err.message : String(err)

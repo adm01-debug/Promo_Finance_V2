@@ -419,9 +419,11 @@ export async function exigirVinculoEmpresa(
  */
 export async function exigirAdminOuVinculo(
   supabase: SupabaseClient,
+  req: Request,
   userId: string,
   empresaId: string | null | undefined
 ): Promise<Response | null> {
+  const cors = corsHeadersPara(req);
   const { data: isAdmin } = await supabase.rpc('has_role', {
     _user_id: userId,
     _role: 'admin',
@@ -430,7 +432,7 @@ export async function exigirAdminOuVinculo(
   if (!empresaId) {
     return new Response(
       JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
-      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 403, headers: { ...cors, 'Content-Type': 'application/json' } }
     );
   }
   const { data: vinculo } = await supabase
@@ -443,7 +445,7 @@ export async function exigirAdminOuVinculo(
   if (!vinculo) {
     return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
       status: 403,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...cors, 'Content-Type': 'application/json' },
     });
   }
   return null;
@@ -456,6 +458,7 @@ export async function exigirAdminOuVinculo(
  */
 export async function exigirAlgumPapel(
   supabase: SupabaseClient,
+  req: Request,
   userId: string,
   papeis: readonly string[],
   mensagem = 'Permissão insuficiente para esta operação'
@@ -469,7 +472,7 @@ export async function exigirAlgumPapel(
   if (possui) return null;
   return new Response(JSON.stringify({ error: mensagem }), {
     status: 403,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...corsHeadersPara(req), 'Content-Type': 'application/json' },
   });
 }
 

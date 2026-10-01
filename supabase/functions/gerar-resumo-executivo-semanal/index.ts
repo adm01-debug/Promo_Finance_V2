@@ -188,7 +188,7 @@ serve(async (req) => {
     const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
     if (guard.dados.origem === 'usuario' && guard.dados.userId) {
-      const escopo = await exigirAdminOuVinculo(supabase, guard.dados.userId, empresaIdFilter);
+      const escopo = await exigirAdminOuVinculo(supabase, req, guard.dados.userId, empresaIdFilter);
       if (escopo) return escopo;
     }
 

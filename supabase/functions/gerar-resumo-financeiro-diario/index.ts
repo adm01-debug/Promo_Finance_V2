@@ -20,6 +20,7 @@ export const handler = async (req: Request) => {
     if (guard.dados.origem === 'usuario' && guard.dados.userId) {
       const acesso = await exigirAlgumPapel(
         supabase,
+        req,
         guard.dados.userId,
         ['admin', 'financeiro'],
         'Acesso restrito a admin ou financeiro'
