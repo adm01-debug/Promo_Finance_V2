@@ -1,0 +1,216 @@
+src/components/admin/AnomaliasFiltersBar.tsx(...): error TS2322: Type 'unknown' is not assignable to type 'string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined'.
+src/components/admin/AutomacoesTab.tsx(...): error TS2322: Type 'null' is not assignable to type 'string | undefined'.
+src/components/admin/GerenciadorPermissoes.tsx(...): error TS2345: Argument of type '{ created_at: string | null; id: string; permission_id: string | null; role: "operator" | "admin" | "manager" | "viewer" | "financeiro" | "operacional" | "visualizador" | "contador"; }[]' is not assignable to parameter of type 'SetStateAction<RolePermission[]>'.
+src/components/admin/sso/SSOStepValidacao.tsx(...): error TS2322: Type 'string | undefined' is not assignable to type 'BlobPart'.
+src/components/admin/sso/SSOStepValidacao.tsx(...): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+src/components/asaas/ExtratoAsaasPanel.tsx(...): error TS18047: 's.score' is possibly 'null'.
+src/components/asaas/ExtratoAsaasPanel.tsx(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/components/asaas/ExtratoAsaasPanel.tsx(...): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+src/components/asaas/TransferenciaPixHistoryPanel.tsx(...): error TS18047: 't.chave_pix' is possibly 'null'.
+src/components/asaas/tabs/FilaTab.tsx(...): error TS2339: Property 'attempts' does not exist on type 'never'.
+src/components/asaas/tabs/FilaTab.tsx(...): error TS2339: Property 'error_history' does not exist on type 'never'.
+src/components/asaas/tabs/FilaTab.tsx(...): error TS2339: Property 'id' does not exist on type 'never'.
+src/components/asaas/tabs/FilaTab.tsx(...): error TS2339: Property 'max_attempts' does not exist on type 'never'.
+src/components/asaas/tabs/FilaTab.tsx(...): error TS2339: Property 'next_retry_at' does not exist on type 'never'.
+src/components/asaas/tabs/FilaTab.tsx(...): error TS2339: Property 'payment_id' does not exist on type 'never'.
+src/components/asaas/tabs/FilaTab.tsx(...): error TS2339: Property 'status' does not exist on type 'never'.
+src/components/auth/WebAuthnManager.tsx(...): error TS2345: Argument of type '{ id: string; credential_id: string; device_name: string | null; created_at: string; }[]' is not assignable to parameter of type 'SetStateAction<WebAuthnCredential[]>'.
+src/components/boletos/NovoBoletoForm.tsx(...): error TS2345: Argument of type '(prev: { sacado_nome: string; sacado_cpf_cnpj: string; valor: string; vencimento: string; conta_bancaria_id: string; empresa_id: string; descricao: string; conta_receber_id: string; conta_pagar_id: string; }) => { ...; }' is not assignable to parameter of type 'SetStateAction<{ sacado_nome: string; sacado_cpf_cnpj: string; valor: string; vencimento: string; conta_bancaria_id: string; empresa_id: string; descricao: string; conta_receber_id: string; conta_pagar_id: string; }>'.
+src/components/centros-custo/CentroCustoExport.tsx(...): error TS18047: 'c.orcamento_previsto' is possibly 'null'.
+src/components/centros-custo/CentroCustoExport.tsx(...): error TS18047: 'c.orcamento_realizado' is possibly 'null'.
+src/components/centros-custo/CentroCustoTree.tsx(...): error TS18047: 'a.codigo' is possibly 'null'.
+src/components/centros-custo/CentroCustoTree.tsx(...): error TS18047: 'node.codigo' is possibly 'null'.
+src/components/centros-custo/CentroCustoTree.tsx(...): error TS18047: 'previsto' is possibly 'null'.
+src/components/centros-custo/CentroCustoTree.tsx(...): error TS18047: 'realizado' is possibly 'null'.
+src/components/centros-custo/CentroCustoTree.tsx(...): error TS2322: Type 'number | null' is not assignable to type 'number'.
+src/components/centros-custo/CentroCustoTree.tsx(...): error TS2769: No overload matches this call.
+src/components/clientes/ClienteDetailDialog.tsx(...): error TS2345: Argument of type 'number | null | undefined' is not assignable to parameter of type 'number | null'.
+src/components/clientes/ClienteDetailDialog.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/components/clientes/ClienteForm.tsx(...): error TS2322: Type 'UseFormReturn<{ ativo: boolean; razao_social: string; email?: string | undefined; observacoes?: string | undefined; endereco?: string | undefined; telefone?: string | undefined; cidade?: string | undefined; ... 5 more ...; ramo_atividade?: string | undefined; }, any, { ...; }>' is not assignable to type 'UseFormReturn<FieldValues>'.
+src/components/cobranca/NegativacoesProtestosPanel.tsx(...): error TS18047: 'neg.bureau' is possibly 'null'.
+src/components/cobranca/PrevisaoInadimplencia.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/components/cobranca/PrevisaoInadimplencia.tsx(...): error TS2345: Argument of type '{ id: string; valor: number; valor_recebido: number | null; data_vencimento: string; status: string | null; cliente_id: string | null; cliente_nome: string | null; clientes: { id: string; ... 4 more ...; ramo_atividade: string | null; } | null; }' is not assignable to parameter of type 'ContaData'.
+src/components/cobranca/PrevisaoInadimplencia.tsx(...): error TS2345: Argument of type '{ status: string | null; }[]' is not assignable to parameter of type 'HistoricoContaData[]'.
+src/components/cobranca/WhatsAppProativoPanel.tsx(...): error TS2322: Type 'unknown' is not assignable to type 'string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined'.
+src/components/conciliacao/ConciliacaoAuditPanel.tsx(...): error TS2345: Argument of type '{ evento: string; valor: number; responsavel: string; data: string | null; regra: string; classificacao: string | null; evidencia_url: string | undefined; }[]' is not assignable to parameter of type 'ConciliacaoAuditRow[]'.
+src/components/conciliacao/ConciliacaoAuditPanel.tsx(...): error TS2769: No overload matches this call.
+src/components/conciliacao/ConciliacaoRetroativaPanel.tsx(...): error TS18047: 'log.divergencias_encontradas' is possibly 'null'.
+src/components/conciliacao/ExtratoPreviewStep.tsx(...): error TS18047: 'r.padrao_descricao' is possibly 'null'.
+src/components/conciliacao/RegrasConciliacaoPanel.tsx(...): error TS18047: 'r.padrao_descricao' is possibly 'null'.
+src/components/conciliacao/RegrasConciliacaoPanel.tsx(...): error TS2322: Type 'boolean | null' is not assignable to type 'boolean | undefined'.
+src/components/contabilidade/DreBalancoTab.tsx(...): error TS2345: Argument of type '{ empresaTitulo: string; empresaCnpj: string | null | undefined; ano: number; mes: number; fonte: FonteDemonstrativo; }' is not assignable to parameter of type 'ExportContext'.
+src/components/contabilidade/LancamentosTab.tsx(...): error TS2345: Argument of type '(l: { id: string; numero_lancamento: number; data_lancamento: string; historico: string; origem: string; valor_total: number; status: string; }, idx: number) => JSX.Element' is not assignable to parameter of type '(value: { competencia: string | null; created_at: string; created_by: string | null; data_lancamento: string; empresa_id: string | null; historico: string | null; id: string; numero_lancamento: number | null; ... 5 more ...; partidas: { ...; }[]; }, index: number, array: { ...; }[]) => Element'.
+src/components/contabilidade/LancamentosTab.tsx(...): error TS2769: No overload matches this call.
+src/components/contabilidade/elisao/ElisaoFiscalTab.tsx(...): error TS18048: 'op.valor_estimado' is possibly 'undefined'.
+src/components/contabilidade/sped-contabil/useSpedContabilState.ts(...): error TS2345: Argument of type '{ cnpj: string | null; razao_social: string; }' is not assignable to parameter of type 'SetStateAction<{ cnpj: string; razao_social: string; } | null>'.
+src/components/contabilidade/validacoes-pre-sped/exportUtils.ts(...): error TS2532: Object is possibly 'undefined'.
+src/components/contas-bancarias/ContaBancariaCard.tsx(...): error TS18047: 'conta.saldo_disponivel' is possibly 'null'.
+src/components/contas-bancarias/DistribuicaoBancos.tsx(...): error TS2538: Type 'null' cannot be used as an index type.
+src/components/contas-pagar/ContaPagarForm.tsx(...): error TS2322: Type 'ContaBancariaComRegras[]' is not assignable to type '{ id: string; banco: string; agencia: string; conta: string; }[]'.
+src/components/contas-pagar/ContaPagarForm.tsx(...): error TS2322: Type 'UseFormReturn<{ empresa_id: string; tipo_cobranca: "boleto" | "pix" | "transferencia" | "cartao" | "dinheiro"; descricao: string; data_vencimento: string; valor: number; fornecedor_nome: string; ... 8 more ...; numero_documento?: string | undefined; }, any, { ...; }>' is not assignable to type 'UseFormReturn<FieldValues>'.
+src/components/contas-pagar/ContaPagarForm.tsx(...): error TS2322: Type '{ ativo: boolean | null; codigo: string | null; created_at: string | null; descricao: string | null; empresa_id: string | null; id: string; nome: string; orcamento_previsto: number | null; ... 5 more ...; user_id: string | null; }[]' is not assignable to type '{ id: string; codigo: string; nome: string; }[]'.
+src/components/contas-pagar/ContasPagarTableRow.tsx(...): error TS2322: Type 'SolicitacaoAprovacaoHistorico[]' is not assignable to type 'SolicitacaoAprovacao[]'.
+src/components/contas-pagar/ContasPagarTableRow.tsx(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/components/contas-receber/BaixaAutomaticaDialog.tsx(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/components/contas-receber/ContaReceberForm.tsx(...): error TS2322: Type 'UseFormReturn<{ empresa_id: string; tipo_cobranca: "boleto" | "pix" | "transferencia" | "cartao" | "dinheiro"; descricao: string; cliente_nome: string; data_vencimento: string; valor: number; cliente_id?: string | undefined; ... 13 more ...; parcelado?: boolean | undefined; }, any, { ...; }>' is not assignable to type 'UseFormReturn<ContaReceberFormValues>'.
+src/components/contas-receber/ContasReceberKPIs.tsx(...): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+src/components/contratos/GestaoContratos.tsx(...): error TS2538: Type 'null' cannot be used as an index type.
+src/components/dashboard/DashboardExecutivo.tsx(...): error TS18047: 'c.valor' is possibly 'null'.
+src/components/dashboard/DashboardExecutivo.tsx(...): error TS2322: Type 'ContaBancariaComRegras[]' is not assignable to type '{ id: string; banco: string; saldo_atual: number; }[]'.
+src/components/dashboard/DashboardExecutivo.tsx(...): error TS2322: Type '{ valor: number; dataVencimento: Date; entidade: string | null; }[]' is not assignable to type '{ valor: number; dataVencimento: Date; entidade: string; }[]'.
+src/components/dashboard/DashboardExecutivo.tsx(...): error TS2769: No overload matches this call.
+src/components/dashboard/MetasFinanceirasPanel.tsx(...): error TS18047: 'rec.impacto_estimado' is possibly 'null'.
+src/components/demonstrativos/ExportDemonstrativoPDF.tsx(...): error TS2532: Object is possibly 'undefined'.
+src/components/demonstrativos/FluxoCaixaContabil.tsx(...): error TS2531: Object is possibly 'null'.
+src/components/effects/BlurText.tsx(...): error TS2322: Type 'Snapshot | Record<string, (string | number | undefined)[]>' is not assignable to type 'boolean | VariantLabels | AnimationControls | TargetAndTransition | undefined'.
+src/components/effects/BlurText.tsx(...): error TS2322: Type 'Snapshot' is not assignable to type 'boolean | MakeCustomValueType<TargetProperties> | VariantLabels | undefined'.
+src/components/empresas/EmpresaCardView.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/components/error/ErrorBoundary.tsx(...): error TS2322: Type 'string | undefined' is not assignable to type 'Json'.
+src/components/expert/ExpertPromptComposer.tsx(...): error TS2322: Type 'RefObject<HTMLTextAreaElement | null>' is not assignable to type 'LegacyRef<HTMLTextAreaElement> | undefined'.
+src/components/financeiro/AnexoList.tsx(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/components/financeiro/AnexoList.tsx(...): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+src/components/fornecedores/FornecedorDetailDialog.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/components/fornecedores/FornecedorForm.tsx(...): error TS2322: Type 'UseFormReturn<{ ativo: boolean; razao_social: string; email?: string | undefined; observacoes?: string | undefined; endereco?: string | undefined; telefone?: string | undefined; cidade?: string | undefined; cnpj_cpf?: string | undefined; contato?: string | undefined; estado?: string | undefined; nome_fantasia?: stri...' is not assignable to type 'UseFormReturn<FieldValues>'.
+src/components/integracoes/BitrixWebhookPanel.tsx(...): error TS2769: No overload matches this call.
+src/components/pix-hub/PixDashboardRealtime.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/components/reforma-tributaria/ComparativoRegimesPanel.tsx(...): error TS2322: Type 'boolean | null' is not assignable to type 'boolean | undefined'.
+src/components/reforma-tributaria/ExportacaoSPED.tsx(...): error TS18047: 'empresaSelecionada.cnpj' is possibly 'null'.
+src/components/reforma-tributaria/ExportacaoSPED.tsx(...): error TS2345: Argument of type '{ cnpj: string | null; razaoSocial: string; inscricaoEstadual: string | undefined; uf: string; }' is not assignable to parameter of type 'DadosEmpresa'.
+src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx(...): error TS2345: Argument of type '{ empresa_id: string; nome: string; tipo_incentivo: string; ano_inicio: number; ano_fim: number | null; limite_percentual: number | null; limite_valor: number | null; numero_processo: string; ato_concessorio: string; ativo: boolean; }' is not assignable to parameter of type 'CreateIncentivoInput'.
+src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx(...): error TS2345: Argument of type '{ nome: string; tipo_incentivo: string; ano_inicio: number; ano_fim: number | null; limite_percentual: number | null; limite_valor: number | null; numero_processo: string; ato_concessorio: string; ativo: boolean; id: string; }' is not assignable to parameter of type 'Partial<IncentivoFiscal> & { id: string; }'.
+src/components/relatorios/RelatorioDrillDown.tsx(...): error TS2322: Type '{ id: string; descricao: string; entidade: string; valor: number; vencimento: string; status: string | null; }[] | undefined' is not assignable to type 'DetalheDrillRow[] | undefined'.
+src/components/tesouraria/ConsolidacaoMultiCNPJ.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/components/tesouraria/ProjectedCashFlowChart.tsx(...): error TS2345: Argument of type '{ name: string; receber: number; pagar: number; saldo: number; }' is not assignable to parameter of type 'never'.
+src/components/tesouraria/TesourariaCentralizada.tsx(...): error TS18047: 'c.banco' is possibly 'null'.
+src/components/tesouraria/TesourariaCentralizada.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/components/tributario/ComparativoTemporalChart.tsx(...): error TS2769: No overload matches this call.
+src/components/tributario/ProjecaoConformidadeCard.tsx(...): error TS2769: No overload matches this call.
+src/components/tributario/dashboard/ConformidadeFiscalCard.tsx(...): error TS2339: Property 'checks_aprovados' does not exist on type 'NonNullable<NoInfer<TQueryFnData>>'.
+src/components/tributario/dashboard/ConformidadeFiscalCard.tsx(...): error TS2339: Property 'gerado_em' does not exist on type 'NonNullable<NoInfer<TQueryFnData>>'.
+src/components/tributario/dashboard/ConformidadeFiscalCard.tsx(...): error TS2339: Property 'itens' does not exist on type 'NonNullable<NoInfer<TQueryFnData>>'.
+src/components/tributario/dashboard/ConformidadeFiscalCard.tsx(...): error TS2339: Property 'nivel' does not exist on type 'NonNullable<NoInfer<TQueryFnData>>'.
+src/components/tributario/dashboard/ConformidadeFiscalCard.tsx(...): error TS2339: Property 'score' does not exist on type 'NonNullable<NoInfer<TQueryFnData>>'.
+src/components/tributario/dashboard/ConformidadeFiscalCard.tsx(...): error TS2339: Property 'total_checks' does not exist on type 'NonNullable<NoInfer<TQueryFnData>>'.
+src/components/ui/phone-input.tsx(...): error TS2540: Cannot assign to 'current' because it is a read-only property.
+src/components/vendedores/VendedorDashboard.tsx(...): error TS18047: 'cr.valor' is possibly 'null'.
+src/components/vendedores/VendedorDashboard.tsx(...): error TS2531: Object is possibly 'null'.
+src/hooks/AuthProvider.tsx(...): error TS2345: Argument of type '{ avatar_url: string | null; created_at: string; email: string | null; empresa_id: string | null; full_name: string | null; id: string; role: string | null; updated_at: string; user_id: string | null; }' is not assignable to parameter of type 'SetStateAction<Profile | null>'.
+src/hooks/expert-actions/query-actions.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/useAcordosParcelamento.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/useAcordosParcelamento.ts(...): error TS2345: Argument of type '{ acordo_id: string; numero_parcela: number; valor: number; data_vencimento: string; status: string; }' is not assignable to parameter of type 'never'.
+src/hooks/useAlertas.ts(...): error TS2322: Type '{ id: string; tipo: string; titulo: string; mensagem: string | null; prioridade: PrioridadeAlerta; lido: boolean | null; entidade_tipo: string | null; entidade_id: string | null; acao_url: string | null; user_id: string; created_at: string; }[]' is not assignable to type 'Alerta[]'.
+src/hooks/useAlertasTributarios.ts(...): error TS18047: 'darf.valor_total' is possibly 'null'.
+src/hooks/useAlertasTributarios.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/hooks/useAlertasTributarios.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/useAnomaliaDetalhe.ts(...): error TS2322: Type '{ id: string; data: string | null; valor: number; descricao: string | null; }[]' is not assignable to type 'PontoHistorico[]'.
+src/hooks/useApuracoesTributarias.ts(...): error TS2345: Argument of type '(op: OperacaoData) => void' is not assignable to parameter of type '(value: { apuracao_id: string | null; base_calculo: number; cbs_aliquota: number | null; cbs_credito: number | null; cbs_valor: number | null; cfop: string | null; cliente_id: string | null; ... 43 more ...; valor_total: number | null; }, index: number, array: { ...; }[]) => void'.
+src/hooks/useAsaas.ts(...): error TS2345: Argument of type '(p: PaymentRow) => { sacado_nome: string | undefined; sacado_cpf_cnpj: string | undefined; clientes?: { razao_social?: string; cpf_cnpj?: string; } | null; }' is not assignable to parameter of type '(value: { asaas_customer_id: string | null; asaas_id: string | null; bank_slip_url: string | null; codigo_barras: string | null; conta_receber_id: string | null; created_at: string; ... 18 more ...; clientes: { ...; } | null; }, index: number, array: { ...; }[]) => { ...; }'.
+src/hooks/useAuditLog.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/hooks/useAuditLog.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/hooks/useAuditoriaCompliance.ts(...): error TS18047: 'nf.valor_total' is possibly 'null'.
+src/hooks/useBoletos.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/useCobrancas.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/hooks/useConciliacao.ts(...): error TS2345: Argument of type 'string | null | undefined' is not assignable to parameter of type 'string | null'.
+src/hooks/useConciliacaoPage.ts(...): error TS2345: Argument of type 'ContasPagarPainelRow[] | undefined' is not assignable to parameter of type 'ContaPagarRow[] | null | undefined'.
+src/hooks/useConciliacaoTributaria.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/hooks/useConciliacaoTributaria.ts(...): error TS2769: No overload matches this call.
+src/hooks/useConformidadeFiscal.ts(...): error TS2769: No overload matches this call.
+src/hooks/useContasPagarLogic.ts(...): error TS18047: 'a.fornecedor_nome' is possibly 'null'.
+src/hooks/useContasPagarLogic.ts(...): error TS18047: 'c.valor' is possibly 'null'.
+src/hooks/useContasPagarLogic.ts(...): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+src/hooks/useContasPagarLogic.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/useContasPagarLogic.ts(...): error TS2769: No overload matches this call.
+src/hooks/useContasReceberLogic.ts(...): error TS18047: 'c.valor' is possibly 'null'.
+src/hooks/useContasReceberLogic.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/useCreditosTributarios.ts(...): error TS18047: 'nf.data_emissao' is possibly 'null'.
+src/hooks/useCreditosTributarios.ts(...): error TS2345: Argument of type '(c: CreditoData) => void' is not assignable to parameter of type '(value: { tipo_tributo: string; status: string | null; valor_credito: number | null; valor_utilizado: number | null; saldo_disponivel: number; }, index: number, array: { tipo_tributo: string; status: string | null; valor_credito: number | null; valor_utilizado: number | null; saldo_disponivel: number; }[]) => void'.
+src/hooks/useCreditosTributarios.ts(...): error TS2345: Argument of type '{ empresa_id: string; tipo_tributo: string; tipo_credito: string; documento_tipo: string; documento_numero: string | null; documento_chave: string | null; nota_fiscal_id: string; valor_base: number; ... 6 more ...; saldo_disponivel: number; }' is not assignable to parameter of type 'never'.
+src/hooks/useCreditosTributarios.ts(...): error TS2769: No overload matches this call.
+src/hooks/useDashboardMetrics.ts(...): error TS18047: 'c.valor' is possibly 'null'.
+src/hooks/useDashboardMetrics.ts(...): error TS18047: 'conta.valor' is possibly 'null'.
+src/hooks/useDashboardMetrics.ts(...): error TS2345: Argument of type '{ data: string; receitas: number; despesas: number; saldo: number; }' is not assignable to parameter of type 'never'.
+src/hooks/useDashboardMetrics.ts(...): error TS2531: Object is possibly 'null'.
+src/hooks/useDashboardMetrics.ts(...): error TS2769: No overload matches this call.
+src/hooks/useDemonstrativosContabeis.ts(...): error TS18047: 'cp.valor' is possibly 'null'.
+src/hooks/useDemonstrativosContabeis.ts(...): error TS18047: 'cr.valor' is possibly 'null'.
+src/hooks/useDemonstrativosContabeis.ts(...): error TS2531: Object is possibly 'null'.
+src/hooks/useDemonstrativosContabeis.ts(...): error TS2769: No overload matches this call.
+src/hooks/useExpertConversations.ts(...): error TS2322: Type '{ created_at: string | null; empresa_id: string | null; id: string; last_message_at: string | null; resumo: string | null; status: string | null; titulo: string | null; updated_at: string | null; user_id: string; }' is not assignable to type 'ExpertConversation'.
+src/hooks/useExpertConversations.ts(...): error TS2322: Type '{ created_at: string | null; empresa_id: string | null; id: string; last_message_at: string | null; resumo: string | null; status: string | null; titulo: string | null; updated_at: string | null; user_id: string; }[]' is not assignable to type 'ExpertConversation[]'.
+src/hooks/useExpertConversations.ts(...): error TS2322: Type '{ role: "user" | "assistant"; actions: ExpertAction[] | undefined; actions_executed: boolean | null; content: string; conversation_id: string; created_at: string | null; id: string; metadata: Json; }[]' is not assignable to type 'ExpertMessage[]'.
+src/hooks/useFluxoCaixa.ts(...): error TS2322: Type 'number | null' is not assignable to type 'number'.
+src/hooks/useFrontendErrorLogs.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/hooks/useInadimplenciaSegmentada.ts(...): error TS18047: 'item.probabilidade' is possibly 'null'.
+src/hooks/useMetricasAprendizadoIA.ts(...): error TS2769: No overload matches this call.
+src/hooks/useOperacoesTributaveis.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/hooks/useOperacoesTributaveis.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/hooks/useOportunidadesElisao.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/usePermissions.ts(...): error TS2345: Argument of type '(string | undefined)[]' is not assignable to parameter of type 'SetStateAction<string[]>'.
+src/hooks/useRegrasConciliacao.ts(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/hooks/useReguaCobranca.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/hooks/useRelatoriosData.ts(...): error TS2322: Type '{ created_at: string | null; empresa_id: string | null; enviado_em: string | null; id: string; kpis: Json; resumo_md: string; semana_fim: string; semana_inicio: string; }[]' is not assignable to type 'ResumoSemanal[]'.
+src/hooks/useRelatoriosData.ts(...): error TS2538: Type 'null' cannot be used as an index type.
+src/hooks/useScoringClientes.ts(...): error TS2322: Type '{ clienteId: string; clienteNome: string | null; score: number; classificacao: "A" | "B" | "D" | "C" | "E"; risco: "critico" | "alto" | "medio" | "baixo"; fatores: FatorScore[]; limiteRecomendado: number; ultimaAtualizacao: string; tendencia: "subindo" | ... 1 more ... | "descendo"; }[]' is not assignable to type 'ClienteScore[]'.
+src/hooks/useScoringClientes.ts(...): error TS2345: Argument of type '{ cliente_id: string | null; valor: number; valor_recebido: number | null; data_vencimento: string; data_recebimento: string | null; status: string | null; created_at: string | null; }[]' is not assignable to parameter of type 'ContaReceberScoring[]'.
+src/hooks/useWhatsAppCobrancaHistory.ts(...): error TS2578: Unused '@ts-expect-error' directive.
+src/lib/sso-slo-audit.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+src/lib/sso-slo-audit.ts(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/lib/tributario/validador-ncm-cst.ts(...): error TS2345: Argument of type '{ campo: string; mensagem: string; }' is not assignable to parameter of type 'never'.
+src/pages/Asaas.parts.tsx(...): error TS2322: Type '{ sacado_nome: string; sacado_cpf_cnpj: null; numero: string; banco: string; agencia: string; conta: string; cedente_nome: string; cedente_cnpj: string | null; vencimento: string; id: string; ... 18 more ...; created_at: string; }' is not assignable to type 'Boleto'.
+src/pages/BI.tsx(...): error TS18047: 'c.valor' is possibly 'null'.
+src/pages/BI.tsx(...): error TS2322: Type 'ContasReceberPainelRow[] | ContasPagarPainelRow[]' is not assignable to type 'BIDrillDownItem[]'.
+src/pages/BI.tsx(...): error TS2322: Type '{ id: string; nome: string; cnpj: string | null; receitas: number; despesas: number; lucro: number; margem: number; saldo: number; aReceber: number; aPagar: number; inadimplencia: number; liquidez: number; contasCount: number; ticketMedio: number; saldoProjetado: number; }[]' is not assignable to type 'EmpresaComparativo[]'.
+src/pages/BI.tsx(...): error TS2345: Argument of type '{ mes: string; receitas: number; despesas: number; lucro: number; margem: number; }' is not assignable to parameter of type 'never'.
+src/pages/BI.tsx(...): error TS2531: Object is possibly 'null'.
+src/pages/BI.tsx(...): error TS2769: No overload matches this call.
+src/pages/Bitrix24.tsx(...): error TS2322: Type '{ anexo_url: string | null; bitrix_deal_id: string | null; categoria_id: string | null; categoria_nome: string | null; centro_custo_id: string | null; chave_pix: string | null; ... 32 more ...; vendedor_id: string | null; }[] | undefined' is not assignable to type 'Deal[] | undefined'.
+src/pages/Bitrix24.tsx(...): error TS2322: Type '{ ativo: boolean | null; cidade: string | null; cnpj_cpf: string | null; contato: string | null; cpf_cnpj: string | null; created_at: string | null; email: string | null; empresa_id: string | null; ... 13 more ...; user_id: string | null; }[] | undefined' is not assignable to type 'SyncedClient[] | undefined'.
+src/pages/BloqueiosDuplicidade.tsx(...): error TS2322: Type '{ id: string; nome_fantasia: string | null; cnpj: string | null; }[] | undefined' is not assignable to type '{ id: string; nome_fantasia: string; cnpj: string; }[] | undefined'.
+src/pages/Boletos.tsx(...): error TS2322: Type '{ id: string; banco: string | null; agencia: string | null; conta: string | null; empresa_id: string | null; }[] | undefined' is not assignable to type '{ id: string; banco: string; agencia: string; conta: string; empresa_id: string; }[] | undefined'.
+src/pages/Categorias.tsx(...): error TS2322: Type 'Categoria | null' is not assignable to type 'Categoria | undefined'.
+src/pages/CentroCustos.tsx(...): error TS18047: 'c.codigo' is possibly 'null'.
+src/pages/CentroCustos.tsx(...): error TS18047: 'c.orcamento_previsto' is possibly 'null'.
+src/pages/CentroCustos.tsx(...): error TS18047: 'c.orcamento_realizado' is possibly 'null'.
+src/pages/Clientes.tsx(...): error TS18047: 'c.razao_social' is possibly 'null'.
+src/pages/Clientes.tsx(...): error TS2322: Type '{ ativo: boolean | null; cidade: string | null; cnpj_cpf: string | null; contato: string | null; cpf_cnpj: string | null; created_at: string | null; email: string | null; empresa_id: string | null; ... 13 more ...; user_id: string | null; }[]' is not assignable to type 'ExternalCliente[]'.
+src/pages/Cobrancas.tsx(...): error TS18047: 'devedor.score' is possibly 'null'.
+src/pages/ContasBancarias.tsx(...): error TS18047: 'c.saldo_disponivel' is possibly 'null'.
+src/pages/ContasBancarias.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/pages/ContasPagar.tsx(...): error TS2322: Type '{ anexo_url: string | null; aprovado_por: string | null; categoria: string | null; categoria_id: string | null; categoria_nome: string | null; centro_custo_id: string | null; ... 27 more ...; valor_pago: number | null; } | null' is not assignable to type 'ContaPagar | null'.
+src/pages/ContasPagar.tsx(...): error TS2322: Type '{ anexo_url: string | null; aprovado_por: string | null; categoria: string | null; categoria_id: string | null; categoria_nome: string | null; centro_custo_id: string | null; ... 27 more ...; valor_pago: number | null; } | null' is not assignable to type 'ContaParaAprovacao | null'.
+src/pages/ContasPagar.tsx(...): error TS2322: Type '{ id: string; descricao: string; valor: number; fornecedor_nome: string | null; }[]' is not assignable to type 'DespesaParaCategorizar[]'.
+src/pages/ContasPagar/components/Filters.tsx(...): error TS2322: Type '{ id: string; banco: string | null; agencia: string | null; conta: string | null; }[]' is not assignable to type '{ id: string; banco: string; agencia: string; conta: string; }[]'.
+src/pages/ContasReceber.tsx(...): error TS2322: Type 'ContaReceberWithRelations | null' is not assignable to type 'ContaReceber | null'.
+src/pages/ContasReceber.tsx(...): error TS2322: Type 'ContaReceberWithRelations | null' is not assignable to type '{ id: string; descricao: string; valor: number; valor_desconto?: number | null | undefined; cliente_nome: string; } | null'.
+src/pages/DashboardEmpresa.tsx(...): error TS18047: 'c.saldo_disponivel' is possibly 'null'.
+src/pages/DashboardEmpresa.tsx(...): error TS18047: 'c.valor' is possibly 'null'.
+src/pages/DashboardEmpresa.tsx(...): error TS2322: Type '({ tipo: "receber"; descricao: string | null; nome: string | null; valor: number | null; data: string; } | { tipo: "pagar"; descricao: string | null; nome: string | null; valor: number | null; data: string; })[]' is not assignable to type 'Transacao[]'.
+src/pages/DashboardEmpresa.tsx(...): error TS2322: Type 'ContaBancariaComRegras[]' is not assignable to type 'ContaBancaria[]'.
+src/pages/DashboardEmpresa.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/pages/DashboardEmpresa.tsx(...): error TS2345: Argument of type '{ data: string; receitas: number; despesas: number; saldo: number; }' is not assignable to parameter of type 'never'.
+src/pages/DashboardReceber.tsx(...): error TS18047: 'a.valor' is possibly 'null'.
+src/pages/DashboardReceber.tsx(...): error TS18047: 'b.valor' is possibly 'null'.
+src/pages/DashboardReceber.tsx(...): error TS18047: 'c.data_recebimento' is possibly 'null'.
+src/pages/DashboardReceber.tsx(...): error TS18047: 'c.data_vencimento' is possibly 'null'.
+src/pages/DashboardReceber.tsx(...): error TS18047: 'c.valor' is possibly 'null'.
+src/pages/DashboardReceber.tsx(...): error TS2322: Type 'ContasReceberPainelRow[]' is not assignable to type '{ id: string; cliente_nome: string; descricao: string; valor: number; valor_recebido: number | null; data_vencimento: string; status: string; }[]'.
+src/pages/DashboardReceber.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/pages/Empresas.tsx(...): error TS18047: 'e.cnpj' is possibly 'null'.
+src/pages/Empresas.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+src/pages/Fornecedores.tsx(...): error TS2322: Type '{ ativo: boolean; cidade: string | null; cnpj: string | null; cnpj_cpf: string | null; contato: string | null; created_at: string | null; email: string | null; endereco: string | null; ... 11 more ...; user_id: string | null; }' is not assignable to type 'ExternalCliente'.
+src/pages/OrcamentoEvento.tsx(...): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/pages/Orcamentos.tsx(...): error TS2322: Type 'UseZodFormReturn<{ [x: string]: any; }>' is not assignable to type 'UseZodFormReturn<{ budgeted_amount: number; category: string; period: string; }>'.
+src/pages/Relatorios.tsx(...): error TS2322: Type 'ContaBancariaComRegras[]' is not assignable to type 'Conta[]'.
+src/pages/Relatorios.tsx(...): error TS2322: Type '{ id: string; data: string; descricao: string | null; categoria: string; tipo: string; valor: number; status: string; }[]' is not assignable to type 'Transacao[]'.
+src/pages/bloqueios-duplicidade/BloqueiosTable.tsx(...): error TS18047: 'b.dados_tentativa' is possibly 'null'.
+src/pages/bloqueios-duplicidade/BloqueiosTable.tsx(...): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+src/pages/bloqueios-duplicidade/DetailsDialog.tsx(...): error TS18047: 'selectedBlock.dados_tentativa' is possibly 'null'.
+src/pages/bloqueios-duplicidade/DetailsDialog.tsx(...): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+src/pages/centro-custos/CentroCustoCards.tsx(...): error TS18047: 'centro.orcamento_previsto' is possibly 'null'.
+src/pages/centro-custos/CentroCustoCards.tsx(...): error TS18047: 'centro.orcamento_realizado' is possibly 'null'.
+src/pages/clientes/ClientesTableBody.tsx(...): error TS2345: Argument of type 'number | null | undefined' is not assignable to parameter of type 'number | null'.
+src/pages/tributario/CalculadoraTributaria.tsx(...): error TS2322: Type 'AtividadeDerivada | null' is not assignable to type 'AtividadeDerivada'.
+src/pages/tributario/CalculadoraTributaria.tsx(...): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+src/pages/tributario/oportunidades-elisao/AuditoriaTab.tsx(...): error TS18049: 'c.nota' is possibly 'null' or 'undefined'.
+src/pages/tributario/oportunidades-elisao/AuditoriaTab.tsx(...): error TS2322: Type 'CreditoAuditoriaComRelacoes' is not assignable to type 'CreditoAuditoriaItem'.
+src/pages/tributario/oportunidades-elisao/AuditoriaTab.tsx(...): error TS2345: Argument of type 'string | null | undefined' is not assignable to parameter of type 'string | URL | undefined'.
