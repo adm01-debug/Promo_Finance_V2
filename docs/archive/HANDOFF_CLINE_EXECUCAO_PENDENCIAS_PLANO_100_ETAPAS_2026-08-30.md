@@ -390,7 +390,7 @@ O status abaixo é inicial. Para mudar qualquer item para `✅`, anexe evidênci
 ### Grupo H — testes, CI, build e dependências
 
 | Etapa | Estado | Entrega exigida do Cline                                                                            |
-| ----: | :----: | --------------------------------------------------------------------------------------------------- |
+| ----: | :----: | --------------------------------------------------------------------------------------------------- | --- | --------------------------- |
 |   071 |   ❌   | Alinhar thresholds documentados e reais, elevando gradualmente a partir de baseline comprovado.     |
 |   072 |   ❌   | Incluir testes/E2E/apoio no typecheck e avançar strictness por domínio.                             |
 |   073 |   🟡   | Executar todos os 35 arquivos Deno atuais ou justificar tecnicamente exclusões explícitas.          |

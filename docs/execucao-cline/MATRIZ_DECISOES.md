@@ -8,7 +8,7 @@
 
 ## D1. Baseline por domínio quando origem, destino e migrations divergem
 
-- **Contexto:** três fontes de verdade (banco de origem, banco de destino, migrations no repo) divergem entre si. Contagem verificada em 2026-08-30: **551 arquivos** em `supabase/migrations/` (a auditoria de 2026-08-26 registrava 548) contra **28 entradas no ledger live**, com 6 versões do ledger ausentes no commit (`docs/AUDITORIA_EXAUSTIVA_PLANO_100_ETAPAS_2026-08-26.md` §6.3). Objetos só no destino também existem.
+- **Contexto:** três fontes de verdade (banco de origem, banco de destino, migrations no repo) divergem entre si. Contagem verificada em 2026-08-30: **551 arquivos** em `supabase/migrations/` (a auditoria de 2026-08-26 registrava 548) contra **28 entradas no ledger live**, com 6 versões do ledger ausentes no commit (`docs/archive/AUDITORIA_EXAUSTIVA_PLANO_100_ETAPAS_2026-08-26.md` §6.3). Objetos só no destino também existem.
 - **Opções:** (a) destino é o baseline, repo congelado como histórico; (b) repo é o baseline, divergências do destino viram exceção documentada; (c) baseline híbrido por domínio, definido em `MATRIZ_DIVERGENCIAS_BD.md`.
 - **Impacto:** define a régua de todos os diffs e testes dos lotes B–C.
 - **Risco:** 🔴 régua errada valida drift como "oficial" ou descarta alteração de deploy real.
@@ -118,13 +118,12 @@
 
 ## Pendências de autorização já existentes (fora das 12)
 
-| Item | Tipo de autorização necessária | Etapas relacionadas |
-|------|-------------------------------|---------------------|
-| Merge dos PRs #48/#49/#50 | decisão de código (proprietário) | 006/009/010 e demais |
-| Rotação/revogação de segredos externos | operacional externa | 006 |
-| Acesso MCP read-only à origem | infraestrutura/acesso | 011/012/019/020 |
-| Aplicação remota de migrations | operação em produção | 025/032 e lote C |
-| Deploy canário / rollout | operação em produção | 050/091–100 |
+| Item                                   | Tipo de autorização necessária   | Etapas relacionadas  |
+| -------------------------------------- | -------------------------------- | -------------------- |
+| Merge dos PRs #48/#49/#50              | decisão de código (proprietário) | 006/009/010 e demais |
+| Rotação/revogação de segredos externos | operacional externa              | 006                  |
+| Acesso MCP read-only à origem          | infraestrutura/acesso            | 011/012/019/020      |
+| Aplicação remota de migrations         | operação em produção             | 025/032 e lote C     |
+| Deploy canário / rollout               | operação em produção             | 050/091–100          |
 
 > Nenhuma das ações acima foi executada por este agente. Toda ação local foi reversível e limitada a este branch.
-
