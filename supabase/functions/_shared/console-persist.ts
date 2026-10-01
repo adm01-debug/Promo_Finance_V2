@@ -91,7 +91,7 @@ function agendarFlush(): void {
     void flush();
     return;
   }
-  if (!agendado) {
+  if (agendado === null) {
     agendado = new Promise<void>((resolve) => {
       setTimeout(async () => {
         try {
@@ -107,13 +107,15 @@ function agendarFlush(): void {
 }
 
 function agendarReenvio(): void {
-  if (Deno.env.get('DENO_TESTING') || reenvioAgendado) return;
+  if (Deno.env.get('DENO_TESTING') || reenvioAgendado !== null) return;
   reenvioAgendado = new Promise<void>((resolve) => {
     setTimeout(async () => {
+      // Libera a trava ANTES do flush: uma nova falha dentro dele precisa
+      // poder agendar a próxima tentativa.
+      reenvioAgendado = null;
       try {
         await flush();
       } finally {
-        reenvioAgendado = null;
         resolve();
       }
     }, 5000 * reenvios);
