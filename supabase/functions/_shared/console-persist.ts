@@ -43,9 +43,22 @@ const originais = {
 // Teto do buffer: em falhas persistentes descartamos o excedente mais novo
 // em vez de deixar a fila crescer até estourar a memória do isolado.
 const LIMITE_BUFFER = 200;
+// Reenvios com backoff após falha de insert — a fila não pode depender de
+// um próximo log para andar (isolado pode morrer sem outra mensagem).
+const MAX_REENVIOS = 3;
+let reenvios = 0;
+let reenvioAgendado: Promise<void> | null = null;
 const buffer: ConsoleLogRow[] = [];
 let agendado: Promise<void> | null = null;
 let inserindo = false;
+
+// Mantém a promise viva além do response quando o runtime suporta waitUntil.
+function segurarNoIsolado(p: Promise<unknown>): void {
+  const edgeRuntime = (globalThis as Record<string, unknown>)['EdgeRuntime'] as
+    | { waitUntil?: (p: Promise<unknown>) => void }
+    | undefined;
+  edgeRuntime?.waitUntil?.(p);
+}
 
 function ehEchoEstruturado(arg: unknown): boolean {
   if (typeof arg !== 'string') return false;
@@ -89,12 +102,23 @@ function agendarFlush(): void {
         }
       }, 2000);
     });
-    // Mantém a microtask viva além do response quando o runtime suporta
-    const edgeRuntime = (globalThis as Record<string, unknown>)['EdgeRuntime'] as
-      | { waitUntil?: (p: Promise<unknown>) => void }
-      | undefined;
-    edgeRuntime?.waitUntil?.(agendado);
+    segurarNoIsolado(agendado);
   }
+}
+
+function agendarReenvio(): void {
+  if (Deno.env.get('DENO_TESTING') || reenvioAgendado) return;
+  reenvioAgendado = new Promise<void>((resolve) => {
+    setTimeout(async () => {
+      try {
+        await flush();
+      } finally {
+        reenvioAgendado = null;
+        resolve();
+      }
+    }, 5000 * reenvios);
+  });
+  segurarNoIsolado(reenvioAgendado);
 }
 
 let client: SupabaseClient | null | undefined;
@@ -109,24 +133,26 @@ async function flush(): Promise<void> {
   }
   inserindo = true;
   const rows = buffer.splice(0, buffer.length);
+  let falha: string | null = null;
   try {
     if (client === undefined) client = createClient(url, key);
     const { error } = (await client?.from('edge_function_logs').insert(rows)) ?? {};
-    if (error) {
-      // Falha transitória (rede, RLS, restart): recoloca o lote na fila para a
-      // próxima rodada em vez de perder os registros definitivamente.
-      buffer.unshift(...rows.slice(0, Math.max(0, LIMITE_BUFFER - buffer.length)));
-      originais.error('[console-persist] insert falhou:', error.message);
-    }
+    if (error) falha = error.message;
   } catch (err) {
-    buffer.unshift(...rows.slice(0, Math.max(0, LIMITE_BUFFER - buffer.length)));
-    originais.error(
-      '[console-persist] flush falhou:',
-      err instanceof Error ? err.message : String(err)
-    );
+    falha = err instanceof Error ? err.message : String(err);
   } finally {
     inserindo = false;
   }
+  if (!falha) {
+    reenvios = 0;
+    return;
+  }
+  // Falha transitória (rede, RLS, restart): recoloca o lote e agenda nova
+  // tentativa com backoff em vez de perder os registros definitivamente.
+  buffer.unshift(...rows.slice(0, Math.max(0, LIMITE_BUFFER - buffer.length)));
+  originais.error('[console-persist] insert falhou:', falha);
+  reenvios++;
+  if (reenvios <= MAX_REENVIOS) agendarReenvio();
 }
 
 function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unknown[]) => void) {

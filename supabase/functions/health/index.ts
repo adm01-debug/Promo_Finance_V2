@@ -44,29 +44,36 @@ Deno.serve(async (req) => {
   const db = services.database as { status: string };
   const apis = services.external_apis as Record<string, { status: string }>;
 
-  try {
-    const { error } = await supabase
-      .from('asaas_config')
-      .select('count', { count: 'exact', head: true })
-      .limit(1);
-    db.status = error ? 'degraded' : 'operational';
-  } catch {
-    db.status = 'outage';
-  }
+  // Ping externo com prazo: uma API que segura a conexão aberta não pode
+  // travar o painel de status — estoura em 'outage' após o timeout.
+  const ping = async (url: string): Promise<string> => {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+      return res.ok ? 'operational' : 'degraded';
+    } catch {
+      return 'outage';
+    }
+  };
 
-  try {
-    const asaasRes = await fetch('https://api.asaas.com/v3/ping').catch(() => null);
-    apis.asaas.status = asaasRes?.ok ? 'operational' : 'degraded';
-  } catch {
-    apis.asaas.status = 'outage';
-  }
+  const [dbRes, asaasStatus, blingStatus] = await Promise.all([
+    (async () => {
+      try {
+        const { error } = await supabase
+          .from('asaas_config')
+          .select('count', { count: 'exact', head: true })
+          .limit(1);
+        return error ? 'degraded' : 'operational';
+      } catch {
+        return 'outage';
+      }
+    })(),
+    ping('https://api.asaas.com/v3/ping'),
+    ping('https://api.bling.com.br/Api/v3/ping'),
+  ]);
 
-  try {
-    const blingRes = await fetch('https://api.bling.com.br/Api/v3/ping').catch(() => null);
-    apis.bling.status = blingRes?.ok ? 'operational' : 'degraded';
-  } catch {
-    apis.bling.status = 'outage';
-  }
+  db.status = dbRes;
+  apis.asaas.status = asaasStatus;
+  apis.bling.status = blingStatus;
 
   services.realtime = { status: db.status };
   if (db.status === 'outage') health.status = 'degraded';

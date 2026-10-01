@@ -69,9 +69,8 @@ jobs:
           git add src/integrations/supabase/types.ts
           git commit -m "chore(db): regenera tipos Supabase após drift de schema"
           # checkout usa persist-credentials:false — autentica o push com o
-          # GITHUB_TOKEN do job no remoto.
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
-          git push -u origin "$BRANCH"
+          # GITHUB_TOKEN do job direto na URL (sem gravar o token no .git/config).
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
           gh pr create \
             --title "chore(db): tipos Supabase dessincronizados de prod" \
             --body "$(cat <<'EOF'
