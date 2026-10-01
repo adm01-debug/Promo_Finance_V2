@@ -245,7 +245,7 @@ Deno.serve(async (req) => {
       console.error(`[external-data] Error querying companies (${tabela}):`, error);
 
       // Emit error telemetry
-      emitTelemetry({
+      void emitTelemetry({
         operation: 'SELECT',
         table_name: `companies (${tabela})`,
         duration_ms: queryDurationMs,
@@ -264,7 +264,7 @@ Deno.serve(async (req) => {
     }
 
     // Emit telemetry for successful queries
-    emitTelemetry({
+    void emitTelemetry({
       operation: 'SELECT',
       table_name: `companies (${tabela})`,
       duration_ms: queryDurationMs,
@@ -344,7 +344,7 @@ Deno.serve(async (req) => {
     console.error('[external-data] Unexpected error:', error);
 
     // Emit telemetry for unexpected errors
-    emitTelemetry({
+    void emitTelemetry({
       operation: 'SELECT',
       table_name: 'companies',
       duration_ms: durationMs,

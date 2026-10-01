@@ -168,64 +168,63 @@ async function getParticipatingInstitutions(): Promise<any> {
 
   // This would call the Open Finance directory API
   // For now, return a simulated list of major Brazilian banks
-  const institutions = [
-    {
-      id: 'bb',
-      name: 'Banco do Brasil',
-      logo: 'https://www.bb.com.br/docs/portal/img/logobb.png',
-      status: 'active',
-      api_base_url: 'https://openbanking.bb.com.br',
-    },
-    {
-      id: 'itau',
-      name: 'Itaú Unibanco',
-      logo: 'https://www.itau.com.br/_arquivosestaticos/Itau/defaultTheme/img/logo-itau.png',
-      status: 'active',
-      api_base_url: 'https://secure.api.itau',
-    },
-    {
-      id: 'bradesco',
-      name: 'Bradesco',
-      logo: 'https://banco.bradesco/assets/classic/img/logo-bradesco.png',
-      status: 'active',
-      api_base_url: 'https://openbanking.bradesco.com.br',
-    },
-    {
-      id: 'santander',
-      name: 'Santander Brasil',
-      logo: 'https://www.santander.com.br/institucional/img/logo-santander.png',
-      status: 'active',
-      api_base_url: 'https://openbanking.santander.com.br',
-    },
-    {
-      id: 'caixa',
-      name: 'Caixa Econômica Federal',
-      logo: 'https://www.caixa.gov.br/PublishingImages/marca-caixa.png',
-      status: 'active',
-      api_base_url: 'https://openbanking.caixa.gov.br',
-    },
-    {
-      id: 'nubank',
-      name: 'Nubank',
-      logo: 'https://nubank.com.br/images/nu-icon.png',
-      status: 'active',
-      api_base_url: 'https://prod-global-webapp-proxy.nubank.com.br',
-    },
-    {
-      id: 'inter',
-      name: 'Banco Inter',
-      logo: 'https://static.bancointer.com.br/images/logoInter.svg',
-      status: 'active',
-      api_base_url: 'https://openbanking.bancointer.com.br',
-    },
-    {
-      id: 'c6bank',
-      name: 'C6 Bank',
-      logo: 'https://www.c6bank.com.br/assets/images/logo-c6bank.svg',
-      status: 'active',
-      api_base_url: 'https://openbanking.c6bank.com.br',
-    },
+  const INSTITUICOES: Array<[id: string, nome: string, logo: string, apiBase: string]> = [
+    [
+      'bb',
+      'Banco do Brasil',
+      'https://www.bb.com.br/docs/portal/img/logobb.png',
+      'https://openbanking.bb.com.br',
+    ],
+    [
+      'itau',
+      'Itaú Unibanco',
+      'https://www.itau.com.br/_arquivosestaticos/Itau/defaultTheme/img/logo-itau.png',
+      'https://secure.api.itau',
+    ],
+    [
+      'bradesco',
+      'Bradesco',
+      'https://banco.bradesco/assets/classic/img/logo-bradesco.png',
+      'https://openbanking.bradesco.com.br',
+    ],
+    [
+      'santander',
+      'Santander Brasil',
+      'https://www.santander.com.br/institucional/img/logo-santander.png',
+      'https://openbanking.santander.com.br',
+    ],
+    [
+      'caixa',
+      'Caixa Econômica Federal',
+      'https://www.caixa.gov.br/PublishingImages/marca-caixa.png',
+      'https://openbanking.caixa.gov.br',
+    ],
+    [
+      'nubank',
+      'Nubank',
+      'https://nubank.com.br/images/nu-icon.png',
+      'https://prod-global-webapp-proxy.nubank.com.br',
+    ],
+    [
+      'inter',
+      'Banco Inter',
+      'https://static.bancointer.com.br/images/logoInter.svg',
+      'https://openbanking.bancointer.com.br',
+    ],
+    [
+      'c6bank',
+      'C6 Bank',
+      'https://www.c6bank.com.br/assets/images/logo-c6bank.svg',
+      'https://openbanking.c6bank.com.br',
+    ],
   ];
+  const institutions = INSTITUICOES.map(([id, name, logo, api_base_url]) => ({
+    id,
+    name,
+    logo,
+    status: 'active',
+    api_base_url,
+  }));
 
   return {
     success: true,

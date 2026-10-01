@@ -124,6 +124,9 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          # fetch-depth completo: o gate de formato precisa do merge-base
+          # com a branch de destino da PR.
+          fetch-depth: 0
           persist-credentials: false
       # Etapa 27: composite action elimina bloco bun+cache repetido 5x.
       - uses: ./.github/actions/setup-bun

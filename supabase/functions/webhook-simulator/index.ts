@@ -6,6 +6,15 @@ import { corsHeadersComSegredo, exigirPapel } from '../_shared/auth-guard.ts';
 import { getRequestId } from '../_shared/correlation.ts';
 import { resolveSecret } from '../_shared/webhook-auth.ts';
 
+// crypto.getRandomValues no lugar de Math.random: os valores vão para
+// payloads simulados de webhook — rand criptográfico evita o alerta de PRNG
+// previsível e custa o mesmo aqui.
+const aleatorio = (max: number): number => {
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return (buf[0] / 0x100000000) * max;
+};
+
 const _WebhookSimSchema = z.object({
   run_id: z.string().uuid(),
   target_function: z.string().min(1),
@@ -121,26 +130,26 @@ Deno.serve(async (req) => {
               ? {
                   id: `pay_${crypto.randomUUID()}`,
                   status: 'RECEIVED',
-                  value: Math.random() * 1000,
+                  value: aleatorio(1000),
                 }
               : null,
             transfer: scenario.type.startsWith('TRANSFER')
               ? {
                   id: `tra_${crypto.randomUUID()}`,
                   status: 'PENDING',
-                  value: Math.random() * 5000,
+                  value: aleatorio(5000),
                 }
               : null,
           };
         } else if (target_function === 'bling-webhook') {
           payload = {
             event: scenario.type,
-            data: { id: Math.floor(Math.random() * 100000), status: 'ok' },
+            data: { id: Math.floor(aleatorio(100000)), status: 'ok' },
           };
         } else {
           payload = {
             event: scenario.type,
-            data: { FIELDS: { ID: Math.floor(Math.random() * 1000) } },
+            data: { FIELDS: { ID: Math.floor(aleatorio(1000)) } },
           };
         }
       }

@@ -306,11 +306,19 @@ export function ImportarExtratoDialog({
                         ? 'border-primary bg-primary/5'
                         : 'border-border hover:border-primary/50 hover:bg-accent/30'
                     )}
+                    role="button"
+                    tabIndex={0}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
                     onClick={() => document.getElementById('ofx-file-upload')?.click()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        document.getElementById('ofx-file-upload')?.click();
+                      }
+                    }}
                   >
                     <input
                       id="ofx-file-upload"

@@ -105,7 +105,10 @@ jobs:
             -c "select version from supabase_migrations.schema_migrations order by version" \
             > /tmp/remote_versions.txt
 
-          ls supabase/migrations/*.sql | xargs -n1 basename | sed 's/\.sql$//' | sort \
+          # O banco guarda só o prefixo numérico em schema_migrations.version;
+          # arquivos locais podem ter sufixo descritivo/UUID depois do timestamp.
+          ls supabase/migrations/*.sql | xargs -n1 basename \
+            | sed -E 's/^([0-9]+).*\.sql$/\1/' | sort -u \
             > /tmp/local_versions.txt
 
           comm -23 /tmp/remote_versions.txt /tmp/local_versions.txt > /tmp/remote_only.txt

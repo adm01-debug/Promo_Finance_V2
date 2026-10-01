@@ -29,13 +29,13 @@ atualizar() {
   set -e
 }
 
-if [ "${1:-}" = "--update" ]; then
+if [[ "${1:-}" = "--update" ]]; then
   atualizar > "$BASELINE"
   echo "Baseline regerado: $(wc -l < "$BASELINE") assinaturas"
   exit 0
 fi
 
-[ -f "$BASELINE" ] || { echo "::error::Baseline ausente em $BASELINE"; exit 1; }
+[[ -f "$BASELINE" ]] || { echo "::error::Baseline ausente em $BASELINE"; exit 1; }
 
 ATUAL="$(mktemp)"
 NOVOS="$(mktemp)"
@@ -50,11 +50,11 @@ NOVOS_COUNT=$(wc -l < "$NOVOS")
 
 echo "strictNullChecks: $TOTAL_ATUAL erros atuais vs $TOTAL_BASELINE no baseline"
 
-if [ "$TOTAL_ATUAL" -lt "$TOTAL_BASELINE" ]; then
+if [[ "$TOTAL_ATUAL" -lt "$TOTAL_BASELINE" ]]; then
   echo "::notice::Baseline encolheu $(( TOTAL_BASELINE - TOTAL_ATUAL )) erros — considere regenerar com --update"
 fi
 
-if [ "$NOVOS_COUNT" -gt 0 ]; then
+if [[ "$NOVOS_COUNT" -gt 0 ]]; then
   echo "::error::$NOVOS_COUNT erro(s) novo(s) de strictNullChecks:"
   cat "$NOVOS"
   exit 1

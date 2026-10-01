@@ -24,7 +24,7 @@
  */
 
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeadersPara } from './cors.ts';
+import { corsHeaders, corsHeadersPara } from './cors.ts';
 
 /** Headers CORS por requisição — ecoa o Origin permitido (allowlist em cors.ts). */
 export function corsHeadersComSegredoPara(req: Request): Record<string, string> {
@@ -410,6 +410,67 @@ export async function exigirVinculoEmpresa(
   }
 
   return { ok: true, dados: { empresaId, empresaIds: vinculadas } };
+}
+
+/**
+ * Guard de escopo para jobs/automações acionados por usuário: admin pode
+ * rodar para todas as empresas; não-admin precisa informar empresa_id e ter
+ * vínculo ativo com ela. Retorna a resposta de erro (403) ou null.
+ */
+export async function exigirAdminOuVinculo(
+  supabase: SupabaseClient,
+  userId: string,
+  empresaId: string | null | undefined
+): Promise<Response | null> {
+  const { data: isAdmin } = await supabase.rpc('has_role', {
+    _user_id: userId,
+    _role: 'admin',
+  });
+  if (isAdmin) return null;
+  if (!empresaId) {
+    return new Response(
+      JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+  const { data: vinculo } = await supabase
+    .from('user_empresas')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('empresa_id', empresaId)
+    .eq('ativo', true)
+    .maybeSingle();
+  if (!vinculo) {
+    return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  return null;
+}
+
+/**
+ * Exige que o usuário possua ao menos um dos papéis em `user_roles` — para
+ * fluxos já autenticados (`guard.dados.origem === 'usuario'`) que consultam
+ * papéis com o client de serviço. Retorna a resposta de erro (403) ou null.
+ */
+export async function exigirAlgumPapel(
+  supabase: SupabaseClient,
+  userId: string,
+  papeis: readonly string[],
+  mensagem = 'Permissão insuficiente para esta operação'
+): Promise<Response | null> {
+  const { data: roles, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId);
+  if (error) throw error;
+  const possui = (roles ?? []).some((linha: { role: string }) => papeis.includes(linha.role));
+  if (possui) return null;
+  return new Response(JSON.stringify({ error: mensagem }), {
+    status: 403,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
 }
 
 /**

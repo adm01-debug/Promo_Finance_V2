@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
-import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
+import { exigirAdminOuVinculo, exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 const ResumoSemanalBodySchema = z.object({
@@ -187,35 +187,9 @@ serve(async (req) => {
     if (!validation.success) return validation.response;
     const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
-    if (guard.dados.origem === 'usuario') {
-      const { data: isAdmin } = await supabase.rpc('has_role', {
-        _user_id: guard.dados.userId,
-        _role: 'admin',
-      });
-      if (!isAdmin) {
-        if (!empresaIdFilter) {
-          return new Response(
-            JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
-            {
-              status: 403,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            }
-          );
-        }
-        const { data: vinculo } = await supabase
-          .from('user_empresas')
-          .select('id')
-          .eq('user_id', guard.dados.userId)
-          .eq('empresa_id', empresaIdFilter)
-          .eq('ativo', true)
-          .maybeSingle();
-        if (!vinculo) {
-          return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
-            status: 403,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-      }
+    if (guard.dados.origem === 'usuario' && guard.dados.userId) {
+      const escopo = await exigirAdminOuVinculo(supabase, guard.dados.userId, empresaIdFilter);
+      if (escopo) return escopo;
     }
 
     const hoje = new Date();
