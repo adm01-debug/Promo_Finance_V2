@@ -48,8 +48,15 @@ const autoProvided = new Set([
   'SUPABASE_URL','SUPABASE_ANON_KEY','SUPABASE_SERVICE_ROLE_KEY',
   'SUPABASE_DB_URL','SUPABASE_JWKS','SUPABASE_PUBLISHABLE_KEYS','SUPABASE_SECRET_KEYS',
 ]);
+// Vars com fallback no código — ausência é estado válido, não config incompleta.
+const opcionais = new Set([
+  'ALLOWED_ORIGINS',
+  'EDGE_FUNCTION_NAME',
+  'MFA_ADMIN_ENFORCED',
+  'SUPABASE_FUNCTION_NAME',
+]);
 const edge = [...edgeSet].sort().map(name => ({
-  name, scope: 'edge', required: !autoProvided.has(name),
+  name, scope: 'edge', required: !autoProvided.has(name) && !opcionais.has(name),
   dest: autoProvided.has(name) ? 'supabase_auto' : 'supabase_vault',
 }));
 
