@@ -109,7 +109,8 @@ jobs:
 
           # O banco guarda só o prefixo numérico em schema_migrations.version;
           # arquivos locais podem ter sufixo descritivo/UUID depois do timestamp.
-          ls supabase/migrations/*.sql | xargs -n1 basename \
+          find supabase/migrations -maxdepth 1 -name '*.sql' -print0 \
+            | xargs -0 -n1 basename \
             | sed -E 's/^([0-9]+).*\.sql$/\1/' | sort -u \
             > /tmp/local_versions.txt
 
