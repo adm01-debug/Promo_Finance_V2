@@ -424,9 +424,19 @@ export async function exigirAdminOuVinculo(
   empresaId: string | null | undefined
 ): Promise<Response | null> {
   const cors = corsHeadersPara(req);
-  const { data: isAdmin } = await supabase.rpc('has_role', {
-    _user_id: userId,
-    _role: 'admin',
+  // Consulta direta em vez de has_role: a RPC vigente só filtra is_active e
+  // manteria como admin uma atribuição com expires_at já vencido.
+  const { data: adminRows, error: adminErr } = await supabase
+    .from('user_roles')
+    .select('expires_at')
+    .eq('user_id', userId)
+    .eq('role', 'admin')
+    .eq('is_active', true);
+  if (adminErr) throw adminErr;
+  const isAdmin = (adminRows ?? []).some((linha: { expires_at?: string | null }) => {
+    if (!linha.expires_at) return true;
+    const expiraEm = Date.parse(linha.expires_at);
+    return Number.isFinite(expiraEm) && expiraEm > Date.now();
   });
   if (isAdmin) {
     const token = extrairBearer(req);
