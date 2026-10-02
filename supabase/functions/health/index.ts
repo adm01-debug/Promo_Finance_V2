@@ -52,10 +52,12 @@ Deno.serve(async (req) => {
       ping('https://api.bling.com.br/Api/v3/ping'),
     ]);
     const falhou = dbErr || asaasRes !== 'operational' || blingRes !== 'operational';
-    // 503 quando algo falha: monitores que só veem o código HTTP também alertam.
+    // Semântica de liveness: 503 só quando o app não consegue servir (banco
+    // fora). APIs externas degradadas não mudam o HTTP — o corpo agregado
+    // continua marcando 'outage' para monitores que o leem.
     return json(
       { status: falhou ? 'outage' : 'ok', timestamp: new Date().toISOString() },
-      falhou ? 503 : 200
+      dbErr ? 503 : 200
     );
   }
 

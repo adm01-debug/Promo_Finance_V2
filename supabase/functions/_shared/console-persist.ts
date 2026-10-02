@@ -211,6 +211,9 @@ async function flush(): Promise<void> {
   }
   if (!falha) {
     reenvios = 0;
+    // Logs emitidos durante o insert não agendaram timer; pega o rastro aqui
+    // em vez de deixá-los parados no buffer até o isolado morrer.
+    if (buffer.length > 0) agendarFlush();
     return;
   }
   // Falha transitória (rede, RLS, restart): recoloca o lote e agenda nova

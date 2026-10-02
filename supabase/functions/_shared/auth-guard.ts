@@ -488,7 +488,22 @@ export async function exigirAlgumPapel(
     const expiraEm = Date.parse(linha.expires_at);
     return Number.isFinite(expiraEm) && expiraEm > agora;
   });
-  if (possui) return null;
+  if (possui) {
+    const token = extrairBearer(req);
+    if (token && mfaAdminInsuficiente(papeis, token)) {
+      return new Response(
+        JSON.stringify({
+          error: 'mfa_requerido',
+          message: 'Esta operação exige segundo fator (TOTP) ativo na sessão.',
+        }),
+        {
+          status: 403,
+          headers: { ...corsHeadersPara(req), 'Content-Type': 'application/json' },
+        }
+      );
+    }
+    return null;
+  }
   return new Response(JSON.stringify({ error: mensagem }), {
     status: 403,
     headers: { ...corsHeadersPara(req), 'Content-Type': 'application/json' },

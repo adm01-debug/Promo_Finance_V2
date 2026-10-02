@@ -70,7 +70,11 @@ jobs:
           git commit -m "chore(db): regenera tipos Supabase após drift de schema"
           # checkout usa persist-credentials:false — autentica o push com o
           # GITHUB_TOKEN do job direto na URL (sem gravar o token no .git/config).
-          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
+          # --force-with-lease: em rerun no mesmo dia o -B reseta a branch local
+          # para main e ela diverge da remota já aberta; o lease falha se alguém
+          # mexeu na branch remota entre as execuções (caso em que queremos ver).
+          git push --force-with-lease \
+            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
           gh pr create \
             --head "$BRANCH" \
             --title "chore(db): tipos Supabase dessincronizados de prod" \
