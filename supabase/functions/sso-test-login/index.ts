@@ -1,4 +1,3 @@
-import { corsHeaders } from '../_shared/cors.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { type ClaimMapping, evaluateClaims, type RoleMapping } from './pipeline.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -46,7 +45,7 @@ Deno.serve(async (req) => {
     if (payload.provider_id) {
       const authHeader = req.headers.get('Authorization');
       if (!authHeader?.startsWith('Bearer ')) {
-        return json({ success: false, errors: ['Não autenticado'] }, 401);
+        return json({ success: false, errors: ['Não autenticado'] }, 401, corsHeaders);
       }
       const userClient = createClient(SUPABASE_URL, ANON, {
         global: { headers: { Authorization: authHeader } },
@@ -54,7 +53,7 @@ Deno.serve(async (req) => {
       const token = authHeader.replace('Bearer ', '');
       const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(token);
       if (claimsErr || !claimsData?.claims) {
-        return json({ success: false, errors: ['Token inválido'] }, 401);
+        return json({ success: false, errors: ['Token inválido'] }, 401, corsHeaders);
       }
       const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
       const { data: roleRow } = await admin
@@ -64,7 +63,11 @@ Deno.serve(async (req) => {
         .eq('role', 'admin')
         .maybeSingle();
       if (!roleRow) {
-        return json({ success: false, errors: ['Acesso negado: requer papel admin'] }, 403);
+        return json(
+          { success: false, errors: ['Acesso negado: requer papel admin'] },
+          403,
+          corsHeaders
+        );
       }
       const { data: provider, error: provErr } = await admin
         .from('sso_providers')
@@ -72,7 +75,7 @@ Deno.serve(async (req) => {
         .eq('id', payload.provider_id)
         .maybeSingle();
       if (provErr || !provider) {
-        return json({ success: false, errors: ['Provider não encontrado'] }, 404);
+        return json({ success: false, errors: ['Provider não encontrado'] }, 404, corsHeaders);
       }
       const { data: maps } = await admin
         .from('sso_role_mappings')
@@ -111,15 +114,19 @@ Deno.serve(async (req) => {
       userLookup,
     });
 
-    return json(result, 200);
+    return json(result, 200, corsHeaders);
   } catch (e) {
-    return json({ success: false, errors: [e instanceof Error ? e.message : 'Erro'] }, 500);
+    return json(
+      { success: false, errors: [e instanceof Error ? e.message : 'Erro'] },
+      500,
+      corsHeaders
+    );
   }
 });
 
-function json(data: unknown, status: number) {
+function json(data: unknown, status: number, headers: Record<string, string>) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

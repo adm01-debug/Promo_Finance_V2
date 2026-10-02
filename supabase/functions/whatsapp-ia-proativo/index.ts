@@ -1,13 +1,12 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import {
-  corsHeaders,
   createErrorResponse,
   validatePayload,
   WhatsappIaProativoSchema,
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
-import { corsHeadersComSegredo, exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
+import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 interface AlertaProativo {
@@ -48,15 +47,20 @@ interface ClienteAlerta {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function respostaJson(body: Record<string, unknown>, status: number): Response {
+function respostaJson(
+  body: Record<string, unknown>,
+  status: number,
+  cors: Record<string, string>
+): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...cors, 'Content-Type': 'application/json' },
   });
 }
 
 function extrairEmpresaSolicitada(
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  cors: Record<string, string>
 ): { ok: true; empresaId: string | null } | { ok: false; resposta: Response } {
   const contexto =
     data.contexto && typeof data.contexto === 'object' && !Array.isArray(data.contexto)
@@ -75,7 +79,8 @@ function extrairEmpresaSolicitada(
             error: 'empresa_invalida',
             message: 'empresa_id deve ser um UUID válido.',
           },
-          400
+          400,
+          cors
         ),
       };
     }
@@ -90,7 +95,8 @@ function extrairEmpresaSolicitada(
           error: 'empresa_ambigua',
           message: 'Os identificadores de empresa informados não coincidem.',
         },
-        400
+        400,
+        cors
       ),
     };
   }
@@ -101,7 +107,8 @@ function extrairEmpresaSolicitada(
 async function resolverEscopoEmpresas(
   supabase: SupabaseClient,
   identidade: IdentidadeAutorizada,
-  empresaSolicitada: string | null
+  empresaSolicitada: string | null,
+  cors: Record<string, string>
 ): Promise<ResultadoEscopo> {
   if (identidade.origem === 'interna') {
     return {
@@ -117,7 +124,8 @@ async function resolverEscopoEmpresas(
       ok: false,
       resposta: respostaJson(
         { error: 'sem_permissao', message: 'Usuário sem identidade válida.' },
-        403
+        403,
+        cors
       ),
     };
   }
@@ -137,7 +145,8 @@ async function resolverEscopoEmpresas(
           error: 'erro_autorizacao',
           message: 'Não foi possível validar o acesso às empresas.',
         },
-        503
+        503,
+        cors
       ),
     };
   }
@@ -161,7 +170,8 @@ async function resolverEscopoEmpresas(
           error: 'sem_permissao_empresa',
           message: 'A empresa solicitada não está acessível para este usuário.',
         },
-        403
+        403,
+        cors
       ),
     };
   }
@@ -195,7 +205,7 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
   return async (req: Request): Promise<Response> => {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeadersComSegredo });
+      return new Response(null, { headers: corsHeaders });
     }
 
     const guard = await dependencies.autorizar(req);
@@ -209,7 +219,7 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
       }
       const { action } = validation.data;
       const data = validation.data.data ?? {};
-      const empresaSolicitada = extrairEmpresaSolicitada(data);
+      const empresaSolicitada = extrairEmpresaSolicitada(data, corsHeaders);
       if (!empresaSolicitada.ok) return empresaSolicitada.resposta;
 
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -221,7 +231,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
       const escopo = await resolverEscopoEmpresas(
         supabase,
         guard.dados,
-        empresaSolicitada.empresaId
+        empresaSolicitada.empresaId,
+        corsHeaders
       );
       if (!escopo.ok) return escopo.resposta;
 
@@ -274,7 +285,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
           );
           return respostaJson(
             { error: 'erro_consulta', message: 'Falha ao consultar alertas.' },
-            503
+            503,
+            corsHeaders
           );
         }
 
@@ -315,7 +327,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                 error: 'erro_consulta',
                 message: 'Falha ao consultar clientes.',
               },
-              503
+              503,
+              corsHeaders
             );
           }
           clientes = (clientesRaw ?? []).filter((cliente: ClienteAlerta) =>
@@ -498,7 +511,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
               success: false,
               error: 'telefone e mensagem são obrigatórios',
             },
-            400
+            400,
+            corsHeaders
           );
         }
 
@@ -517,7 +531,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
               error: 'referencia_invalida',
               message: 'conta_receber_id e cliente_id devem ser UUIDs válidos.',
             },
-            400
+            400,
+            corsHeaders
           );
         }
 
@@ -543,7 +558,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                 error: 'erro_autorizacao',
                 message: 'Não foi possível validar a conta informada.',
               },
-              503
+              503,
+              corsHeaders
             );
           }
           if (
@@ -556,7 +572,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                 error: 'sem_permissao_empresa',
                 message: 'Conta ou cliente fora do escopo autorizado.',
               },
-              403
+              403,
+              corsHeaders
             );
           }
           empresaAutorizada = conta.empresa_id;
@@ -586,7 +603,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                   error: 'erro_autorizacao',
                   message: 'Não foi possível validar o cliente da conta.',
                 },
-                503
+                503,
+                corsHeaders
               );
             }
             if (
@@ -599,7 +617,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                   error: 'sem_permissao_empresa',
                   message: 'Cliente da conta fora do escopo autorizado.',
                 },
-                403
+                403,
+                corsHeaders
               );
             }
           }
@@ -622,7 +641,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                 error: 'erro_autorizacao',
                 message: 'Não foi possível validar o cliente informado.',
               },
-              503
+              503,
+              corsHeaders
             );
           }
           if (!cliente || !empresaEstaNoEscopo(cliente.empresa_id, escopo.empresaIds)) {
@@ -631,7 +651,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                 error: 'sem_permissao_empresa',
                 message: 'Cliente fora do escopo autorizado.',
               },
-              403
+              403,
+              corsHeaders
             );
           }
           empresaAutorizada = cliente.empresa_id;
@@ -673,7 +694,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                 error: 'erro_registro',
                 message: 'Não foi possível registrar a mensagem.',
               },
-              503
+              503,
+              corsHeaders
             );
           }
         }
@@ -699,7 +721,8 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
               success: false,
               error: 'pergunta_cliente é obrigatória',
             },
-            400
+            400,
+            corsHeaders
           );
         }
 

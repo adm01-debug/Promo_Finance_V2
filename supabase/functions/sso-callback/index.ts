@@ -1,4 +1,3 @@
-import { corsHeaders } from '../_shared/cors.ts';
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { resolveClaim, resolveClaimArray } from './claims.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
@@ -576,7 +575,10 @@ async function applyPipeline(opts: {
  * + Authorization: Bearer <jwt do usuário recém autenticado pelo broker SAML>.
  * Aplica o mesmo pipeline para criar/atualizar vínculo, role, audit.
  * ============================================================================= */
-async function handleSamlFinalize(req: Request): Promise<Response> {
+async function handleSamlFinalize(
+  req: Request,
+  headers: Record<string, string>
+): Promise<Response> {
   const t0 = Date.now();
   const ip = getClientIp(req);
   const ua = req.headers.get('user-agent');
@@ -584,7 +586,7 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
 
   const authHeader = req.headers.get('Authorization') ?? '';
   if (!authHeader.startsWith('Bearer ')) {
-    return jsonResp({ error: 'unauthorized' }, 401);
+    return jsonResp({ error: 'unauthorized' }, 401, headers);
   }
   const token = authHeader.slice('Bearer '.length);
 
@@ -594,13 +596,13 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
   });
   const { data: claimsResp, error: claimsErr } = await userClient.auth.getClaims(token);
   if (claimsErr || !claimsResp?.claims) {
-    return jsonResp({ error: 'invalid_token' }, 401);
+    return jsonResp({ error: 'invalid_token' }, 401, headers);
   }
   const userId = claimsResp.claims.sub as string;
 
   const body = (await safeJson(req)) ?? {};
   const providerId = body.provider_id as string | undefined;
-  if (!providerId) return jsonResp({ error: 'provider_id_required' }, 400);
+  if (!providerId) return jsonResp({ error: 'provider_id_required' }, 400, headers);
 
   // Busca provider
   const { data: provider } = await admin
@@ -621,7 +623,7 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
       ip,
       ua,
     });
-    return jsonResp({ error: 'provider_missing' }, 404);
+    return jsonResp({ error: 'provider_missing' }, 404, headers);
   }
 
   // Busca o user completo (precisamos de email + identities + app_metadata.groups)
@@ -638,7 +640,7 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
       ip,
       ua,
     });
-    return jsonResp({ error: 'user_not_found' }, 404);
+    return jsonResp({ error: 'user_not_found' }, 404, headers);
   }
   const email = u.user.email.toLowerCase();
   const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
@@ -688,7 +690,7 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
       ip,
       ua,
     });
-    return jsonResp({ error: result.error, details: result.details }, 400);
+    return jsonResp({ error: result.error, details: result.details }, 400, headers);
   }
 
   await logAttempt({
@@ -710,14 +712,15 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
       matched_group: result.matchedGroup,
       empresa_id: provider.empresa_id ?? null,
     },
-    200
+    200,
+    headers
   );
 }
 
-function jsonResp(data: unknown, status: number) {
+function jsonResp(data: unknown, status: number, headers: Record<string, string>) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -738,7 +741,7 @@ Deno.serve(async (req) => {
         headers: req.headers,
         body: JSON.stringify(peek),
       });
-      return handleSamlFinalize(reused);
+      return handleSamlFinalize(reused, corsHeaders);
     }
   }
 

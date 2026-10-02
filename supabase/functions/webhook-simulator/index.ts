@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { ConcurrencyLimiter } from '../_shared/concurrency-limiter.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { corsHeadersComSegredo, exigirPapel } from '../_shared/auth-guard.ts';
+import { corsHeadersComSegredoPara, exigirPapel } from '../_shared/auth-guard.ts';
 import { getRequestId } from '../_shared/correlation.ts';
 import { resolveSecret } from '../_shared/webhook-auth.ts';
 
@@ -24,7 +24,7 @@ const _WebhookSimSchema = z.object({
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeadersComSegredo });
+    return new Response(null, { headers: corsHeadersComSegredoPara(req) });
   }
 
   const requestId = getRequestId(req);
@@ -219,13 +219,13 @@ Deno.serve(async (req) => {
       .eq('id', run_id);
 
     return new Response(JSON.stringify({ success: true, run_id }), {
-      headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
+      headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
-      headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
+      headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
     });
   }
 });

@@ -1,4 +1,3 @@
-import { corsHeaders } from '../_shared/cors.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 interface ValidationResult {
@@ -28,20 +27,25 @@ Deno.serve(async (req) => {
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'sso-validate-config');
     if (!parsed.success)
-      return json({ valid: false, message: parsed.error, details: parsed.details }, 400);
+      return json(
+        { valid: false, message: parsed.error, details: parsed.details },
+        400,
+        corsHeaders
+      );
     const { tipo, discovery_url, metadata_xml, metadata_url, sso_url, x509_cert } = parsed.data;
 
     const result: ValidationResult = { valid: false, message: '' };
 
     if (tipo === 'oidc') {
       if (!discovery_url) {
-        return json({ valid: false, message: 'discovery_url é obrigatório' }, 400);
+        return json({ valid: false, message: 'discovery_url é obrigatório' }, 400, corsHeaders);
       }
       const res = await fetch(discovery_url, { signal: AbortSignal.timeout(10_000) });
       if (!res.ok) {
         return json(
           { valid: false, message: `Falha ao buscar discovery: HTTP ${res.status}` },
-          200
+          200,
+          corsHeaders
         );
       }
       const config = await res.json();
@@ -50,7 +54,8 @@ Deno.serve(async (req) => {
       if (missing.length) {
         return json(
           { valid: false, message: `Campos ausentes no discovery: ${missing.join(', ')}` },
-          200
+          200,
+          corsHeaders
         );
       }
       result.valid = true;
@@ -63,7 +68,7 @@ Deno.serve(async (req) => {
         issuer: config.issuer,
         scopes_supported: config.scopes_supported,
       };
-      return json(result, 200);
+      return json(result, 200, corsHeaders);
     }
 
     if (tipo === 'saml') {
@@ -71,7 +76,11 @@ Deno.serve(async (req) => {
       if (!xml && metadata_url) {
         const res = await fetch(metadata_url, { signal: AbortSignal.timeout(10_000) });
         if (!res.ok)
-          return json({ valid: false, message: `Falha metadata HTTP ${res.status}` }, 200);
+          return json(
+            { valid: false, message: `Falha metadata HTTP ${res.status}` },
+            200,
+            corsHeaders
+          );
         xml = await res.text();
       }
       if (xml) {
@@ -83,7 +92,8 @@ Deno.serve(async (req) => {
         if (!ssoMatch || !certMatch) {
           return json(
             { valid: false, message: 'Metadata SAML inválida (faltam SSO URL ou certificado)' },
-            200
+            200,
+            corsHeaders
           );
         }
         result.valid = true;
@@ -93,37 +103,42 @@ Deno.serve(async (req) => {
           x509_cert: certMatch[1].replace(/\s+/g, ''),
           entity_id_idp: entityMatch?.[1],
         };
-        return json(result, 200);
+        return json(result, 200, corsHeaders);
       }
       // Validação manual
       if (!sso_url || !x509_cert) {
-        return json({ valid: false, message: 'sso_url e x509_cert obrigatórios' }, 400);
+        return json(
+          { valid: false, message: 'sso_url e x509_cert obrigatórios' },
+          400,
+          corsHeaders
+        );
       }
       try {
         new URL(sso_url);
       } catch {
-        return json({ valid: false, message: 'sso_url inválido' }, 200);
+        return json({ valid: false, message: 'sso_url inválido' }, 200, corsHeaders);
       }
       if (x509_cert.replace(/[\s\-]/g, '').length < 100) {
-        return json({ valid: false, message: 'Certificado X.509 muito curto' }, 200);
+        return json({ valid: false, message: 'Certificado X.509 muito curto' }, 200, corsHeaders);
       }
       result.valid = true;
       result.message = 'Configuração SAML manual válida';
-      return json(result, 200);
+      return json(result, 200, corsHeaders);
     }
 
-    return json({ valid: false, message: "tipo deve ser 'oidc' ou 'saml'" }, 400);
+    return json({ valid: false, message: "tipo deve ser 'oidc' ou 'saml'" }, 400, corsHeaders);
   } catch (e) {
     return json(
       { valid: false, message: e instanceof Error ? e.message : 'Erro desconhecido' },
-      500
+      500,
+      corsHeaders
     );
   }
 });
 
-function json(data: unknown, status: number) {
+function json(data: unknown, status: number, headers: Record<string, string>) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

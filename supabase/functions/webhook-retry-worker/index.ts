@@ -1,12 +1,12 @@
 // Worker interno: consome webhooks pendentes/retrying prontos e reencaminha
 // para o edge function correto de cada origem. Chamado por pg_cron a cada minuto
 // e sob demanda pelo webhook-replay.
-import { corsHeaders, createErrorResponse } from '../_shared/validation.ts';
+import { createErrorResponse } from '../_shared/validation.ts';
 import { createLogger } from '../_shared/logger.ts';
 import { serviceClient, markSuccess, markFailure } from '../_shared/webhook-idempotency.ts';
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
-import { corsHeadersComSegredo, exigirChamadaInterna } from '../_shared/auth-guard.ts';
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 const logger = createLogger('webhook-retry-worker');
@@ -42,7 +42,7 @@ const HANDLERS: Record<
 export const handler = async (req: Request) => {
   const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeadersComSegredo });
+    return new Response(null, { headers: corsHeaders });
   }
 
   const guard = await exigirChamadaInterna(req);
@@ -52,7 +52,7 @@ export const handler = async (req: Request) => {
     const supabase = serviceClient();
     const rawBody = await req.json().catch(() => ({}));
     const parsed = RetryBodySchema.safeParse(rawBody);
-    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeadersComSegredo);
+    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders);
     const body = parsed.data;
     const limit = Math.min(Number(body.limit ?? 25), 200);
 
@@ -95,7 +95,7 @@ export const handler = async (req: Request) => {
     logger.info('Retry worker executado', { picked: rows.length, ok, failed });
 
     return new Response(JSON.stringify({ picked: rows.length, ok, failed }), {
-      headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
     logger.error('Falha no retry worker', { error: (e as Error).message });
