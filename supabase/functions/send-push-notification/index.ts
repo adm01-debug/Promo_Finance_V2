@@ -47,7 +47,7 @@ async function generateVapidAuthHeader(
   // Base64url encode
   const base64urlEncode = (data: string | Uint8Array): string => {
     const str = typeof data === 'string' ? data : new TextDecoder().decode(data);
-    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); // NOSONAR S8786: regex trivial ancorada, sem backtracking real
   };
 
   const base64urlEncodeJson = (obj: object): string => {
@@ -78,7 +78,7 @@ async function generateVapidAuthHeader(
     d: btoa(String.fromCharCode(...privateKeyData))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
-      .replace(/=+$/, ''),
+      .replace(/=+$/, ''), // NOSONAR S8786: idem
   };
 
   const cryptoKey = await crypto.subtle.importKey(
