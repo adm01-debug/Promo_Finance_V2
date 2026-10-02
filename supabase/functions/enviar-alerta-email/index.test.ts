@@ -1,4 +1,8 @@
-import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.208.0/assert/mod.ts';
+import {
+  assert,
+  assertEquals,
+  assertStringIncludes,
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import { handler } from './index.ts';
 
 const originalEnvGet = Deno.env.get;
@@ -61,11 +65,17 @@ Deno.test(
   }
 );
 
-Deno.test('enviar-alerta-email preserva preflight e anuncia os headers internos', async () => {
-  const response = await handler(
-    new Request('http://localhost/enviar-alerta-email', { method: 'OPTIONS' })
-  );
+Deno.test(
+  'enviar-alerta-email preserva preflight e não anuncia headers de segredo no preflight',
+  async () => {
+    const response = await handler(
+      new Request('http://localhost/enviar-alerta-email', { method: 'OPTIONS' })
+    );
 
-  assertEquals(response.status, 200);
-  assertStringIncludes(response.headers.get('Access-Control-Allow-Headers') ?? '', 'x-cron-secret');
-});
+    assertEquals(response.status, 200);
+    assert(
+      !(response.headers.get('Access-Control-Allow-Headers') ?? '').includes('x-cron-secret'),
+      'preflight não deve anunciar x-cron-secret'
+    );
+  }
+);

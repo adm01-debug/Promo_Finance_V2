@@ -1,4 +1,8 @@
-import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.208.0/assert/mod.ts';
+import {
+  assert,
+  assertEquals,
+  assertStringIncludes,
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import { handler } from './index.ts';
 
 const originalEnvGet = Deno.env.get;
@@ -64,7 +68,7 @@ Deno.test(
 );
 
 Deno.test(
-  'gerar-alertas-tributarios preserva preflight e anuncia os headers internos',
+  'gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight',
   async () => {
     const response = await handler(
       new Request('http://localhost/gerar-alertas-tributarios', {
@@ -73,9 +77,9 @@ Deno.test(
     );
 
     assertEquals(response.status, 200);
-    assertStringIncludes(
-      response.headers.get('Access-Control-Allow-Headers') ?? '',
-      'x-cron-secret'
+    assert(
+      !(response.headers.get('Access-Control-Allow-Headers') ?? '').includes('x-cron-secret'),
+      'preflight não deve anunciar x-cron-secret'
     );
   }
 );
