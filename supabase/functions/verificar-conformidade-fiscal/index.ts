@@ -1,18 +1,18 @@
 // Edge: verificar-conformidade-fiscal — 8 checks automáticos + score 0-100
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
+import { getRequestId } from '../_shared/correlation.ts';
 const _ConfFiscalSchema = z.object({
   empresa_id: z.string().uuid(),
-  periodo: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+  periodo: z
+    .string()
+    .regex(/^\d{4}-\d{2}$/)
+    .optional(),
 });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 interface CheckResult {
   id: string;
@@ -24,9 +24,11 @@ interface CheckResult {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const logger = createLogger('verificar-conformidade-fiscal');
+  const logger = createLogger('verificar-conformidade-fiscal', getRequestId(req));
   const t0 = Date.now();
   logger.info('fn_start');
 
@@ -39,7 +41,8 @@ Deno.serve(async (req) => {
     if (!auth) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'Não autorizado' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     const userClient = createClient(SUPABASE_URL, ANON_KEY, {
@@ -49,17 +52,22 @@ Deno.serve(async (req) => {
     if (!userData?.user) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'Não autenticado' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: roles } = await admin.from('user_roles').select('role').eq('user_id', userData.user.id);
+    const { data: roles } = await admin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userData.user.id);
     const userRoles = (roles ?? []).map((r) => r.role);
     if (!userRoles.some((r) => ['admin', 'financeiro', 'visualizador'].includes(r))) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'Sem permissão' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -73,7 +81,8 @@ Deno.serve(async (req) => {
     if (!empresa_id) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'empresa_id obrigatório' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -91,7 +100,8 @@ Deno.serve(async (req) => {
     if (!vinculo) {
       await logger.flush();
       return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -105,7 +115,9 @@ Deno.serve(async (req) => {
       .eq('empresa_id', empresa_id)
       .order('competencia', { ascending: false })
       .limit(12);
-    const atrasadas = (apuracoes ?? []).filter((a) => a.status !== 'transmitida' && a.status !== 'fechada').length;
+    const atrasadas = (apuracoes ?? []).filter(
+      (a) => a.status !== 'transmitida' && a.status !== 'fechada'
+    ).length;
     checks.push({
       id: 'apuracoes_atraso',
       titulo: 'Apurações tributárias em dia',
@@ -293,10 +305,15 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    logger.error('fn_failure', { duration_ms: Date.now() - t0, status_code: 500, error_message: msg });
+    logger.error('fn_failure', {
+      duration_ms: Date.now() - t0,
+      status_code: 500,
+      error_message: msg,
+    });
     await logger.flush();
     return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });

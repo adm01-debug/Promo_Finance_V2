@@ -7,8 +7,10 @@ import {
   createErrorResponse,
 } from '../_shared/validation.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -29,7 +31,7 @@ serve(async (req) => {
     if (!validation.success) {
       // For this specific function, we might want to continue if it's a scheduled call with empty body
       // but let's be strict for manual calls.
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const relatorioId = validation.data.relatorio_id || null;
 

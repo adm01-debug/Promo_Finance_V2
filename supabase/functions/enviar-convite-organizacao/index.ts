@@ -11,12 +11,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform',
-};
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 const BodySchema = z.object({
   convite_id: z.string().uuid(),
@@ -30,10 +25,14 @@ const PAPEL_LABEL: Record<string, string> = {
   RESPONSAVEL: 'Responsável',
 };
 
-function json(body: unknown, status = 200): Response {
+function json(
+  body: unknown,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -46,12 +45,14 @@ function escapeHtml(value: string): string {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  const cors = corsHeadersPara(req);
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+  const res = (body: unknown, status = 200) => json(body, status, cors);
 
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
-      return json({ error: 'Não autenticado.' }, 401);
+      return res({ error: 'Não autenticado.' }, 401);
     }
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -63,13 +64,13 @@ Deno.serve(async (req) => {
     });
     const { data: userData, error: userError } = await userClient.auth.getUser();
     if (userError || !userData?.user) {
-      return json({ error: 'Sessão inválida.' }, 401);
+      return res({ error: 'Sessão inválida.' }, 401);
     }
     const solicitanteId = userData.user.id;
 
     const parsed = BodySchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
-      return json({ error: 'Dados inválidos.', detalhes: parsed.error.flatten().fieldErrors }, 400);
+      return res({ error: 'Dados inválidos.', detalhes: parsed.error.flatten().fieldErrors }, 400);
     }
     const { convite_id, origin } = parsed.data;
 
@@ -77,16 +78,18 @@ Deno.serve(async (req) => {
 
     const { data: convite, error: conviteError } = await admin
       .from('convites')
-      .select('id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em')
+      .select(
+        'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em'
+      )
       .eq('id', convite_id)
       .maybeSingle();
 
-    if (conviteError) return json({ error: 'Falha ao carregar convite.' }, 500);
-    if (!convite) return json({ error: 'Convite não encontrado.' }, 404);
-    if (convite.revogado_em) return json({ error: 'Convite revogado.' }, 409);
-    if (convite.aceito_em) return json({ error: 'Convite já aceito.' }, 409);
+    if (conviteError) return res({ error: 'Falha ao carregar convite.' }, 500);
+    if (!convite) return res({ error: 'Convite não encontrado.' }, 404);
+    if (convite.revogado_em) return res({ error: 'Convite revogado.' }, 409);
+    if (convite.aceito_em) return res({ error: 'Convite já aceito.' }, 409);
     if (new Date(convite.expira_em).getTime() <= Date.now()) {
-      return json({ error: 'Convite expirado.' }, 409);
+      return res({ error: 'Convite expirado.' }, 409);
     }
 
     // Autorização: gestor ativo da organização do convite.
@@ -109,7 +112,7 @@ Deno.serve(async (req) => {
       (vinculo?.ativo === true && ['RESPONSAVEL', 'ADMIN'].includes(String(vinculo.papel_na_org)));
 
     if (!ehGestor) {
-      return json({ error: 'Sem permissão para enviar este convite.' }, 403);
+      return res({ error: 'Sem permissão para enviar este convite.' }, 403);
     }
 
     const resendKey = Deno.env.get('RESEND_API_KEY');
@@ -118,7 +121,7 @@ Deno.serve(async (req) => {
 
     if (!resendKey) {
       // Modo simulado: não falha o fluxo de criação do convite.
-      return json({ enviado: false, motivo: 'email_nao_configurado', link });
+      return res({ enviado: false, motivo: 'email_nao_configurado', link });
     }
 
     const nomeOrg = escapeHtml(org?.nome ?? 'Organização');
@@ -152,12 +155,12 @@ Deno.serve(async (req) => {
     if (!resp.ok) {
       const detalhe = await resp.text();
       console.error('resend_error', resp.status, detalhe.slice(0, 300));
-      return json({ enviado: false, motivo: 'falha_provedor_email', link }, 502);
+      return res({ enviado: false, motivo: 'falha_provedor_email', link }, 502);
     }
 
-    return json({ enviado: true, link });
+    return res({ enviado: true, link });
   } catch (e) {
     console.error('enviar-convite-organizacao_error', e instanceof Error ? e.message : e);
-    return json({ error: 'Erro interno ao enviar convite.' }, 500);
+    return res({ error: 'Erro interno ao enviar convite.' }, 500);
   }
 });

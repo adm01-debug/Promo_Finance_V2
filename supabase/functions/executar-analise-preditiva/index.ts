@@ -1,12 +1,8 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 
 interface ResultadoEmpresa {
   empresa_id: string;
@@ -27,7 +23,8 @@ interface ResultadoEmpresa {
 async function analisarEmpresa(
   supabase: SupabaseClient,
   empresaId: string,
-  LOVABLE_API_KEY: string
+  LOVABLE_API_KEY: string,
+  requestId: string
 ): Promise<ResultadoEmpresa> {
   // Buscar dados financeiros para análise
   const hoje = new Date();
@@ -294,6 +291,7 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       for (const destinatario of destinatarios) {
         try {
           await supabase.functions.invoke('send-push-notification', {
+            headers: correlationHeaders(requestId),
             body: {
               userId: destinatario,
               title: `⚠️ ${alerta.titulo}`,
@@ -348,6 +346,8 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
 }
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
+  const requestId = getRequestId(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -382,7 +382,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const falhas: { empresa_id: string; erro: string }[] = [];
     for (const empresaId of empresaIds) {
       try {
-        resultados.push(await analisarEmpresa(supabase, empresaId, LOVABLE_API_KEY));
+        resultados.push(await analisarEmpresa(supabase, empresaId, LOVABLE_API_KEY, requestId));
       } catch (erro) {
         const msg = erro instanceof Error ? erro.message : 'Erro desconhecido';
         console.error(`[executar-analise-preditiva] Falha na empresa ${empresaId}:`, msg);

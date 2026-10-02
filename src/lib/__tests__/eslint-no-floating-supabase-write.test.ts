@@ -16,13 +16,15 @@ import regra from '../../../eslint-rules/no-floating-supabase-write.js';
 
 const require = createRequire(import.meta.url);
 
+// ESLint 9 exige flat config no RuleTester: languageOptions no lugar de
+// parserOptions, e o parser como objeto importado (não caminho resolvido).
 const testerJs = new RuleTester({
-  parserOptions: { ecmaVersion: 2022, sourceType: 'module' },
+  languageOptions: { ecmaVersion: 2022, sourceType: 'module' },
 });
 
+const parserTs = require('@typescript-eslint/parser');
 const testerTs = new RuleTester({
-  parser: require.resolve('@typescript-eslint/parser'),
-  parserOptions: { ecmaVersion: 2022, sourceType: 'module' },
+  languageOptions: { parser: parserTs, ecmaVersion: 2022, sourceType: 'module' },
 });
 
 describe('no-floating-supabase-write', () => {

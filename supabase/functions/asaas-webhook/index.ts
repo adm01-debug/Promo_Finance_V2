@@ -1,52 +1,74 @@
-import { createErrorResponse, AsaasWebhookSchema, AsaasWebhookV2Schema, corsHeaders } from '../_shared/validation.ts'
-import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts'
-import { createLogger } from '../_shared/logger.ts'
-import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts'
-import { processWithIdempotency, RetryableError, serviceClient } from '../_shared/webhook-idempotency.ts'
-import { createValidationErrorResponse } from '../_shared/contract-response.ts'
-import { segredosIguais } from '../_shared/auth-guard.ts'
+import {
+  createErrorResponse,
+  AsaasWebhookSchema,
+  AsaasWebhookV2Schema,
+} from '../_shared/validation.ts';
+import {
+  contractVersionHeaders,
+  validateVersionedContract,
+} from '../_shared/versioned-contract.ts';
+import { createLogger } from '../_shared/logger.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import {
+  processWithIdempotency,
+  RetryableError,
+  serviceClient,
+} from '../_shared/webhook-idempotency.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { segredosIguais } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
-const logger = createLogger('asaas-webhook')
+const logger = createLogger('asaas-webhook');
 
 export const handler = async (req: Request) => {
-  const startTime = Date.now()
+  const corsHeaders = corsHeadersPara(req);
+  const startTime = Date.now();
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
-  const correlation_id = crypto.randomUUID()
-  const ip_origem = req.headers.get('x-forwarded-for') || 'desconhecido'
+  const correlation_id = crypto.randomUUID();
+  const ip_origem = req.headers.get('x-forwarded-for') || 'desconhecido';
 
   try {
-    const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN')
+    const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN');
     if (!WEBHOOK_TOKEN) {
-      logger.error('ASAAS_WEBHOOK_TOKEN não configurado — rejeitando webhook', { correlation_id })
-      return createErrorResponse('Webhook não configurado', 503)
+      logger.error('ASAAS_WEBHOOK_TOKEN não configurado — rejeitando webhook', { correlation_id });
+      return createErrorResponse('Webhook não configurado', 503, undefined, req);
     }
-    const receivedToken = req.headers.get('asaas-access-token')
+    const receivedToken = req.headers.get('asaas-access-token');
     if (!segredosIguais(receivedToken, WEBHOOK_TOKEN)) {
-      logger.error('Token de webhook inválido', { ip_origem, correlation_id })
-      return createErrorResponse('Token inválido', 403)
+      logger.error('Token de webhook inválido', { ip_origem, correlation_id });
+      return createErrorResponse('Token inválido', 403, undefined, req);
     }
 
-    const rawBody = await req.text()
-    let body: unknown
+    const rawBody = await req.text();
+    let body: unknown;
     try {
-      body = JSON.parse(rawBody)
+      body = JSON.parse(rawBody);
     } catch {
-      return createValidationErrorResponse([{
-        path: '$', message: 'JSON malformado', code: 'invalid_json',
-      }], corsHeaders)
+      return createValidationErrorResponse(
+        [
+          {
+            path: '$',
+            message: 'JSON malformado',
+            code: 'invalid_json',
+          },
+        ],
+        corsHeaders
+      );
     }
     const validation = validateVersionedContract(req, body, {
-      v1: AsaasWebhookSchema, v2: AsaasWebhookV2Schema, functionName: 'asaas-webhook',
-    })
+      v1: AsaasWebhookSchema,
+      v2: AsaasWebhookV2Schema,
+      functionName: 'asaas-webhook',
+    });
     if (!validation.success) {
-      return validation.response
+      return validation.response;
     }
-    const { event, payment, transfer } = validation.data
+    const { event, payment, transfer } = validation.data;
 
-    const supabase = serviceClient()
+    const supabase = serviceClient();
 
     // Rate limit defensivo (defesa em profundidade — token continua sendo a defesa primária).
     const rl = await checkRateLimit(supabase, {
@@ -55,10 +77,10 @@ export const handler = async (req: Request) => {
       limit: 120,
       windowSeconds: 60,
       userAgent: req.headers.get('user-agent'),
-    })
+    });
     if (!rl.allowed) {
-      logger.warn('Rate limit atingido', { ip_origem, correlation_id })
-      return rateLimitResponse(rl, corsHeaders)
+      logger.warn('Rate limit atingido', { ip_origem, correlation_id });
+      return rateLimitResponse(rl, corsHeaders);
     }
 
     // Idempotência atômica + reprocessamento seguro
@@ -66,7 +88,7 @@ export const handler = async (req: Request) => {
       validation.data.id ||
       (payment?.id ? `payment:${payment.id}:${event}` : null) ||
       (transfer?.id ? `transfer:${transfer.id}:${event}` : null) ||
-      null
+      null;
 
     const { claim, failure } = await processWithIdempotency(
       supabase,
@@ -78,8 +100,8 @@ export const handler = async (req: Request) => {
             .from('asaas_payments')
             .select('id, status, asaas_id')
             .eq('asaas_id', payment.id)
-            .maybeSingle()
-          if (selErr) throw new RetryableError(`select asaas_payments: ${selErr.message}`)
+            .maybeSingle();
+          if (selErr) throw new RetryableError(`select asaas_payments: ${selErr.message}`);
 
           if (localPayment) {
             const statusMap: Record<string, string> = {
@@ -89,14 +111,14 @@ export const handler = async (req: Request) => {
               PAYMENT_DELETED: 'CANCELLED',
               PAYMENT_REFUNDED: 'REFUNDED',
               PAYMENT_CHARGEBACK_REQUESTED: 'CHARGEBACK',
-            }
-            const newStatus = statusMap[event] || payment.status
+            };
+            const newStatus = statusMap[event] || payment.status;
             if (newStatus !== localPayment.status) {
               const { error: updErr } = await supabase
                 .from('asaas_payments')
                 .update({ status: newStatus, updated_at: new Date().toISOString() })
-                .eq('id', localPayment.id)
-              if (updErr) throw new RetryableError(`update asaas_payments: ${updErr.message}`)
+                .eq('id', localPayment.id);
+              if (updErr) throw new RetryableError(`update asaas_payments: ${updErr.message}`);
 
               await supabase.from('asaas_audit_trail').insert({
                 payment_id: localPayment.id,
@@ -104,7 +126,7 @@ export const handler = async (req: Request) => {
                 previous_status: localPayment.status,
                 new_status: newStatus,
                 details: { event, message: `Status alterado via Webhook: ${event}` },
-              })
+              });
             }
           }
         }
@@ -115,16 +137,16 @@ export const handler = async (req: Request) => {
             .from('asaas_transfers')
             .select('id, status, asaas_id')
             .eq('asaas_id', transfer.id)
-            .maybeSingle()
-          if (selErr) throw new RetryableError(`select asaas_transfers: ${selErr.message}`)
+            .maybeSingle();
+          if (selErr) throw new RetryableError(`select asaas_transfers: ${selErr.message}`);
 
           if (localTransfer) {
             const map: Record<string, string> = {
               TRANSFER_DONE: 'DONE',
               TRANSFER_CANCELLED: 'CANCELLED',
               TRANSFER_FAILED: 'FAILED',
-            }
-            const newStatus = map[event] || transfer.status
+            };
+            const newStatus = map[event] || transfer.status;
             if (newStatus !== localTransfer.status) {
               const { error: updErr } = await supabase
                 .from('asaas_transfers')
@@ -133,8 +155,8 @@ export const handler = async (req: Request) => {
                   updated_at: new Date().toISOString(),
                   transaction_receipt_url: transfer.transactionReceiptUrl || null,
                 })
-                .eq('id', localTransfer.id)
-              if (updErr) throw new RetryableError(`update asaas_transfers: ${updErr.message}`)
+                .eq('id', localTransfer.id);
+              if (updErr) throw new RetryableError(`update asaas_transfers: ${updErr.message}`);
 
               await supabase.from('asaas_audit_trail').insert({
                 action: 'WEBHOOK_TRANSFER',
@@ -145,18 +167,25 @@ export const handler = async (req: Request) => {
                   new_status: newStatus,
                   message: `Transferência alterada via Webhook: ${event}`,
                 },
-              })
+              });
             }
           }
         }
-      },
-    )
+      }
+    );
 
     if (claim.alreadyProcessed) {
-      logger.info('Webhook Asaas já processado (idempotência)', { correlation_id, external_id: externalId })
+      logger.info('Webhook Asaas já processado (idempotência)', {
+        correlation_id,
+        external_id: externalId,
+      });
       return new Response(JSON.stringify({ success: true, duplicated: true }), {
-        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
-      })
+        headers: {
+          ...corsHeaders,
+          ...contractVersionHeaders(validation.version),
+          'Content-Type': 'application/json',
+        },
+      });
     }
 
     if (failure) {
@@ -167,30 +196,40 @@ export const handler = async (req: Request) => {
         next_retry_at: failure.nextRetryAt,
         dlq_id: failure.dlqId,
         duration_ms: Date.now() - startTime,
-      })
+      });
       // Devolvemos 200 para o Asaas não retransmitir — nosso retry é interno.
       return new Response(
         JSON.stringify({ success: false, will_retry: failure.willRetry, status: failure.status }),
-        { headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' } },
-      )
+        {
+          headers: {
+            ...corsHeaders,
+            ...contractVersionHeaders(validation.version),
+            'Content-Type': 'application/json',
+          },
+        }
+      );
     }
 
     return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
-    })
+      headers: {
+        ...corsHeaders,
+        ...contractVersionHeaders(validation.version),
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
     logger.error('Erro fatal no webhook Asaas', {
       correlation_id,
       error: (error as Error).message,
       duration_ms: Date.now() - startTime,
-    })
+    });
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    });
   }
-}
+};
 
 if (import.meta.main) {
-  Deno.serve(handler)
+  Deno.serve(handler);
 }

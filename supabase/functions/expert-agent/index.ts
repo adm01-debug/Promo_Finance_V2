@@ -1,9 +1,9 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { ExpertAgentSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
-import { exigirUsuario } from "../_shared/auth-guard.ts";
-
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { ExpertAgentSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const SYSTEM_PROMPT = `Você é o EXPERT, um assistente de IA especializado em finanças corporativas para a empresa Promo Finance.
 
@@ -109,7 +109,8 @@ Você tem acesso ao histórico da conversa atual. Use-o para:
 - Integração com Bitrix24 CRM`;
 
 export const handler = async (req: Request) => {
-  if (req.method === "OPTIONS") {
+  const corsHeaders = corsHeadersPara(req);
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -124,35 +125,38 @@ export const handler = async (req: Request) => {
     if (supabaseUrl && serviceRoleKey) {
       const supa = createClient(supabaseUrl, serviceRoleKey);
       const rl = await checkRateLimit(supa, {
-        endpoint: 'expert-agent', ip, limit: 30, windowSeconds: 60,
+        endpoint: 'expert-agent',
+        ip,
+        limit: 30,
+        windowSeconds: 60,
         userAgent: req.headers.get('user-agent'),
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
     const rawBody = await req.json().catch(() => null);
-    const validation = validatePayload(ExpertAgentSchema, rawBody, "expert-agent");
+    const validation = validatePayload(ExpertAgentSchema, rawBody, 'expert-agent');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 422, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details, req);
     }
     const { messages, context, conversationSummary } = validation.data;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     // Build context-aware system prompt with memory
     let enhancedSystemPrompt = SYSTEM_PROMPT;
-    
+
     if (conversationSummary) {
       enhancedSystemPrompt += `\n\n## Resumo da Conversa Anterior:\n${conversationSummary}`;
     }
-    
+
     if (context) {
       enhancedSystemPrompt += `\n\n## Contexto Financeiro Atual:\n${context}`;
-      
+
       // Analisar contexto para sugestões proativas
       enhancedSystemPrompt += `\n\n## Instruções de Análise Proativa:
 Baseado nos dados financeiros acima, você DEVE:
@@ -162,55 +166,56 @@ Baseado nos dados financeiros acima, você DEVE:
 4. Alertar sobre clientes/fornecedores que precisam de atenção especial`;
     }
 
-    console.log("Starting EXPERT agent request with", messages.length, "messages");
+    console.log('Starting EXPERT agent request with', messages.length, 'messages');
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: enhancedSystemPrompt },
-          ...messages,
-        ],
+        model: 'google/gemini-2.5-flash',
+        messages: [{ role: 'system', content: enhancedSystemPrompt }, ...messages],
         stream: true,
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.error("Rate limit exceeded");
+        console.error('Rate limit exceeded');
         return new Response(
-          JSON.stringify({ error: "Limite de requisições excedido. Por favor, aguarde alguns instantes." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({
+            error: 'Limite de requisições excedido. Por favor, aguarde alguns instantes.',
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       if (response.status === 402) {
-        console.error("Payment required");
+        console.error('Payment required');
         return new Response(
-          JSON.stringify({ error: "Créditos insuficientes. Entre em contato com o administrador." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({
+            error: 'Créditos insuficientes. Entre em contato com o administrador.',
+          }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      return new Response(
-        JSON.stringify({ error: "Erro ao processar sua solicitação" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.error('AI gateway error:', response.status, errorText);
+      return new Response(JSON.stringify({ error: 'Erro ao processar sua solicitação' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
   } catch (error) {
-    console.error("EXPERT agent error:", error);
+    console.error('EXPERT agent error:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Erro desconhecido' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 };

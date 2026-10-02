@@ -205,6 +205,7 @@ function normalizePhone(v: unknown): {
 
 // buildProfileSyncDelta foi extraída para ./profile-sync-delta.ts
 import { buildProfileSyncDelta } from './profile-sync-delta.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 async function applyPipeline(opts: {
   admin: Admin;
@@ -724,6 +725,7 @@ function jsonResp(data: unknown, status: number) {
  * Handler principal
  * ============================================================================= */
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   // Roteia POST com body { kind: 'saml-finalize' } para o branch SAML
