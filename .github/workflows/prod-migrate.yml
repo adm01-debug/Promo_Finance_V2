@@ -62,11 +62,13 @@ jobs:
           version: 2.22.6
 
       - name: Guard-rails de confirmação
+        env:
+          CONFIRMADO: ${{ inputs.confirmar_project_ref }}
         run: |
           set -euo pipefail
           EXPECTED="${PROD_PROJECT_REF:-bwwbeyolnnzppeuhgkcd}"
-          if [ "${{ inputs.confirmar_project_ref }}" != "$EXPECTED" ]; then
-            echo "::error::confirmar_project_ref '${{ inputs.confirmar_project_ref }}' != '$EXPECTED'"
+          if [ "$CONFIRMADO" != "$EXPECTED" ]; then
+            echo "::error::confirmar_project_ref '$CONFIRMADO' != '$EXPECTED'"
             exit 1
           fi
           # Defesa em profundidade: a URL apontada precisa ser do projeto certo.
