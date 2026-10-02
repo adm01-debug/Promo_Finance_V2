@@ -132,6 +132,11 @@ function redigirObj(x: unknown): unknown {
   if (typeof x === 'string') return redigir(x);
   if (Array.isArray(x)) return x.map(redigirObj);
   if (x !== null && typeof x === 'object') {
+    // Instâncias estruturadas (Date, Error, Map...) têm estado em campos não
+    // enumeráveis — achatar para {} apagaria datas e mensagens de erro do
+    // log nativo. Só descemos em objetos planos, em qualquer profundidade.
+    const proto = Object.getPrototypeOf(x);
+    if (proto !== Object.prototype && proto !== null) return x;
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(x as Record<string, unknown>)) out[k] = redigirObj(v);
     return out;

@@ -84,8 +84,15 @@ for (const wf of ciWorkflows) {
     }
   } catch { /* workflow ausente — ignorar */ }
 }
-const ci = [...ciSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
-const ciVars = [...ciVarSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions_vars' }));
+// Variáveis que só ativam features opt-in — funcionam ausentes (CI roda sem
+// snapshots autenticados e sem simulação em prod), logo não são obrigatórias.
+const VARS_OPT_IN = new Set([
+  'ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS',
+  'ENABLE_PRODUCTION_SIMULATION_AUDIT',
+]);
+const porNome = (a, b) => a.localeCompare(b);
+const ci = [...ciSet].sort(porNome).map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
+const ciVars = [...ciVarSet].sort(porNome).map(name => ({ name, scope: 'ci', required: !VARS_OPT_IN.has(name), dest: 'github_actions_vars' }));
 
 const freshVars = [...frontend, ...edge, ...ci, ...ciVars];
 
