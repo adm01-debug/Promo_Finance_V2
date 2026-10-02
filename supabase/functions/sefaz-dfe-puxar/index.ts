@@ -17,36 +17,36 @@
  */
 
 // deno-lint-ignore-file no-explicit-any
-import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 
 const RequestBodySchema = z.object({ empresa_id: z.string().uuid().optional() }).strict();
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-cron-secret, x-supabase-client-platform",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-supabase-client-platform',
 };
 
-import { loadCertificado, makeAdminClient, type CertificadoRow } from "../_shared/sefaz/pfx.ts";
-import { distDFeEndpoint } from "../_shared/sefaz/endpoints.ts";
+import { loadCertificado, makeAdminClient, type CertificadoRow } from '../_shared/sefaz/pfx.ts';
+import { distDFeEndpoint } from '../_shared/sefaz/endpoints.ts';
 import {
   buildDistDFeEnvelope,
   classifyCStat,
   parseDistDFeResponse,
   SOAP_ACTION,
   type DistDFeResponse,
-} from "../_shared/sefaz/soap.ts";
-import { gunzipBase64 } from "../_shared/sefaz/gunzip.ts";
-import { parseDoc, type ParsedDoc } from "../_shared/sefaz/parser.ts";
-import { buildXmlPath, uploadNfeXml } from "../_shared/nfe/xml-storage.ts";
+} from '../_shared/sefaz/soap.ts';
+import { gunzipBase64 } from '../_shared/sefaz/gunzip.ts';
+import { parseDoc, type ParsedDoc } from '../_shared/sefaz/parser.ts';
+import { buildXmlPath, uploadNfeXml } from '../_shared/nfe/xml-storage.ts';
 
 const MAX_BATCHES_PER_CNPJ = 10;
 
 interface PullSummary {
   cnpj: string;
-  ambiente: "homologacao" | "producao";
+  ambiente: 'homologacao' | 'producao';
   batches: number;
   docs: number;
   novos: number;
@@ -64,7 +64,7 @@ interface PullSummary {
 function json(status: number, body: unknown) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 }
 
@@ -74,18 +74,18 @@ function json(status: number, body: unknown) {
  * e chaves canônicas do domínio SEFAZ (`cnpj`, `ambiente`, `cStat`,
  * `cb_open`, `durationMs`) para agregações e alertas.
  */
-type LogLevel = "INFO" | "WARN" | "ERROR";
+type LogLevel = 'INFO' | 'WARN' | 'ERROR';
 function slog(level: LogLevel, event: string, fields: Record<string, unknown> = {}) {
   try {
     const line = JSON.stringify({
       ts: new Date().toISOString(),
       level,
-      fn: "sefaz-dfe-puxar",
+      fn: 'sefaz-dfe-puxar',
       event,
       ...fields,
     });
-    if (level === "ERROR") console.error(line);
-    else if (level === "WARN") console.warn(line);
+    if (level === 'ERROR') console.error(line);
+    else if (level === 'WARN') console.warn(line);
     else console.log(line);
   } catch {
     // Nunca deixar log estruturado quebrar o fluxo.
@@ -94,13 +94,16 @@ function slog(level: LogLevel, event: string, fields: Record<string, unknown> = 
 
 async function fetchCertificados(
   admin: SupabaseClient,
-  empresaId?: string,
+  empresaId?: string
 ): Promise<CertificadoRow[]> {
-  let query = admin.from("empresas_certificados")
-    .select("id, empresa_id, cnpj, razao_social, uf, ambiente, valido_de, valido_ate, pfx_storage_path")
-    .eq("ativo", true)
-    .gte("valido_ate", new Date().toISOString());
-  if (empresaId) query = query.eq("empresa_id", empresaId);
+  let query = admin
+    .from('empresas_certificados')
+    .select(
+      'id, empresa_id, cnpj, razao_social, uf, ambiente, valido_de, valido_ate, pfx_storage_path'
+    )
+    .eq('ativo', true)
+    .gte('valido_ate', new Date().toISOString());
+  if (empresaId) query = query.eq('empresa_id', empresaId);
   const { data, error } = await query;
   if (error) throw new Error(`fetch_certificados_failed: ${error.message}`);
   return (data ?? []) as CertificadoRow[];
@@ -115,11 +118,14 @@ interface CursorState {
 async function getCursor(
   admin: SupabaseClient,
   cnpj: string,
-  ambiente: "homologacao" | "producao",
+  ambiente: 'homologacao' | 'producao'
 ): Promise<CursorState> {
-  const { data } = await admin.from("sefaz_dfe_cursor")
-    .select("ultimo_nsu, circuit_open, next_run_at")
-    .eq("cnpj", cnpj).eq("ambiente", ambiente).maybeSingle();
+  const { data } = await admin
+    .from('sefaz_dfe_cursor')
+    .select('ultimo_nsu, circuit_open, next_run_at')
+    .eq('cnpj', cnpj)
+    .eq('ambiente', ambiente)
+    .maybeSingle();
   const nextRunAt = data?.next_run_at ?? null;
   return {
     nsu: Number(data?.ultimo_nsu ?? 0),
@@ -143,9 +149,9 @@ async function applyBatchTransactional(
   maxNsu: number,
   status: string,
   erro: string | null,
-  docs: Array<{ kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }>,
+  docs: Array<{ kind: 'nfe' | 'evento'; nsu: number; payload: Record<string, unknown> }>
 ): Promise<{ novos: number; eventos: number; ignorados: number; cursor_depois: number }> {
-  const { data, error } = await admin.rpc("sefaz_process_batch", {
+  const { data, error } = await admin.rpc('sefaz_process_batch', {
     p_cnpj: cert.cnpj,
     p_ambiente: cert.ambiente,
     p_empresa_id: cert.empresa_id,
@@ -172,24 +178,28 @@ async function defaultSefazFetch(
   url: string,
   envelope: string,
   certPem: string,
-  keyPem: string,
+  keyPem: string
 ): Promise<string> {
   const client = (Deno as any).createHttpClient({ cert: certPem, key: keyPem });
   try {
     const resp = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       // @ts-ignore Deno-only
       client,
       headers: {
-        "Content-Type": `application/soap+xml; charset=utf-8; action="${SOAP_ACTION}"`,
-        "SOAPAction": SOAP_ACTION,
+        'Content-Type': `application/soap+xml; charset=utf-8; action="${SOAP_ACTION}"`,
+        SOAPAction: SOAP_ACTION,
       },
       body: envelope,
       signal: AbortSignal.timeout(30_000),
     });
     return await resp.text();
   } finally {
-    try { client?.close?.(); } catch { /* noop */ }
+    try {
+      client?.close?.();
+    } catch {
+      /* noop */
+    }
   }
 }
 
@@ -203,15 +213,12 @@ async function stageDoc(
   admin: SupabaseClient,
   empresaId: string,
   nsu: number,
-  xml: string,
-): Promise<
-  | { kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }
-  | null
-> {
+  xml: string
+): Promise<{ kind: 'nfe' | 'evento'; nsu: number; payload: Record<string, unknown> } | null> {
   const parsed: ParsedDoc | null = parseDoc(xml);
   if (!parsed) return null;
 
-  if (parsed.kind === "nfe") {
+  if (parsed.kind === 'nfe') {
     const xmlPath = buildXmlPath(empresaId, parsed.chaveAcesso);
     // Storage é fora da transação, mas o path é determinístico:
     // um retry re-envia para o mesmo caminho (upsert=true). Nunca gera órfão inconsistente.
@@ -221,7 +228,7 @@ async function stageDoc(
       xml,
     });
     return {
-      kind: "nfe",
+      kind: 'nfe',
       nsu,
       payload: {
         chave_acesso: parsed.chaveAcesso,
@@ -245,7 +252,7 @@ async function stageDoc(
   }
 
   return {
-    kind: "evento",
+    kind: 'evento',
     nsu,
     payload: {
       chave_acesso: parsed.chaveAcesso,
@@ -261,12 +268,11 @@ async function stageDoc(
   };
 }
 
-
 // ------------------------------------------------------- pull loop
 export async function runPuxador(
   admin: SupabaseClient,
   cert: CertificadoRow,
-  sefazFetch?: SefazFetch,
+  sefazFetch?: SefazFetch
 ): Promise<PullSummary> {
   const started = performance.now();
   const summary: PullSummary = {
@@ -278,14 +284,14 @@ export async function runPuxador(
     eventos: 0,
     cursorAntes: 0,
     cursorDepois: 0,
-    cStatFinal: "",
+    cStatFinal: '',
     cbOpen: false,
     backoffPending: false,
     erro: null,
     durationMs: 0,
   };
 
-  slog("INFO", "puxador_start", {
+  slog('INFO', 'puxador_start', {
     cnpj: cert.cnpj,
     ambiente: cert.ambiente,
     uf: cert.uf,
@@ -300,32 +306,33 @@ export async function runPuxador(
     summary.backoffPending = cursorState.backoffPending;
 
     if (cursorState.cbOpen) {
-      summary.erro = "circuit_open";
-      slog("WARN", "puxador_skipped", {
-        cnpj: cert.cnpj, ambiente: cert.ambiente,
-        cb_open: true, reason: "circuit_open",
+      summary.erro = 'circuit_open';
+      slog('WARN', 'puxador_skipped', {
+        cnpj: cert.cnpj,
+        ambiente: cert.ambiente,
+        cb_open: true,
+        reason: 'circuit_open',
         cursor_antes: cursorState.nsu,
       });
-      throw new Error("circuit_open");
+      throw new Error('circuit_open');
     }
     if (cursorState.backoffPending) {
-      summary.erro = "backoff_pending";
-      slog("WARN", "puxador_skipped", {
-        cnpj: cert.cnpj, ambiente: cert.ambiente,
-        cb_open: false, backoff_pending: true,
+      summary.erro = 'backoff_pending';
+      slog('WARN', 'puxador_skipped', {
+        cnpj: cert.cnpj,
+        ambiente: cert.ambiente,
+        cb_open: false,
+        backoff_pending: true,
         next_run_at: cursorState.nextRunAt,
-        reason: "backoff_pending",
+        reason: 'backoff_pending',
       });
-      throw new Error("backoff_pending");
+      throw new Error('backoff_pending');
     }
 
     // Só carrega o PFX quando vamos falar de verdade com a SEFAZ.
     // Em testes injetamos `sefazFetch` e o loadCertificado é dispensado.
-    const pem = sefazFetch
-      ? { certPem: "", keyPem: "" }
-      : await loadCertificado(admin, cert);
-    const endpoint = distDFeEndpoint(cert.ambiente, "AN");
-
+    const pem = sefazFetch ? { certPem: '', keyPem: '' } : await loadCertificado(admin, cert);
+    const endpoint = distDFeEndpoint(cert.ambiente, 'AN');
 
     let ultNSU = cursorState.nsu;
     let response: DistDFeResponse | null = null;
@@ -348,7 +355,7 @@ export async function runPuxador(
       const cls = classifyCStat(response.cStat);
       const batchDurationMs = Math.round(performance.now() - batchStarted);
 
-      slog("INFO", "puxador_batch", {
+      slog('INFO', 'puxador_batch', {
         cnpj: cert.cnpj,
         ambiente: cert.ambiente,
         batch: batch + 1,
@@ -363,21 +370,35 @@ export async function runPuxador(
       });
 
       // Cenários sem docs: apenas atualizar status/erro no cursor (sem regredir NSU).
-      if (cls === "empty") {
+      if (cls === 'empty') {
         await applyBatchTransactional(
-          admin, cert, ultNSU, response.maxNSU, response.cStat, null, [],
+          admin,
+          cert,
+          ultNSU,
+          response.maxNSU,
+          response.cStat,
+          null,
+          []
         );
         break;
       }
-      if (cls === "retry" || cls === "rate_limit" || cls === "fatal") {
+      if (cls === 'retry' || cls === 'rate_limit' || cls === 'fatal') {
         summary.erro = `cStat=${response.cStat} ${response.xMotivo}`;
-        slog("WARN", "puxador_cstat_stop", {
-          cnpj: cert.cnpj, ambiente: cert.ambiente,
-          cStat: response.cStat, classify: cls,
+        slog('WARN', 'puxador_cstat_stop', {
+          cnpj: cert.cnpj,
+          ambiente: cert.ambiente,
+          cStat: response.cStat,
+          classify: cls,
           xMotivo: response.xMotivo,
         });
         await applyBatchTransactional(
-          admin, cert, ultNSU, response.maxNSU, response.cStat, summary.erro, [],
+          admin,
+          cert,
+          ultNSU,
+          response.maxNSU,
+          response.cStat,
+          summary.erro,
+          []
         );
         break;
       }
@@ -386,7 +407,11 @@ export async function runPuxador(
       // O RPC transacional consolida tudo num único COMMIT: se ele falhar,
       // NENHUM registro é inserido e o cursor NÃO avança — próxima execução
       // retoma do mesmo ultNSU e reprocessa idempotentemente (ON CONFLICT DO NOTHING).
-      const staged: Array<{ kind: "nfe" | "evento"; nsu: number; payload: Record<string, unknown> }> = [];
+      const staged: Array<{
+        kind: 'nfe' | 'evento';
+        nsu: number;
+        payload: Record<string, unknown>;
+      }> = [];
       let docsIgnorados = 0;
       for (const doc of response.docs) {
         summary.docs++;
@@ -398,8 +423,9 @@ export async function runPuxador(
         } catch (err) {
           // Doc inválido não bloqueia o lote — log e segue (é ignorado pelo RPC).
           docsIgnorados++;
-          slog("WARN", "puxador_doc_invalido", {
-            cnpj: cert.cnpj, ambiente: cert.ambiente,
+          slog('WARN', 'puxador_doc_invalido', {
+            cnpj: cert.cnpj,
+            ambiente: cert.ambiente,
             nsu: doc.nsu,
             error: err instanceof Error ? err.message : String(err),
           });
@@ -407,17 +433,22 @@ export async function runPuxador(
       }
 
       const applied = await applyBatchTransactional(
-        admin, cert,
-        response.ultNSU, response.maxNSU, response.cStat, null,
-        staged,
+        admin,
+        cert,
+        response.ultNSU,
+        response.maxNSU,
+        response.cStat,
+        null,
+        staged
       );
-      summary.novos     += applied.novos;
-      summary.eventos   += applied.eventos;
+      summary.novos += applied.novos;
+      summary.eventos += applied.eventos;
       summary.cursorDepois = applied.cursor_depois;
       ultNSU = applied.cursor_depois;
 
-      slog("INFO", "puxador_batch_persisted", {
-        cnpj: cert.cnpj, ambiente: cert.ambiente,
+      slog('INFO', 'puxador_batch_persisted', {
+        cnpj: cert.cnpj,
+        ambiente: cert.ambiente,
         batch: batch + 1,
         novos: applied.novos,
         eventos: applied.eventos,
@@ -428,7 +459,6 @@ export async function runPuxador(
       // Chegou no fim
       if (response.ultNSU >= response.maxNSU) break;
     }
-
   } catch (err) {
     summary.erro = err instanceof Error ? err.message : String(err);
   }
@@ -436,7 +466,7 @@ export async function runPuxador(
   summary.durationMs = Math.round(performance.now() - started);
 
   // Log final por CNPJ (agrega métrica de tempo total).
-  slog(summary.erro ? "WARN" : "INFO", "puxador_finish", {
+  slog(summary.erro ? 'WARN' : 'INFO', 'puxador_finish', {
     cnpj: cert.cnpj,
     ambiente: cert.ambiente,
     empresa_id: cert.empresa_id,
@@ -456,46 +486,55 @@ export async function runPuxador(
   // Telemetria persistida (dashboard de queries).
   // `error_message` carrega o JSON completo do summary — parseável por
   // `SELECT error_message::jsonb ->> 'cStat_final'` etc.
-  await admin.from("query_telemetry").insert({
-    operation: "sefaz_dfe_puxar",
-    table_name: "nfe_recebidas",
-    duration_ms: summary.durationMs,
-    severity: summary.erro ? "warning" : "info",
-    error_message: JSON.stringify({
-      cnpj: cert.cnpj,
-      ambiente: cert.ambiente,
-      empresa_id: cert.empresa_id,
-      cStat_final: summary.cStatFinal,
-      cb_open: summary.cbOpen,
-      backoff_pending: summary.backoffPending,
-      batches: summary.batches,
-      docs: summary.docs,
-      novos: summary.novos,
-      eventos: summary.eventos,
-      cursor_antes: summary.cursorAntes,
-      cursor_depois: summary.cursorDepois,
-      erro: summary.erro,
-    }),
-  }).then(() => {}, () => {});
+  await admin
+    .from('query_telemetry')
+    .insert({
+      operation: 'sefaz_dfe_puxar',
+      table_name: 'nfe_recebidas',
+      duration_ms: summary.durationMs,
+      severity: summary.erro ? 'warning' : 'info',
+      error_message: JSON.stringify({
+        cnpj: cert.cnpj,
+        ambiente: cert.ambiente,
+        empresa_id: cert.empresa_id,
+        cStat_final: summary.cStatFinal,
+        cb_open: summary.cbOpen,
+        backoff_pending: summary.backoffPending,
+        batches: summary.batches,
+        docs: summary.docs,
+        novos: summary.novos,
+        eventos: summary.eventos,
+        cursor_antes: summary.cursorAntes,
+        cursor_depois: summary.cursorDepois,
+        erro: summary.erro,
+      }),
+    })
+    .then(
+      () => {},
+      () => {}
+    );
 
   return summary;
 }
 
 // ------------------------------------------------------- HTTP handler
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
   }
-  if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
+  if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
-  const cronSecret = Deno.env.get("SEFAZ_CRON_SECRET");
-  const provided = req.headers.get("x-cron-secret");
+  const cronSecret = Deno.env.get('SEFAZ_CRON_SECRET');
+  const provided = req.headers.get('x-cron-secret');
   if (!cronSecret || provided !== cronSecret) {
-    console.warn(JSON.stringify({
-      level: "WARN", fn: "sefaz-dfe-puxar",
-      message: "unauthorized dispatch attempt",
-    }));
-    return json(401, { error: "unauthorized" });
+    console.warn(
+      JSON.stringify({
+        level: 'WARN',
+        fn: 'sefaz-dfe-puxar',
+        message: 'unauthorized dispatch attempt',
+      })
+    );
+    return json(401, { error: 'unauthorized' });
   }
 
   let payload: { empresa_id?: string } = {};
@@ -503,10 +542,11 @@ Deno.serve(async (req) => {
     const text = await req.text();
     if (text) payload = JSON.parse(text);
   } catch {
-    return json(400, { error: "invalid_json" });
+    return json(400, { error: 'invalid_json' });
   }
   const parsedPayload = RequestBodySchema.safeParse(payload);
-  if (!parsedPayload.success) return createValidationErrorResponse(parsedPayload.error, corsHeaders);
+  if (!parsedPayload.success)
+    return createValidationErrorResponse(parsedPayload.error, corsHeaders);
   payload = parsedPayload.data;
 
   const admin = makeAdminClient();

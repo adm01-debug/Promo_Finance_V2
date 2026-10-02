@@ -7,6 +7,8 @@ import {
   createErrorResponse,
 } from '../_shared/validation.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('executar-relatorios');
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -34,9 +36,9 @@ serve(async (req) => {
     const relatorioId = validation.data.relatorio_id || null;
 
     if (relatorioId) {
-      console.log(`[executar-relatorios] Execução manual do relatório: ${relatorioId}`);
+      log.info(`[executar-relatorios] Execução manual do relatório: ${relatorioId}`);
     } else {
-      console.log('[executar-relatorios] Iniciando execução de relatórios agendados...');
+      log.info('[executar-relatorios] Iniciando execução de relatórios agendados...');
     }
 
     // Buscar relatórios que precisam ser executados
@@ -54,7 +56,9 @@ serve(async (req) => {
     const { data: relatoriosParaExecutar, error: fetchError } = await query;
 
     if (fetchError) {
-      console.error('[executar-relatorios] Erro ao buscar relatórios:', fetchError);
+      log.error('[executar-relatorios] Erro ao buscar relatórios:', {
+        error_message: mensagemErro(fetchError),
+      });
       throw fetchError;
     }
 
@@ -93,16 +97,14 @@ serve(async (req) => {
       }
     }
 
-    console.log(
+    log.info(
       `[executar-relatorios] Encontrados ${relatoriosParaExecutar?.length || 0} relatórios para executar`
     );
 
     const resultados = [];
 
     for (const relatorio of relatoriosParaExecutar || []) {
-      console.log(
-        `[executar-relatorios] Executando: ${relatorio.nome} (${relatorio.tipo_relatorio})`
-      );
+      log.info(`[executar-relatorios] Executando: ${relatorio.nome} (${relatorio.tipo_relatorio})`);
 
       try {
         // Gerar os dados do relatório
@@ -116,7 +118,9 @@ serve(async (req) => {
         });
 
         if (historicoError) {
-          console.error(`[executar-relatorios] Erro ao salvar histórico:`, historicoError);
+          log.error(`[executar-relatorios] Erro ao salvar histórico:`, {
+            error_message: mensagemErro(historicoError),
+          });
         }
 
         // Calcular próxima execução
@@ -137,7 +141,9 @@ serve(async (req) => {
           .eq('id', relatorio.id);
 
         if (updateError) {
-          console.error(`[executar-relatorios] Erro ao atualizar relatório:`, updateError);
+          log.error(`[executar-relatorios] Erro ao atualizar relatório:`, {
+            error_message: mensagemErro(updateError),
+          });
         }
 
         resultados.push({
@@ -147,10 +153,12 @@ serve(async (req) => {
           proximo_envio: proximoEnvio,
         });
 
-        console.log(`[executar-relatorios] Relatório ${relatorio.nome} executado com sucesso`);
+        log.info(`[executar-relatorios] Relatório ${relatorio.nome} executado com sucesso`);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
-        console.error(`[executar-relatorios] Erro ao executar ${relatorio.nome}:`, err);
+        log.error(`[executar-relatorios] Erro ao executar ${relatorio.nome}:`, {
+          error_message: mensagemErro(err),
+        });
 
         // Salvar erro no histórico
         await supabase.from('historico_relatorios').insert({
@@ -168,7 +176,7 @@ serve(async (req) => {
       }
     }
 
-    console.log(
+    log.info(
       `[executar-relatorios] Execução finalizada. ${resultados.length} relatórios processados.`
     );
 
@@ -182,7 +190,7 @@ serve(async (req) => {
     );
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
-    console.error('[executar-relatorios] Erro geral:', err);
+    log.error('[executar-relatorios] Erro geral:', { error_message: mensagemErro(err) });
     return new Response(JSON.stringify({ success: false, error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

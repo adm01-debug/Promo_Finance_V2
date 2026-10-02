@@ -3,6 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import JSZip from 'https://esm.sh/jszip@3.10.1';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('gerar-pacote-evidencias');
 
 const _EvidBodySchema = z.object({
   periodo_inicio: z.string().min(1),
@@ -244,7 +246,7 @@ Windows: Get-FileHash trilha-financeira.csv -Algorithm SHA256
   let audit_warning: string | null = null;
   if (auditErr) {
     // Não bloqueia a geração — apenas loga, sinaliza ao cliente e segue
-    console.error('audit_logs insert falhou:', auditErr.message);
+    log.error('audit_logs insert falhou:', { error_message: mensagemErro(auditErr.message) });
     audit_warning = `Pacote gerado, mas a trilha de auditoria não foi registrada: ${auditErr.message}`;
     send('registrar', 'Registrando pacote', 'concluído (sem audit log)');
   } else {
@@ -385,7 +387,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error('gerar-pacote-evidencias error:', e);
+    log.error('gerar-pacote-evidencias error:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -3,6 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirChamadaInterna, exigirPapel, corsHeadersComSegredo } from '../_shared/auth-guard.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('detectar-anomalias-financeiras');
 
 const corsHeaders = {
   ...corsHeadersComSegredo,
@@ -370,7 +372,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('detectar-anomalias-financeiras error:', e);
+    log.error('detectar-anomalias-financeiras error:', { error_message: mensagemErro(e) });
     const msg = e instanceof Error ? e.message : 'unknown';
     await updateRun({
       status: 'failed',

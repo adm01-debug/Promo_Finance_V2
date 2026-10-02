@@ -1,6 +1,8 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('executar-analise-preditiva');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,12 +57,18 @@ async function analisarEmpresa(
   if (contasPagar.error) throw contasPagar.error;
   if (clientes.error) throw clientes.error;
 
-  console.log('[executar-analise-preditiva] Dados carregados:', {
-    contasReceber: contasReceber.data?.length,
-    contasPagar: contasPagar.data?.length,
-    clientes: clientes.data?.length,
-    transacoes: transacoes.data?.length,
-    metas: metas.data?.length,
+  log.info('[executar-analise-preditiva] Dados carregados:', {
+    context: {
+      args: [
+        {
+          contasReceber: contasReceber.data?.length,
+          contasPagar: contasPagar.data?.length,
+          clientes: clientes.data?.length,
+          transacoes: transacoes.data?.length,
+          metas: metas.data?.length,
+        },
+      ],
+    },
   });
 
   // Preparar contexto para a IA
@@ -166,7 +174,7 @@ Responda em JSON:
 
 IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
 
-  console.log('[executar-analise-preditiva] Chamando IA...');
+  log.info('[executar-analise-preditiva] Chamando IA...');
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
@@ -188,7 +196,9 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('[executar-analise-preditiva] Erro IA:', response.status, errorText);
+    log.error('[executar-analise-preditiva] Erro IA:', {
+      context: { args: [response.status, errorText] },
+    });
     throw new Error(`AI gateway error: ${response.status}`);
   }
 
@@ -207,11 +217,11 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       .trim();
     analise = JSON.parse(cleanContent);
   } catch (parseError) {
-    console.error('[executar-analise-preditiva] Erro parse:', content);
+    log.error('[executar-analise-preditiva] Erro parse:', { error_message: mensagemErro(content) });
     throw new Error('Invalid JSON response from AI');
   }
 
-  console.log('[executar-analise-preditiva] Análise recebida, salvando...');
+  log.info('[executar-analise-preditiva] Análise recebida, salvando...');
 
   // Salvar análise preditiva
   const { data: analiseRecord, error: analiseError } = await supabase
@@ -234,7 +244,9 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
     .single();
 
   if (analiseError) {
-    console.error('[executar-analise-preditiva] Erro salvar análise:', analiseError);
+    log.error('[executar-analise-preditiva] Erro salvar análise:', {
+      error_message: mensagemErro(analiseError),
+    });
   }
 
   // Salvar score de saúde
@@ -246,7 +258,9 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
   });
 
   if (scoreError) {
-    console.error('[executar-analise-preditiva] Erro salvar score:', scoreError);
+    log.error('[executar-analise-preditiva] Erro salvar score:', {
+      error_message: mensagemErro(scoreError),
+    });
   }
 
   // Salvar alertas preditivos
@@ -271,9 +285,11 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       .insert(alertasParaSalvar);
 
     if (alertasError) {
-      console.error('[executar-analise-preditiva] Erro salvar alertas:', alertasError);
+      log.error('[executar-analise-preditiva] Erro salvar alertas:', {
+        error_message: mensagemErro(alertasError),
+      });
     } else {
-      console.log(`[executar-analise-preditiva] ${alertasParaSalvar.length} alertas salvos`);
+      log.info(`[executar-analise-preditiva] ${alertasParaSalvar.length} alertas salvos`);
     }
 
     // Enviar push notifications para alertas críticos
@@ -304,7 +320,9 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
             },
           });
         } catch (pushError) {
-          console.error('[executar-analise-preditiva] Erro push:', pushError);
+          log.error('[executar-analise-preditiva] Erro push:', {
+            error_message: mensagemErro(pushError),
+          });
         }
       }
     }
@@ -330,9 +348,11 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       .insert(recomendacoesParaSalvar);
 
     if (recError) {
-      console.error('[executar-analise-preditiva] Erro salvar recomendações:', recError);
+      log.error('[executar-analise-preditiva] Erro salvar recomendações:', {
+        error_message: mensagemErro(recError),
+      });
     } else {
-      console.log(
+      log.info(
         `[executar-analise-preditiva] ${recomendacoesParaSalvar.length} recomendações salvas`
       );
     }
@@ -356,7 +376,7 @@ export const handler = async (req: Request): Promise<Response> => {
   if (!auth.ok) return auth.resposta;
 
   try {
-    console.log('[executar-analise-preditiva] Iniciando análise preditiva agendada...');
+    log.info('[executar-analise-preditiva] Iniciando análise preditiva agendada...');
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -374,7 +394,7 @@ export const handler = async (req: Request): Promise<Response> => {
     if (empresasErr) throw empresasErr;
 
     const empresaIds = (empresas ?? []).map((e: { id: string }) => e.id);
-    console.log(`[executar-analise-preditiva] ${empresaIds.length} empresas ativas`);
+    log.info(`[executar-analise-preditiva] ${empresaIds.length} empresas ativas`);
 
     // Uma empresa que falhe não pode derrubar as demais: o job é agendado e
     // precisa entregar o máximo possível por execução.
@@ -385,12 +405,14 @@ export const handler = async (req: Request): Promise<Response> => {
         resultados.push(await analisarEmpresa(supabase, empresaId, LOVABLE_API_KEY));
       } catch (erro) {
         const msg = erro instanceof Error ? erro.message : 'Erro desconhecido';
-        console.error(`[executar-analise-preditiva] Falha na empresa ${empresaId}:`, msg);
+        log.error(`[executar-analise-preditiva] Falha na empresa ${empresaId}:`, {
+          error_message: mensagemErro(msg),
+        });
         falhas.push({ empresa_id: empresaId, erro: msg });
       }
     }
 
-    console.log('[executar-analise-preditiva] Análise concluída com sucesso!');
+    log.info('[executar-analise-preditiva] Análise concluída com sucesso!');
 
     return new Response(
       JSON.stringify({
@@ -405,7 +427,7 @@ export const handler = async (req: Request): Promise<Response> => {
       }
     );
   } catch (error) {
-    console.error('[executar-analise-preditiva] Erro:', error);
+    log.error('[executar-analise-preditiva] Erro:', { error_message: mensagemErro(error) });
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'Erro desconhecido',

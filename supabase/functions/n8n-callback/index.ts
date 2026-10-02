@@ -4,6 +4,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('n8n-callback');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -67,7 +69,7 @@ export function createHandler(deps: HandlerDeps) {
       return json({ ok: true, action: body.action, result });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.error('n8n-callback error:', msg);
+      log.error('n8n-callback error:', { error_message: mensagemErro(msg) });
       return json({ error: msg }, 500);
     }
   };

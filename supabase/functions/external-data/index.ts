@@ -1,4 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('external-data');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -51,13 +53,13 @@ async function emitTelemetry(opts: {
     ` count=${opts.count_mode ?? '-'}`;
 
   if (severity === 'very_slow') {
-    console.warn(`⚠️ VERY SLOW QUERY: ${line}`);
+    log.warn(`⚠️ VERY SLOW QUERY: ${line}`);
   } else if (severity === 'slow') {
-    console.warn(`⚠️ SLOW QUERY: ${line}`);
+    log.warn(`⚠️ SLOW QUERY: ${line}`);
   } else if (severity === 'error') {
-    console.error(`${line} error=${opts.error_message}`);
+    log.error(`${line} error=${opts.error_message}`);
   } else {
-    console.info(line);
+    log.info('log_console', { error_message: mensagemErro(line) });
   }
 
   // Only persist slow/error queries to avoid flooding
@@ -87,11 +89,14 @@ async function emitTelemetry(opts: {
         empresa_id: opts.empresa_id || null,
       })
       .then(({ error: insertErr }) => {
-        if (insertErr) console.warn('[telemetry-persist] Insert failed:', insertErr.message);
+        if (insertErr)
+          log.warn('[telemetry-persist] Insert failed:', {
+            error_message: mensagemErro(insertErr.message),
+          });
       });
   } catch (e) {
     // Fire-and-forget: NEVER block the main response
-    console.error('[telemetry] Failed to persist telemetry:', e);
+    log.error('[telemetry] Failed to persist telemetry:', { error_message: mensagemErro(e) });
   }
 }
 
@@ -185,7 +190,7 @@ Deno.serve(async (req) => {
         `Configure em Lovable Cloud → Edge Functions → Secrets para habilitar a sincronização. ` +
         `Enquanto isso, a listagem retorna vazia (fallback) sem interromper o app.`;
 
-      console.warn(
+      log.warn(
         `[external-data] EXTERNAL_DB_NOT_CONFIGURED — missing=[${missing.join(', ')}] tabela=${tabela}`
       );
 
@@ -245,10 +250,12 @@ Deno.serve(async (req) => {
     const queryDurationMs = Math.round(performance.now() - queryStart);
 
     if (error) {
-      console.error(`[external-data] Error querying companies (${tabela}):`, error);
+      log.error(`[external-data] Error querying companies (${tabela}):`, {
+        error_message: mensagemErro(error),
+      });
 
       // Emit error telemetry
-      emitTelemetry({
+      void emitTelemetry({
         operation: 'SELECT',
         table_name: `companies (${tabela})`,
         duration_ms: queryDurationMs,
@@ -267,7 +274,7 @@ Deno.serve(async (req) => {
     }
 
     // Emit telemetry for successful queries
-    emitTelemetry({
+    void emitTelemetry({
       operation: 'SELECT',
       table_name: `companies (${tabela})`,
       duration_ms: queryDurationMs,
@@ -344,10 +351,10 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     const durationMs = Math.round(performance.now() - startTime);
-    console.error('[external-data] Unexpected error:', error);
+    log.error('[external-data] Unexpected error:', { error_message: mensagemErro(error) });
 
     // Emit telemetry for unexpected errors
-    emitTelemetry({
+    void emitTelemetry({
       operation: 'SELECT',
       table_name: 'companies',
       duration_ms: durationMs,

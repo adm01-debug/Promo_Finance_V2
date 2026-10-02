@@ -1,13 +1,15 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-import { validateContract } from "../_shared/contract-validator.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
-import { exigirUsuario } from "../_shared/auth-guard.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('conciliacao-ia');
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 const TransacaoExtratoSchema = z.object({
@@ -51,7 +53,6 @@ interface MatchSugestaoIA {
   analiseIA?: string;
 }
 
-
 const SYSTEM_PROMPT = `Você é um especialista em conciliação bancária. Sua tarefa é analisar transações de extrato bancário e encontrar correspondências com lançamentos do sistema financeiro.
 
 Você deve levar em conta o histórico de decisões anteriores (Aprovados/Rejeitados) para aprender padrões específicos deste usuário. Se uma transação similar foi rejeitada antes, diminua o score. Se foi aprovada, aumente.
@@ -90,7 +91,7 @@ IMPORTANTE:
 - Ignore transações sem correspondência clara (score < 40)`;
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -101,62 +102,61 @@ serve(async (req) => {
 
   try {
     // Rate limit: 30 req/min por IP (endpoint de IA com custo)
-    const ip = (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0].trim();
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     if (supabaseUrl && serviceRoleKey) {
       const supa = createClient(supabaseUrl, serviceRoleKey);
       const rl = await checkRateLimit(supa, {
-        endpoint: "conciliacao-ia",
+        endpoint: 'conciliacao-ia',
         ip,
         limit: 30,
         windowSeconds: 60,
-        userAgent: req.headers.get("user-agent"),
+        userAgent: req.headers.get('user-agent'),
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
     const body = await req.json();
     const validation = await validateContract(ConciliacaoInputSchema, body);
-    
+
     if (!validation.success) {
       return validation.response;
     }
 
     const { transacoes, lancamentos, historicoFeedback } = validation.data;
 
-
     if (!transacoes?.length || !lancamentos?.length) {
       return new Response(
-        JSON.stringify({ matches: [], message: "Dados insuficientes para análise" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ matches: [], message: 'Dados insuficientes para análise' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log(`Analisando ${transacoes.length} transações contra ${lancamentos.length} lançamentos`);
+    log.info(`Analisando ${transacoes.length} transações contra ${lancamentos.length} lançamentos`);
 
     // Prepare context for AI
-    const transacoesResumo = transacoes.slice(0, 50).map(t => ({
+    const transacoesResumo = transacoes.slice(0, 50).map((t) => ({
       id: t.id,
       data: t.data,
       descricao: t.descricao.substring(0, 100),
       valor: t.valor,
-      tipo: t.tipo
+      tipo: t.tipo,
     }));
 
-    const lancamentosResumo = lancamentos.slice(0, 100).map(l => ({
+    const lancamentosResumo = lancamentos.slice(0, 100).map((l) => ({
       id: l.id,
       tipo: l.tipo,
       entidade: l.entidade.substring(0, 50),
       descricao: l.descricao?.substring(0, 50) || '',
       valor: l.valor,
       dataVencimento: l.dataVencimento,
-      documento: l.documento
+      documento: l.documento,
     }));
 
     const userPrompt = `Analise estas transações de extrato bancário e encontre correspondências com os lançamentos do sistema:
@@ -167,22 +167,26 @@ ${JSON.stringify(transacoesResumo, null, 2)}
 LANÇAMENTOS DO SISTEMA:
 ${JSON.stringify(lancamentosResumo, null, 2)}
 
-${historicoFeedback?.length ? `HISTÓRICO DE APRENDIZADO (FEEDBACKS ANTERIORES):
-${JSON.stringify(historicoFeedback, null, 2)}` : ''}
+${
+  historicoFeedback?.length
+    ? `HISTÓRICO DE APRENDIZADO (FEEDBACKS ANTERIORES):
+${JSON.stringify(historicoFeedback, null, 2)}`
+    : ''
+}
 
 Encontre os melhores matches e retorne o JSON conforme especificado.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: 'google/gemini-2.5-flash',
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: userPrompt }
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userPrompt },
         ],
         temperature: 0.2,
       }),
@@ -190,28 +194,30 @@ Encontre os melhores matches e retorne o JSON conforme especificado.`;
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.error("Rate limit exceeded");
+        log.error('Rate limit exceeded');
         return new Response(
-          JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns instantes." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({
+            error: 'Limite de requisições excedido. Tente novamente em alguns instantes.',
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       if (response.status === 402) {
-        console.error("Payment required");
+        log.error('Payment required');
         return new Response(
-          JSON.stringify({ error: "Créditos insuficientes para análise de IA." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: 'Créditos insuficientes para análise de IA.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "";
-    
-    console.log("AI response received, parsing...");
+    const content = data.choices?.[0]?.message?.content || '';
+
+    log.info('AI response received, parsing...');
 
     // Extract JSON from response
     let matches: MatchSugestaoIA[] = [];
@@ -222,34 +228,36 @@ Encontre os melhores matches e retorne o JSON conforme especificado.`;
         matches = (parsed.matches || []).map((m: any) => ({
           transacaoId: m.transacaoId,
           lancamentoId: m.lancamentoId,
-          lancamentoTipo: lancamentos.find(l => l.id === m.lancamentoId)?.tipo || 'pagar',
+          lancamentoTipo: lancamentos.find((l) => l.id === m.lancamentoId)?.tipo || 'pagar',
           score: Math.min(100, Math.max(0, m.score || 0)),
           confianca: m.score >= 80 ? 'alta' : m.score >= 60 ? 'media' : 'baixa',
           motivos: m.motivos || [],
-          analiseIA: m.analiseIA || ''
+          analiseIA: m.analiseIA || '',
         }));
       }
     } catch (parseError) {
-      console.error("Error parsing AI response:", parseError);
-      console.log("Raw content:", content);
+      log.error('Error parsing AI response:', { error_message: mensagemErro(parseError) });
+      log.info('Raw content:', { context: { args: [content] } });
     }
 
-    console.log(`Found ${matches.length} AI-suggested matches`);
+    log.info(`Found ${matches.length} AI-suggested matches`);
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         matches,
         processedAt: new Date().toISOString(),
         transacoesAnalisadas: transacoes.length,
-        lancamentosAnalisados: lancamentos.length
+        lancamentosAnalisados: lancamentos.length,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error("Conciliação IA error:", error);
+    log.error('Conciliação IA error:', { error_message: mensagemErro(error) });
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Erro ao processar análise de IA" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({
+        error: error instanceof Error ? error.message : 'Erro ao processar análise de IA',
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

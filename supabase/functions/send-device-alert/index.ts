@@ -1,11 +1,13 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('send-device-alert');
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 interface DeviceAlertRequest {
@@ -18,11 +20,14 @@ interface DeviceAlertRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'method_not_allowed' }), {
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   const auth = await exigirUsuario(req);
@@ -32,31 +37,35 @@ const handler = async (req: Request): Promise<Response> => {
     const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
-    const Schema = z.object({
-      userId: z.string().uuid(),
-      email: z.string().email(),
-      browser: z.string(),
-      os: z.string(),
-      deviceType: z.string(),
-      timestamp: z.string(),
-    }).passthrough();
+    const Schema = z
+      .object({
+        userId: z.string().uuid(),
+        email: z.string().email(),
+        browser: z.string(),
+        os: z.string(),
+        deviceType: z.string(),
+        timestamp: z.string(),
+      })
+      .passthrough();
     const parsed = validatePayload(Schema, raw, 'send-device-alert');
     if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
     const { userId, email, browser, os, deviceType, timestamp } = parsed.data as DeviceAlertRequest;
     if (userId !== auth.dados.userId || !auth.dados.email) {
       return new Response(JSON.stringify({ error: 'destinatario_nao_autorizado' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     // O email do body é apenas legado de contrato; a identidade autenticada é
     // a única fonte autorizada do destinatário.
     if (email.toLowerCase() !== auth.dados.email.toLowerCase()) {
       return new Response(JSON.stringify({ error: 'destinatario_nao_autorizado' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log(`Sending new device alert to authenticated user ${userId}`);
+    log.info(`Sending new device alert to authenticated user ${userId}`);
 
     const formattedDate = new Date(timestamp).toLocaleString('pt-BR', {
       timeZone: 'America/Sao_Paulo',
@@ -64,7 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
 
     const emailHtml = `
@@ -126,36 +135,33 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Segurança <onboarding@resend.dev>",
+        from: 'Segurança <onboarding@resend.dev>',
         to: [email],
-        subject: "⚠️ Novo dispositivo detectado em sua conta",
+        subject: '⚠️ Novo dispositivo detectado em sua conta',
         html: emailHtml,
       }),
     });
 
     const data = await res.json();
-    console.log("Device alert email sent:", data);
+    log.info('Device alert email sent:', { context: { args: [data] } });
 
     return new Response(JSON.stringify({ success: true, data }), {
       status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   } catch (error: any) {
-    console.error("Error in send-device-alert function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    log.error('Error in send-device-alert function:', { error_message: mensagemErro(error) });
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
   }
 };
 
