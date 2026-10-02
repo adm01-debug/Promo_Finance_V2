@@ -1,10 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 // ── Telemetry constants ─────────────────────────────────────────────────
 const SLOW_QUERY_THRESHOLD_MS = 3000;
@@ -97,6 +92,8 @@ async function emitTelemetry(opts: {
 
 // ── Main handler (v2: graceful fallback when EXTERNAL_* secrets missing) ──
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -248,7 +245,7 @@ Deno.serve(async (req) => {
       console.error(`[external-data] Error querying companies (${tabela}):`, error);
 
       // Emit error telemetry
-      emitTelemetry({
+      void emitTelemetry({
         operation: 'SELECT',
         table_name: `companies (${tabela})`,
         duration_ms: queryDurationMs,
@@ -267,7 +264,7 @@ Deno.serve(async (req) => {
     }
 
     // Emit telemetry for successful queries
-    emitTelemetry({
+    void emitTelemetry({
       operation: 'SELECT',
       table_name: `companies (${tabela})`,
       duration_ms: queryDurationMs,
@@ -347,7 +344,7 @@ Deno.serve(async (req) => {
     console.error('[external-data] Unexpected error:', error);
 
     // Emit telemetry for unexpected errors
-    emitTelemetry({
+    void emitTelemetry({
       operation: 'SELECT',
       table_name: 'companies',
       duration_ms: durationMs,

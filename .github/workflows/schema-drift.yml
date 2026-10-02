@@ -1,0 +1,167 @@
+name: Schema drift (types + migrations)
+
+# Vigia semanal do pipeline de banco:
+#  1. Regenera os tipos TS do Supabase e abre PR automático se divergirem.
+#  2. Compara supabase/migrations/ com supabase_migrations.schema_migrations
+#     em prod e reporta drift nos dois sentidos.
+# Agenda semanal + execução manual. Não roda em PR — é observabilidade do
+# pipeline de migrations, não gate de código.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # segundas 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: schema-drift
+  cancel-in-progress: true
+
+env:
+  PROD_PROJECT_REF: ${{ vars.PROD_PROJECT_REF }}
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+
+jobs:
+  types-drift:
+    name: Tipos TS regenerados ↔ commitados
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # Sempre da main: um workflow_dispatch iniciado a partir de branch
+          # não integrada colocaria os commits dela na PR de tipos.
+          ref: main
+          persist-credentials: false
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.22.6
+
+      - name: Regenerar tipos do schema de prod
+        run: |
+          supabase gen types typescript \
+            --project-id "$PROD_PROJECT_REF" \
+            --schema public \
+            > src/integrations/supabase/types.ts
+
+      - name: Verificar drift
+        id: drift
+        run: |
+          if git diff --quiet -- src/integrations/supabase/types.ts; then
+            echo "Sem drift — types.ts está em dia com prod."
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Drift detectado em types.ts."
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Abrir PR de drift
+        if: steps.drift.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="chore/db-types-drift-$(date +%Y%m%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add src/integrations/supabase/types.ts
+          git commit -m "chore(db): regenera tipos Supabase após drift de schema"
+          # checkout usa persist-credentials:false — autentica o push com o
+          # GITHUB_TOKEN do job direto na URL (sem gravar o token no .git/config).
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          # Em rerun no mesmo dia a branch remota já existe: busca o SHA dela
+          # para um lease explícito — falha só se alguém mexeu na branch entre
+          # o fetch e o push (caso em que queremos ver).
+          if git fetch "$REMOTE" "$BRANCH"; then
+            git push --force-with-lease="refs/heads/$BRANCH:$(git rev-parse FETCH_HEAD)" \
+              "$REMOTE" "$BRANCH"
+          else
+            git push "$REMOTE" "$BRANCH"
+          fi
+          # Reusa a PR já aberta no mesmo dia em vez de falhar na criação.
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            echo "PR da branch $BRANCH já existe — apenas os commits foram atualizados."
+            exit 0
+          fi
+          gh pr create \
+            --head "$BRANCH" \
+            --title "chore(db): tipos Supabase dessincronizados de prod" \
+            --body "$(cat <<'EOF'
+          Regeneração automática semanal detectou que `src/integrations/supabase/types.ts`
+          diverge do schema de prod (`bwwbeyolnnzppeuhgkcd`).
+
+          Causa provável: DDL aplicada fora do fluxo de migrations ou migration
+          aplicada sem regerar os tipos. Revisar o diff e mergear — tipos
+          desatualizados escondem colunas renomeadas/removidas do TypeScript.
+
+          Gerado por `.github/workflows/schema-drift.yml`.
+          EOF
+          )" --base main
+
+  migration-parity:
+    name: Paridade migrations locais ↔ aplicadas em prod
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # Sempre da main: um workflow_dispatch iniciado a partir de branch
+          # não integrada colocaria os commits dela na PR de tipos.
+          ref: main
+          persist-credentials: false
+
+      - name: Instalar psql
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Comparar versões
+        run: |
+          psql "$PROD_DB_URL" -At \
+            -c "select version from supabase_migrations.schema_migrations order by version" \
+            > /tmp/remote_versions.txt
+
+          # O banco guarda só o prefixo numérico em schema_migrations.version;
+          # arquivos locais podem ter sufixo descritivo/UUID depois do timestamp.
+          find supabase/migrations -maxdepth 1 -name '*.sql' -print0 \
+            | xargs -0 -n1 basename \
+            | sed -E 's/^([0-9]+).*\.sql$/\1/' | sort -u \
+            > /tmp/local_versions.txt
+
+          comm -23 /tmp/remote_versions.txt /tmp/local_versions.txt > /tmp/remote_only.txt
+          comm -13 /tmp/remote_versions.txt /tmp/local_versions.txt > /tmp/local_only.txt
+
+          REMOTE_ONLY=$(wc -l < /tmp/remote_only.txt)
+          LOCAL_ONLY=$(wc -l < /tmp/local_only.txt)
+
+          {
+            echo "## Paridade de migrations ($(date -u +%Y-%m-%d))"
+            echo
+            echo "- Versões aplicadas em prod: $(wc -l < /tmp/remote_versions.txt)"
+            echo "- Arquivos de migration no repo: $(wc -l < /tmp/local_versions.txt)"
+            echo "- Aplicadas em prod sem arquivo no repo: $REMOTE_ONLY"
+            echo "- No repo sem aplicação em prod: $LOCAL_ONLY"
+            echo
+            if [ "$REMOTE_ONLY" -gt 0 ]; then
+              echo "### Em prod sem arquivo no repo (DDL fora do pipeline)"
+              echo '```'; cat /tmp/remote_only.txt; echo '```'
+            fi
+            if [ "$LOCAL_ONLY" -gt 0 ]; then
+              echo "### No repo sem aplicação (migrations pendentes)"
+              echo '```'; cat /tmp/local_only.txt; echo '```'
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+          # Falha só quando há migrations locais não aplicadas — sinal acionável
+          # claro (rodar staging-migrate). Drift reverso fica no relatório.
+          if [ "$LOCAL_ONLY" -gt 0 ]; then
+            echo "::error::$LOCAL_ONLY migration(s) no repo não aplicadas em prod — rodar staging-migrate"
+            exit 1
+          fi

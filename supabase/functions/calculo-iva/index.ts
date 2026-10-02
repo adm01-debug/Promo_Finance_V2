@@ -1,8 +1,7 @@
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { CalculoIvaSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-import { exigirUsuario } from "../_shared/auth-guard.ts";
-
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { CalculoIvaSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
+import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 // Alíquotas de transição da Reforma Tributária (P7)
 const CRONOGRAMA = [
@@ -17,6 +16,7 @@ const CRONOGRAMA = [
 ];
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
@@ -24,41 +24,44 @@ serve(async (req) => {
     if (!guard.ok) return guard.resposta;
 
     const rawBody = await req.json();
-    const validation = validatePayload(CalculoIvaSchema, rawBody, "calculo-iva");
+    const validation = validatePayload(CalculoIvaSchema, rawBody, 'calculo-iva');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { faturamentoAnual, ano, setor = 'geral' } = validation.data;
 
+    const config = CRONOGRAMA.find((c) => c.ano === (ano || 2026)) || CRONOGRAMA[0];
 
-    const config = CRONOGRAMA.find(c => c.ano === (ano || 2026)) || CRONOGRAMA[0];
-    
     // Redutores setoriais (exemplo simplificado)
     let redutor = 1.0;
     if (['saude', 'educacao', 'servicos_limpeza'].includes(setor)) redutor = 0.4;
     if (['agro'].includes(setor)) redutor = 0.0; // Isento ou alíquota zero dependendo do caso
 
-    const cbs = (faturamentoAnual * (config.cbs / 100)) * redutor;
-    const ibs = (faturamentoAnual * (config.ibs / 100)) * redutor;
+    const cbs = faturamentoAnual * (config.cbs / 100) * redutor;
+    const ibs = faturamentoAnual * (config.ibs / 100) * redutor;
     const totalIVA = cbs + ibs;
 
-    return new Response(JSON.stringify({
-      ano: config.ano,
-      cbs,
-      ibs,
-      totalIVA,
-      cargaEfetiva: (totalIVA / faturamentoAnual) * 100,
-      config: {
-        aliq_cbs: config.cbs * redutor,
-        aliq_ibs: config.ibs * redutor,
-        redutor_setorial: (1 - redutor) * 100
+    return new Response(
+      JSON.stringify({
+        ano: config.ano,
+        cbs,
+        ibs,
+        totalIVA,
+        cargaEfetiva: (totalIVA / faturamentoAnual) * 100,
+        config: {
+          aliq_cbs: config.cbs * redutor,
+          aliq_ibs: config.ibs * redutor,
+          redutor_setorial: (1 - redutor) * 100,
+        },
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    );
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });

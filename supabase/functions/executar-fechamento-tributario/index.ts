@@ -7,18 +7,14 @@ import { createLogger } from '../_shared/observability.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
+import { getRequestId } from '../_shared/correlation.ts';
 const _FechamentoSchema = z.object({
   empresa_id: z.string().uuid(),
   ano: z.number().int().min(2000).max(2100),
   mes: z.number().int().min(1).max(12),
 });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
 
 interface CheckResult {
   id: string;
@@ -38,8 +34,9 @@ interface ReqBody {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  const log = createLogger('executar-fechamento-tributario');
+  const log = createLogger('executar-fechamento-tributario', getRequestId(req));
   const startedAt = Date.now();
 
   try {
@@ -92,7 +89,7 @@ Deno.serve(async (req) => {
     // O RBAC acima é global (user_roles não tem empresa_id): ser "financeiro"
     // não diz em qual empresa. Sem este vínculo, o body.empresa_id permitiria
     // ler e ESCREVER o fechamento tributário de outro tenant via service-role.
-    const escopo = await exigirVinculoEmpresa(uid, body.empresa_id);
+    const escopo = await exigirVinculoEmpresa(uid, body.empresa_id, req);
     if (!escopo.ok) return escopo.resposta;
 
     log.info('fechamento_iniciado', {

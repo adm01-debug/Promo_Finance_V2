@@ -6,31 +6,37 @@
 // Compatibilidade retroativa: mantém as funções antigas em produção; este
 // dispatcher permite migração gradual e adição de novos tipos sem novo deploy.
 
-import { corsHeaders } from "../_shared/cors.ts";
+import {} from '../_shared/cors.ts';
 import { createLogger } from '../_shared/logger.ts';
 import { getRequestId, correlationResponseHeaders } from '../_shared/correlation.ts';
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const ALERT_TYPES = ['financeiro', 'tributario', 'preditivo', 'health-score'] as const;
-type AlertType = typeof ALERT_TYPES[number];
+type AlertType = (typeof ALERT_TYPES)[number];
 
 const FUNCTION_MAP: Record<AlertType, string> = {
-  'financeiro': 'gerar-alertas',
-  'tributario': 'gerar-alertas-tributarios',
-  'preditivo': 'analise-preditiva',
+  financeiro: 'gerar-alertas',
+  tributario: 'gerar-alertas-tributarios',
+  preditivo: 'analise-preditiva',
   'health-score': 'calcular-health-score-operacional',
 };
 const ForwardedBodySchema = z.string().max(1_000_000);
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   const requestId = getRequestId(req);
   const logger = createLogger('gerar-alertas-dispatcher', requestId);
-  const headers = { ...corsHeaders, ...correlationResponseHeaders(requestId), 'Content-Type': 'application/json' };
+  const headers = {
+    ...corsHeaders,
+    ...correlationResponseHeaders(requestId),
+    'Content-Type': 'application/json',
+  };
 
   try {
     const url = new URL(req.url);
@@ -38,10 +44,10 @@ Deno.serve(async (req) => {
 
     if (!ALERT_TYPES.includes(tipo)) {
       logger.warn('tipo inválido', { tipo });
-      return new Response(
-        JSON.stringify({ error: 'tipo inválido', allowed: ALERT_TYPES }),
-        { headers, status: 400 },
-      );
+      return new Response(JSON.stringify({ error: 'tipo inválido', allowed: ALERT_TYPES }), {
+        headers,
+        status: 400,
+      });
     }
 
     const targetFunction = FUNCTION_MAP[tipo];
@@ -57,9 +63,9 @@ Deno.serve(async (req) => {
       method: req.method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authHeader,
+        Authorization: authHeader,
         'x-request-id': requestId,
-        'apikey': Deno.env.get('SUPABASE_ANON_KEY') || '',
+        apikey: Deno.env.get('SUPABASE_ANON_KEY') || '',
       },
       body,
     });
@@ -70,9 +76,9 @@ Deno.serve(async (req) => {
     return new Response(data, { headers, status: resp.status });
   } catch (err) {
     logger.error('dispatch failed', { error: (err as Error).message });
-    return new Response(
-      JSON.stringify({ error: (err as Error).message, request_id: requestId }),
-      { headers, status: 500 },
-    );
+    return new Response(JSON.stringify({ error: (err as Error).message, request_id: requestId }), {
+      headers,
+      status: 500,
+    });
   }
 });

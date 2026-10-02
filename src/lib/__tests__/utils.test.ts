@@ -5,6 +5,7 @@ describe('cn (classname merge)', () => {
   it('mescla classes', () => expect(cn('a', 'b')).toBe('a b'));
   it('resolve conflitos tailwind', () => expect(cn('p-2', 'p-4')).toBe('p-4'));
   it('ignora undefined', () => expect(cn('a', undefined, 'b')).toBe('a b'));
+  // eslint-disable-next-line no-constant-binary-expression -- testa tratamento de falsy
   it('ignora false', () => expect(cn('a', false && 'hidden', 'b')).toBe('a b'));
   it('vazio', () => expect(cn()).toBe(''));
   it('condicionais', () => {

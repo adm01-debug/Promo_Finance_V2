@@ -3,6 +3,44 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
+// Redação de credenciais: valores de env que pareçam segredo são mascarados no
+// insert — um handler que logue um token por descuido não o espalha na tabela.
+// Recomputado a cada chamada: um segredo criado depois do boot (Deno.env.set)
+// também precisa ser mascarado nos registros seguintes.
+function segredos(): string[] {
+  try {
+    return Object.entries(Deno.env.toObject())
+      .filter(([k, v]) => /(KEY|SECRET|TOKEN|PASSWORD)/.test(k) && v.length >= 8)
+      .map(([, v]) => v);
+  } catch {
+    return [];
+  }
+}
+
+// Chaves cujo valor nunca vai para edge_function_logs: identificadores
+// pessoais e credenciais embutidos em context/metadata — mesma regra do
+// console-persist, porque a tabela libera leitura a todo admin sem escopo
+// de empresa. Valores financeiros ficam: são o propósito da trilha.
+const CHAVE_SENSIVEL =
+  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email)/i;
+
+function redigir(x: unknown): unknown {
+  if (typeof x === 'string') {
+    let out = x;
+    for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+    return out;
+  }
+  if (Array.isArray(x)) return x.map(redigir);
+  if (x !== null && typeof x === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(x as Record<string, unknown>)) {
+      out[k] = CHAVE_SENSIVEL.test(k) ? '[REDACTED]' : redigir(v);
+    }
+    return out;
+  }
+  return x;
+}
+
 interface LogEntry {
   function_name: string;
   level: 'info' | 'warn' | 'error';
@@ -20,21 +58,20 @@ export interface EdgeLogger {
   flush: () => Promise<void>;
 }
 
-export function createLogger(functionName: string): EdgeLogger {
+export function createLogger(functionName: string, requestId?: string): EdgeLogger {
   const buffer: LogEntry[] = [];
   const startedAt = Date.now();
 
-  const push = (
-    level: 'info' | 'warn' | 'error',
-    event: string,
-    extra?: Partial<LogEntry>
-  ) => {
+  const push = (level: 'info' | 'warn' | 'error', event: string, extra?: Partial<LogEntry>) => {
     const entry: LogEntry = {
       function_name: functionName,
       level,
       event,
       ...extra,
     };
+    if (requestId) {
+      entry.context = { request_id: requestId, ...(extra?.context ?? {}) };
+    }
     buffer.push(entry);
     // Console também (compatibilidade com supabase logs)
     try {
@@ -51,7 +88,20 @@ export function createLogger(functionName: string): EdgeLogger {
     if (!url || !key) return;
     try {
       const admin = createClient(url, key);
-      const rows = buffer.splice(0, buffer.length);
+      // A API pública do logger fala `context`, mas a coluna real da tabela é
+      // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
+      const rows = buffer
+        .splice(0, buffer.length)
+        .map(({ context, event, error_message, ...rest }) => ({
+          ...rest,
+          event: redigir(event) as string,
+          ...(error_message !== undefined
+            ? { error_message: redigir(error_message) as string }
+            : {}),
+          ...(context !== undefined
+            ? { metadata: redigir(context) as Record<string, unknown> }
+            : {}),
+        }));
       await admin.from('edge_function_logs').insert(rows);
     } catch (err) {
       // Nunca lançar — observabilidade não pode derrubar a função

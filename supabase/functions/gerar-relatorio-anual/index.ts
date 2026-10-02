@@ -6,13 +6,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 
 const RelatorioAnualBodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -21,11 +16,14 @@ const RelatorioAnualBodySchema = z.object({
 type ReqBody = z.infer<typeof RelatorioAnualBodySchema>;
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+  const requestId = getRequestId(req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const logger = createLogger('gerar-relatorio-anual');
+  const logger = createLogger('gerar-relatorio-anual', requestId);
   const t0 = Date.now();
   logger.info('fn_start');
 
@@ -46,8 +44,7 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsErr } =
-      await supabaseAuth.auth.getClaims(token);
+    const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
     if (claimsErr || !claimsData?.claims) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
@@ -59,14 +56,9 @@ Deno.serve(async (req) => {
     const admin = createClient(supabaseUrl, serviceKey);
 
     // RBAC — admin/financeiro/contador_readonly
-    const { data: roles } = await admin
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId);
+    const { data: roles } = await admin.from('user_roles').select('role').eq('user_id', userId);
     const allowedRoles = new Set(['admin', 'financeiro', 'contador_readonly']);
-    const hasAccess = (roles ?? []).some((r) =>
-      allowedRoles.has(String(r.role))
-    );
+    const hasAccess = (roles ?? []).some((r) => allowedRoles.has(String(r.role)));
     if (!hasAccess) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403,
@@ -133,6 +125,7 @@ Deno.serve(async (req) => {
         headers: {
           Authorization: authHeader,
           'Content-Type': 'application/json',
+          ...correlationHeaders(requestId),
         },
         body: JSON.stringify({
           empresaId: body.empresa_id,
@@ -149,14 +142,10 @@ Deno.serve(async (req) => {
 
     // Totais anuais
     const sum = (k: string) =>
-      serie.reduce(
-        (acc: number, s: Record<string, number>) => acc + Number(s[k] ?? 0),
-        0
-      );
+      serie.reduce((acc: number, s: Record<string, number>) => acc + Number(s[k] ?? 0), 0);
     const faturamentoAnual = sum('faturamento');
     const tributosAnuais = sum('total_tributos');
-    const cargaEfetiva =
-      faturamentoAnual > 0 ? (tributosAnuais / faturamentoAnual) * 100 : 0;
+    const cargaEfetiva = faturamentoAnual > 0 ? (tributosAnuais / faturamentoAnual) * 100 : 0;
 
     logger.info('data_aggregated', {
       context: {
