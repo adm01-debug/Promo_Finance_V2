@@ -24,10 +24,7 @@ interface OpenFinanceRequest {
 }
 
 // Open Finance Brasil API endpoints (sandbox)
-const OPEN_FINANCE_BASE_URL =
-  Deno.env.get('OPEN_FINANCE_BASE_URL') || 'https://api.openbanking.org.br/sandbox';
 const OPEN_FINANCE_CLIENT_ID = Deno.env.get('OPEN_FINANCE_CLIENT_ID');
-const OPEN_FINANCE_CLIENT_SECRET = Deno.env.get('OPEN_FINANCE_CLIENT_SECRET');
 const OPEN_FINANCE_REDIRECT_URI = Deno.env.get('OPEN_FINANCE_REDIRECT_URI');
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;

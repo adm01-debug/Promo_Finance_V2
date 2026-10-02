@@ -117,7 +117,6 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const logger = createLogger('decidir-regime', getRequestId(req));
-  const t0 = Date.now();
 
   try {
     const authHeader = req.headers.get('Authorization');

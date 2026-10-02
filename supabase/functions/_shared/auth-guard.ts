@@ -24,7 +24,7 @@
  */
 
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeaders, corsHeadersPara } from './cors.ts';
+import { corsHeadersPara } from './cors.ts';
 
 /** Headers CORS por requisição — ecoa o Origin permitido (allowlist em cors.ts). */
 export function corsHeadersComSegredoPara(req: Request): Record<string, string> {
@@ -428,7 +428,19 @@ export async function exigirAdminOuVinculo(
     _user_id: userId,
     _role: 'admin',
   });
-  if (isAdmin) return null;
+  if (isAdmin) {
+    const token = extrairBearer(req);
+    if (token && mfaAdminInsuficiente(['admin'], token)) {
+      return new Response(
+        JSON.stringify({
+          error: 'mfa_requerido',
+          message: 'Esta operação exige segundo fator (TOTP) ativo na sessão.',
+        }),
+        { status: 403, headers: { ...cors, 'Content-Type': 'application/json' } }
+      );
+    }
+    return null;
+  }
   if (!empresaId) {
     return new Response(
       JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
@@ -465,10 +477,17 @@ export async function exigirAlgumPapel(
 ): Promise<Response | null> {
   const { data: roles, error } = await supabase
     .from('user_roles')
-    .select('role')
-    .eq('user_id', userId);
+    .select('role, expires_at')
+    .eq('user_id', userId)
+    .eq('is_active', true);
   if (error) throw error;
-  const possui = (roles ?? []).some((linha: { role: string }) => papeis.includes(linha.role));
+  const agora = Date.now();
+  const possui = (roles ?? []).some((linha: { role: string; expires_at?: string | null }) => {
+    if (!papeis.includes(linha.role)) return false;
+    if (!linha.expires_at) return true;
+    const expiraEm = Date.parse(linha.expires_at);
+    return Number.isFinite(expiraEm) && expiraEm > agora;
+  });
   if (possui) return null;
   return new Response(JSON.stringify({ error: mensagem }), {
     status: 403,

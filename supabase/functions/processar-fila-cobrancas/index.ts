@@ -135,13 +135,10 @@ export const handler = async (req: Request) => {
     });
   } catch (error) {
     console.error('Erro processar fila:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ error: 'Erro interno ao processar a fila.' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 };
 

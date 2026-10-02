@@ -91,13 +91,10 @@ export const handler = async (req: Request) => {
     });
   } catch (error) {
     console.error('Erro ao gerar relatório diário:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ error: 'Erro interno ao gerar o relatório diário.' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 };
 

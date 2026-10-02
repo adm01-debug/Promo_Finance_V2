@@ -65,7 +65,7 @@ jobs:
           BRANCH="chore/db-types-drift-$(date +%Y%m%d)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
+          git checkout -B "$BRANCH"
           git add src/integrations/supabase/types.ts
           git commit -m "chore(db): regenera tipos Supabase após drift de schema"
           # checkout usa persist-credentials:false — autentica o push com o

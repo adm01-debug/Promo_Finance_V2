@@ -1,4 +1,3 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
@@ -196,9 +195,9 @@ Deno.serve(async (req) => {
       error_message: err instanceof Error ? err.message : String(err),
     });
     await logger.flush();
-    return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
-      { status: 500, headers: corsHeaders }
-    );
+    return new Response(JSON.stringify({ error: 'Erro interno ao processar a projeção.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 });

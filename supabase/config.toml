@@ -231,7 +231,9 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.health]
-verify_jwt = true
+# Monitor externo de uptime precisa alcançar o endpoint sem JWT; a resposta
+# pública já é só {status, timestamp} — os detalhes de infra exigem login.
+verify_jwt = false
 
 [functions.log-sped-bitrix24]
 verify_jwt = true

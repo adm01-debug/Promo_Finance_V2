@@ -24,7 +24,7 @@ interface ConsoleLogRow {
   function_name: string;
   level: 'info' | 'warn' | 'error';
   event: string;
-  context?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }
 
 // O nome da função não é derivável de um módulo compartilhado; o runtime da
@@ -76,6 +76,37 @@ function ehEchoEstruturado(arg: unknown): boolean {
   }
 }
 
+// O Logger legado (_shared/logger.ts) emite JSON {function, message, context}
+// só para o console — sem insert próprio. O tee reaproveita os campos para
+// gravar a linha com a função e a mensagem reais em vez de 'console-tee'.
+interface LogLegado {
+  functionName: string;
+  event: string;
+  metadata: Record<string, unknown>;
+}
+
+function parseLogLegado(arg: unknown): LogLegado | null {
+  if (typeof arg !== 'string') return null;
+  const s = arg.trim();
+  if (!s.startsWith('{')) return null;
+  try {
+    const parsed = JSON.parse(s) as Record<string, unknown>;
+    if (typeof parsed['function'] !== 'string' || typeof parsed['message'] !== 'string') {
+      return null;
+    }
+    return {
+      functionName: parsed['function'],
+      event: parsed['message'].slice(0, 2000),
+      metadata:
+        parsed['context'] && typeof parsed['context'] === 'object'
+          ? (parsed['context'] as Record<string, unknown>)
+          : {},
+    };
+  } catch {
+    return null;
+  }
+}
+
 function serializar(arg: unknown): unknown {
   if (arg instanceof Error) {
     return { name: arg.name, message: arg.message, stack: arg.stack };
@@ -88,7 +119,8 @@ function serializar(arg: unknown): unknown {
 function agendarFlush(): void {
   if (Deno.env.get('DENO_TESTING')) return;
   if (buffer.length >= 10) {
-    void flush();
+    // waitUntil mantém o lote vivo se o handler responder antes do insert.
+    segurarNoIsolado(flush());
     return;
   }
   if (agendado === null) {
@@ -162,15 +194,18 @@ function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unkno
     original(...args);
     try {
       if (args.length === 1 && ehEchoEstruturado(args[0])) return;
-      const event = args
-        .map((a) => (typeof a === 'string' ? a : JSON.stringify(serializar(a))))
-        .join(' ')
-        .slice(0, 2000);
+      const legado = args.length === 1 ? parseLogLegado(args[0]) : null;
+      const event =
+        legado?.event ??
+        args
+          .map((a) => (typeof a === 'string' ? a : JSON.stringify(serializar(a))))
+          .join(' ')
+          .slice(0, 2000);
       buffer.push({
-        function_name: FUNCTION_NAME,
+        function_name: legado?.functionName ?? FUNCTION_NAME,
         level,
         event,
-        context: { raw: args.map(serializar) },
+        metadata: legado?.metadata ?? { raw: args.map(serializar) },
       });
       agendarFlush();
     } catch {

@@ -50,7 +50,12 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     if (!url || !key) return;
     try {
       const admin = createClient(url, key);
-      const rows = buffer.splice(0, buffer.length);
+      // A API pública do logger fala `context`, mas a coluna real da tabela é
+      // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
+      const rows = buffer.splice(0, buffer.length).map(({ context, ...rest }) => ({
+        ...rest,
+        ...(context !== undefined ? { metadata: context } : {}),
+      }));
       await admin.from('edge_function_logs').insert(rows);
     } catch (err) {
       // Nunca lançar — observabilidade não pode derrubar a função

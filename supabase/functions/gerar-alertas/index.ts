@@ -185,7 +185,6 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
         if (emRisco) {
           const falta = meta.valor_meta - valorAtual;
           const diasRestantes = diasNoMes - diaDoMes;
-          const mediaIdealDiaria = falta / diasRestantes;
 
           if (percentualAtingido < percentualMesDecorrido * 0.5) {
             nivelRisco = 'critica';
@@ -218,7 +217,6 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
 
       case 'inadimplencia':
         valorAtual = taxaInadimplencia;
-        percentualAtingido = valorAtual;
         emRisco = taxaInadimplencia > meta.valor_meta * 0.7; // Alerta quando atinge 70% do limite
 
         if (emRisco) {
