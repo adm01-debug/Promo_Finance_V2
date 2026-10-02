@@ -4,12 +4,7 @@ import { z } from '../_shared/zod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-request-id',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const DadosFluxoSchema = z.object({
   saldo_atual: z.number(),
@@ -36,6 +31,7 @@ interface Insight {
 }
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

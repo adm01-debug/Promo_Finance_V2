@@ -2,11 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { buildEcdLinhas, type EcdConta, type EcdEmpresa, type EcdLancamento } from './layout.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 // Os tipos de dados vêm de `layout.ts` — única definição da forma dos
 // registros ECD, compartilhada entre o fetch (aqui) e a montagem pura das
@@ -34,6 +30,8 @@ interface ChecklistItem {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
@@ -83,7 +81,8 @@ Deno.serve(async (req) => {
       (typeof body === 'object' ? body : {}) as unknown,
       'gerar-sped-ecd'
     );
-    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    if (!__contract.success)
+      return createErrorResponse(__contract.error, 422, __contract.details, req);
 
     const empresa_id: string = body.empresa_id;
     const ano_calendario: number = body.ano_calendario;

@@ -1,11 +1,7 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirInternaOuUsuario, exigirPapel } from '../_shared/auth-guard.ts';
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 interface PushNotificationRequest {
   userId?: string;
@@ -35,7 +31,7 @@ async function generateVapidAuthHeader(
   const audience = `${endpointUrl.protocol}//${endpointUrl.host}`;
 
   // Create JWT header and payload
-  const header = { typ: "JWT", alg: "ES256" };
+  const header = { typ: 'JWT', alg: 'ES256' };
   const payload = {
     aud: audience,
     exp: Math.floor(Date.now() / 1000) + 12 * 60 * 60, // 12 hours
@@ -44,8 +40,8 @@ async function generateVapidAuthHeader(
 
   // Base64url encode
   const base64urlEncode = (data: string | Uint8Array): string => {
-    const str = typeof data === "string" ? data : new TextDecoder().decode(data);
-    return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const str = typeof data === 'string' ? data : new TextDecoder().decode(data);
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   };
 
   const base64urlEncodeJson = (obj: object): string => {
@@ -54,8 +50,8 @@ async function generateVapidAuthHeader(
 
   // Decode base64url to Uint8Array
   const base64urlDecode = (str: string): Uint8Array => {
-    const padding = "=".repeat((4 - (str.length % 4)) % 4);
-    const base64 = (str + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const padding = '='.repeat((4 - (str.length % 4)) % 4);
+    const base64 = (str + padding).replace(/-/g, '+').replace(/_/g, '/');
     const rawData = atob(base64);
     const outputArray = new Uint8Array(rawData.length);
     for (let i = 0; i < rawData.length; ++i) {
@@ -66,30 +62,33 @@ async function generateVapidAuthHeader(
 
   // Import the private key
   const privateKeyData = base64urlDecode(vapidPrivateKey);
-  
+
   // Create the JWK for ES256
   const jwk = {
-    kty: "EC",
-    crv: "P-256",
+    kty: 'EC',
+    crv: 'P-256',
     x: vapidPublicKey.substring(0, 43),
     y: vapidPublicKey.substring(43),
-    d: btoa(String.fromCharCode(...privateKeyData)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""),
+    d: btoa(String.fromCharCode(...privateKeyData))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, ''),
   };
 
   const cryptoKey = await crypto.subtle.importKey(
-    "jwk",
+    'jwk',
     jwk,
-    { name: "ECDSA", namedCurve: "P-256" },
+    { name: 'ECDSA', namedCurve: 'P-256' },
     false,
-    ["sign"]
+    ['sign']
   );
 
   // Create unsigned token
   const unsignedToken = `${base64urlEncodeJson(header)}.${base64urlEncodeJson(payload)}`;
-  
+
   // Sign the token
   const signature = await crypto.subtle.sign(
-    { name: "ECDSA", hash: "SHA-256" },
+    { name: 'ECDSA', hash: 'SHA-256' },
     cryptoKey,
     new TextEncoder().encode(unsignedToken)
   );
@@ -110,63 +109,71 @@ async function sendWebPush(
   vapidPublicKey: string,
   vapidPrivateKey: string
 ): Promise<Response> {
-  console.log("[send-push-notification] Sending to endpoint:", subscription.endpoint);
+  console.log('[send-push-notification] Sending to endpoint:', subscription.endpoint);
 
   try {
     // For now, we'll use a simpler approach - just POST to the endpoint
     // Real Web Push requires complex encryption, so we'll use a fallback
     const response = await fetch(subscription.endpoint, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/octet-stream",
-        "TTL": "86400",
+        'Content-Type': 'application/octet-stream',
+        TTL: '86400',
       },
       body: payload,
     });
 
-    console.log("[send-push-notification] Push response status:", response.status);
+    console.log('[send-push-notification] Push response status:', response.status);
     return response;
   } catch (error) {
-    console.error("[send-push-notification] Push send error:", error);
+    console.error('[send-push-notification] Push send error:', error);
     throw error;
   }
 }
 
 export async function handler(req: Request): Promise<Response> {
-  if (req.method === "OPTIONS") {
+  const corsHeaders = corsHeadersPara(req);
+
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'method_not_allowed' }), {
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   const acesso = await exigirInternaOuUsuario(req, 'send_push_notification');
   if (!acesso.ok) return acesso.resposta;
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
-    const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY");
-    
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+    const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
-    const Schema = z.object({
-      userId: z.string().uuid().optional(),
-      title: z.string().min(1),
-      body: z.string().min(1),
-      icon: z.string().optional(),
-      badge: z.string().optional(),
-      tag: z.string().optional(),
-      data: z.record(z.any()).optional(),
-      prioridade: z.enum(['baixa', 'media', 'alta', 'critica']).optional(),
-    }).passthrough();
+    const Schema = z
+      .object({
+        userId: z.string().uuid().optional(),
+        title: z.string().min(1),
+        body: z.string().min(1),
+        icon: z.string().optional(),
+        badge: z.string().optional(),
+        tag: z.string().optional(),
+        data: z.record(z.any()).optional(),
+        prioridade: z.enum(['baixa', 'media', 'alta', 'critica']).optional(),
+      })
+      .passthrough();
     const parsed = validatePayload(Schema, raw, 'send-push-notification');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
-    const { userId, title, body, icon, badge, tag, data, prioridade } = parsed.data as PushNotificationRequest;
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
+    const { userId, title, body, icon, badge, tag, data, prioridade } =
+      parsed.data as PushNotificationRequest;
     let targetUserId: string;
     if (acesso.dados.origem === 'interna') {
       // Automação não possui identidade de usuário. Exigir destinatário evita
@@ -187,28 +194,28 @@ export async function handler(req: Request): Promise<Response> {
       if (!admin.ok) return admin.resposta;
     }
 
-    console.log("[send-push-notification] Enviando notificação:", { userId: targetUserId, prioridade });
+    console.log('[send-push-notification] Enviando notificação:', {
+      userId: targetUserId,
+      prioridade,
+    });
 
     // Buscar subscriptions ativas
-    let query = supabase
-      .from("push_subscriptions")
-      .select("*")
-      .eq("ativo", true);
+    let query = supabase.from('push_subscriptions').select('*').eq('ativo', true);
 
-    query = query.eq("user_id", targetUserId);
+    query = query.eq('user_id', targetUserId);
 
     const { data: subscriptions, error: fetchError } = await query;
 
     if (fetchError) {
-      console.error("[send-push-notification] Erro ao buscar subscriptions:", fetchError);
+      console.error('[send-push-notification] Erro ao buscar subscriptions:', fetchError);
       throw fetchError;
     }
 
     if (!subscriptions || subscriptions.length === 0) {
-      console.log("[send-push-notification] Nenhuma subscription ativa encontrada");
+      console.log('[send-push-notification] Nenhuma subscription ativa encontrada');
       return new Response(
-        JSON.stringify({ success: true, sent: 0, message: "Nenhuma subscription ativa" }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        JSON.stringify({ success: true, sent: 0, message: 'Nenhuma subscription ativa' }),
+        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -218,10 +225,10 @@ export async function handler(req: Request): Promise<Response> {
     const payload = JSON.stringify({
       title,
       body,
-      icon: icon || "/favicon.ico",
-      badge: badge || "/favicon.ico",
-      tag: tag || "security-alert",
-      data: data || { url: "/alertas" },
+      icon: icon || '/favicon.ico',
+      badge: badge || '/favicon.ico',
+      tag: tag || 'security-alert',
+      data: data || { url: '/alertas' },
       prioridade,
       timestamp: new Date().toISOString(),
     });
@@ -233,7 +240,13 @@ export async function handler(req: Request): Promise<Response> {
     for (const subscription of subscriptions) {
       try {
         // If we have VAPID keys and subscription has push info, try real push
-        if (vapidPublicKey && vapidPrivateKey && subscription.endpoint && subscription.p256dh && subscription.auth) {
+        if (
+          vapidPublicKey &&
+          vapidPrivateKey &&
+          subscription.endpoint &&
+          subscription.p256dh &&
+          subscription.auth
+        ) {
           try {
             const pushResponse = await sendWebPush(
               {
@@ -247,16 +260,20 @@ export async function handler(req: Request): Promise<Response> {
             );
 
             if (pushResponse.ok || pushResponse.status === 201) {
-              console.log(`[send-push-notification] Push enviado com sucesso para user ${subscription.user_id}`);
+              console.log(
+                `[send-push-notification] Push enviado com sucesso para user ${subscription.user_id}`
+              );
               successCount++;
               continue;
             } else if (pushResponse.status === 410 || pushResponse.status === 404) {
               // Subscription is no longer valid, mark as inactive
-              console.log(`[send-push-notification] Subscription expirada para user ${subscription.user_id}, desativando...`);
+              console.log(
+                `[send-push-notification] Subscription expirada para user ${subscription.user_id}, desativando...`
+              );
               await supabase
-                .from("push_subscriptions")
+                .from('push_subscriptions')
                 .update({ ativo: false })
-                .eq("id", subscription.id);
+                .eq('id', subscription.id);
               failCount++;
               continue;
             }
@@ -266,16 +283,18 @@ export async function handler(req: Request): Promise<Response> {
         }
 
         // Fallback: Criar alerta no banco para mostrar na UI
-        console.log(`[send-push-notification] Criando alerta no banco para user ${subscription.user_id}`);
-        await supabase.from("alertas").insert({
-          tipo: "push_notification",
+        console.log(
+          `[send-push-notification] Criando alerta no banco para user ${subscription.user_id}`
+        );
+        await supabase.from('alertas').insert({
+          tipo: 'push_notification',
           titulo: title,
           mensagem: body,
-          prioridade: prioridade || "media",
+          prioridade: prioridade || 'media',
           user_id: subscription.user_id,
-          acao_url: data?.url as string || "/alertas",
+          acao_url: (data?.url as string) || '/alertas',
         });
-        
+
         successCount++;
       } catch (error) {
         console.error(`[send-push-notification] Erro ao processar subscription:`, error);
@@ -286,21 +305,21 @@ export async function handler(req: Request): Promise<Response> {
     console.log(`[send-push-notification] Resultado: ${successCount} sucesso, ${failCount} falhas`);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        sent: successCount, 
+      JSON.stringify({
+        success: true,
+        sent: successCount,
         failed: failCount,
-        total: subscriptions.length 
+        total: subscriptions.length,
       }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
-    console.error("[send-push-notification] Erro:", errorMessage);
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('[send-push-notification] Erro:', errorMessage);
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
   }
 }
 

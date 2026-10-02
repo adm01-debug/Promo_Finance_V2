@@ -169,7 +169,9 @@ describe('AnexoList — remoção', () => {
 describe('AnexoList — upload', () => {
   function anexaArquivo(container: HTMLElement) {
     const input = container.querySelector('#file-upload') as HTMLInputElement;
-    const file = new File(['conteudo'], 'nota.pdf', { type: 'application/pdf' });
+    // Bytes com assinatura %PDF — o gate de magic bytes exige que o conteúdo
+    // bata com a extensão declarada.
+    const file = new File(['%PDF-1.4 conteudo'], 'nota.pdf', { type: 'application/pdf' });
     fireEvent.change(input, { target: { files: [file] } });
   }
 

@@ -2,12 +2,8 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
-import { exigirChamadaInterna, exigirPapel, corsHeadersComSegredo } from '../_shared/auth-guard.ts';
-
-const corsHeaders = {
-  ...corsHeadersComSegredo,
-  'Access-Control-Allow-Headers': `${corsHeadersComSegredo['Access-Control-Allow-Headers']}, x-trigger-source`,
-};
+import { exigirChamadaInterna, exigirPapel } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const AnomaliaRunInputSchema = z.object({
   run_id: z.string().uuid().optional(),
@@ -44,6 +40,11 @@ function percentile(arr: number[], p: number): number {
 }
 
 serve(async (req) => {
+  const baseCors = corsHeadersPara(req);
+  const corsHeaders = {
+    ...baseCors,
+    'Access-Control-Allow-Headers': `${baseCors['Access-Control-Allow-Headers']}, x-trigger-source`,
+  };
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

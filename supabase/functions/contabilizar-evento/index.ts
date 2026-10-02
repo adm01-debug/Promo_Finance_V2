@@ -4,17 +4,21 @@
 // contábil em partidas dobradas.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { ContabilizarEventoSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-
+import { corsHeadersPara } from '../_shared/cors.ts';
+import {
+  ContabilizarEventoSchema,
+  validatePayload,
+  createErrorResponse,
+} from '../_shared/validation.ts';
 
 // Body interface removed in favor of Zod schema
-
 
 function renderTemplate(tpl: string, data: Record<string, unknown>): string {
   return tpl.replace(/\{(\w+)\}/g, (_, k) => String(data[k] ?? ''));
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -45,12 +49,11 @@ Deno.serve(async (req) => {
   const userId = userData.user.id;
 
   const rawBody = await req.json().catch(() => ({}));
-  const validation = validatePayload(ContabilizarEventoSchema, rawBody, "contabilizar-evento");
+  const validation = validatePayload(ContabilizarEventoSchema, rawBody, 'contabilizar-evento');
   if (!validation.success) {
-    return createErrorResponse(validation.error, 400, validation.details);
+    return createErrorResponse(validation.error, 400, validation.details, req);
   }
   const body = validation.data;
-
 
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -63,14 +66,28 @@ Deno.serve(async (req) => {
   const { data: isAdmin } = await admin.rpc('has_role', { _user_id: userId, _role: 'admin' });
   if (!isAdmin) {
     const [{ data: papeis }, { data: vinculo }] = await Promise.all([
-      admin.from('user_roles').select('role').eq('user_id', userId).eq('role', 'financeiro').eq('is_active', true),
-      admin.from('user_empresas').select('id').eq('user_id', userId).eq('empresa_id', body.empresa_id).eq('ativo', true).maybeSingle(),
+      admin
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'financeiro')
+        .eq('is_active', true),
+      admin
+        .from('user_empresas')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('empresa_id', body.empresa_id)
+        .eq('ativo', true)
+        .maybeSingle(),
     ]);
     if (!papeis?.length || !vinculo) {
-      return new Response(JSON.stringify({ error: 'Sem permissão para contabilizar eventos desta empresa' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'Sem permissão para contabilizar eventos desta empresa' }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
   }
 
@@ -92,7 +109,7 @@ Deno.serve(async (req) => {
       {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+      }
     );
   }
 
@@ -113,10 +130,10 @@ Deno.serve(async (req) => {
   }
 
   // Selecionar regra: prioriza categoria match
-  const regra = body.ignore_rules ? null : (
-    regras?.find((r) => r.categoria_id === body.categoria_id) ??
-    regras?.find((r) => !r.categoria_id)
-  );
+  const regra = body.ignore_rules
+    ? null
+    : (regras?.find((r) => r.categoria_id === body.categoria_id) ??
+      regras?.find((r) => !r.categoria_id));
 
   if (!regra) {
     await admin.from('eventos_contabilizacao_log').insert({
@@ -126,13 +143,10 @@ Deno.serve(async (req) => {
       status: 'sem_regra',
       detalhe: 'Nenhuma regra ativa encontrada',
     });
-    return new Response(
-      JSON.stringify({ status: 'sem_regra' }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
-    );
+    return new Response(JSON.stringify({ status: 'sem_regra' }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   if (body.dry_run) {
@@ -147,7 +161,7 @@ Deno.serve(async (req) => {
       {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+      }
     );
   }
 
@@ -182,13 +196,10 @@ Deno.serve(async (req) => {
       status: 'erro',
       detalhe: lancErr?.message ?? 'falha lancamento',
     });
-    return new Response(
-      JSON.stringify({ error: lancErr?.message ?? 'falha lancamento' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
-    );
+    return new Response(JSON.stringify({ error: lancErr?.message ?? 'falha lancamento' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   const { error: partErr } = await admin.from('partidas_contabeis').insert([
@@ -242,6 +253,6 @@ Deno.serve(async (req) => {
     {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    },
+    }
   );
 });

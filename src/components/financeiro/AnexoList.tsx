@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Paperclip, Download, FileText, Loader2, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { validarMagicBytes } from '@/lib/magic-bytes';
 import { mustSucceed } from '@/lib/supabase-write';
 import { logger } from '@/lib/logger';
 import { caminhoNoStorage, BUCKET_FINANCEIRO as BUCKET } from '@/lib/storage-path';
@@ -135,11 +136,16 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       if (file.size > 10 * 1024 * 1024) {
         toast.error('Arquivo muito grande (máx 10MB)');
+        return;
+      }
+      const erroConteudo = await validarMagicBytes(file);
+      if (erroConteudo) {
+        toast.error(erroConteudo);
         return;
       }
       uploadMutation.mutate(file);

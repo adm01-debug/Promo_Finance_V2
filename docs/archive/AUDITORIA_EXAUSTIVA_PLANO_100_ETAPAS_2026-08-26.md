@@ -122,7 +122,7 @@ O maior risco arquitetural não é falta de arquivos: é a existência de **múl
 Todos os comandos abaixo foram executados no commit auditado. Variáveis públicas fictícias foram usadas no build/E2E; nenhum segredo real foi introduzido.
 
 | Verificação                          | Resultado                              | Interpretação                                                                                                               |
-| ------------------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | --- | ---------------------------------------- |
 | `npm run type-check`                 | **passou**                             | O escopo real é apenas `src`; testes e E2E estão excluídos, e `strict` está desabilitado.                                   |
 | `npm run lint`                       | **passou com 17 avisos**               | O gate permissivo aceita avisos e ignora Edge/scripts.                                                                      |
 | `npm run lint:strict`                | **falhou**                             | Os 17 avisos quebram o gate estrito, que não é usado na CI.                                                                 |

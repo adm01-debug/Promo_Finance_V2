@@ -1,32 +1,31 @@
-import { corsHeaders } from "../_shared/cors.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import {
-  type ClaimMapping,
-  evaluateClaims,
-  type RoleMapping,
-} from "./pipeline.ts";
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { type ClaimMapping, evaluateClaims, type RoleMapping } from './pipeline.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
+const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const corsHeaders = corsHeadersPara(req);
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
     const raw = await req.json().catch(() => ({}));
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { createErrorResponse, validatePayload } = await import('../_shared/validation.ts');
-    const Schema = z.object({
-      mock_claims: z.record(z.any()),
-      claim_mapping: z.record(z.any()).optional(),
-      role_mappings: z.array(z.any()).optional(),
-      default_role: z.string().optional(),
-      allowed_domains: z.array(z.string()).optional(),
-      provider_id: z.string().uuid().optional(),
-    }).passthrough();
+    const Schema = z
+      .object({
+        mock_claims: z.record(z.any()),
+        claim_mapping: z.record(z.any()).optional(),
+        role_mappings: z.array(z.any()).optional(),
+        default_role: z.string().optional(),
+        allowed_domains: z.array(z.string()).optional(),
+        provider_id: z.string().uuid().optional(),
+      })
+      .passthrough();
     const parsed = validatePayload(Schema, raw, 'sso-test-login');
-    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details, req);
     const payload = parsed.data as {
       mock_claims: Record<string, unknown>;
       claim_mapping?: ClaimMapping;
@@ -38,50 +37,54 @@ Deno.serve(async (req) => {
 
     let claim_mapping = payload.claim_mapping ?? {};
     let role_mappings = payload.role_mappings ?? [];
-    let default_role = payload.default_role ?? "visualizador";
+    let default_role = payload.default_role ?? 'visualizador';
     let allowed_domains = payload.allowed_domains ?? [];
     let auto_provision_users = true;
     let provider_nome: string | null = null;
 
     if (payload.provider_id) {
-      const authHeader = req.headers.get("Authorization");
-      if (!authHeader?.startsWith("Bearer ")) {
-        return json({ success: false, errors: ["Não autenticado"] }, 401);
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        return json({ success: false, errors: ['Não autenticado'] }, 401, corsHeaders);
       }
       const userClient = createClient(SUPABASE_URL, ANON, {
         global: { headers: { Authorization: authHeader } },
       });
-      const token = authHeader.replace("Bearer ", "");
+      const token = authHeader.replace('Bearer ', '');
       const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(token);
       if (claimsErr || !claimsData?.claims) {
-        return json({ success: false, errors: ["Token inválido"] }, 401);
+        return json({ success: false, errors: ['Token inválido'] }, 401, corsHeaders);
       }
       const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
       const { data: roleRow } = await admin
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", claimsData.claims.sub)
-        .eq("role", "admin")
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', claimsData.claims.sub)
+        .eq('role', 'admin')
         .maybeSingle();
       if (!roleRow) {
-        return json({ success: false, errors: ["Acesso negado: requer papel admin"] }, 403);
+        return json(
+          { success: false, errors: ['Acesso negado: requer papel admin'] },
+          403,
+          corsHeaders
+        );
       }
       const { data: provider, error: provErr } = await admin
-        .from("sso_providers")
-        .select("nome, claim_mapping, default_role, allowed_domains, auto_provision_users")
-        .eq("id", payload.provider_id)
+        .from('sso_providers')
+        .select('nome, claim_mapping, default_role, allowed_domains, auto_provision_users')
+        .eq('id', payload.provider_id)
         .maybeSingle();
       if (provErr || !provider) {
-        return json({ success: false, errors: ["Provider não encontrado"] }, 404);
+        return json({ success: false, errors: ['Provider não encontrado'] }, 404, corsHeaders);
       }
       const { data: maps } = await admin
-        .from("sso_role_mappings")
-        .select("idp_group, app_role")
-        .eq("provider_id", payload.provider_id)
-        .order("ordem");
+        .from('sso_role_mappings')
+        .select('idp_group, app_role')
+        .eq('provider_id', payload.provider_id)
+        .order('ordem');
       claim_mapping = (provider.claim_mapping ?? {}) as ClaimMapping;
       role_mappings = (maps ?? []) as RoleMapping[];
-      default_role = provider.default_role ?? "visualizador";
+      default_role = provider.default_role ?? 'visualizador';
       allowed_domains = (provider.allowed_domains ?? []) as string[];
       auto_provision_users = !!provider.auto_provision_users;
       provider_nome = provider.nome;
@@ -111,15 +114,19 @@ Deno.serve(async (req) => {
       userLookup,
     });
 
-    return json(result, 200);
+    return json(result, 200, corsHeaders);
   } catch (e) {
-    return json({ success: false, errors: [e instanceof Error ? e.message : "Erro"] }, 500);
+    return json(
+      { success: false, errors: [e instanceof Error ? e.message : 'Erro'] },
+      500,
+      corsHeaders
+    );
   }
 });
 
-function json(data: unknown, status: number) {
+function json(data: unknown, status: number, headers: Record<string, string>) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
