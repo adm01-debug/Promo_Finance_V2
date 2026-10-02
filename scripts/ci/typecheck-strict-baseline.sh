@@ -24,9 +24,18 @@ BASELINE="scripts/ci/baselines/strictnullchecks-baseline.txt"
 atualizar() {
   # tsc sai com código 2 quando há erros — é o esperado, não uma falha do gate.
   set +e
-  node node_modules/typescript/bin/tsc --noEmit --strictNullChecks -p tsconfig.json 2>&1 \
-    | grep 'error TS' | sed -E 's/\([0-9]+,[0-9]+\)/(...)/' | sort -u
+  SAIDA="$(node node_modules/typescript/bin/tsc --noEmit --strictNullChecks -p tsconfig.json 2>&1)"
+  RC=$?
   set -e
+  ERROS="$(printf '%s\n' "$SAIDA" | grep 'error TS' | sed -E 's/\([0-9]+,[0-9]+\)/(...)/' | sort -u)"
+  # Sem linhas "error TS" mas com falha = crash do compilador (OOM, config
+  # inválida) — não pode virar "baseline vazia" nem passar o gate de graça.
+  if [[ $RC -ne 0 && -z "$ERROS" ]]; then
+    echo "::error::tsc falhou sem emitir 'error TS' (exit $RC) — saída:" >&2
+    printf '%s\n' "$SAIDA" >&2
+    return 1
+  fi
+  [[ -z "$ERROS" ]] || printf '%s\n' "$ERROS"
 }
 
 if [[ "${1:-}" = "--update" ]]; then

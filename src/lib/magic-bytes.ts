@@ -41,8 +41,10 @@ const MAGIC: Array<{ tipo: TipoDetectado; bytes: number[]; mascara?: number[] }>
   { tipo: 'webp', bytes: [0x52, 0x49, 0x46, 0x46] }, // RIFF....WEBP (verificação parcial)
   { tipo: 'exe', bytes: [0x4d, 0x5a] }, // MZ (PE/DOS)
   { tipo: 'elf', bytes: [0x7f, 0x45, 0x4c, 0x46] }, // \x7fELF
-  { tipo: 'macho', bytes: [0xfe, 0xed, 0xfa, 0xce] },
-  { tipo: 'macho', bytes: [0xcf, 0xfa, 0xed, 0xfe] },
+  { tipo: 'macho', bytes: [0xfe, 0xed, 0xfa, 0xce] }, // 32-bit big-endian
+  { tipo: 'macho', bytes: [0xce, 0xfa, 0xed, 0xfe] }, // 32-bit little-endian (Intel)
+  { tipo: 'macho', bytes: [0xcf, 0xfa, 0xed, 0xfe] }, // 64-bit little-endian
+  { tipo: 'macho', bytes: [0xfe, 0xed, 0xfa, 0xcf] }, // 64-bit big-endian
   { tipo: 'classe', bytes: [0xca, 0xfe, 0xba, 0xbe] }, // Java class / Mach fat
   { tipo: 'wasm', bytes: [0x00, 0x61, 0x73, 0x6d] }, // \0asm
   { tipo: 'script', bytes: [0x23, 0x21] }, // #!
