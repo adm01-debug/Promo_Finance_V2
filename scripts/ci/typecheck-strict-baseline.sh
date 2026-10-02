@@ -27,7 +27,9 @@ atualizar() {
   SAIDA="$(node node_modules/typescript/bin/tsc --noEmit --strictNullChecks -p tsconfig.json 2>&1)"
   RC=$?
   set -e
-  ERROS="$(printf '%s\n' "$SAIDA" | grep 'error TS' | sed -E 's/\([0-9]+,[0-9]+\)/(...)/' | sort -u)"
+  # grep sai 1 sem matches — com pipefail isso mataria o script num build
+  # limpo (zero erros), então o '|| true' fica dentro da subshell.
+  ERROS="$(printf '%s\n' "$SAIDA" | { grep 'error TS' || true; } | sed -E 's/\([0-9]+,[0-9]+\)/(...)/' | sort -u)"
   # Sem linhas "error TS" mas com falha = crash do compilador (OOM, config
   # inválida) — não pode virar "baseline vazia" nem passar o gate de graça.
   if [[ $RC -ne 0 && -z "$ERROS" ]]; then
