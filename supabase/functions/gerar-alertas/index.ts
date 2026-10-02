@@ -216,7 +216,6 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
         break;
 
       case 'inadimplencia':
-        valorAtual = taxaInadimplencia;
         emRisco = taxaInadimplencia > meta.valor_meta * 0.7; // Alerta quando atinge 70% do limite
 
         if (emRisco) {
