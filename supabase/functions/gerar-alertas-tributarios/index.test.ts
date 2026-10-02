@@ -1,8 +1,4 @@
-import {
-  assert,
-  assertEquals,
-  assertStringIncludes,
-} from 'https://deno.land/std@0.208.0/assert/mod.ts';
+import { assert, assertEquals } from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import { handler } from './index.ts';
 
 const originalEnvGet = Deno.env.get;
