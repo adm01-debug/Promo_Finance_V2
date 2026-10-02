@@ -20,8 +20,6 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validatePayload } from '../_shared/validation.ts';
-import { createLogger, mensagemErro } from '../_shared/observability.ts';
-const log = createLogger('sefaz-manifestar');
 import { loadCertificado, makeAdminClient, type CertificadoRow } from '../_shared/sefaz/pfx.ts';
 import {
   buildEnvEvento,
@@ -62,9 +60,9 @@ function slog(
     event,
     ...fields,
   });
-  if (level === 'ERROR') log.error('error_console', { error_message: mensagemErro(line) });
-  else if (level === 'WARN') log.warn('warn_console', { error_message: mensagemErro(line) });
-  else log.info('log_console', { context: { args: [line] } });
+  if (level === 'ERROR') console.error(line);
+  else if (level === 'WARN') console.warn(line);
+  else console.log(line);
 }
 
 export type SefazFetch = (url: string, envelope: string) => Promise<string>;
