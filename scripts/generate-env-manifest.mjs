@@ -66,6 +66,7 @@ const ciWorkflows = readdirSync('.github/workflows')
   .filter((f) => f.endsWith('.yml') || f.endsWith('.yaml'))
   .map((f) => `.github/workflows/${f}`);
 const ciSet = new Set();
+const ciVarSet = new Set();
 for (const wf of ciWorkflows) {
   try {
     const src = readFileSync(wf, 'utf8');
@@ -76,14 +77,17 @@ for (const wf of ciWorkflows) {
     }
     // vars.* (variáveis do repositório) também exigem provisionamento manual —
     // sem elas o workflow falha em runtime (ex.: PROD_PROJECT_REF no schema-drift).
+    // Vão para ciVarSet: variáveis vivem no endpoint /actions/variables, não em
+    // /actions/secrets — destino próprio evita falso MISSING no audit-env.
     for (const m of src.matchAll(/vars\.([A-Z0-9_]+)/g)) {
-      ciSet.add(m[1]);
+      ciVarSet.add(m[1]);
     }
   } catch { /* workflow ausente — ignorar */ }
 }
 const ci = [...ciSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
+const ciVars = [...ciVarSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions_vars' }));
 
-const freshVars = [...frontend, ...edge, ...ci];
+const freshVars = [...frontend, ...edge, ...ci, ...ciVars];
 
 if (CHECK_MODE) {
   let existing;

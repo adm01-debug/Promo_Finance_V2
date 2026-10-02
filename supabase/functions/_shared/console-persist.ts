@@ -260,6 +260,9 @@ function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unkno
             .join(' ')
             .slice(0, 2000)
       );
+      // Teto também no enqueue: com insert lento ou falhando, os flushes
+      // saem por `inserindo` e o buffer só crescia — descarta o mais antigo.
+      if (buffer.length >= LIMITE_BUFFER) buffer.shift();
       buffer.push({
         function_name: legado?.functionName ?? FUNCTION_NAME,
         level,

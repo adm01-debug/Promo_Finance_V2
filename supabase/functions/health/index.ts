@@ -54,9 +54,23 @@ Deno.serve(async (req) => {
     const falhou = dbErr || asaasRes !== 'operational' || blingRes !== 'operational';
     // Semântica de liveness: 503 só quando o app não consegue servir (banco
     // fora). APIs externas degradadas não mudam o HTTP — o corpo agregado
-    // continua marcando 'outage' para monitores que o leem.
+    // continua marcando 'outage' para monitores que o leem. O esqueleto de
+    // services (só status agregado, sem internals) mantém a StatusPage
+    // funcionando para visitantes anônimos da rota pública /status.
     return json(
-      { status: falhou ? 'outage' : 'ok', timestamp: new Date().toISOString() },
+      {
+        status: falhou ? 'outage' : 'ok',
+        timestamp: new Date().toISOString(),
+        services: {
+          edge_runtime: { status: 'operational' },
+          database: { status: dbErr ? 'outage' : 'operational' },
+          realtime: { status: dbErr ? 'outage' : 'operational' },
+          external_apis: {
+            asaas: { status: asaasRes },
+            bling: { status: blingRes },
+          },
+        },
+      },
       dbErr ? 503 : 200
     );
   }
