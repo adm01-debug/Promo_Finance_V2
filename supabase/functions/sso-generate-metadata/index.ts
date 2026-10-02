@@ -7,6 +7,7 @@ const OIDC_CALLBACK = `https://${PROJECT_REF}.supabase.co/auth/v1/callback`;
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
 
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -18,11 +19,11 @@ Deno.serve(async (req) => {
       .object({ tipo: z.enum(['oidc', 'saml']), nome: z.string().optional() })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'sso-generate-metadata');
-    if (!parsed.success) return json({ error: parsed.error, details: parsed.details }, 400);
+    if (!parsed.success) return res({ error: parsed.error, details: parsed.details }, 400);
     const { tipo, nome } = parsed.data;
 
     if (tipo === 'oidc') {
-      return json(
+      return res(
         {
           callback_url: OIDC_CALLBACK,
           entity_id: ENTITY_ID,
@@ -46,7 +47,7 @@ Deno.serve(async (req) => {
                               isDefault="true"/>
   </SPSSODescriptor>
 </EntityDescriptor>`;
-      return json(
+      return res(
         {
           metadata_xml: xml,
           acs_url: ACS_URL,
@@ -59,15 +60,15 @@ Deno.serve(async (req) => {
       );
     }
 
-    return json({ error: 'tipo inválido' }, 400);
+    return res({ error: 'tipo inválido' }, 400);
   } catch (e) {
-    return json({ error: e instanceof Error ? e.message : 'Erro' }, 500);
+    return res({ error: e instanceof Error ? e.message : 'Erro' }, 500);
   }
 });
 
-function json(data: unknown, status: number) {
+function json(data: unknown, status: number, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

@@ -44,18 +44,19 @@ const BodySchema = z.discriminatedUnion('acao', [
   }),
 ]);
 
-function json(payload: unknown, status = 200) {
+function json(payload: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
 
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+  if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -65,9 +66,9 @@ Deno.serve(async (req) => {
 
   // 1) Autenticação: exige um JWT válido de usuário.
   const token = req.headers.get('Authorization')?.replace('Bearer ', '') ?? '';
-  if (!token) return json({ error: 'unauthorized' }, 401);
+  if (!token) return res({ error: 'unauthorized' }, 401);
   const { data: userData, error: userError } = await admin.auth.getUser(token);
-  if (userError || !userData?.user) return json({ error: 'unauthorized' }, 401);
+  if (userError || !userData?.user) return res({ error: 'unauthorized' }, 401);
   const userId = userData.user.id;
 
   // 2) Autorização: escrita restrita a admin/manager (checagem server-side).
@@ -75,18 +76,18 @@ Deno.serve(async (req) => {
     admin.rpc('has_role', { _user_id: userId, _role: 'admin' }),
     admin.rpc('has_role', { _user_id: userId, _role: 'manager' }),
   ]);
-  if (!isAdmin && !isManager) return json({ error: 'forbidden' }, 403);
+  if (!isAdmin && !isManager) return res({ error: 'forbidden' }, 403);
 
   // 3) Validação de entrada.
   let body: z.infer<typeof BodySchema>;
   try {
     const parsed = BodySchema.safeParse(await req.json());
     if (!parsed.success) {
-      return json({ error: 'invalid_payload', detalhes: parsed.error.flatten() }, 400);
+      return res({ error: 'invalid_payload', detalhes: parsed.error.flatten() }, 400);
     }
     body = parsed.data;
   } catch {
-    return json({ error: 'invalid_json' }, 400);
+    return res({ error: 'invalid_json' }, 400);
   }
 
   if (body.acao === 'resolver') {
@@ -100,14 +101,14 @@ Deno.serve(async (req) => {
       .eq('id', body.id);
     if (error) {
       console.error('[auditoria-overlay] falha ao resolver', error.message);
-      return json({ error: 'persist_failed' }, 500);
+      return res({ error: 'persist_failed' }, 500);
     }
-    return json({ ok: true });
+    return res({ ok: true });
   }
 
   // acao === "registrar"
   const { referencia, rejeicoes } = body;
-  if (rejeicoes.length === 0) return json({ inseridos: 0, atualizados: 0 });
+  if (rejeicoes.length === 0) return res({ inseridos: 0, atualizados: 0 });
 
   const { data: existentes, error: readError } = await admin
     .from('overlay_rejeicoes_auditoria')
@@ -115,7 +116,7 @@ Deno.serve(async (req) => {
     .eq('referencia', referencia);
   if (readError) {
     console.error('[auditoria-overlay] falha ao ler existentes', readError.message);
-    return json({ error: 'read_failed' }, 500);
+    return res({ error: 'read_failed' }, 500);
   }
 
   const chave = (r: { catalogo: string; identificador: string; campo: string; motivo: string }) =>
@@ -160,9 +161,9 @@ Deno.serve(async (req) => {
     const { error } = await admin.from('overlay_rejeicoes_auditoria').insert(novos);
     if (error) {
       console.error('[auditoria-overlay] falha ao inserir', error.message);
-      return json({ error: 'persist_failed' }, 500);
+      return res({ error: 'persist_failed' }, 500);
     }
   }
 
-  return json({ inseridos: novos.length, atualizados });
+  return res({ inseridos: novos.length, atualizados });
 });

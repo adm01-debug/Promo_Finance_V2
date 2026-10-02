@@ -67,7 +67,6 @@ const EXTENSAO_PARA_TIPOS: Record<string, TipoDetectado[]> = {
   jpeg: ['jpeg'],
   webp: ['webp'],
   zip: ['zip'],
-  jar: ['zip'],
   xlsx: ['zip'],
   xlsm: ['zip'],
   docx: ['zip'],

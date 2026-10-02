@@ -36,6 +36,7 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const log = createLogger('convidar-contador', getRequestId(req));
@@ -46,7 +47,7 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       log.warn('unauthorized_no_token');
-      return json({ error: 'Unauthorized' }, 401);
+      return res({ error: 'Unauthorized' }, 401);
     }
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -61,7 +62,7 @@ Deno.serve(async (req) => {
     const { data: claims, error: claimsErr } = await supaUser.auth.getClaims(token);
     if (claimsErr || !claims?.claims?.sub) {
       log.warn('unauthorized_invalid_jwt');
-      return json({ error: 'Unauthorized' }, 401);
+      return res({ error: 'Unauthorized' }, 401);
     }
     const userId = claims.claims.sub as string;
 
@@ -101,7 +102,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!vinculo || !['admin', 'financeiro'].includes(vinculo.role)) {
       log.warn('forbidden_empresa_access', { context: { empresa_id } });
-      return json({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
+      return res({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
     }
 
     // Gera token aleatório de 32 bytes (URL-safe)
@@ -143,7 +144,7 @@ Deno.serve(async (req) => {
 
     if (insertErr) {
       log.error('insert_failed', { error_message: insertErr.message });
-      return json({ error: 'Falha ao registrar convite' }, 500);
+      return res({ error: 'Falha ao registrar convite' }, 500);
     }
 
     // Envia e-mail via Resend (gateway connector)
@@ -203,7 +204,7 @@ Deno.serve(async (req) => {
       context: { convite_id: convite.id, email_sent: emailSent },
     });
 
-    return json(
+    return res(
       {
         success: true,
         convite_id: convite.id,
@@ -218,15 +219,15 @@ Deno.serve(async (req) => {
       error_message: err instanceof Error ? err.message : String(err),
       duration_ms: Date.now() - startedAt,
     });
-    return json({ error: 'Erro interno' }, 500);
+    return res({ error: 'Erro interno' }, 500);
   } finally {
     await log.flush();
   }
 });
 
-function json(body: unknown, status = 200) {
+function json(body: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

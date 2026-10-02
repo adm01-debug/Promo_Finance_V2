@@ -36,10 +36,10 @@ import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 const VALID_TIPOS: ReadonlyArray<ManifTipo> = ['210200', '210210', '210220', '210240'];
 
-function json(status: number, body: unknown) {
+function json(status: number, body: unknown, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -236,12 +236,13 @@ export async function executeManifestacao(
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (status: number, body?: unknown) => json(status, body, corsHeaders);
 
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
+  if (req.method !== 'POST') return res(405, { error: 'method_not_allowed' });
 
   const authHeader = req.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return json(401, { error: 'missing_jwt' });
+  if (!authHeader?.startsWith('Bearer ')) return res(401, { error: 'missing_jwt' });
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -250,7 +251,7 @@ Deno.serve(async (req) => {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { data: userData, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !userData.user) return json(401, { error: 'invalid_jwt' });
+  if (userErr || !userData.user) return res(401, { error: 'invalid_jwt' });
 
   let body: ManifestarArgs;
   try {
@@ -261,10 +262,10 @@ Deno.serve(async (req) => {
       justificativa: z.string().optional(),
     });
     const __c = validatePayload(ManifSchema, raw, 'sefaz-manifestar');
-    if (!__c.success) return json(400, { error: __c.error, details: __c.details });
+    if (!__c.success) return res(400, { error: __c.error, details: __c.details });
     body = __c.data as ManifestarArgs;
   } catch {
-    return json(400, { error: 'invalid_json' });
+    return res(400, { error: 'invalid_json' });
   }
 
   const admin = makeAdminClient();
@@ -280,7 +281,7 @@ Deno.serve(async (req) => {
     .eq('chave_acesso', body.chave_acesso)
     .maybeSingle();
   if (nfeVinculoErr || !nfeParaVinculo?.empresa_id) {
-    return json(404, { error: 'nfe_nao_encontrada' });
+    return res(404, { error: 'nfe_nao_encontrada' });
   }
   const { data: vinculoEmpresa, error: vinculoErr } = await admin
     .from('user_empresas')
@@ -289,11 +290,11 @@ Deno.serve(async (req) => {
     .eq('empresa_id', nfeParaVinculo.empresa_id)
     .eq('ativo', true)
     .maybeSingle();
-  if (vinculoErr) return json(500, { error: 'erro_autorizacao' });
-  if (!vinculoEmpresa) return json(403, { error: 'sem_permissao_empresa' });
+  if (vinculoErr) return res(500, { error: 'erro_autorizacao' });
+  if (!vinculoEmpresa) return res(403, { error: 'sem_permissao_empresa' });
   try {
     const result = await executeManifestacao(admin, body);
-    return json(200, result);
+    return res(200, result);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     slog('ERROR', 'manifestar_failed', {
@@ -301,6 +302,6 @@ Deno.serve(async (req) => {
       tipo: body?.tipo,
       error: message,
     });
-    return json(400, { error: message });
+    return res(400, { error: message });
   }
 });

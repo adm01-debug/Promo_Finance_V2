@@ -45,8 +45,9 @@ export interface HandlerDeps {
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
     const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-    if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+    if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
     const secretAuth = authorizeSharedSecret(
       deps.getEnv('CI_GATE_LOG_SECRET'),
@@ -58,7 +59,7 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await deps.readJson(req);
     } catch {
-      return json({ error: 'invalid_json' }, 400);
+      return res({ error: 'invalid_json' }, 400);
     }
 
     const validation = await validateContract(bodySchema, raw);
@@ -66,7 +67,7 @@ export function createHandler(deps: HandlerDeps) {
     const body: RequestBody = validation.data;
 
     if (body.failures.length === 0) {
-      return json({ inserted: 0, skipped: 'no_failures' }, 200);
+      return res({ inserted: 0, skipped: 'no_failures' }, 200);
     }
 
     const rows = body.failures.map((failure) => mapFailure(body, failure));
@@ -74,10 +75,10 @@ export function createHandler(deps: HandlerDeps) {
 
     if (error) {
       console.error('insert_failed', error);
-      return json({ error: 'insert_failed', details: error.message }, 500);
+      return res({ error: 'insert_failed', details: error.message }, 500);
     }
 
-    return json({ inserted: count ?? rows.length }, 201);
+    return res({ inserted: count ?? rows.length }, 201);
   };
 }
 
@@ -150,10 +151,14 @@ function withCors(response: Response): Response {
   });
 }
 
-function json(payload: unknown, status = 200): Response {
+function json(
+  payload: unknown,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+): Response {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 

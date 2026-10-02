@@ -7,13 +7,14 @@ const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
 
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
-      return json({ error: 'Unauthorized' }, 401);
+      return res({ error: 'Unauthorized' }, 401);
     }
 
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -21,7 +22,7 @@ Deno.serve(async (req) => {
     });
     const token = authHeader.replace('Bearer ', '');
     const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims) return json({ error: 'Unauthorized' }, 401);
+    if (claimsErr || !claimsData?.claims) return res({ error: 'Unauthorized' }, 401);
 
     const userId = claimsData.claims.sub as string;
     const userEmail = (claimsData.claims.email as string) ?? null;
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
     const providerId: string | undefined = body?.provider_id;
     const returnOrigin: string = body?.return_origin || new URL(req.url).origin;
 
-    if (!providerId) return json({ error: 'provider_id required' }, 400);
+    if (!providerId) return res({ error: 'provider_id required' }, 400);
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
     const { data: provider } = await admin
@@ -39,7 +40,7 @@ Deno.serve(async (req) => {
       .eq('id', providerId)
       .maybeSingle();
 
-    if (!provider) return json({ error: 'provider_not_found' }, 404);
+    if (!provider) return res({ error: 'provider_not_found' }, 404);
 
     // Resolve end_session_endpoint
     let endSessionEndpoint: string | null = provider.slo_url;
@@ -80,16 +81,16 @@ Deno.serve(async (req) => {
       details: `SSO Single Logout via ${provider.nome}${logoutUrl ? '' : ' (sem end_session_endpoint — apenas local)'}`,
     });
 
-    return json({ logout_url: logoutUrl, provider_nome: provider.nome });
+    return res({ logout_url: logoutUrl, provider_nome: provider.nome });
   } catch (e) {
-    return json({ error: e instanceof Error ? e.message : 'unexpected' }, 500);
+    return res({ error: e instanceof Error ? e.message : 'unexpected' }, 500);
   }
 });
 
-function json(body: unknown, status = 200) {
+function json(body: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 async function safeJson(req: Request) {

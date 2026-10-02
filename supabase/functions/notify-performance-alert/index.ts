@@ -44,9 +44,10 @@ type AlertPayload = z.infer<typeof alertShape>;
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
     const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
 
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-    if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+    if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
     const auth = await deps.guardInternal(req, 'internal_jobs');
     if (!auth.ok) return withCors(auth.resposta);
@@ -55,7 +56,7 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await deps.readJson(req);
     } catch (error) {
-      return json({ error: error instanceof Error ? error.message : 'invalid_json' }, 400);
+      return res({ error: error instanceof Error ? error.message : 'invalid_json' }, 400);
     }
 
     const parsed = validatePayload(schema, raw, 'notify-performance-alert');
@@ -63,11 +64,11 @@ export function createHandler(deps: HandlerDeps) {
     const alert = extractAlert(parsed.data as AlertBody);
 
     if (!alert?.severity) {
-      return json({ error: 'payload inválido' }, 400);
+      return res({ error: 'payload inválido' }, 400);
     }
 
     if (alert.severity !== 'critical' && alert.severity !== 'warning') {
-      return json({ ok: true, skipped: 'severity' }, 200);
+      return res({ ok: true, skipped: 'severity' }, 200);
     }
 
     const slackUrl = deps.getEnv('SLACK_WEBHOOK_URL');
@@ -144,7 +145,7 @@ export function createHandler(deps: HandlerDeps) {
       // Telemetria não deve bloquear a resposta.
     }
 
-    return json({ ok: true, results }, 200);
+    return res({ ok: true, results }, 200);
   };
 }
 
@@ -184,10 +185,14 @@ function withCors(response: Response): Response {
   });
 }
 
-function json(payload: unknown, status = 200): Response {
+function json(
+  payload: unknown,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+): Response {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 

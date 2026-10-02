@@ -56,10 +56,10 @@ interface PullSummary {
 }
 
 // ------------------------------------------------------- helpers
-function json(status: number, body: unknown) {
+function json(status: number, body: unknown, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -515,11 +515,12 @@ export async function runPuxador(
 // ------------------------------------------------------- HTTP handler
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (status: number, body?: unknown) => json(status, body, corsHeaders);
 
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
-  if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
+  if (req.method !== 'POST') return res(405, { error: 'method_not_allowed' });
 
   const cronSecret = Deno.env.get('SEFAZ_CRON_SECRET');
   const provided = req.headers.get('x-cron-secret');
@@ -531,7 +532,7 @@ Deno.serve(async (req) => {
         message: 'unauthorized dispatch attempt',
       })
     );
-    return json(401, { error: 'unauthorized' });
+    return res(401, { error: 'unauthorized' });
   }
 
   let payload: { empresa_id?: string } = {};
@@ -539,7 +540,7 @@ Deno.serve(async (req) => {
     const text = await req.text();
     if (text) payload = JSON.parse(text);
   } catch {
-    return json(400, { error: 'invalid_json' });
+    return res(400, { error: 'invalid_json' });
   }
   const parsedPayload = RequestBodySchema.safeParse(payload);
   if (!parsedPayload.success)
@@ -555,7 +556,7 @@ Deno.serve(async (req) => {
     summaries.push(await runPuxador(admin, cert));
   }
 
-  return json(200, {
+  return res(200, {
     ok: true,
     processed: summaries.length,
     summaries,

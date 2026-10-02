@@ -230,9 +230,10 @@ async function flush(): Promise<void> {
   }
   if (!falha) {
     reenvios = 0;
-    // Logs emitidos durante o insert não agendaram timer; pega o rastro aqui
-    // em vez de deixá-los parados no buffer até o isolado morrer.
-    if (buffer.length > 0) agendarFlush();
+    // Logs emitidos durante o insert não agendaram timer — `agendado` só é
+    // liberado no finally do setTimeout, então agendarFlush() seria noop aqui.
+    // Descarrega o rastro direto em vez de deixá-lo parado no buffer.
+    if (buffer.length > 0) segurarNoIsolado(flush());
     return;
   }
   // Falha transitória (rede, RLS, restart): recoloca o lote e agenda nova
@@ -272,10 +273,9 @@ function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unkno
         function_name: legado?.functionName ?? FUNCTION_NAME,
         level,
         event,
-        metadata: redigirObj(legado?.metadata ?? { raw: args.map(serializar) }) as Record<
-          string,
-          unknown
-        >,
+        // Sem `raw`: o join de args já vai em `event` (redigido, 2000 chars).
+        // Persistir o payload bruto vazaria saldos/receitas para a tabela de logs.
+        metadata: redigirObj(legado?.metadata ?? {}) as Record<string, unknown>,
       });
       agendarFlush();
     } catch {

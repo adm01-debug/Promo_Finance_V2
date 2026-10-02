@@ -37,9 +37,10 @@ export interface HandlerDeps {
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
     const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
 
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-    if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+    if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
     const secretAuth = authorizeSharedSecret(
       deps.getEnv('N8N_CALLBACK_SECRET'),
@@ -51,7 +52,7 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await deps.readJson(req);
     } catch {
-      return json({ error: 'invalid_json' }, 400);
+      return res({ error: 'invalid_json' }, 400);
     }
 
     const parsed = validatePayload(schema, raw ?? {}, 'n8n-callback');
@@ -60,11 +61,11 @@ export function createHandler(deps: HandlerDeps) {
 
     try {
       const result = await executeAction(deps.admin, body);
-      return json({ ok: true, action: body.action, result });
+      return res({ ok: true, action: body.action, result });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       console.error('n8n-callback error:', msg);
-      return json({ error: msg }, 500);
+      return res({ error: msg }, 500);
     }
   };
 }
@@ -161,10 +162,14 @@ function withCors(response: Response): Response {
   });
 }
 
-function json(payload: unknown, status = 200): Response {
+function json(
+  payload: unknown,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+): Response {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 

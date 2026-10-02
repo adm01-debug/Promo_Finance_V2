@@ -23,10 +23,10 @@ interface SyncBody {
   telefone?: string | null;
 }
 
-function jsonResp(data: unknown, status = 200) {
+function jsonResp(data: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -116,19 +116,20 @@ async function findBitrixContactByEmail(email: string): Promise<string | null> {
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (a: unknown, b = 200) => jsonResp(a, b, corsHeaders);
 
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (req.method !== 'POST') return jsonResp({ error: 'method_not_allowed' }, 405);
+  if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
   // Autenticação: precisamos do user logado
   const authHeader = req.headers.get('Authorization') ?? '';
-  if (!authHeader.startsWith('Bearer ')) return jsonResp({ error: 'unauthorized' }, 401);
+  if (!authHeader.startsWith('Bearer ')) return res({ error: 'unauthorized' }, 401);
 
   const userClient = createClient(SUPABASE_URL, ANON_KEY, {
     global: { headers: { Authorization: authHeader } },
   });
   const { data: userData, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !userData?.user) return jsonResp({ error: 'unauthorized' }, 401);
+  if (userErr || !userData?.user) return res({ error: 'unauthorized' }, 401);
   const user = userData.user;
 
   // Body
@@ -139,7 +140,7 @@ Deno.serve(async (req) => {
     if (!_v.success) return _v.response;
     body = _v.data as unknown as SyncBody;
   } catch {
-    return jsonResp({ error: 'invalid_json' }, 400);
+    return res({ error: 'invalid_json' }, 400);
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
@@ -151,7 +152,7 @@ Deno.serve(async (req) => {
     .eq('id', user.id)
     .maybeSingle();
 
-  if (!profile?.email) return jsonResp({ error: 'profile_email_missing' }, 404);
+  if (!profile?.email) return res({ error: 'profile_email_missing' }, 404);
 
   const emailLower = String(profile.email).toLowerCase();
   const avatarUrl = body.avatar_url !== undefined ? body.avatar_url : (profile.avatar_url ?? null);
@@ -160,11 +161,11 @@ Deno.serve(async (req) => {
   );
 
   if (!avatarUrl && !telefoneNorm) {
-    return jsonResp({ ok: true, skipped: true, reason: 'nothing_to_sync' });
+    return res({ ok: true, skipped: true, reason: 'nothing_to_sync' });
   }
 
   if (!BITRIX_DOMAIN) {
-    return jsonResp({ error: 'bitrix_not_configured' }, 503);
+    return res({ error: 'bitrix_not_configured' }, 503);
   }
 
   try {
@@ -183,7 +184,7 @@ Deno.serve(async (req) => {
         },
         details: 'Bitrix24: contato não encontrado por email',
       });
-      return jsonResp({ ok: false, error: 'bitrix_contact_not_found' }, 404);
+      return res({ ok: false, error: 'bitrix_contact_not_found' }, 404);
     }
 
     const fields: Record<string, unknown> = {};
@@ -232,7 +233,7 @@ Deno.serve(async (req) => {
       details: 'Sincronização avatar/telefone do perfil para Bitrix24',
     });
 
-    return jsonResp({
+    return res({
       ok: true,
       bitrix_contact_id: contactId,
       synced_fields: Object.keys(fields),
@@ -249,6 +250,6 @@ Deno.serve(async (req) => {
       new_data: { error: msg },
       details: 'Falha ao sincronizar perfil para Bitrix24',
     });
-    return jsonResp({ ok: false, error: 'sync_failed', details: msg }, 500);
+    return res({ ok: false, error: 'sync_failed', details: msg }, 500);
   }
 });

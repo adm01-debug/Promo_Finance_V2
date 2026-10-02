@@ -10,23 +10,23 @@ const mensagemErro = (erro: unknown) => (erro instanceof Error ? erro.message : 
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
+  const res = (body: Record<string, unknown>, status = 200) => resposta(body, status, corsHeaders);
   const requestId = getRequestId(req);
 
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  if (req.method !== 'POST') return resposta({ error: 'Método não permitido' }, 405);
+  if (req.method !== 'POST') return res({ error: 'Método não permitido' }, 405);
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
   const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   const cronSecret = Deno.env.get('REGUA_CRON_SECRET');
   if (!supabaseUrl || !serviceRoleKey || !cronSecret)
-    return resposta({ error: 'Configuração interna ausente' }, 500);
+    return res({ error: 'Configuração interna ausente' }, 500);
 
-  if (req.headers.get('x-cron-secret') !== cronSecret)
-    return resposta({ error: 'Não autorizado' }, 401);
+  if (req.headers.get('x-cron-secret') !== cronSecret) return res({ error: 'Não autorizado' }, 401);
 
   try {
     const parsed = BodySchema.safeParse(await req.json().catch(() => ({})));
-    if (!parsed.success) return resposta({ error: 'Payload inválido' }, 400);
+    if (!parsed.success) return res({ error: 'Payload inválido' }, 400);
     const dryRun = parsed.data.dry_run;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
     const { data: regras, error: regrasError } = await supabase
@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return resposta({
+    return res({
       success: true,
       dry_run: dryRun,
       processed: detalhes.length,
@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
     });
   } catch (erro) {
     console.error('Erro régua cobrança:', erro);
-    return resposta({ error: mensagemErro(erro) }, 500);
+    return res({ error: mensagemErro(erro) }, 500);
   }
 });
 
@@ -169,9 +169,13 @@ async function enviarCobranca(
   return `Canal ${canal} sem provedor ou contato configurado`;
 }
 
-function resposta(body: Record<string, unknown>, status = 200) {
+function resposta(
+  body: Record<string, unknown>,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
