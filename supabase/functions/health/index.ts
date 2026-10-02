@@ -1,3 +1,4 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { clientDeServico, exigirUsuario } from '../_shared/auth-guard.ts';
 
@@ -20,7 +21,37 @@ Deno.serve(async (req) => {
 
   const usuario = await exigirUsuario(req);
   if (!usuario.ok) {
-    return json({ status: 'ok', timestamp: new Date().toISOString() });
+    // Probe público: roda os mesmos checks, mas devolve só o status agregado —
+    // o monitor externo detecta indisponibilidade sem ver o contorno da infra.
+    const url = Deno.env.get('SUPABASE_URL');
+    const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!url || !key) return json({ status: 'ok', timestamp: new Date().toISOString() });
+    const anon = createClient(url, key);
+    const ping = async (u: string): Promise<string> => {
+      try {
+        const res = await fetch(u, { signal: AbortSignal.timeout(3000) });
+        return res.ok ? 'operational' : 'degraded';
+      } catch {
+        return 'outage';
+      }
+    };
+    const [dbErr, asaasRes, blingRes] = await Promise.all([
+      (async () => {
+        try {
+          const { error } = await anon
+            .from('asaas_config')
+            .select('count', { count: 'exact', head: true })
+            .limit(1);
+          return error;
+        } catch {
+          return true;
+        }
+      })(),
+      ping('https://api.asaas.com/v3/ping'),
+      ping('https://api.bling.com.br/Api/v3/ping'),
+    ]);
+    const falhou = dbErr || asaasRes !== 'operational' || blingRes !== 'operational';
+    return json({ status: falhou ? 'outage' : 'ok', timestamp: new Date().toISOString() });
   }
 
   const supabase = clientDeServico();

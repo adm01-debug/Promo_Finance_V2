@@ -107,6 +107,36 @@ function parseLogLegado(arg: unknown): LogLegado | null {
   }
 }
 
+// Redação de credenciais: o tee grava os argumentos inteiros em
+// edge_function_logs, então um valor de env que pareça segredo não pode ir
+// parar na tabela quando uma função o loga por descuido.
+const SEGREDOS: readonly string[] = (() => {
+  try {
+    return Object.entries(Deno.env.toObject())
+      .filter(([k, v]) => /(KEY|SECRET|TOKEN|PASSWORD)/.test(k) && v.length >= 8)
+      .map(([, v]) => v);
+  } catch {
+    return [];
+  }
+})();
+
+function redigir(s: string): string {
+  let out = s;
+  for (const segredo of SEGREDOS) out = out.split(segredo).join('[REDACTED]');
+  return out;
+}
+
+function redigirObj(x: unknown): unknown {
+  if (typeof x === 'string') return redigir(x);
+  if (Array.isArray(x)) return x.map(redigirObj);
+  if (x !== null && typeof x === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(x as Record<string, unknown>)) out[k] = redigirObj(v);
+    return out;
+  }
+  return x;
+}
+
 function serializar(arg: unknown): unknown {
   if (arg instanceof Error) {
     return { name: arg.name, message: arg.message, stack: arg.stack };
@@ -195,17 +225,21 @@ function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unkno
     try {
       if (args.length === 1 && ehEchoEstruturado(args[0])) return;
       const legado = args.length === 1 ? parseLogLegado(args[0]) : null;
-      const event =
+      const event = redigir(
         legado?.event ??
-        args
-          .map((a) => (typeof a === 'string' ? a : JSON.stringify(serializar(a))))
-          .join(' ')
-          .slice(0, 2000);
+          args
+            .map((a) => (typeof a === 'string' ? a : JSON.stringify(serializar(a))))
+            .join(' ')
+            .slice(0, 2000)
+      );
       buffer.push({
         function_name: legado?.functionName ?? FUNCTION_NAME,
         level,
         event,
-        metadata: legado?.metadata ?? { raw: args.map(serializar) },
+        metadata: redigirObj(legado?.metadata ?? { raw: args.map(serializar) }) as Record<
+          string,
+          unknown
+        >,
       });
       agendarFlush();
     } catch {

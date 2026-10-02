@@ -3,6 +3,33 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
+// Redação de credenciais: valores de env que pareçam segredo são mascarados no
+// insert — um handler que logue um token por descuido não o espalha na tabela.
+const SEGREDOS: readonly string[] = (() => {
+  try {
+    return Object.entries(Deno.env.toObject())
+      .filter(([k, v]) => /(KEY|SECRET|TOKEN|PASSWORD)/.test(k) && v.length >= 8)
+      .map(([, v]) => v);
+  } catch {
+    return [];
+  }
+})();
+
+function redigir(x: unknown): unknown {
+  if (typeof x === 'string') {
+    let out = x;
+    for (const segredo of SEGREDOS) out = out.split(segredo).join('[REDACTED]');
+    return out;
+  }
+  if (Array.isArray(x)) return x.map(redigir);
+  if (x !== null && typeof x === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(x as Record<string, unknown>)) out[k] = redigir(v);
+    return out;
+  }
+  return x;
+}
+
 interface LogEntry {
   function_name: string;
   level: 'info' | 'warn' | 'error';
@@ -52,9 +79,10 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
       const admin = createClient(url, key);
       // A API pública do logger fala `context`, mas a coluna real da tabela é
       // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
-      const rows = buffer.splice(0, buffer.length).map(({ context, ...rest }) => ({
+      const rows = buffer.splice(0, buffer.length).map(({ context, event, ...rest }) => ({
         ...rest,
-        ...(context !== undefined ? { metadata: context } : {}),
+        event: redigir(event) as string,
+        ...(context !== undefined ? { metadata: redigir(context) as Record<string, unknown> } : {}),
       }));
       await admin.from('edge_function_logs').insert(rows);
     } catch (err) {
