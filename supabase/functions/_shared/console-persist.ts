@@ -139,6 +139,20 @@ function redigirObj(x: unknown): unknown {
   return x;
 }
 
+// Objetos planos e arrays podem carregar segredos (payloads, headers) e são
+// redigidos; tipos estruturados (Error, Date, Map...) ficam intocados para a
+// saída nativa continuar legível — seus campos úteis não são enumeráveis e a
+// redação os esvaziaria.
+function redigirArgNativo(a: unknown): unknown {
+  if (typeof a === 'string') return redigir(a);
+  if (Array.isArray(a)) return redigirObj(a);
+  if (a !== null && typeof a === 'object') {
+    const proto = Object.getPrototypeOf(a);
+    if (proto === Object.prototype || proto === null) return redigirObj(a);
+  }
+  return a;
+}
+
 function serializar(arg: unknown): unknown {
   if (arg instanceof Error) {
     return { name: arg.name, message: arg.message, stack: arg.stack };
@@ -226,10 +240,16 @@ async function flush(): Promise<void> {
 
 function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
-    // Redige strings também na saída nativa: os logs do Supabase persistem o
-    // stdout do isolado, então um segredo logado por descuido não pode ir para
-    // lá. Objetos ficam intocados para não quebrar a exibição (Errors, datas).
-    original(...args.map((a) => (typeof a === 'string' ? redigir(a) : a)));
+    // Redige também na saída nativa: os logs do Supabase persistem o stdout
+    // do isolado, então um segredo logado por descuido não pode ir para lá.
+    // Falha na redação não pode derrubar o handler — cai para os args crus.
+    let argsNativos = args;
+    try {
+      argsNativos = args.map(redigirArgNativo);
+    } catch {
+      // nunca propagar
+    }
+    original(...argsNativos);
     try {
       if (args.length === 1 && ehEchoEstruturado(args[0])) return;
       const legado = args.length === 1 ? parseLogLegado(args[0]) : null;
