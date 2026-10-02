@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     const rawBody = await req.json();
     const validation = validatePayload(BlingProxySchema, rawBody, 'bling-proxy');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { action, ...params } = validation.data;
 

@@ -30,7 +30,7 @@ serve(async (req) => {
       : {};
     const corpo = validatePayload(OptionalEmpresaIdSchema, corpoCru, 'analise-preditiva');
     if (!corpo.success) {
-      return createErrorResponse(corpo.error, 400, corpo.details);
+      return createErrorResponse(corpo.error, 400, corpo.details, req);
     }
 
     const guard = await exigirUsuarioComEmpresa(req, corpo.data.empresa_id ?? null);

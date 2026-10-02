@@ -40,7 +40,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const validation = validatePayload(AnalyzeDocumentSchema, body);
 
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
 
     const { fileName, fileType, fileContent } = validation.data;

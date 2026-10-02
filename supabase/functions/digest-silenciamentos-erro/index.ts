@@ -12,7 +12,6 @@
  * disparos simultâneos do cron produzem no máximo um envio.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeaders } from '../_shared/validation.ts';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';

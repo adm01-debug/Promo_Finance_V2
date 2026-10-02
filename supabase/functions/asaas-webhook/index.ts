@@ -2,7 +2,6 @@ import {
   createErrorResponse,
   AsaasWebhookSchema,
   AsaasWebhookV2Schema,
-  corsHeaders,
 } from '../_shared/validation.ts';
 import {
   contractVersionHeaders,
@@ -35,12 +34,12 @@ export const handler = async (req: Request) => {
     const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN');
     if (!WEBHOOK_TOKEN) {
       logger.error('ASAAS_WEBHOOK_TOKEN não configurado — rejeitando webhook', { correlation_id });
-      return createErrorResponse('Webhook não configurado', 503);
+      return createErrorResponse('Webhook não configurado', 503, undefined, req);
     }
     const receivedToken = req.headers.get('asaas-access-token');
     if (!segredosIguais(receivedToken, WEBHOOK_TOKEN)) {
       logger.error('Token de webhook inválido', { ip_origem, correlation_id });
-      return createErrorResponse('Token inválido', 403);
+      return createErrorResponse('Token inválido', 403, undefined, req);
     }
 
     const rawBody = await req.text();

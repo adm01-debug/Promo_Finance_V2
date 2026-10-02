@@ -57,7 +57,7 @@ export const handler = async (req: Request) => {
     const limit = Math.min(Number(body.limit ?? 25), 200);
 
     const { data, error } = await supabase.rpc('webhook_dequeue_retries', { p_limit: limit });
-    if (error) return createErrorResponse(`dequeue: ${error.message}`, 500);
+    if (error) return createErrorResponse(`dequeue: ${error.message}`, 500, undefined, req);
 
     const rows = (data ?? []) as Array<{
       id: string;
@@ -99,7 +99,7 @@ export const handler = async (req: Request) => {
     });
   } catch (e) {
     logger.error('Falha no retry worker', { error: (e as Error).message });
-    return createErrorResponse((e as Error).message, 500);
+    return createErrorResponse((e as Error).message, 500, undefined, req);
   }
 };
 

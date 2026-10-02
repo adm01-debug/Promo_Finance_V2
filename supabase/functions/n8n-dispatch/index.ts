@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
       })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'n8n-dispatch');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const body = parsed.data as DispatchRequest;
     if (!body.event_type || !body.payload) {
       return new Response(JSON.stringify({ error: 'event_type e payload são obrigatórios' }), {

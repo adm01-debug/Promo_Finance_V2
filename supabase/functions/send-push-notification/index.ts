@@ -171,7 +171,7 @@ export async function handler(req: Request): Promise<Response> {
       })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'send-push-notification');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const { userId, title, body, icon, badge, tag, data, prioridade } =
       parsed.data as PushNotificationRequest;
     let targetUserId: string;

@@ -1,10 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import {
-  CalculoIvaSchema,
-  corsHeaders,
-  validatePayload,
-  createErrorResponse,
-} from '../_shared/validation.ts';
+import { CalculoIvaSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
@@ -31,7 +26,7 @@ serve(async (req) => {
     const rawBody = await req.json();
     const validation = validatePayload(CalculoIvaSchema, rawBody, 'calculo-iva');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { faturamentoAnual, ano, setor = 'geral' } = validation.data;
 

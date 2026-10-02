@@ -38,9 +38,15 @@ export function validatePayload<T>(
   };
 }
 
-export function createErrorResponse(message: string, status = 400, details?: unknown) {
+export function createErrorResponse(
+  message: string,
+  status = 400,
+  details?: unknown,
+  req?: Request
+) {
+  const headers = req ? corsHeadersPara(req) : corsHeaders;
   if (message.includes('Contract Violation')) {
-    return createValidationErrorResponse(details, corsHeaders);
+    return createValidationErrorResponse(details, headers);
   }
   return new Response(
     JSON.stringify({
@@ -50,7 +56,7 @@ export function createErrorResponse(message: string, status = 400, details?: unk
     }),
     {
       status,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...headers, 'Content-Type': 'application/json' },
     }
   );
 }

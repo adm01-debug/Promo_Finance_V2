@@ -19,7 +19,7 @@ serve(async (req) => {
 
     const raw = await req.json();
     const parsed = validatePayload(SimularSimplesRpcSchema, raw, 'simular-simples');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const { faturamentoAnual, rbt12, folha12m, percentualServicos } = parsed.data;
     const hoje = new Date();
     const result = simularSimples(
@@ -40,6 +40,6 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    return createErrorResponse((e as Error).message, 500);
+    return createErrorResponse((e as Error).message, 500, undefined, req);
   }
 });

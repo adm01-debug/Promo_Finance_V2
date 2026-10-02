@@ -2,7 +2,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import {
   BlingWebhookSchema,
   BlingWebhookV2Schema,
-  corsHeaders,
   createErrorResponse,
 } from '../_shared/validation.ts';
 import {
@@ -18,7 +17,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 export const handler = async (req: Request) => {
   const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  if (req.method !== 'POST') return createErrorResponse('Method not allowed', 405);
+  if (req.method !== 'POST') return createErrorResponse('Method not allowed', 405, undefined, req);
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;

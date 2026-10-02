@@ -1,11 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import {
-  ExpertAgentSchema,
-  corsHeaders,
-  validatePayload,
-  createErrorResponse,
-} from '../_shared/validation.ts';
+import { ExpertAgentSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -142,7 +137,7 @@ export const handler = async (req: Request) => {
     const rawBody = await req.json().catch(() => null);
     const validation = validatePayload(ExpertAgentSchema, rawBody, 'expert-agent');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 422, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details, req);
     }
     const { messages, context, conversationSummary } = validation.data;
 

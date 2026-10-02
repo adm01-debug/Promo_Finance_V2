@@ -205,7 +205,7 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
       const rawBody = normalizarPayloadLegado(await req.json());
       const validation = validatePayload(WhatsappIaProativoSchema, rawBody, 'whatsapp-ia-proativo');
       if (!validation.success) {
-        return createErrorResponse(validation.error, 400, validation.details);
+        return createErrorResponse(validation.error, 400, validation.details, req);
       }
       const { action } = validation.data;
       const data = validation.data.data ?? {};

@@ -62,7 +62,8 @@ Deno.serve(async (req) => {
       (typeof body === 'object' ? body : {}) as unknown,
       'exportar-sped-contribuicoes'
     );
-    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    if (!__contract.success)
+      return createErrorResponse(__contract.error, 422, __contract.details, req);
     const empresa_id = body.empresa_id as string | undefined;
     const periodo = body.periodo as string | undefined; // YYYY-MM
 

@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get('Authorization') || '';
     const token = authHeader.replace(/^Bearer\s+/i, '');
-    if (!token) return createErrorResponse('Autenticação requerida', 401);
+    if (!token) return createErrorResponse('Autenticação requerida', 401, undefined, req);
 
     const url = Deno.env.get('SUPABASE_URL')!;
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -35,14 +35,16 @@ Deno.serve(async (req) => {
       auth: { persistSession: false },
     });
     const { data: userData, error: userErr } = await userClient.auth.getUser();
-    if (userErr || !userData?.user) return createErrorResponse('Token inválido', 401);
+    if (userErr || !userData?.user)
+      return createErrorResponse('Token inválido', 401, undefined, req);
 
     const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
     const { data: isAdmin, error: roleErr } = await admin.rpc('has_role', {
       _user_id: userData.user.id,
       _role: 'admin',
     });
-    if (roleErr || !isAdmin) return createErrorResponse('Somente administradores', 403);
+    if (roleErr || !isAdmin)
+      return createErrorResponse('Somente administradores', 403, undefined, req);
 
     const rawBody = await req.json().catch(() => ({}));
     const parsed = ReplayBodySchema.safeParse(rawBody);
@@ -65,7 +67,8 @@ Deno.serve(async (req) => {
       if (source) q.eq('source', source);
       q.in('status', status ? [status] : ['failed', 'dead', 'retrying']);
       const { data, error } = await q;
-      if (error) return createErrorResponse(`Falha ao listar: ${error.message}`, 500);
+      if (error)
+        return createErrorResponse(`Falha ao listar: ${error.message}`, 500, undefined, req);
       targetIds = (data ?? []).map((r) => r.id as string);
     }
 
@@ -98,6 +101,6 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    return createErrorResponse((e as Error).message, 500);
+    return createErrorResponse((e as Error).message, 500, undefined, req);
   }
 });

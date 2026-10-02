@@ -2,7 +2,6 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import {
   OptionalEmpresaIdSchema,
-  corsHeaders,
   validatePayload,
   createErrorResponse,
 } from '../_shared/validation.ts';
@@ -213,7 +212,7 @@ serve(async (req) => {
       'calcular-health-score-operacional'
     );
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const empresaIdFiltro = validation.data.empresa_id ?? null;
 

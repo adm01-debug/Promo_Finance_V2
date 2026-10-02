@@ -32,7 +32,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const rawBody = await req.json();
     const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, 'enviar-alerta-email');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { tipo, destinatario, dados } = validation.data;
 

@@ -81,7 +81,8 @@ Deno.serve(async (req) => {
       (typeof body === 'object' ? body : {}) as unknown,
       'gerar-sped-ecd'
     );
-    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    if (!__contract.success)
+      return createErrorResponse(__contract.error, 422, __contract.details, req);
 
     const empresa_id: string = body.empresa_id;
     const ano_calendario: number = body.ano_calendario;

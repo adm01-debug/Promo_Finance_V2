@@ -56,7 +56,8 @@ export function createHandler(deps: HandlerDeps) {
     }
 
     const parsed = validatePayload(schema, raw ?? {}, 'n8n-callback');
-    if (!parsed.success) return withCors(createErrorResponse(parsed.error, 400, parsed.details));
+    if (!parsed.success)
+      return withCors(createErrorResponse(parsed.error, 400, parsed.details, req));
     const body: CallbackBody = parsed.data;
 
     try {

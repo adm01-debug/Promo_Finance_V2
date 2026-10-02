@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
       })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'projecao-reforma');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const {
       faturamentoAnual,
       percentualServicos,

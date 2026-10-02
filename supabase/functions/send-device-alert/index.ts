@@ -44,7 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
       })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'send-device-alert');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const { userId, email, browser, os, deviceType, timestamp } = parsed.data as DeviceAlertRequest;
     if (userId !== auth.dados.userId || !auth.dados.email) {
       return new Response(JSON.stringify({ error: 'destinatario_nao_autorizado' }), {

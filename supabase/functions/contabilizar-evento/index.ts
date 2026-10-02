@@ -7,7 +7,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import {
   ContabilizarEventoSchema,
-  corsHeaders,
   validatePayload,
   createErrorResponse,
 } from '../_shared/validation.ts';
@@ -52,7 +51,7 @@ Deno.serve(async (req) => {
   const rawBody = await req.json().catch(() => ({}));
   const validation = validatePayload(ContabilizarEventoSchema, rawBody, 'contabilizar-evento');
   if (!validation.success) {
-    return createErrorResponse(validation.error, 400, validation.details);
+    return createErrorResponse(validation.error, 400, validation.details, req);
   }
   const body = validation.data;
 

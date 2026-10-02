@@ -19,12 +19,12 @@ serve(async (req) => {
 
     const raw = await req.json();
     const parsed = validatePayload(ParametrosSimulacaoSchema, raw, 'simular-presumido');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const result = simularPresumido(parsed.data as Parameters<typeof simularPresumido>[0]);
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    return createErrorResponse((e as Error).message, 500);
+    return createErrorResponse((e as Error).message, 500, undefined, req);
   }
 });

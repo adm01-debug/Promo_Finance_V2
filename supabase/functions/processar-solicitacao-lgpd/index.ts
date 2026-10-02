@@ -42,7 +42,8 @@ serve(async (req) => {
       (typeof body === 'object' ? body : {}) as unknown,
       'processar-solicitacao-lgpd'
     );
-    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    if (!__contract.success)
+      return createErrorResponse(__contract.error, 422, __contract.details, req);
     if (!body?.solicitacao_id) {
       return new Response(JSON.stringify({ error: 'solicitacao_id required' }), {
         status: 400,

@@ -4,12 +4,7 @@
 // ============================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import {
-  validatePayload,
-  createErrorResponse,
-  AsaasProxySchema,
-  corsHeaders,
-} from '../_shared/validation.ts';
+import { validatePayload, createErrorResponse, AsaasProxySchema } from '../_shared/validation.ts';
 import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
@@ -120,7 +115,7 @@ export const handler = async (req: Request) => {
     const validation = validatePayload(AsaasProxySchema, rawBody, 'asaas-proxy');
 
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
 
     const { action, data } = validation.data;

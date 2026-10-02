@@ -77,7 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
       })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'notify-saved-filter');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const payload = parsed.data as NotifyRequest;
     if (!payload?.title || !payload?.filterName || !payload?.channels) {
       return new Response(JSON.stringify({ error: 'invalid_payload' }), {

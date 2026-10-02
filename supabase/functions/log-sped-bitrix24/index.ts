@@ -99,7 +99,8 @@ Deno.serve(async (req) => {
       (typeof body === 'object' ? body : {}) as unknown,
       'log-sped-bitrix24'
     );
-    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    if (!__contract.success)
+      return createErrorResponse(__contract.error, 422, __contract.details, req);
 
     if (!body.empresaId || !body.empresaNome || !body.tipo || !body.anoCalendario || !body.status) {
       return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {

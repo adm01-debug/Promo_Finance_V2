@@ -6,7 +6,7 @@
 // Compatibilidade retroativa: mantém as funções antigas em produção; este
 // dispatcher permite migração gradual e adição de novos tipos sem novo deploy.
 
-import { corsHeaders } from '../_shared/cors.ts';
+import {} from '../_shared/cors.ts';
 import { createLogger } from '../_shared/logger.ts';
 import { getRequestId, correlationResponseHeaders } from '../_shared/correlation.ts';
 import { z } from '../_shared/zod.ts';

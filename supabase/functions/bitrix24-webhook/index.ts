@@ -54,7 +54,7 @@ export const handler = async (req: Request) => {
       // Autenticado por header (HMAC ou token compartilhado).
     } else if (auth.reason === 'missing_credential') {
       const segredo = await resolveSecret(supabase, 'bitrix24');
-      if (!segredo) return createErrorResponse('Webhook nao configurado', 503);
+      if (!segredo) return createErrorResponse('Webhook nao configurado', 503, undefined, req);
       try {
         rawPayload = JSON.parse(rawBody) as Record<string, unknown>;
       } catch {
@@ -74,7 +74,7 @@ export const handler = async (req: Request) => {
         !bruto.auth?.application_token ||
         !segredosIguais(bruto.auth.application_token, segredo)
       ) {
-        return createErrorResponse('Token invalido', 401);
+        return createErrorResponse('Token invalido', 401, undefined, req);
       }
     } else {
       return auth.response;
@@ -158,7 +158,7 @@ export const handler = async (req: Request) => {
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
     console.error('Erro bitrix24 webhook:', errMsg.slice(0, 100));
-    return createErrorResponse(errMsg, 500);
+    return createErrorResponse(errMsg, 500, undefined, req);
   }
 };
 

@@ -56,7 +56,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const rawBody = await req.json();
     const validation = validatePayload(CategorizarDespesaSchema, rawBody, 'categorizar-despesa');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { despesas } = validation.data;
 

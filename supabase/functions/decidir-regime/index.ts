@@ -162,7 +162,7 @@ Deno.serve(async (req) => {
       })
       .passthrough();
     const parsed = validatePayload(DecidirBodySchema, raw, 'decidir-regime');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const {
       empresaId,
       anoReferencia,

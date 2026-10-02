@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
       })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'sso-test-login');
-    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details, req);
     const payload = parsed.data as {
       mock_claims: Record<string, unknown>;
       claim_mapping?: ClaimMapping;

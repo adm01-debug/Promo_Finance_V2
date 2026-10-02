@@ -43,7 +43,7 @@ export const handler = async (req: Request): Promise<Response> => {
       'benchmarking-setorial'
     );
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { metricas, setor } = validation.data;
 

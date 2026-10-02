@@ -45,7 +45,6 @@ function escapeHtml(value: string): string {
 }
 
 Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
   const cors = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const res = (body: unknown, status = 200) => json(body, status, cors);

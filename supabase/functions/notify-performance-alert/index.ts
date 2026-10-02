@@ -60,7 +60,8 @@ export function createHandler(deps: HandlerDeps) {
     }
 
     const parsed = validatePayload(schema, raw, 'notify-performance-alert');
-    if (!parsed.success) return withCors(createErrorResponse(parsed.error, 400, parsed.details));
+    if (!parsed.success)
+      return withCors(createErrorResponse(parsed.error, 400, parsed.details, req));
     const alert = extractAlert(parsed.data as AlertBody);
 
     if (!alert?.severity) {
