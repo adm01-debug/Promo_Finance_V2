@@ -110,7 +110,9 @@ function parseLogLegado(arg: unknown): LogLegado | null {
 // Redação de credenciais: o tee grava os argumentos inteiros em
 // edge_function_logs, então um valor de env que pareça segredo não pode ir
 // parar na tabela quando uma função o loga por descuido.
-const SEGREDOS: readonly string[] = (() => {
+// Recomputado a cada chamada: um segredo criado depois do boot (Deno.env.set)
+// também precisa ser mascarado nos registros seguintes.
+function segredos(): string[] {
   try {
     return Object.entries(Deno.env.toObject())
       .filter(([k, v]) => /(KEY|SECRET|TOKEN|PASSWORD)/.test(k) && v.length >= 8)
@@ -118,11 +120,11 @@ const SEGREDOS: readonly string[] = (() => {
   } catch {
     return [];
   }
-})();
+}
 
 function redigir(s: string): string {
   let out = s;
-  for (const segredo of SEGREDOS) out = out.split(segredo).join('[REDACTED]');
+  for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
   return out;
 }
 

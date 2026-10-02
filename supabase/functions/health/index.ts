@@ -14,8 +14,9 @@ Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  const json = (body: unknown) =>
+  const json = (body: unknown, status = 200) =>
     new Response(JSON.stringify(body), {
+      status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
@@ -51,7 +52,11 @@ Deno.serve(async (req) => {
       ping('https://api.bling.com.br/Api/v3/ping'),
     ]);
     const falhou = dbErr || asaasRes !== 'operational' || blingRes !== 'operational';
-    return json({ status: falhou ? 'outage' : 'ok', timestamp: new Date().toISOString() });
+    // 503 quando algo falha: monitores que só veem o código HTTP também alertam.
+    return json(
+      { status: falhou ? 'outage' : 'ok', timestamp: new Date().toISOString() },
+      falhou ? 503 : 200
+    );
   }
 
   const supabase = clientDeServico();

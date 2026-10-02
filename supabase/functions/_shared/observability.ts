@@ -5,7 +5,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 // Redação de credenciais: valores de env que pareçam segredo são mascarados no
 // insert — um handler que logue um token por descuido não o espalha na tabela.
-const SEGREDOS: readonly string[] = (() => {
+// Recomputado a cada chamada: um segredo criado depois do boot (Deno.env.set)
+// também precisa ser mascarado nos registros seguintes.
+function segredos(): string[] {
   try {
     return Object.entries(Deno.env.toObject())
       .filter(([k, v]) => /(KEY|SECRET|TOKEN|PASSWORD)/.test(k) && v.length >= 8)
@@ -13,12 +15,12 @@ const SEGREDOS: readonly string[] = (() => {
   } catch {
     return [];
   }
-})();
+}
 
 function redigir(x: unknown): unknown {
   if (typeof x === 'string') {
     let out = x;
-    for (const segredo of SEGREDOS) out = out.split(segredo).join('[REDACTED]');
+    for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
     return out;
   }
   if (Array.isArray(x)) return x.map(redigir);
@@ -79,11 +81,18 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
       const admin = createClient(url, key);
       // A API pública do logger fala `context`, mas a coluna real da tabela é
       // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
-      const rows = buffer.splice(0, buffer.length).map(({ context, event, ...rest }) => ({
-        ...rest,
-        event: redigir(event) as string,
-        ...(context !== undefined ? { metadata: redigir(context) as Record<string, unknown> } : {}),
-      }));
+      const rows = buffer
+        .splice(0, buffer.length)
+        .map(({ context, event, error_message, ...rest }) => ({
+          ...rest,
+          event: redigir(event) as string,
+          ...(error_message !== undefined
+            ? { error_message: redigir(error_message) as string }
+            : {}),
+          ...(context !== undefined
+            ? { metadata: redigir(context) as Record<string, unknown> }
+            : {}),
+        }));
       await admin.from('edge_function_logs').insert(rows);
     } catch (err) {
       // Nunca lançar — observabilidade não pode derrubar a função
