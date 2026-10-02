@@ -17,6 +17,13 @@ function segredos(): string[] {
   }
 }
 
+// Chaves cujo valor nunca vai para edge_function_logs: identificadores
+// pessoais e credenciais embutidos em context/metadata — mesma regra do
+// console-persist, porque a tabela libera leitura a todo admin sem escopo
+// de empresa. Valores financeiros ficam: são o propósito da trilha.
+const CHAVE_SENSIVEL =
+  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email)/i;
+
 function redigir(x: unknown): unknown {
   if (typeof x === 'string') {
     let out = x;
@@ -26,7 +33,9 @@ function redigir(x: unknown): unknown {
   if (Array.isArray(x)) return x.map(redigir);
   if (x !== null && typeof x === 'object') {
     const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(x as Record<string, unknown>)) out[k] = redigir(v);
+    for (const [k, v] of Object.entries(x as Record<string, unknown>)) {
+      out[k] = CHAVE_SENSIVEL.test(k) ? '[REDACTED]' : redigir(v);
+    }
     return out;
   }
   return x;
