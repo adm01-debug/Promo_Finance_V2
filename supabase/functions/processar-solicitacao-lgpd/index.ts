@@ -1,12 +1,13 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('processar-solicitacao-lgpd');
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 interface Payload {
@@ -14,61 +15,65 @@ interface Payload {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   const startedAt = Date.now();
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const authHeader = req.headers.get("Authorization") ?? "";
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const authHeader = req.headers.get('Authorization') ?? '';
 
-    const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+    const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
       global: { headers: { Authorization: authHeader } },
     });
     const adminClient = createClient(supabaseUrl, serviceKey);
 
     const { data: userData, error: userErr } = await userClient.auth.getUser();
     if (userErr || !userData.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     const userId = userData.user.id;
 
     const body = (await req.json()) as Payload;
-    const __contract = validatePayload(z.object({ solicitacao_id: z.string().uuid() }), (typeof body === 'object' ? body : {}) as unknown, 'processar-solicitacao-lgpd');
+    const __contract = validatePayload(
+      z.object({ solicitacao_id: z.string().uuid() }),
+      (typeof body === 'object' ? body : {}) as unknown,
+      'processar-solicitacao-lgpd'
+    );
     if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
     if (!body?.solicitacao_id) {
-      return new Response(JSON.stringify({ error: "solicitacao_id required" }), {
+      return new Response(JSON.stringify({ error: 'solicitacao_id required' }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const { data: sol, error: solErr } = await adminClient
-      .from("solicitacoes_lgpd")
-      .select("*")
-      .eq("id", body.solicitacao_id)
+      .from('solicitacoes_lgpd')
+      .select('*')
+      .eq('id', body.solicitacao_id)
       .maybeSingle();
     if (solErr || !sol) {
-      return new Response(JSON.stringify({ error: "Solicitação não encontrada" }), {
+      return new Response(JSON.stringify({ error: 'Solicitação não encontrada' }), {
         status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     // Permissão: dono ou admin
-    const { data: isAdmin } = await adminClient.rpc("has_role", {
+    const { data: isAdmin } = await adminClient.rpc('has_role', {
       _user_id: userId,
-      _role: "admin",
+      _role: 'admin',
     });
     if (sol.user_id !== userId && !isAdmin) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -78,18 +83,15 @@ serve(async (req) => {
 
     // Coletar dados do titular
     const [profile, alertas, audits, solicitacoes] = await Promise.all([
-      adminClient.from("profiles").select("*").eq("id", targetUserId).maybeSingle(),
-      adminClient.from("alertas").select("*").eq("user_id", targetUserId).limit(1000),
+      adminClient.from('profiles').select('*').eq('id', targetUserId).maybeSingle(),
+      adminClient.from('alertas').select('*').eq('user_id', targetUserId).limit(1000),
       adminClient
-        .from("audit_logs")
-        .select("*")
-        .eq("user_id", targetUserId)
-        .order("created_at", { ascending: false })
+        .from('audit_logs')
+        .select('*')
+        .eq('user_id', targetUserId)
+        .order('created_at', { ascending: false })
         .limit(1000),
-      adminClient
-        .from("solicitacoes_lgpd")
-        .select("*")
-        .eq("user_id", targetUserId),
+      adminClient.from('solicitacoes_lgpd').select('*').eq('user_id', targetUserId),
     ]);
 
     const dump = {
@@ -101,9 +103,9 @@ serve(async (req) => {
       solicitacoes_lgpd: solicitacoes.data ?? [],
     };
 
-    if (sol.tipo === "acesso") {
+    if (sol.tipo === 'acesso') {
       payloadResposta = dump;
-    } else if (sol.tipo === "portabilidade") {
+    } else if (sol.tipo === 'portabilidade') {
       // Gera CSV agregado e faz upload
       const sections: string[] = [];
       sections.push(`# DUMP LGPD — ${sol.user_email} — ${new Date().toISOString()}`);
@@ -116,76 +118,75 @@ serve(async (req) => {
         sections.push(`\n\n## ${name}`);
         const arr = rows as Record<string, unknown>[];
         if (arr.length === 0) {
-          sections.push("(sem registros)");
+          sections.push('(sem registros)');
           continue;
         }
         const headers = Object.keys(arr[0]);
-        sections.push(headers.join(","));
+        sections.push(headers.join(','));
         for (const r of arr) {
           sections.push(
             headers
               .map((h) => {
                 const v = r[h];
-                if (v == null) return "";
-                const s = typeof v === "string" ? v : JSON.stringify(v);
+                if (v == null) return '';
+                const s = typeof v === 'string' ? v : JSON.stringify(v);
                 return `"${s.replace(/"/g, '""')}"`;
               })
-              .join(",")
+              .join(',')
           );
         }
       }
-      const csv = "\uFEFF" + sections.join("\n");
+      const csv = '\uFEFF' + sections.join('\n');
       const path = `lgpd/${targetUserId}/dump-${Date.now()}.csv`;
       const { error: upErr } = await adminClient.storage
-        .from("relatorios-tributarios")
-        .upload(path, new Blob([csv], { type: "text/csv" }), {
-          contentType: "text/csv; charset=utf-8",
+        .from('relatorios-tributarios')
+        .upload(path, new Blob([csv], { type: 'text/csv' }), {
+          contentType: 'text/csv; charset=utf-8',
           upsert: true,
         });
       if (upErr) throw upErr;
       const { data: signed } = await adminClient.storage
-        .from("relatorios-tributarios")
+        .from('relatorios-tributarios')
         .createSignedUrl(path, 60 * 60 * 24);
       urlDump = signed?.signedUrl ?? null;
-      payloadResposta = { formato: "csv", path, registros: dump };
-    } else if (sol.tipo === "exclusao" || sol.tipo === "anonimizacao") {
+      payloadResposta = { formato: 'csv', path, registros: dump };
+    } else if (sol.tipo === 'exclusao' || sol.tipo === 'anonimizacao') {
       const hashed = `anon-${targetUserId.slice(0, 8)}@removido.local`;
       await adminClient
-        .from("profiles")
+        .from('profiles')
         .update({
-          full_name: "Titular removido",
+          full_name: 'Titular removido',
           email: hashed,
           avatar_url: null,
           phone: null,
         })
-        .eq("id", targetUserId);
+        .eq('id', targetUserId);
       payloadResposta = {
         anonimizado_em: new Date().toISOString(),
         email_substituto: hashed,
       };
-    } else if (sol.tipo === "retificacao") {
+    } else if (sol.tipo === 'retificacao') {
       payloadResposta = {
-        instrucoes:
-          "Retificação requer revisão manual do administrador. Justificativa registrada.",
+        instrucoes: 'Retificação requer revisão manual do administrador. Justificativa registrada.',
       };
     }
 
     // Atualiza solicitação
     await adminClient
-      .from("solicitacoes_lgpd")
+      .from('solicitacoes_lgpd')
       .update({
-        status: "atendida",
+        status: 'atendida',
         payload_resposta: payloadResposta,
         url_dump: urlDump,
         atendida_em: new Date().toISOString(),
         atendida_por: userId,
       })
-      .eq("id", sol.id);
+      .eq('id', sol.id);
 
     // Auditoria P9
-    await adminClient.from("auditoria_tributaria").insert({
-      acao: "update",
-      entidade_tipo: "solicitacoes_lgpd",
+    await adminClient.from('auditoria_tributaria').insert({
+      acao: 'update',
+      entidade_tipo: 'solicitacoes_lgpd',
       entidade_id: sol.id,
       user_id: userId,
       user_email: userData.user.email,
@@ -200,16 +201,13 @@ serve(async (req) => {
         payload: payloadResposta,
         duration_ms: Date.now() - startedAt,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error("processar-solicitacao-lgpd error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "unknown" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    log.error('processar-solicitacao-lgpd error:', { error_message: mensagemErro(e) });
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

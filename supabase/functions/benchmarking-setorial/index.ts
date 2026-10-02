@@ -8,6 +8,8 @@ import {
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('benchmarking-setorial');
 
 export const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
@@ -153,7 +155,7 @@ Use referências reais do mercado brasileiro de eventos. Métricas importantes:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error('benchmarking error:', e);
+    log.error('benchmarking error:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'Erro' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

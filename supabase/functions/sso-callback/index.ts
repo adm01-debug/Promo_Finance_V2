@@ -205,6 +205,8 @@ function normalizePhone(v: unknown): {
 
 // buildProfileSyncDelta foi extraída para ./profile-sync-delta.ts
 import { buildProfileSyncDelta } from './profile-sync-delta.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('sso-callback');
 
 async function applyPipeline(opts: {
   admin: Admin;
@@ -276,10 +278,9 @@ async function applyPipeline(opts: {
         details: `Telefone SSO normalizado (${providerNome}): "${phoneNorm.raw}" → "${phoneNorm.value ?? '—'}"`,
       });
     } catch (err) {
-      console.warn(
-        '[sso-callback] falha ao registrar audit_logs sso_phone_normalized:',
-        err instanceof Error ? err.message : String(err)
-      );
+      log.warn('[sso-callback] falha ao registrar audit_logs sso_phone_normalized:', {
+        error_message: mensagemErro(err instanceof Error ? err.message : String(err)),
+      });
     }
   }
 
@@ -412,10 +413,9 @@ async function applyPipeline(opts: {
           details: `Sincronização SSO (${providerNome}): ${fieldsChanged.length} campo(s) atualizado(s) — ${fieldsChanged.join(', ')}`,
         });
       } catch (err) {
-        console.warn(
-          '[sso-callback] falha ao registrar audit_logs sso_profile_sync:',
-          err instanceof Error ? err.message : String(err)
-        );
+        log.warn('[sso-callback] falha ao registrar audit_logs sso_profile_sync:', {
+          error_message: mensagemErro(err instanceof Error ? err.message : String(err)),
+        });
       }
     }
   }
@@ -497,10 +497,9 @@ async function applyPipeline(opts: {
       });
     }
   } catch (err) {
-    console.warn(
-      '[sso-callback] falha ao sincronizar sso_user_groups:',
-      err instanceof Error ? err.message : String(err)
-    );
+    log.warn('[sso-callback] falha ao sincronizar sso_user_groups:', {
+      error_message: mensagemErro(err instanceof Error ? err.message : String(err)),
+    });
   }
 
   // Vínculo em user_empresas (com default exclusivo)
@@ -542,10 +541,9 @@ async function applyPipeline(opts: {
         }`,
       });
     } catch (err) {
-      console.warn(
-        '[sso-callback] falha ao registrar audit_logs sso_jit_provisioning:',
-        err instanceof Error ? err.message : String(err)
-      );
+      log.warn('[sso-callback] falha ao registrar audit_logs sso_jit_provisioning:', {
+        error_message: mensagemErro(err instanceof Error ? err.message : String(err)),
+      });
     }
   } else if (matchedGroup) {
     try {
@@ -559,10 +557,9 @@ async function applyPipeline(opts: {
         details: `SSO role mapping aplicado (${providerNome}): ${matchedGroup} → ${role}`,
       });
     } catch (err) {
-      console.warn(
-        '[sso-callback] falha ao registrar audit_logs user_roles:',
-        err instanceof Error ? err.message : String(err)
-      );
+      log.warn('[sso-callback] falha ao registrar audit_logs user_roles:', {
+        error_message: mensagemErro(err instanceof Error ? err.message : String(err)),
+      });
     }
   }
 
@@ -1033,10 +1030,9 @@ Deno.serve(async (req) => {
         })`,
       });
     } catch (err) {
-      console.warn(
-        '[sso-callback] falha ao registrar audit_logs sso_magic_link_issued:',
-        err instanceof Error ? err.message : String(err)
-      );
+      log.warn('[sso-callback] falha ao registrar audit_logs sso_magic_link_issued:', {
+        error_message: mensagemErro(err instanceof Error ? err.message : String(err)),
+      });
     }
 
     // Magic link e redirect para o app

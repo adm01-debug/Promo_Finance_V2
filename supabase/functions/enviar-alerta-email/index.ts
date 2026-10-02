@@ -7,6 +7,8 @@ import {
   EnviarAlertaEmailSchema,
   validatePayload,
 } from '../_shared/validation.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('enviar-alerta-email');
 
 const corsHeaders = {
   ...baseCorsHeaders,
@@ -34,11 +36,11 @@ export const handler = async (req: Request): Promise<Response> => {
     }
     const { tipo, destinatario, dados } = validation.data;
 
-    console.log(`Processando alerta do tipo: ${tipo} para ${destinatario}`);
+    log.info(`Processando alerta do tipo: ${tipo} para ${destinatario}`);
 
     // Verificar se Resend está configurado
     if (!resendApiKey) {
-      console.log('RESEND_API_KEY não configurada - simulando envio');
+      log.info('RESEND_API_KEY não configurada - simulando envio');
 
       // Registrar o alerta no banco mesmo sem enviar email
       await supabase.from('alertas').insert({
@@ -173,7 +175,7 @@ export const handler = async (req: Request): Promise<Response> => {
     });
 
     const result = await response.json();
-    console.log('Resultado do envio:', result);
+    log.info('Resultado do envio:', { context: { args: [result] } });
 
     if (!response.ok) {
       throw new Error(result.message || 'Erro ao enviar email');
@@ -192,7 +194,7 @@ export const handler = async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: unknown) {
-    console.error('Erro ao enviar alerta:', error);
+    log.error('Erro ao enviar alerta:', { error_message: mensagemErro(error) });
     const message = error instanceof Error ? error.message : 'Erro desconhecido';
     return new Response(JSON.stringify({ error: message }), {
       status: 500,

@@ -4,6 +4,8 @@ import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { z } from '../_shared/zod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('insights-relatorio');
 
 const InsightsRelatorioBodySchema = z.object({
   dados: z.unknown(),
@@ -115,7 +117,7 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
         );
       }
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
@@ -149,7 +151,7 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error('insights-relatorio error:', e);
+    log.error('insights-relatorio error:', { error_message: mensagemErro(e) });
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : 'Erro desconhecido' }),
       {

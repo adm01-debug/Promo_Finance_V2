@@ -6,14 +6,23 @@ import {
   type UsuarioAutenticado,
 } from '../_shared/auth-guard.ts';
 import { corsHeaders, jsonComCors, respostaPreflight } from '../_shared/cors.ts';
-import { checkRateLimit, rateLimitResponse, type RateLimitOptions, type RateLimitResult } from '../_shared/rate-limit.ts';
+import {
+  checkRateLimit,
+  rateLimitResponse,
+  type RateLimitOptions,
+  type RateLimitResult,
+} from '../_shared/rate-limit.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
+import { createLogger } from '../_shared/observability.ts';
+const log = createLogger('convidar-usuario');
 
 const PapelSchema = z.enum(['admin', 'financeiro', 'operacional', 'visualizador']);
-const ConviteSchema = z.object({
-  email: z.string().trim().email().max(255),
-  role: PapelSchema,
-}).strict();
+const ConviteSchema = z
+  .object({
+    email: z.string().trim().email().max(255),
+    role: PapelSchema,
+  })
+  .strict();
 
 type Papel = z.infer<typeof PapelSchema>;
 
@@ -41,7 +50,7 @@ interface ClienteConvite {
     admin: {
       inviteUserByEmail: (
         email: string,
-        options: { data: Record<string, string>; redirectTo?: string },
+        options: { data: Record<string, string>; redirectTo?: string }
       ) => Promise<Resultado<{ user: { id: string } }>>;
       deleteUser: (id: string) => Promise<Resultado<unknown>>;
     };
@@ -51,12 +60,15 @@ interface ClienteConvite {
 export interface DependenciasConviteUsuario {
   exigirPapel: (
     req: Request,
-    papeis: readonly string[],
+    papeis: readonly string[]
   ) => Promise<ResultadoGuard<UsuarioAutenticado>>;
   clientDeServico: () => ClienteConvite;
   appBaseUrl: () => string | undefined;
   registrarErro: (mensagem: string, contexto?: Record<string, string>) => void;
-  verificarRateLimit: (cliente: ClienteConvite, opcoes: RateLimitOptions) => Promise<RateLimitResult>;
+  verificarRateLimit: (
+    cliente: ClienteConvite,
+    opcoes: RateLimitOptions
+  ) => Promise<RateLimitResult>;
 }
 
 function erro(status: number, codigo: string, mensagem: string): Response {
@@ -74,22 +86,24 @@ function redirectSeguro(valor: string | undefined): string | undefined {
 }
 
 function extrairIp(req: Request): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || req.headers.get('x-real-ip')?.trim()
-    || '0.0.0.0';
+  return (
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip')?.trim() ||
+    '0.0.0.0'
+  );
 }
 
 async function removerConviteIncompleto(
   admin: ClienteConvite,
   userId: string,
-  deps: DependenciasConviteUsuario,
+  deps: DependenciasConviteUsuario
 ): Promise<void> {
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) deps.registrarErro('convite_usuario_compensacao_falhou', { user_id: userId });
 }
 
 export function createHandler(
-  deps: DependenciasConviteUsuario,
+  deps: DependenciasConviteUsuario
 ): (req: Request) => Promise<Response> {
   return async (req: Request): Promise<Response> => {
     if (req.method === 'OPTIONS') return respostaPreflight();
@@ -100,7 +114,11 @@ export function createHandler(
 
     const validacao = ConviteSchema.safeParse(await req.json().catch(() => null));
     if (!validacao.success) {
-      return erro(400, 'payload_invalido', 'E-mail e perfil de acesso são obrigatórios e devem ser válidos.');
+      return erro(
+        400,
+        'payload_invalido',
+        'E-mail e perfil de acesso são obrigatórios e devem ser válidos.'
+      );
     }
 
     const { email, role } = validacao.data;
@@ -125,22 +143,33 @@ export function createHandler(
       .select('id')
       .eq('email', emailNormalizado)
       .maybeSingle();
-    if (erroConsulta) return erro(500, 'erro_consulta', 'Não foi possível validar o e-mail informado.');
+    if (erroConsulta)
+      return erro(500, 'erro_consulta', 'Não foi possível validar o e-mail informado.');
     if (existente) return erro(409, 'usuario_existente', 'Já existe um usuário com este e-mail.');
 
-    const { data: convite, error: erroConvite } = await admin.auth.admin.inviteUserByEmail(emailNormalizado, {
-      data: { invited_by: auth.dados.userId, requested_role: role },
-      redirectTo: redirectSeguro(deps.appBaseUrl()),
-    });
+    const { data: convite, error: erroConvite } = await admin.auth.admin.inviteUserByEmail(
+      emailNormalizado,
+      {
+        data: { invited_by: auth.dados.userId, requested_role: role },
+        redirectTo: redirectSeguro(deps.appBaseUrl()),
+      }
+    );
     const convidadoId = convite?.user?.id;
     if (erroConvite || !convidadoId) {
-      return erro(502, 'falha_convite', 'Não foi possível criar o convite no serviço de autenticação.');
+      return erro(
+        502,
+        'falha_convite',
+        'Não foi possível criar o convite no serviço de autenticação.'
+      );
     }
 
     // O trigger de Auth pode criar o papel visualizador. Como esta conta acabou
     // de ser criada e a pré-validação eliminou usuários existentes, removemos
     // esse papel padrão antes de persistir exatamente o papel solicitado.
-    const { error: erroRemocao } = await admin.from('user_roles').delete().eq('user_id', convidadoId);
+    const { error: erroRemocao } = await admin
+      .from('user_roles')
+      .delete()
+      .eq('user_id', convidadoId);
     if (erroRemocao) {
       await removerConviteIncompleto(admin, convidadoId, deps);
       return erro(500, 'falha_perfil', 'Não foi possível atribuir o perfil de acesso ao convite.');
@@ -158,12 +187,15 @@ export function createHandler(
       return erro(500, 'falha_perfil', 'Não foi possível atribuir o perfil de acesso ao convite.');
     }
 
-    return jsonComCors({
-      invitation_id: convidadoId,
-      email: emailNormalizado,
-      role,
-      email_status: 'solicitado_ao_auth',
-    }, 201);
+    return jsonComCors(
+      {
+        invitation_id: convidadoId,
+        email: emailNormalizado,
+        role,
+        email_status: 'solicitado_ao_auth',
+      },
+      201
+    );
   };
 }
 
@@ -171,7 +203,8 @@ export const handler = createHandler({
   exigirPapel,
   clientDeServico: clientDeServico as unknown as () => ClienteConvite,
   appBaseUrl: () => getAppBaseUrl() || undefined,
-  registrarErro: (mensagem, contexto) => console.error(mensagem, contexto),
+  registrarErro: (mensagem, contexto) =>
+    log.error('error_console', { context: { args: [mensagem, contexto] } }),
   verificarRateLimit: checkRateLimit,
 });
 

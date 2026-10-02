@@ -24,11 +24,7 @@ export function createLogger(functionName: string): EdgeLogger {
   const buffer: LogEntry[] = [];
   const startedAt = Date.now();
 
-  const push = (
-    level: 'info' | 'warn' | 'error',
-    event: string,
-    extra?: Partial<LogEntry>
-  ) => {
+  const push = (level: 'info' | 'warn' | 'error', event: string, extra?: Partial<LogEntry>) => {
     const entry: LogEntry = {
       function_name: functionName,
       level,
@@ -72,4 +68,15 @@ export function createLogger(functionName: string): EdgeLogger {
       }),
     flush,
   };
+}
+
+/** Extrai mensagem legível de qualquer valor capturado em catch/log. */
+export function mensagemErro(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'string') return err;
+  try {
+    return JSON.stringify(err) ?? String(err);
+  } catch {
+    return String(err);
+  }
 }

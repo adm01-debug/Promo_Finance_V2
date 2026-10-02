@@ -11,6 +11,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
+import { createLogger, mensagemErro } from '../_shared/observability.ts';
+const log = createLogger('enviar-convite-organizacao');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -77,7 +79,9 @@ Deno.serve(async (req) => {
 
     const { data: convite, error: conviteError } = await admin
       .from('convites')
-      .select('id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em')
+      .select(
+        'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em'
+      )
       .eq('id', convite_id)
       .maybeSingle();
 
@@ -151,13 +155,15 @@ Deno.serve(async (req) => {
 
     if (!resp.ok) {
       const detalhe = await resp.text();
-      console.error('resend_error', resp.status, detalhe.slice(0, 300));
+      log.error('resend_error', { context: { args: [resp.status, detalhe.slice(0, 300)] } });
       return json({ enviado: false, motivo: 'falha_provedor_email', link }, 502);
     }
 
     return json({ enviado: true, link });
   } catch (e) {
-    console.error('enviar-convite-organizacao_error', e instanceof Error ? e.message : e);
+    log.error('enviar-convite-organizacao_error', {
+      error_message: mensagemErro(e instanceof Error ? e.message : e),
+    });
     return json({ error: 'Erro interno ao enviar convite.' }, 500);
   }
 });
