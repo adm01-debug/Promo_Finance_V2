@@ -74,6 +74,11 @@ for (const wf of ciWorkflows) {
       if (m[1].startsWith('GITHUB_')) continue;
       ciSet.add(m[1]);
     }
+    // vars.* (variáveis do repositório) também exigem provisionamento manual —
+    // sem elas o workflow falha em runtime (ex.: PROD_PROJECT_REF no schema-drift).
+    for (const m of src.matchAll(/vars\.([A-Z0-9_]+)/g)) {
+      ciSet.add(m[1]);
+    }
   } catch { /* workflow ausente — ignorar */ }
 }
 const ci = [...ciSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));

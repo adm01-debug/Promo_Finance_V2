@@ -10,7 +10,7 @@ Sistema financeiro corporativo multi-empresa: Contas a Pagar, Contas a Receber, 
 
 ## Como rodar localmente
 
-Pré-requisito: Node.js ≥ 18 (ou Bun ≥ 1.1, usado no CI).
+Pré-requisito: Node.js ≥ 18.18 (ou Bun ≥ 1.1, usado no CI).
 
 ```sh
 # 1. Clone e entre no diretório
