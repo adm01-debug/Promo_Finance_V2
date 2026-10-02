@@ -482,15 +482,20 @@ export async function exigirAlgumPapel(
     .eq('is_active', true);
   if (error) throw error;
   const agora = Date.now();
-  const possui = (roles ?? []).some((linha: { role: string; expires_at?: string | null }) => {
-    if (!papeis.includes(linha.role)) return false;
-    if (!linha.expires_at) return true;
-    const expiraEm = Date.parse(linha.expires_at);
-    return Number.isFinite(expiraEm) && expiraEm > agora;
-  });
-  if (possui) {
+  const efetivos = (roles ?? [])
+    .filter((linha: { role: string; expires_at?: string | null }) => {
+      if (!papeis.includes(linha.role)) return false;
+      if (!linha.expires_at) return true;
+      const expiraEm = Date.parse(linha.expires_at);
+      return Number.isFinite(expiraEm) && expiraEm > agora;
+    })
+    .map((linha: { role: string }) => linha.role);
+  if (efetivos.length > 0) {
     const token = extrairBearer(req);
-    if (token && mfaAdminInsuficiente(papeis, token)) {
+    // A verificação olha os papéis EFETIVOS do usuário, não a lista aceita:
+    // quem só tem 'financeiro' não pode ser barrado pelo MFA de admin quando
+    // o chamador passa ['admin', 'financeiro'].
+    if (token && mfaAdminInsuficiente(efetivos, token)) {
       return new Response(
         JSON.stringify({
           error: 'mfa_requerido',

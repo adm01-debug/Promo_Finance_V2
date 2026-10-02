@@ -226,7 +226,10 @@ async function flush(): Promise<void> {
 
 function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
-    original(...args);
+    // Redige strings também na saída nativa: os logs do Supabase persistem o
+    // stdout do isolado, então um segredo logado por descuido não pode ir para
+    // lá. Objetos ficam intocados para não quebrar a exibição (Errors, datas).
+    original(...args.map((a) => (typeof a === 'string' ? redigir(a) : a)));
     try {
       if (args.length === 1 && ehEchoEstruturado(args[0])) return;
       const legado = args.length === 1 ? parseLogLegado(args[0]) : null;

@@ -70,11 +70,21 @@ jobs:
           git commit -m "chore(db): regenera tipos Supabase após drift de schema"
           # checkout usa persist-credentials:false — autentica o push com o
           # GITHUB_TOKEN do job direto na URL (sem gravar o token no .git/config).
-          # --force-with-lease: em rerun no mesmo dia o -B reseta a branch local
-          # para main e ela diverge da remota já aberta; o lease falha se alguém
-          # mexeu na branch remota entre as execuções (caso em que queremos ver).
-          git push --force-with-lease \
-            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          # Em rerun no mesmo dia a branch remota já existe: busca o SHA dela
+          # para um lease explícito — falha só se alguém mexeu na branch entre
+          # o fetch e o push (caso em que queremos ver).
+          if git fetch "$REMOTE" "$BRANCH"; then
+            git push --force-with-lease="refs/heads/$BRANCH:$(git rev-parse FETCH_HEAD)" \
+              "$REMOTE" "$BRANCH"
+          else
+            git push "$REMOTE" "$BRANCH"
+          fi
+          # Reusa a PR já aberta no mesmo dia em vez de falhar na criação.
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            echo "PR da branch $BRANCH já existe — apenas os commits foram atualizados."
+            exit 0
+          fi
           gh pr create \
             --head "$BRANCH" \
             --title "chore(db): tipos Supabase dessincronizados de prod" \
