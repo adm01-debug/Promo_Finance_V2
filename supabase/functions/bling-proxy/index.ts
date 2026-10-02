@@ -5,7 +5,12 @@ import {
   validatePayload,
   createErrorResponse,
 } from '../_shared/validation.ts';
-import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts';
+import {
+  withRetry,
+  createCircuitBreaker,
+  withTimeout,
+  respostaIntegracaoDesativada,
+} from '../_shared/resilience.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 const BLING_API_BASE = 'https://api.bling.com.br/Api/v3';
@@ -18,6 +23,9 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
+  if (inativa) return inativa;
 
   try {
     const authHeader = req.headers.get('Authorization');
