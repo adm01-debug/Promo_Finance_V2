@@ -72,10 +72,14 @@ const ParamsSchema = z.object({
 
 type Params = z.infer<typeof ParamsSchema>;
 
-function json(payload: unknown, status = 200): Response {
+function json(
+  payload: unknown,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+): Response {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -85,8 +89,12 @@ function json(payload: unknown, status = 200): Response {
 // ---------------------------------------------------------------------------
 // Recurso: UF
 // ---------------------------------------------------------------------------
-async function consultarUF(db: SupabaseClient, p: Params) {
-  if (!p.uf) return json({ error: 'Parâmetro "uf" é obrigatório para recurso=uf' }, 400);
+async function consultarUF(
+  db: SupabaseClient,
+  p: Params,
+  res: (payload: unknown, status?: number) => Response
+) {
+  if (!p.uf) return res({ error: 'Parâmetro "uf" é obrigatório para recurso=uf' }, 400);
 
   const [internasRes, interRes, protocolosRes, beneficiosRes, issRes] = await Promise.all([
     db.from('aliquotas_internas_uf').select('*').eq('uf', p.uf),
@@ -118,7 +126,7 @@ async function consultarUF(db: SupabaseClient, p: Params) {
     protocolosRes.error ??
     beneficiosRes.error ??
     issRes.error;
-  if (erro) return json({ error: 'Falha ao consultar catálogos', detalhe: erro.message }, 500);
+  if (erro) return res({ error: 'Falha ao consultar catálogos', detalhe: erro.message }, 500);
 
   type Interna = {
     categoria_produto: string | null;
@@ -131,7 +139,7 @@ async function consultarUF(db: SupabaseClient, p: Params) {
   // Fallback da alíquota interna: categoria exata → GERAL/PADRAO → primeira disponível.
   const { escolhida, match } = escolherAliquotaInterna(internas, p.categoria, p.uf);
 
-  return json({
+  return res({
     recurso: 'uf',
     uf: p.uf,
     match,
@@ -147,11 +155,15 @@ async function consultarUF(db: SupabaseClient, p: Params) {
 // ---------------------------------------------------------------------------
 // Recurso: CNAE
 // ---------------------------------------------------------------------------
-async function consultarCNAE(db: SupabaseClient, p: Params) {
-  if (!p.codigo) return json({ error: 'Parâmetro "codigo" é obrigatório para recurso=cnae' }, 400);
+async function consultarCNAE(
+  db: SupabaseClient,
+  p: Params,
+  res: (payload: unknown, status?: number) => Response
+) {
+  if (!p.codigo) return res({ error: 'Parâmetro "codigo" é obrigatório para recurso=cnae' }, 400);
 
   const digitos = somenteDigitos(p.codigo);
-  if (digitos.length < 2) return json({ error: 'Código CNAE inválido' }, 400);
+  if (digitos.length < 2) return res({ error: 'Código CNAE inválido' }, 400);
 
   const select =
     'codigo, descricao, atividade, anexo_simples, sujeito_fator_r, vedado_simples, presuncao_irpj, presuncao_csll, rat_padrao, terceiros_padrao';
@@ -164,9 +176,9 @@ async function consultarCNAE(db: SupabaseClient, p: Params) {
     .limit(1)
     .maybeSingle();
   if (exato.error)
-    return json({ error: 'Falha ao consultar CNAE', detalhe: exato.error.message }, 500);
+    return res({ error: 'Falha ao consultar CNAE', detalhe: exato.error.message }, 500);
   if (exato.data) {
-    return json({
+    return res({
       recurso: 'cnae',
       match: { estrategia: 'exato', exato: true },
       cnae: exato.data,
@@ -183,10 +195,10 @@ async function consultarCNAE(db: SupabaseClient, p: Params) {
       .select(select)
       .ilike('codigo', `${prefixo}%`)
       .limit(p.limite);
-    if (error) return json({ error: 'Falha ao consultar CNAE', detalhe: error.message }, 500);
+    if (error) return res({ error: 'Falha ao consultar CNAE', detalhe: error.message }, 500);
     const candidatos = data ?? [];
     if (candidatos.length > 0) {
-      return json({
+      return res({
         recurso: 'cnae',
         match: {
           estrategia: `fallback_prefixo_${tamanho}`,
@@ -199,7 +211,7 @@ async function consultarCNAE(db: SupabaseClient, p: Params) {
     }
   }
 
-  return json({
+  return res({
     recurso: 'cnae',
     match: {
       estrategia: 'sem_correspondencia',
@@ -266,15 +278,19 @@ async function montarCenarioST(db: SupabaseClient, ncmCodigo: string, p: Params)
   };
 }
 
-async function consultarNCM(db: SupabaseClient, p: Params) {
+async function consultarNCM(
+  db: SupabaseClient,
+  p: Params,
+  res: (payload: unknown, status?: number) => Response
+) {
   // Modo listagem: sem código, apenas filtros (monofásico / ST).
   if (!p.codigo) {
     let query = db.from('ncms').select(NCM_SELECT).order('codigo').limit(p.limite);
     if (p.monofasico !== undefined) query = query.eq('monofasico_pis_cofins', p.monofasico);
     if (p.st !== undefined) query = query.eq('sujeito_st', p.st);
     const { data, error } = await query;
-    if (error) return json({ error: 'Falha ao listar NCMs', detalhe: error.message }, 500);
-    return json({
+    if (error) return res({ error: 'Falha ao listar NCMs', detalhe: error.message }, 500);
+    return res({
       recurso: 'ncm',
       modo: 'listagem',
       filtros: { monofasico: p.monofasico ?? null, st: p.st ?? null },
@@ -284,7 +300,7 @@ async function consultarNCM(db: SupabaseClient, p: Params) {
   }
 
   const digitos = somenteDigitos(p.codigo);
-  if (digitos.length < 2) return json({ error: 'Código NCM inválido' }, 400);
+  if (digitos.length < 2) return res({ error: 'Código NCM inválido' }, 400);
 
   // Fallback hierárquico do NCM: 8 → 6 → 4 → 2 dígitos (item → subposição → posição → capítulo).
   let escolhido: NcmRow | null = null;
@@ -298,7 +314,7 @@ async function consultarNCM(db: SupabaseClient, p: Params) {
     if (p.monofasico !== undefined) query = query.eq('monofasico_pis_cofins', p.monofasico);
     if (p.st !== undefined) query = query.eq('sujeito_st', p.st);
     const { data, error } = await query;
-    if (error) return json({ error: 'Falha ao consultar NCM', detalhe: error.message }, 500);
+    if (error) return res({ error: 'Falha ao consultar NCM', detalhe: error.message }, 500);
 
     const candidatos = vigentes<NcmRow>(data);
     if (candidatos.length === 0) continue;
@@ -332,7 +348,7 @@ async function consultarNCM(db: SupabaseClient, p: Params) {
       null;
   }
 
-  return json({
+  return res({
     recurso: 'ncm',
     modo: 'detalhe',
     match,
@@ -347,12 +363,13 @@ async function consultarNCM(db: SupabaseClient, p: Params) {
 
 // ---------------------------------------------------------------------------
 Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  const cors = corsHeadersPara(req);
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+  const res = (payload: unknown, status = 200) => json(payload, status, cors);
 
   try {
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) return json({ error: 'Unauthorized' }, 401);
+    if (!authHeader?.startsWith('Bearer ')) return res({ error: 'Unauthorized' }, 401);
 
     const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
       global: { headers: { Authorization: authHeader } },
@@ -360,7 +377,7 @@ Deno.serve(async (req) => {
     });
 
     const { data: userData, error: userError } = await db.auth.getUser();
-    if (userError || !userData?.user) return json({ error: 'Unauthorized' }, 401);
+    if (userError || !userData?.user) return res({ error: 'Unauthorized' }, 401);
 
     // Aceita GET (query string) e POST (JSON), normalizando para o mesmo schema.
     const url = new URL(req.url);
@@ -372,19 +389,19 @@ Deno.serve(async (req) => {
 
     const parsed = ParamsSchema.safeParse(raw);
     if (!parsed.success) {
-      return json(
+      return res(
         { error: 'Parâmetros inválidos', detalhes: parsed.error.flatten().fieldErrors },
         400
       );
     }
     const p = parsed.data;
 
-    if (p.recurso === 'uf') return await consultarUF(db, p);
-    if (p.recurso === 'cnae') return await consultarCNAE(db, p);
-    return await consultarNCM(db, p);
+    if (p.recurso === 'uf') return await consultarUF(db, p, res);
+    if (p.recurso === 'cnae') return await consultarCNAE(db, p, res);
+    return await consultarNCM(db, p, res);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erro desconhecido';
     console.error('[consulta-tributaria]', msg);
-    return json({ error: 'Erro interno na consulta tributária' }, 500);
+    return res({ error: 'Erro interno na consulta tributária' }, 500);
   }
 });

@@ -60,16 +60,20 @@ const edge = [...edgeSet].sort().map(name => ({
   dest: autoProvided.has(name) ? 'supabase_auto' : 'supabase_vault',
 }));
 
-// CI — secrets referenciados em todos os workflows do repositório
-const ciWorkflows = [
-  '.github/workflows/ci.yml',
-  '.github/workflows/supabase-linter.yml',
-];
+// CI — secrets referenciados em TODOS os workflows do repositório (glob:
+// enumerar nomes aqui deixava secrets de workflows novos fora do manifest)
+const ciWorkflows = readdirSync('.github/workflows')
+  .filter((f) => f.endsWith('.yml') || f.endsWith('.yaml'))
+  .map((f) => `.github/workflows/${f}`);
 const ciSet = new Set();
 for (const wf of ciWorkflows) {
   try {
     const src = readFileSync(wf, 'utf8');
-    for (const m of src.matchAll(/secrets\.([A-Z0-9_]+)/g)) ciSet.add(m[1]);
+    for (const m of src.matchAll(/secrets\.([A-Z0-9_]+)/g)) {
+      // GITHUB_* são providos pelo próprio Actions, não precisam de provisionamento.
+      if (m[1].startsWith('GITHUB_')) continue;
+      ciSet.add(m[1]);
+    }
   } catch { /* workflow ausente — ignorar */ }
 }
 const ci = [...ciSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
