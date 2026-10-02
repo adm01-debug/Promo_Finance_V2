@@ -319,6 +319,34 @@ export async function exigirInternaOuUsuario(
   return { ok: false, resposta: usuario.resposta };
 }
 
+/**
+ * Preâmbulo completo das funções disparadas por cron OU usuário com papel:
+ * valida interna/usuário, monta o client de serviço e, quando o chamador é
+ * usuário, exige um dos papéis aceitos. Devolve o client pronto para uso.
+ */
+export async function exigirInternaOuUsuarioComPapel(
+  req: Request,
+  papeis: readonly string[],
+  mensagemPapel: string
+): Promise<
+  ResultadoGuard<{ supabase: SupabaseClient; origem: 'interna' | 'usuario'; userId: string | null }>
+> {
+  const guard = await exigirInternaOuUsuario(req);
+  if (!guard.ok) return { ok: false, resposta: guard.resposta };
+
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  );
+
+  if (guard.dados.origem === 'usuario' && guard.dados.userId) {
+    const acesso = await exigirAlgumPapel(supabase, req, guard.dados.userId, papeis, mensagemPapel);
+    if (acesso) return { ok: false, resposta: acesso };
+  }
+
+  return { ok: true, dados: { supabase, origem: guard.dados.origem, userId: guard.dados.userId } };
+}
+
 // ---------------------------------------------------------------------------
 // Escopo de empresa (tenant)
 // ---------------------------------------------------------------------------

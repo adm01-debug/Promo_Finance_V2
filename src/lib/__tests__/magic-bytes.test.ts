@@ -48,6 +48,13 @@ describe('validarMagicBytes', () => {
     expect(await validarMagicBytes(csv, ['.csv'])).toBeNull();
   });
 
+  it('bloqueia .jar mesmo com assinatura zip válida', async () => {
+    const jar = arquivo('payload.jar', [0x50, 0x4b, 0x03, 0x04]);
+    expect(await validarMagicBytes(jar)).toMatch(/não é permitida/);
+    const sh = arquivo('notas.sh', Array.from(new TextEncoder().encode('texto qualquer')));
+    expect(await validarMagicBytes(sh)).toMatch(/não é permitida/);
+  });
+
   it('aceita xlsx (zip) e rejeita extensão fora da lista aceita', async () => {
     const xlsx = arquivo('plan.xlsx', [0x50, 0x4b, 0x03, 0x04, 0x14]);
     expect(await validarMagicBytes(xlsx, ['.ofx', '.xlsx'])).toBeNull();

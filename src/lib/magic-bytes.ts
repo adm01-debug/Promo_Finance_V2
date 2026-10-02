@@ -59,6 +59,36 @@ const EXECUTAVEIS: ReadonlySet<TipoDetectado> = new Set([
   'script',
 ]);
 
+/** Extensões executáveis — bloqueadas por nome mesmo sem assinatura binária
+ *  (ex.: `.jar` é zip válido e passaria na checagem de assinatura). */
+const EXTENSOES_BLOQUEADAS: ReadonlySet<string> = new Set([
+  'apk',
+  'app',
+  'bat',
+  'bin',
+  'cmd',
+  'com',
+  'deb',
+  'dll',
+  'dmg',
+  'dylib',
+  'elf',
+  'exe',
+  'hta',
+  'ipa',
+  'jar',
+  'js',
+  'mjs',
+  'msi',
+  'ps1',
+  'rpm',
+  'scr',
+  'sh',
+  'so',
+  'vbs',
+  'wsf',
+]);
+
 /** Extensão → tipos detectados aceitos. `zip` cobre xlsx/docx/ofx-zip etc. */
 const EXTENSAO_PARA_TIPOS: Record<string, TipoDetectado[]> = {
   pdf: ['pdf'],
@@ -150,6 +180,12 @@ export async function validarMagicBytes(
   // Se a UI declarou extensões aceitas, a extensão do arquivo precisa constar.
   if (aceitas.length > 0 && !aceitas.includes(ext)) {
     return `${file.name}: extensão .${ext} fora da lista aceita (${aceitas.join(', ')})`;
+  }
+
+  // Extensão executável → sempre bloqueada: a assinatura de `.jar` é zip
+  // válida e o arquivo ainda carrega bytecode rodável.
+  if (EXTENSOES_BLOQUEADAS.has(ext)) {
+    return `${file.name}: extensão .${ext} não é permitida em uploads`;
   }
 
   const esperados = EXTENSAO_PARA_TIPOS[ext];
