@@ -32,6 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          # Sempre da main: um workflow_dispatch iniciado a partir de branch
+          # não integrada colocaria os commits dela na PR de tipos.
+          ref: main
           persist-credentials: false
 
       - name: Setup Supabase CLI
@@ -109,6 +112,9 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          # Sempre da main: um workflow_dispatch iniciado a partir de branch
+          # não integrada colocaria os commits dela na PR de tipos.
+          ref: main
           persist-credentials: false
 
       - name: Instalar psql
