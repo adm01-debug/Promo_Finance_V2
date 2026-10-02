@@ -157,7 +157,20 @@ function redigirObj(x: unknown): unknown {
 // saída nativa continuar legível — seus campos úteis não são enumeráveis e a
 // redação os esvaziaria.
 function redigirArgNativo(a: unknown): unknown {
-  if (typeof a === 'string') return redigir(a);
+  if (typeof a === 'string') {
+    // Strings frequentemente carregam JSON serializado (payloads, respostas
+    // de API): sem inspecionar a estrutura, chaves sensíveis passariam sem
+    // mascaramento por nome de campo.
+    const t = a.trim();
+    if (t.startsWith('{') || t.startsWith('[')) {
+      try {
+        return JSON.stringify(redigirObj(JSON.parse(t)));
+      } catch {
+        // Não era JSON de verdade — cai no mascaramento de segredos abaixo.
+      }
+    }
+    return redigir(a);
+  }
   if (Array.isArray(a)) return redigirObj(a);
   if (a !== null && typeof a === 'object') {
     const proto = Object.getPrototypeOf(a);

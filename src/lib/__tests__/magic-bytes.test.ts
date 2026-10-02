@@ -56,9 +56,24 @@ describe('validarMagicBytes', () => {
   });
 
   it('aceita xlsx (zip) e rejeita extensão fora da lista aceita', async () => {
-    const xlsx = arquivo('plan.xlsx', [0x50, 0x4b, 0x03, 0x04, 0x14]);
+    const xlsx = arquivo(
+      'plan.xlsx',
+      Array.from(new TextEncoder().encode('PK\x03\x04\x14[Content_Types].xml'))
+    );
     expect(await validarMagicBytes(xlsx, ['.ofx', '.xlsx'])).toBeNull();
     const exe = arquivo('plan.zip', [0x50, 0x4b, 0x03, 0x04]);
     expect(await validarMagicBytes(exe, ['.ofx', '.csv'])).toMatch(/extensão .zip fora/);
+  });
+
+  it('rejeita zip genérico renomeado para extensão de escritório', async () => {
+    // JAR renomeado: assinatura zip válida, mas sem a entrada OOXML obrigatória.
+    const jar = arquivo(
+      'plan.xlsx',
+      Array.from(new TextEncoder().encode('PK\x03\x04\x14META-INF/MANIFEST.MF'))
+    );
+    expect(await validarMagicBytes(jar, ['.xlsx'])).toMatch(/não é um pacote .xlsx válido/);
+    // .zip continua aceito sem marcador de escritório.
+    const zip = arquivo('dados.zip', [0x50, 0x4b, 0x03, 0x04]);
+    expect(await validarMagicBytes(zip, ['.zip'])).toBeNull();
   });
 });

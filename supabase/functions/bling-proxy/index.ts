@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
-      return jsonResponse({ error: 'Unauthorized' }, 401);
+      return jsonResponse({ error: 'Unauthorized' }, 401, corsHeaders);
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       error: userError,
     } = await supabase.auth.getUser();
     if (userError || !user) {
-      return jsonResponse({ error: 'Unauthorized' }, 401);
+      return jsonResponse({ error: 'Unauthorized' }, 401, corsHeaders);
     }
 
     const userId = user.id;
@@ -70,18 +70,18 @@ Deno.serve(async (req) => {
         .limit(1)
         .maybeSingle();
       if (!roleData) {
-        return jsonResponse({ error: 'Sem permissao para executar esta acao' }, 403);
+        return jsonResponse({ error: 'Sem permissao para executar esta acao' }, 403, corsHeaders);
       }
     }
 
     // --- OAuth Actions ---
     if (action === 'oauth_callback') {
-      return await handleOAuthCallback(supabase, params, userId);
+      return await handleOAuthCallback(supabase, params, userId, corsHeaders);
     }
 
     // --- Gap #3: Token revocation ---
     if (action === 'revogar_token') {
-      return await handleTokenRevocation(supabase);
+      return await handleTokenRevocation(supabase, corsHeaders);
     }
 
     // --- Get valid access token ---
@@ -89,7 +89,8 @@ Deno.serve(async (req) => {
     if (!accessToken) {
       return jsonResponse(
         { error: 'Token Bling não configurado. Faça a autenticação OAuth primeiro.' },
-        401
+        401,
+        corsHeaders
       );
     }
 
@@ -97,280 +98,514 @@ Deno.serve(async (req) => {
     switch (action) {
       // ═══════════════ CONTATOS ═══════════════
       case 'listar_contatos':
-        return await blingGet(accessToken, '/contatos', params.filtros);
+        return await blingGet(accessToken, '/contatos', params.filtros, corsHeaders);
       case 'buscar_contato':
-        return await blingGet(accessToken, `/contatos/${params.id}`);
+        return await blingGet(accessToken, `/contatos/${params.id}`, undefined, corsHeaders);
       case 'criar_contato':
-        return await blingPost(accessToken, '/contatos', params.data);
+        return await blingPost(accessToken, '/contatos', params.data, corsHeaders);
       case 'atualizar_contato':
-        return await blingPut(accessToken, `/contatos/${params.id}`, params.data);
+        return await blingPut(accessToken, `/contatos/${params.id}`, params.data, corsHeaders);
       case 'alterar_situacao_contato':
         return await blingRequest(
           accessToken,
           'PATCH',
           `/contatos/${params.id}/situacoes`,
-          params.data
+          params.data,
+          corsHeaders
         );
       case 'alterar_situacao_contatos_lote':
-        return await blingPost(accessToken, '/contatos/situacoes', params.data);
+        return await blingPost(accessToken, '/contatos/situacoes', params.data, corsHeaders);
       case 'excluir_contatos':
-        return await blingRequest(accessToken, 'DELETE', '/contatos', { idsContatos: params.ids });
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          '/contatos',
+          { idsContatos: params.ids },
+          corsHeaders
+        );
       case 'tipos_contato':
-        return await blingGet(accessToken, '/contatos/tipos');
+        return await blingGet(accessToken, '/contatos/tipos', undefined, corsHeaders);
       case 'consumidor_final':
-        return await blingGet(accessToken, '/contatos/consumidor-final');
+        return await blingGet(accessToken, '/contatos/consumidor-final', undefined, corsHeaders);
 
       // ═══════════════ PEDIDOS DE VENDA ═══════════════
       case 'listar_pedidos':
-        return await blingGet(accessToken, '/pedidos/vendas', params.filtros);
+        return await blingGet(accessToken, '/pedidos/vendas', params.filtros, corsHeaders);
       case 'buscar_pedido':
-        return await blingGet(accessToken, `/pedidos/vendas/${params.id}`);
+        return await blingGet(accessToken, `/pedidos/vendas/${params.id}`, undefined, corsHeaders);
       case 'criar_pedido':
-        return await blingPost(accessToken, '/pedidos/vendas', params.data);
+        return await blingPost(accessToken, '/pedidos/vendas', params.data, corsHeaders);
       case 'atualizar_pedido':
-        return await blingPut(accessToken, `/pedidos/vendas/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/pedidos/vendas/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_pedidos':
-        return await blingRequest(accessToken, 'DELETE', '/pedidos/vendas', {
-          idsPedidosVendas: params.ids,
-        });
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          '/pedidos/vendas',
+          {
+            idsPedidosVendas: params.ids,
+          },
+          corsHeaders
+        );
       case 'alterar_situacao_pedido':
         return await blingRequest(
           accessToken,
           'PATCH',
-          `/pedidos/vendas/${params.id}/situacoes/${params.idSituacao}`
+          `/pedidos/vendas/${params.id}/situacoes/${params.idSituacao}`,
+          corsHeaders
         );
       case 'lancar_estoque_pedido':
-        return await blingPost(accessToken, `/pedidos/vendas/${params.id}/lancar-estoque`);
+        return await blingPost(
+          accessToken,
+          `/pedidos/vendas/${params.id}/lancar-estoque`,
+          undefined,
+          corsHeaders
+        );
       case 'estornar_estoque_pedido':
-        return await blingPost(accessToken, `/pedidos/vendas/${params.id}/estornar-estoque`);
+        return await blingPost(
+          accessToken,
+          `/pedidos/vendas/${params.id}/estornar-estoque`,
+          undefined,
+          corsHeaders
+        );
       case 'lancar_contas_pedido':
-        return await blingPost(accessToken, `/pedidos/vendas/${params.id}/lancar-contas`);
+        return await blingPost(
+          accessToken,
+          `/pedidos/vendas/${params.id}/lancar-contas`,
+          undefined,
+          corsHeaders
+        );
       case 'estornar_contas_pedido':
-        return await blingPost(accessToken, `/pedidos/vendas/${params.id}/estornar-contas`);
+        return await blingPost(
+          accessToken,
+          `/pedidos/vendas/${params.id}/estornar-contas`,
+          undefined,
+          corsHeaders
+        );
       case 'gerar_nfe_pedido':
-        return await blingPost(accessToken, `/pedidos/vendas/${params.id}/gerar-nfe`);
+        return await blingPost(
+          accessToken,
+          `/pedidos/vendas/${params.id}/gerar-nfe`,
+          undefined,
+          corsHeaders
+        );
       case 'gerar_nfce_pedido':
-        return await blingPost(accessToken, `/pedidos/vendas/${params.id}/gerar-nfce`);
+        return await blingPost(
+          accessToken,
+          `/pedidos/vendas/${params.id}/gerar-nfce`,
+          undefined,
+          corsHeaders
+        );
 
       // ═══════════════ PEDIDOS DE COMPRA (Gap #14) ═══════════════
       case 'listar_pedidos_compra':
-        return await blingGet(accessToken, '/pedidos/compras', params.filtros);
+        return await blingGet(accessToken, '/pedidos/compras', params.filtros, corsHeaders);
       case 'buscar_pedido_compra':
-        return await blingGet(accessToken, `/pedidos/compras/${params.id}`);
+        return await blingGet(accessToken, `/pedidos/compras/${params.id}`, undefined, corsHeaders);
       case 'criar_pedido_compra':
-        return await blingPost(accessToken, '/pedidos/compras', params.data);
+        return await blingPost(accessToken, '/pedidos/compras', params.data, corsHeaders);
       case 'atualizar_pedido_compra':
-        return await blingPut(accessToken, `/pedidos/compras/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/pedidos/compras/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_pedidos_compra':
-        return await blingRequest(accessToken, 'DELETE', '/pedidos/compras', {
-          idsPedidosCompras: params.ids,
-        });
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          '/pedidos/compras',
+          {
+            idsPedidosCompras: params.ids,
+          },
+          corsHeaders
+        );
 
       // ═══════════════ PRODUTOS ═══════════════
       case 'listar_produtos':
-        return await blingGet(accessToken, '/produtos', params.filtros);
+        return await blingGet(accessToken, '/produtos', params.filtros, corsHeaders);
       case 'buscar_produto':
-        return await blingGet(accessToken, `/produtos/${params.id}`);
+        return await blingGet(accessToken, `/produtos/${params.id}`, undefined, corsHeaders);
       case 'criar_produto':
-        return await blingPost(accessToken, '/produtos', params.data);
+        return await blingPost(accessToken, '/produtos', params.data, corsHeaders);
       case 'atualizar_produto':
-        return await blingPut(accessToken, `/produtos/${params.id}`, params.data);
+        return await blingPut(accessToken, `/produtos/${params.id}`, params.data, corsHeaders);
       case 'atualizar_produto_parcial':
-        return await blingRequest(accessToken, 'PATCH', `/produtos/${params.id}`, params.data);
+        return await blingRequest(
+          accessToken,
+          'PATCH',
+          `/produtos/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_produtos':
-        return await blingRequest(accessToken, 'DELETE', '/produtos', { idsProdutos: params.ids });
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          '/produtos',
+          { idsProdutos: params.ids },
+          corsHeaders
+        );
       case 'listar_variacoes':
-        return await blingGet(accessToken, `/produtos/${params.id}/variacoes`);
+        return await blingGet(
+          accessToken,
+          `/produtos/${params.id}/variacoes`,
+          undefined,
+          corsHeaders
+        );
       case 'criar_variacoes':
-        return await blingPost(accessToken, `/produtos/${params.id}/variacoes`, params.data);
+        return await blingPost(
+          accessToken,
+          `/produtos/${params.id}/variacoes`,
+          params.data,
+          corsHeaders
+        );
       case 'gerar_combinacoes':
         return await blingPost(
           accessToken,
           '/produtos/variacoes/atributos/gerar-combinacoes',
-          params.data
+          params.data,
+          corsHeaders
         );
       case 'buscar_estrutura':
-        return await blingGet(accessToken, `/produtos/estruturas/${params.id}`);
+        return await blingGet(
+          accessToken,
+          `/produtos/estruturas/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'atualizar_estrutura':
-        return await blingPut(accessToken, `/produtos/estruturas/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/produtos/estruturas/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_estrutura':
-        return await blingRequest(accessToken, 'DELETE', `/produtos/estruturas/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/produtos/estruturas/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'listar_produto_fornecedores':
-        return await blingGet(accessToken, '/produtos/fornecedores', params.filtros);
+        return await blingGet(accessToken, '/produtos/fornecedores', params.filtros, corsHeaders);
       case 'criar_produto_fornecedor':
-        return await blingPost(accessToken, '/produtos/fornecedores', params.data);
+        return await blingPost(accessToken, '/produtos/fornecedores', params.data, corsHeaders);
       case 'atualizar_produto_fornecedor':
-        return await blingPut(accessToken, `/produtos/fornecedores/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/produtos/fornecedores/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_produto_fornecedor':
-        return await blingRequest(accessToken, 'DELETE', `/produtos/fornecedores/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/produtos/fornecedores/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'listar_produto_lojas':
-        return await blingGet(accessToken, '/produtos/lojas', params.filtros);
+        return await blingGet(accessToken, '/produtos/lojas', params.filtros, corsHeaders);
       case 'criar_produto_loja':
-        return await blingPost(accessToken, '/produtos/lojas', params.data);
+        return await blingPost(accessToken, '/produtos/lojas', params.data, corsHeaders);
       case 'atualizar_produto_loja':
-        return await blingPut(accessToken, `/produtos/lojas/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/produtos/lojas/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_produto_loja':
-        return await blingRequest(accessToken, 'DELETE', `/produtos/lojas/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/produtos/lojas/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'listar_lotes':
-        return await blingGet(accessToken, '/produtos/lotes', params.filtros);
+        return await blingGet(accessToken, '/produtos/lotes', params.filtros, corsHeaders);
       case 'atualizar_lote':
-        return await blingPut(accessToken, `/produtos/lotes/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/produtos/lotes/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_lote':
-        return await blingRequest(accessToken, 'DELETE', `/produtos/lotes/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/produtos/lotes/${params.id}`,
+          undefined,
+          corsHeaders
+        );
 
       // ═══════════════ ESTOQUE ═══════════════
       case 'saldos_estoque':
-        return await blingGet(accessToken, '/estoques/saldos', params.filtros);
+        return await blingGet(accessToken, '/estoques/saldos', params.filtros, corsHeaders);
       case 'lancar_estoque':
-        return await blingPost(accessToken, '/estoques', params.data);
+        return await blingPost(accessToken, '/estoques', params.data, corsHeaders);
       case 'listar_depositos':
-        return await blingGet(accessToken, '/depositos');
+        return await blingGet(accessToken, '/depositos', undefined, corsHeaders);
       case 'criar_deposito':
-        return await blingPost(accessToken, '/depositos', params.data);
+        return await blingPost(accessToken, '/depositos', params.data, corsHeaders);
       case 'atualizar_deposito':
-        return await blingPut(accessToken, `/depositos/${params.id}`, params.data);
+        return await blingPut(accessToken, `/depositos/${params.id}`, params.data, corsHeaders);
 
       // ═══════════════ FINANCEIRO ═══════════════
       case 'listar_contas_receber':
-        return await blingGet(accessToken, '/contas/receber', params.filtros);
+        return await blingGet(accessToken, '/contas/receber', params.filtros, corsHeaders);
       case 'buscar_conta_receber':
-        return await blingGet(accessToken, `/contas/receber/${params.id}`);
+        return await blingGet(accessToken, `/contas/receber/${params.id}`, undefined, corsHeaders);
       case 'criar_conta_receber':
-        return await blingPost(accessToken, '/contas/receber', params.data);
+        return await blingPost(accessToken, '/contas/receber', params.data, corsHeaders);
       case 'atualizar_conta_receber':
-        return await blingPut(accessToken, `/contas/receber/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/contas/receber/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_conta_receber':
-        return await blingRequest(accessToken, 'DELETE', `/contas/receber/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/contas/receber/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'baixa_conta_receber':
-        return await blingPost(accessToken, `/contas/receber/${params.id}/baixas`, params.data);
+        return await blingPost(
+          accessToken,
+          `/contas/receber/${params.id}/baixas`,
+          params.data,
+          corsHeaders
+        );
       case 'estornar_baixa_receber':
         return await blingRequest(
           accessToken,
           'DELETE',
-          `/contas/receber/${params.id}/baixas/${params.baixaId}`
+          `/contas/receber/${params.id}/baixas/${params.baixaId}`,
+          corsHeaders
         );
       case 'listar_contas_pagar':
-        return await blingGet(accessToken, '/contas/pagar', params.filtros);
+        return await blingGet(accessToken, '/contas/pagar', params.filtros, corsHeaders);
       case 'buscar_conta_pagar':
-        return await blingGet(accessToken, `/contas/pagar/${params.id}`);
+        return await blingGet(accessToken, `/contas/pagar/${params.id}`, undefined, corsHeaders);
       case 'criar_conta_pagar':
-        return await blingPost(accessToken, '/contas/pagar', params.data);
+        return await blingPost(accessToken, '/contas/pagar', params.data, corsHeaders);
       case 'atualizar_conta_pagar':
-        return await blingPut(accessToken, `/contas/pagar/${params.id}`, params.data);
+        return await blingPut(accessToken, `/contas/pagar/${params.id}`, params.data, corsHeaders);
       case 'excluir_conta_pagar':
-        return await blingRequest(accessToken, 'DELETE', `/contas/pagar/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/contas/pagar/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'baixa_conta_pagar':
-        return await blingPost(accessToken, `/contas/pagar/${params.id}/baixas`, params.data);
+        return await blingPost(
+          accessToken,
+          `/contas/pagar/${params.id}/baixas`,
+          params.data,
+          corsHeaders
+        );
       case 'estornar_baixa_pagar':
         return await blingRequest(
           accessToken,
           'DELETE',
-          `/contas/pagar/${params.id}/baixas/${params.baixaId}`
+          `/contas/pagar/${params.id}/baixas/${params.baixaId}`,
+          corsHeaders
         );
       case 'listar_borderos':
-        return await blingGet(accessToken, '/borderos', params.filtros);
+        return await blingGet(accessToken, '/borderos', params.filtros, corsHeaders);
       case 'criar_bordero':
-        return await blingPost(accessToken, '/borderos', params.data);
+        return await blingPost(accessToken, '/borderos', params.data, corsHeaders);
       case 'excluir_bordero':
-        return await blingRequest(accessToken, 'DELETE', `/borderos/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/borderos/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'listar_contas_contabeis':
-        return await blingGet(accessToken, '/contas-contabeis');
+        return await blingGet(accessToken, '/contas-contabeis', undefined, corsHeaders);
       case 'criar_conta_contabil':
-        return await blingPost(accessToken, '/contas-contabeis', params.data);
+        return await blingPost(accessToken, '/contas-contabeis', params.data, corsHeaders);
       case 'formas_pagamento':
-        return await blingGet(accessToken, '/formas-pagamentos');
+        return await blingGet(accessToken, '/formas-pagamentos', undefined, corsHeaders);
       case 'criar_forma_pagamento':
-        return await blingPost(accessToken, '/formas-pagamentos', params.data);
+        return await blingPost(accessToken, '/formas-pagamentos', params.data, corsHeaders);
       case 'atualizar_forma_pagamento':
-        return await blingPut(accessToken, `/formas-pagamentos/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/formas-pagamentos/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'excluir_forma_pagamento':
-        return await blingRequest(accessToken, 'DELETE', `/formas-pagamentos/${params.id}`);
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          `/formas-pagamentos/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'categorias_receitas_despesas':
-        return await blingGet(accessToken, '/categorias/receitas-despesas');
+        return await blingGet(accessToken, '/categorias/receitas-despesas', undefined, corsHeaders);
       case 'criar_categoria':
-        return await blingPost(accessToken, '/categorias/receitas-despesas', params.data);
+        return await blingPost(
+          accessToken,
+          '/categorias/receitas-despesas',
+          params.data,
+          corsHeaders
+        );
 
       // ═══════════════ NF-e / FISCAL ═══════════════
       case 'listar_nfe':
-        return await blingGet(accessToken, '/nfe', params.filtros);
+        return await blingGet(accessToken, '/nfe', params.filtros, corsHeaders);
       case 'buscar_nfe':
-        return await blingGet(accessToken, `/nfe/${params.id}`);
+        return await blingGet(accessToken, `/nfe/${params.id}`, undefined, corsHeaders);
       case 'criar_nfe':
-        return await blingPost(accessToken, '/nfe', params.data);
+        return await blingPost(accessToken, '/nfe', params.data, corsHeaders);
       case 'enviar_nfe_sefaz':
         return await blingPost(
           accessToken,
-          `/nfe/${params.id}/enviar${params.enviarEmail ? '?enviarEmail=true' : ''}`
+          `/nfe/${params.id}/enviar${params.enviarEmail ? '?enviarEmail=true' : ''}`,
+          corsHeaders
         );
       case 'cancelar_nfe':
-        return await blingRequest(accessToken, 'DELETE', '/nfe', { idsNotas: params.ids });
+        return await blingRequest(
+          accessToken,
+          'DELETE',
+          '/nfe',
+          { idsNotas: params.ids },
+          corsHeaders
+        );
       case 'lancar_estoque_nfe':
-        return await blingPost(accessToken, `/nfe/${params.id}/lancar-estoque`);
+        return await blingPost(
+          accessToken,
+          `/nfe/${params.id}/lancar-estoque`,
+          undefined,
+          corsHeaders
+        );
       case 'lancar_contas_nfe':
-        return await blingPost(accessToken, `/nfe/${params.id}/lancar-contas`);
+        return await blingPost(
+          accessToken,
+          `/nfe/${params.id}/lancar-contas`,
+          undefined,
+          corsHeaders
+        );
       case 'estornar_estoque_nfe':
-        return await blingPost(accessToken, `/nfe/${params.id}/estornar-estoque`);
+        return await blingPost(
+          accessToken,
+          `/nfe/${params.id}/estornar-estoque`,
+          undefined,
+          corsHeaders
+        );
       case 'estornar_contas_nfe':
-        return await blingPost(accessToken, `/nfe/${params.id}/estornar-contas`);
+        return await blingPost(
+          accessToken,
+          `/nfe/${params.id}/estornar-contas`,
+          undefined,
+          corsHeaders
+        );
 
       // ═══════════════ NFC-e (Gap #15) ═══════════════
       case 'listar_nfce':
-        return await blingGet(accessToken, '/nfce', params.filtros);
+        return await blingGet(accessToken, '/nfce', params.filtros, corsHeaders);
       case 'buscar_nfce':
-        return await blingGet(accessToken, `/nfce/${params.id}`);
+        return await blingGet(accessToken, `/nfce/${params.id}`, undefined, corsHeaders);
       case 'criar_nfce':
-        return await blingPost(accessToken, '/nfce', params.data);
+        return await blingPost(accessToken, '/nfce', params.data, corsHeaders);
       case 'enviar_nfce':
-        return await blingPost(accessToken, `/nfce/${params.id}/enviar`);
+        return await blingPost(accessToken, `/nfce/${params.id}/enviar`, undefined, corsHeaders);
 
       // ═══════════════ LOGÍSTICA ═══════════════
       case 'listar_logisticas':
-        return await blingGet(accessToken, '/logisticas');
+        return await blingGet(accessToken, '/logisticas', undefined, corsHeaders);
       case 'listar_servicos_logistica':
-        return await blingGet(accessToken, '/logisticas/servicos');
+        return await blingGet(accessToken, '/logisticas/servicos', undefined, corsHeaders);
       case 'listar_remessas':
-        return await blingGet(accessToken, '/logisticas/remessas', params.filtros);
+        return await blingGet(accessToken, '/logisticas/remessas', params.filtros, corsHeaders);
       case 'buscar_remessa':
-        return await blingGet(accessToken, `/logisticas/remessas/${params.id}`);
+        return await blingGet(
+          accessToken,
+          `/logisticas/remessas/${params.id}`,
+          undefined,
+          corsHeaders
+        );
       case 'criar_remessa':
-        return await blingPost(accessToken, '/logisticas/remessas', params.data);
+        return await blingPost(accessToken, '/logisticas/remessas', params.data, corsHeaders);
       case 'listar_objetos':
-        return await blingGet(accessToken, '/logisticas/objetos', params.filtros);
+        return await blingGet(accessToken, '/logisticas/objetos', params.filtros, corsHeaders);
       case 'rastrear_objeto':
-        return await blingGet(accessToken, `/logisticas/objetos/${params.codigo}`);
+        return await blingGet(
+          accessToken,
+          `/logisticas/objetos/${params.codigo}`,
+          undefined,
+          corsHeaders
+        );
       case 'atualizar_objeto':
-        return await blingPut(accessToken, `/logisticas/objetos/${params.id}`, params.data);
+        return await blingPut(
+          accessToken,
+          `/logisticas/objetos/${params.id}`,
+          params.data,
+          corsHeaders
+        );
       case 'gerar_etiqueta':
-        return await blingPost(accessToken, '/logisticas/etiquetas', params.data);
+        return await blingPost(accessToken, '/logisticas/etiquetas', params.data, corsHeaders);
       case 'baixar_etiqueta':
-        return await blingGet(accessToken, `/logisticas/etiquetas/${params.id}`);
+        return await blingGet(
+          accessToken,
+          `/logisticas/etiquetas/${params.id}`,
+          undefined,
+          corsHeaders
+        );
 
       // ═══════════════ EMPRESA ═══════════════
       case 'dados_empresa':
-        return await blingGet(accessToken, '/empresas/me/dados-basicos');
+        return await blingGet(accessToken, '/empresas/me/dados-basicos', undefined, corsHeaders);
 
       // ═══════════════ NATUREZAS DE OPERAÇÃO ═══════════════
       case 'listar_naturezas_operacao':
-        return await blingGet(accessToken, '/naturezas-operacoes', params.filtros);
+        return await blingGet(accessToken, '/naturezas-operacoes', params.filtros, corsHeaders);
 
       default:
-        return jsonResponse({ error: `Ação desconhecida: ${action}` }, 400);
+        return jsonResponse({ error: `Ação desconhecida: ${action}` }, 400, corsHeaders);
     }
   } catch (error) {
     console.error('Bling proxy error:', error);
-    return jsonResponse({ error: error instanceof Error ? error.message : 'Erro interno' }, 500);
+    return jsonResponse(
+      { error: error instanceof Error ? error.message : 'Erro interno' },
+      500,
+      corsHeaders
+    );
   }
 });
 
 // --- Gap #3: Token Revocation ---
-async function handleTokenRevocation(supabase: any) {
+async function handleTokenRevocation(supabase: any, cors: Record<string, string>) {
   const serviceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const adminClient = createClient(Deno.env.get('SUPABASE_URL')!, serviceRole);
   const clientId = Deno.env.get('BLING_CLIENT_ID');
   const clientSecret = Deno.env.get('BLING_CLIENT_SECRET');
 
   if (!clientId || !clientSecret) {
-    return jsonResponse({ error: 'Credenciais Bling não configuradas' }, 500);
+    return jsonResponse({ error: 'Credenciais Bling não configuradas' }, 500, cors);
   }
 
   const { data: tokens } = await adminClient
@@ -380,7 +615,7 @@ async function handleTokenRevocation(supabase: any) {
     .limit(1);
 
   if (!tokens || tokens.length === 0) {
-    return jsonResponse({ error: 'Nenhum token encontrado' }, 404);
+    return jsonResponse({ error: 'Nenhum token encontrado' }, 404, cors);
   }
 
   const token = tokens[0];
@@ -407,20 +642,25 @@ async function handleTokenRevocation(supabase: any) {
   // Always clean up local tokens
   await adminClient.from('bling_tokens').delete().eq('id', token.id);
 
-  return jsonResponse({ success: true });
+  return jsonResponse({ success: true }, 200, cors);
 }
 
 // --- OAuth Callback Handler ---
 async function handleOAuthCallback(
   supabase: any,
   params: { code: string; redirect_uri: string },
-  userId: string
+  userId: string,
+  cors: Record<string, string>
 ) {
   const clientId = Deno.env.get('BLING_CLIENT_ID');
   const clientSecret = Deno.env.get('BLING_CLIENT_SECRET');
 
   if (!clientId || !clientSecret) {
-    return jsonResponse({ error: 'BLING_CLIENT_ID e BLING_CLIENT_SECRET não configurados' }, 500);
+    return jsonResponse(
+      { error: 'BLING_CLIENT_ID e BLING_CLIENT_SECRET não configurados' },
+      500,
+      cors
+    );
   }
 
   const basicAuth = btoa(`${clientId}:${clientSecret}`);
@@ -440,7 +680,7 @@ async function handleOAuthCallback(
   if (!tokenRes.ok) {
     const errText = await tokenRes.text();
     console.error('Bling OAuth error:', errText);
-    return jsonResponse({ error: 'Falha ao trocar código OAuth', details: errText }, 400);
+    return jsonResponse({ error: 'Falha ao trocar código OAuth', details: errText }, 400, cors);
   }
 
   const tokenData = await tokenRes.json();
@@ -460,10 +700,10 @@ async function handleOAuthCallback(
 
   if (insertError) {
     console.error('Error storing Bling token:', insertError);
-    return jsonResponse({ error: 'Erro ao salvar token' }, 500);
+    return jsonResponse({ error: 'Erro ao salvar token' }, 500, cors);
   }
 
-  return jsonResponse({ success: true, expires_in: tokenData.expires_in });
+  return jsonResponse({ success: true, expires_in: tokenData.expires_in }, 200, cors);
 }
 
 // --- Token Management ---
@@ -535,7 +775,12 @@ async function refreshAccessToken(adminClient: any, token: any): Promise<string 
 }
 
 // --- Bling API Helpers ---
-async function blingGet(accessToken: string, path: string, params?: Record<string, any>) {
+async function blingGet(
+  accessToken: string,
+  path: string,
+  params?: Record<string, any>,
+  cors: Record<string, string> = corsHeaders
+) {
   let url = `${BLING_API_BASE}${path}`;
   if (params) {
     const searchParams = new URLSearchParams();
@@ -551,19 +796,35 @@ async function blingGet(accessToken: string, path: string, params?: Record<strin
     const qs = searchParams.toString();
     if (qs) url += `?${qs}`;
   }
-  return await blingFetch(accessToken, url, 'GET');
+  return await blingFetch(accessToken, url, 'GET', undefined, cors);
 }
 
-async function blingPost(accessToken: string, path: string, data?: any) {
-  return await blingFetch(accessToken, `${BLING_API_BASE}${path}`, 'POST', data);
+async function blingPost(
+  accessToken: string,
+  path: string,
+  data?: any,
+  cors: Record<string, string> = corsHeaders
+) {
+  return await blingFetch(accessToken, `${BLING_API_BASE}${path}`, 'POST', data, cors);
 }
 
-async function blingPut(accessToken: string, path: string, data?: any) {
-  return await blingFetch(accessToken, `${BLING_API_BASE}${path}`, 'PUT', data);
+async function blingPut(
+  accessToken: string,
+  path: string,
+  data?: any,
+  cors: Record<string, string> = corsHeaders
+) {
+  return await blingFetch(accessToken, `${BLING_API_BASE}${path}`, 'PUT', data, cors);
 }
 
-async function blingRequest(accessToken: string, method: string, path: string, data?: any) {
-  return await blingFetch(accessToken, `${BLING_API_BASE}${path}`, method, data);
+async function blingRequest(
+  accessToken: string,
+  method: string,
+  path: string,
+  data?: any,
+  cors: Record<string, string> = corsHeaders
+) {
+  return await blingFetch(accessToken, `${BLING_API_BASE}${path}`, method, data, cors);
 }
 
 /** Gap #5: Retry with exponential backoff for 429/5xx, auto-refresh on 401 */
@@ -571,7 +832,8 @@ async function blingFetch(
   accessToken: string,
   url: string,
   method: string,
-  data?: any
+  data?: any,
+  cors: Record<string, string> = corsHeaders
 ): Promise<Response> {
   return await blingCB.run(async () => {
     return await withRetry(async () => {
@@ -614,18 +876,19 @@ async function blingFetch(
         console.error(`Bling API error [${res.status}]:`, JSON.stringify(responseData));
         return jsonResponse(
           { error: `Bling API error`, status: res.status, details: responseData },
-          res.status === 403 ? 403 : 400
+          res.status === 403 ? 403 : 400,
+          cors
         );
       }
 
-      return jsonResponse(responseData);
+      return jsonResponse(responseData, 200, cors);
     });
   });
 }
 
-function jsonResponse(data: any, status = 200) {
+function jsonResponse(data: any, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

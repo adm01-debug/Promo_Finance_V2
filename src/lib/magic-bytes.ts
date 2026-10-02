@@ -115,6 +115,28 @@ const EXTENSAO_PARA_TIPOS: Record<string, TipoDetectado[]> = {
   txt: ['texto'],
 };
 
+/** Formatos de escritório são zip: exigir a entrada que os identifica por
+ *  dentro impede que um `.jar`/`.apk` renomeado passe por `.xlsx`.
+ *  OOXML (xlsx/xlsm/docx) obriga `[Content_Types].xml` como 1ª entrada do
+ *  pacote; ODF (ods) obriga `mimetype` como 1ª entrada. */
+const MARCADORES_OFFICE: Record<string, string[]> = {
+  xlsx: ['[Content_Types].xml'],
+  xlsm: ['[Content_Types].xml'],
+  docx: ['[Content_Types].xml'],
+  ods: ['mimetype'],
+};
+
+function contemAscii(head: Uint8Array, texto: string): boolean {
+  const alvo = new TextEncoder().encode(texto);
+  outer: for (let i = 0; i + alvo.length <= head.length; i++) {
+    for (let j = 0; j < alvo.length; j++) {
+      if (head[i + j] !== alvo[j]) continue outer;
+    }
+    return true;
+  }
+  return false;
+}
+
 function corresponde(head: Uint8Array, assinatura: number[]): boolean {
   if (head.length < assinatura.length) return false;
   return assinatura.every((b, i) => head[i] === b);
@@ -162,7 +184,9 @@ export async function validarMagicBytes(
     const r = new FileReader();
     r.onload = () => resolve(new Uint8Array(r.result as ArrayBuffer));
     r.onerror = () => reject(r.error);
-    r.readAsArrayBuffer(file.slice(0, 512));
+    // 4 KiB: entradas internas de zip (Content_Types/mimetype) precisam
+    // caber na janela lida para a validação de formatos de escritório.
+    r.readAsArrayBuffer(file.slice(0, 4096));
   });
   const tipo = detectarTipo(head);
 
@@ -191,6 +215,11 @@ export async function validarMagicBytes(
   const esperados = EXTENSAO_PARA_TIPOS[ext];
   if (esperados && !esperados.includes(tipo)) {
     return `${file.name}: conteúdo (${tipo}) não corresponde à extensão .${ext}`;
+  }
+
+  const marcadores = MARCADORES_OFFICE[ext];
+  if (tipo === 'zip' && marcadores && !marcadores.some((m) => contemAscii(head, m))) {
+    return `${file.name}: zip não é um pacote .${ext} válido`;
   }
 
   return null;
