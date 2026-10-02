@@ -13,6 +13,7 @@ import {
 import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
 const asaasCB = createCircuitBreaker('asaas');
@@ -58,6 +59,7 @@ async function asaasFetch(path: string, apiKey: string, options: RequestInit = {
 }
 
 export const handler = async (req: Request) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

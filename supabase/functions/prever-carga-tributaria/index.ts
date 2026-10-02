@@ -4,7 +4,7 @@
 //   { empresa_id, gerado_em, historico_meses, previsao_base[], cenario_conservador_total,
 //     cenario_agressivo_total, acoes_recomendadas[], resumo_executivo }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 
@@ -42,15 +42,16 @@ interface PrevisaoResponse {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return respostaPreflight();
-  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
+  if (req.method === 'OPTIONS') return respostaPreflight(req);
+  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405, req);
 
   const guard = await exigirInternaOuUsuario(req);
   if (!guard.ok) return guard.resposta;
 
   try {
     const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
-    if (!parsed.success) return jsonComCors({ error: 'empresa_id ou meses_historico inválido' }, 400);
+    if (!parsed.success)
+      return jsonComCors({ error: 'empresa_id ou meses_historico inválido' }, 400, req);
     const { empresa_id: empresaId, meses_historico: mesesHistorico } = parsed.data;
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
@@ -64,11 +65,19 @@ Deno.serve(async (req) => {
       const supa = createClient(SUPABASE_URL, SERVICE_KEY);
 
       if (guard.dados.origem === 'usuario') {
-        const { data: isAdmin } = await supa.rpc('has_role', { _user_id: guard.dados.userId, _role: 'admin' });
+        const { data: isAdmin } = await supa.rpc('has_role', {
+          _user_id: guard.dados.userId,
+          _role: 'admin',
+        });
         if (!isAdmin) {
-          const { data: vinculo } = await supa.from('user_empresas').select('id')
-            .eq('user_id', guard.dados.userId).eq('empresa_id', empresaId).eq('ativo', true).maybeSingle();
-          if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+          const { data: vinculo } = await supa
+            .from('user_empresas')
+            .select('id')
+            .eq('user_id', guard.dados.userId)
+            .eq('empresa_id', empresaId)
+            .eq('ativo', true)
+            .maybeSingle();
+          if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403, req);
         }
       }
 
@@ -81,7 +90,8 @@ Deno.serve(async (req) => {
         .limit(mesesHistorico);
 
       if (fat && fat.length > 0) {
-        const mediaReceita = fat.reduce((acc, r) => acc + Number(r.receita_bruta || 0), 0) / fat.length;
+        const mediaReceita =
+          fat.reduce((acc, r) => acc + Number(r.receita_bruta || 0), 0) / fat.length;
         // Carga tributária efetiva média nacional ~33% (cesta Simples/LP/LR)
         baseTributosMensal = Math.max(2000, Math.round(mediaReceita * 0.33));
         origem = 'dados_reais';
@@ -116,25 +126,28 @@ Deno.serve(async (req) => {
       });
 
       cenarioConservadorTotal += Math.round(total * 1.15); // pior caso: +15%
-      cenarioAgressivoTotal += Math.round(total * 0.90);  // melhor caso: -10% via otimizações
+      cenarioAgressivoTotal += Math.round(total * 0.9); // melhor caso: -10% via otimizações
     }
 
     const acoesRecomendadas: AcaoRecomendada[] = [
       {
         titulo: 'Revisão de créditos PIS/COFINS sobre insumos',
-        descricao: 'Apurar créditos não-cumulativos sobre energia elétrica, insumos industriais e fretes nos últimos 5 anos (Lei 10.637/02 + Lei 10.833/03).',
+        descricao:
+          'Apurar créditos não-cumulativos sobre energia elétrica, insumos industriais e fretes nos últimos 5 anos (Lei 10.637/02 + Lei 10.833/03).',
         impacto_estimado_brl: Math.round(baseTributosMensal * 0.08),
         prioridade: 'alta',
       },
       {
         titulo: 'Simulação do regime tributário ótimo',
-        descricao: 'Comparar Simples Nacional vs Lucro Presumido vs Lucro Real considerando a transição CBS+IBS a partir de 2026.',
+        descricao:
+          'Comparar Simples Nacional vs Lucro Presumido vs Lucro Real considerando a transição CBS+IBS a partir de 2026.',
         impacto_estimado_brl: Math.round(baseTributosMensal * 0.05),
         prioridade: 'alta',
       },
       {
         titulo: 'Aproveitamento de créditos de ICMS-ST',
-        descricao: 'Recuperar ICMS pago a maior em operações com substituição tributária (Art. 166 CTN + Convênio CONFAZ 13/97).',
+        descricao:
+          'Recuperar ICMS pago a maior em operações com substituição tributária (Art. 166 CTN + Convênio CONFAZ 13/97).',
         impacto_estimado_brl: Math.round(baseTributosMensal * 0.03),
         prioridade: 'media',
       },
@@ -146,7 +159,10 @@ Deno.serve(async (req) => {
       },
     ];
 
-    const totalEconomiaPotencial = acoesRecomendadas.reduce((acc, a) => acc + a.impacto_estimado_brl, 0);
+    const totalEconomiaPotencial = acoesRecomendadas.reduce(
+      (acc, a) => acc + a.impacto_estimado_brl,
+      0
+    );
 
     const resumoExecutivo =
       origem === 'dados_reais'
@@ -165,8 +181,8 @@ Deno.serve(async (req) => {
       origem,
     };
 
-    return jsonComCors(resposta);
+    return jsonComCors(resposta, 200, req);
   } catch (err) {
-    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500);
+    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500, req);
   }
 });

@@ -156,7 +156,7 @@ function payloadJwt(token: string): Record<string, unknown> | null {
  * comportamento atual se mantém — ligar antes de todos os admins terem TOTP
  * cadastrado trancaria o acesso.
  */
-function mfaAdminInsuficiente(papeis: readonly string[], token: string): boolean {
+export function mfaAdminInsuficiente(papeis: readonly string[], token: string): boolean {
   if (Deno.env.get('MFA_ADMIN_ENFORCED') !== 'true') return false;
   if (!papeis.includes('admin')) return false;
   const aal = payloadJwt(token)?.['aal'];

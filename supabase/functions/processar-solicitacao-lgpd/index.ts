@@ -3,6 +3,7 @@ import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { mfaAdminInsuficiente } from '../_shared/auth-guard.ts';
 
 interface Payload {
   solicitacao_id: string;
@@ -68,6 +69,17 @@ serve(async (req) => {
     });
     if (sol.user_id !== userId && !isAdmin) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    // Admin operando a solicitação de outro titular: exige aal2 quando o
+    // MFA-admin estiver ligado — mesma regra do guard exigirPapel.
+    if (
+      sol.user_id !== userId &&
+      mfaAdminInsuficiente(['admin'], authHeader.replace(/^Bearer\s+/i, ''))
+    ) {
+      return new Response(JSON.stringify({ error: 'mfa_required' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

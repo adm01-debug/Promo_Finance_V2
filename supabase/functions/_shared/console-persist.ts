@@ -128,6 +128,13 @@ function redigir(s: string): string {
   return out;
 }
 
+// Chaves cujo valor nunca vai para edge_function_logs: identificadores
+// pessoais e credenciais embutidos em payloads de console.*. Valores
+// financeiros (saldo, receita) ficam — são o propósito da trilha e a tabela
+// já é restrita a admin; PII não é necessária para depurar uma edge fn.
+const CHAVE_SENSIVEL =
+  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private)/i;
+
 function redigirObj(x: unknown): unknown {
   if (typeof x === 'string') return redigir(x);
   if (Array.isArray(x)) return x.map(redigirObj);
@@ -138,7 +145,8 @@ function redigirObj(x: unknown): unknown {
     const proto = Object.getPrototypeOf(x);
     if (proto !== Object.prototype && proto !== null) return x;
     const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(x as Record<string, unknown>)) out[k] = redigirObj(v);
+    for (const [k, v] of Object.entries(x as Record<string, unknown>))
+      out[k] = CHAVE_SENSIVEL.test(k) ? '[REDACTED]' : redigirObj(v);
     return out;
   }
   return x;
@@ -262,7 +270,7 @@ function interceptar(level: 'info' | 'warn' | 'error', original: (...args: unkno
       const event = redigir(
         legado?.event ??
           args
-            .map((a) => (typeof a === 'string' ? a : JSON.stringify(serializar(a))))
+            .map((a) => (typeof a === 'string' ? a : JSON.stringify(redigirObj(serializar(a)))))
             .join(' ')
             .slice(0, 2000)
       );

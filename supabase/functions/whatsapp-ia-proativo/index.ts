@@ -8,6 +8,7 @@ import {
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { corsHeadersComSegredo, exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 interface AlertaProativo {
   tipo: 'vencimento' | 'inadimplencia' | 'meta' | 'fluxo' | 'oportunidade';
@@ -192,6 +193,7 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
   };
 
   return async (req: Request): Promise<Response> => {
+    const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeadersComSegredo });
     }

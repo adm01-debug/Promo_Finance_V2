@@ -5,11 +5,15 @@ import {
   corsHeaders,
   createErrorResponse,
 } from '../_shared/validation.ts';
-import { contractVersionHeaders, validateVersionedContract } from '../_shared/versioned-contract.ts';
+import {
+  contractVersionHeaders,
+  validateVersionedContract,
+} from '../_shared/versioned-contract.ts';
 import { authenticateWebhook } from '../_shared/webhook-auth.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { processWithIdempotency, RetryableError } from '../_shared/webhook-idempotency.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 async function sha256(value: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
@@ -17,6 +21,7 @@ async function sha256(value: string): Promise<string> {
 }
 
 export const handler = async (req: Request) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
@@ -41,11 +46,22 @@ export const handler = async (req: Request) => {
     try {
       rawPayload = JSON.parse(rawBody) as Record<string, unknown>;
     } catch {
-      return createValidationErrorResponse([{
-        path: '$', message: 'JSON malformado', code: 'invalid_json',
-      }], corsHeaders);
+      return createValidationErrorResponse(
+        [
+          {
+            path: '$',
+            message: 'JSON malformado',
+            code: 'invalid_json',
+          },
+        ],
+        corsHeaders
+      );
     }
-    console.log('[whatsapp-webhook] Event received:', { evento: rawPayload?.event, messageId: rawPayload?.messageId, status: rawPayload?.status });
+    console.log('[whatsapp-webhook] Event received:', {
+      evento: rawPayload?.event,
+      messageId: rawPayload?.messageId,
+      status: rawPayload?.status,
+    });
 
     // Rate limit: 120 req/min por IP (defesa em profundidade apos autenticacao)
     const ip = (req.headers.get('x-forwarded-for') || '0.0.0.0').split(',')[0].trim();
@@ -59,7 +75,9 @@ export const handler = async (req: Request) => {
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
     const validation = validateVersionedContract(req, rawPayload, {
-      v1: WhatsappWebhookSchema, v2: WhatsappWebhookV2Schema, functionName: 'whatsapp-webhook',
+      v1: WhatsappWebhookSchema,
+      v2: WhatsappWebhookV2Schema,
+      functionName: 'whatsapp-webhook',
     });
     if (!validation.success) {
       return validation.response;
@@ -68,58 +86,75 @@ export const handler = async (req: Request) => {
     const body = validation.data;
     // Payload variation depending on provider (WPPConnect, Meta, etc)
     const { event, messageId, status, from } = body;
-    const externalId = messageId ?? await sha256(rawBody);
+    const externalId = messageId ?? (await sha256(rawBody));
     const { claim, failure } = await processWithIdempotency(
       supabase,
       { source: 'whatsapp', externalId, eventType: event, payload: body },
       async () => {
-    if (messageId && status) {
-      // 1. Atualizar status na fila ou execuções
-      const { error: updateError } = await supabase
-        .from('execucoes_cobranca')
-        .update({
-          status: status === 'read' ? 'lido' : status === 'delivered' ? 'entregue' : 'enviado',
-          metadata: { ...rawPayload, updated_at: new Date().toISOString() },
-        })
-        .eq('provider_message_id', messageId);
-      if (updateError) throw new RetryableError(`update execucoes_cobranca: ${updateError.message}`);
+        if (messageId && status) {
+          // 1. Atualizar status na fila ou execuções
+          const { error: updateError } = await supabase
+            .from('execucoes_cobranca')
+            .update({
+              status: status === 'read' ? 'lido' : status === 'delivered' ? 'entregue' : 'enviado',
+              metadata: { ...rawPayload, updated_at: new Date().toISOString() },
+            })
+            .eq('provider_message_id', messageId);
+          if (updateError)
+            throw new RetryableError(`update execucoes_cobranca: ${updateError.message}`);
 
-      // 2. Se for resposta (reply), registrar na auditoria/notificações
-      if (event === 'message') {
-        const { data: exec } = await supabase
-          .from('execucoes_cobranca')
-          .select('empresa_id, conta_receber_id')
-          .eq('destinatario', from)
+          // 2. Se for resposta (reply), registrar na auditoria/notificações
+          if (event === 'message') {
+            const { data: exec } = await supabase
+              .from('execucoes_cobranca')
+              .select('empresa_id, conta_receber_id')
+              .eq('destinatario', from)
 
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
 
-        if (exec) {
-          const { error: auditError } = await supabase.from('asaas_audit_trail').insert({
-            payment_id: exec.conta_receber_id,
-            action: 'WHATSAPP_REPLY',
-            details: { message: body.text, from },
-          });
-          if (auditError) throw new RetryableError(`insert asaas_audit_trail: ${auditError.message}`);
+            if (exec) {
+              const { error: auditError } = await supabase.from('asaas_audit_trail').insert({
+                payment_id: exec.conta_receber_id,
+                action: 'WHATSAPP_REPLY',
+                details: { message: body.text, from },
+              });
+              if (auditError)
+                throw new RetryableError(`insert asaas_audit_trail: ${auditError.message}`);
+            }
+          }
         }
       }
-    }
-      },
     );
     if (claim.alreadyProcessed) {
       return new Response(JSON.stringify({ success: true, duplicated: true }), {
-        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
+        headers: {
+          ...corsHeaders,
+          ...contractVersionHeaders(validation.version),
+          'Content-Type': 'application/json',
+        },
       });
     }
     if (failure) {
-      return new Response(JSON.stringify({ success: false, will_retry: failure.willRetry, status: failure.status }), {
-        headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ success: false, will_retry: failure.willRetry, status: failure.status }),
+        {
+          headers: {
+            ...corsHeaders,
+            ...contractVersionHeaders(validation.version),
+            'Content-Type': 'application/json',
+          },
+        }
+      );
     }
 
     return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, ...contractVersionHeaders(validation.version), 'Content-Type': 'application/json' },
+      headers: {
+        ...corsHeaders,
+        ...contractVersionHeaders(validation.version),
+        'Content-Type': 'application/json',
+      },
     });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);

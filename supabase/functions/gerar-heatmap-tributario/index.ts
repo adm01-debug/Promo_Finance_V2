@@ -2,7 +2,7 @@
 // Substitui a versão com Lovable AI Gateway.
 // Gera heatmap 12m × 8 tributos com intensidade normalizada e variação MoM.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
 
@@ -45,8 +45,8 @@ const ALIQUOTAS: Record<string, number> = {
 };
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return respostaPreflight();
-  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
+  if (req.method === 'OPTIONS') return respostaPreflight(req);
+  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405, req);
 
   // [auth-guard] Funcao chamada pelo app com o JWT do usuario logado (Authorization
   // validado via getUser). Fail-closed: sem sessao valida -> 401.
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
 
   try {
     const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
-    if (!parsed.success) return jsonComCors({ error: 'empresa_id ou ano inválido' }, 400);
+    if (!parsed.success) return jsonComCors({ error: 'empresa_id ou ano inválido' }, 400, req);
     const { empresa_id: empresaId, ano } = parsed.data;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
           .eq('empresa_id', empresaId)
           .eq('ativo', true)
           .maybeSingle();
-        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403, req);
       }
 
       const { data: fat } = await supa
@@ -144,17 +144,21 @@ Deno.serve(async (req) => {
     const mesValeIdx = totalPorMes.findIndex((v) => v === Math.min(...totalPorMes));
     const mesVale = mesValeIdx >= 0 ? mesValeIdx + 1 : null;
 
-    return jsonComCors({
-      success: true,
-      ano,
-      empresa_id: empresaId,
-      celulas,
-      total_por_mes: totalPorMes.map((v) => Math.round(v)),
-      total_ano: Math.round(totalAno),
-      max_valor: Math.round(maxValor),
-      insights: { mes_pico: mesPico, mes_vale: mesVale },
-    });
+    return jsonComCors(
+      {
+        success: true,
+        ano,
+        empresa_id: empresaId,
+        celulas,
+        total_por_mes: totalPorMes.map((v) => Math.round(v)),
+        total_ano: Math.round(totalAno),
+        max_valor: Math.round(maxValor),
+        insights: { mes_pico: mesPico, mes_vale: mesVale },
+      },
+      200,
+      req
+    );
   } catch (err) {
-    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500);
+    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500, req);
   }
 });

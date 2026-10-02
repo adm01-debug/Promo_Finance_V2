@@ -29,6 +29,7 @@ function json(
 const normalizarEmail = (email: string) => email.trim().toLowerCase();
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   const cors = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const res = (payload: unknown, status = 200) => json(payload, status, cors);

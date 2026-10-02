@@ -10,6 +10,7 @@ import { z } from 'npm:zod@3.23.8';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -34,6 +35,7 @@ function extractCnpjFromSubject(subject: forge.pki.Certificate['subject']): stri
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const t0 = Date.now();

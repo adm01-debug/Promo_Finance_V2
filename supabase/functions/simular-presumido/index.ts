@@ -1,9 +1,16 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { simularPresumido } from '../_shared/tributario-logic.ts';
-import { corsHeaders, validatePayload, createErrorResponse, ParametrosSimulacaoSchema } from '../_shared/validation.ts';
+import {
+  corsHeaders,
+  validatePayload,
+  createErrorResponse,
+  ParametrosSimulacaoSchema,
+} from '../_shared/validation.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {

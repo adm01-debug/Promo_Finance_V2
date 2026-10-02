@@ -7,8 +7,10 @@ import {
   createErrorResponse,
 } from '../_shared/validation.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

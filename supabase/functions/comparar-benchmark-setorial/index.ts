@@ -2,7 +2,7 @@
 // Substitui a versão que dependia de LOVABLE_API_KEY (ausente neste projeto).
 // Calcula carga tributária 12m da empresa vs benchmarks por regime tributário.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 
@@ -23,15 +23,15 @@ const BENCHMARKS: Record<string, Omit<Benchmark, 'amostra'>> = {
 };
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return respostaPreflight();
-  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
+  if (req.method === 'OPTIONS') return respostaPreflight(req);
+  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405, req);
 
   const guard = await exigirInternaOuUsuario(req);
   if (!guard.ok) return guard.resposta;
 
   try {
     const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
-    if (!parsed.success) return jsonComCors({ error: 'empresa_id inválido' }, 400);
+    if (!parsed.success) return jsonComCors({ error: 'empresa_id inválido' }, 400, req);
     const empresaId = parsed.data.empresa_id;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -44,15 +44,27 @@ Deno.serve(async (req) => {
       const supa = createClient(supabaseUrl, serviceKey);
 
       if (guard.dados.origem === 'usuario') {
-        const { data: isAdmin } = await supa.rpc('has_role', { _user_id: guard.dados.userId, _role: 'admin' });
+        const { data: isAdmin } = await supa.rpc('has_role', {
+          _user_id: guard.dados.userId,
+          _role: 'admin',
+        });
         if (!isAdmin) {
-          const { data: vinculo } = await supa.from('user_empresas').select('id')
-            .eq('user_id', guard.dados.userId).eq('empresa_id', empresaId).eq('ativo', true).maybeSingle();
-          if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+          const { data: vinculo } = await supa
+            .from('user_empresas')
+            .select('id')
+            .eq('user_id', guard.dados.userId)
+            .eq('empresa_id', empresaId)
+            .eq('ativo', true)
+            .maybeSingle();
+          if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403, req);
         }
       }
 
-      const { data: emp } = await supa.from('empresas').select('id, razao_social, regime_tributario').eq('id', empresaId).maybeSingle();
+      const { data: emp } = await supa
+        .from('empresas')
+        .select('id, razao_social, regime_tributario')
+        .eq('id', empresaId)
+        .maybeSingle();
       if (emp) {
         empresa = {
           id: emp.id,
@@ -84,10 +96,16 @@ Deno.serve(async (req) => {
     let percentil: number;
     if (cargaEmpresa12m < benchmark.p25) {
       posicao = 'abaixo_p25';
-      percentil = Math.max(5, Math.round(25 - ((benchmark.p25 - cargaEmpresa12m) / benchmark.p25) * 25));
+      percentil = Math.max(
+        5,
+        Math.round(25 - ((benchmark.p25 - cargaEmpresa12m) / benchmark.p25) * 25)
+      );
     } else if (cargaEmpresa12m > benchmark.p75) {
       posicao = 'acima_p75';
-      percentil = Math.min(95, 75 + Math.round(((cargaEmpresa12m - benchmark.p75) / benchmark.p75) * 20));
+      percentil = Math.min(
+        95,
+        75 + Math.round(((cargaEmpresa12m - benchmark.p75) / benchmark.p75) * 20)
+      );
     } else {
       posicao = 'mediana';
       const range = benchmark.p75 - benchmark.p25;
@@ -96,25 +114,33 @@ Deno.serve(async (req) => {
 
     const insights: string[] = [];
     if (cargaEmpresa12m > mediana) {
-      insights.push(`Carga tributária ${diferenca.toFixed(1)} p.p. acima da mediana do regime ${empresa.regime}.`);
+      insights.push(
+        `Carga tributária ${diferenca.toFixed(1)} p.p. acima da mediana do regime ${empresa.regime}.`
+      );
       insights.push('Revisão de créditos PIS/COFINS pode reduzir até 8% da carga.');
     } else {
-      insights.push(`Carga tributária ${Math.abs(diferenca).toFixed(1)} p.p. abaixo da mediana do regime ${empresa.regime}.`);
+      insights.push(
+        `Carga tributária ${Math.abs(diferenca).toFixed(1)} p.p. abaixo da mediana do regime ${empresa.regime}.`
+      );
       insights.push('Operação eficiente — manter monitoramento trimestral.');
     }
     insights.push('Comparado a 1247 empresas do mesmo regime nos últimos 12 meses.');
 
-    return jsonComCors({
-      empresa: { id: empresa.id, razao_social: empresa.razao_social, regime: empresa.regime },
-      carga_empresa_12m: cargaEmpresa12m,
-      benchmark: { ...benchmark, amostra: 1247 },
-      posicao,
-      percentil,
-      diferenca_mediana: diferenca,
-      insights,
-      atualizado_em: new Date().toISOString(),
-    });
+    return jsonComCors(
+      {
+        empresa: { id: empresa.id, razao_social: empresa.razao_social, regime: empresa.regime },
+        carga_empresa_12m: cargaEmpresa12m,
+        benchmark: { ...benchmark, amostra: 1247 },
+        posicao,
+        percentil,
+        diferenca_mediana: diferenca,
+        insights,
+        atualizado_em: new Date().toISOString(),
+      },
+      200,
+      req
+    );
   } catch (err) {
-    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500);
+    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500, req);
   }
 });

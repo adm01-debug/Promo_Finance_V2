@@ -7,6 +7,7 @@ import {
   EnviarAlertaEmailSchema,
   validatePayload,
 } from '../_shared/validation.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const corsHeaders = {
   ...baseCorsHeaders,
@@ -14,6 +15,7 @@ const corsHeaders = {
 };
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }

@@ -434,6 +434,7 @@ async function handleTransaction(
 
 export function createHandler(deps: RuntimeDeps = {}) {
   return async (req: Request): Promise<Response> => {
+    const corsHeaders = corsHeadersPara(req);
     const CORS = corsHeadersPara(req);
 
     if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });

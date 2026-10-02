@@ -5,10 +5,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { PDFDocument, StandardFonts, rgb } from 'https://esm.sh/pdf-lib@1.17.1';
 import { createLogger } from '../_shared/observability.ts';
-import { exigirChamadaInterna, corsHeadersComSegredo } from '../_shared/auth-guard.ts';
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
-
-const corsHeaders = corsHeadersComSegredo;
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 interface Agendamento {
   id: string;
@@ -100,6 +99,7 @@ async function enviarEmail(
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const requestId = getRequestId(req);
