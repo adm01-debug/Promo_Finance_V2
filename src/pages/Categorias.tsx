@@ -14,13 +14,13 @@ export default function Categorias() {
   const [activeTab, setActiveTab] = useState<'despesa' | 'receita'>('despesa');
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingCategoria, setEditingCategoria] = useState<Categoria | null>(null);
+  const [editingCategoria, setEditingCategoria] = useState<Categoria | undefined>(undefined);
 
   const { categoriasDespesa, categoriasReceita, isLoading } = useCategorias();
 
   const currentCategorias = activeTab === 'despesa' ? categoriasDespesa : categoriasReceita;
-  
-  const filteredCategorias = currentCategorias.filter(c => 
+
+  const filteredCategorias = currentCategorias.filter((c) =>
     c.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -30,7 +30,7 @@ export default function Categorias() {
   };
 
   const handleCreate = () => {
-    setEditingCategoria(null);
+    setEditingCategoria(undefined);
     setIsFormOpen(true);
   };
 
@@ -38,15 +38,19 @@ export default function Categorias() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="relative z-10 space-y-10 pb-20">
-          <PageHeader 
-            title="Categorias Financeiras" 
+          <PageHeader
+            title="Categorias Financeiras"
             subtitle="Gerencie a classificação de receitas e despesas do seu negócio."
             badge="Chart of Accounts"
             icon={Tag}
             actions={
-              <Button onClick={handleCreate} size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]">
+              <Button
+                onClick={handleCreate}
+                size="lg"
+                className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
+              >
                 <Plus className="h-5 w-5" /> Novo Registro
               </Button>
             }
@@ -58,9 +62,9 @@ export default function Categorias() {
             searchPlaceholder="Buscar categoria..."
             badge="Classificação"
           >
-            <Tabs 
-              value={activeTab} 
-              onValueChange={(v) => setActiveTab(v as 'despesa' | 'receita')} 
+            <Tabs
+              value={activeTab}
+              onValueChange={(v) => setActiveTab(v as 'despesa' | 'receita')}
               className="w-full md:w-auto"
             >
               <TabsList className="grid grid-cols-2 w-full md:w-[300px] h-10 bg-card/5 border-white/10 rounded-xl">
@@ -77,18 +81,18 @@ export default function Categorias() {
           </StandardFilterSection>
 
           <StandardTableCard isLoading={isLoading}>
-            <CategoriaTable 
-              categorias={filteredCategorias} 
-              isLoading={isLoading} 
+            <CategoriaTable
+              categorias={filteredCategorias}
+              isLoading={isLoading}
               onEdit={handleEdit}
             />
           </StandardTableCard>
         </div>
       </div>
 
-      <CategoriaForm 
-        open={isFormOpen} 
-        onOpenChange={setIsFormOpen} 
+      <CategoriaForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
         categoria={editingCategoria}
         defaultType={activeTab}
       />
