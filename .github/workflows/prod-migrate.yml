@@ -87,6 +87,41 @@ jobs:
           set -o pipefail
           supabase migration list --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/migration-list.txt
 
+      - name: Gate — divergência histórica do ledger
+        # docs/AUDITORIA_SINCRONIA_2026-09-17.md registra centenas de versões
+        # só locais e poucas em comum com o ledger remoto. `db push` aplica
+        # TUDO o que não consta do ledger — se houver versão pendente mais
+        # antiga que a última aplicada, o push tentaria reaplicar histórico
+        # contra schema existente (falha parcial = pior cenário). Só é
+        # seguro aplicar quando toda pendente é estritamente mais nova que
+        # o máximo remoto (migrations novas no fim da fila).
+        run: |
+          set -euo pipefail
+          # Versões aplicadas no ledger remoto
+          psql "$PROD_DB_URL" -Atc \
+            "SELECT version FROM supabase_migrations.schema_migrations" \
+            | sort -n > /tmp/ledger-remoto.txt
+          MAX_REMOTO=$(tail -1 /tmp/ledger-remoto.txt || true)
+          if [ -z "$MAX_REMOTO" ]; then
+            echo "::error::ledger remoto vazio ou supabase_migrations.schema_migrations inacessível — reconcile o ledger antes de aplicar."
+            exit 1
+          fi
+          # Versões locais pendentes (não constam do ledger)
+          DIVERGENTES=0
+          for f in supabase/migrations/*.sql; do
+            V=$(basename "$f" | cut -d_ -f1)
+            if ! grep -qx "$V" /tmp/ledger-remoto.txt; then
+              if [ "$V" -le "$MAX_REMOTO" ]; then
+                DIVERGENTES=$((DIVERGENTES + 1))
+              fi
+            fi
+          done
+          echo "Última versão no ledger remoto: $MAX_REMOTO — pendentes fora de ordem: $DIVERGENTES"
+          if [ "$DIVERGENTES" -gt 0 ]; then
+            echo "::error::Ledger divergente: $DIVERGENTES migration(s) local(is) anteriores ao máximo remoto ($MAX_REMOTO) não constam do ledger. Reconcile com 'supabase migration repair' antes de aplicar — db push as reaplicaria parcialmente."
+            exit 1
+          fi
+
       - name: Dry-run — parar aqui sem aplicar
         if: inputs.dry_run
         run: echo "dry_run=true — nada aplicado. Re-dispare com dry_run=false para aplicar."
