@@ -1,5 +1,11 @@
 // Hook: validação de conformidade fiscal
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -24,7 +30,12 @@ export interface ConformidadeResultado {
   gerado_em: string;
 }
 
-export function useConformidadeFiscal(empresaId?: string, periodo?: string) {
+export function useConformidadeFiscal(
+  empresaId?: string,
+  periodo?: string
+): UseQueryResult<ConformidadeResultado | null> & {
+  verificar: UseMutationResult<ConformidadeResultado, Error, void>;
+} {
   const qc = useQueryClient();
   const periodoFinal = periodo ?? new Date().toISOString().slice(0, 7);
   const queryKey = ['conformidade-fiscal', empresaId, periodoFinal];

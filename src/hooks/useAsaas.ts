@@ -1,11 +1,15 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export type AsaasPaymentStatus = 
-  | 'PENDING' | 'RECEIVED' | 'CONFIRMED' | 'OVERDUE' 
-  | 'REFUNDED' | 'CANCELLED' | 'CHARGEBACK';
+export type AsaasPaymentStatus =
+  | 'PENDING'
+  | 'RECEIVED'
+  | 'CONFIRMED'
+  | 'OVERDUE'
+  | 'REFUNDED'
+  | 'CANCELLED'
+  | 'CHARGEBACK';
 
 export type AsaasBillingType = 'boleto' | 'pix' | 'credit_card' | 'debit_card';
 
@@ -44,6 +48,16 @@ export interface AsaasPayment {
   sacado_nome?: string;
   sacado_cpf_cnpj?: string;
   created_at: string;
+}
+
+export interface AsaasSyncQueueItem {
+  id: string;
+  payment_id: string | null;
+  attempts: number;
+  max_attempts: number;
+  next_retry_at: string | null;
+  status: string;
+  error_history: Record<string, unknown>[] | null;
 }
 
 import { invokeEdge, EdgeFunctionError, handleEdgeError } from '@/lib/edge-function-error';
@@ -116,19 +130,24 @@ export function useAsaas(empresaId?: string) {
       if (!empresaId) return [];
       const { data, error } = await supabase
         .from('asaas_payments')
-        .select(`
+        .select(
+          `
           *,
           clientes:asaas_customers!asaas_payments_asaas_customer_id_fkey(razao_social, cpf_cnpj)
-        `)
+        `
+        )
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      
-      type PaymentRow = { clientes?: { razao_social?: string; cpf_cnpj?: string } | null } & Record<string, unknown>;
+
+      type PaymentRow = { clientes?: { razao_social?: string; cpf_cnpj?: string } | null } & Record<
+        string,
+        unknown
+      >;
       return (data || []).map((p: PaymentRow) => ({
         ...p,
         sacado_nome: p.clientes?.razao_social,
-        sacado_cpf_cnpj: p.clientes?.cpf_cnpj
+        sacado_cpf_cnpj: p.clientes?.cpf_cnpj,
       })) as AsaasPayment[];
     },
     enabled: !!empresaId,
@@ -171,7 +190,8 @@ export function useAsaas(empresaId?: string) {
   });
 
   const buscarPixQrCode = useMutation({
-    mutationFn: (asaasId: string) => invokeAsaas<{ encodedImage?: string; payload?: string }>('pix_qrcode', { asaas_id: asaasId }),
+    mutationFn: (asaasId: string) =>
+      invokeAsaas<{ encodedImage?: string; payload?: string }>('pix_qrcode', { asaas_id: asaasId }),
     onError: (e) => handleEdgeError(e, 'Erro ao buscar QR Code'),
   });
 
@@ -222,7 +242,8 @@ export function useAsaas(empresaId?: string) {
   });
 
   const sincronizarTransferencia = useMutation({
-    mutationFn: (asaasId: string) => invokeAsaas('sincronizar_transferencia', { asaas_id: asaasId }),
+    mutationFn: (asaasId: string) =>
+      invokeAsaas('sincronizar_transferencia', { asaas_id: asaasId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-transfers'] });
       toast.success('Status da transferência atualizado');
@@ -237,7 +258,10 @@ export function useAsaas(empresaId?: string) {
   const criarLinkPagamento = useMutation({
     mutationFn: (payload: Record<string, unknown>) => {
       if (!empresaId) throw new Error('Empresa não identificada');
-      return invokeAsaas<{ url?: string }>('criar_link_pagamento', { ...payload, empresa_id: empresaId });
+      return invokeAsaas<{ url?: string }>('criar_link_pagamento', {
+        ...payload,
+        empresa_id: empresaId,
+      });
     },
     onSuccess: () => {
       toast.success('Link de pagamento criado!');
@@ -271,7 +295,7 @@ export function useAsaas(empresaId?: string) {
         .eq('empresa_id', empresaId)
         .maybeSingle();
       if (error) throw error;
-      
+
       const conf = (data?.configuracoes ?? {}) as {
         retry_limit?: number;
         retry_interval_minutes?: number;
@@ -285,7 +309,7 @@ export function useAsaas(empresaId?: string) {
         failure_threshold?: number;
         bitrix_trigger_stage?: string;
       };
-      
+
       return {
         ...data,
         retry_limit: conf.retry_limit || 5,
@@ -298,7 +322,7 @@ export function useAsaas(empresaId?: string) {
         alert_email_address: conf.alert_email_address || '',
         alert_whatsapp_number: conf.alert_whatsapp_number || '',
         failure_threshold: conf.failure_threshold || 5,
-        bitrix_trigger_stage: conf.bitrix_trigger_stage || 'WON'
+        bitrix_trigger_stage: conf.bitrix_trigger_stage || 'WON',
       };
     },
     enabled: !!empresaId,
@@ -312,18 +336,27 @@ export function useAsaas(empresaId?: string) {
         .select('configuracoes')
         .eq('empresa_id', empresaId)
         .maybeSingle();
-      const mergedConfig = { ...((current?.configuracoes as Record<string, unknown> | null) || {}), ...payload } as Record<string, unknown>;
-      const { error } = await supabase.from('asaas_config').upsert(
-        { empresa_id: empresaId, configuracoes: mergedConfig as never, updated_at: new Date().toISOString() },
-        { onConflict: 'empresa_id' }
-      );
+      const mergedConfig = {
+        ...((current?.configuracoes as Record<string, unknown> | null) || {}),
+        ...payload,
+      } as Record<string, unknown>;
+      const { error } = await supabase
+        .from('asaas_config')
+        .upsert(
+          {
+            empresa_id: empresaId,
+            configuracoes: mergedConfig as never,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'empresa_id' }
+        );
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-config'] });
       toast.success('Configurações salvas');
     },
-    onError: (e) => handleEdgeError(e, 'Erro ao salvar')
+    onError: (e) => handleEdgeError(e, 'Erro ao salvar'),
   });
 
   const { data: suggestions = [] } = useQuery({
@@ -354,11 +387,12 @@ export function useAsaas(empresaId?: string) {
         transaction_id: payload.transaction_id,
       });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] }),
   });
 
   const aceitarSugestao = useMutation({
-    mutationFn: async ({ suggestionId, contaId }: { suggestionId: string, contaId: string }) => {
+    mutationFn: async ({ suggestionId, contaId }: { suggestionId: string; contaId: string }) => {
       // Proxy autenticado faz UPDATE atômico em suggestions + contas_receber
       // sob service_role: dispensa GRANT UPDATE ao role authenticated nessas
       // tabelas para o fluxo de aceite.
@@ -371,7 +405,7 @@ export function useAsaas(empresaId?: string) {
       queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] });
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       toast.success('Conciliação realizada com sucesso');
-    }
+    },
   });
 
   return {
@@ -407,20 +441,31 @@ export function useAsaas(empresaId?: string) {
     gerarSugestoes,
     stats: {
       total: payments.length,
-      pendentes: payments.filter(p => p.status === 'PENDING').length,
-      recebidos: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).length,
-      vencidos: payments.filter(p => p.status === 'OVERDUE').length,
-      valorPendente: (payments || []).filter(p => p.status === 'PENDING').reduce((s, p) => s + (p.valor || 0), 0),
-      valorRecebido: (payments || []).filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor || 0), 0),
+      pendentes: payments.filter((p) => p.status === 'PENDING').length,
+      recebidos: payments.filter((p) => ['RECEIVED', 'CONFIRMED'].includes(p.status)).length,
+      vencidos: payments.filter((p) => p.status === 'OVERDUE').length,
+      valorPendente: (payments || [])
+        .filter((p) => p.status === 'PENDING')
+        .reduce((s, p) => s + (p.valor || 0), 0),
+      valorRecebido: (payments || [])
+        .filter((p) => ['RECEIVED', 'CONFIRMED'].includes(p.status))
+        .reduce((s, p) => s + (p.valor_liquido || p.valor || 0), 0),
     },
-    obterComprovante: { mutateAsync: async (_asaasId: string) => ({ url: null }), isPending: false },
+    obterComprovante: {
+      mutateAsync: async (_asaasId: string) => ({ url: null }),
+      isPending: false,
+    },
     auditTrail: [],
     loadingAudit: false,
     loadingSuggestions: false,
     detailStats: [],
-    syncQueue: [],
+    syncQueue: [] as AsaasSyncQueueItem[],
     loadingQueue: false,
-    reprocessarManual: { mutateAsync: async (_payload: Record<string, unknown>) => {}, mutate: (_payload: Record<string, unknown>) => {}, isPending: false },
+    reprocessarManual: {
+      mutateAsync: async (_payload: Record<string, unknown>) => {},
+      mutate: (_payload: Record<string, unknown>) => {},
+      isPending: false,
+    },
     exportarAuditoria: { mutate: (_payload?: Record<string, unknown>) => {}, isPending: false },
     exportarAuditoriaPDF: () => {},
     queueStats: { pendentes: 0, falhas: 0, sucesso: 0, total: 0 },
