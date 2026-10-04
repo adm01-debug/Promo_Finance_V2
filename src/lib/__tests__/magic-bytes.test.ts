@@ -5,6 +5,48 @@ function arquivo(nome: string, bytes: number[]): File {
   return new File([new Uint8Array(bytes)], nome);
 }
 
+/** Monta um zip mínimo só com local file headers (sem dados) para testes. */
+function zipComEntradas(...nomes: string[]): number[] {
+  const bytes: number[] = [];
+  for (const nome of nomes) {
+    const enc = new TextEncoder().encode(nome);
+    bytes.push(
+      0x50,
+      0x4b,
+      0x03,
+      0x04, // assinatura local file header
+      20,
+      0, // versão
+      0,
+      0, // flags
+      0,
+      0, // método (stored)
+      0,
+      0,
+      0,
+      0, // data/hora
+      0,
+      0,
+      0,
+      0, // crc32
+      0,
+      0,
+      0,
+      0, // tamanho comprimido
+      0,
+      0,
+      0,
+      0, // tamanho real
+      enc.length & 0xff,
+      enc.length >> 8, // tamanho do nome
+      0,
+      0, // tamanho do extra
+      ...enc
+    );
+  }
+  return bytes;
+}
+
 describe('detectarTipo', () => {
   it('identifica PDF, PNG e ZIP/XLSX pelas assinaturas', () => {
     expect(detectarTipo(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d]))).toBe('pdf');
@@ -56,10 +98,7 @@ describe('validarMagicBytes', () => {
   });
 
   it('aceita xlsx (zip) e rejeita extensão fora da lista aceita', async () => {
-    const xlsx = arquivo(
-      'plan.xlsx',
-      Array.from(new TextEncoder().encode('PK\x03\x04\x14[Content_Types].xml'))
-    );
+    const xlsx = arquivo('plan.xlsx', zipComEntradas('[Content_Types].xml', 'xl/workbook.xml'));
     expect(await validarMagicBytes(xlsx, ['.ofx', '.xlsx'])).toBeNull();
     const exe = arquivo('plan.zip', [0x50, 0x4b, 0x03, 0x04]);
     expect(await validarMagicBytes(exe, ['.ofx', '.csv'])).toMatch(/extensão .zip fora/);
@@ -67,11 +106,11 @@ describe('validarMagicBytes', () => {
 
   it('rejeita zip genérico renomeado para extensão de escritório', async () => {
     // JAR renomeado: assinatura zip válida, mas sem a entrada OOXML obrigatória.
-    const jar = arquivo(
-      'plan.xlsx',
-      Array.from(new TextEncoder().encode('PK\x03\x04\x14META-INF/MANIFEST.MF'))
-    );
+    const jar = arquivo('plan.xlsx', zipComEntradas('META-INF/MANIFEST.MF', 'App.class'));
     expect(await validarMagicBytes(jar, ['.xlsx'])).toMatch(/não é um pacote .xlsx válido/);
+    // Texto contendo o nome da entrada não engana o parser de estrutura.
+    const falso = arquivo('plan.docx', zipComEntradas('notas.txt', 'META-INF/[Content_Types].xml'));
+    expect(await validarMagicBytes(falso, ['.docx'])).toMatch(/não é um pacote .docx válido/);
     // .zip continua aceito sem marcador de escritório.
     const zip = arquivo('dados.zip', [0x50, 0x4b, 0x03, 0x04]);
     expect(await validarMagicBytes(zip, ['.zip'])).toBeNull();

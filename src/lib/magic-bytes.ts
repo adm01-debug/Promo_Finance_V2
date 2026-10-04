@@ -118,23 +118,42 @@ const EXTENSAO_PARA_TIPOS: Record<string, TipoDetectado[]> = {
 /** Formatos de escritório são zip: exigir a entrada que os identifica por
  *  dentro impede que um `.jar`/`.apk` renomeado passe por `.xlsx`.
  *  OOXML (xlsx/xlsm/docx) obriga `[Content_Types].xml` como 1ª entrada do
- *  pacote; ODF (ods) obriga `mimetype` como 1ª entrada. */
-const MARCADORES_OFFICE: Record<string, string[]> = {
-  xlsx: ['[Content_Types].xml'],
-  xlsm: ['[Content_Types].xml'],
-  docx: ['[Content_Types].xml'],
-  ods: ['mimetype'],
+ *  pacote + diretório próprio (`xl/`, `word/`); ODF (ods) obriga `mimetype`
+ *  como 1ª entrada. Conferida na estrutura do zip, não como substring. */
+const MARCADORES_OFFICE: Record<string, { primeira: string; prefixo?: string }> = {
+  xlsx: { primeira: '[Content_Types].xml', prefixo: 'xl/' },
+  xlsm: { primeira: '[Content_Types].xml', prefixo: 'xl/' },
+  docx: { primeira: '[Content_Types].xml', prefixo: 'word/' },
+  ods: { primeira: 'mimetype' },
 };
 
-function contemAscii(head: Uint8Array, texto: string): boolean {
-  const alvo = new TextEncoder().encode(texto);
-  outer: for (let i = 0; i + alvo.length <= head.length; i++) {
-    for (let j = 0; j < alvo.length; j++) {
-      if (head[i + j] !== alvo[j]) continue outer;
+/** Lê os nomes das entradas do zip pelos local file headers (PK\x03\x04).
+ *  Não infla conteúdo — só a tabela de nomes na ordem gravada. */
+function entradasZip(head: Uint8Array, max = 40): string[] {
+  const nomes: string[] = [];
+  const dv = new DataView(head.buffer, head.byteOffset, head.byteLength);
+  let pos = 0;
+  while (nomes.length < max) {
+    let idx = -1;
+    for (let i = pos; i + 30 <= head.length; i++) {
+      if (
+        head[i] === 0x50 &&
+        head[i + 1] === 0x4b &&
+        head[i + 2] === 0x03 &&
+        head[i + 3] === 0x04
+      ) {
+        idx = i;
+        break;
+      }
     }
-    return true;
+    if (idx === -1) break;
+    const nomeLen = dv.getUint16(idx + 26, true);
+    const extraLen = dv.getUint16(idx + 28, true);
+    if (nomeLen === 0 || idx + 30 + nomeLen > head.length) break;
+    nomes.push(new TextDecoder().decode(head.subarray(idx + 30, idx + 30 + nomeLen)));
+    pos = idx + 30 + nomeLen + extraLen;
   }
-  return false;
+  return nomes;
 }
 
 function corresponde(head: Uint8Array, assinatura: number[]): boolean {
@@ -184,9 +203,10 @@ export async function validarMagicBytes(
     const r = new FileReader();
     r.onload = () => resolve(new Uint8Array(r.result as ArrayBuffer));
     r.onerror = () => reject(r.error);
-    // 4 KiB: entradas internas de zip (Content_Types/mimetype) precisam
-    // caber na janela lida para a validação de formatos de escritório.
-    r.readAsArrayBuffer(file.slice(0, 4096));
+    // 32 KiB: entradas iniciais do zip (Content_Types, mimetype e os
+    // primeiros diretórios) precisam caber na janela lida para validar
+    // a estrutura de pacotes de escritório.
+    r.readAsArrayBuffer(file.slice(0, 32768));
   });
   const tipo = detectarTipo(head);
 
@@ -217,9 +237,15 @@ export async function validarMagicBytes(
     return `${file.name}: conteúdo (${tipo}) não corresponde à extensão .${ext}`;
   }
 
-  const marcadores = MARCADORES_OFFICE[ext];
-  if (tipo === 'zip' && marcadores && !marcadores.some((m) => contemAscii(head, m))) {
-    return `${file.name}: zip não é um pacote .${ext} válido`;
+  const office = MARCADORES_OFFICE[ext];
+  if (tipo === 'zip' && office) {
+    const entradas = entradasZip(head);
+    const estruturaValida =
+      entradas[0] === office.primeira &&
+      (!office.prefixo || entradas.some((e) => e.startsWith(office.prefixo!)));
+    if (!estruturaValida) {
+      return `${file.name}: zip não é um pacote .${ext} válido`;
+    }
   }
 
   return null;

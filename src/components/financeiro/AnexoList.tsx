@@ -6,7 +6,6 @@ import { Paperclip, Download, FileText, Loader2, Trash2, Plus } from 'lucide-rea
 import { toast } from 'sonner';
 import { validarMagicBytes } from '@/lib/magic-bytes';
 import { mustSucceed } from '@/lib/supabase-write';
-import { logger } from '@/lib/logger';
 import { caminhoNoStorage, BUCKET_FINANCEIRO as BUCKET } from '@/lib/storage-path';
 
 interface AnexoListProps {
@@ -39,49 +38,16 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
     mutationFn: async (file: File) => {
       setUploading(true);
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${entidadeTipo}/${entidadeId}/${fileName}`;
-
-        // 1. Upload to Storage (Private bucket)
-        const { error: uploadError } = await supabase.storage
-          .from('financeiro')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        // 2. Get Signed URL (or public if bucket is public, but we prefer private)
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('financeiro').getPublicUrl(filePath);
-
-        // 3. Save to Database
-        try {
-          await mustSucceed(
-            supabase.from('anexos_financeiros').insert({
-              entidade_id: entidadeId,
-              entidade_tipo: entidadeTipo,
-              nome_arquivo: file.name,
-              mime_type: file.type,
-              tamanho_bytes: file.size,
-              url: publicUrl,
-              url_publica: publicUrl,
-            }),
-            'registrar o anexo'
-          );
-        } catch (erroBanco) {
-          // O arquivo já está no bucket. Sem a linha, ele fica invisível na
-          // tela e ninguém mais o remove — mas segue baixável por quem tiver a
-          // URL. Desfazer o upload é o que mantém as duas pontas coerentes.
-          const { error: erroLimpeza } = await supabase.storage.from(BUCKET).remove([filePath]);
-          if (erroLimpeza) {
-            logger.error('Falha ao remover arquivo órfão do storage', {
-              filePath,
-              erro: erroLimpeza.message,
-            });
-          }
-          throw erroBanco;
-        }
+        // O upload vai pela edge function `upload-anexo`: ela revalida os
+        // magic bytes no servidor (a checagem local é só UX — quem chama o
+        // HTTP do Storage direto pula o front), grava via service_role e já
+        // registra a linha em `anexos_financeiros`.
+        const form = new FormData();
+        form.append('arquivo', file);
+        form.append('entidade_tipo', entidadeTipo);
+        form.append('entidade_id', entidadeId);
+        const { error } = await supabase.functions.invoke('upload-anexo', { body: form });
+        if (error) throw error;
       } finally {
         setUploading(false);
       }

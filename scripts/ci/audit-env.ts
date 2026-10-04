@@ -34,13 +34,15 @@ async function get(url: string, headers: Record<string, string>): Promise<unknow
 }
 
 // ---------- leitura dos destinos ----------
-async function fetchVercelEnvs(): Promise<Set<string>> {
-  if (!VERCEL_TOKEN) return new Set();
+async function fetchVercelEnvs(): Promise<Map<string, string>> {
+  if (!VERCEL_TOKEN) return new Map();
   const d = (await get(
     `https://api.vercel.com/v10/projects/${VERCEL_PROJECT}/env?teamId=${VERCEL_TEAM_ID}`,
     { Authorization: `Bearer ${VERCEL_TOKEN}` }
-  )) as { envs?: { key: string }[] } | null;
-  return new Set((d?.envs ?? []).map((e) => e.key));
+  )) as { envs?: { key: string; value?: string }[] } | null;
+  // 'secret' vem sem valor — só os não-secretos chegam legíveis, que é o
+  // suficiente para conferir referências de projeto (nunca são 'secret').
+  return new Map((d?.envs ?? []).map((e) => [e.key, e.value ?? '']));
 }
 
 async function fetchSupabaseSecrets(): Promise<Set<string>> {
@@ -60,13 +62,13 @@ async function fetchGithubSecrets(): Promise<Set<string>> {
   return new Set((d?.secrets ?? []).map((s) => s.name));
 }
 
-async function fetchGithubVariables(): Promise<Set<string>> {
-  if (!GITHUB_TOKEN) return new Set();
+async function fetchGithubVariables(): Promise<Map<string, string>> {
+  if (!GITHUB_TOKEN) return new Map();
   const d = (await get(`https://api.github.com/repos/${GITHUB_REPO}/actions/variables`, {
     Authorization: `token ${GITHUB_TOKEN}`,
     Accept: 'application/vnd.github.v3+json',
-  })) as { variables?: { name: string }[] } | null;
-  return new Set((d?.variables ?? []).map((v) => v.name));
+  })) as { variables?: { name: string; value: string }[] } | null;
+  return new Map((d?.variables ?? []).map((v) => [v.name, v.value]));
 }
 
 // ---------- auditoria ----------
@@ -111,13 +113,37 @@ for (const v of vars) {
 
 // Classe 2: cadastrada no destino mas não declarada no manifesto (ruído)
 const manifestNames = new Set(vars.map((v) => v.name));
-for (const k of vercelEnvs) if (!manifestNames.has(k)) console.log(`  ⚠️  [ORPHAN-VERCEL]   ${k}`);
+for (const k of vercelEnvs.keys())
+  if (!manifestNames.has(k)) console.log(`  ⚠️  [ORPHAN-VERCEL]   ${k}`);
 for (const k of supabaseSecrets)
   if (!manifestNames.has(k)) console.log(`  ⚠️  [ORPHAN-SUPABASE] ${k}`);
 for (const k of githubSecrets)
   if (!manifestNames.has(k)) console.log(`  ⚠️  [ORPHAN-GITHUB]   ${k}`);
-for (const k of githubVariables)
+for (const k of githubVariables.keys())
   if (!manifestNames.has(k)) console.log(`  ⚠️  [ORPHAN-GH-VARS]  ${k}`);
+
+// Classe 3: referência de projeto cadastrada mas apontando para outro banco.
+// Uma var com o nome certo e valor errado passaria na checagem de presença e
+// faria o workflow semanal gerar types.ts do projeto errado.
+const REFS_PROJETO = new Set([
+  'PROD_PROJECT_REF',
+  'SUPABASE_PROJECT_ID',
+  'VITE_SUPABASE_PROJECT_ID',
+  'SUPABASE_REF',
+]);
+for (const [mapa, destino] of [
+  [vercelEnvs, 'vercel'],
+  [githubVariables, 'github_actions_vars'],
+] as const) {
+  for (const [k, v] of mapa) {
+    if (REFS_PROJETO.has(k) && v && v !== SUPABASE_REF) {
+      console.log(
+        `  ❌ [BAD-REF] ${k} → ${destino} aponta para '${v}', esperado '${SUPABASE_REF}'`
+      );
+      failures++;
+    }
+  }
+}
 
 if (failures > 0) {
   console.error(`\n✗ audit-env: ${failures} variável(is) obrigatória(s) ausente(s) no destino.`);

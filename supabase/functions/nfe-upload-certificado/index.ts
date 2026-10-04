@@ -4,12 +4,11 @@
 // persiste os metadados criptografados via RPC certificado_upsert.
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { corsHeaders } from '../_shared/cors.ts';
 import forge from 'npm:node-forge@1.3.1';
 import { z } from 'npm:zod@3.23.8';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
-import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { exigirVinculoEmpresa, mfaAdminInsuficiente } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 const BodySchema = z.object({
@@ -88,6 +87,18 @@ Deno.serve(async (req) => {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Admin confirmado — a troca do certificado que assina NF-e exige
+    // segundo fator quando MFA_ADMIN_ENFORCED está ligado (sessão aal2).
+    if (mfaAdminInsuficiente(['admin'], authHeader.slice(7))) {
+      return new Response(
+        JSON.stringify({
+          error: 'mfa_requerido',
+          message: 'Esta operação exige segundo fator (TOTP) ativo na sessão.',
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const rawBody = await req.json();
