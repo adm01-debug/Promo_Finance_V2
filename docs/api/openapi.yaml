@@ -31,8 +31,10 @@ paths:
         Recebe eventos PAYMENT_*/TRANSFER_* do Asaas. Autenticado pelo header
         asaas-access-token (configurado no painel Asaas → Integrações →
         Webhooks). Idempotente por id/eventId — reenvio retorna 200 sem
-        reprocessar. Responde 5xx só quando o retry do Asaas deve acontecer
-        (RetryableError); erro de validação retorna 4xx sem retry.
+        reprocessar. Falha de processamento retorna 200 com
+        {success: false, will_retry} e a retentativa acontece na fila interna
+        (retry/DLQ próprios — o Asaas não retransmite); 5xx só em erro fatal
+        fora do fluxo e 4xx em erro de validação.
       parameters:
         - name: asaas-access-token
           in: header
@@ -145,9 +147,10 @@ paths:
                   type: object
                   description: >-
                     Campos por action: create_alert usa
-                    {alert_type, severity, subject, message, description,
-                    deal_id, driver_id, order_id, record_id}; log usa
-                    {action, message, ...}.
+                    {alert_type, severity, title, message, description,
+                    deal_id, driver_id, order_id, record_id} (title é
+                    obrigatório para o título do alerta); create_task aceita
+                    subject ou title; log usa {action, message, ...}.
       responses:
         '200':
           description: Ação executada
@@ -194,25 +197,29 @@ paths:
         '404': { description: Provedor não encontrado ou inativo }
 
   /sso-callback:
-    post:
+    get:
       tags: [identidade]
       summary: Conclui fluxo OIDC (code → sessão)
       description: >-
-        Troca o authorization code do IdP (com PKCE) e provisiona o usuário na
-        empresa. Chamado pelo frontend na rota /sso/callback.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [code, state]
-              properties:
-                code: { type: string }
-                state: { type: string }
-                code_verifier: { type: string }
+        Callback que o IdP chama via redirect: lê code/state da query (e
+        verifier opcional na query ou no corpo), troca o authorization code
+        (com PKCE) e provisiona o usuário na empresa, respondendo redirect
+        ou magic link conforme o fluxo.
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema: { type: string }
+        - name: state
+          in: query
+          required: true
+          schema: { type: string }
+        - name: verifier
+          in: query
+          required: false
+          schema: { type: string }
       responses:
-        '200': { description: Sessão criada; usuário provisionado }
+        '302': { description: Redirect para a aplicação com sessão estabelecida }
         '400': { $ref: '#/components/responses/ErroValidacao' }
         '401': { description: State/verifier inválido ou expirado }
 
@@ -365,7 +372,7 @@ paths:
       summary: Valida token JWT de contador convidado
       description: >-
         Verifica assinatura/expiração do token emitido por convidar-contador e
-        devolve {empresa_id, role, sub} para o fluxo de aceite sem login.
+        devolve {success, empresa, convite} para o fluxo de aceite sem login.
       requestBody:
         required: true
         content:
@@ -377,15 +384,21 @@ paths:
                 token: { type: string }
       responses:
         '200':
-          description: Payload validado do token
+          description: Token validado
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  empresa_id: { type: string, format: uuid }
-                  role: { type: string }
-                  sub: { type: string }
+                  success: { type: boolean }
+                  empresa:
+                    type: object
+                    description: Empresa dona do convite
+                  convite:
+                    type: object
+                    properties:
+                      email: { type: string, format: email }
+                      expires_at: { type: string, format: date-time }
         '401': { description: Token inválido ou expirado }
 
   /health:
@@ -393,22 +406,27 @@ paths:
       tags: [util]
       summary: Liveness público
       description: >-
-        Resposta mínima {status, timestamp, version} — não expõe detalhe de
-        infra. Usuário autenticado recebe o bloco services.* estendido.
+        Resposta mínima {status, timestamp} — não expõe detalhe de infra.
+        Público: status 'ok' ou 'outage' (503 quando o probe interno falha).
+        Usuário autenticado recebe o bloco services.* com
+        operational/degraded/outage por serviço (edge_runtime, database,
+        realtime, external_apis.asaas/bling).
       responses:
         '200':
-          description: Sistema no ar
+          description: Sistema no ar (status 'ok' ou degradado autenticado)
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status: { type: string, enum: [ok] }
+                  status: { type: string, enum: [ok, outage] }
                   timestamp: { type: string, format: date-time }
-                  version: { type: string }
                   services:
                     type: object
-                    description: Só presente para chamador autenticado
+                    description: >-
+                      Só presente para chamador autenticado — cada serviço
+                      reporta operational/degraded/outage
+        '503': { description: Probe público falhou — status 'outage' }
 
   /get-vapid-key:
     get:
@@ -422,7 +440,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  key: { type: string }
+                  vapidPublicKey: { type: string }
 
   /get-mapbox-token:
     get:

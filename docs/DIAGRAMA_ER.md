@@ -17,6 +17,7 @@ erDiagram
     empresas ||--o{ categorias : "tem"
     empresas ||--o{ asaas_payments : "tem"
     empresas ||--o{ asaas_customers : "tem"
+    empresas ||--o{ asaas_transfers : "tem"
     empresas ||--o{ notas_fiscais : "tem"
     empresas ||--o{ sso_providers : "tem"
 
@@ -33,13 +34,10 @@ erDiagram
     contas_bancarias ||--o{ contas_pagar : "conta de pagamento"
     contas_bancarias ||--o{ contas_receber : "conta de recebimento"
 
-    transacoes_bancarias }o--o| contas_pagar : "concilia (conta_pagar_id)"
-    transacoes_bancarias }o--o| contas_receber : "concilia (conta_receber_id)"
 
     clientes ||--o{ asaas_customers : "espelha no Asaas"
     contas_receber ||--o{ asaas_payments : "cobra via"
     asaas_customers ||--o{ asaas_payments : "paga"
-    asaas_payments ||--o{ asaas_transfers : "liquida via"
 
     notas_fiscais ||--o{ nfe_recebidas : "df-e SEFAZ"
     contas_pagar ||--o{ notas_fiscais : "origina de"
@@ -94,8 +92,6 @@ erDiagram
     transacoes_bancarias {
         uuid id PK
         uuid conta_bancaria_id FK
-        uuid conta_pagar_id FK "nullable"
-        uuid conta_receber_id FK "nullable"
         date data
         numeric valor
         boolean conciliada
@@ -115,8 +111,9 @@ erDiagram
 
 - **Toda tabela de negócio tem `empresa_id`** — isolamento multi-tenant; a RLS
   nega cross-empresa (ver `RLS_MATRIZ_NEGATIVA.md`).
-- **Baixa de conta é sempre via `transacoes_bancarias`** — conta paga/recebida
-  sem transação conciliada é exceção manual, não o fluxo.
+- **Baixa de conta é via `conciliacoes_parciais`** — join entre
+  `transacoes_bancarias` e a conta (pagar/receber); conta paga/recebida sem
+  transação conciliada é exceção manual, não o fluxo.
 - **`contas_pagar.updated_at` / `contas_receber.updated_at`** são a versão do
   lock otimista — trigger `update_updated_at_column` os mantém.
 - **Espelhos de provedor** (`asaas_*`, `bling_*`) guardam o id externo

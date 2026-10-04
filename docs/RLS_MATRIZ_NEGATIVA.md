@@ -17,26 +17,36 @@
 Todas as tabelas abaixo carregam `empresa_id` e são acessadas pelo PostgREST
 com o JWT do usuário. A negação esperada é a mesma família a família:
 
-| Família de tabelas                                                   | Cross-empresa SELECT | Cross-empresa INSERT/UPDATE/DELETE | Anônimo (sem JWT) | Outro papel na MESMA empresa                                                      |
-| -------------------------------------------------------------------- | -------------------- | ---------------------------------- | ----------------- | --------------------------------------------------------------------------------- |
-| `contas_pagar`, `contas_receber`                                     | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `transacoes_bancarias`, `contas_bancarias`                           | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `clientes`, `fornecedores`, `contatos_financeiros`                   | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `notas_fiscais`, `nfe_recebidas`, `nfe_eventos`, `notas_fiscais_ocr` | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `conciliacoes*`, `regras_conciliacao`, `conciliacao_sugestoes`       | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `categorias`, `centros_custo`, `plano_contas`                        | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `apuracoes_*`, `simulacoes`, `gerar_*` fiscais, `auditoria_*`        | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `asaas_*`, `bling_*`, `bitrix24_*` (espelhos de provedor)            | negado               | negado                             | negado            | `visualizador`: só leitura                                                        |
-| `anexos_financeiros`, `storage.objects` (buckets privados)           | negado               | negado                             | negado            | path prefix `empresa_id/`                                                         |
-| `user_empresas`, `convites`, `empresas`                              | negado               | negado (só admin)                  | negado            | `admin` gerencia; outros leem a própria linha                                     |
-| `alertas*`, `acoes_recomendadas`, `insights*`                        | negado               | negado                             | negado            | leitura por vínculo                                                               |
-| `empresas_certificados` (cert. A1)                                   | negado               | negado                             | negado            | **ninguém lê `password_encrypted` pelo PostgREST** — só service_role nas edge fns |
+| Família de tabelas                                                   | Cross-empresa SELECT | Cross-empresa INSERT/UPDATE/DELETE | Anônimo (sem JWT) | Outro papel na MESMA empresa                                                                                                                                                      |
+| -------------------------------------------------------------------- | -------------------- | ---------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `contas_pagar`, `contas_receber`                                     | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `transacoes_bancarias` (escopo via `conta_bancaria_id`→empresa)      | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `contas_bancarias`                                                   | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `clientes`, `fornecedores`, `contatos_financeiros`                   | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `notas_fiscais`, `nfe_recebidas`, `nfe_eventos`, `notas_fiscais_ocr` | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `conciliacoes*`, `regras_conciliacao`, `conciliacao_sugestoes`       | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `categorias`, `centros_custo`, `plano_contas`                        | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `apuracoes_*`, `simulacoes`, `gerar_*` fiscais, `auditoria_*`        | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `asaas_*`, `bling_*`, `bitrix24_*` (espelhos de provedor)            | negado               | negado                             | negado            | `visualizador`: só leitura                                                                                                                                                        |
+| `anexos_financeiros`                                                 | negado               | negado                             | negado            | linha escopada por `empresa_id`                                                                                                                                                   |
+| `storage.objects` bucket `financeiro`                                | **GAP (P1)**         | negado                             | negado            | **SELECT/DELETE abertos a qualquer `authenticated`** — policies `anexos_financeiro_{leitura,remocao}_autenticada` usam só `bucket_id='financeiro'`; INSERT bloqueado (só edge fn) |
+| `user_empresas`, `convites`, `empresas`                              | negado               | negado (só admin)                  | negado            | `admin` gerencia; outros leem a própria linha                                                                                                                                     |
+| `alertas*`, `acoes_recomendadas`, `insights*`                        | negado               | negado                             | negado            | leitura por vínculo                                                                                                                                                               |
+| `empresas_certificados` (cert. A1)                                   | negado               | negado                             | negado            | **ninguém lê `password_encrypted` pelo PostgREST** — só service_role nas edge fns                                                                                                 |
 
 Notas da família:
 
 - A política base repete o padrão `empresa_id IN (SELECT empresa_id FROM
 user_empresas WHERE user_id = auth.uid() AND ativo)` — se uma migration
   nova criar policy com `USING (true)`, ela viola esta matriz.
+- `transacoes_bancarias` é a exceção ao padrão: o escopo é
+  `conta_bancaria_id IN (SELECT id FROM contas_bancarias WHERE empresa_id IN
+user_empresas do usuário)`, somado à policy de papel financeiro/admin.
+- **Gap P1 registrado:** no bucket `financeiro` o SELECT/DELETE de
+  `storage.objects` vale para qualquer `authenticated` (policy por
+  `bucket_id` apenas, sem prefixo `empresa_id/`). Um usuário logado da
+  empresa A pode ler/apagar anexos da empresa B — correção de policy
+  pendente (restringir por prefixo de path).
 - `visualizador` lendo não pode escrever: policies `FOR ALL` de escrita
   exigem `role IN ('admin','financeiro','contador')`.
 - Secrets (`integration_secrets`, `scim_tokens`, `empresas_certificados`)
