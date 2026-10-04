@@ -36,6 +36,10 @@ jobs:
   migrate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Ref guard: workflow_dispatch pode ser disparado de qualquer branch;
+    # aplicar migrations de uma ref não integrada em PROD não é permitido
+    # (mesmo padrão de functions-deploy.yml).
+    if: github.ref == 'refs/heads/main'
     # Gate de aprovação: o job só inicia depois que um reviewer aprova
     # no Environment "Production" (proteção do repo).
     environment: Production
@@ -94,17 +98,24 @@ jobs:
 
       - name: Aplicar migrations em PROD
         if: '!inputs.dry_run'
-        run: supabase db push --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/db-push.log
+        run: |
+          set -o pipefail
+          supabase db push --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/db-push.log
 
       - name: Verificação pós-apply (drift)
         if: '!inputs.dry_run'
         run: |
-          supabase db diff --db-url "$PROD_DB_URL" --schema public \
-            > /tmp/prod-diff-pos.sql 2>&1 || true
+          # Schemas mantidos pelas migrations: public + storage (bucket e
+          # policies de storage.objects criados por migration dedicada).
+          if ! supabase db diff --db-url "$PROD_DB_URL" --schema public,storage \
+            > /tmp/prod-diff-pos.sql 2>&1; then
+            echo "::error::supabase db diff falhou — paridade não verificada. Revisar artefato."
+            exit 1
+          fi
           if [ -s /tmp/prod-diff-pos.sql ] && grep -qE "create|alter|drop" /tmp/prod-diff-pos.sql; then
             echo "::warning::Ainda há diff entre migrations/ e PROD — revisar artefato."
           else
-            echo "PROD em paridade com supabase/migrations/."
+            echo "PROD em paridade com supabase/migrations/ (schemas: public, storage)."
           fi
 
       - name: Upload evidências

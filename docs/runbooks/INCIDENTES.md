@@ -22,7 +22,10 @@
 
 1. **Rollback de deploy Vercel**: Dashboard > Deployments > ⋮ > "Redeploy" do deploy anterior estável. Leva ~2min.
 2. **Desligar integração degradada** (quando o circuit breaker do roadmap existir): update em `feature_flags`/`INTEGRACOES_DESATIVADAS`.
-3. **Edge function específica**: redeploy da versão anterior via workflow `functions-deploy` (workflow_dispatch, escolher a fn).
+3. **Edge function específica**: o workflow `functions-deploy` publica sempre a ponta de `main` — ele **não** restaura versão anterior sozinho. Rollback real:
+   1. `git revert <sha-do-commit-quebrou>` em branch própria → PR → merge em `main`.
+   2. Com o revert em `main`, disparar `functions-deploy` (workflow_dispatch, escolher a fn) — agora o código publicado é a versão estável.
+   3. Em emergência sem tempo para PR: commitar o conteúdo anterior do arquivo direto na `main` via UI do GitHub (respeitando branch protection) e disparar o deploy.
 4. **Migração problemática**: **não** fazer `db push` reverso às cegas — ver runbook HOTFIX e BACKUP_DR antes.
 
 ## 4. Comunicação
