@@ -47,15 +47,41 @@ Esta chave criptografa `empresas_certificados.password_encrypted` via `pgp_sym_e
            'CHAVE_NOVA'
          )
          WHERE id = r.id;
-       EXCEPTION WHEN OTHERS THEN
-         -- Linha cifrada depois do passo 3 (upload durante a rotação):
-         -- já abre com a chave nova, não precisa de recriptografia.
+       EXCEPTION WHEN external_routine_invocation_exception THEN
+         -- Erro de decriptografia (chave errada): linha cifrada depois do
+         -- passo 3 já abre com a chave nova, não precisa de recriptografia.
          RAISE NOTICE 'pulando id % — já está na chave nova', r.id;
        END;
      END LOOP;
    END $$;
    ```
    Linhas que emitiram `NOTICE` já abrem com a chave nova na primeira tentativa.
+   Qualquer outro erro (timeout, lock, falha de banco) **aborta** o bloco —
+   não é tratado como "já migrada".
+   4b. Verificação obrigatória: **toda** linha tem que decriptar com a chave nova
+   antes de seguir — a validação amostral do passo 5 não cobre uma linha que
+   tenha ficado na chave antiga. Se este bloco abortar, **não** remova o
+   `NFE_CERT_MASTER_KEY_PREV`:
+   `sql
+    DO $$
+    DECLARE r RECORD; falhas INT := 0;
+    BEGIN
+      FOR r IN
+        SELECT id, password_encrypted FROM empresas_certificados
+        WHERE password_encrypted IS NOT NULL
+      LOOP
+        BEGIN
+          PERFORM extensions.pgp_sym_decrypt(r.password_encrypted, 'CHAVE_NOVA');
+        EXCEPTION WHEN OTHERS THEN
+          falhas := falhas + 1;
+          RAISE NOTICE 'id % NÃO abre com a chave nova', r.id;
+        END;
+      END LOOP;
+      IF falhas > 0 THEN
+        RAISE EXCEPTION '% linha(s) não decriptam com a chave nova — mantenha NFE_CERT_MASTER_KEY_PREV', falhas;
+      END IF;
+    END $$;
+    `
 5. Validar: baixar/abrir um certificado existente via app e subir um novo (o encrypt sempre usa a chave nova).
 6. Só então **remover** o secret `NFE_CERT_MASTER_KEY_PREV` e descartar a chave antiga de qualquer lugar — guardá-la fora de prod até a validação.
 
