@@ -148,13 +148,13 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   const inadimplencia = totalReceber > 0 ? (totalVencidasReceber / totalReceber) * 100 : 0;
 
   const venceHojeReceber = contasReceberFiltradas.filter((c) => {
-    const dataVenc = new Date(c.data_vencimento);
+    const dataVenc = new Date(c.data_vencimento ?? '');
     dataVenc.setHours(0, 0, 0, 0);
     return dataVenc.getTime() === hoje.getTime() && c.status === 'pendente';
   });
 
   const venceHojePagar = contasPagarFiltradas.filter((c) => {
-    const dataVenc = new Date(c.data_vencimento);
+    const dataVenc = new Date(c.data_vencimento ?? '');
     dataVenc.setHours(0, 0, 0, 0);
     return dataVenc.getTime() === hoje.getTime() && c.status === 'pendente';
   });
@@ -201,7 +201,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
       }
       const current = map.get(ccId)!;
       if (c.status !== 'pago' && c.status !== 'cancelado') {
-        current.pagar += c.valor - (c.valor_pago || 0);
+        current.pagar += (c.valor ?? 0) - (c.valor_pago || 0);
       }
     });
 
@@ -216,7 +216,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
       }
       const current = map.get(ccId)!;
       if (c.status !== 'pago' && c.status !== 'cancelado') {
-        current.receber += c.valor - (c.valor_recebido || 0);
+        current.receber += (c.valor ?? 0) - (c.valor_recebido || 0);
       }
     });
 
@@ -261,12 +261,12 @@ export function useDashboardMetrics(filters: DashboardFilters) {
       }
 
       const current = clienteReceitas.get(clienteId)!;
-      current.receita += conta.valor;
+      current.receita += conta.valor ?? 0;
 
       if (conta.status === 'pago') {
-        current.pagos += conta.valor_recebido || conta.valor;
+        current.pagos += conta.valor_recebido || conta.valor || 0;
       } else if (conta.status !== 'cancelado') {
-        current.pendentes += conta.valor - (conta.valor_recebido || 0);
+        current.pendentes += (conta.valor ?? 0) - (conta.valor_recebido || 0);
       }
     });
 
@@ -283,7 +283,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   // Fluxo de caixa projetado
   const fluxoCaixaProjetado = useMemo(() => {
     const dias = parseInt(periodoFluxo);
-    const result = [];
+    const result: Array<{ data: string; receitas: number; despesas: number; saldo: number }> = [];
     let saldoAcumulado = saldoTotal;
 
     for (let i = 0; i < dias; i++) {
@@ -295,13 +295,13 @@ export function useDashboardMetrics(filters: DashboardFilters) {
         .filter(
           (c) => c.data_vencimento === dataStr && c.status !== 'pago' && c.status !== 'cancelado'
         )
-        .reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
+        .reduce((sum, c) => sum + (c.valor ?? 0) - (c.valor_recebido || 0), 0);
 
       const despesasDia = contasPagarFiltradas
         .filter(
           (c) => c.data_vencimento === dataStr && c.status !== 'pago' && c.status !== 'cancelado'
         )
-        .reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
+        .reduce((sum, c) => sum + (c.valor ?? 0) - (c.valor_pago || 0), 0);
 
       saldoAcumulado = saldoAcumulado + receitasDia - despesasDia;
 
