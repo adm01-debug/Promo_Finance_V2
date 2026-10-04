@@ -1,5 +1,5 @@
 import { todayISOLocal, toISOLocal } from '@/lib/formatters';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -128,7 +128,12 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     },
   });
 
+  const contaIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    // Callbacks assíncronos (refetch de conflito) conferem o id aqui antes de
+    // mexer no form — resposta tardia da conta A não pode pisar na conta B.
+    contaIdRef.current = conta?.id ?? null;
     if (conta && open) {
       setVersaoEsperada(null);
       form.reset({
@@ -169,19 +174,23 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       updateMutation.mutate(
         { ...data, id: conta.id, expected_updated_at: versaoEsperada ?? conta.updated_at },
         {
-          onSuccess: () => {
+          onSuccess: (novaVersao) => {
+            // A próxima edição já parte da versão que este write gerou —
+            // sem isso, reabrir rápido usaria a versão pré-save.
+            if (typeof novaVersao === 'string') setVersaoEsperada(novaVersao);
             celebrateSuccess('Conta atualizada com sucesso!');
             onOpenChange(false);
           },
           onError: (error: Error) => {
             if (error instanceof ConflitoVersaoError) {
+              const contaId = conta.id;
               supabase
                 .from('contas_pagar')
                 .select('*')
-                .eq('id', conta.id)
+                .eq('id', contaId)
                 .single()
                 .then(({ data: row }) => {
-                  if (!row) return;
+                  if (!row || contaIdRef.current !== contaId) return;
                   setVersaoEsperada(row.updated_at);
                   // Recarrega os campos com a versão vigente — salvar de novo
                   // em cima dos valores antigos sobrescreveria a edição da outra pessoa.

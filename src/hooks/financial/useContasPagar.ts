@@ -145,13 +145,15 @@ export function useUpdateContaPagar() {
       id,
       expected_updated_at,
       ...data
-    }: { id: string; expected_updated_at: string } & Partial<
+    }: { id: string; expected_updated_at: string | null } & Partial<
       Database['public']['Tables']['contas_pagar']['Update']
     >) => {
-      await updateComLockOtimista('contas_pagar', id, expected_updated_at, data);
+      return await updateComLockOtimista('contas_pagar', id, expected_updated_at, data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+    onSuccess: async () => {
+      // Aguarda o refetch antes de liberar o UI: reabrir a conta com a lista
+      // ainda desatualizada mandaria a versão antiga e geraria falso conflito.
+      await queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       sounds.success();
     },
     onError: (error: Error) => {

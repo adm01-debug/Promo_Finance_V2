@@ -21,12 +21,13 @@ export async function updateComLockOtimista(
   id: string,
   updatedAtVisto: string | null,
   patch: Record<string, unknown>
-): Promise<void> {
+): Promise<string> {
   // updated_at é anulável nas linhas antigas: com versão vista nula o filtro
   // é `.is(null)` — `.eq(col, null)` nunca casa NULL no PostgREST.
+  const novaVersao = new Date().toISOString();
   const update = supabase
     .from(tabela)
-    .update({ ...patch, updated_at: new Date().toISOString() })
+    .update({ ...patch, updated_at: novaVersao })
     .eq('id', id);
   const { data, error } = await (
     updatedAtVisto === null
@@ -47,4 +48,5 @@ export async function updateComLockOtimista(
     if (atual && atual.updated_at !== updatedAtVisto) throw new ConflitoVersaoError();
     throw new Error('Sem permissão para alterar este registro, ou o registro não existe mais.');
   }
+  return novaVersao;
 }

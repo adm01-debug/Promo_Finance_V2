@@ -390,14 +390,19 @@ export function useContasPagarLogic() {
   };
 
   // A seleção em massa persiste entre páginas, mas sortedContas só cobre a
-  // página atual: busca a versão na lista completa e, se a linha não estiver
-  // carregada em lugar nenhum, lê o updated_at direto do banco — nunca envia
-  // versão vazia ao lock otimista.
-  const versaoVista = async (id: string): Promise<string> => {
+  // página atual: busca a versão na lista completa.
+  // Reler o updated_at quando a conta está fora da janela carregada fingiria
+  // uma leitura feita na hora da seleção: uma escrita alheia posterior à
+  // seleção passaria pelo lock. Sem versão vista registrada, falha pedindo
+  // recarga em vez de burlar o lock.
+  const versaoVista = (id: string): string | null => {
     const local = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
-    if (local?.updated_at) return local.updated_at;
-    const { data } = await supabase.from('contas_pagar').select('updated_at').eq('id', id).single();
-    return data?.updated_at ?? '';
+    if (!local) {
+      throw new Error(
+        'Conta fora da janela carregada — recarregue a lista e repita a ação em massa.'
+      );
+    }
+    return local.updated_at;
   };
 
   const handleBulkMarkAsPaid = () => {
@@ -406,7 +411,7 @@ export function useContasPagarLogic() {
         const conta = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
         await updateMutation.mutateAsync({
           id,
-          expected_updated_at: await versaoVista(id),
+          expected_updated_at: versaoVista(id),
           status: 'pago',
           data_pagamento: todayISOLocal(),
           valor_pago: conta?.valor || 0,
@@ -421,7 +426,7 @@ export function useContasPagarLogic() {
       async (id) => {
         await updateMutation.mutateAsync({
           id,
-          expected_updated_at: await versaoVista(id),
+          expected_updated_at: versaoVista(id),
           status: 'cancelado',
         });
       },

@@ -67,7 +67,6 @@ src/components/effects/BlurText.tsx(...): error TS2322: Type 'Snapshot' is not a
 src/components/empresas/EmpresaCardView.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
 src/components/error/ErrorBoundary.tsx(...): error TS2322: Type 'string | undefined' is not assignable to type 'Json'.
 src/components/expert/ExpertPromptComposer.tsx(...): error TS2322: Type 'RefObject<HTMLTextAreaElement | null>' is not assignable to type 'LegacyRef<HTMLTextAreaElement> | undefined'.
-src/components/financeiro/AnexoList.tsx(...): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
 src/components/financeiro/AnexoList.tsx(...): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
 src/components/fornecedores/FornecedorDetailDialog.tsx(...): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
 src/components/fornecedores/FornecedorForm.tsx(...): error TS2322: Type 'UseFormReturn<{ ativo: boolean; razao_social: string; email?: string | undefined; observacoes?: string | undefined; endereco?: string | undefined; telefone?: string | undefined; cidade?: string | undefined; cnpj_cpf?: string | undefined; contato?: string | undefined; estado?: string | undefined; nome_fantasia?: stri...' is not assignable to type 'UseFormReturn<FieldValues>'.

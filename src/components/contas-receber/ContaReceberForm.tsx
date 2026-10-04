@@ -1,5 +1,5 @@
 import { todayISOLocal } from '@/lib/formatters';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -110,7 +110,12 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const isParcelado = form.watch('parcelado');
   const numParcelas = form.watch('numero_parcelas') || 1;
 
+  const contaIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    // Callbacks assíncronos (refetch de conflito) conferem o id aqui antes de
+    // mexer no form — resposta tardia da conta A não pode pisar na conta B.
+    contaIdRef.current = conta?.id ?? null;
     if (conta && open) {
       setVersaoEsperada(null);
       form.reset({
@@ -195,23 +200,31 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const updateMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
-      await updateComLockOtimista('contas_receber', conta.id, versaoEsperada ?? conta.updated_at, {
-        cliente_id: data.cliente_id || null,
-        cliente_nome: data.cliente_nome,
-        descricao: data.descricao,
-        valor: data.valor,
-        data_vencimento: data.data_vencimento,
-        data_emissao: data.data_emissao || todayISOLocal(),
-        empresa_id: data.empresa_id,
-        centro_custo_id: data.centro_custo_id || null,
-        categoria_id: data.categoria_id || null,
-        conta_bancaria_id: data.conta_bancaria_id || null,
-        tipo_cobranca: data.tipo_cobranca,
-        numero_documento: data.numero_documento || null,
-        // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
-        chave_pix: data.chave_pix || null,
-        observacoes: data.observacoes || null,
-      });
+      const novaVersao = await updateComLockOtimista(
+        'contas_receber',
+        conta.id,
+        versaoEsperada ?? conta.updated_at,
+        {
+          cliente_id: data.cliente_id || null,
+          cliente_nome: data.cliente_nome,
+          descricao: data.descricao,
+          valor: data.valor,
+          data_vencimento: data.data_vencimento,
+          data_emissao: data.data_emissao || todayISOLocal(),
+          empresa_id: data.empresa_id,
+          centro_custo_id: data.centro_custo_id || null,
+          categoria_id: data.categoria_id || null,
+          conta_bancaria_id: data.conta_bancaria_id || null,
+          tipo_cobranca: data.tipo_cobranca,
+          numero_documento: data.numero_documento || null,
+          // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
+          chave_pix: data.chave_pix || null,
+          observacoes: data.observacoes || null,
+        }
+      );
+      // A próxima edição já parte da versão que este write gerou — sem isso,
+      // reabrir rápido usaria a versão pré-save e cairia em falso conflito.
+      setVersaoEsperada(novaVersao);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
@@ -223,13 +236,14 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       if (error instanceof ConflitoVersaoError) {
         if (!conta) return;
         queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+        const contaId = conta.id;
         supabase
           .from('contas_receber')
           .select('*')
-          .eq('id', conta.id)
+          .eq('id', contaId)
           .single()
           .then(({ data: row }) => {
-            if (!row) return;
+            if (!row || contaIdRef.current !== contaId) return;
             setVersaoEsperada(row.updated_at);
             // Recarrega os campos com a versão vigente — salvar de novo em
             // cima dos valores antigos sobrescreveria a edição da outra pessoa.
@@ -245,6 +259,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
               categoria_id: row.categoria_id || undefined,
               conta_bancaria_id: row.conta_bancaria_id || undefined,
               tipo_cobranca: row.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
+              numero_documento: row.numero_documento || undefined,
+              chave_pix: row.chave_pix || undefined,
+              observacoes: row.observacoes || undefined,
             });
           });
         toast({

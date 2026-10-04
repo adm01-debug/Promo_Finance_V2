@@ -84,11 +84,13 @@ describe('updateComLockOtimista', () => {
     );
   });
 
-  it('atualiza quando a versão vista ainda é a atual', async () => {
-    await expect(
-      updateComLockOtimista('contas_pagar', 'c1', '2026-01-01T00:00:00Z', { descricao: 'novo' })
-    ).resolves.toBeUndefined();
+  it('atualiza quando a versão vista ainda é a atual e devolve a nova versão', async () => {
+    const novaVersao = await updateComLockOtimista('contas_pagar', 'c1', '2026-01-01T00:00:00Z', {
+      descricao: 'novo',
+    });
+    expect(typeof novaVersao).toBe('string');
     expect(store.get('contas_pagar')?.get('c1')?.descricao).toBe('novo');
+    expect(store.get('contas_pagar')?.get('c1')?.updated_at).toBe(novaVersao);
   });
 
   it('rejeita com ConflitoVersaoError quando a linha mudou desde a leitura', async () => {
@@ -125,9 +127,10 @@ describe('updateComLockOtimista', () => {
       'contas_receber',
       new Map([['r1', { id: 'r1', descricao: 'legada', updated_at: null }]])
     );
-    await expect(
-      updateComLockOtimista('contas_receber', 'r1', null, { descricao: 'usuario-A' })
-    ).resolves.toBeUndefined();
+    const versaoA = await updateComLockOtimista('contas_receber', 'r1', null, {
+      descricao: 'usuario-A',
+    });
+    expect(store.get('contas_receber')?.get('r1')?.updated_at).toBe(versaoA);
     // Depois do primeiro write a linha ganhou updated_at — lock com null falha.
     await expect(
       updateComLockOtimista('contas_receber', 'r1', null, { descricao: 'usuario-B' })
