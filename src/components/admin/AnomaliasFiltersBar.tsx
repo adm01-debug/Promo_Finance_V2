@@ -1,7 +1,7 @@
-import { ArrowUpDown, Filter, RotateCcw } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ArrowUpDown, Filter, RotateCcw } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,28 +9,26 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
+} from '@/components/ui/select';
+import { SavedFiltersBar } from '@/components/shared/SavedFiltersBar';
 import {
   AdvancedSearchPopover,
   type SearchSuggestion,
   type SeverityPreview,
-} from "@/components/shared/AdvancedSearchPopover";
-import {
-  ViewExportButton,
-  type ViewExportColumn,
-} from "@/components/shared/ViewExportButton";
-import { ColumnVisibilityMenu } from "@/components/shared/ColumnVisibilityMenu";
-import { mergeLockedColumns } from "@/components/shared/ColumnVisibilityMenu.utils";
-import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
+} from '@/components/shared/AdvancedSearchPopover';
+import { ViewExportButton, type ViewExportColumn } from '@/components/shared/ViewExportButton';
+import { ColumnVisibilityMenu } from '@/components/shared/ColumnVisibilityMenu';
+import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu.utils';
+import type { SavedFilterPayload } from '@/hooks/useSavedFilters';
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
+import type { ReaberturaInfo } from '@/hooks/useAnomaliasReabertasIndex';
 import {
   COLUNAS,
   ENTITY_TYPE,
@@ -39,13 +37,13 @@ import {
   TIPOS,
   TIPO_LABEL,
   type AnomaliaFilters,
-} from "./AnomaliasDetectadasPanel.helpers";
+} from './AnomaliasDetectadasPanel.helpers';
 
 export interface AnomaliasFiltersBarProps {
   filters: AnomaliaFilters;
   setFilters: React.Dispatch<React.SetStateAction<AnomaliaFilters>>;
-  sort: { key: string; dir: "asc" | "desc" };
-  setSort: React.Dispatch<React.SetStateAction<{ key: string; dir: "asc" | "desc" }>>;
+  sort: { key: string; dir: 'asc' | 'desc' };
+  setSort: React.Dispatch<React.SetStateAction<{ key: string; dir: 'asc' | 'desc' }>>;
   visibleCols: string[];
   setVisibleCols: (cols: string[]) => void;
   searchTerm: string;
@@ -59,7 +57,7 @@ export interface AnomaliasFiltersBarProps {
   searchSuggestions: SearchSuggestion[];
   scopeLabel: string;
   activeFilterCount: number;
-  reabertasIndex: unknown;
+  reabertasIndex: Map<string, ReaberturaInfo> | undefined;
   exportRows: Anomalia[];
   exportColumns: ViewExportColumn<Anomalia>[];
   exportMeta: {
@@ -107,8 +105,7 @@ export function AnomaliasFiltersBar({
         onRestoreState={({ presetId, payload }) => {
           setFilters((f) => ({ ...f, ...payload.filters }));
           if (payload.sort) setSort(payload.sort);
-          if (payload.columns)
-            setVisibleCols(mergeLockedColumns(payload.columns, COLUNAS));
+          if (payload.columns) setVisibleCols(mergeLockedColumns(payload.columns, COLUNAS));
           setActivePresetId(presetId);
         }}
       />
@@ -125,9 +122,7 @@ export function AnomaliasFiltersBar({
 
       <Select
         value={filters.status}
-        onValueChange={(v) =>
-          setFilters((f) => ({ ...f, status: v as AnomaliaFilters["status"] }))
-        }
+        onValueChange={(v) => setFilters((f) => ({ ...f, status: v as AnomaliaFilters['status'] }))}
       >
         <SelectTrigger className="w-36 h-9">
           <SelectValue />
@@ -163,9 +158,7 @@ export function AnomaliasFiltersBar({
               onCheckedChange={(v) =>
                 setFilters((f) => ({
                   ...f,
-                  severidades: v
-                    ? [...f.severidades, s]
-                    : f.severidades.filter((x) => x !== s),
+                  severidades: v ? [...f.severidades, s] : f.severidades.filter((x) => x !== s),
                 }))
               }
               onSelect={(e) => e.preventDefault()}
@@ -214,9 +207,7 @@ export function AnomaliasFiltersBar({
         <Input
           type="date"
           value={filters.periodoInicio}
-          onChange={(e) =>
-            setFilters((f) => ({ ...f, periodoInicio: e.target.value }))
-          }
+          onChange={(e) => setFilters((f) => ({ ...f, periodoInicio: e.target.value }))}
           className="h-9 w-36"
           aria-label="Período início"
         />
@@ -224,9 +215,7 @@ export function AnomaliasFiltersBar({
         <Input
           type="date"
           value={filters.periodoFim}
-          onChange={(e) =>
-            setFilters((f) => ({ ...f, periodoFim: e.target.value }))
-          }
+          onChange={(e) => setFilters((f) => ({ ...f, periodoFim: e.target.value }))}
           className="h-9 w-36"
           aria-label="Período fim"
         />
@@ -234,12 +223,10 @@ export function AnomaliasFiltersBar({
 
       <Button
         type="button"
-        variant={filters.apenasReabertas ? "default" : "outline"}
+        variant={filters.apenasReabertas ? 'default' : 'outline'}
         size="sm"
         className="gap-1.5"
-        onClick={() =>
-          setFilters((f) => ({ ...f, apenasReabertas: !f.apenasReabertas }))
-        }
+        onClick={() => setFilters((f) => ({ ...f, apenasReabertas: !f.apenasReabertas }))}
         aria-pressed={filters.apenasReabertas}
         title="Mostrar apenas anomalias que já foram reabertas"
       >
@@ -274,9 +261,9 @@ export function AnomaliasFiltersBar({
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem
-            checked={sort.dir === "desc"}
+            checked={sort.dir === 'desc'}
             onCheckedChange={() =>
-              setSort((s) => ({ ...s, dir: s.dir === "asc" ? "desc" : "asc" }))
+              setSort((s) => ({ ...s, dir: s.dir === 'asc' ? 'desc' : 'asc' }))
             }
             onSelect={(e) => e.preventDefault()}
           >
@@ -285,11 +272,7 @@ export function AnomaliasFiltersBar({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ColumnVisibilityMenu
-        columns={COLUNAS}
-        visible={visibleCols}
-        onChange={setVisibleCols}
-      />
+      <ColumnVisibilityMenu columns={COLUNAS} visible={visibleCols} onChange={setVisibleCols} />
 
       <ViewExportButton
         filename="anomalias_visualizacao"
@@ -301,8 +284,8 @@ export function AnomaliasFiltersBar({
 
       {activeFilterCount > 0 && (
         <Badge variant="outline" className="h-7 px-2">
-          {activeFilterCount} filtro{activeFilterCount > 1 ? "s" : ""} ativo
-          {activeFilterCount > 1 ? "s" : ""}
+          {activeFilterCount} filtro{activeFilterCount > 1 ? 's' : ''} ativo
+          {activeFilterCount > 1 ? 's' : ''}
         </Badge>
       )}
     </div>

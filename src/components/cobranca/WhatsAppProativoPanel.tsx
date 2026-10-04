@@ -98,7 +98,7 @@ export function WhatsAppProativoPanel() {
       if (error) throw error;
       if (data?.whatsapp_link) {
         window.open(data.whatsapp_link, '_blank');
-        setSentIds(prev => new Set(prev).add(idx));
+        setSentIds((prev) => new Set(prev).add(idx));
         toast.success(`Mensagem gerada para ${alerta.cliente_nome}`);
       }
     } catch (e: unknown) {
@@ -119,9 +119,10 @@ export function WhatsAppProativoPanel() {
   };
 
   const toggleSelect = (idx: number) => {
-    setSelectedIds(prev => {
+    setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx); else next.add(idx);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
       return next;
     });
   };
@@ -135,15 +136,15 @@ export function WhatsAppProativoPanel() {
   };
 
   const salvarEdicao = (idx: number) => {
-    setAlertas(prev => prev.map((a, i) => i === idx ? { ...a, mensagem: editText } : a));
+    setAlertas((prev) => prev.map((a, i) => (i === idx ? { ...a, mensagem: editText } : a)));
     setEditingIdx(null);
     toast.success('Mensagem editada');
   };
 
   const resumo = {
-    vencimento: alertas.filter(a => a.tipo === 'vencimento').length,
-    inadimplencia: alertas.filter(a => a.tipo === 'inadimplencia').length,
-    alta: alertas.filter(a => a.prioridade === 'alta').length,
+    vencimento: alertas.filter((a) => a.tipo === 'vencimento').length,
+    inadimplencia: alertas.filter((a) => a.tipo === 'inadimplencia').length,
+    alta: alertas.filter((a) => a.prioridade === 'alta').length,
   };
 
   return (
@@ -158,7 +159,9 @@ export function WhatsAppProativoPanel() {
               </div>
               <div>
                 <CardTitle className="text-lg">Cobranças Proativas via WhatsApp</CardTitle>
-                <CardDescription>IA analisa inadimplência e gera mensagens personalizadas</CardDescription>
+                <CardDescription>
+                  IA analisa inadimplência e gera mensagens personalizadas
+                </CardDescription>
               </div>
             </div>
             <Button
@@ -191,7 +194,10 @@ export function WhatsAppProativoPanel() {
                   </Badge>
                 )}
                 {resumo.vencimento > 0 && (
-                  <Badge className="gap-1 bg-warning/10 text-warning border-warning/20" variant="outline">
+                  <Badge
+                    className="gap-1 bg-warning/10 text-warning border-warning/20"
+                    variant="outline"
+                  >
                     <Clock className="h-3 w-3" />
                     {resumo.vencimento} a vencer
                   </Badge>
@@ -258,15 +264,22 @@ export function WhatsAppProativoPanel() {
                             {prioridade.label}
                           </Badge>
                           {isSent && (
-                            <Badge className="gap-1 bg-success/10 text-success border-success/20" variant="outline">
+                            <Badge
+                              className="gap-1 bg-success/10 text-success border-success/20"
+                              variant="outline"
+                            >
                               <CheckCircle2 className="h-3 w-3" />
                               Enviado
                             </Badge>
                           )}
                         </div>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          {dados.valor && <span className="font-medium">{formatCurrency(Number(dados.valor))}</span>}
-                          {dados.dias_atraso && (
+                          {Boolean(dados.valor) && (
+                            <span className="font-medium">
+                              {formatCurrency(Number(dados.valor))}
+                            </span>
+                          )}
+                          {Boolean(dados.dias_atraso) && (
                             <Badge variant="destructive" className="text-[10px] h-4 px-1">
                               {String(dados.dias_atraso)}d atraso
                             </Badge>
@@ -283,8 +296,12 @@ export function WhatsAppProativoPanel() {
                             className="text-sm min-h-[80px]"
                           />
                           <div className="flex gap-2">
-                            <Button size="sm" onClick={() => salvarEdicao(idx)}>Salvar</Button>
-                            <Button size="sm" variant="ghost" onClick={() => setEditingIdx(null)}>Cancelar</Button>
+                            <Button size="sm" onClick={() => salvarEdicao(idx)}>
+                              Salvar
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => setEditingIdx(null)}>
+                              Cancelar
+                            </Button>
                           </div>
                         </div>
                       ) : (
@@ -318,7 +335,9 @@ export function WhatsAppProativoPanel() {
                           )}
                           {isSent ? 'Reenviar' : 'Abrir WhatsApp'}
                         </Button>
-                        <span className="text-xs text-muted-foreground">📱 {alerta.cliente_telefone}</span>
+                        <span className="text-xs text-muted-foreground">
+                          📱 {alerta.cliente_telefone}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -336,7 +355,8 @@ export function WhatsAppProativoPanel() {
             <MessageSquare className="h-16 w-16 mx-auto mb-4 text-muted-foreground/20" />
             <h3 className="font-semibold text-lg mb-1">Nenhum alerta gerado</h3>
             <p className="text-muted-foreground text-sm max-w-md mx-auto">
-              Clique em "Analisar & Gerar Mensagens" para que a IA identifique clientes com contas próximas ao vencimento ou inadimplentes e gere mensagens personalizadas de cobrança.
+              Clique em "Analisar & Gerar Mensagens" para que a IA identifique clientes com contas
+              próximas ao vencimento ou inadimplentes e gere mensagens personalizadas de cobrança.
             </p>
           </CardContent>
         </Card>

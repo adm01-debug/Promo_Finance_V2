@@ -145,12 +145,10 @@ export function ProjecaoConformidadeCard({
                       fontSize: 12,
                     }}
                     labelFormatter={(v: string) => `Competência ${v}`}
-                    formatter={(valor: number | null, nome: string) => {
-                      if (valor === null || nome === 'minimo' || nome === 'banda') return [];
-                      return [
-                        valor.toFixed(1),
-                        nome === 'observado' ? 'Observado' : 'Projetado',
-                      ];
+                    formatter={(valor, nome) => {
+                      if (typeof valor !== 'number' || nome === 'minimo' || nome === 'banda')
+                        return [];
+                      return [valor.toFixed(1), nome === 'observado' ? 'Observado' : 'Projetado'];
                     }}
                   />
                   <ReferenceLine
@@ -196,7 +194,10 @@ export function ProjecaoConformidadeCard({
 
             {projecao.competenciaCritica ? (
               <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" aria-hidden="true" />
+                <AlertTriangle
+                  className="mt-0.5 h-4 w-4 shrink-0 text-destructive"
+                  aria-hidden="true"
+                />
                 <p className="text-sm text-destructive">
                   A projeção cruza o limiar de {LIMIAR_ALERTA} pontos na competência{' '}
                   {projecao.competenciaCritica}. Antecipe as entregas pendentes para evitar multas.

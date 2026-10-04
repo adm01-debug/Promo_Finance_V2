@@ -8,7 +8,10 @@ export interface FluxoCaixaRow {
   saldo: number;
 }
 
-export function generateFluxoCaixaPDF(dados: FluxoCaixaRow[], titulo: string = 'Fluxo de Caixa'): void {
+export function generateFluxoCaixaPDF(
+  dados: FluxoCaixaRow[],
+  titulo: string = 'Fluxo de Caixa'
+): void {
   const w = openPrintWindow();
   if (!w) return;
 
@@ -26,7 +29,7 @@ export function generateFluxoCaixaPDF(dados: FluxoCaixaRow[], titulo: string = '
       <td class="valor ${d.receitas - d.despesas >= 0 ? 'positivo' : 'negativo'}">${formatCurrency(d.receitas - d.despesas)}</td>
       <td class="valor ${d.saldo >= 0 ? 'positivo' : 'negativo'}">${formatCurrency(d.saldo)}</td>
     </tr>
-  `,
+  `
     )
     .join('');
 
@@ -70,7 +73,6 @@ export function generateFluxoCaixaPDF(dados: FluxoCaixaRow[], titulo: string = '
         <tbody>${rows}</tbody>
       </table>
 
-      <script>window.onload = function() { window.print(); };</script>
     </body>
     </html>
   `;

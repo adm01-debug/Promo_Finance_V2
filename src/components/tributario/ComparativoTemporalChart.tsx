@@ -49,10 +49,7 @@ export function ComparativoTemporalChart({
   const [janela, setJanela] = useState<number>(12);
   const [mostrarMedia, setMostrarMedia] = useState(true);
 
-  const comparativo = useMemo(
-    () => montarComparativoTemporal(series, janela),
-    [series, janela],
-  );
+  const comparativo = useMemo(() => montarComparativoTemporal(series, janela), [series, janela]);
 
   const baixarCsv = () => {
     const conteudo = exportarComparativoTemporalCsv(comparativo);
@@ -121,7 +118,10 @@ export function ComparativoTemporalChart({
         ) : (
           <div className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={comparativo.dados as never[]} margin={{ top: 8, right: 16, bottom: 0, left: -16 }}>
+              <LineChart
+                data={comparativo.dados as never[]}
+                margin={{ top: 8, right: 16, bottom: 0, left: -16 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="rotulo"
@@ -144,8 +144,8 @@ export function ComparativoTemporalChart({
                     color: 'hsl(var(--popover-foreground))',
                     fontSize: 12,
                   }}
-                  formatter={(valor: number | null, nome: string) => [
-                    valor === null || valor === undefined ? 'sem dados' : `${Number(valor).toFixed(1)} pts`,
+                  formatter={(valor, nome) => [
+                    typeof valor !== 'number' ? 'sem dados' : `${valor.toFixed(1)} pts`,
                     nome,
                   ]}
                 />

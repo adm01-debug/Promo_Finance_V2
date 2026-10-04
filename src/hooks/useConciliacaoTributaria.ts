@@ -1,4 +1,3 @@
-
 // Cruza NF-e emitidas/recebidas vs cálculos tributários
 
 import { useState, useMemo } from 'react';
@@ -36,9 +35,7 @@ export interface ResumoConciliacao {
 export function useConciliacaoTributaria(empresaId?: string, competencia?: string) {
   const [isAnalisando, setIsAnalisando] = useState(false);
   const [divergencias, setDivergencias] = useState<DiferencaConciliacao[]>([]);
-  const empresaValida = Boolean(
-    empresaId && !['todas', 'all', 'default'].includes(empresaId)
-  );
+  const empresaValida = Boolean(empresaId && !['todas', 'all', 'default'].includes(empresaId));
 
   // Buscar notas fiscais
   const { data: notasFiscais } = useQuery({
@@ -56,7 +53,7 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   // Buscar apurações
@@ -75,7 +72,7 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   // Buscar créditos
@@ -94,31 +91,33 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   // Executar análise de conciliação
   const executarConciliacao = useMutation({
     mutationFn: async (config: { ano: number; mes: number }) => {
-      if (!empresaValida) throw new Error('Selecione uma empresa válida antes de executar a conciliação');
+      if (!empresaValida)
+        throw new Error('Selecione uma empresa válida antes de executar a conciliação');
       setIsAnalisando(true);
       const novasDivergencias: DiferencaConciliacao[] = [];
       const { ano, mes } = config;
       const competenciaStr = `${ano}-${String(mes).padStart(2, '0')}`;
 
       // Obter alíquotas do ano
-      const aliquotas = ALIQUOTAS_TRANSICAO.find(a => a.ano === ano) || ALIQUOTAS_TRANSICAO[0];
+      const aliquotas = ALIQUOTAS_TRANSICAO.find((a) => a.ano === ano) || ALIQUOTAS_TRANSICAO[0];
 
       // Filtrar NFs do período
-      const nfsDoPerido = notasFiscais?.filter(nf => {
-        const dataNf = new Date(nf.data_emissao);
-        return dataNf.getFullYear() === ano && dataNf.getMonth() + 1 === mes;
-      }) || [];
+      const nfsDoPerido =
+        notasFiscais?.filter((nf) => {
+          const dataNf = new Date(nf.data_emissao ?? '');
+          return dataNf.getFullYear() === ano && dataNf.getMonth() + 1 === mes;
+        }) || [];
 
       // Calcular totais esperados das NF-e
       let totalCBSEsperado = 0;
 
-      nfsDoPerido.forEach(nf => {
+      nfsDoPerido.forEach((nf) => {
         const baseCalculo = nf.valor_total || 0;
         const cbsCalculado = baseCalculo * (aliquotas.cbs / 100);
         const ibsCalculado = baseCalculo * (aliquotas.ibs / 100);
@@ -131,15 +130,17 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
           novasDivergencias.push({
             id: `nfe-tributos-${nf.id}`,
             tipo: 'nfe',
-            documento: nf.numero,
+            documento: nf.numero ?? '',
             competencia: competenciaStr,
             descricao: `Tributos divergentes na NF-e ${nf.numero}`,
             valorEsperado: cbsCalculado + ibsCalculado,
             valorEncontrado: valorICMS,
             diferenca: valorICMS - (cbsCalculado + ibsCalculado),
-            percentualDiferenca: (cbsCalculado + ibsCalculado) > 0 
-              ? ((valorICMS - (cbsCalculado + ibsCalculado)) / (cbsCalculado + ibsCalculado)) * 100 
-              : 0,
+            percentualDiferenca:
+              cbsCalculado + ibsCalculado > 0
+                ? ((valorICMS - (cbsCalculado + ibsCalculado)) / (cbsCalculado + ibsCalculado)) *
+                  100
+                : 0,
             status: 'divergente',
             gravidade: Math.abs(valorICMS - (cbsCalculado + ibsCalculado)) > 100 ? 'alta' : 'media',
             dataIdentificacao: new Date(),
@@ -148,9 +149,9 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
       });
 
       // Verificar apuração do período
-      const apuracaoPeriodo = apuracoes?.find(a => a.competencia === competenciaStr);
+      const apuracaoPeriodo = apuracoes?.find((a) => a.competencia === competenciaStr);
       if (apuracaoPeriodo) {
-        const cbsApuracao = (apuracaoPeriodo.cbs_debitos || 0);
+        const cbsApuracao = apuracaoPeriodo.cbs_debitos || 0;
         if (Math.abs(cbsApuracao - totalCBSEsperado) > 1) {
           novasDivergencias.push({
             id: `apuracao-cbs-${apuracaoPeriodo.id}`,
@@ -161,7 +162,10 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
             valorEsperado: totalCBSEsperado,
             valorEncontrado: cbsApuracao,
             diferenca: cbsApuracao - totalCBSEsperado,
-            percentualDiferenca: totalCBSEsperado > 0 ? ((cbsApuracao - totalCBSEsperado) / totalCBSEsperado) * 100 : 0,
+            percentualDiferenca:
+              totalCBSEsperado > 0
+                ? ((cbsApuracao - totalCBSEsperado) / totalCBSEsperado) * 100
+                : 0,
             status: 'divergente',
             gravidade: Math.abs(cbsApuracao - totalCBSEsperado) > 1000 ? 'critica' : 'alta',
             dataIdentificacao: new Date(),
@@ -170,10 +174,11 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
       }
 
       // Verificar créditos do período
-      const creditosPeriodo = creditos?.filter(c => c.competencia_origem === competenciaStr) || [];
-      
+      const creditosPeriodo =
+        creditos?.filter((c) => c.competencia_origem === competenciaStr) || [];
+
       const totalCreditosCBS = creditosPeriodo
-        .filter(c => c.tipo_tributo === 'CBS')
+        .filter((c) => c.tipo_tributo === 'CBS')
         .reduce((acc, c) => acc + (c.valor_credito || 0), 0);
 
       if (totalCreditosCBS > 0 && Math.abs(totalCreditosCBS - totalCBSEsperado * 0.5) > 100) {
@@ -185,7 +190,7 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
           descricao: `Créditos CBS podem estar inconsistentes com operações`,
           valorEsperado: totalCBSEsperado * 0.5,
           valorEncontrado: totalCreditosCBS,
-          diferenca: totalCreditosCBS - (totalCBSEsperado * 0.5),
+          diferenca: totalCreditosCBS - totalCBSEsperado * 0.5,
           percentualDiferenca: 10,
           status: 'divergente',
           gravidade: 'media',
@@ -203,16 +208,13 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
     onError: (error: Error) => {
       toast.error('Erro na conciliação: ' + error.message);
       setIsAnalisando(false);
-    }
+    },
   });
 
   // Justificar divergência
   const justificarDivergencia = (id: string, justificativa: string) => {
-    setDivergencias(prev => 
-      prev.map(d => d.id === id 
-        ? { ...d, status: 'justificado' as const, justificativa } 
-        : d
-      )
+    setDivergencias((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, status: 'justificado' as const, justificativa } : d))
     );
     toast.success('Divergência justificada');
   };
@@ -230,7 +232,7 @@ export function useConciliacaoTributaria(empresaId?: string, competencia?: strin
       totalDebitos,
       divergenciasEncontradas: divergencias.length,
       valorTotalDivergencias: divergencias.reduce((acc, d) => acc + Math.abs(d.diferenca), 0),
-      percentualAcuracia: Math.max(0, 100 - (divergencias.length * 5)),
+      percentualAcuracia: Math.max(0, 100 - divergencias.length * 5),
     };
   }, [notasFiscais, creditos, divergencias]);
 

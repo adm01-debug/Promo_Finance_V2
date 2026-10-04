@@ -224,7 +224,7 @@ export function useConciliacao() {
         .in('hash_transacao', hashes);
 
       const existingHashes = new Set((existing || []).map((e) => e.hash_transacao));
-      const newRows = rows.filter((r) => !existingHashes.has(r.hash_transacao));
+      const newRows = rows.filter((r) => !existingHashes.has(r.hash_transacao ?? ''));
       const duplicateCount = rows.length - newRows.length;
 
       if (newRows.length === 0) {
