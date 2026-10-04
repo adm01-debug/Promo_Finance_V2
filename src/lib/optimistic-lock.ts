@@ -33,7 +33,7 @@ export async function updateComLockOtimista(
     updatedAtVisto === null
       ? update.is('updated_at', null)
       : update.eq('updated_at', updatedAtVisto)
-  ).select('id');
+  ).select('id, updated_at');
   if (error) throw error;
   if (!data || data.length === 0) {
     // 0 linhas pode ser conflito de versão OU a RLS negando a escrita (o
@@ -48,5 +48,8 @@ export async function updateComLockOtimista(
     if (atual && atual.updated_at !== updatedAtVisto) throw new ConflitoVersaoError();
     throw new Error('Sem permissão para alterar este registro, ou o registro não existe mais.');
   }
-  return novaVersao;
+  // O trigger BEFORE UPDATE (update_updated_at_column) sobrescreve o
+  // updated_at com o relógio do banco — a versão que vale é a devolvida
+  // pelo select, não a que enviamos no patch.
+  return data[0].updated_at ?? novaVersao;
 }

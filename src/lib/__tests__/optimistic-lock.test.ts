@@ -38,7 +38,7 @@ function makeBuilder(tabela: string, patch: Record<string, unknown>) {
         Object.assign(r, patch);
         r.updated_at = bump(); // trigger moddatetime
       });
-      resolve({ data: matched.map((r) => ({ id: r.id })), error: null });
+      resolve({ data: matched.map((r) => ({ id: r.id, updated_at: r.updated_at })), error: null });
     },
   };
   return chain;
