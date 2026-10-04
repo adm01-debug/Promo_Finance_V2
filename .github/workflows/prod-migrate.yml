@@ -199,6 +199,28 @@ jobs:
           fi
           echo "Buckets esperados presentes, privados e com limites/MIME corretos."
 
+      - name: Verificar publicação supabase_realtime em PROD
+        if: '!inputs.dry_run'
+        # db diff (engine legado) não cobre membership de publicação — uma
+        # tabela removida de supabase_realtime em PROD sairia como paridade.
+        # Esperado = união dos ADD TABLE das migrations (incl. EXECUTE
+        # dinâmico); divergência em qualquer direção = erro.
+        run: |
+          set -euo pipefail
+          grep -rhoE "supabase_realtime ADD TABLE public\.[a-z_]+" supabase/migrations/ \
+            | sed 's/.*public\.//' | sort -u > /tmp/realtime-add.txt
+          grep -rhoE "supabase_realtime DROP TABLE public\.[a-z_]+" supabase/migrations/ \
+            | sed 's/.*public\.//' | sort -u > /tmp/realtime-drop.txt || true
+          comm -23 /tmp/realtime-add.txt /tmp/realtime-drop.txt > /tmp/realtime-esperado.txt
+          psql "$PROD_DB_URL" -Atc \
+            "SELECT tablename FROM pg_publication_tables WHERE pubname='supabase_realtime' ORDER BY 1" \
+            > /tmp/realtime-prod.txt
+          if ! diff -u /tmp/realtime-esperado.txt /tmp/realtime-prod.txt; then
+            echo "::error::Publicação supabase_realtime diverge das migrations — revisar artefato."
+            exit 1
+          fi
+          echo "Publicação supabase_realtime em paridade com migrations/."
+
       - name: Upload evidências
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6

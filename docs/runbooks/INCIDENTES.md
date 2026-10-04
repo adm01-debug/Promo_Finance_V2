@@ -25,7 +25,7 @@
 3. **Edge function específica**: o workflow `functions-deploy` publica sempre a ponta de `main` — ele **não** restaura versão anterior sozinho. Rollback real:
    1. `git revert <sha-do-commit-quebrou>` em branch própria → PR → merge em `main`.
    2. Com o revert em `main`, disparar `functions-deploy` (workflow_dispatch, escolher a fn) — agora o código publicado é a versão estável.
-   3. Em emergência sem tempo para PR: commitar o conteúdo anterior do arquivo direto na `main` via UI do GitHub (respeitando branch protection) e disparar o deploy.
+   3. Rollback **nunca** vai direto na `main` — nem via UI: commit sem CI publica uma Edge function não verificada e ainda registra divergência entre git e o que roda em produção. O caminho rápido continua sendo PR: abra o revert na branch `hotfix/revert-<sha>`, use merge admin se a proteção permitir, e dispare o deploy em seguida — o tempo extra são minutos de CI, não horas.
 4. **Migração problemática**: **não** fazer `db push` reverso às cegas — ver runbook HOTFIX e BACKUP_DR antes.
 
 ## 4. Comunicação
