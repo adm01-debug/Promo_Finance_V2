@@ -210,6 +210,7 @@ export function useAlertasTributarios(empresaId?: string) {
         .eq('status', 'gerado');
 
       darfsPendentes?.forEach((darf) => {
+        if (!darf.data_vencimento) return;
         const diasParaVencer = differenceInDays(parseISO(darf.data_vencimento), hoje);
 
         if (diasParaVencer <= 3 && diasParaVencer >= 0) {
@@ -217,7 +218,7 @@ export function useAlertasTributarios(empresaId?: string) {
             empresa_id: empresaId,
             tipo: 'vencimento_darf',
             titulo: `DARF ${darf.codigo_receita} vence em ${diasParaVencer} dias`,
-            mensagem: `DARF de ${darf.descricao_receita} no valor de R$ ${darf.valor_total.toFixed(2)} vence em ${format(parseISO(darf.data_vencimento), 'dd/MM/yyyy')}`,
+            mensagem: `DARF de ${darf.descricao_receita} no valor de R$ ${(darf.valor_total ?? 0).toFixed(2)} vence em ${format(parseISO(darf.data_vencimento), 'dd/MM/yyyy')}`,
             prioridade: diasParaVencer === 0 ? 'critica' : diasParaVencer === 1 ? 'alta' : 'media',
             data_vencimento: darf.data_vencimento,
             entidade_tipo: 'darf',
@@ -268,7 +269,7 @@ export function useAlertasTributarios(empresaId?: string) {
             prioridade: diasParaExpirar <= 30 ? 'alta' : 'media',
             entidade_tipo: 'credito',
             entidade_id: credito.id,
-            competencia: credito.competencia_origem,
+            competencia: credito.competencia_origem ?? undefined,
             acao_url: '/reforma-tributaria?tab=creditos',
             acao_label: 'Ver Créditos',
           });
