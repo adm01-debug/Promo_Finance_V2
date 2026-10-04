@@ -115,12 +115,17 @@ jobs:
             echo "::error::supabase db diff falhou — paridade não verificada. Revisar artefato."
             exit 1
           fi
-          # Qualquer saída real (CREATE/ALTER/DROP/GRANT/REVOKE) é divergência;
-          # só comentários e linhas vazias significam paridade.
-          if grep -qvE '^\s*($|--)' /tmp/prod-diff-pos.sql; then
+          # O CLI mistura logs operacionais ("Creating shadow database",
+          # "No schema changes found") com o DDL no stdout. Statement de
+          # verdade = divergência; o marcador do próprio CLI = paridade;
+          # nem um nem outro = não podemos afirmar nada — falha por segurança.
+          if grep -qiE '^\s*(create|alter|drop|grant|revoke|insert into|update |delete from|comment on|truncate )\b' /tmp/prod-diff-pos.sql; then
             echo "::warning::Ainda há diff entre migrations/ e PROD — revisar artefato."
-          else
+          elif grep -qi 'no schema changes' /tmp/prod-diff-pos.sql; then
             echo "PROD em paridade com supabase/migrations/ (schemas: public, storage)."
+          else
+            echo "::error::db diff não retornou DDL nem marcador de paridade — revisar artefato."
+            exit 1
           fi
 
       - name: Verificar buckets esperados em PROD
@@ -129,8 +134,9 @@ jobs:
         # storage.buckets nas migrations precisam de verificação explícita.
         run: |
           set -euo pipefail
-          # Buckets criados por migrations versionadas deste repo.
-          ESPERADOS=(financeiro)
+          # Buckets criados por migrations versionadas deste repo
+          # ('uploads' existe só comentado numa migration — não é esperado).
+          ESPERADOS=(financeiro nfe-certificados nfe-xml notas-fiscais-upload relatorios-tributarios)
           for bucket in "${ESPERADOS[@]}"; do
             EXISTE=$(psql "$PROD_DB_URL" -Atc \
               "SELECT count(*) FROM storage.buckets WHERE id = '$bucket'")

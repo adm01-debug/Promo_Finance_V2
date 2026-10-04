@@ -4,13 +4,13 @@
 
 ## Onde vive cada segredo
 
-| Local                               | O que                                                                                                                                 | Como trocar                                                                                                   |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Supabase > Edge Functions > Secrets | `ASAAS_*`, `BLING_*`, `BITRIX24_*`, `SEFAZ_CRON_SECRET`, `N8N_*`, `MCP_*`, `OPEN_FINANCE_*`, `ALLOWED_ORIGINS`, `NFE_CERT_MASTER_KEY` | Dashboard do projeto `bwwbeyolnnzppeuhgkcd` > Edge Functions > Manage Secrets — valor novo vale imediatamente |
-| GitHub repo Secrets                 | `SUPABASE_ACCESS_TOKEN`, `PROD_DB_URL`, `STAGING_*`, `TEST_ADMIN_JWT`, tokens de CI                                                   | Settings > Secrets and variables > Actions                                                                    |
-| GitHub repo Variables               | `PROD_PROJECT_REF`, `REQUIRED_SECRETS`                                                                                                | Settings > Secrets and variables > Actions > Variables                                                        |
-| Vercel env vars                     | `VITE_SUPABASE_*`, chaves públicas                                                                                                    | Vercel > project > Settings > Environment Variables → redeploy                                                |
-| .env local                          | desenvolvimento                                                                                                                       | `cp .env.example .env` e preencher                                                                            |
+| Local                               | O que                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Como trocar                                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Supabase > Edge Functions > Secrets | `ASAAS_API_KEY`, `ASAAS_WEBHOOK_TOKEN`, `BLING_CLIENT_ID`, `BLING_CLIENT_SECRET`, `BITRIX24_ACCESS_TOKEN`, `BITRIX24_CLIENT_ID`, `BITRIX24_CLIENT_SECRET`, `BITRIX24_DOMAIN`, `CNPJA_API_KEY`, `CRON_DISPATCH_SECRET`, `LOVABLE_API_KEY`, `MAPBOX_ACCESS_TOKEN`, `MFA_ADMIN_ENFORCED`, `N8N_DISPATCH_SECRET`, `NFE_CERT_MASTER_KEY`, `OPENAI_API_KEY`, `OPEN_FINANCE_CLIENT_ID`, `OPEN_FINANCE_REDIRECT_URI`, `REGUA_CRON_SECRET`, `RESEND_API_KEY`, `RESEND_FROM`, `SCHEMA_COMPARE_EXTERNAL_*`, `SEFAZ_CRON_SECRET`, `SLACK_WEBHOOK_URL`, `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY`, `APP_BASE_URL`, `APP_PUBLIC_URL`, `PUBLIC_APP_URL`, `EXTERNAL_SUPABASE_*`, `ALLOWED_ORIGINS` | Dashboard do projeto `bwwbeyolnnzppeuhgkcd` > Edge Functions > Manage Secrets — valor novo vale imediatamente |
+| GitHub repo Secrets                 | `SUPABASE_ACCESS_TOKEN`, `PROD_DB_URL`, `STAGING_*`, `TEST_ADMIN_JWT`, tokens de CI                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Settings > Secrets and variables > Actions                                                                    |
+| GitHub repo Variables               | `PROD_PROJECT_REF`, `REQUIRED_SECRETS`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Settings > Secrets and variables > Actions > Variables                                                        |
+| Vercel env vars                     | `VITE_SUPABASE_*`, chaves públicas                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Vercel > project > Settings > Environment Variables → redeploy                                                |
+| .env local                          | desenvolvimento                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `cp .env.example .env` e preencher                                                                            |
 
 > **`SUPABASE_SERVICE_ROLE_KEY` não está na tabela de Edge Secrets**: nomes com prefixo `SUPABASE_` são reservados e a tela de Manage Secrets os rejeita — a service role é injetada pela plataforma. A rotação dela se faz em **Dashboard > Settings > API Keys** (novo formato `sb_secret_...`): gerar a nova key, atualizar `SUPABASE_SERVICE_ROLE_KEY` nos secrets dos workflows/GitHub e nas edge functions que a leem do ambiente, validar e só então revogar a antiga. A senha do Postgres do `PROD_DB_URL` roda em Settings > Database.
 
@@ -23,12 +23,14 @@
 5. Revogar o valor antigo no provedor.
 6. Registrar na tabela de rotação abaixo.
 
-## Caso especial: `NFE_CERT_MASTER_KEY` (rotação com recriptografia)
+## Caso especial: `NFE_CERT_MASTER_KEY` (rotação com recriptografia, sem janela)
 
-Esta chave criptografa `empresas_certificados.password_encrypted` via `pgp_sym_encrypt`/`pgp_sym_decrypt` — trocar só o valor do secret torna todas as senhas de certificados já cadastrados indecifráveis e quebra os fluxos SEFAZ. Procedimento correto:
+Esta chave criptografa `empresas_certificados.password_encrypted` via `pgp_sym_encrypt`/`pgp_sym_decrypt` — trocar só o valor do secret torna todas as senhas de certificados já cadastrados indecifráveis e quebra os fluxos SEFAZ. O decrypt das edge fns tem **fallback duplo**: tenta `NFE_CERT_MASTER_KEY` e, falhando, `NFE_CERT_MASTER_KEY_PREV` — é isso que elimina a janela entre recriptografia e troca do secret. Ordem correta:
 
-1. Gerar a chave nova (`openssl rand -hex 32`) e anotar a **antiga** (ela fica em uso até o fim).
-2. Recriptografar todos os registros **antes** de trocar o secret, via SQL no projeto `bwwbeyolnnzppeuhgkcd` (Editor SQL ou `db_query`):
+1. Gerar a chave nova (`openssl rand -hex 32`) e anotar a **antiga**.
+2. Criar o secret `NFE_CERT_MASTER_KEY_PREV` = **chave antiga** (Edge Functions > Manage Secrets).
+3. Atualizar `NFE_CERT_MASTER_KEY` = **chave nova**. A partir daqui as linhas antigas decryptam via `PREV` — nenhum fluxo cai.
+4. Recriptografar todos os registros, via SQL no projeto `bwwbeyolnnzppeuhgkcd` (Editor SQL ou `db_query`):
    ```sql
    UPDATE empresas_certificados
    SET password_encrypted = extensions.pgp_sym_encrypt(
@@ -36,9 +38,11 @@ Esta chave criptografa `empresas_certificados.password_encrypted` via `pgp_sym_e
      'CHAVE_NOVA'
    );
    ```
-3. Atualizar o secret `NFE_CERT_MASTER_KEY` (Edge Functions > Manage Secrets).
-4. Validar: baixar/abrir um certificado existente via app (nfe-upload-certificado usa a chave no `pgp_sym_decrypt`).
-5. Só então descartar a chave antiga — guardá-la fora de prod até a validação.
+   Agora todas as linhas abrem com a chave nova na primeira tentativa.
+5. Validar: baixar/abrir um certificado existente via app e subir um novo (o encrypt sempre usa a chave nova).
+6. Só então **remover** o secret `NFE_CERT_MASTER_KEY_PREV` e descartar a chave antiga de qualquer lugar — guardá-la fora de prod até a validação.
+
+> Se `NFE_CERT_MASTER_KEY_PREV` ficar configurado por engano, linhas antigas continuam funcionando — aceitável temporariamente, mas a remoção é obrigatória para a rotação valer de fato.
 
 ## Vazamento (urgente)
 
