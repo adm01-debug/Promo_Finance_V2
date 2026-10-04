@@ -111,11 +111,9 @@ export const handler = async (req: Request) => {
       });
     }
 
-    const inativa = respostaIntegracaoDesativada('asaas', corsHeaders);
-    if (inativa) return inativa;
-
-    // Só revela indisponibilidade da integração depois de autenticar e autorizar
-    // o usuário, evitando exposição de configuração interna a chamadas anônimas.
+    // O kill-switch roda DEPOIS do vínculo empresa↔usuário: um 503 aqui
+    // vazaria o estado da integração para quem tem papel mas não acesso
+    // ao recurso da empresa em questão.
     const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY');
     if (!ASAAS_API_KEY) {
       throw new Error('Integração ASAAS indisponível');
@@ -129,6 +127,19 @@ export const handler = async (req: Request) => {
     }
 
     const { action, data } = validation.data;
+
+    // Ações globais não passam por exigirEmpresaDoRecurso — o kill-switch
+    // delas acontece aqui, já após autenticação e papel admin/financeiro.
+    const ACOES_SEM_ESCOPO_EMPRESA = new Set([
+      'consultar_saldo',
+      'processar_fila_sincronizacao',
+      'simular_backoff',
+      'analisar_risco_cliente',
+    ]);
+    if (ACOES_SEM_ESCOPO_EMPRESA.has(action)) {
+      const inativaGlobal = respostaIntegracaoDesativada('asaas', corsHeaders);
+      if (inativaGlobal) return inativaGlobal;
+    }
 
     const ok = (result: any) =>
       new Response(JSON.stringify(result), {
@@ -193,7 +204,9 @@ export const handler = async (req: Request) => {
       if (!empresaId) return err('Recurso não encontrado', 404);
       const vinculo = await exigirVinculoEmpresa(user.id, empresaId, req);
       if (!vinculo.ok) return vinculo.resposta;
-      return null;
+      // Kill-switch pós-escopo: só quem tem vínculo com a empresa do recurso
+      // descobre que a integração está desativada.
+      return respostaIntegracaoDesativada('asaas', corsHeaders);
     };
 
     let result: any;
