@@ -140,10 +140,9 @@ export function useAsaas(empresaId?: string) {
         .order('created_at', { ascending: false });
       if (error) throw error;
 
-      type PaymentRow = { clientes?: { razao_social?: string; cpf_cnpj?: string } | null } & Record<
-        string,
-        unknown
-      >;
+      type PaymentRow = {
+        clientes?: { razao_social?: string | null; cpf_cnpj?: string | null } | null;
+      } & Record<string, unknown>;
       return (data || []).map((p: PaymentRow) => ({
         ...p,
         sacado_nome: p.clientes?.razao_social,
@@ -340,16 +339,14 @@ export function useAsaas(empresaId?: string) {
         ...((current?.configuracoes as Record<string, unknown> | null) || {}),
         ...payload,
       } as Record<string, unknown>;
-      const { error } = await supabase
-        .from('asaas_config')
-        .upsert(
-          {
-            empresa_id: empresaId,
-            configuracoes: mergedConfig as never,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'empresa_id' }
-        );
+      const { error } = await supabase.from('asaas_config').upsert(
+        {
+          empresa_id: empresaId,
+          configuracoes: mergedConfig as never,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'empresa_id' }
+      );
       if (error) throw error;
     },
     onSuccess: () => {
