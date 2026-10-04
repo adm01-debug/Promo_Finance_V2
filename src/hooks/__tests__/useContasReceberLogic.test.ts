@@ -203,7 +203,7 @@ describe('useContasReceberLogic - KPI calculation', () => {
 
     it('calcula datas de vencimento mensais', () => {
       const baseDate = parseLocalDate('2025-03-15');
-      const parcelas = [];
+      const parcelas: string[] = [];
       for (let i = 0; i < 3; i++) {
         const venc = new Date(baseDate);
         venc.setMonth(venc.getMonth() + i);

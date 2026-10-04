@@ -215,7 +215,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
           // Auto-validação de consistência
           return (data || []).map((c) => {
             if (c.score_confianca === null || c.score_confianca === 100) {
-              const v = validarConsistenciaNcmCst(c.ncm, c.cst_csosn);
+              const v = validarConsistenciaNcmCst(c.ncm ?? '', c.cst_csosn ?? '');
               return {
                 ...c,
                 score_confianca: v.score,

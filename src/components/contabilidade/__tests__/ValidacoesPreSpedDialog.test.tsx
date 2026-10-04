@@ -14,9 +14,9 @@ function makeArquivo(overrides: Partial<ValidacoesPreSpedArquivo> = {}): Validac
 }
 
 describe('ValidacoesPreSpedDialog — bloqueio de download por erros', () => {
-  let onDownloadTxt: ReturnType<typeof vi.fn>;
-  let onDownloadZip: ReturnType<typeof vi.fn>;
-  let onOpenChange: ReturnType<typeof vi.fn>;
+  let onDownloadTxt: () => void;
+  let onDownloadZip: () => void;
+  let onOpenChange: (v: boolean) => void;
 
   beforeEach(() => {
     onDownloadTxt = vi.fn();
@@ -38,7 +38,7 @@ describe('ValidacoesPreSpedDialog — bloqueio de download por erros', () => {
         })}
         onDownloadTxt={onDownloadTxt}
         onDownloadZip={onDownloadZip}
-      />,
+      />
     );
 
     const btnTxt = screen.getByTestId('btn-download-txt');
@@ -81,12 +81,15 @@ describe('ValidacoesPreSpedDialog — bloqueio de download por erros', () => {
           status: 'gerado',
           validacoes: {
             erros: [],
-            avisos: ['Plano de contas com 3 contas inativas', 'Período tem feriados não conciliados'],
+            avisos: [
+              'Plano de contas com 3 contas inativas',
+              'Período tem feriados não conciliados',
+            ],
           },
         })}
         onDownloadTxt={onDownloadTxt}
         onDownloadZip={onDownloadZip}
-      />,
+      />
     );
 
     const btnTxt = screen.getByTestId('btn-download-txt');
@@ -116,7 +119,7 @@ describe('ValidacoesPreSpedDialog — bloqueio de download por erros', () => {
         arquivo={makeArquivo({ validacoes: { erros: [], avisos: [] } })}
         onDownloadTxt={onDownloadTxt}
         onDownloadZip={onDownloadZip}
-      />,
+      />
     );
 
     expect(screen.getByTestId('btn-download-txt')).toBeEnabled();
@@ -133,7 +136,7 @@ describe('ValidacoesPreSpedDialog — bloqueio de download por erros', () => {
         arquivo={null}
         onDownloadTxt={onDownloadTxt}
         onDownloadZip={onDownloadZip}
-      />,
+      />
     );
     expect(container).toBeEmptyDOMElement();
   });

@@ -288,7 +288,7 @@ describe('useContasPagarPaginated', () => {
   });
 
   it('propaga erro quando a query de count falha', async () => {
-    nextResponses.push({ count: null, data: null, error: new Error('count-fail') });
+    nextResponses.push({ count: undefined, data: null, error: new Error('count-fail') });
     nextResponses.push({ data: [], error: null });
 
     const { result } = renderHook(() => useContasPagarPaginated({ page: 1, pageSize: 10 }), {

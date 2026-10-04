@@ -33,7 +33,9 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
         const parsed = JSON.parse(raw) as { ano?: number };
         if (typeof parsed.ano === 'number' && parsed.ano >= 2010) return parsed.ano;
       }
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
     return new Date().getFullYear() - 1;
   });
   const [rascunhoRestaurado, setRascunhoRestaurado] = useState(false);
@@ -56,7 +58,9 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
   const [searchAno, setSearchAno] = useState('');
 
   const [exportStatus, setExportStatus] = useState<ExportStatus>('idle');
-  const [empresaDados, setEmpresaDados] = useState<{ cnpj: string; razao_social: string } | null>(null);
+  const [empresaDados, setEmpresaDados] = useState<{ cnpj: string; razao_social: string } | null>(
+    null
+  );
   const transmitir = useRegistrarTransmissaoSped();
   const gerarSped = useGerarSpedContabil();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
@@ -79,7 +83,8 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
 
         if (validacaoFilter === 'com_erros' && erros.length === 0) return false;
         if (validacaoFilter === 'com_avisos' && avisos.length === 0) return false;
-        if (validacaoFilter === 'sem_alertas' && (erros.length > 0 || avisos.length > 0)) return false;
+        if (validacaoFilter === 'sem_alertas' && (erros.length > 0 || avisos.length > 0))
+          return false;
 
         return true;
       });
@@ -104,22 +109,53 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
     const base = 'flex-1';
     switch (exportStatus) {
       case 'queued':
-        return { icon: React.createElement(Clock, { className: 'mr-2 h-4 w-4' }), label: 'Em fila…', disabled: true, variant: 'secondary' as const, className: cn(base, 'bg-muted text-muted-foreground') };
+        return {
+          icon: React.createElement(Clock, { className: 'mr-2 h-4 w-4' }),
+          label: 'Em fila…',
+          disabled: true,
+          variant: 'secondary' as const,
+          className: cn(base, 'bg-muted text-muted-foreground'),
+        };
       case 'processing':
-        return { icon: React.createElement(Loader2, { className: 'mr-2 h-4 w-4 animate-spin' }), label: 'Processando…', disabled: true, variant: 'secondary' as const, className: cn(base, 'bg-primary/10 text-primary') };
+        return {
+          icon: React.createElement(Loader2, { className: 'mr-2 h-4 w-4 animate-spin' }),
+          label: 'Processando…',
+          disabled: true,
+          variant: 'secondary' as const,
+          className: cn(base, 'bg-primary/10 text-primary'),
+        };
       case 'done':
-        return { icon: React.createElement(CheckCircle2, { className: 'mr-2 h-4 w-4' }), label: 'Concluído', disabled: false, variant: 'default' as const, className: cn(base, 'bg-success hover:bg-success text-primary-foreground') };
+        return {
+          icon: React.createElement(CheckCircle2, { className: 'mr-2 h-4 w-4' }),
+          label: 'Concluído',
+          disabled: false,
+          variant: 'default' as const,
+          className: cn(base, 'bg-success hover:bg-success text-primary-foreground'),
+        };
       case 'error':
-        return { icon: React.createElement(AlertTriangle, { className: 'mr-2 h-4 w-4' }), label: 'Falhou — tentar novamente', disabled: false, variant: 'destructive' as const, className: base };
+        return {
+          icon: React.createElement(AlertTriangle, { className: 'mr-2 h-4 w-4' }),
+          label: 'Falhou — tentar novamente',
+          disabled: false,
+          variant: 'destructive' as const,
+          className: base,
+        };
       default:
-        return { icon: React.createElement(PlayCircle, { className: 'mr-2 h-4 w-4' }), label: `Gerar/Exportar SPED ${tipo}`, disabled: false, variant: 'default' as const, className: base };
+        return {
+          icon: React.createElement(PlayCircle, { className: 'mr-2 h-4 w-4' }),
+          label: `Gerar/Exportar SPED ${tipo}`,
+          disabled: false,
+          variant: 'default' as const,
+          className: base,
+        };
     }
   })();
 
   const toggleAudit = (id: string) => {
     setExpandedAudit((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -131,7 +167,9 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
         AUDIT_EXPANDED_KEY(empresaId),
         JSON.stringify(Array.from(expandedAudit))
       );
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }, [expandedAudit, empresaId]);
 
   const copyHash = async (hash: string | null) => {
@@ -139,7 +177,9 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
     try {
       await navigator.clipboard.writeText(hash);
       toast.success('Hash copiado');
-    } catch { toast.error('Falha ao copiar'); }
+    } catch {
+      toast.error('Falha ao copiar');
+    }
   };
 
   useEffect(() => {
@@ -155,7 +195,9 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
           return () => clearTimeout(t);
         }
       }
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }, [tipo, empresaId]);
 
   useEffect(() => {
@@ -163,9 +205,11 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
     try {
       window.localStorage.setItem(
         DRAFT_KEY(tipo, empresaId),
-        JSON.stringify({ ano, ts: Date.now() }),
+        JSON.stringify({ ano, ts: Date.now() })
       );
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }, [ano, tipo, empresaId]);
 
   useEffect(() => {
@@ -176,26 +220,39 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
       .eq('id', empresaId)
       .maybeSingle()
       .then(({ data }) => {
-        if (data) setEmpresaDados(data);
+        if (data) setEmpresaDados({ ...data, cnpj: data.cnpj ?? '' });
       });
   }, [empresaId]);
 
   const handleDownload = async (storage_path: string) => {
-    const { data, error } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(storage_path, 60 * 60);
-    if (error || !data) { toast.error('Falha ao gerar link'); return; }
+    const { data, error } = await supabase.storage
+      .from('relatorios-tributarios')
+      .createSignedUrl(storage_path, 60 * 60);
+    if (error || !data) {
+      toast.error('Falha ao gerar link');
+      return;
+    }
     window.open(data.signedUrl, '_blank');
   };
 
   const handleDownloadZip = async (h: HistoricoRow) => {
-    const { data, error } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(h.storage_path, 60 * 60);
-    if (error || !data) { toast.error('Falha ao gerar link'); return; }
+    const { data, error } = await supabase.storage
+      .from('relatorios-tributarios')
+      .createSignedUrl(h.storage_path, 60 * 60);
+    if (error || !data) {
+      toast.error('Falha ao gerar link');
+      return;
+    }
     const fileName = h.storage_path.split('/').pop() || `${tipo}-${h.ano_calendario}.txt`;
     try {
       await baixarSpedZip({
-        txtUrl: data.signedUrl, fileName, hash: h.hash_sha256 || 'N/A',
+        txtUrl: data.signedUrl,
+        fileName,
+        hash: h.hash_sha256 || 'N/A',
         empresa: { razao_social: '—', cnpj: '—' },
         periodo: { inicio: `${h.ano_calendario}-01-01`, fim: `${h.ano_calendario}-12-31` },
-        totalLinhas: h.total_linhas, totalLancamentos: h.total_lancamentos,
+        totalLinhas: h.total_linhas,
+        totalLancamentos: h.total_lancamentos,
         tipo,
       });
       toast.success('ZIP baixado');
@@ -206,23 +263,37 @@ export function useSpedContabilState({ tipo, empresaId }: Params) {
 
   const handleConfirmarTransmissao = async () => {
     if (!transmissaoArquivo || !reciboInput.trim()) return;
-    await transmitir.mutateAsync({ arquivoId: transmissaoArquivo.id, recibo: reciboInput.trim(), tipo });
+    await transmitir.mutateAsync({
+      arquivoId: transmissaoArquivo.id,
+      recibo: reciboInput.trim(),
+      tipo,
+    });
     setTransmissaoArquivo(null);
     setReciboInput('');
   };
 
   return {
-    ano, setAno,
+    ano,
+    setAno,
     rascunhoRestaurado,
-    wizardOpen, setWizardOpen,
-    previewOpen, setPreviewOpen,
-    transmissaoArquivo, setTransmissaoArquivo,
-    validacoesArquivo, setValidacoesArquivo,
-    reciboInput, setReciboInput,
-    expandedAudit, toggleAudit,
-    statusFilter, setStatusFilter,
-    validacaoFilter, setValidacaoFilter,
-    searchAno, setSearchAno,
+    wizardOpen,
+    setWizardOpen,
+    previewOpen,
+    setPreviewOpen,
+    transmissaoArquivo,
+    setTransmissaoArquivo,
+    validacoesArquivo,
+    setValidacoesArquivo,
+    reciboInput,
+    setReciboInput,
+    expandedAudit,
+    toggleAudit,
+    statusFilter,
+    setStatusFilter,
+    validacaoFilter,
+    setValidacaoFilter,
+    searchAno,
+    setSearchAno,
     exportStatus,
     empresaDados,
     transmitir,

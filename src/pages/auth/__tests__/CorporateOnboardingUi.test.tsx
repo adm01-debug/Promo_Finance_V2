@@ -85,7 +85,7 @@ vi.mock('framer-motion', () => ({
           delete (props as Record<string, unknown>).transition;
           return <div {...props}>{children}</div>;
         },
-    },
+    }
   ),
 }));
 
@@ -103,9 +103,9 @@ function setResolver(partial: Partial<ResolverState>) {
 
 function renderPage() {
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <CorporateOnboarding />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
@@ -157,7 +157,7 @@ describe('/auth/corporate · CTAs aparecem nos momentos corretos', () => {
     renderPage();
     expect(screen.queryByRole('button', { name: /Continuar com senha/i })).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: /Cancelar redirecionamento/i }),
+      screen.queryByRole('button', { name: /Cancelar redirecionamento/i })
     ).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Tentar novamente/i })).not.toBeInTheDocument();
   });
@@ -167,11 +167,9 @@ describe('/auth/corporate · CTAs aparecem nos momentos corretos', () => {
     renderPage();
     await submitEmail('foo@desconhecido.com');
 
+    expect(await screen.findByRole('button', { name: /Continuar com senha/i })).toBeInTheDocument();
     expect(
-      await screen.findByRole('button', { name: /Continuar com senha/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: /Cancelar redirecionamento/i }),
+      screen.queryByRole('button', { name: /Cancelar redirecionamento/i })
     ).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Tentar novamente/i })).not.toBeInTheDocument();
   });
@@ -181,11 +179,9 @@ describe('/auth/corporate · CTAs aparecem nos momentos corretos', () => {
     renderPage();
     await submitEmail('alice@acme.com');
 
+    expect(await screen.findByRole('button', { name: /Entrar com Acme SSO/i })).toBeInTheDocument();
     expect(
-      await screen.findByRole('button', { name: /Entrar com Acme SSO/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: /Cancelar redirecionamento/i }),
+      screen.queryByRole('button', { name: /Cancelar redirecionamento/i })
     ).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Tentar novamente/i })).not.toBeInTheDocument();
   });
@@ -203,7 +199,7 @@ describe('/auth/corporate · CTAs aparecem nos momentos corretos', () => {
       fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
 
       expect(
-        await screen.findByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
+        await screen.findByRole('button', { name: /Cancelar redirecionamento e voltar/i })
       ).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /Tentar novamente/i })).not.toBeInTheDocument();
     } finally {
@@ -230,12 +226,10 @@ describe('/auth/corporate · CTAs aparecem nos momentos corretos', () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByRole('button', { name: /Cancelar redirecionamento/i }),
+          screen.queryByRole('button', { name: /Cancelar redirecionamento/i })
         ).not.toBeInTheDocument();
       });
-      expect(
-        screen.getByRole('button', { name: /Entrar com Acme SSO/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Entrar com Acme SSO/i })).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }
@@ -251,13 +245,11 @@ describe('/auth/corporate · CTAs aparecem nos momentos corretos', () => {
       fireEvent.click(await screen.findByRole('button', { name: /Entrar com Acme SSO/i }));
     });
 
-    expect(
-      await screen.findByText(/Não foi possível iniciar o login SSO/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Não foi possível iniciar o login SSO/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Tentar novamente/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Continuar com senha/i })).toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: /Cancelar redirecionamento/i }),
+      screen.queryByRole('button', { name: /Cancelar redirecionamento/i })
     ).not.toBeInTheDocument();
   });
 
@@ -297,7 +289,7 @@ describe('/auth/corporate · CTAs aparecem nos momentos corretos', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: /Continuar com senha/i }));
     expect(hoisted.mockNavigate).toHaveBeenCalledWith(
-      `/auth?email=${encodeURIComponent('frank@acme.com')}`,
+      `/auth?email=${encodeURIComponent('frank@acme.com')}`
     );
   });
 });

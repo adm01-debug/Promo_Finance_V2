@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { BarChart3, PieChart, Scale, Search } from 'lucide-react';
-import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
+import {
+  useDemonstrativosContabeis,
+  type FonteDemonstrativo,
+} from '@/hooks/useDemonstrativosContabeis';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -17,7 +20,11 @@ import { LancamentosDrillDown } from './dre-balanco/LancamentosDrillDown';
 import { exportarBalanco, exportarDRE } from './dre-balanco/exporters';
 import type { DrillDownState, ModoDemonstrativo } from './dre-balanco/types';
 
-interface Props { empresaId?: string; ano: number; anoFim?: number }
+interface Props {
+  empresaId?: string;
+  ano: number;
+  anoFim?: number;
+}
 
 export function DreBalancoTab({ empresaId, ano }: Props) {
   const { user } = useAuth();
@@ -121,7 +128,11 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
     });
   };
 
-  const { dre: dreNovo, balanco: balancoNovo, isLoading: isLoadingNovo } = useDemonstrativosContabeis({
+  const {
+    dre: dreNovo,
+    balanco: balancoNovo,
+    isLoading: isLoadingNovo,
+  } = useDemonstrativosContabeis({
     empresaId: selectedEmpresaId,
     ano,
     mes,
@@ -131,11 +142,13 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
   const { data: empresas = [] } = useEmpresas();
   const empresa = empresas.find((e) => e.id === selectedEmpresaId);
   const empresaTitulo = empresa
-    ? (empresa.nome_fantasia || empresa.razao_social)
-    : (selectedEmpresaId === 'todas' ? 'Consolidado' : 'Empresa');
+    ? empresa.nome_fantasia || empresa.razao_social
+    : selectedEmpresaId === 'todas'
+      ? 'Consolidado'
+      : 'Empresa';
 
   const handleExport = (format: 'pdf' | 'json') => {
-    const ctx = { empresaTitulo, empresaCnpj: empresa?.cnpj, ano, mes, fonte };
+    const ctx = { empresaTitulo, empresaCnpj: empresa?.cnpj ?? undefined, ano, mes, fonte };
     if (modo === 'dre') exportarDRE(format, dreNovo, ctx);
     else exportarBalanco(format, balancoNovo, ctx);
   };
@@ -150,7 +163,9 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
           </div>
           <div className="space-y-2">
             <p className="text-xl font-black tracking-tight">DRE & Balanço</p>
-            <p className="text-sm font-medium opacity-60 max-w-xs mx-auto">Selecione uma empresa para visualizar as demonstrações financeiras e patrimoniais.</p>
+            <p className="text-sm font-medium opacity-60 max-w-xs mx-auto">
+              Selecione uma empresa para visualizar as demonstrações financeiras e patrimoniais.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -159,7 +174,10 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
 
   return (
     <>
-      <Dialog open={drillDown.open} onOpenChange={(open) => handleSetDrillDown({ ...drillDown, open })}>
+      <Dialog
+        open={drillDown.open}
+        onOpenChange={(open) => handleSetDrillDown({ ...drillDown, open })}
+      >
         <DialogContent className="max-w-5xl border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2.5rem] p-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
           <DialogHeader className="p-8 pb-4 relative z-10">
@@ -168,8 +186,12 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                 <Search className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <DialogTitle className="text-2xl font-black tracking-tight">{drillDown.titulo}</DialogTitle>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{drillDown.subtitulo}</p>
+                <DialogTitle className="text-2xl font-black tracking-tight">
+                  {drillDown.titulo}
+                </DialogTitle>
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                  {drillDown.subtitulo}
+                </p>
               </div>
             </div>
           </DialogHeader>
@@ -190,14 +212,20 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
         <CardHeader className="p-8 pb-4 relative z-10">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex items-center gap-5">
-              <div className={cn('p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500')}>
+              <div
+                className={cn(
+                  'p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500'
+                )}
+              >
                 {modo === 'dre' ? <BarChart3 className="h-8 w-8" /> : <Scale className="h-8 w-8" />}
               </div>
               <div>
                 <CardTitle className="text-3xl font-black tracking-tighter">
                   {modo === 'dre' ? 'Demonstração de Resultado' : 'Balanço Patrimonial'}
                 </CardTitle>
-                <CardDescription className="text-sm font-medium opacity-60">Performance financeira e saúde patrimonial corporativa</CardDescription>
+                <CardDescription className="text-sm font-medium opacity-60">
+                  Performance financeira e saúde patrimonial corporativa
+                </CardDescription>
               </div>
             </div>
           </div>
@@ -221,12 +249,26 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
 
           {isLoadingNovo ? (
             <div className="space-y-2">
-              {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-8 w-full" />
+              ))}
             </div>
           ) : modo === 'dre' ? (
-            <DreView dre={dreNovo} empresaTitulo={empresaTitulo} ano={ano} mes={mes} onOpenDrill={setDrillDown} />
+            <DreView
+              dre={dreNovo}
+              empresaTitulo={empresaTitulo}
+              ano={ano}
+              mes={mes}
+              onOpenDrill={setDrillDown}
+            />
           ) : (
-            <BalancoView balanco={balancoNovo} empresaTitulo={empresaTitulo} ano={ano} mes={mes} onOpenDrill={setDrillDown} />
+            <BalancoView
+              balanco={balancoNovo}
+              empresaTitulo={empresaTitulo}
+              ano={ano}
+              mes={mes}
+              onOpenDrill={setDrillDown}
+            />
           )}
         </CardContent>
       </Card>

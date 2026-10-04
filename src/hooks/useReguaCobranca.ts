@@ -123,7 +123,7 @@ export function useProcessarRegua() {
       simulate = false,
     }: { empresaId?: string; simulate?: boolean } = {}) => {
       const { data, error } = await supabase.rpc('processar_regua_cobranca', {
-        p_empresa_id: empresaId || null,
+        p_empresa_id: empresaId,
         p_simulate: simulate,
       });
       if (error) throw error;
@@ -180,10 +180,10 @@ export function useConfirmarEnvio() {
     }) => {
       const { error } = await supabase.rpc('confirmar_envio_cobranca', {
         p_fila_id: params.filaId,
-        p_provider: params.provider || null,
-        p_provider_message_id: params.providerMessageId || null,
+        p_provider: params.provider,
+        p_provider_message_id: params.providerMessageId,
         p_sucesso: params.sucesso ?? true,
-        p_erro: params.erro || null,
+        p_erro: params.erro,
       });
       if (error) throw error;
     },

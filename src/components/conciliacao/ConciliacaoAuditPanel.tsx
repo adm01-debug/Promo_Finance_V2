@@ -4,12 +4,36 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { Shield, User, Clock, Zap, Link2, CheckCircle2, Search, X, Download, AlertTriangle } from 'lucide-react';
+import {
+  Shield,
+  User,
+  Clock,
+  Zap,
+  Link2,
+  CheckCircle2,
+  Search,
+  X,
+  Download,
+  AlertTriangle,
+} from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { generateConciliacaoAuditPDF } from '@/lib/pdf-generator';
 import { cn } from '@/lib/utils';
 
@@ -26,7 +50,7 @@ export function ConciliacaoAuditPanel() {
     queryFn: async () => {
       const { data } = await supabase.from('profiles').select('id, full_name');
       return data || [];
-    }
+    },
   });
 
   const { data: accounts } = useQuery({
@@ -34,7 +58,7 @@ export function ConciliacaoAuditPanel() {
     queryFn: async () => {
       const { data } = await supabase.from('contas_bancarias').select('id, nome, banco');
       return data || [];
-    }
+    },
   });
 
   const { data: auditData, isLoading } = useQuery({
@@ -43,7 +67,8 @@ export function ConciliacaoAuditPanel() {
       // Compensações de centavos
       let compQuery = supabase
         .from('transacoes_bancarias')
-        .select(`
+        .select(
+          `
           id, 
           descricao, 
           data, 
@@ -56,7 +81,8 @@ export function ConciliacaoAuditPanel() {
           compensacao_aceita_por,
           compensacao_aceita_em,
           compensacao_evidencia_url
-        `)
+        `
+        )
         .not('compensacao_valor', 'is', null)
         .neq('compensacao_valor', 0);
 
@@ -66,12 +92,15 @@ export function ConciliacaoAuditPanel() {
       if (dateFrom) compQuery = compQuery.gte('compensacao_aceita_em', dateFrom);
       if (dateTo) compQuery = compQuery.lte('compensacao_aceita_em', dateTo);
 
-      const { data: compensacoes } = await compQuery.order('compensacao_aceita_em', { ascending: false });
+      const { data: compensacoes } = await compQuery.order('compensacao_aceita_em', {
+        ascending: false,
+      });
 
       // Divergências
       let divQuery = supabase
         .from('divergencias_conciliacao')
-        .select(`
+        .select(
+          `
           id,
           descricao,
           tipo_divergencia,
@@ -81,7 +110,8 @@ export function ConciliacaoAuditPanel() {
           status,
           resolvido_por,
           resolvido_em
-        `)
+        `
+        )
         .eq('status', 'aceito');
 
       if (userFilter !== 'all') divQuery = divQuery.eq('resolvido_por', userFilter);
@@ -92,68 +122,81 @@ export function ConciliacaoAuditPanel() {
       const { data: divergencias } = await divQuery.order('resolvido_em', { ascending: false });
 
       return { compensacoes: compensacoes || [], divergencias: divergencias || [] };
-    }
+    },
   });
 
   const filteredItems = useMemo(() => {
     if (!auditData) return [];
-    
+
     const all = [
-      ...auditData.compensacoes.map(c => ({
+      ...auditData.compensacoes.map((c) => ({
         id: `comp-${c.id}`,
         type: 'compensacao',
         evento: c.descricao,
         valor: c.compensacao_valor || 0,
-        responsavel: profiles?.find(p => p.id === c.compensacao_aceita_por)?.full_name || (c.compensacao_aceita_por ? 'Usuário' : 'IA (Automático)'),
+        responsavel:
+          profiles?.find((p) => p.id === c.compensacao_aceita_por)?.full_name ||
+          (c.compensacao_aceita_por ? 'Usuário' : 'IA (Automático)'),
         data: c.compensacao_aceita_em || c.data,
         regra: c.compensacao_regra || c.compensacao_motivo || '',
-        classificacao: c.compensacao_classificacao,
+        classificacao: c.compensacao_classificacao ?? undefined,
         evidencia_url: c.compensacao_evidencia_url,
-        conta: accounts?.find(a => a.id === c.conta_bancaria_id)?.nome || 'N/A'
+        conta: accounts?.find((a) => a.id === c.conta_bancaria_id)?.nome || 'N/A',
       })),
-      ...auditData.divergencias.map(d => ({
+      ...auditData.divergencias.map((d) => ({
         id: `div-${d.id}`,
         type: 'divergencia',
         evento: `Divergência: ${d.descricao}`,
         valor: d.valor_divergencia || 0,
-        responsavel: profiles?.find(p => p.id === d.resolvido_por)?.full_name || 'Sistema',
-        data: d.resolvido_em || d.created_at,
+        responsavel: profiles?.find((p) => p.id === d.resolvido_por)?.full_name || 'Sistema',
+        data: d.resolvido_em || d.created_at || '',
         regra: 'Aceite manual de divergência de saldo',
         classificacao: 'Divergência',
         evidencia_url: null,
-        conta: accounts?.find(a => a.id === d.conta_bancaria_id)?.nome || 'N/A'
-      }))
+        conta: accounts?.find((a) => a.id === d.conta_bancaria_id)?.nome || 'N/A',
+      })),
     ];
 
-    if (!searchTerm) return all.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    if (!searchTerm)
+      return all.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
     return all
-      .filter(item => 
-        item.evento.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        item.responsavel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.regra?.toLowerCase().includes(searchTerm.toLowerCase())
+      .filter(
+        (item) =>
+          item.evento.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.responsavel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.regra?.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
   }, [auditData, searchTerm, profiles, accounts]);
 
   const handleExportPDF = () => {
     const filters = {
-      user: userFilter !== 'all' ? profiles?.find(p => p.id === userFilter)?.full_name : 'Todos',
-      conta: accountFilter !== 'all' ? accounts?.find(a => a.id === accountFilter)?.nome : 'Todas',
+      user:
+        userFilter !== 'all'
+          ? (profiles?.find((p) => p.id === userFilter)?.full_name ?? undefined)
+          : 'Todos',
+      conta:
+        accountFilter !== 'all'
+          ? (accounts?.find((a) => a.id === accountFilter)?.nome ?? undefined)
+          : 'Todas',
       inicio: dateFrom,
       fim: dateTo,
-      classificacao: classFilter !== 'all' ? classFilter : 'Todas'
+      classificacao: classFilter !== 'all' ? classFilter : 'Todas',
     };
 
-    generateConciliacaoAuditPDF(filteredItems.map(i => ({
-      evento: i.evento,
-      valor: i.valor,
-      responsavel: i.responsavel,
-      data: i.data,
-      regra: i.regra,
-      classificacao: i.classificacao,
-      evidencia_url: i.evidencia_url || undefined
-    })), filters);
+    generateConciliacaoAuditPDF(
+      filteredItems.map((i) => ({
+        evento: i.evento,
+        valor: i.valor,
+        responsavel: i.responsavel,
+        data: i.data,
+        regra: i.regra,
+        classificacao: i.classificacao,
+        evidencia_url: i.evidencia_url || undefined,
+      })),
+      filters
+    );
   };
 
   const clearFilters = () => {
@@ -170,7 +213,9 @@ export function ConciliacaoAuditPanel() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Auditoria de Conciliação</h2>
-          <p className="text-muted-foreground">Rastreio completo de ajustes, compensações e aceites manuais.</p>
+          <p className="text-muted-foreground">
+            Rastreio completo de ajustes, compensações e aceites manuais.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={handleExportPDF} className="gap-2">
@@ -186,9 +231,9 @@ export function ConciliacaoAuditPanel() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <Search className="h-3 w-3" /> Buscar
               </label>
-              <Input 
-                placeholder="Evento, responsável ou regra..." 
-                value={searchTerm} 
+              <Input
+                placeholder="Evento, responsável ou regra..."
+                value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-background"
               />
@@ -203,8 +248,10 @@ export function ConciliacaoAuditPanel() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os usuários</SelectItem>
-                  {profiles?.map(p => (
-                    <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>
+                  {profiles?.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.full_name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -235,8 +282,10 @@ export function ConciliacaoAuditPanel() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as contas</SelectItem>
-                  {accounts?.map(a => (
-                    <SelectItem key={a.id} value={a.id}>{a.nome} ({a.banco})</SelectItem>
+                  {accounts?.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.nome} ({a.banco})
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -248,17 +297,37 @@ export function ConciliacaoAuditPanel() {
                 <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                   <Clock className="h-3 w-3" /> De
                 </label>
-                <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="bg-background" />
+                <Input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="bg-background"
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                   <Clock className="h-3 w-3" /> Até
                 </label>
-                <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="bg-background" />
+                <Input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="bg-background"
+                />
               </div>
             </div>
-            {(searchTerm || userFilter !== 'all' || accountFilter !== 'all' || classFilter !== 'all' || dateFrom || dateTo) && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs gap-1.5 h-9">
+            {(searchTerm ||
+              userFilter !== 'all' ||
+              accountFilter !== 'all' ||
+              classFilter !== 'all' ||
+              dateFrom ||
+              dateTo) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="text-xs gap-1.5 h-9"
+              >
                 <X className="h-3.5 w-3.5" /> Limpar Filtros
               </Button>
             )}
@@ -335,27 +404,39 @@ export function ConciliacaoAuditPanel() {
                   </TableRow>
                 ) : filteredItems.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground italic">
+                    <TableCell
+                      colSpan={7}
+                      className="h-32 text-center text-muted-foreground italic"
+                    >
                       Nenhum registro de auditoria encontrado com os filtros selecionados.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredItems.map((item) => (
-                    <TableRow key={item.id} className={item.type === 'divergencia' ? 'bg-warning/5' : ''}>
+                    <TableRow
+                      key={item.id}
+                      className={item.type === 'divergencia' ? 'bg-warning/5' : ''}
+                    >
                       <TableCell>
                         <div className="flex flex-col">
                           <span className="font-semibold text-sm">{item.evento}</span>
-                          <Badge variant={item.type === 'divergencia' ? 'warning' : 'outline'} className="w-fit text-[10px] mt-1 h-4">
+                          <Badge
+                            variant={item.type === 'divergencia' ? 'warning' : 'outline'}
+                            className="w-fit text-[10px] mt-1 h-4"
+                          >
                             {item.classificacao}
                           </Badge>
                         </div>
                       </TableCell>
-                      <TableCell className={cn("font-bold text-sm", item.valor >= 0 ? "text-success" : "text-destructive")}>
+                      <TableCell
+                        className={cn(
+                          'font-bold text-sm',
+                          item.valor >= 0 ? 'text-success' : 'text-destructive'
+                        )}
+                      >
                         {formatCurrency(item.valor)}
                       </TableCell>
-                      <TableCell className="text-xs font-medium">
-                        {item.conta}
-                      </TableCell>
+                      <TableCell className="text-xs font-medium">{item.conta}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1.5 text-xs">
                           <User className="h-3 w-3 text-muted-foreground" />
@@ -368,22 +449,28 @@ export function ConciliacaoAuditPanel() {
                           {formatDate(item.data)}
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs max-w-[220px] truncate italic" title={item.regra}>
+                      <TableCell
+                        className="text-xs max-w-[220px] truncate italic"
+                        title={item.regra}
+                      >
                         {item.regra}
                       </TableCell>
                       <TableCell className="text-right">
                         {item.evidencia_url ? (
-                          <Button variant="ghost" size="icon" asChild className="h-8 w-8 text-primary">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            asChild
+                            className="h-8 w-8 text-primary"
+                          >
                             <a href={item.evidencia_url} target="_blank" rel="noopener noreferrer">
                               <Link2 className="h-4 w-4" />
                             </a>
                           </Button>
+                        ) : item.type === 'divergencia' ? (
+                          <CheckCircle2 className="h-4 w-4 text-success inline-block mr-2" />
                         ) : (
-                          item.type === 'divergencia' ? (
-                            <CheckCircle2 className="h-4 w-4 text-success inline-block mr-2" />
-                          ) : (
-                            <span className="text-xs text-muted-foreground">Automático</span>
-                          )
+                          <span className="text-xs text-muted-foreground">Automático</span>
                         )}
                       </TableCell>
                     </TableRow>

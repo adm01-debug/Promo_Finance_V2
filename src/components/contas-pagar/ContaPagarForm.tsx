@@ -1,5 +1,5 @@
 import { todayISOLocal, toISOLocal } from '@/lib/formatters';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -291,6 +291,27 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
+  // ContaPagarFormFields declara o tipo apagado UseFormReturn<FieldValues>
+  // (padrao RHF para props compartilhadas); em runtime recebe o mesmo form.
+  // As listas sao normalizadas para o shape minimo nao-nulo que ele consome.
+  const formForFields = form as unknown as React.ComponentProps<
+    typeof ContaPagarFormFields
+  >['form'];
+  const centrosCustoOptions = useMemo(
+    () => centrosCusto.map((cc) => ({ id: cc.id, codigo: cc.codigo ?? '', nome: cc.nome })),
+    [centrosCusto]
+  );
+  const contasBancariasOptions = useMemo(
+    () =>
+      contasBancarias.map((cb) => ({
+        id: cb.id,
+        banco: cb.banco ?? '',
+        agencia: cb.agencia ?? '',
+        conta: cb.conta ?? '',
+      })),
+    [contasBancarias]
+  );
+
   return (
     <>
       <LeitorCodigoBarras
@@ -432,10 +453,10 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
 
               <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                 <ContaPagarFormFields
-                  form={form}
+                  form={formForFields}
                   empresas={empresas}
-                  centrosCusto={centrosCusto}
-                  contasBancarias={contasBancarias}
+                  centrosCusto={centrosCustoOptions}
+                  contasBancarias={contasBancariasOptions}
                   categorias={categoriasDespesa}
                 />
 

@@ -100,7 +100,7 @@ beforeEach(() => {
 
 async function montaHook(respostas: Record<string, Resultado[]>) {
   const escritas = montaCliente(respostas);
-  const { result } = renderHook(() => useImportacaoXMLNFe(), { wrapper });
+  const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
 
   await act(async () => {
     await result.current.processarArquivos([arquivoXML()] as unknown as FileList);

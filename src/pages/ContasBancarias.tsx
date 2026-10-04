@@ -18,7 +18,13 @@ import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoD
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useContasBancarias, useEmpresas, ContaBancaria } from '@/hooks/useFinancialData';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { EmptyState } from '@/components/ui/micro-interactions';
@@ -37,22 +43,22 @@ import { DistribuicaoBancos } from '@/components/contas-bancarias/DistribuicaoBa
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 const bancoLogos: Record<string, { icon: typeof Landmark; color: string }> = {
-  'Itaú': { icon: Landmark, color: 'bg-streak' },
-  'Bradesco': { icon: Building2, color: 'bg-destructive' },
+  Itaú: { icon: Landmark, color: 'bg-streak' },
+  Bradesco: { icon: Building2, color: 'bg-destructive' },
   'Banco do Brasil': { icon: Landmark, color: 'bg-warning' },
-  'Santander': { icon: Building2, color: 'bg-destructive' },
-  'Caixa': { icon: PiggyBank, color: 'bg-secondary' },
-  'Nubank': { icon: CreditCard, color: 'bg-accent' },
-  'Inter': { icon: Wallet, color: 'bg-streak' },
+  Santander: { icon: Building2, color: 'bg-destructive' },
+  Caixa: { icon: PiggyBank, color: 'bg-secondary' },
+  Nubank: { icon: CreditCard, color: 'bg-accent' },
+  Inter: { icon: Wallet, color: 'bg-streak' },
   'C6 Bank': { icon: CreditCard, color: 'bg-foreground' },
 };
 
@@ -69,23 +75,22 @@ export default function ContasBancarias() {
   const [regrasOpen, setRegrasOpen] = useState(false);
   const [importarOpen, setImportarOpen] = useState(false);
 
-
   const queryClient = useQueryClient();
 
-  const contasFiltradas = selectedEmpresa === 'all'
-    ? contas
-    : contas.filter(c => c.empresa_id === selectedEmpresa);
+  const contasFiltradas =
+    selectedEmpresa === 'all' ? contas : contas.filter((c) => c.empresa_id === selectedEmpresa);
 
   const saldoTotal = contasFiltradas.reduce((acc, c) => acc + c.saldo_atual, 0);
-  const saldoDisponivel = contasFiltradas.reduce((acc, c) => acc + c.saldo_disponivel, 0);
-  const contasAtivas = contasFiltradas.filter(c => c.ativo).length;
+  const saldoDisponivel = contasFiltradas.reduce((acc, c) => acc + (c.saldo_disponivel ?? 0), 0);
+  const contasAtivas = contasFiltradas.filter((c) => c.ativo).length;
 
   const getEmpresaNome = (empresaId: string) => {
-    const empresa = empresas.find(e => e.id === empresaId);
+    const empresa = empresas.find((e) => e.id === empresaId);
     return empresa?.nome_fantasia || empresa?.razao_social || 'Não identificado';
   };
 
-  const getBancoInfo = (banco: string) => bancoLogos[banco] || { icon: Landmark, color: 'bg-muted-foreground' };
+  const getBancoInfo = (banco: string) =>
+    bancoLogos[banco] || { icon: Landmark, color: 'bg-muted-foreground' };
 
   const handleOpenDeleteDialog = (conta: ContaBancaria) => {
     setDeletingConta(conta);
@@ -102,7 +107,10 @@ export default function ContasBancarias() {
       item: contaBackup,
       itemName: `Conta "${contaBackup.banco} - ${contaBackup.conta}"`,
       onDelete: async () => {
-        const { error } = await supabase.from('contas_bancarias').update({ ativo: false }).eq('id', contaBackup.id);
+        const { error } = await supabase
+          .from('contas_bancarias')
+          .update({ ativo: false })
+          .eq('id', contaBackup.id);
         if (error) throw error;
         queryClient.invalidateQueries({ queryKey: ['contas-bancarias'] });
       },
@@ -119,7 +127,9 @@ export default function ContasBancarias() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Contas Bancárias</h1>
-              <p className="text-muted-foreground">Gerencie suas contas e acompanhe saldos em tempo real</p>
+              <p className="text-muted-foreground">
+                Gerencie suas contas e acompanhe saldos em tempo real
+              </p>
             </div>
           </div>
           <LoadingSkeleton variant="stats" />
@@ -135,21 +145,50 @@ export default function ContasBancarias() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Gestão de Contas Bancárias</h1>
-            <p className="text-muted-foreground">Configure multi-contas, regras de conciliação e mapeamentos por CNPJ</p>
+            <p className="text-muted-foreground">
+              Configure multi-contas, regras de conciliação e mapeamentos por CNPJ
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => setImportarOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all">
-              <Upload className="h-4 w-4 text-primary" />Importar Extrato
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setImportarOpen(true)}
+              className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all"
+            >
+              <Upload className="h-4 w-4 text-primary" />
+              Importar Extrato
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setRegrasOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all">
-              <Settings className="h-4 w-4 text-warning" />Regras Conciliação
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRegrasOpen(true)}
+              className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all"
+            >
+              <Settings className="h-4 w-4 text-warning" />
+              Regras Conciliação
             </Button>
             <div className="w-px h-10 bg-card/10 mx-1 hidden sm:block" />
-            <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all">
-              <ArrowLeftRight className="h-4 w-4 text-streak" />Transferência
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setTransferenciaOpen(true)}
+              className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all"
+            >
+              <ArrowLeftRight className="h-4 w-4 text-streak" />
+              Transferência
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowSaldos(!showSaldos)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all">
-              {showSaldos ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSaldos(!showSaldos)}
+              className="gap-2 h-10 rounded-xl border-white/10 hover:bg-card/5 transition-all"
+            >
+              {showSaldos ? (
+                <EyeOff className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              )}
               {showSaldos ? 'Ocultar Saldos' : 'Mostrar Saldos'}
             </Button>
 
@@ -165,11 +204,15 @@ export default function ContasBancarias() {
         <div className="flex items-center gap-4">
           <Label>Filtrar por empresa:</Label>
           <Select value={selectedEmpresa} onValueChange={setSelectedEmpresa}>
-            <SelectTrigger className="w-[250px]"><SelectValue placeholder="Todas as empresas" /></SelectTrigger>
+            <SelectTrigger className="w-[250px]">
+              <SelectValue placeholder="Todas as empresas" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as empresas</SelectItem>
-              {empresas.map(e => (
-                <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>
+              {empresas.map((e) => (
+                <SelectItem key={e.id} value={e.id}>
+                  {e.nome_fantasia || e.razao_social}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -197,19 +240,20 @@ export default function ContasBancarias() {
                 description="Adicione sua primeira conta bancária para gerenciar seus saldos."
                 action={
                   <Button onClick={() => setDialogOpen(true)} className="gap-2">
-                    <Plus className="h-4 w-4" />Adicionar Conta
+                    <Plus className="h-4 w-4" />
+                    Adicionar Conta
                   </Button>
                 }
               />
             </div>
           ) : (
             contasFiltradas.map((conta) => {
-              const info = getBancoInfo(conta.banco);
+              const info = getBancoInfo(conta.banco ?? '');
               return (
                 <ContaBancariaCard
                   key={conta.id}
                   conta={conta}
-                  empresaNome={getEmpresaNome(conta.empresa_id)}
+                  empresaNome={getEmpresaNome(conta.empresa_id ?? '')}
                   showSaldos={showSaldos}
                   bancoIcon={info.icon}
                   bancoColor={info.color}
@@ -220,18 +264,16 @@ export default function ContasBancarias() {
           )}
 
           <motion.div variants={itemVariants}>
-            <button
-              type="button"
-              className="w-full text-left"
-              onClick={() => setDialogOpen(true)}
-            >
+            <button type="button" className="w-full text-left" onClick={() => setDialogOpen(true)}>
               <div className="border border-dashed hover:border-primary/50 transition-colors cursor-pointer h-full min-h-[280px] flex items-center justify-center rounded-lg">
                 <div className="flex flex-col items-center justify-center text-center p-6">
                   <div className="p-4 rounded-full bg-muted mb-4">
                     <Plus className="h-8 w-8 text-muted-foreground" />
                   </div>
                   <h3 className="font-medium text-muted-foreground">Adicionar Nova Conta</h3>
-                  <p className="text-sm text-muted-foreground mt-1">Conecte uma nova conta bancária</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Conecte uma nova conta bancária
+                  </p>
                 </div>
               </div>
             </button>
@@ -259,18 +301,18 @@ export default function ContasBancarias() {
 
         <TransferenciaDialog open={transferenciaOpen} onOpenChange={setTransferenciaOpen} />
         <RegrasConciliacaoDialog open={regrasOpen} onOpenChange={setRegrasOpen} />
-        <ImportarExtratoDialog 
-          open={importarOpen} 
-          onOpenChange={setImportarOpen} 
+        <ImportarExtratoDialog
+          open={importarOpen}
+          onOpenChange={setImportarOpen}
           onImportSuccess={(extrato) => {
-            toast.success(`${extrato.transacoes.length} transações importadas com sucesso para processamento.`);
+            toast.success(
+              `${extrato.transacoes.length} transações importadas com sucesso para processamento.`
+            );
             setImportarOpen(false);
             queryClient.invalidateQueries({ queryKey: ['extratos-bancarios'] });
           }}
         />
-
       </div>
     </MainLayout>
   );
 }
-

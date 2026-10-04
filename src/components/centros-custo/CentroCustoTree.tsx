@@ -32,7 +32,13 @@ interface CentroCustoTreeProps {
   onHistory?: (centro: CentroCusto) => void;
 }
 
-const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
+const COLORS = [
+  'hsl(24, 95%, 46%)',
+  'hsl(215, 90%, 42%)',
+  'hsl(150, 70%, 32%)',
+  'hsl(275, 75%, 48%)',
+  'hsl(42, 95%, 48%)',
+];
 
 function buildTree(centros: CentroCusto[]): TreeNode[] {
   const map = new Map<string, TreeNode>();
@@ -57,7 +63,7 @@ function buildTree(centros: CentroCusto[]): TreeNode[] {
 
   // Sort children by codigo
   const sortChildren = (nodes: TreeNode[]) => {
-    nodes.sort((a, b) => a.codigo.localeCompare(b.codigo));
+    nodes.sort((a, b) => (a.codigo ?? '').localeCompare(b.codigo ?? ''));
     nodes.forEach((n) => sortChildren(n.children));
   };
   sortChildren(roots);
@@ -67,8 +73,8 @@ function buildTree(centros: CentroCusto[]): TreeNode[] {
 
 // Calculate aggregated budget for parent nodes
 function calculateAggregatedBudget(node: TreeNode): { previsto: number; realizado: number } {
-  let previsto = node.orcamento_previsto;
-  let realizado = node.orcamento_realizado;
+  let previsto = node.orcamento_previsto ?? 0;
+  let realizado = node.orcamento_realizado ?? 0;
 
   node.children.forEach((child) => {
     const childBudget = calculateAggregatedBudget(child);
@@ -104,7 +110,8 @@ function TreeNodeItem({
   const hasChildren = node.children.length > 0;
 
   const aggregated = useMemo(() => calculateAggregatedBudget(node), [node]);
-  const percentual = aggregated.previsto > 0 ? (aggregated.realizado / aggregated.previsto) * 100 : 0;
+  const percentual =
+    aggregated.previsto > 0 ? (aggregated.realizado / aggregated.previsto) * 100 : 0;
   const isOver = aggregated.realizado > aggregated.previsto;
   const color = COLORS[colorIndex % COLORS.length];
 
@@ -146,7 +153,7 @@ function TreeNodeItem({
               <Folder className="h-4 w-4" />
             )
           ) : (
-            <span className="font-bold text-xs">{node.codigo.slice(0, 2)}</span>
+            <span className="font-bold text-xs">{(node.codigo ?? '').slice(0, 2)}</span>
           )}
         </div>
 
@@ -223,12 +230,7 @@ function TreeNodeItem({
               <History className="h-3.5 w-3.5" />
             </Button>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={() => onEdit(node)}
-          >
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(node)}>
             <Edit2 className="h-3.5 w-3.5" />
           </Button>
           {node.ativo ? (
