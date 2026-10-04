@@ -392,11 +392,13 @@ export function useContasPagarLogic() {
   const handleBulkMarkAsPaid = () => {
     bulkActionsHook.executeBulkAction(
       async (id) => {
+        const conta = sortedContas.find((c) => c.id === id);
         await updateMutation.mutateAsync({
           id,
+          expected_updated_at: conta?.updated_at ?? '',
           status: 'pago',
           data_pagamento: todayISOLocal(),
-          valor_pago: sortedContas.find((c) => c.id === id)?.valor || 0,
+          valor_pago: conta?.valor || 0,
         });
       },
       { showProgress: true }
@@ -406,7 +408,12 @@ export function useContasPagarLogic() {
   const handleBulkCancel = () => {
     bulkActionsHook.executeBulkAction(
       async (id) => {
-        await updateMutation.mutateAsync({ id, status: 'cancelado' });
+        const conta = sortedContas.find((c) => c.id === id);
+        await updateMutation.mutateAsync({
+          id,
+          expected_updated_at: conta?.updated_at ?? '',
+          status: 'cancelado',
+        });
       },
       { showProgress: true }
     );

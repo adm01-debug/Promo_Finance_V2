@@ -1,0 +1,33 @@
+/**
+ * Lock otimista para edições concorrentes.
+ *
+ * Duas pessoas editando a mesma conta hoje fazem last-write-wins silencioso:
+ * quem salva por último sobrescreve o trabalho da outra sem aviso. Como os
+ * triggers moddatetime atualizam `updated_at` em todo UPDATE, o timestamp que
+ * a tela viu serve de versão: o update só casa se ninguém mexeu na linha
+ * desde a leitura (`.eq('updated_at', visto)`), senão 0 linhas → conflito.
+ */
+import { supabase } from '@/integrations/supabase/client';
+
+export class ConflitoVersaoError extends Error {
+  constructor() {
+    super('O registro foi alterado por outra pessoa desde que você abriu.');
+    this.name = 'ConflitoVersaoError';
+  }
+}
+
+export async function updateComLockOtimista(
+  tabela: 'contas_pagar' | 'contas_receber',
+  id: string,
+  updatedAtVisto: string,
+  patch: Record<string, unknown>
+): Promise<void> {
+  const { data, error } = await supabase
+    .from(tabela)
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('updated_at', updatedAtVisto)
+    .select('id');
+  if (error) throw error;
+  if (!data || data.length === 0) throw new ConflitoVersaoError();
+}

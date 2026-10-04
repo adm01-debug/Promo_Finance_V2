@@ -20,6 +20,7 @@ import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 import { logger } from '@/lib/logger';
+import { ConflitoVersaoError, updateComLockOtimista } from '@/lib/optimistic-lock';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -66,6 +67,7 @@ interface ContaReceber {
   categoria_id: string | null;
   conta_bancaria_id: string | null;
   tipo_cobranca: string;
+  updated_at: string;
 }
 
 interface ContaReceberFormProps {
@@ -189,27 +191,23 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const updateMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
-      const { error } = await supabase
-        .from('contas_receber')
-        .update({
-          cliente_id: data.cliente_id || null,
-          cliente_nome: data.cliente_nome,
-          descricao: data.descricao,
-          valor: data.valor,
-          data_vencimento: data.data_vencimento,
-          data_emissao: data.data_emissao || todayISOLocal(),
-          empresa_id: data.empresa_id,
-          centro_custo_id: data.centro_custo_id || null,
-          categoria_id: data.categoria_id || null,
-          conta_bancaria_id: data.conta_bancaria_id || null,
-          tipo_cobranca: data.tipo_cobranca,
-          numero_documento: data.numero_documento || null,
-          // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
-          chave_pix: data.chave_pix || null,
-          observacoes: data.observacoes || null,
-        })
-        .eq('id', conta.id);
-      if (error) throw error;
+      await updateComLockOtimista('contas_receber', conta.id, conta.updated_at, {
+        cliente_id: data.cliente_id || null,
+        cliente_nome: data.cliente_nome,
+        descricao: data.descricao,
+        valor: data.valor,
+        data_vencimento: data.data_vencimento,
+        data_emissao: data.data_emissao || todayISOLocal(),
+        empresa_id: data.empresa_id,
+        centro_custo_id: data.centro_custo_id || null,
+        categoria_id: data.categoria_id || null,
+        conta_bancaria_id: data.conta_bancaria_id || null,
+        tipo_cobranca: data.tipo_cobranca,
+        numero_documento: data.numero_documento || null,
+        // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
+        chave_pix: data.chave_pix || null,
+        observacoes: data.observacoes || null,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
@@ -218,11 +216,20 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     },
     onError: (error: unknown) => {
       logger.error('Error updating conta receber:', error);
-      toast({
-        title: 'Erro ao atualizar',
-        description: 'Tente novamente.',
-        variant: 'destructive',
-      });
+      if (error instanceof ConflitoVersaoError) {
+        queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+        toast({
+          title: 'Conta alterada por outra pessoa',
+          description: 'Recarregue a lista e tente novamente.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Erro ao atualizar',
+          description: 'Tente novamente.',
+          variant: 'destructive',
+        });
+      }
     },
   });
 
