@@ -171,16 +171,30 @@ jobs:
           set -euo pipefail
           # Buckets criados por migrations versionadas deste repo
           # ('uploads' existe só comentado numa migration — não é esperado).
+          # Existir não basta: um bucket que virou público expõe certificados
+          # e documentos financeiros, e drift de limite/MIME nos buckets NF-e
+          # muda o que pode ser gravado. Compara a configuração, não só a linha.
           ESPERADOS=(financeiro nfe-certificados nfe-xml notas-fiscais-upload relatorios-tributarios)
           for bucket in "${ESPERADOS[@]}"; do
-            EXISTE=$(psql "$PROD_DB_URL" -Atc \
-              "SELECT count(*) FROM storage.buckets WHERE id = '$bucket'")
-            if [ "$EXISTE" != "1" ]; then
-              echo "::error::Bucket storage '$bucket' ausente em PROD — apply incompleto."
+            PUBLICO=$(psql "$PROD_DB_URL" -Atc \
+              "SELECT coalesce(public::text,'<ausente>') FROM storage.buckets WHERE id = '$bucket'")
+            if [ "$PUBLICO" != "false" ]; then
+              echo "::error::Bucket storage '$bucket' ausente ou público em PROD (public='$PUBLICO')."
               exit 1
             fi
           done
-          echo "Buckets esperados presentes: ${ESPERADOS[*]}"
+          # nfe-certificados: 5 MiB + PKCS#12/octet-stream; nfe-xml: 50 MiB + XML.
+          CONF=$(psql "$PROD_DB_URL" -Atc "
+            SELECT count(*) FROM storage.buckets WHERE
+              (id='nfe-certificados' AND file_size_limit=5242880
+                AND allowed_mime_types='{application/pkcs12,application/x-pkcs12,application/octet-stream}'::text[])
+             OR (id='nfe-xml' AND file_size_limit=52428800
+                AND allowed_mime_types='{application/xml,text/xml}'::text[])")
+          if [ "$CONF" != "2" ]; then
+            echo "::error::Buckets NF-e com drift de file_size_limit/allowed_mime_types em PROD."
+            exit 1
+          fi
+          echo "Buckets esperados presentes, privados e com limites/MIME corretos."
 
       - name: Upload evidências
         if: always()

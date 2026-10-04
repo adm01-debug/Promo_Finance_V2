@@ -31,15 +31,31 @@ Esta chave criptografa `empresas_certificados.password_encrypted` via `pgp_sym_e
 1. Gerar a chave nova (`openssl rand -hex 32`) e anotar a **antiga**.
 2. Criar o secret `NFE_CERT_MASTER_KEY_PREV` = **chave antiga** (Edge Functions > Manage Secrets).
 3. Atualizar `NFE_CERT_MASTER_KEY` = **chave nova**. A partir daqui as linhas antigas decryptam via `PREV` — nenhum fluxo cai.
-4. Recriptografar todos os registros, via SQL no projeto `bwwbeyolnnzppeuhgkcd` (Editor SQL ou `db_query`):
+4. Recriptografar os registros, via SQL no projeto `bwwbeyolnnzppeuhgkcd` (Editor SQL ou `db_query`). Rode em janela de baixo uso e peça aos usuários para não enviar/substituir certificados durante a etapa: um upload entre os passos 3 e 4 já chega cifrado com a **chave nova**, e um `UPDATE` único com `pgp_sym_decrypt(CHAVE_ANTIGA)` abortaria na primeira dessas linhas — deixando a rotação pela metade e impedindo remover o `PREV`. O bloco abaixo recriptografa linha a linha e **pula** as que já estão na chave nova:
    ```sql
-   UPDATE empresas_certificados
-   SET password_encrypted = extensions.pgp_sym_encrypt(
-     extensions.pgp_sym_decrypt(password_encrypted, 'CHAVE_ANTIGA'),
-     'CHAVE_NOVA'
-   );
+   DO $$
+   DECLARE r RECORD;
+   BEGIN
+     FOR r IN
+       SELECT id FROM empresas_certificados
+       WHERE password_encrypted IS NOT NULL
+     LOOP
+       BEGIN
+         UPDATE empresas_certificados
+         SET password_encrypted = extensions.pgp_sym_encrypt(
+           extensions.pgp_sym_decrypt(password_encrypted, 'CHAVE_ANTIGA'),
+           'CHAVE_NOVA'
+         )
+         WHERE id = r.id;
+       EXCEPTION WHEN OTHERS THEN
+         -- Linha cifrada depois do passo 3 (upload durante a rotação):
+         -- já abre com a chave nova, não precisa de recriptografia.
+         RAISE NOTICE 'pulando id % — já está na chave nova', r.id;
+       END;
+     END LOOP;
+   END $$;
    ```
-   Agora todas as linhas abrem com a chave nova na primeira tentativa.
+   Linhas que emitiram `NOTICE` já abrem com a chave nova na primeira tentativa.
 5. Validar: baixar/abrir um certificado existente via app e subir um novo (o encrypt sempre usa a chave nova).
 6. Só então **remover** o secret `NFE_CERT_MASTER_KEY_PREV` e descartar a chave antiga de qualquer lugar — guardá-la fora de prod até a validação.
 
