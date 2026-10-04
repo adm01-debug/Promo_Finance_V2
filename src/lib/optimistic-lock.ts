@@ -29,5 +29,17 @@ export async function updateComLockOtimista(
     .eq('updated_at', updatedAtVisto)
     .select('id');
   if (error) throw error;
-  if (!data || data.length === 0) throw new ConflitoVersaoError();
+  if (!data || data.length === 0) {
+    // 0 linhas pode ser conflito de versão OU a RLS negando a escrita (o
+    // PostgREST devolve seleção vazia sem erro nos dois casos). A linha ainda
+    // com o updated_at visto = ninguém escreveu → permissão/remoção; um
+    // updated_at diferente = outra pessoa escreveu → conflito de verdade.
+    const { data: atual } = await supabase
+      .from(tabela)
+      .select('updated_at')
+      .eq('id', id)
+      .maybeSingle();
+    if (atual && atual.updated_at !== updatedAtVisto) throw new ConflitoVersaoError();
+    throw new Error('Sem permissão para alterar este registro, ou o registro não existe mais.');
+  }
 }

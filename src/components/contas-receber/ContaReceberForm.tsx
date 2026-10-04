@@ -237,7 +237,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       } else {
         toast({
           title: 'Erro ao atualizar',
-          description: 'Tente novamente.',
+          description: error instanceof Error ? error.message : 'Tente novamente.',
           variant: 'destructive',
         });
       }

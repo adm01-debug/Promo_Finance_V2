@@ -160,7 +160,7 @@ export function useUpdateContaPagar() {
         toast.error('Esta conta foi alterada por outra pessoa. Revise e salve novamente.');
         queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       } else {
-        toast.error('Erro ao salvar conta a pagar');
+        toast.error(error.message || 'Erro ao salvar conta a pagar');
       }
       sounds.error();
     },
