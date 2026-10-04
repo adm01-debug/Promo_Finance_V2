@@ -55,7 +55,10 @@ jobs:
         # substituição de entradas históricas por novas supressões.
         run: |
           set -euo pipefail
-          git fetch --depth=1 origin main 2>/dev/null || true
+          # Fetch sem --depth: --depth=1 trunca a main local e quebra o
+          # git merge-base do step de varredura (BASE vazio → varredura do
+          # histórico inteiro → achados antigos fora do baseline).
+          git fetch origin main 2>/dev/null || true
           if git show origin/main:.gitleaks-baseline.json >/dev/null 2>&1; then
             # Extrai e ordena fingerprints de ambas as versões
             jq -r '.[].Fingerprint' .gitleaks-baseline.json | sort > /tmp/pr_fps.txt
@@ -85,7 +88,14 @@ jobs:
         # histórico inteiro do repo), evitando falsos positivos de commits
         # já presentes em main antes desta PR existir.
         run: |
-          BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          # HEAD é o merge ref do PR (refs/pull/N/merge): o 1º pai é a main na
+          # época do merge — escopo determinístico que não depende do estado
+          # local de origin/main.
+          if git rev-parse --verify -q HEAD^2 >/dev/null 2>&1; then
+            BASE=$(git rev-parse HEAD^1)
+          else
+            BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          fi
           if [ -n "$BASE" ]; then
             LOG_OPTS="${BASE}..HEAD"
           else
