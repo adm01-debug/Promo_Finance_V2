@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { mustSucceed } from '@/lib/supabase-write';
 import { addMonths, format } from 'date-fns';
+import type { TablesInsert } from '@/integrations/supabase/types';
 
 export interface AcordoParcelamento {
   id: string;
@@ -129,7 +130,7 @@ export function useAcordosParcelamento() {
       if (acordoError) throw acordoError;
 
       // Criar parcelas
-      const parcelas = [];
+      const parcelas: TablesInsert<'parcelas_acordo'>[] = [];
       let dataVencimento = new Date(data.data_primeiro_vencimento);
 
       for (let i = 1; i <= data.numero_parcelas; i++) {
@@ -196,6 +197,8 @@ export function useAcordosParcelamento() {
         .single();
 
       if (error) throw error;
+      if (!data.acordo_id) throw new Error('Parcela sem acordo vinculado');
+      const acordoId = data.acordo_id;
 
       // O erro deste select era descartado, e a expressão errava nos dois
       // sentidos: com `parcelas` undefined (select falhou), `?.every` devolve
@@ -203,7 +206,7 @@ export function useAcordosParcelamento() {
       // RLS produz quando as parcelas estão fora do escopo — `[].every()`
       // devolve `true` e o acordo era quitado sem parcela alguma paga.
       const parcelas = await mustSucceed(
-        supabase.from('parcelas_acordo').select('status').eq('acordo_id', data.acordo_id),
+        supabase.from('parcelas_acordo').select('status').eq('acordo_id', acordoId),
         'conferir as parcelas restantes do acordo'
       );
 
@@ -214,7 +217,7 @@ export function useAcordosParcelamento() {
           supabase
             .from('acordos_parcelamento')
             .update({ status: 'quitado' })
-            .eq('id', data.acordo_id)
+            .eq('id', acordoId)
             .select('id, contas_receber_ids'),
           'quitar o acordo de parcelamento',
           { exigirLinhas: true }
