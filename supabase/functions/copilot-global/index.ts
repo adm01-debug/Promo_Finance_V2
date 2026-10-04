@@ -4,6 +4,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('copilot-global');
 
 const CopilotGlobalBodySchema = z.object({
   contexto_pagina: z.string().max(64).optional(),
@@ -143,144 +146,150 @@ async function executeTool(name: string, sb: ReturnType<typeof createClient>, us
 }
 
 Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-
+  const _t0 = Date.now();
   try {
-    const auth = req.headers.get('Authorization') ?? '';
-    const token = auth.replace('Bearer ', '');
-    if (!token)
-      return new Response(JSON.stringify({ error: 'no auth' }), {
-        status: 401,
-        headers: corsHeaders,
-      });
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-    const sbUser = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: auth } },
-    });
-    const { data: userData } = await sbUser.auth.getUser(token);
-    if (!userData?.user)
-      return new Response(JSON.stringify({ error: 'invalid auth' }), {
-        status: 401,
-        headers: corsHeaders,
-      });
-
-    // RBAC
-    const sbAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    // Usuário pode ter múltiplos papéis ativos simultâneos (UNIQUE é
-    // user_id+role, não user_id sozinho) — .maybeSingle() sem filtrar por
-    // role quebrava (>1 linha) para esses usuários, negando acesso mesmo
-    // com papel permitido. Filtra pelos papéis aceitos e checa existência.
-    const { data: roleRows } = await sbAdmin
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userData.user.id)
-      .eq('is_active', true)
-      .in('role', Array.from(ROLES_PERMITIDOS));
-    if (!roleRows || roleRows.length === 0) {
-      return new Response(JSON.stringify({ error: 'forbidden' }), {
-        status: 403,
-        headers: corsHeaders,
-      });
-    }
-
-    const rawBody = await req.json().catch(() => ({}));
-    const validation = await validateContract(CopilotGlobalBodySchema, rawBody);
-    if (!validation.success) return validation.response;
-    const body = validation.data;
-    const contexto = String(body.contexto_pagina ?? 'financeiro');
-    const messages = Array.isArray(body.messages) ? body.messages : [];
-
-    const fullMessages = [{ role: 'system', content: buildSystemPrompt(contexto) }, ...messages];
-
-    // Loop tool calls (até 3 iterações)
-    let workingMessages = fullMessages;
-    for (let iter = 0; iter < 3; iter++) {
-      const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash',
-          messages: workingMessages,
-          tools: TOOLS,
-          stream: false,
-        }),
-      });
-
-      if (resp.status === 429)
-        return new Response(JSON.stringify({ error: 'Rate limit. Tente em alguns segundos.' }), {
-          status: 429,
+    try {
+      const auth = req.headers.get('Authorization') ?? '';
+      const token = auth.replace('Bearer ', '');
+      if (!token)
+        return new Response(JSON.stringify({ error: 'no auth' }), {
+          status: 401,
           headers: corsHeaders,
         });
-      if (resp.status === 402)
-        return new Response(JSON.stringify({ error: 'Créditos de IA esgotados.' }), {
-          status: 402,
+
+      const sbUser = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: auth } },
+      });
+      const { data: userData } = await sbUser.auth.getUser(token);
+      if (!userData?.user)
+        return new Response(JSON.stringify({ error: 'invalid auth' }), {
+          status: 401,
           headers: corsHeaders,
         });
-      if (!resp.ok) {
-        const t = await resp.text();
-        console.error('AI gateway:', resp.status, t);
-        return new Response(JSON.stringify({ error: 'AI gateway error' }), {
-          status: 500,
+
+      // RBAC
+      const sbAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+      // Usuário pode ter múltiplos papéis ativos simultâneos (UNIQUE é
+      // user_id+role, não user_id sozinho) — .maybeSingle() sem filtrar por
+      // role quebrava (>1 linha) para esses usuários, negando acesso mesmo
+      // com papel permitido. Filtra pelos papéis aceitos e checa existência.
+      const { data: roleRows } = await sbAdmin
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userData.user.id)
+        .eq('is_active', true)
+        .in('role', Array.from(ROLES_PERMITIDOS));
+      if (!roleRows || roleRows.length === 0) {
+        return new Response(JSON.stringify({ error: 'forbidden' }), {
+          status: 403,
           headers: corsHeaders,
         });
       }
 
-      const data = await resp.json();
-      const choice = data.choices?.[0];
-      const msg = choice?.message;
-      if (!msg) break;
+      const rawBody = await req.json().catch(() => ({}));
+      const validation = await validateContract(CopilotGlobalBodySchema, rawBody);
+      if (!validation.success) return validation.response;
+      const body = validation.data;
+      const contexto = String(body.contexto_pagina ?? 'financeiro');
+      const messages = Array.isArray(body.messages) ? body.messages : [];
 
-      if (msg.tool_calls?.length) {
-        workingMessages = [...workingMessages, msg];
-        for (const tc of msg.tool_calls) {
-          // sbUser (RLS ligada ao JWT real do chamador) — nunca sbAdmin aqui:
-          // as tools agregam contas_pagar/contas_receber/acoes_recomendadas/
-          // health_scores_operacionais, todas escopadas por empresa via RLS;
-          // service-role vazaria dados de TODAS as empresas para qualquer
-          // usuário com um dos papéis permitidos.
-          const result = await executeTool(tc.function.name, sbUser, userData.user.id);
-          workingMessages.push({
-            role: 'tool',
-            tool_call_id: tc.id,
-            content: JSON.stringify(result),
+      const fullMessages = [{ role: 'system', content: buildSystemPrompt(contexto) }, ...messages];
+
+      // Loop tool calls (até 3 iterações)
+      let workingMessages = fullMessages;
+      for (let iter = 0; iter < 3; iter++) {
+        const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: workingMessages,
+            tools: TOOLS,
+            stream: false,
+          }),
+        });
+
+        if (resp.status === 429)
+          return new Response(JSON.stringify({ error: 'Rate limit. Tente em alguns segundos.' }), {
+            status: 429,
+            headers: corsHeaders,
+          });
+        if (resp.status === 402)
+          return new Response(JSON.stringify({ error: 'Créditos de IA esgotados.' }), {
+            status: 402,
+            headers: corsHeaders,
+          });
+        if (!resp.ok) {
+          const t = await resp.text();
+          log.error('AI gateway:', { context: { args: [resp.status, t] } });
+          return new Response(JSON.stringify({ error: 'AI gateway error' }), {
+            status: 500,
+            headers: corsHeaders,
           });
         }
-        continue; // próximo iter
+
+        const data = await resp.json();
+        const choice = data.choices?.[0];
+        const msg = choice?.message;
+        if (!msg) break;
+
+        if (msg.tool_calls?.length) {
+          workingMessages = [...workingMessages, msg];
+          for (const tc of msg.tool_calls) {
+            // sbUser (RLS ligada ao JWT real do chamador) — nunca sbAdmin aqui:
+            // as tools agregam contas_pagar/contas_receber/acoes_recomendadas/
+            // health_scores_operacionais, todas escopadas por empresa via RLS;
+            // service-role vazaria dados de TODAS as empresas para qualquer
+            // usuário com um dos papéis permitidos.
+            const result = await executeTool(tc.function.name, sbUser, userData.user.id);
+            workingMessages.push({
+              role: 'tool',
+              tool_call_id: tc.id,
+              content: JSON.stringify(result),
+            });
+          }
+          continue; // próximo iter
+        }
+
+        // Resposta final → stream simulado em uma única mensagem
+        const final = msg.content ?? '';
+        const stream = new ReadableStream({
+          start(controller) {
+            const enc = new TextEncoder();
+            const chunkSize = 40;
+            for (let i = 0; i < final.length; i += chunkSize) {
+              const chunk = final.slice(i, i + chunkSize);
+              const sse = `data: ${JSON.stringify({ choices: [{ delta: { content: chunk } }] })}\n\n`;
+              controller.enqueue(enc.encode(sse));
+            }
+            controller.enqueue(enc.encode('data: [DONE]\n\n'));
+            controller.close();
+          },
+        });
+        return new Response(stream, {
+          headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+        });
       }
 
-      // Resposta final → stream simulado em uma única mensagem
-      const final = msg.content ?? '';
-      const stream = new ReadableStream({
-        start(controller) {
-          const enc = new TextEncoder();
-          const chunkSize = 40;
-          for (let i = 0; i < final.length; i += chunkSize) {
-            const chunk = final.slice(i, i + chunkSize);
-            const sse = `data: ${JSON.stringify({ choices: [{ delta: { content: chunk } }] })}\n\n`;
-            controller.enqueue(enc.encode(sse));
-          }
-          controller.enqueue(enc.encode('data: [DONE]\n\n'));
-          controller.close();
-        },
+      return new Response(JSON.stringify({ error: 'tool loop excedido' }), {
+        status: 500,
+        headers: corsHeaders,
       });
-      return new Response(stream, {
-        headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+    } catch (e) {
+      log.error('copilot-global:', { error_message: mensagemErro(e), context: contextoErro(e) });
+      return new Response(JSON.stringify({ error: (e as Error).message }), {
+        status: 500,
+        headers: corsHeaders,
       });
     }
-
-    return new Response(JSON.stringify({ error: 'tool loop excedido' }), {
-      status: 500,
-      headers: corsHeaders,
-    });
-  } catch (e) {
-    console.error('copilot-global:', e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
-      status: 500,
-      headers: corsHeaders,
-    });
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

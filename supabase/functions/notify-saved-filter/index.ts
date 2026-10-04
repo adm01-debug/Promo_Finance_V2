@@ -12,6 +12,9 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('notify-saved-filter');
 
 interface NotifyRequest {
   /** Identificador da assinatura ou do filtro de origem (para auditoria). */
@@ -32,7 +35,6 @@ interface NotifyRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -168,7 +170,10 @@ const handler = async (req: Request): Promise<Response> => {
     if (insertRows.length > 0) {
       const { error: insErr } = await admin.from('notification_history').insert(insertRows);
       if (insErr) {
-        console.error('[notify-saved-filter] insert history failed', insErr);
+        log.error('[notify-saved-filter] insert history failed', {
+          error_message: mensagemErro(insErr),
+          context: contextoErro(insErr),
+        });
       }
     }
 
@@ -181,7 +186,10 @@ const handler = async (req: Request): Promise<Response> => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('[notify-saved-filter] erro', e);
+    log.error('[notify-saved-filter] erro', {
+      error_message: mensagemErro(e),
+      context: contextoErro(e),
+    });
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -228,4 +236,12 @@ function renderEmail(input: {
   `;
 }
 
-serve(handler);
+serve(async (req) => {
+  const _t0 = Date.now();
+  try {
+    return await handler(req);
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
+  }
+});
