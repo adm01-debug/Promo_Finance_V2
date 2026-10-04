@@ -1,0 +1,575 @@
+openapi: 3.0.3
+info:
+  title: Promo Finance V2 — API pública (edge functions)
+  description: >-
+    Contrato externo das edge functions chamadas por sistemas de terceiros
+    (provedores de cobrança, ERPs, IdPs, n8n) e utilitários públicos.
+    Todas as rotas vivem sob {SUPABASE_URL}/functions/v1/. As ~90 funções
+    internas (chamadas só pelo app autenticado) não fazem parte deste
+    contrato. Schemas espelham os zod de
+    supabase/functions/_shared/validation.ts — divergência entre este
+    documento e o schema zod = bug neste documento.
+  version: '1.0.0'
+servers:
+  - url: https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1
+tags:
+  - name: webhooks
+    description: Eventos inbound de provedores externos
+  - name: identidade
+    description: SSO e provisionamento SCIM
+  - name: automacao
+    description: Callbacks de automação (n8n)
+  - name: util
+    description: Health e chaves públicas de configuração
+
+paths:
+  /asaas-webhook:
+    post:
+      tags: [webhooks]
+      summary: Eventos de cobrança do Asaas
+      description: >-
+        Recebe eventos PAYMENT_*/TRANSFER_* do Asaas. Autenticado pelo header
+        asaas-access-token (configurado no painel Asaas → Integrações →
+        Webhooks). Idempotente por id/eventId — reenvio retorna 200 sem
+        reprocessar. Responde 5xx só quando o retry do Asaas deve acontecer
+        (RetryableError); erro de validação retorna 4xx sem retry.
+      parameters:
+        - name: asaas-access-token
+          in: header
+          required: true
+          schema: { type: string }
+          description: Token de verificação configurado no Asaas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AsaasWebhook'
+      responses:
+        '200':
+          description: Evento aceito (ou duplicado já processado)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  evento: { type: string }
+        '400':
+          $ref: '#/components/responses/ErroValidacao'
+        '401':
+          description: Token do webhook inválido/ausente
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          description: Erro transitório — o Asaas deve reenviar
+
+  /bling-webhook:
+    post:
+      tags: [webhooks]
+      summary: Eventos do ERP Bling
+      description: >-
+        Recebe callbacks do Bling (notas fiscais, pedidos, estoque). Assinatura
+        verificada por authenticateWebhook (secret por empresa). Idempotente
+        por eventId — obrigatório no contrato v2.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlingWebhook'
+      responses:
+        '200': { description: Evento aceito }
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '401': { description: Assinatura/secret inválidos }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /bitrix24-webhook:
+    post:
+      tags: [webhooks]
+      summary: Eventos do Bitrix24
+      description: >-
+        Recebe eventos outbound do Bitrix24 (entidades CRM). Autenticado por
+        application_token no payload auth ou secret resolvido por domínio.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bitrix24Webhook'
+      responses:
+        '200': { description: Evento aceito }
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '401': { description: Token inválido }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /whatsapp-webhook:
+    post:
+      tags: [webhooks]
+      summary: Eventos de mensagem (Evolution API / WhatsApp)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WhatsappWebhook'
+      responses:
+        '200': { description: Evento aceito }
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /n8n-callback:
+    post:
+      tags: [automacao]
+      summary: Callback de workflows n8n
+      description: >-
+        Endpoint genérico para workflows n8n gravarem resultados. Autenticado
+        pelo header x-n8n-secret (comparado a N8N_CALLBACK_SECRET).
+      parameters:
+        - name: x-n8n-secret
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action, payload]
+              properties:
+                action:
+                  type: string
+                  enum: [create_task, create_alert, log]
+                payload:
+                  type: object
+                  description: >-
+                    Campos por action: create_alert usa
+                    {alert_type, severity, subject, message, description,
+                    deal_id, driver_id, order_id, record_id}; log usa
+                    {action, message, ...}.
+      responses:
+        '200':
+          description: Ação executada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  action: { type: string }
+                  result: { type: object }
+        '401': { description: x-n8n-secret inválido }
+        '405': { description: Método diferente de POST }
+
+  /sso-initiate:
+    post:
+      tags: [identidade]
+      summary: Inicia fluxo SSO (SAML ou OIDC)
+      description: >-
+        Retorna a URL de autorização do IdP. Para SAML devolve a URL nativa do
+        Supabase; para OIDC monta authorize com PKCE a partir da
+        authorization_endpoint/discovery_url do provedor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_id]
+              properties:
+                provider_id: { type: string, format: uuid }
+                redirect_to: { type: string, format: uri, nullable: true }
+      responses:
+        '200':
+          description: URL de redirecionamento para o IdP
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirect_url: { type: string, format: uri }
+                  type: { type: string, enum: [saml, oidc] }
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '404': { description: Provedor não encontrado ou inativo }
+
+  /sso-callback:
+    post:
+      tags: [identidade]
+      summary: Conclui fluxo OIDC (code → sessão)
+      description: >-
+        Troca o authorization code do IdP (com PKCE) e provisiona o usuário na
+        empresa. Chamado pelo frontend na rota /sso/callback.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, state]
+              properties:
+                code: { type: string }
+                state: { type: string }
+                code_verifier: { type: string }
+      responses:
+        '200': { description: Sessão criada; usuário provisionado }
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '401': { description: State/verifier inválido ou expirado }
+
+  /scim-server/scim/v2/ServiceProviderConfig:
+    get:
+      tags: [identidade]
+      summary: Capabilities SCIM 2.0
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: ServiceProviderConfig (patch/etag suportados) }
+        '401': { description: Bearer token SCIM inválido }
+
+  /scim-server/scim/v2/Users:
+    get:
+      tags: [identidade]
+      summary: Lista usuários provisionados
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: filter, in: query, schema: { type: string }, description: 'SCIM filter (ex.: userName eq "a@b.com")' }
+        - { name: startIndex, in: query, schema: { type: integer, default: 1 } }
+        - { name: count, in: query, schema: { type: integer } }
+      responses:
+        '200': { description: ListResponse SCIM }
+        '401': { description: Bearer token SCIM inválido }
+    post:
+      tags: [identidade]
+      summary: Provisiona usuário em user_empresas + user_roles
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema: { $ref: '#/components/schemas/ScimUser' }
+      responses:
+        '201': { description: User criado (Location: /scim/v2/Users/{id}) }
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '401': { description: Bearer token SCIM inválido }
+        '409': { description: userName já provisionado }
+
+  '/scim-server/scim/v2/Users/{id}':
+    get:
+      tags: [identidade]
+      summary: Lê usuário por id
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '200': { description: User SCIM }
+        '404': { description: Não encontrado }
+    patch:
+      tags: [identidade]
+      summary: Patch SCIM (active, displayName, name.*, externalId, department)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              properties:
+                schemas: { type: array, items: { type: string } }
+                Operations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      op: { type: string, enum: [add, remove, replace] }
+                      path: { type: string }
+                      value: {}
+      responses:
+        '200': { description: User atualizado }
+        '404': { description: Não encontrado }
+    put:
+      tags: [identidade]
+      summary: Substitui o usuário inteiro
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema: { $ref: '#/components/schemas/ScimUser' }
+      responses:
+        '200': { description: User substituído }
+        '404': { description: Não encontrado }
+    delete:
+      tags: [identidade]
+      summary: Desprovisiona (desativa vínculo user_empresas)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '204': { description: Desprovisionado }
+        '404': { description: Não encontrado }
+
+  /scim-server/scim/v2/Groups:
+    get:
+      tags: [identidade]
+      summary: Lista grupos/papéis provisionáveis
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: ListResponse SCIM }
+    post:
+      tags: [identidade]
+      summary: Cria mapeamento de grupo → papel
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              properties:
+                displayName: { type: string }
+                members:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value: { type: string }
+      responses:
+        '201': { description: Group criado (Location: /scim/v2/Groups/{id}) }
+
+  '/scim-server/scim/v2/Groups/{id}':
+    get:
+      tags: [identidade]
+      summary: Lê grupo por id
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '200': { description: Group SCIM }
+        '404': { description: Não encontrado }
+    patch:
+      tags: [identidade]
+      summary: Patch de membros do grupo
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '200': { description: Group atualizado }
+    delete:
+      tags: [identidade]
+      summary: Remove o mapeamento de grupo
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '204': { description: Removido }
+
+  /validar-token-contador:
+    post:
+      tags: [identidade]
+      summary: Valida token JWT de contador convidado
+      description: >-
+        Verifica assinatura/expiração do token emitido por convidar-contador e
+        devolve {empresa_id, role, sub} para o fluxo de aceite sem login.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        '200':
+          description: Payload validado do token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  empresa_id: { type: string, format: uuid }
+                  role: { type: string }
+                  sub: { type: string }
+        '401': { description: Token inválido ou expirado }
+
+  /health:
+    get:
+      tags: [util]
+      summary: Liveness público
+      description: >-
+        Resposta mínima {status, timestamp, version} — não expõe detalhe de
+        infra. Usuário autenticado recebe o bloco services.* estendido.
+      responses:
+        '200':
+          description: Sistema no ar
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [ok] }
+                  timestamp: { type: string, format: date-time }
+                  version: { type: string }
+                  services:
+                    type: object
+                    description: Só presente para chamador autenticado
+
+  /get-vapid-key:
+    get:
+      tags: [util]
+      summary: Chave pública VAPID para Web Push
+      responses:
+        '200':
+          description: Chave pública (subject/applicationServerKey do push)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key: { type: string }
+
+  /get-mapbox-token:
+    get:
+      tags: [util]
+      summary: Token público do Mapbox
+      responses:
+        '200':
+          description: Token de escopo público (pk.*)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: token
+      description: Token SCIM por provedor (secrets scim_tokens por provider)
+
+  parameters:
+    ScimId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+
+  responses:
+    ErroValidacao:
+      description: Payload fora do contrato (detalhes zod)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+              details: { type: object }
+    RateLimited:
+      description: Acima do limite por IP/função (checkRateLimit)
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+
+  schemas:
+    AsaasWebhook:
+      type: object
+      required: [event]
+      additionalProperties: false
+      properties:
+        event:
+          type: string
+          description: 'Ex.: PAYMENT_RECEIVED, PAYMENT_OVERDUE, TRANSFER_DONE'
+        payment:
+          type: object
+          properties:
+            id: { type: string }
+            status: { type: string }
+        transfer:
+          type: object
+          properties:
+            id: { type: string }
+            status: { type: string }
+            transactionReceiptUrl: { type: string }
+        id:
+          type: string
+          description: Obrigatório no contrato v2 (idempotência)
+
+    BlingWebhook:
+      type: object
+      required: [event, data]
+      additionalProperties: false
+      properties:
+        eventId:
+          type: string
+          description: Obrigatório no contrato v2 (idempotência)
+        date: { type: string, format: date-time }
+        version: { oneOf: [{ type: string }, { type: number }] }
+        companyId: { oneOf: [{ type: string }, { type: number }] }
+        event: { type: string }
+        module: { type: string }
+        data:
+          type: object
+          additionalProperties: true
+        retries: { type: number }
+
+    Bitrix24Webhook:
+      type: object
+      required: [event, data]
+      additionalProperties: false
+      properties:
+        event: { type: string }
+        event_id:
+          type: string
+          description: Obrigatório no contrato v2 (idempotência)
+        data:
+          type: object
+          required: [FIELDS]
+          properties:
+            FIELDS:
+              type: object
+              additionalProperties: true
+        ts: { type: string }
+        auth:
+          type: object
+          properties:
+            domain: { type: string }
+            client_endpoint: { type: string }
+            server_endpoint: { type: string }
+            member_id: { type: string }
+            application_token: { type: string }
+
+    WhatsappWebhook:
+      type: object
+      required: [event, from]
+      additionalProperties: false
+      properties:
+        event: { type: string }
+        messageId:
+          type: string
+          description: Obrigatório no contrato v2 (idempotência)
+        status: { type: string }
+        from: { type: string }
+        text: { type: string }
+
+    ScimUser:
+      type: object
+      required: [userName]
+      properties:
+        schemas:
+          type: array
+          items: { type: string }
+        userName: { type: string, format: email }
+        displayName: { type: string }
+        externalId: { type: string }
+        active: { type: boolean }
+        name:
+          type: object
+          properties:
+            givenName: { type: string }
+            familyName: { type: string }
+            formatted: { type: string }
