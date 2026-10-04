@@ -87,7 +87,18 @@ export function useContasPagarLogic() {
     contaBancariaId: currentBankAccountId || 'all',
   });
 
-  const { data: allContas = [] } = useContasPagar(currentEmpresaId || 'all');
+  const { data: allContasRaw = [] } = useContasPagar(currentEmpresaId || 'all');
+  // valor/data_vencimento são NOT NULL na tabela base mas nullable no tipo da
+  // view; normalizamos uma vez para os KPIs e filtros.
+  const allContas = useMemo(
+    () =>
+      allContasRaw.map((c) => ({
+        ...c,
+        valor: c.valor ?? 0,
+        data_vencimento: c.data_vencimento ?? '',
+      })),
+    [allContasRaw]
+  );
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: empresas = [] } = useEmpresas();
   const { data: contasBancarias = [] } = useContasBancarias();
@@ -144,6 +155,7 @@ export function useContasPagarLogic() {
   const historicoAprovacaoPorConta = useMemo(
     () =>
       solicitacoesAprovacao.reduce((acc, s) => {
+        if (!s.conta_pagar_id) return acc;
         if (!acc.has(s.conta_pagar_id)) {
           acc.set(s.conta_pagar_id, []);
         }
@@ -301,7 +313,7 @@ export function useContasPagarLogic() {
       case 'valor_asc':
         return a.valor - b.valor;
       case 'fornecedor':
-        return a.fornecedor_nome.localeCompare(b.fornecedor_nome);
+        return (a.fornecedor_nome ?? '').localeCompare(b.fornecedor_nome ?? '');
       default:
         return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
     }
