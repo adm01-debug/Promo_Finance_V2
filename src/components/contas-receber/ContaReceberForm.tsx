@@ -81,6 +81,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const queryClient = useQueryClient();
   const confetti = useConfetti();
   const [showClienteSelect, setShowClienteSelect] = useState(false);
+  // Versao fresca apos conflito: `conta` fica congelado no form; em
+  // ConflitoVersaoError recarregamos o updated_at para a proxima tentativa.
+  const [versaoEsperada, setVersaoEsperada] = useState<string | null>(null);
   const isEditing = !!conta;
 
   const { data: clientes = [] } = useClientes();
@@ -191,7 +194,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const updateMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
-      await updateComLockOtimista('contas_receber', conta.id, conta.updated_at, {
+      await updateComLockOtimista('contas_receber', conta.id, versaoEsperada ?? conta.updated_at, {
         cliente_id: data.cliente_id || null,
         cliente_nome: data.cliente_nome,
         descricao: data.descricao,
@@ -218,9 +221,17 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       logger.error('Error updating conta receber:', error);
       if (error instanceof ConflitoVersaoError) {
         queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+        supabase
+          .from('contas_receber')
+          .select('updated_at')
+          .eq('id', conta.id)
+          .single()
+          .then(({ data: row }) => {
+            if (row?.updated_at) setVersaoEsperada(row.updated_at);
+          });
         toast({
           title: 'Conta alterada por outra pessoa',
-          description: 'Recarregue a lista e tente novamente.',
+          description: 'Revise os dados e salve novamente.',
           variant: 'destructive',
         });
       } else {

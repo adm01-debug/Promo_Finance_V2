@@ -157,7 +157,7 @@ export function useUpdateContaPagar() {
     onError: (error: Error) => {
       logger.error('Error updating conta pagar:', error);
       if (error instanceof ConflitoVersaoError) {
-        toast.error('Esta conta foi alterada por outra pessoa. Recarregue e tente de novo.');
+        toast.error('Esta conta foi alterada por outra pessoa. Revise e salve novamente.');
         queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       } else {
         toast.error('Erro ao salvar conta a pagar');

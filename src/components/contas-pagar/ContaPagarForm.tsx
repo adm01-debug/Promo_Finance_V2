@@ -21,6 +21,8 @@ import { useProcessarNFMutation } from '@/hooks/useProcessarNFOCR';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
+import { supabase } from '@/integrations/supabase/client';
+import { ConflitoVersaoError } from '@/lib/optimistic-lock';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Form,
@@ -97,6 +99,9 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
   const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
+  // Versao fresca apos conflito: o objeto `conta` fica congelado no form;
+  // em ConflitoVersaoError recarregamos o updated_at para a proxima tentativa.
+  const [versaoEsperada, setVersaoEsperada] = useState<string | null>(null);
   const isEditing = !!conta;
 
   const processarNF = useProcessarNFMutation();
@@ -161,11 +166,23 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const onSubmit = (data: ContaPagarFormData) => {
     if (isEditing && conta) {
       updateMutation.mutate(
-        { ...data, id: conta.id, expected_updated_at: conta.updated_at },
+        { ...data, id: conta.id, expected_updated_at: versaoEsperada ?? conta.updated_at },
         {
           onSuccess: () => {
             celebrateSuccess('Conta atualizada com sucesso!');
             onOpenChange(false);
+          },
+          onError: (error: Error) => {
+            if (error instanceof ConflitoVersaoError) {
+              supabase
+                .from('contas_pagar')
+                .select('updated_at')
+                .eq('id', conta.id)
+                .single()
+                .then(({ data: row }) => {
+                  if (row?.updated_at) setVersaoEsperada(row.updated_at);
+                });
+            }
           },
         }
       );
