@@ -190,14 +190,22 @@ export function validarMagicBytesServidor(nome: string, head: Uint8Array): strin
     return `${nome}: conteúdo (${tipo}) não corresponde à extensão .${ext}`;
   }
 
-  const office = MARCADORES_OFFICE[ext];
-  if (tipo === 'zip' && office) {
+  if (tipo === 'zip') {
     const entradas = entradasZip(head);
-    const estruturaValida =
-      entradas[0] === office.primeira &&
-      (!office.prefixo || entradas.some((e) => e.startsWith(office.prefixo!)));
-    if (!estruturaValida) {
-      return `${nome}: zip não é um pacote .${ext} válido`;
+    // JAR é zip comum: manifest + bytecode .class rodam com `java -jar`
+    // mesmo renomeado para .zip. A assinatura PK não distingue os dois —
+    // só a tabela de entradas.
+    if (entradas.some((e) => e === 'META-INF/MANIFEST.MF' || e.endsWith('.class'))) {
+      return `${nome}: zip com estrutura de executável Java não é permitido`;
+    }
+    const office = MARCADORES_OFFICE[ext];
+    if (office) {
+      const estruturaValida =
+        entradas[0] === office.primeira &&
+        (!office.prefixo || entradas.some((e) => e.startsWith(office.prefixo!)));
+      if (!estruturaValida) {
+        return `${nome}: zip não é um pacote .${ext} válido`;
+      }
     }
   }
 

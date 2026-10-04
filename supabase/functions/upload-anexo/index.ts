@@ -79,9 +79,12 @@ Deno.serve(async (req) => {
       return erro(req, 500, 'upload_falhou', 'Falha ao gravar o arquivo.');
     }
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from(BUCKET).getPublicUrl(caminho);
+    // Bucket privado: não existe URL pública — persistir a de
+    // `/object/public/` seria guardar um link já quebrado. O endereço
+    // interno (`/<bucket>/<caminho>`) é o locator parseável por
+    // caminhoNoStorage; o download gera URL assinada na hora a partir do
+    // storage_path.
+    const enderecoObjeto = `/${BUCKET}/${caminho}`;
 
     const { error: erroInsert } = await supabase.from('anexos_financeiros').insert({
       entidade_id: entidadeId,
@@ -89,8 +92,9 @@ Deno.serve(async (req) => {
       nome_arquivo: arquivo.name,
       mime_type: arquivo.type,
       tamanho_bytes: arquivo.size,
-      url: publicUrl,
-      url_publica: publicUrl,
+      url: enderecoObjeto,
+      url_publica: null,
+      storage_path: caminho,
       user_id: userId,
     });
 
@@ -103,7 +107,7 @@ Deno.serve(async (req) => {
     }
 
     log.info('anexo registrado', { caminho, tamanho: arquivo.size });
-    return new Response(JSON.stringify({ url: publicUrl, caminho }), {
+    return new Response(JSON.stringify({ url: enderecoObjeto, caminho }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

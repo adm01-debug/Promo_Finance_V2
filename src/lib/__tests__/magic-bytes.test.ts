@@ -105,14 +105,27 @@ describe('validarMagicBytes', () => {
   });
 
   it('rejeita zip genérico renomeado para extensão de escritório', async () => {
-    // JAR renomeado: assinatura zip válida, mas sem a entrada OOXML obrigatória.
+    // JAR renomeado: manifest + bytecode denunciam o executável antes de
+    // checar a entrada OOXML obrigatória.
     const jar = arquivo('plan.xlsx', zipComEntradas('META-INF/MANIFEST.MF', 'App.class'));
-    expect(await validarMagicBytes(jar, ['.xlsx'])).toMatch(/não é um pacote .xlsx válido/);
+    expect(await validarMagicBytes(jar, ['.xlsx'])).toMatch(/executável Java/);
     // Texto contendo o nome da entrada não engana o parser de estrutura.
     const falso = arquivo('plan.docx', zipComEntradas('notas.txt', 'META-INF/[Content_Types].xml'));
     expect(await validarMagicBytes(falso, ['.docx'])).toMatch(/não é um pacote .docx válido/);
     // .zip continua aceito sem marcador de escritório.
     const zip = arquivo('dados.zip', [0x50, 0x4b, 0x03, 0x04]);
+    expect(await validarMagicBytes(zip, ['.zip'])).toBeNull();
+  });
+
+  it('rejeita JAR renomeado para .zip (manifest + bytecode nas entradas)', async () => {
+    // `.jar` como extensão já é bloqueado por nome; o disfarce é mandar o
+    // mesmo pacote como `.zip` — só a tabela de entradas o denuncia.
+    const jar = arquivo('payload.zip', zipComEntradas('META-INF/MANIFEST.MF', 'App.class'));
+    expect(await validarMagicBytes(jar, ['.zip'])).toMatch(/executável Java/);
+    const classes = arquivo('payload.zip', zipComEntradas('com/app/Main.class'));
+    expect(await validarMagicBytes(classes, ['.zip'])).toMatch(/executável Java/);
+    // Zip comum com META-INF inofensivo (sem MANIFEST.MF nem .class) passa.
+    const zip = arquivo('dados.zip', zipComEntradas('META-INF/leiame.txt', 'planilha.csv'));
     expect(await validarMagicBytes(zip, ['.zip'])).toBeNull();
   });
 });

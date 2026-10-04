@@ -62,8 +62,15 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (anexo: { id: string; url?: string | null; nome_arquivo?: string }) => {
-      const caminho = caminhoNoStorage(anexo.url);
+    mutationFn: async (anexo: {
+      id: string;
+      url?: string | null;
+      storage_path?: string | null;
+      nome_arquivo?: string;
+    }) => {
+      // storage_path é o locator canônico (anexos novos, bucket privado);
+      // a URL parseada cobre linhas legadas.
+      const caminho = anexo.storage_path ?? caminhoNoStorage(anexo.url);
 
       // Storage primeiro, de propósito. Na ordem inversa, a falha do storage
       // deixaria um arquivo sem nenhuma linha apontando para ele: invisível,
@@ -101,6 +108,27 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
       toast.success('Anexo removido');
     },
   });
+
+  // Bucket privado: `url_publica` não é link HTTP — o download gera uma
+  // URL assinada curta na hora. Linhas legadas com URL pública antiga
+  // resolvem o caminho por caminhoNoStorage da mesma forma.
+  const baixarAnexo = async (anexo: {
+    url?: string | null;
+    url_publica?: string | null;
+    storage_path?: string | null;
+  }) => {
+    const caminho = anexo.storage_path ?? caminhoNoStorage(anexo.url ?? anexo.url_publica);
+    if (!caminho) {
+      toast.error('Não foi possível localizar o arquivo do anexo');
+      return;
+    }
+    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
+    if (error || !data?.signedUrl) {
+      toast.error('Falha ao gerar link de download: ' + (error?.message ?? 'sem URL assinada'));
+      return;
+    }
+    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -198,11 +226,9 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                asChild
+                onClick={() => baixarAnexo(anexo)}
               >
-                <a href={anexo.url_publica} target="_blank" rel="noopener noreferrer">
-                  <Download className="h-4 w-4" />
-                </a>
+                <Download className="h-4 w-4" />
               </Button>
               {!readonly && (
                 <Button

@@ -122,9 +122,22 @@ function segredos(): string[] {
   }
 }
 
+// PII em texto livre: segredos() só cobre valores de env — um e-mail ou
+// documento interpolado na mensagem ('Processando alerta para ${dest}')
+// passava reto. edge_function_logs é legível por qualquer admin, então
+// identificadores pessoais saem mascarados antes de persistir e de ir para
+// o stdout. Cobrimos os formatos com separadores — dígitos puros longos
+// demais dariam falso positivo em ids e timestamps.
+const PII_TEXTO: Array<[RegExp, string]> = [
+  [/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[EMAIL]'],
+  [/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g, '[CPF]'],
+  [/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, '[CNPJ]'],
+];
+
 function redigir(s: string): string {
   let out = s;
   for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+  for (const [re, rotulo] of PII_TEXTO) out = out.replace(re, rotulo);
   return out;
 }
 
