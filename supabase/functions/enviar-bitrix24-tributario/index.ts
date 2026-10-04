@@ -95,9 +95,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
-    if (inativa) return inativa;
-
     const _raw = await req.json();
     const _v = await validateContract(_BxTribSchema, _raw);
     if (!_v.success) return _v.response;
@@ -124,10 +121,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Depois da autorização por empresa — um usuário sem vínculo recebe 403 e
+    // não o 503 que vazaria a configuração interna do kill-switch.
+    const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+    if (inativa) return inativa;
+
     const titulo = `Recomendação Tributária — ${body.empresaNome} — ${body.periodo}`;
     const economiaTxt =
       body.economiaAnual > 0
-        ? `Economia anual estimada: R$ ${body.economiaAnual.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`
+        ? `Economia anual estimada: R$ ${body.economiaAnual.toLocaleString('pt-BR', {
+            maximumFractionDigits: 0,
+          })}`
         : 'Sem economia adicional vs. regime atual';
     const comentario = `[B]Análise Tributária — ${body.periodo}[/B]\n\nRegime recomendado: ${body.regimeRecomendado}\n${economiaTxt}\n\nPDF: ${body.signedUrl}`;
 
