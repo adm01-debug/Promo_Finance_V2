@@ -221,6 +221,34 @@ jobs:
           fi
           echo "Publicação supabase_realtime em paridade com migrations/."
 
+      - name: Verificar security_invoker das views em PROD
+        if: '!inputs.dry_run'
+        # O db diff do engine legado (migra) pode não detectar
+        # security_invoker de views — uma view que perdeu o atributo em PROD
+        # sairia como paridade rodando com privilégio do owner (bypass de
+        # RLS). Confere reloptions de cada view que as migrations marcam.
+        run: |
+          set -euo pipefail
+          grep -rhoE "ALTER VIEW public\.[a-z0-9_]+ SET \(security_invoker" supabase/migrations/ \
+            | sed -E 's/ALTER VIEW public\.([a-z0-9_]+).*/\1/' | sort -u \
+            > /tmp/si-esperado.txt
+          # Views criadas já com o atributo (CREATE VIEW ... WITH (security_invoker))
+          grep -rlZ "security_invoker" supabase/migrations/ \
+            | xargs -0 grep -hoE "CREATE OR REPLACE VIEW public\.[a-z0-9_]+|CREATE VIEW public\.[a-z0-9_]+" \
+            | sed -E 's/.*public\.([a-z0-9_]+)/\1/' | sort -u \
+            >> /tmp/si-esperado.txt || true
+          sort -u -o /tmp/si-esperado.txt /tmp/si-esperado.txt
+          psql "$PROD_DB_URL" -Atc \
+            "SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('v','m') AND COALESCE(array_to_string(c.reloptions,','),'') LIKE '%security_invoker%' ORDER BY 1" \
+            > /tmp/si-prod.txt
+          comm -23 /tmp/si-esperado.txt /tmp/si-prod.txt > /tmp/si-faltando.txt || true
+          if [ -s /tmp/si-faltando.txt ]; then
+            cat /tmp/si-faltando.txt
+            echo "::error::Views acima perderam security_invoker em PROD — rodando com privilégio do owner."
+            exit 1
+          fi
+          echo "$(wc -l < /tmp/si-esperado.txt) views com security_invoker conferidas em PROD."
+
       - name: Upload evidências
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6

@@ -14,7 +14,12 @@
 
 > **`SUPABASE_SERVICE_ROLE_KEY` não está na tabela de Edge Secrets**: nomes com prefixo `SUPABASE_` são reservados e a tela de Manage Secrets os rejeita — a service role é injetada pela plataforma. A rotação dela se faz em **Dashboard > Settings > API Keys** (novo formato `sb_secret_...`): gerar a nova key, atualizar `SUPABASE_SERVICE_ROLE_KEY` nos secrets dos workflows/GitHub e nas edge functions que a leem do ambiente, validar e só então revogar a antiga. A senha do Postgres do `PROD_DB_URL` roda em Settings > Database.
 >
-> **`SUPABASE_JWT_SECRET`** (secret obrigatório do vault em `env.manifest.json`): vive em **Dashboard > Settings > API > JWT Settings**. Rodá-lo **invalida todos os JWTs emitidos** — toda sessão cai e os cron tokens (`CRON_DISPATCH_SECRET`, `REGUA_CRON_SECRET`, `SEFAZ_CRON_SECRET` assinados como JWT) precisam ser reemitidos. Só executar em janela coordenada: avisar usuários, gerar o segredo novo, aplicar, reemitir os tokens de cron e validar login antes de encerrar a janela.
+> **`SUPABASE_JWT_SECRET`** vive em **Dashboard > Settings > API > JWT Settings**. Rodá-lo **invalida todos os JWTs emitidos** — toda sessão cai e os cron tokens (`CRON_DISPATCH_SECRET`, `REGUA_CRON_SECRET`, `SEFAZ_CRON_SECRET` assinados como JWT) precisam ser reemitidos. Só executar em janela coordenada: avisar usuários, gerar o segredo novo, aplicar, reemitir os tokens de cron e validar login antes de encerrar a janela.
+>
+> **Não confundir com a assinatura dos convites de contador**: nomes `SUPABASE_*` são reservados e não podem ser cadastrados como secret custom nas edge fns, então `convidar-contador`/`validar-token-contador` leem primeiro **`CONTADOR_INVITE_SECRET`** — um HMAC dedicado e não reservado — e só caem para `SUPABASE_SERVICE_ROLE_KEY` quando ele não existe. Portanto:
+>
+> - **Rotação dos convites**: gerar um novo `CONTADOR_INVITE_SECRET` em Supabase > Edge Functions > Manage Secrets e redeploy das duas fns. Convites emitidos antes da troca **param de validar** (expiração já embutida no token) — é a invalidação pretendida em incidente.
+> - **Primeiro provisionamento**: ao cadastrar `CONTADOR_INVITE_SECRET` num ambiente que só tinha o fallback, os convites pendentes assinados com a service role também deixam de valer — planejar reenvio.
 
 ## Procedimento padrão (planejado)
 

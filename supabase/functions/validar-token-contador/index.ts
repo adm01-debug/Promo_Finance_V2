@@ -51,7 +51,8 @@ Deno.serve(async (req) => {
 
     const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const JWT_SECRET = Deno.env.get('SUPABASE_JWT_SECRET') ?? SERVICE;
+    const JWT_SECRET =
+      Deno.env.get('CONTADOR_INVITE_SECRET') ?? Deno.env.get('SUPABASE_JWT_SECRET') ?? SERVICE;
 
     let payload: Record<string, unknown>;
     try {
