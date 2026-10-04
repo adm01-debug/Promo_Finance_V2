@@ -8,9 +8,12 @@ Bug em produção com impacto real (S1/S2 do runbook INCIDENTES). Para qualquer 
 
 ## Fluxo
 
-1. **Branch de emergência a partir de `main` estável**:
+1. **Worktree isolado a partir de `main` estável** (obrigatório — o checkout
+   compartilhado pode estar em outra branch/agente; ver AGENTS.md):
    ```bash
-   git fetch origin && git checkout -b hotfix/<slug> origin/main
+   git fetch origin
+   git worktree add ~/hermes-workspaces/hotfix-<slug> -b hotfix/<slug> origin/main
+   cd ~/hermes-workspaces/hotfix-<slug> && bun install
    ```
 2. **Diff mínimo**: só a correção. Refatoração e limpeza ficam para PR separado.
 3. **Commit convencional**: `fix(<escopo>): <o que corrige>` — hooks de husky rodam normalmente; `--no-verify` só se a emergência justificar e o PR documentar por quê.
@@ -20,6 +23,7 @@ Bug em produção com impacto real (S1/S2 do runbook INCIDENTES). Para qualquer 
 5. **Deploy**: merge em `main` dispara deploy Vercel automático (~2-4min). Validar o sintoma original em https://app.promo-finance.com.
 6. **Edge function**: se o fix é numa fn, rodar o workflow `functions-deploy` para ela após o merge — merge não publica fn sozinho.
 7. **Migration de emergência**: usar workflow `prod-migrate` (approval gate) — nunca `db push` da máquina local.
+8. **Cleanup**: após o merge, `git worktree remove ~/hermes-workspaces/hotfix-<slug> --force && git branch -D hotfix/<slug>`.
 
 ## Pós-incidente
 

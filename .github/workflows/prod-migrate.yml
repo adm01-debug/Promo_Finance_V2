@@ -83,7 +83,9 @@ jobs:
           echo "Projeto de destino confirmado: $EXPECTED"
 
       - name: Migrations pendentes em PROD
-        run: supabase migration list --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/migration-list.txt
+        run: |
+          set -o pipefail
+          supabase migration list --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/migration-list.txt
 
       - name: Dry-run — parar aqui sem aplicar
         if: inputs.dry_run
@@ -105,6 +107,7 @@ jobs:
       - name: Verificação pós-apply (drift)
         if: '!inputs.dry_run'
         run: |
+          set -o pipefail
           # Schemas mantidos pelas migrations: public + storage (bucket e
           # policies de storage.objects criados por migration dedicada).
           if ! supabase db diff --db-url "$PROD_DB_URL" --schema public,storage \
@@ -112,11 +115,31 @@ jobs:
             echo "::error::supabase db diff falhou — paridade não verificada. Revisar artefato."
             exit 1
           fi
-          if [ -s /tmp/prod-diff-pos.sql ] && grep -qE "create|alter|drop" /tmp/prod-diff-pos.sql; then
+          # Qualquer saída real (CREATE/ALTER/DROP/GRANT/REVOKE) é divergência;
+          # só comentários e linhas vazias significam paridade.
+          if grep -qvE '^\s*($|--)' /tmp/prod-diff-pos.sql; then
             echo "::warning::Ainda há diff entre migrations/ e PROD — revisar artefato."
           else
             echo "PROD em paridade com supabase/migrations/ (schemas: public, storage)."
           fi
+
+      - name: Verificar buckets esperados em PROD
+        if: '!inputs.dry_run'
+        # db diff não rastreia DML — buckets criados por INSERT INTO
+        # storage.buckets nas migrations precisam de verificação explícita.
+        run: |
+          set -euo pipefail
+          # Buckets criados por migrations versionadas deste repo.
+          ESPERADOS=(financeiro)
+          for bucket in "${ESPERADOS[@]}"; do
+            EXISTE=$(psql "$PROD_DB_URL" -Atc \
+              "SELECT count(*) FROM storage.buckets WHERE id = '$bucket'")
+            if [ "$EXISTE" != "1" ]; then
+              echo "::error::Bucket storage '$bucket' ausente em PROD — apply incompleto."
+              exit 1
+            fi
+          done
+          echo "Buckets esperados presentes: ${ESPERADOS[*]}"
 
       - name: Upload evidências
         if: always()
