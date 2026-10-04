@@ -13,8 +13,14 @@ export function openPrintWindow(): Window | null {
 export function writeAndPrint(w: Window, html: string): void {
   // O HTML dos PDFs embute dados do banco (nomes, descrições) — sanitiza antes
   // do document.write para que markup malicioso não execute na origem do app.
-  w.document.write(DOMPurify.sanitize(html, { WHOLE_DOCUMENT: true }));
+  // Fragmento (WHOLE_DOCUMENT implícito=false): <html>/<head>/<body> saem, o
+  // conteúdo (incl. <style>) fica; o doctype é reescrito para não cair em
+  // quirks mode na impressão.
+  w.document.write(`<!DOCTYPE html>${DOMPurify.sanitize(html)}`);
   w.document.close();
+  // O auto-print vinha de um <script> inline que o sanitizador remove —
+  // dispara daqui, com o documento já fechado e os estilos aplicados.
+  w.print();
 }
 
 export function generateBarcodeHTML(code: string): string {
