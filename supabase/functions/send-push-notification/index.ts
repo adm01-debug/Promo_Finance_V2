@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirInternaOuUsuario, exigirPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('send-push-notification');
 
 interface PushNotificationRequest {
@@ -133,7 +133,10 @@ async function sendWebPush(
     });
     return response;
   } catch (error) {
-    log.error('[send-push-notification] Push send error:', { error_message: mensagemErro(error) });
+    log.error('[send-push-notification] Push send error:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     throw error;
   }
 }
@@ -221,6 +224,7 @@ export async function handler(req: Request): Promise<Response> {
     if (fetchError) {
       log.error('[send-push-notification] Erro ao buscar subscriptions:', {
         error_message: mensagemErro(fetchError),
+        context: contextoErro(fetchError),
       });
       throw fetchError;
     }
@@ -294,6 +298,7 @@ export async function handler(req: Request): Promise<Response> {
           } catch (pushError) {
             log.error(`[send-push-notification] Erro no push para subscription:`, {
               error_message: mensagemErro(pushError),
+              context: contextoErro(pushError),
             });
           }
         }
@@ -315,6 +320,7 @@ export async function handler(req: Request): Promise<Response> {
       } catch (error) {
         log.error(`[send-push-notification] Erro ao processar subscription:`, {
           error_message: mensagemErro(error),
+          context: contextoErro(error),
         });
         failCount++;
       }
@@ -333,7 +339,10 @@ export async function handler(req: Request): Promise<Response> {
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-    log.error('[send-push-notification] Erro:', { error_message: mensagemErro(errorMessage) });
+    log.error('[send-push-notification] Erro:', {
+      error_message: mensagemErro(errorMessage),
+      context: contextoErro(errorMessage),
+    });
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -341,4 +350,11 @@ export async function handler(req: Request): Promise<Response> {
   }
 }
 
-if (import.meta.main) serve(handler);
+if (import.meta.main)
+  serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });

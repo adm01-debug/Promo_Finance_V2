@@ -2,7 +2,7 @@ import { exigirInternaOuUsuarioComPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('processar-fila-cobrancas');
 
 export const handler = async (req: Request) => {
@@ -114,7 +114,10 @@ export const handler = async (req: Request) => {
 
           results.push({ id: item.fila_id, success });
         } catch (e) {
-          log.error(`Falha ao processar item ${item.fila_id}:`, { error_message: mensagemErro(e) });
+          log.error(`Falha ao processar item ${item.fila_id}:`, {
+            error_message: mensagemErro(e),
+            context: contextoErro(e),
+          });
           await supabase
             .from('fila_cobrancas')
             .update({ status: 'falhou', erro: e instanceof Error ? e.message : String(e) })
@@ -127,7 +130,10 @@ export const handler = async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    log.error('Erro processar fila:', { error_message: mensagemErro(error) });
+    log.error('Erro processar fila:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(JSON.stringify({ error: 'Erro interno ao processar a fila.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -136,5 +142,11 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }

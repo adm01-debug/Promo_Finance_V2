@@ -6,7 +6,7 @@ import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('analise-fluxo-ia');
 
 const DadosFluxoSchema = z.object({
@@ -194,7 +194,10 @@ REGRAS:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    log.error('Erro na análise de fluxo:', { error_message: mensagemErro(error) });
+    log.error('Erro na análise de fluxo:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
@@ -204,7 +207,13 @@ REGRAS:
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }
 
 function gerarAnaliseFallback(dados: DadosFluxo) {

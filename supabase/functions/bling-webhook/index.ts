@@ -14,7 +14,7 @@ import { authenticateWebhook } from '../_shared/webhook-auth.ts';
 import { processWithIdempotency, RetryableError } from '../_shared/webhook-idempotency.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('bling-webhook');
 
 export const handler = async (req: Request) => {
@@ -165,7 +165,10 @@ export const handler = async (req: Request) => {
       },
     });
   } catch (error) {
-    log.error('Bling webhook error:', { error_message: mensagemErro(error) });
+    log.error('Bling webhook error:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'Internal error',
@@ -179,7 +182,13 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }
 
 // --- Event Processors ---

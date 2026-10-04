@@ -4,7 +4,7 @@ import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('executar-analise-preditiva');
 
 interface ResultadoEmpresa {
@@ -215,7 +215,10 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       .trim();
     analise = JSON.parse(cleanContent);
   } catch (parseError) {
-    log.error('[executar-analise-preditiva] Erro parse:', { error_message: mensagemErro(content) });
+    log.error('[executar-analise-preditiva] Erro parse:', {
+      error_message: mensagemErro(content),
+      context: contextoErro(content),
+    });
     throw new Error('Invalid JSON response from AI');
   }
 
@@ -244,6 +247,7 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
   if (analiseError) {
     log.error('[executar-analise-preditiva] Erro salvar análise:', {
       error_message: mensagemErro(analiseError),
+      context: contextoErro(analiseError),
     });
   }
 
@@ -258,6 +262,7 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
   if (scoreError) {
     log.error('[executar-analise-preditiva] Erro salvar score:', {
       error_message: mensagemErro(scoreError),
+      context: contextoErro(scoreError),
     });
   }
 
@@ -285,6 +290,7 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
     if (alertasError) {
       log.error('[executar-analise-preditiva] Erro salvar alertas:', {
         error_message: mensagemErro(alertasError),
+        context: contextoErro(alertasError),
       });
     } else {
       log.info(`[executar-analise-preditiva] ${alertasParaSalvar.length} alertas salvos`);
@@ -321,6 +327,7 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
         } catch (pushError) {
           log.error('[executar-analise-preditiva] Erro push:', {
             error_message: mensagemErro(pushError),
+            context: contextoErro(pushError),
           });
         }
       }
@@ -349,6 +356,7 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
     if (recError) {
       log.error('[executar-analise-preditiva] Erro salvar recomendações:', {
         error_message: mensagemErro(recError),
+        context: contextoErro(recError),
       });
     } else {
       log.info(
@@ -408,6 +416,7 @@ export const handler = async (req: Request): Promise<Response> => {
         const msg = erro instanceof Error ? erro.message : 'Erro desconhecido';
         log.error(`[executar-analise-preditiva] Falha na empresa ${empresaId}:`, {
           error_message: mensagemErro(msg),
+          context: contextoErro(msg),
         });
         falhas.push({ empresa_id: empresaId, erro: msg });
       }
@@ -428,7 +437,10 @@ export const handler = async (req: Request): Promise<Response> => {
       }
     );
   } catch (error) {
-    log.error('[executar-analise-preditiva] Erro:', { error_message: mensagemErro(error) });
+    log.error('[executar-analise-preditiva] Erro:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'Erro desconhecido',
@@ -441,4 +453,11 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-if (import.meta.main) serve(handler);
+if (import.meta.main)
+  serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });

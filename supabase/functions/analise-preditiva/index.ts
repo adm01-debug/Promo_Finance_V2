@@ -9,128 +9,129 @@ import {
 import { exigirUsuarioComEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('analise-preditiva');
 
 serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
   try {
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
     }
 
-    // `verify_jwt = true` prova apenas que existe *algum* JWT válido — não diz
-    // nada sobre a qual empresa o chamador pertence. Sem o vínculo explícito
-    // abaixo, o client service-role (que ignora RLS) devolveria o financeiro de
-    // todos os tenants a qualquer usuário autenticado.
-    const corpoCru = req.headers.get('content-type')?.includes('application/json')
-      ? await req.json().catch(() => ({}))
-      : {};
-    const corpo = validatePayload(OptionalEmpresaIdSchema, corpoCru, 'analise-preditiva');
-    if (!corpo.success) {
-      return createErrorResponse(corpo.error, 400, corpo.details, req);
-    }
+    try {
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (!LOVABLE_API_KEY) {
+        throw new Error('LOVABLE_API_KEY is not configured');
+      }
 
-    const guard = await exigirUsuarioComEmpresa(req, corpo.data.empresa_id ?? null);
-    if (!guard.ok) return guard.resposta;
-    const { empresaId } = guard.dados;
+      // `verify_jwt = true` prova apenas que existe *algum* JWT válido — não diz
+      // nada sobre a qual empresa o chamador pertence. Sem o vínculo explícito
+      // abaixo, o client service-role (que ignora RLS) devolveria o financeiro de
+      // todos os tenants a qualquer usuário autenticado.
+      const corpoCru = req.headers.get('content-type')?.includes('application/json')
+        ? await req.json().catch(() => ({}))
+        : {};
+      const corpo = validatePayload(OptionalEmpresaIdSchema, corpoCru, 'analise-preditiva');
+      if (!corpo.success) {
+        return createErrorResponse(corpo.error, 400, corpo.details, req);
+      }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      const guard = await exigirUsuarioComEmpresa(req, corpo.data.empresa_id ?? null);
+      if (!guard.ok) return guard.resposta;
+      const { empresaId } = guard.dados;
 
-    // Buscar dados financeiros para análise
-    const hoje = new Date();
-    const tresMesesAtras = new Date(hoje);
-    tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const [contasReceber, contasPagar, clientes, transacoes] = await Promise.all([
-      supabase
-        .from('contas_receber')
-        .select('*')
-        .eq('empresa_id', empresaId)
-        .order('data_vencimento'),
-      supabase
-        .from('contas_pagar')
-        .select('*')
-        .eq('empresa_id', empresaId)
-        .order('data_vencimento'),
-      supabase.from('clientes').select('*').eq('empresa_id', empresaId),
-      supabase
-        .from('transacoes_bancarias')
-        .select('*')
-        .eq('empresa_id', empresaId)
-        .gte('data', tresMesesAtras.toISOString().split('T')[0])
-        .order('data'),
-    ]);
+      // Buscar dados financeiros para análise
+      const hoje = new Date();
+      const tresMesesAtras = new Date(hoje);
+      tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
 
-    if (contasReceber.error) throw contasReceber.error;
-    if (contasPagar.error) throw contasPagar.error;
-    if (clientes.error) throw clientes.error;
+      const [contasReceber, contasPagar, clientes, transacoes] = await Promise.all([
+        supabase
+          .from('contas_receber')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('data_vencimento'),
+        supabase
+          .from('contas_pagar')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('data_vencimento'),
+        supabase.from('clientes').select('*').eq('empresa_id', empresaId),
+        supabase
+          .from('transacoes_bancarias')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .gte('data', tresMesesAtras.toISOString().split('T')[0])
+          .order('data'),
+      ]);
 
-    // Preparar contexto para a IA
-    const hojeStr = hoje.toISOString().split('T')[0];
+      if (contasReceber.error) throw contasReceber.error;
+      if (contasPagar.error) throw contasPagar.error;
+      if (clientes.error) throw clientes.error;
 
-    // Calcular dados históricos para análise de tendências
-    const recebiveisData = contasReceber.data.map((cr) => ({
-      cliente: cr.cliente_nome,
-      valor: cr.valor,
-      vencimento: cr.data_vencimento,
-      status: cr.status,
-      etapa_cobranca: cr.etapa_cobranca,
-      valor_recebido: cr.valor_recebido || 0,
-      data_emissao: cr.data_emissao,
-    }));
+      // Preparar contexto para a IA
+      const hojeStr = hoje.toISOString().split('T')[0];
 
-    const pagaveisData = contasPagar.data.map((cp) => ({
-      fornecedor: cp.fornecedor_nome,
-      valor: cp.valor,
-      vencimento: cp.data_vencimento,
-      status: cp.status,
-      valor_pago: cp.valor_pago || 0,
-      data_emissao: cp.data_emissao,
-    }));
+      // Calcular dados históricos para análise de tendências
+      const recebiveisData = contasReceber.data.map((cr) => ({
+        cliente: cr.cliente_nome,
+        valor: cr.valor,
+        vencimento: cr.data_vencimento,
+        status: cr.status,
+        etapa_cobranca: cr.etapa_cobranca,
+        valor_recebido: cr.valor_recebido || 0,
+        data_emissao: cr.data_emissao,
+      }));
 
-    const clientesData = clientes.data.map((c) => ({
-      nome: c.razao_social,
-      score: c.score,
-      limite_credito: c.limite_credito,
-    }));
+      const pagaveisData = contasPagar.data.map((cp) => ({
+        fornecedor: cp.fornecedor_nome,
+        valor: cp.valor,
+        vencimento: cp.data_vencimento,
+        status: cp.status,
+        valor_pago: cp.valor_pago || 0,
+        data_emissao: cp.data_emissao,
+      }));
 
-    // Agrupar transações por mês para análise de tendências
-    const transacoesPorMes = (transacoes.data || []).reduce(
-      (acc: Record<string, { receitas: number; despesas: number }>, t) => {
-        const mes = t.data.substring(0, 7); // YYYY-MM
-        if (!acc[mes]) acc[mes] = { receitas: 0, despesas: 0 };
-        if (t.tipo === 'receita') {
-          acc[mes].receitas += Number(t.valor);
-        } else {
-          acc[mes].despesas += Number(t.valor);
-        }
-        return acc;
-      },
-      {}
-    );
+      const clientesData = clientes.data.map((c) => ({
+        nome: c.razao_social,
+        score: c.score,
+        limite_credito: c.limite_credito,
+      }));
 
-    // Calcular métricas históricas
-    const historicoReceitas = contasReceber.data.reduce(
-      (acc: Record<string, { total: number; recebido: number; vencido: number }>, cr) => {
-        const mes = cr.data_vencimento.substring(0, 7);
-        if (!acc[mes]) acc[mes] = { total: 0, recebido: 0, vencido: 0 };
-        acc[mes].total += Number(cr.valor);
-        if (cr.status === 'pago') acc[mes].recebido += Number(cr.valor_recebido || cr.valor);
-        if (cr.status === 'vencido') acc[mes].vencido += Number(cr.valor);
-        return acc;
-      },
-      {}
-    );
+      // Agrupar transações por mês para análise de tendências
+      const transacoesPorMes = (transacoes.data || []).reduce(
+        (acc: Record<string, { receitas: number; despesas: number }>, t) => {
+          const mes = t.data.substring(0, 7); // YYYY-MM
+          if (!acc[mes]) acc[mes] = { receitas: 0, despesas: 0 };
+          if (t.tipo === 'receita') {
+            acc[mes].receitas += Number(t.valor);
+          } else {
+            acc[mes].despesas += Number(t.valor);
+          }
+          return acc;
+        },
+        {}
+      );
 
-    const prompt = `Você é um analista financeiro especializado em análise preditiva e tendências. Analise os seguintes dados financeiros e forneça insights detalhados COM ANÁLISE DE TENDÊNCIAS HISTÓRICAS.
+      // Calcular métricas históricas
+      const historicoReceitas = contasReceber.data.reduce(
+        (acc: Record<string, { total: number; recebido: number; vencido: number }>, cr) => {
+          const mes = cr.data_vencimento.substring(0, 7);
+          if (!acc[mes]) acc[mes] = { total: 0, recebido: 0, vencido: 0 };
+          acc[mes].total += Number(cr.valor);
+          if (cr.status === 'pago') acc[mes].recebido += Number(cr.valor_recebido || cr.valor);
+          if (cr.status === 'vencido') acc[mes].vencido += Number(cr.valor);
+          return acc;
+        },
+        {}
+      );
+
+      const prompt = `Você é um analista financeiro especializado em análise preditiva e tendências. Analise os seguintes dados financeiros e forneça insights detalhados COM ANÁLISE DE TENDÊNCIAS HISTÓRICAS.
 
 DATA ATUAL: ${hojeStr}
 
@@ -231,100 +232,109 @@ IMPORTANTE:
 - Projete tendências futuras com base no histórico
 - Responda APENAS com o JSON, sem texto adicional.`;
 
-    log.info('Calling Lovable AI Gateway for trend analysis...');
+      log.info('Calling Lovable AI Gateway for trend analysis...');
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'Você é um analista financeiro expert em análise de tendências e previsões. Sempre responda em JSON válido. Seja preciso com números e identifique padrões históricos. Use os dados reais fornecidos para calcular métricas.',
-          },
-          { role: 'user', content: prompt },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({
-            error: 'Limite de requisições excedido. Tente novamente em alguns minutos.',
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'Créditos insuficientes. Adicione créditos ao workspace.' }),
-          {
-            status: 402,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
-      const errorText = await response.text();
-      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
-      throw new Error(`AI gateway error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('No content in AI response');
-    }
-
-    // Parse o JSON da resposta
-    let analise;
-    try {
-      const cleanContent = content
-        .replace(/```json\n?/g, '')
-        .replace(/```\n?/g, '')
-        .trim();
-      analise = JSON.parse(cleanContent);
-    } catch (parseError) {
-      log.error('Failed to parse AI response:', { error_message: mensagemErro(content) });
-      throw new Error('Invalid JSON response from AI');
-    }
-
-    log.info('Trend analysis completed successfully');
-
-    return new Response(
-      JSON.stringify({
-        analise,
-        gerado_em: new Date().toISOString(),
-        dados_analisados: {
-          contas_receber: recebiveisData.length,
-          contas_pagar: pagaveisData.length,
-          clientes: clientesData.length,
-          meses_historico: Object.keys(transacoesPorMes).length,
+      const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
         },
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'Você é um analista financeiro expert em análise de tendências e previsões. Sempre responda em JSON válido. Seja preciso com números e identifique padrões históricos. Use os dados reais fornecidos para calcular métricas.',
+            },
+            { role: 'user', content: prompt },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(
+            JSON.stringify({
+              error: 'Limite de requisições excedido. Tente novamente em alguns minutos.',
+            }),
+            {
+              status: 429,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
+        if (response.status === 402) {
+          return new Response(
+            JSON.stringify({ error: 'Créditos insuficientes. Adicione créditos ao workspace.' }),
+            {
+              status: 402,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
+        const errorText = await response.text();
+        log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
+        throw new Error(`AI gateway error: ${response.status}`);
       }
-    );
-  } catch (error) {
-    log.error('Error in analise-preditiva function:', { error_message: mensagemErro(error) });
-    return new Response(
-      JSON.stringify({
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+
+      if (!content) {
+        throw new Error('No content in AI response');
       }
-    );
+
+      // Parse o JSON da resposta
+      let analise;
+      try {
+        const cleanContent = content
+          .replace(/```json\n?/g, '')
+          .replace(/```\n?/g, '')
+          .trim();
+        analise = JSON.parse(cleanContent);
+      } catch (parseError) {
+        log.error('Failed to parse AI response:', {
+          error_message: mensagemErro(content),
+          context: contextoErro(content),
+        });
+        throw new Error('Invalid JSON response from AI');
+      }
+
+      log.info('Trend analysis completed successfully');
+
+      return new Response(
+        JSON.stringify({
+          analise,
+          gerado_em: new Date().toISOString(),
+          dados_analisados: {
+            contas_receber: recebiveisData.length,
+            contas_pagar: pagaveisData.length,
+            clientes: clientesData.length,
+            meses_historico: Object.keys(transacoesPorMes).length,
+          },
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    } catch (error) {
+      log.error('Error in analise-preditiva function:', {
+        error_message: mensagemErro(error),
+        context: contextoErro(error),
+      });
+      return new Response(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : 'Erro desconhecido',
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+  } finally {
+    await log.flush();
   }
 });

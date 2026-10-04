@@ -13,7 +13,7 @@ import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('notify-saved-filter');
 
 interface NotifyRequest {
@@ -172,6 +172,7 @@ const handler = async (req: Request): Promise<Response> => {
       if (insErr) {
         log.error('[notify-saved-filter] insert history failed', {
           error_message: mensagemErro(insErr),
+          context: contextoErro(insErr),
         });
       }
     }
@@ -185,7 +186,10 @@ const handler = async (req: Request): Promise<Response> => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    log.error('[notify-saved-filter] erro', { error_message: mensagemErro(e) });
+    log.error('[notify-saved-filter] erro', {
+      error_message: mensagemErro(e),
+      context: contextoErro(e),
+    });
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -232,4 +236,10 @@ function renderEmail(input: {
   `;
 }
 
-serve(handler);
+serve(async (req) => {
+  try {
+    return await handler(req);
+  } finally {
+    await log.flush();
+  }
+});

@@ -225,4 +225,10 @@ export const handler = createHandler({
   verificarRateLimit: checkRateLimit,
 });
 
-Deno.serve(handler);
+Deno.serve(async (req) => {
+  try {
+    return await handler(req);
+  } finally {
+    await log.flush();
+  }
+});

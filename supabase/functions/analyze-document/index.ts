@@ -10,7 +10,7 @@ import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('analyze-document');
 
 export const handler = async (req: Request): Promise<Response> => {
@@ -113,7 +113,10 @@ Formate a resposta de forma clara e estruturada em português brasileiro.`,
           textContent = textContent.substring(0, 10000) + '\n\n[... conteúdo truncado ...]';
         }
       } catch (e: unknown) {
-        log.error('Erro ao decodificar arquivo:', { error_message: mensagemErro(e) });
+        log.error('Erro ao decodificar arquivo:', {
+          error_message: mensagemErro(e),
+          context: contextoErro(e),
+        });
         textContent = '[Não foi possível decodificar o conteúdo do arquivo]';
       }
 
@@ -178,7 +181,10 @@ ${textContent}
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    log.error('Document analysis error:', { error_message: mensagemErro(error) });
+    log.error('Document analysis error:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'Erro desconhecido',
@@ -190,5 +196,11 @@ ${textContent}
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }

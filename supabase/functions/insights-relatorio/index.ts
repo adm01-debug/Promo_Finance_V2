@@ -6,7 +6,7 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('insights-relatorio');
 
 const InsightsRelatorioBodySchema = z.object({
@@ -148,7 +148,10 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    log.error('insights-relatorio error:', { error_message: mensagemErro(e) });
+    log.error('insights-relatorio error:', {
+      error_message: mensagemErro(e),
+      context: contextoErro(e),
+    });
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : 'Erro desconhecido' }),
       {
@@ -160,5 +163,11 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }

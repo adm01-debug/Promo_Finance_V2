@@ -3,7 +3,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersComSegredoPara, exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('calcular-slo-metrics-diario');
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -94,7 +94,10 @@ export const handler = async (req: Request) => {
       { headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    log.error('calcular-slo-metrics-diario:', { error_message: mensagemErro(e) });
+    log.error('calcular-slo-metrics-diario:', {
+      error_message: mensagemErro(e),
+      context: contextoErro(e),
+    });
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
       headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
@@ -103,5 +106,11 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }

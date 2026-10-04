@@ -2,7 +2,7 @@ import { exigirInternaOuUsuarioComPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('gerar-resumo-financeiro-diario');
 
 export const handler = async (req: Request) => {
@@ -83,7 +83,10 @@ export const handler = async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    log.error('Erro ao gerar relatório diário:', { error_message: mensagemErro(error) });
+    log.error('Erro ao gerar relatório diário:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(JSON.stringify({ error: 'Erro interno ao gerar o relatório diário.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -92,5 +95,11 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }

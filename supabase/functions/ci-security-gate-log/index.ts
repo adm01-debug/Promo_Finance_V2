@@ -8,7 +8,7 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('ci-security-gate-log');
 
 const bodySchema = z.object({
@@ -77,7 +77,10 @@ export function createHandler(deps: HandlerDeps) {
     const { error, count } = await deps.insertRows(rows);
 
     if (error) {
-      log.error('insert_failed', { error_message: mensagemErro(error) });
+      log.error('insert_failed', {
+        error_message: mensagemErro(error),
+        context: contextoErro(error),
+      });
       return res({ error: 'insert_failed', details: error.message }, 500);
     }
 
@@ -173,5 +176,12 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 if (!Deno.env.get('DENO_TESTING')) {
-  Deno.serve(createHandler(defaultDeps()));
+  const handler = createHandler(defaultDeps());
+  Deno.serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }

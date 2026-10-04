@@ -109,145 +109,149 @@ function montarHtml(itens: ItemDigest[], janelaHoras: number): string {
 }
 
 Deno.serve(async (req: Request): Promise<Response> => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  // [auth-guard] Endpoint de automacao interna: exige service role ou segredo
-  // rotacionavel em `x-cron-secret`. Sem isso a funcao roda com service role
-  // para qualquer requisicao anonima da internet.
-  const guard = await exigirChamadaInterna(req);
-  if (!guard.ok) return guard.resposta;
-
-  const jsonResponse = (body: unknown, status = 200) =>
-    new Response(JSON.stringify(body), {
-      status,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
 
-    let raw: Record<string, unknown> = {};
+    // [auth-guard] Endpoint de automacao interna: exige service role ou segredo
+    // rotacionavel em `x-cron-secret`. Sem isso a funcao roda com service role
+    // para qualquer requisicao anonima da internet.
+    const guard = await exigirChamadaInterna(req);
+    if (!guard.ok) return guard.resposta;
+
+    const jsonResponse = (body: unknown, status = 200) =>
+      new Response(JSON.stringify(body), {
+        status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+
     try {
-      raw = (await req.json()) as Record<string, unknown>;
-    } catch {
-      raw = {};
-    }
-    const parsed = BodySchema.safeParse(raw);
-    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders);
-    raw = parsed.data;
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      );
 
-    const janelaHoras = num(raw.janelaHoras, 168, 1, 720);
-    const minIntervaloHoras = num(raw.minIntervaloHoras, 144, 0, 720);
+      let raw: Record<string, unknown> = {};
+      try {
+        raw = (await req.json()) as Record<string, unknown>;
+      } catch {
+        raw = {};
+      }
+      const parsed = BodySchema.safeParse(raw);
+      if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders);
+      raw = parsed.data;
 
-    const { data, error } = await supabase.rpc('claim_silenciamentos_digest', {
-      p_horas: janelaHoras,
-      p_min_intervalo_horas: minIntervaloHoras,
-    });
+      const janelaHoras = num(raw.janelaHoras, 168, 1, 720);
+      const minIntervaloHoras = num(raw.minIntervaloHoras, 144, 0, 720);
 
-    if (error) {
-      log.error('Falha ao reivindicar digest:', { error_message: mensagemErro(error.message) });
-      return jsonResponse({ success: false, error: 'falha ao consultar silenciamentos' }, 500);
-    }
+      const { data, error } = await supabase.rpc('claim_silenciamentos_digest', {
+        p_horas: janelaHoras,
+        p_min_intervalo_horas: minIntervaloHoras,
+      });
 
-    const itens = (data ?? []) as ItemDigest[];
-    if (itens.length === 0) {
+      if (error) {
+        log.error('Falha ao reivindicar digest:', { error_message: mensagemErro(error.message) });
+        return jsonResponse({ success: false, error: 'falha ao consultar silenciamentos' }, 500);
+      }
+
+      const itens = (data ?? []) as ItemDigest[];
+      if (itens.length === 0) {
+        return jsonResponse({
+          success: true,
+          itens: 0,
+          message: 'nenhum silenciamento a comunicar (ou digest recente já enviado)',
+        });
+      }
+
+      // Destinatários: administradores com e-mail cadastrado.
+      const { data: admins } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'admin');
+
+      const adminIds = (admins ?? []).map((a: { user_id: string }) => a.user_id);
+      let destinatarios: string[] = [];
+      if (adminIds.length > 0) {
+        const { data: perfis } = await supabase
+          .from('profiles')
+          .select('email')
+          .in('user_id', adminIds)
+          .not('email', 'is', null);
+        destinatarios = (perfis ?? [])
+          .map((p: { email: string | null }) => p.email)
+          .filter((e): e is string => typeof e === 'string' && e.includes('@'));
+      }
+
+      const canais: Record<string, string> = {};
+
+      const slackUrl = Deno.env.get('SLACK_WEBHOOK_URL');
+      if (slackUrl) {
+        try {
+          const texto = itens
+            .map((i) => `• [${i.severity}] ${i.assinatura} — ${prazo(i)}`)
+            .join('\n');
+          const resp = await fetch(slackUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: `🔕 Silenciamentos de alerta vencendo (janela ${janelaHoras}h)\n${texto}`,
+            }),
+          });
+          canais.slack = resp.ok ? 'enviado' : `falha_${resp.status}`;
+        } catch (e) {
+          canais.slack = 'falha';
+          log.error('Slack:', {
+            error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+          });
+        }
+      } else {
+        canais.slack = 'nao_configurado';
+      }
+
+      const resendKey = Deno.env.get('RESEND_API_KEY');
+      if (resendKey && destinatarios.length > 0) {
+        try {
+          const resp = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${resendKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: 'Monitoramento <onboarding@resend.dev>',
+              to: destinatarios,
+              subject: `🔕 ${itens.length} silenciamento(s) de alerta vencendo`,
+              html: montarHtml(itens, janelaHoras),
+            }),
+          });
+          canais.email = resp.ok ? 'enviado' : `falha_${resp.status}`;
+          if (!resp.ok) log.error('Resend:', { error_message: mensagemErro(await resp.text()) });
+        } catch (e) {
+          canais.email = 'falha';
+          log.error('Resend:', {
+            error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+          });
+        }
+      } else {
+        canais.email = resendKey ? 'sem_destinatarios' : 'nao_configurado';
+      }
+
       return jsonResponse({
         success: true,
-        itens: 0,
-        message: 'nenhum silenciamento a comunicar (ou digest recente já enviado)',
+        itens: itens.length,
+        expirados: itens.filter((i) => i.ja_expirou).length,
+        canais,
+        janelaHoras,
       });
+    } catch (e) {
+      log.error('Erro inesperado:', {
+        error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+      });
+      return jsonResponse({ success: false, error: 'erro interno' }, 500);
     }
-
-    // Destinatários: administradores com e-mail cadastrado.
-    const { data: admins } = await supabase
-      .from('user_roles')
-      .select('user_id')
-      .eq('role', 'admin');
-
-    const adminIds = (admins ?? []).map((a: { user_id: string }) => a.user_id);
-    let destinatarios: string[] = [];
-    if (adminIds.length > 0) {
-      const { data: perfis } = await supabase
-        .from('profiles')
-        .select('email')
-        .in('user_id', adminIds)
-        .not('email', 'is', null);
-      destinatarios = (perfis ?? [])
-        .map((p: { email: string | null }) => p.email)
-        .filter((e): e is string => typeof e === 'string' && e.includes('@'));
-    }
-
-    const canais: Record<string, string> = {};
-
-    const slackUrl = Deno.env.get('SLACK_WEBHOOK_URL');
-    if (slackUrl) {
-      try {
-        const texto = itens
-          .map((i) => `• [${i.severity}] ${i.assinatura} — ${prazo(i)}`)
-          .join('\n');
-        const resp = await fetch(slackUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: `🔕 Silenciamentos de alerta vencendo (janela ${janelaHoras}h)\n${texto}`,
-          }),
-        });
-        canais.slack = resp.ok ? 'enviado' : `falha_${resp.status}`;
-      } catch (e) {
-        canais.slack = 'falha';
-        log.error('Slack:', {
-          error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
-        });
-      }
-    } else {
-      canais.slack = 'nao_configurado';
-    }
-
-    const resendKey = Deno.env.get('RESEND_API_KEY');
-    if (resendKey && destinatarios.length > 0) {
-      try {
-        const resp = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${resendKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'Monitoramento <onboarding@resend.dev>',
-            to: destinatarios,
-            subject: `🔕 ${itens.length} silenciamento(s) de alerta vencendo`,
-            html: montarHtml(itens, janelaHoras),
-          }),
-        });
-        canais.email = resp.ok ? 'enviado' : `falha_${resp.status}`;
-        if (!resp.ok) log.error('Resend:', { error_message: mensagemErro(await resp.text()) });
-      } catch (e) {
-        canais.email = 'falha';
-        log.error('Resend:', {
-          error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
-        });
-      }
-    } else {
-      canais.email = resendKey ? 'sem_destinatarios' : 'nao_configurado';
-    }
-
-    return jsonResponse({
-      success: true,
-      itens: itens.length,
-      expirados: itens.filter((i) => i.ja_expirou).length,
-      canais,
-      janelaHoras,
-    });
-  } catch (e) {
-    log.error('Erro inesperado:', {
-      error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
-    });
-    return jsonResponse({ success: false, error: 'erro interno' }, 500);
+  } finally {
+    await log.flush();
   }
 });

@@ -10,7 +10,7 @@ import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('categorizar-despesa');
 
 interface Despesa {
@@ -130,7 +130,10 @@ Responda APENAS com o array JSON, sem texto adicional.`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      log.error('Erro na API de IA:', { error_message: mensagemErro(errorText) });
+      log.error('Erro na API de IA:', {
+        error_message: mensagemErro(errorText),
+        context: contextoErro(errorText),
+      });
       throw new Error(`Erro na API de IA: ${response.status}`);
     }
 
@@ -152,7 +155,10 @@ Responda APENAS com o array JSON, sem texto adicional.`;
         categorias = JSON.parse(content);
       }
     } catch (parseError) {
-      log.error('Erro ao parsear resposta da IA:', { error_message: mensagemErro(parseError) });
+      log.error('Erro ao parsear resposta da IA:', {
+        error_message: mensagemErro(parseError),
+        context: contextoErro(parseError),
+      });
       // Fallback: categorização básica
       categorias = despesas.map((d) => ({
         categoria: 'Outros',
@@ -167,7 +173,10 @@ Responda APENAS com o array JSON, sem texto adicional.`;
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    log.error('Erro ao categorizar despesas:', { error_message: mensagemErro(error) });
+    log.error('Erro ao categorizar despesas:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     const errorMessage = error instanceof Error ? error.message : 'Erro interno';
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
@@ -177,5 +186,11 @@ Responda APENAS com o array JSON, sem texto adicional.`;
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }

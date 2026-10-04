@@ -5,7 +5,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('gerar-alertas');
 
 const _GerarAlertasSchema = z
@@ -16,84 +16,92 @@ const _GerarAlertasSchema = z
   .partial();
 
 serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'method_not_allowed' }), {
-      status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-
-  // Rotina global: somente cron/automação autenticada pode dispará-la.
-  const auth = await exigirChamadaInterna(req, 'gerar_alertas');
-  if (!auth.ok) return auth.resposta;
-
   try {
-    log.info('[gerar-alertas] Iniciando geração de alertas automáticos...');
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Parse request body para opções
-    let options = { incluirMetas: true, userId: null };
-    try {
-      const _raw = await req.json();
-      const _v = await validateContract(_GerarAlertasSchema, _raw);
-      if (!_v.success) return _v.response;
-      options = { ...options, ..._v.data } as typeof options;
-    } catch {
-      // Sem body, usar padrões
+    const corsHeaders = corsHeadersPara(req);
+    // Handle CORS preflight requests
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
     }
-
-    // Chamar a função do banco para gerar alertas de vencimento
-    const { error: vencimentoError } = await supabase.rpc('gerar_alertas_vencimento');
-
-    if (vencimentoError) {
-      log.error('[gerar-alertas] Erro ao gerar alertas de vencimento:', {
-        error_message: mensagemErro(vencimentoError),
+    if (req.method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'method_not_allowed' }), {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    let alertasMetasCriados = 0;
+    // Rotina global: somente cron/automação autenticada pode dispará-la.
+    const auth = await exigirChamadaInterna(req, 'gerar_alertas');
+    if (!auth.ok) return auth.resposta;
 
-    // Verificar metas em risco
-    if (options.incluirMetas) {
-      log.info('[gerar-alertas] Verificando metas em risco...');
-      alertasMetasCriados = await verificarMetasEmRisco(supabase, options.userId);
-    }
+    try {
+      log.info('[gerar-alertas] Iniciando geração de alertas automáticos...');
 
-    log.info('[gerar-alertas] Alertas gerados com sucesso');
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // Contar alertas criados recentemente
-    const { count } = await supabase
-      .from('alertas')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', new Date(Date.now() - 60000).toISOString());
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Alertas gerados com sucesso',
-        alertas_criados: count || 0,
-        alertas_metas: alertasMetasCriados,
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+      // Parse request body para opções
+      let options = { incluirMetas: true, userId: null };
+      try {
+        const _raw = await req.json();
+        const _v = await validateContract(_GerarAlertasSchema, _raw);
+        if (!_v.success) return _v.response;
+        options = { ...options, ..._v.data } as typeof options;
+      } catch {
+        // Sem body, usar padrões
       }
-    );
-  } catch (error: any) {
-    log.error('[gerar-alertas] Erro:', { error_message: mensagemErro(error) });
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500,
-    });
+
+      // Chamar a função do banco para gerar alertas de vencimento
+      const { error: vencimentoError } = await supabase.rpc('gerar_alertas_vencimento');
+
+      if (vencimentoError) {
+        log.error('[gerar-alertas] Erro ao gerar alertas de vencimento:', {
+          error_message: mensagemErro(vencimentoError),
+          context: contextoErro(vencimentoError),
+        });
+      }
+
+      let alertasMetasCriados = 0;
+
+      // Verificar metas em risco
+      if (options.incluirMetas) {
+        log.info('[gerar-alertas] Verificando metas em risco...');
+        alertasMetasCriados = await verificarMetasEmRisco(supabase, options.userId);
+      }
+
+      log.info('[gerar-alertas] Alertas gerados com sucesso');
+
+      // Contar alertas criados recentemente
+      const { count } = await supabase
+        .from('alertas')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', new Date(Date.now() - 60000).toISOString());
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Alertas gerados com sucesso',
+          alertas_criados: count || 0,
+          alertas_metas: alertasMetasCriados,
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    } catch (error: any) {
+      log.error('[gerar-alertas] Erro:', {
+        error_message: mensagemErro(error),
+        context: contextoErro(error),
+      });
+      return new Response(JSON.stringify({ success: false, error: error.message }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      });
+    }
+  } finally {
+    await log.flush();
   }
 });
 
@@ -118,7 +126,10 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
     .eq('ativo', true);
 
   if (metasError) {
-    log.error('[gerar-alertas] Erro ao buscar metas:', { error_message: mensagemErro(metasError) });
+    log.error('[gerar-alertas] Erro ao buscar metas:', {
+      error_message: mensagemErro(metasError),
+      context: contextoErro(metasError),
+    });
     return 0;
   }
 
@@ -265,6 +276,7 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
         if (insertError) {
           log.error('[gerar-alertas] Erro ao criar alerta de meta:', {
             error_message: mensagemErro(insertError),
+            context: contextoErro(insertError),
           });
         } else {
           alertasCriados++;
@@ -301,6 +313,7 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
               const errorText = await pushResponse.text();
               log.error('[gerar-alertas] Erro ao enviar push:', {
                 error_message: mensagemErro(errorText),
+                context: contextoErro(errorText),
               });
             } else {
               log.info('[gerar-alertas] Notificação push enviada com sucesso');
@@ -308,6 +321,7 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
           } catch (pushError) {
             log.error('[gerar-alertas] Erro ao enviar notificação push:', {
               error_message: mensagemErro(pushError),
+              context: contextoErro(pushError),
             });
           }
         }

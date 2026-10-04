@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('send-device-alert');
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -155,7 +155,10 @@ const handler = async (req: Request): Promise<Response> => {
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   } catch (error: any) {
-    log.error('Error in send-device-alert function:', { error_message: mensagemErro(error) });
+    log.error('Error in send-device-alert function:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -163,4 +166,10 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-serve(handler);
+serve(async (req) => {
+  try {
+    return await handler(req);
+  } finally {
+    await log.flush();
+  }
+});

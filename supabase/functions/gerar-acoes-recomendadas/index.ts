@@ -5,7 +5,7 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirAdminOuVinculo, exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('gerar-acoes-recomendadas');
 
 const AcoesRecomendadasBodySchema = z.object({
@@ -23,102 +23,109 @@ interface AcaoIA {
 }
 
 serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-
-  const guard = await exigirInternaOuUsuario(req, 'p13_gerar_acoes_recomendadas');
-  if (!guard.ok) return guard.resposta;
-
   try {
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-    const rawBody = await req.json().catch(() => ({}));
-    const validation = await validateContract(AcoesRecomendadasBodySchema, rawBody);
-    if (!validation.success) return validation.response;
-    const empresaIdFilter: string | undefined = validation.data.empresa_id;
+    const guard = await exigirInternaOuUsuario(req, 'p13_gerar_acoes_recomendadas');
+    if (!guard.ok) return guard.resposta;
 
-    if (guard.dados.origem === 'usuario' && guard.dados.userId) {
-      const escopo = await exigirAdminOuVinculo(supabase, req, guard.dados.userId, empresaIdFilter);
-      if (escopo) return escopo;
-    }
+    try {
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      );
 
-    let q = supabase.from('empresas').select('id, razao_social').eq('ativa', true);
-    if (empresaIdFilter) q = q.eq('id', empresaIdFilter);
-    const { data: empresas, error: errE } = await q;
-    if (errE) throw errE;
+      const rawBody = await req.json().catch(() => ({}));
+      const validation = await validateContract(AcoesRecomendadasBodySchema, rawBody);
+      if (!validation.success) return validation.response;
+      const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
-    const resultados: Array<{ empresa_id: string; total: number; ok: boolean; erro?: string }> = [];
+      if (guard.dados.origem === 'usuario' && guard.dados.userId) {
+        const escopo = await exigirAdminOuVinculo(
+          supabase,
+          req,
+          guard.dados.userId,
+          empresaIdFilter
+        );
+        if (escopo) return escopo;
+      }
 
-    for (const emp of empresas ?? []) {
-      try {
-        // Coleta sinais das fontes, incluindo detecção de duplicidade
-        const [
-          anomalias,
-          healthScore,
-          alertasNaoLidos,
-          apuracoesAtrasadas,
-          lgpdPendentes,
-          duplicidades,
-        ] = await Promise.all([
-          supabase
-            .from('anomalias_detectadas')
-            .select('id, descricao, severidade, tipo_anomalia')
-            .eq('empresa_id', emp.id)
-            .eq('status', 'nova')
-            .in('severidade', ['alta', 'critica'])
-            .limit(10),
-          supabase
-            .from('health_scores_operacionais')
-            .select('score_total')
-            .eq('empresa_id', emp.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle(),
-          supabase
-            .from('alertas_tributarios')
-            .select('id, titulo, prioridade')
-            .eq('empresa_id', emp.id)
-            .eq('lido', false)
-            .in('prioridade', ['alta', 'critica'])
-            .limit(10),
-          supabase
-            .from('apuracoes_tributarias')
-            .select('id, competencia, status')
-            .eq('empresa_id', emp.id)
-            .eq('status', 'rascunho')
-            .lt(
-              'competencia',
-              new Date(new Date().setDate(new Date().getDate() - 5)).toISOString().split('T')[0]
-            )
-            .limit(5),
-          supabase
-            .from('solicitacoes_lgpd')
-            .select('id, tipo, status, created_at')
-            .eq('status', 'aberta')
-            .lt('created_at', new Date(Date.now() - 7 * 86400_000).toISOString())
-            .limit(5),
-          // Detectar duplicidades em contas_pagar (mesmo valor, data e documento)
-          supabase.rpc('detectar_duplicidades_financeiras', {
-            p_empresa_id: emp.id,
-            p_tabela: 'contas_pagar',
-          }),
-        ]);
+      let q = supabase.from('empresas').select('id, razao_social').eq('ativa', true);
+      if (empresaIdFilter) q = q.eq('id', empresaIdFilter);
+      const { data: empresas, error: errE } = await q;
+      if (errE) throw errE;
 
-        const sinais = {
-          anomalias_criticas: (anomalias.data ?? []).length,
-          anomalias_top: (anomalias.data ?? []).slice(0, 3),
-          health_score: healthScore.data?.score_total ?? null,
-          alertas_nao_lidos: (alertasNaoLidos.data ?? []).length,
-          apuracoes_atrasadas: (apuracoesAtrasadas.data ?? []).length,
-          lgpd_pendentes: (lgpdPendentes.data ?? []).length,
-          duplicidades_pagar: (duplicidades.data ?? []).length,
-        };
+      const resultados: Array<{ empresa_id: string; total: number; ok: boolean; erro?: string }> =
+        [];
 
-        const prompt = `Você é um copilot operacional de gestão tributária/financeira. Com base nos sinais abaixo da empresa "${emp.razao_social}", gere as TOP 5 ações mais prioritárias.
+      for (const emp of empresas ?? []) {
+        try {
+          // Coleta sinais das fontes, incluindo detecção de duplicidade
+          const [
+            anomalias,
+            healthScore,
+            alertasNaoLidos,
+            apuracoesAtrasadas,
+            lgpdPendentes,
+            duplicidades,
+          ] = await Promise.all([
+            supabase
+              .from('anomalias_detectadas')
+              .select('id, descricao, severidade, tipo_anomalia')
+              .eq('empresa_id', emp.id)
+              .eq('status', 'nova')
+              .in('severidade', ['alta', 'critica'])
+              .limit(10),
+            supabase
+              .from('health_scores_operacionais')
+              .select('score_total')
+              .eq('empresa_id', emp.id)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle(),
+            supabase
+              .from('alertas_tributarios')
+              .select('id, titulo, prioridade')
+              .eq('empresa_id', emp.id)
+              .eq('lido', false)
+              .in('prioridade', ['alta', 'critica'])
+              .limit(10),
+            supabase
+              .from('apuracoes_tributarias')
+              .select('id, competencia, status')
+              .eq('empresa_id', emp.id)
+              .eq('status', 'rascunho')
+              .lt(
+                'competencia',
+                new Date(new Date().setDate(new Date().getDate() - 5)).toISOString().split('T')[0]
+              )
+              .limit(5),
+            supabase
+              .from('solicitacoes_lgpd')
+              .select('id, tipo, status, created_at')
+              .eq('status', 'aberta')
+              .lt('created_at', new Date(Date.now() - 7 * 86400_000).toISOString())
+              .limit(5),
+            // Detectar duplicidades em contas_pagar (mesmo valor, data e documento)
+            supabase.rpc('detectar_duplicidades_financeiras', {
+              p_empresa_id: emp.id,
+              p_tabela: 'contas_pagar',
+            }),
+          ]);
+
+          const sinais = {
+            anomalias_criticas: (anomalias.data ?? []).length,
+            anomalias_top: (anomalias.data ?? []).slice(0, 3),
+            health_score: healthScore.data?.score_total ?? null,
+            alertas_nao_lidos: (alertasNaoLidos.data ?? []).length,
+            apuracoes_atrasadas: (apuracoesAtrasadas.data ?? []).length,
+            lgpd_pendentes: (lgpdPendentes.data ?? []).length,
+            duplicidades_pagar: (duplicidades.data ?? []).length,
+          };
+
+          const prompt = `Você é um copilot operacional de gestão tributária/financeira. Com base nos sinais abaixo da empresa "${emp.razao_social}", gere as TOP 5 ações mais prioritárias.
 
 Sinais:
 - Anomalias críticas/altas em aberto: ${sinais.anomalias_criticas} ${sinais.anomalias_top.length ? '(ex: ' + sinais.anomalias_top.map((a: any) => a.descricao).join('; ') + ')' : ''}
@@ -133,77 +140,83 @@ Retorne JSON puro (sem markdown):
 
 Máximo 5 ações, ordenadas por urgência. Se nenhum sinal relevante, retorne array vazio.`;
 
-        const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
-            messages: [
-              { role: 'system', content: 'Você gera planos de ação executivos em JSON puro.' },
-              { role: 'user', content: prompt },
-            ],
-            response_format: { type: 'json_object' },
-          }),
-        });
+          const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                { role: 'system', content: 'Você gera planos de ação executivos em JSON puro.' },
+                { role: 'user', content: prompt },
+              ],
+              response_format: { type: 'json_object' },
+            }),
+          });
 
-        if (!aiResp.ok) {
-          if (aiResp.status === 429) throw new Error('Rate limit');
-          if (aiResp.status === 402) throw new Error('Créditos esgotados');
-          throw new Error(`AI: ${await aiResp.text()}`);
-        }
+          if (!aiResp.ok) {
+            if (aiResp.status === 429) throw new Error('Rate limit');
+            if (aiResp.status === 402) throw new Error('Créditos esgotados');
+            throw new Error(`AI: ${await aiResp.text()}`);
+          }
 
-        const aiData = await aiResp.json();
-        const content = aiData.choices?.[0]?.message?.content ?? '{}';
-        const parsed = JSON.parse(content);
-        const acoes: AcaoIA[] = Array.isArray(parsed.acoes) ? parsed.acoes.slice(0, 5) : [];
+          const aiData = await aiResp.json();
+          const content = aiData.choices?.[0]?.message?.content ?? '{}';
+          const parsed = JSON.parse(content);
+          const acoes: AcaoIA[] = Array.isArray(parsed.acoes) ? parsed.acoes.slice(0, 5) : [];
 
-        // Limpa ações antigas da empresa
-        await supabase.from('acoes_recomendadas').delete().eq('empresa_id', emp.id);
+          // Limpa ações antigas da empresa
+          await supabase.from('acoes_recomendadas').delete().eq('empresa_id', emp.id);
 
-        if (acoes.length > 0) {
-          const rows = acoes.map((a, idx) => ({
+          if (acoes.length > 0) {
+            const rows = acoes.map((a, idx) => ({
+              empresa_id: emp.id,
+              titulo: a.titulo,
+              descricao: a.descricao,
+              urgencia: a.urgencia,
+              impacto_estimado: a.impacto_estimado ?? null,
+              impacto_tipo: a.impacto_tipo ?? null,
+              link_resolucao: a.link_resolucao ?? null,
+              fonte: a.fonte,
+              ordem: idx,
+              metadata: { sinais },
+            }));
+            const { error: errIns } = await supabase.from('acoes_recomendadas').insert(rows);
+            if (errIns) throw errIns;
+          }
+
+          resultados.push({ empresa_id: emp.id, total: acoes.length, ok: true });
+        } catch (e) {
+          resultados.push({
             empresa_id: emp.id,
-            titulo: a.titulo,
-            descricao: a.descricao,
-            urgencia: a.urgencia,
-            impacto_estimado: a.impacto_estimado ?? null,
-            impacto_tipo: a.impacto_tipo ?? null,
-            link_resolucao: a.link_resolucao ?? null,
-            fonte: a.fonte,
-            ordem: idx,
-            metadata: { sinais },
-          }));
-          const { error: errIns } = await supabase.from('acoes_recomendadas').insert(rows);
-          if (errIns) throw errIns;
+            total: 0,
+            ok: false,
+            erro: e instanceof Error ? e.message : String(e),
+          });
         }
-
-        resultados.push({ empresa_id: emp.id, total: acoes.length, ok: true });
-      } catch (e) {
-        resultados.push({
-          empresa_id: emp.id,
-          total: 0,
-          ok: false,
-          erro: e instanceof Error ? e.message : String(e),
-        });
       }
-    }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        total_empresas: empresas?.length ?? 0,
-        resultados,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (e) {
-    log.error('gerar-acoes-recomendadas error:', { error_message: mensagemErro(e) });
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      return new Response(
+        JSON.stringify({
+          success: true,
+          total_empresas: empresas?.length ?? 0,
+          resultados,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } catch (e) {
+      log.error('gerar-acoes-recomendadas error:', {
+        error_message: mensagemErro(e),
+        context: contextoErro(e),
+      });
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  } finally {
+    await log.flush();
   }
 });

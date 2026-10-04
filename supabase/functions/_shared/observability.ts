@@ -124,7 +124,9 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     error: (event, extra) =>
       push('error', event, {
         ...extra,
-        duration_ms: extra?.duration_ms ?? Date.now() - startedAt,
+        // duration_ms só faz sentido para logger criado por requisição
+        // (requestId); em logger de módulo ele mediria a vida do worker.
+        duration_ms: extra?.duration_ms ?? (requestId ? Date.now() - startedAt : undefined),
       }),
     flush,
   };

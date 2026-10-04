@@ -9,7 +9,7 @@ import {
 } from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('enviar-alerta-email');
 
 const corsHeaders = {
@@ -197,7 +197,10 @@ export const handler = async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: unknown) {
-    log.error('Erro ao enviar alerta:', { error_message: mensagemErro(error) });
+    log.error('Erro ao enviar alerta:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     const message = error instanceof Error ? error.message : 'Erro desconhecido';
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
@@ -206,4 +209,11 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-if (import.meta.main) serve(handler);
+if (import.meta.main)
+  serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });

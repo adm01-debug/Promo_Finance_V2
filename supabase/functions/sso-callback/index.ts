@@ -725,345 +725,349 @@ function jsonResp(data: unknown, status: number, headers: Record<string, string>
  * Handler principal
  * ============================================================================= */
 Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-
-  // Roteia POST com body { kind: 'saml-finalize' } para o branch SAML
-  if (req.method === 'POST') {
-    const peek = await safeJson(req);
-    if (peek && (peek.kind === 'saml-finalize' || peek.kind === 'saml_finalize')) {
-      // restitui body para o handler
-      const reused = new Request(req.url, {
-        method: 'POST',
-        headers: req.headers,
-        body: JSON.stringify(peek),
-      });
-      return handleSamlFinalize(reused, corsHeaders);
-    }
-  }
-
-  // ============= OIDC callback (GET com code/state vindo do IdP) =============
-  const t0 = Date.now();
-  const ip = getClientIp(req);
-  const ua = req.headers.get('user-agent');
-  const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
-
-  const url = new URL(req.url);
-  const code = url.searchParams.get('code');
-  const state = url.searchParams.get('state');
-  const verifier = url.searchParams.get('verifier') || (await safeJson(req))?.verifier;
-
-  if (!code || !state) {
-    await logAttempt({
-      admin,
-      providerId: null,
-      email: null,
-      success: false,
-      errCode: 'missing_code_or_state',
-      errMsg: null,
-      t0,
-      ip,
-      ua,
-    });
-    return redirectErr(req, 'missing_code_or_state');
-  }
-
-  let appRedirect: string | null = null;
-
   try {
-    const { data: attempt } = await admin
-      .from('sso_login_attempts')
-      .select('*')
-      .eq('state', state)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-    appRedirect = attempt?.app_redirect ?? null;
+    // Roteia POST com body { kind: 'saml-finalize' } para o branch SAML
+    if (req.method === 'POST') {
+      const peek = await safeJson(req);
+      if (peek && (peek.kind === 'saml-finalize' || peek.kind === 'saml_finalize')) {
+        // restitui body para o handler
+        const reused = new Request(req.url, {
+          method: 'POST',
+          headers: req.headers,
+          body: JSON.stringify(peek),
+        });
+        return handleSamlFinalize(reused, corsHeaders);
+      }
+    }
 
-    if (!attempt || (attempt.expires_at && new Date(attempt.expires_at) < new Date())) {
+    // ============= OIDC callback (GET com code/state vindo do IdP) =============
+    const t0 = Date.now();
+    const ip = getClientIp(req);
+    const ua = req.headers.get('user-agent');
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    const url = new URL(req.url);
+    const code = url.searchParams.get('code');
+    const state = url.searchParams.get('state');
+    const verifier = url.searchParams.get('verifier') || (await safeJson(req))?.verifier;
+
+    if (!code || !state) {
       await logAttempt({
         admin,
-        providerId: attempt?.provider_id ?? null,
+        providerId: null,
         email: null,
         success: false,
-        errCode: 'state_invalid_or_expired',
+        errCode: 'missing_code_or_state',
         errMsg: null,
         t0,
         ip,
         ua,
-        appRedirect,
       });
-      return redirectErr(req, 'state_invalid_or_expired', appRedirect);
+      return redirectErr(req, 'missing_code_or_state');
     }
-    if (attempt.code_verifier_hash) {
-      // PKCE registrado no initiate é obrigatório: aceitar a ausência do
-      // verifier seria um downgrade — o atacante omitiria o parâmetro e
-      // pularia a checagem inteira.
-      if (!verifier) {
+
+    let appRedirect: string | null = null;
+
+    try {
+      const { data: attempt } = await admin
+        .from('sso_login_attempts')
+        .select('*')
+        .eq('state', state)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      appRedirect = attempt?.app_redirect ?? null;
+
+      if (!attempt || (attempt.expires_at && new Date(attempt.expires_at) < new Date())) {
         await logAttempt({
           admin,
-          providerId: attempt.provider_id,
+          providerId: attempt?.provider_id ?? null,
           email: null,
           success: false,
-          errCode: 'pkce_verifier_missing',
+          errCode: 'state_invalid_or_expired',
           errMsg: null,
           t0,
           ip,
           ua,
           appRedirect,
         });
-        return redirectErr(req, 'pkce_verifier_missing', appRedirect);
+        return redirectErr(req, 'state_invalid_or_expired', appRedirect);
       }
-      const h = await sha256(verifier);
-      if (h !== attempt.code_verifier_hash) {
+      if (attempt.code_verifier_hash) {
+        // PKCE registrado no initiate é obrigatório: aceitar a ausência do
+        // verifier seria um downgrade — o atacante omitiria o parâmetro e
+        // pularia a checagem inteira.
+        if (!verifier) {
+          await logAttempt({
+            admin,
+            providerId: attempt.provider_id,
+            email: null,
+            success: false,
+            errCode: 'pkce_verifier_missing',
+            errMsg: null,
+            t0,
+            ip,
+            ua,
+            appRedirect,
+          });
+          return redirectErr(req, 'pkce_verifier_missing', appRedirect);
+        }
+        const h = await sha256(verifier);
+        if (h !== attempt.code_verifier_hash) {
+          await logAttempt({
+            admin,
+            providerId: attempt.provider_id,
+            email: null,
+            success: false,
+            errCode: 'pkce_mismatch',
+            errMsg: null,
+            t0,
+            ip,
+            ua,
+            appRedirect,
+          });
+          return redirectErr(req, 'pkce_mismatch', appRedirect);
+        }
+      }
+
+      const { data: provider } = await admin
+        .from('sso_providers')
+        .select('*')
+        .eq('id', attempt.provider_id)
+        .maybeSingle();
+      if (!provider) {
         await logAttempt({
           admin,
           providerId: attempt.provider_id,
           email: null,
           success: false,
-          errCode: 'pkce_mismatch',
+          errCode: 'provider_missing',
           errMsg: null,
           t0,
           ip,
           ua,
           appRedirect,
         });
-        return redirectErr(req, 'pkce_mismatch', appRedirect);
+        return redirectErr(req, 'provider_missing', appRedirect);
       }
-    }
 
-    const { data: provider } = await admin
-      .from('sso_providers')
-      .select('*')
-      .eq('id', attempt.provider_id)
-      .maybeSingle();
-    if (!provider) {
-      await logAttempt({
-        admin,
-        providerId: attempt.provider_id,
-        email: null,
-        success: false,
-        errCode: 'provider_missing',
-        errMsg: null,
-        t0,
-        ip,
-        ua,
-        appRedirect,
-      });
-      return redirectErr(req, 'provider_missing', appRedirect);
-    }
-
-    // Discovery
-    let tokenEndpoint = provider.token_endpoint;
-    let userinfoEndpoint = provider.userinfo_endpoint;
-    if ((!tokenEndpoint || !userinfoEndpoint) && provider.discovery_url) {
-      const meta = await (await fetch(provider.discovery_url)).json();
-      tokenEndpoint ??= meta.token_endpoint;
-      userinfoEndpoint ??= meta.userinfo_endpoint;
-    }
-
-    const clientSecret = provider.client_secret_ref
-      ? Deno.env.get(provider.client_secret_ref)
-      : null;
-
-    // Exchange code → tokens
-    const callback = `${SUPABASE_URL}/functions/v1/sso-callback`;
-    const body = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: callback,
-      client_id: provider.client_id || '',
-      ...(clientSecret ? { client_secret: clientSecret } : {}),
-      ...(verifier ? { code_verifier: verifier } : {}),
-    });
-    const tokRes = await fetch(tokenEndpoint!, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-    });
-    if (!tokRes.ok) {
-      await logAttempt({
-        admin,
-        providerId: provider.id,
-        email: null,
-        success: false,
-        errCode: 'token_exchange_failed',
-        errMsg: await tokRes.text(),
-        t0,
-        ip,
-        ua,
-        appRedirect,
-      });
-      return redirectErr(req, 'token_exchange_failed', appRedirect);
-    }
-    const tokens = await tokRes.json();
-
-    let claims: Record<string, unknown> = {};
-    if (tokens.id_token) {
-      try {
-        claims = decodeJwtPayload(tokens.id_token);
-      } catch {
-        /* ignore */
+      // Discovery
+      let tokenEndpoint = provider.token_endpoint;
+      let userinfoEndpoint = provider.userinfo_endpoint;
+      if ((!tokenEndpoint || !userinfoEndpoint) && provider.discovery_url) {
+        const meta = await (await fetch(provider.discovery_url)).json();
+        tokenEndpoint ??= meta.token_endpoint;
+        userinfoEndpoint ??= meta.userinfo_endpoint;
       }
-    }
-    if (!claims.email && tokens.access_token && userinfoEndpoint) {
-      const ui = await fetch(userinfoEndpoint, {
-        headers: { Authorization: `Bearer ${tokens.access_token}` },
+
+      const clientSecret = provider.client_secret_ref
+        ? Deno.env.get(provider.client_secret_ref)
+        : null;
+
+      // Exchange code → tokens
+      const callback = `${SUPABASE_URL}/functions/v1/sso-callback`;
+      const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: callback,
+        client_id: provider.client_id || '',
+        ...(clientSecret ? { client_secret: clientSecret } : {}),
+        ...(verifier ? { code_verifier: verifier } : {}),
       });
-      if (ui.ok) claims = { ...claims, ...(await ui.json()) };
-    }
+      const tokRes = await fetch(tokenEndpoint!, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+      });
+      if (!tokRes.ok) {
+        await logAttempt({
+          admin,
+          providerId: provider.id,
+          email: null,
+          success: false,
+          errCode: 'token_exchange_failed',
+          errMsg: await tokRes.text(),
+          t0,
+          ip,
+          ua,
+          appRedirect,
+        });
+        return redirectErr(req, 'token_exchange_failed', appRedirect);
+      }
+      const tokens = await tokRes.json();
 
-    const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
-    const sources = [claims];
-    const email = (resolveClaim(sources, cm, 'email', ['email']) || '').toLowerCase();
-    const fullName = resolveClaim(sources, cm, 'full_name', ['name', 'full_name']) || email;
-    const avatarUrl = resolveClaim(sources, cm, 'avatar_url', [
-      'picture',
-      'avatar_url',
-      'photoUrl',
-      'photo_url',
-    ]);
-    const telefone = resolveClaim(sources, cm, 'telefone', [
-      'phone_number',
-      'phoneNumber',
-      'phone',
-      'mobile',
-      'mobilePhone',
-    ]);
-    const groups = resolveClaimArray(sources, cm, 'groups', ['groups']);
+      let claims: Record<string, unknown> = {};
+      if (tokens.id_token) {
+        try {
+          claims = decodeJwtPayload(tokens.id_token);
+        } catch {
+          /* ignore */
+        }
+      }
+      if (!claims.email && tokens.access_token && userinfoEndpoint) {
+        const ui = await fetch(userinfoEndpoint, {
+          headers: { Authorization: `Bearer ${tokens.access_token}` },
+        });
+        if (ui.ok) claims = { ...claims, ...(await ui.json()) };
+      }
 
-    if (!email) {
-      await logAttempt({
+      const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
+      const sources = [claims];
+      const email = (resolveClaim(sources, cm, 'email', ['email']) || '').toLowerCase();
+      const fullName = resolveClaim(sources, cm, 'full_name', ['name', 'full_name']) || email;
+      const avatarUrl = resolveClaim(sources, cm, 'avatar_url', [
+        'picture',
+        'avatar_url',
+        'photoUrl',
+        'photo_url',
+      ]);
+      const telefone = resolveClaim(sources, cm, 'telefone', [
+        'phone_number',
+        'phoneNumber',
+        'phone',
+        'mobile',
+        'mobilePhone',
+      ]);
+      const groups = resolveClaimArray(sources, cm, 'groups', ['groups']);
+
+      if (!email) {
+        await logAttempt({
+          admin,
+          providerId: provider.id,
+          email: null,
+          success: false,
+          errCode: 'no_email_claim',
+          errMsg: null,
+          t0,
+          ip,
+          ua,
+          appRedirect,
+        });
+        return redirectErr(req, 'no_email_claim', appRedirect);
+      }
+
+      const result = await applyPipeline({
         admin,
-        providerId: provider.id,
-        email: null,
-        success: false,
-        errCode: 'no_email_claim',
-        errMsg: null,
-        t0,
-        ip,
-        ua,
-        appRedirect,
+        provider,
+        email,
+        fullName,
+        avatarUrl,
+        telefone,
+        groups,
+        existingUserId: null,
+        allowJit: !!provider.auto_provision_users,
       });
-      return redirectErr(req, 'no_email_claim', appRedirect);
-    }
 
-    const result = await applyPipeline({
-      admin,
-      provider,
-      email,
-      fullName,
-      avatarUrl,
-      telefone,
-      groups,
-      existingUserId: null,
-      allowJit: !!provider.auto_provision_users,
-    });
+      if ('error' in result) {
+        await logAttempt({
+          admin,
+          providerId: provider.id,
+          email,
+          success: false,
+          errCode: result.error,
+          errMsg: result.details ?? null,
+          t0,
+          ip,
+          ua,
+          appRedirect,
+        });
+        return redirectErr(req, result.error, appRedirect);
+      }
 
-    if ('error' in result) {
+      const providerNome = (provider.nome as string) ?? '';
+      const providerTipo = (provider.tipo as string) ?? null;
+      const defaultRole = (provider.default_role as string) || 'visualizador';
+      const roleOrigin = result.matchedGroup ? 'group_mapped' : 'default';
+      const via = providerTipo === 'oidc' ? 'oidc-jit' : 'saml-broker-jit';
+      const magicLinkContext = {
+        provider_nome: providerNome,
+        provider_tipo: providerTipo,
+        matched_group: result.matchedGroup,
+        role_resolved: result.role,
+        default_role: defaultRole,
+        role_origin: roleOrigin,
+        groups_received: groups,
+        via,
+        jit_created: result.jitCreated,
+        empresa_id: (provider.empresa_id as string | null) ?? null,
+      };
+
       await logAttempt({
         admin,
         providerId: provider.id,
         email,
+        success: true,
+        errCode: null,
+        errMsg: result.jitCreated ? 'jit_provisioned' : null,
+        t0,
+        ip,
+        ua,
+        appRedirect,
+        context: magicLinkContext,
+      });
+
+      // Trilha dedicada: magic link → provider → grupo → role (existe em todo login)
+      try {
+        await admin.from('audit_logs').insert({
+          user_id: result.userId,
+          user_email: email,
+          action: 'LOGIN',
+          table_name: 'sso_magic_link_issued',
+          record_id: result.userId,
+          new_data: {
+            provider_id: provider.id,
+            provider_nome: providerNome,
+            provider_tipo: providerTipo,
+            matched_group: result.matchedGroup,
+            role: result.role,
+            default_role: defaultRole,
+            role_origin: roleOrigin,
+            groups_received: groups,
+            via,
+            jit_created: result.jitCreated,
+            app_redirect: appRedirect ?? null,
+          },
+          details: `Magic link emitido via ${providerNome} → role=${result.role} (${
+            roleOrigin === 'group_mapped' ? `grupo ${result.matchedGroup}` : 'default'
+          })`,
+        });
+      } catch (err) {
+        log.warn('[sso-callback] falha ao registrar audit_logs sso_magic_link_issued:', {
+          context: { args: [err instanceof Error ? err.message : String(err)] },
+        });
+      }
+
+      // Magic link e redirect para o app
+      const redirectTo = appRedirect || safeOrigin(req, null);
+      const link = await admin.auth.admin.generateLink({
+        type: 'magiclink',
+        email,
+        options: { redirectTo },
+      });
+      if (link.error || !link.data.properties?.action_link) {
+        return redirectErr(req, 'magiclink_failed', appRedirect);
+      }
+      return Response.redirect(link.data.properties.action_link, 302);
+    } catch (e) {
+      await logAttempt({
+        admin,
+        providerId: null,
+        email: null,
         success: false,
-        errCode: result.error,
-        errMsg: result.details ?? null,
+        errCode: 'unexpected',
+        errMsg: e instanceof Error ? e.message : String(e),
         t0,
         ip,
         ua,
         appRedirect,
       });
-      return redirectErr(req, result.error, appRedirect);
+      return redirectErr(req, 'unexpected', appRedirect);
     }
-
-    const providerNome = (provider.nome as string) ?? '';
-    const providerTipo = (provider.tipo as string) ?? null;
-    const defaultRole = (provider.default_role as string) || 'visualizador';
-    const roleOrigin = result.matchedGroup ? 'group_mapped' : 'default';
-    const via = providerTipo === 'oidc' ? 'oidc-jit' : 'saml-broker-jit';
-    const magicLinkContext = {
-      provider_nome: providerNome,
-      provider_tipo: providerTipo,
-      matched_group: result.matchedGroup,
-      role_resolved: result.role,
-      default_role: defaultRole,
-      role_origin: roleOrigin,
-      groups_received: groups,
-      via,
-      jit_created: result.jitCreated,
-      empresa_id: (provider.empresa_id as string | null) ?? null,
-    };
-
-    await logAttempt({
-      admin,
-      providerId: provider.id,
-      email,
-      success: true,
-      errCode: null,
-      errMsg: result.jitCreated ? 'jit_provisioned' : null,
-      t0,
-      ip,
-      ua,
-      appRedirect,
-      context: magicLinkContext,
-    });
-
-    // Trilha dedicada: magic link → provider → grupo → role (existe em todo login)
-    try {
-      await admin.from('audit_logs').insert({
-        user_id: result.userId,
-        user_email: email,
-        action: 'LOGIN',
-        table_name: 'sso_magic_link_issued',
-        record_id: result.userId,
-        new_data: {
-          provider_id: provider.id,
-          provider_nome: providerNome,
-          provider_tipo: providerTipo,
-          matched_group: result.matchedGroup,
-          role: result.role,
-          default_role: defaultRole,
-          role_origin: roleOrigin,
-          groups_received: groups,
-          via,
-          jit_created: result.jitCreated,
-          app_redirect: appRedirect ?? null,
-        },
-        details: `Magic link emitido via ${providerNome} → role=${result.role} (${
-          roleOrigin === 'group_mapped' ? `grupo ${result.matchedGroup}` : 'default'
-        })`,
-      });
-    } catch (err) {
-      log.warn('[sso-callback] falha ao registrar audit_logs sso_magic_link_issued:', {
-        context: { args: [err instanceof Error ? err.message : String(err)] },
-      });
-    }
-
-    // Magic link e redirect para o app
-    const redirectTo = appRedirect || safeOrigin(req, null);
-    const link = await admin.auth.admin.generateLink({
-      type: 'magiclink',
-      email,
-      options: { redirectTo },
-    });
-    if (link.error || !link.data.properties?.action_link) {
-      return redirectErr(req, 'magiclink_failed', appRedirect);
-    }
-    return Response.redirect(link.data.properties.action_link, 302);
-  } catch (e) {
-    await logAttempt({
-      admin,
-      providerId: null,
-      email: null,
-      success: false,
-      errCode: 'unexpected',
-      errMsg: e instanceof Error ? e.message : String(e),
-      t0,
-      ip,
-      ua,
-      appRedirect,
-    });
-    return redirectErr(req, 'unexpected', appRedirect);
+  } finally {
+    await log.flush();
   }
 });

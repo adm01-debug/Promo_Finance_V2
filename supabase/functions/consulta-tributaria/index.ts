@@ -23,7 +23,7 @@ import {
   type MatchInfo,
 } from './helpers.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('consulta-tributaria');
 
 const UFS = [
@@ -366,45 +366,52 @@ async function consultarNCM(
 
 // ---------------------------------------------------------------------------
 Deno.serve(async (req) => {
-  const cors = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
-  const res = (payload: unknown, status = 200) => json(payload, status, cors);
-
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) return res({ error: 'Unauthorized' }, 401);
+    const cors = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+    const res = (payload: unknown, status = 200) => json(payload, status, cors);
 
-    const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: { headers: { Authorization: authHeader } },
-      auth: { persistSession: false },
-    });
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) return res({ error: 'Unauthorized' }, 401);
 
-    const { data: userData, error: userError } = await db.auth.getUser();
-    if (userError || !userData?.user) return res({ error: 'Unauthorized' }, 401);
+      const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: authHeader } },
+        auth: { persistSession: false },
+      });
 
-    // Aceita GET (query string) e POST (JSON), normalizando para o mesmo schema.
-    const url = new URL(req.url);
-    const raw: Record<string, unknown> = Object.fromEntries(url.searchParams.entries());
-    if (req.method === 'POST') {
-      const body = await req.json().catch(() => ({}));
-      Object.assign(raw, body ?? {});
+      const { data: userData, error: userError } = await db.auth.getUser();
+      if (userError || !userData?.user) return res({ error: 'Unauthorized' }, 401);
+
+      // Aceita GET (query string) e POST (JSON), normalizando para o mesmo schema.
+      const url = new URL(req.url);
+      const raw: Record<string, unknown> = Object.fromEntries(url.searchParams.entries());
+      if (req.method === 'POST') {
+        const body = await req.json().catch(() => ({}));
+        Object.assign(raw, body ?? {});
+      }
+
+      const parsed = ParamsSchema.safeParse(raw);
+      if (!parsed.success) {
+        return res(
+          { error: 'Parâmetros inválidos', detalhes: parsed.error.flatten().fieldErrors },
+          400
+        );
+      }
+      const p = parsed.data;
+
+      if (p.recurso === 'uf') return await consultarUF(db, p, res);
+      if (p.recurso === 'cnae') return await consultarCNAE(db, p, res);
+      return await consultarNCM(db, p, res);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Erro desconhecido';
+      log.error('[consulta-tributaria]', {
+        error_message: mensagemErro(msg),
+        context: contextoErro(msg),
+      });
+      return res({ error: 'Erro interno na consulta tributária' }, 500);
     }
-
-    const parsed = ParamsSchema.safeParse(raw);
-    if (!parsed.success) {
-      return res(
-        { error: 'Parâmetros inválidos', detalhes: parsed.error.flatten().fieldErrors },
-        400
-      );
-    }
-    const p = parsed.data;
-
-    if (p.recurso === 'uf') return await consultarUF(db, p, res);
-    if (p.recurso === 'cnae') return await consultarCNAE(db, p, res);
-    return await consultarNCM(db, p, res);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Erro desconhecido';
-    log.error('[consulta-tributaria]', { error_message: mensagemErro(msg) });
-    return res({ error: 'Erro interno na consulta tributária' }, 500);
+  } finally {
+    await log.flush();
   }
 });

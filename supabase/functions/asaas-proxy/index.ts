@@ -10,7 +10,7 @@ import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
-import { mensagemErro } from '../_shared/erros.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('asaas-proxy');
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
@@ -229,7 +229,10 @@ export const handler = async (req: Request) => {
             endereco: data.endereco || null,
           });
           if (dbError)
-            log.error('Erro DB criar_cliente:', { error_message: mensagemErro(dbError) });
+            log.error('Erro DB criar_cliente:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
         }
         break;
       }
@@ -425,7 +428,10 @@ export const handler = async (req: Request) => {
             link_fatura: result.invoiceUrl || null,
           });
           if (dbError)
-            log.error('Erro DB criar_cobranca:', { error_message: mensagemErro(dbError) });
+            log.error('Erro DB criar_cobranca:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
 
           result.pixData = pixData;
           result.boletoData = boletoData;
@@ -689,7 +695,10 @@ export const handler = async (req: Request) => {
             user_id: user.id,
           });
           if (dbError)
-            log.error('Erro DB asaas_transfers:', { error_message: mensagemErro(dbError) });
+            log.error('Erro DB asaas_transfers:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
 
           // Registrar na auditoria
           await supabase.from('asaas_audit_trail').insert({
@@ -822,6 +831,7 @@ export const handler = async (req: Request) => {
           if (linkMirrorError)
             log.error('Erro ao espelhar link de pagamento:', {
               error_message: mensagemErro(linkMirrorError),
+              context: contextoErro(linkMirrorError),
             });
         }
         break;
@@ -1295,7 +1305,10 @@ export const handler = async (req: Request) => {
 
     return ok(result);
   } catch (error: any) {
-    log.error('Erro asaas-proxy:', { error_message: mensagemErro(error) });
+    log.error('Erro asaas-proxy:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -1304,5 +1317,11 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    try {
+      return await handler(req);
+    } finally {
+      await log.flush();
+    }
+  });
 }
