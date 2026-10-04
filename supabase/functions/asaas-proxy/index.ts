@@ -128,12 +128,21 @@ export const handler = async (req: Request) => {
 
     const { action, data } = validation.data;
 
-    // Kill-switch global pós-autenticação e papel admin/financeiro: cobre
-    // todas as ações — tanto as que passam por exigirEmpresaDoRecurso quanto
-    // as listagens com filtro pós-fetch (listar_clientes, extrato,
-    // listar_links_pagamento, listar_antecipacoes) e as ações globais.
-    const inativa = respostaIntegracaoDesativada('asaas', corsHeaders);
-    if (inativa) return inativa;
+    // Ações globais (sem empresa) não passam por verificação de vínculo —
+    // para elas o papel admin/financeiro já é a autorização completa, e o
+    // kill-switch acontece aqui. As demais descobrem a desativação só depois
+    // do vínculo de empresa (ver exigirEmpresaDoRecurso e as listagens com
+    // filtro pós-fetch), para não vazar o estado a quem não tem acesso.
+    const ACOES_SEM_ESCOPO_EMPRESA = new Set([
+      'consultar_saldo',
+      'processar_fila_sincronizacao',
+      'simular_backoff',
+      'analisar_risco_cliente',
+    ]);
+    if (ACOES_SEM_ESCOPO_EMPRESA.has(action)) {
+      const inativaGlobal = respostaIntegracaoDesativada('asaas', corsHeaders);
+      if (inativaGlobal) return inativaGlobal;
+    }
 
     const ok = (result: any) =>
       new Response(JSON.stringify(result), {
@@ -198,7 +207,9 @@ export const handler = async (req: Request) => {
       if (!empresaId) return err('Recurso não encontrado', 404);
       const vinculo = await exigirVinculoEmpresa(user.id, empresaId, req);
       if (!vinculo.ok) return vinculo.resposta;
-      return null;
+      // Kill-switch pós-escopo: só quem tem vínculo com a empresa do recurso
+      // descobre que a integração está desativada.
+      return respostaIntegracaoDesativada('asaas', corsHeaders);
     };
 
     let result: any;
@@ -299,6 +310,8 @@ export const handler = async (req: Request) => {
       case 'listar_clientes': {
         const escopoListarClientes = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoListarClientes.ok) return escopoListarClientes.resposta;
+        const inativaClientes = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaClientes) return inativaClientes;
         const params = new URLSearchParams();
         if (data?.offset) params.set('offset', data.offset);
         if (data?.limit) params.set('limit', data.limit || '20');
@@ -605,6 +618,8 @@ export const handler = async (req: Request) => {
         } else {
           escopoListarAssinaturas = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
           if (!escopoListarAssinaturas.ok) return escopoListarAssinaturas.resposta;
+          const inativaAssinaturas = respostaIntegracaoDesativada('asaas', corsHeaders);
+          if (inativaAssinaturas) return inativaAssinaturas;
         }
         const params = new URLSearchParams();
         if (data?.customer) params.set('customer', data.customer);
@@ -755,6 +770,8 @@ export const handler = async (req: Request) => {
       case 'extrato': {
         const escopoExtrato = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoExtrato.ok) return escopoExtrato.resposta;
+        const inativaExtrato = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaExtrato) return inativaExtrato;
         const params = new URLSearchParams();
         if (data?.startDate) params.set('startDate', data.startDate);
         if (data?.finishDate) params.set('finishDate', data.finishDate);
@@ -853,6 +870,8 @@ export const handler = async (req: Request) => {
       case 'listar_links_pagamento': {
         const escopoListarLinks = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoListarLinks.ok) return escopoListarLinks.resposta;
+        const inativaLinks = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaLinks) return inativaLinks;
         const params = new URLSearchParams();
         if (data?.offset) params.set('offset', data.offset || '0');
         if (data?.limit) params.set('limit', data.limit || '20');
@@ -942,6 +961,8 @@ export const handler = async (req: Request) => {
       case 'listar_antecipacoes': {
         const escopoListarAntecipacoes = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoListarAntecipacoes.ok) return escopoListarAntecipacoes.resposta;
+        const inativaAntecipacoes = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaAntecipacoes) return inativaAntecipacoes;
         const params = new URLSearchParams();
         if (data?.status) params.set('status', data.status);
         if (data?.offset) params.set('offset', data.offset || '0');
