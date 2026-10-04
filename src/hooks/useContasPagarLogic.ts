@@ -397,8 +397,11 @@ export function useContasPagarLogic() {
   // do outro usuário. Reler quando a conta está fora da janela carregada
   // fingiria a mesma leitura da seleção: sem versão vista registrada, falha
   // pedindo recarga em vez de burlar o lock.
-  const snapshotSelecionadas = (): Map<string, { updated_at: string | null; valor: number }> => {
-    const selecionadas = new Map<string, { updated_at: string | null; valor: number }>();
+  const snapshotSelecionadas = (): Map<
+    string,
+    { updated_at: string | null; valor: number | null }
+  > => {
+    const selecionadas = new Map<string, { updated_at: string | null; valor: number | null }>();
     for (const id of bulkActionsHook.selectedIds) {
       const local = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
       if (!local) {
