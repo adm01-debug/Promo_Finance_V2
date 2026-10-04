@@ -5,6 +5,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { segredosIguais } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 
 interface DispatchRequest {
   event_type: string;
@@ -83,6 +84,10 @@ Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
 
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+
+  const inativa = respostaIntegracaoDesativada('n8n', corsHeaders);
+  if (inativa) return inativa;
+
   if (req.method !== 'POST')
     return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 

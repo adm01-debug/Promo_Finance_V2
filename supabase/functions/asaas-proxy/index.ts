@@ -5,7 +5,12 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validatePayload, createErrorResponse, AsaasProxySchema } from '../_shared/validation.ts';
-import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts';
+import {
+  withRetry,
+  createCircuitBreaker,
+  withTimeout,
+  respostaIntegracaoDesativada,
+} from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -58,6 +63,9 @@ export const handler = async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const inativa = respostaIntegracaoDesativada('asaas', corsHeaders);
+  if (inativa) return inativa;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;

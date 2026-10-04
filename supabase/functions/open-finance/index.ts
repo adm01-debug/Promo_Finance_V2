@@ -4,6 +4,7 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 
 const _OFSchema = z.object({
   action: z.string().min(1),
@@ -36,6 +37,9 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
+  if (inativa) return inativa;
 
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
