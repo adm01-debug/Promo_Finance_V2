@@ -6,7 +6,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-type Row = { id: string; descricao: string; updated_at: string };
+type Row = { id: string; descricao: string; updated_at: string | null };
 const store = new Map<string, Map<string, Row>>();
 // Simula a RLS negando escrita: leitura continua vendo a linha, update casa 0.
 const denyWrites = new Set<string>();
@@ -19,6 +19,10 @@ function makeBuilder(tabela: string, patch: Record<string, unknown>) {
   const filters: Array<[string, unknown]> = [];
   const chain: any = {
     eq(col: string, val: unknown) {
+      filters.push([col, val]);
+      return chain;
+    },
+    is(col: string, val: unknown) {
       filters.push([col, val]);
       return chain;
     },
@@ -114,6 +118,21 @@ describe('updateComLockOtimista', () => {
     await expect(
       updateComLockOtimista('contas_pagar', 'c1', '2026-01-01T00:00:00Z', { descricao: 'x' })
     ).rejects.toThrow('Sem permissão');
+  });
+
+  it('linha legada com updated_at nulo: lock casa por .is(null) e primeiro commit vence', async () => {
+    store.set(
+      'contas_receber',
+      new Map([['r1', { id: 'r1', descricao: 'legada', updated_at: null }]])
+    );
+    await expect(
+      updateComLockOtimista('contas_receber', 'r1', null, { descricao: 'usuario-A' })
+    ).resolves.toBeUndefined();
+    // Depois do primeiro write a linha ganhou updated_at — lock com null falha.
+    await expect(
+      updateComLockOtimista('contas_receber', 'r1', null, { descricao: 'usuario-B' })
+    ).rejects.toBeInstanceOf(ConflitoVersaoError);
+    expect(store.get('contas_receber')?.get('r1')?.descricao).toBe('usuario-A');
   });
 
   it('race: primeiro commit vence, segundo com a mesma versão falha', async () => {

@@ -19,15 +19,20 @@ export class ConflitoVersaoError extends Error {
 export async function updateComLockOtimista(
   tabela: 'contas_pagar' | 'contas_receber',
   id: string,
-  updatedAtVisto: string,
+  updatedAtVisto: string | null,
   patch: Record<string, unknown>
 ): Promise<void> {
-  const { data, error } = await supabase
+  // updated_at é anulável nas linhas antigas: com versão vista nula o filtro
+  // é `.is(null)` — `.eq(col, null)` nunca casa NULL no PostgREST.
+  const update = supabase
     .from(tabela)
     .update({ ...patch, updated_at: new Date().toISOString() })
-    .eq('id', id)
-    .eq('updated_at', updatedAtVisto)
-    .select('id');
+    .eq('id', id);
+  const { data, error } = await (
+    updatedAtVisto === null
+      ? update.is('updated_at', null)
+      : update.eq('updated_at', updatedAtVisto)
+  ).select('id');
   if (error) throw error;
   if (!data || data.length === 0) {
     // 0 linhas pode ser conflito de versão OU a RLS negando a escrita (o
