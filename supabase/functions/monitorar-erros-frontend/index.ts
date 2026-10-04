@@ -250,6 +250,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ success: false, error: 'erro interno' }, 500);
     }
   } finally {
-    await log.flush(Date.now() - _t0);
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

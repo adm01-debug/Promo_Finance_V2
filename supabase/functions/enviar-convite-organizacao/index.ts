@@ -175,6 +175,7 @@ Deno.serve(async (req) => {
       return res({ error: 'Erro interno ao enviar convite.' }, 500);
     }
   } finally {
-    await log.flush(Date.now() - _t0);
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

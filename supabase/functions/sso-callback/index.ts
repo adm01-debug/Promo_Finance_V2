@@ -1069,6 +1069,7 @@ Deno.serve(async (req) => {
       return redirectErr(req, 'unexpected', appRedirect);
     }
   } finally {
-    await log.flush(Date.now() - _t0);
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

@@ -55,9 +55,7 @@ export interface EdgeLogger {
   info: (event: string, extra?: Partial<LogEntry>) => void;
   warn: (event: string, extra?: Partial<LogEntry>) => void;
   error: (event: string, extra?: Partial<LogEntry>) => void;
-  // duracaoMs: carimba a duração da requisição nas linhas sem duration_ms —
-  // usado pelo wrapper try/finally do serve() em loggers de módulo.
-  flush: (duracaoMs?: number) => Promise<void>;
+  flush: () => Promise<void>;
 }
 
 // Instância vive no escopo do módulo e atravessa requisições do mesmo worker;
@@ -89,7 +87,7 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     }
   };
 
-  const flush = async (duracaoMs?: number) => {
+  const flush = async () => {
     if (buffer.length === 0) return;
     const url = Deno.env.get('SUPABASE_URL');
     const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -100,13 +98,6 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
       // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
       const rows = buffer
         .splice(0, buffer.length)
-        .map((e) =>
-          // Logger de módulo não tem relógio de requisição: o flush no
-          // finally do handler carimba a duração real nas linhas do buffer.
-          duracaoMs !== undefined && e.duration_ms === undefined
-            ? { ...e, duration_ms: duracaoMs }
-            : e
-        )
         .map(({ context, event, error_message, ...rest }) => ({
           ...rest,
           event: redigir(event) as string,

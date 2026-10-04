@@ -262,6 +262,7 @@ Deno.serve(async (req) => {
       return res({ ok: false, error: 'sync_failed', details: msg }, 500);
     }
   } finally {
-    await log.flush(Date.now() - _t0);
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

@@ -54,7 +54,9 @@ export const handler = async (req: Request): Promise<Response> => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    log.info(`Analyzing document: ${fileName} (${fileType})`);
+    // fileName vem do cliente e pode conter PII em texto livre — fora do
+    // evento persistido; o tipo MIME já diz o que precisamos saber.
+    log.info(`Analyzing document (${fileType})`);
 
     // Determine analysis prompt based on file type
     let analysisPrompt = `Analise o seguinte documento financeiro e extraia as informações relevantes:
@@ -201,7 +203,8 @@ if (import.meta.main) {
     try {
       return await handler(req);
     } finally {
-      await log.flush(Date.now() - _t0);
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
   });
 }

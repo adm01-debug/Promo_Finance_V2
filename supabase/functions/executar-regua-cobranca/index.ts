@@ -133,7 +133,8 @@ Deno.serve(async (req) => {
       return res({ error: mensagemErro(erro) }, 500);
     }
   } finally {
-    await log.flush(Date.now() - _t0);
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });
 

@@ -230,6 +230,7 @@ Deno.serve(async (req) => {
   try {
     return await handler(req);
   } finally {
-    await log.flush(Date.now() - _t0);
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });
