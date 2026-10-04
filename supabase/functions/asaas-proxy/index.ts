@@ -128,18 +128,12 @@ export const handler = async (req: Request) => {
 
     const { action, data } = validation.data;
 
-    // Ações globais não passam por exigirEmpresaDoRecurso — o kill-switch
-    // delas acontece aqui, já após autenticação e papel admin/financeiro.
-    const ACOES_SEM_ESCOPO_EMPRESA = new Set([
-      'consultar_saldo',
-      'processar_fila_sincronizacao',
-      'simular_backoff',
-      'analisar_risco_cliente',
-    ]);
-    if (ACOES_SEM_ESCOPO_EMPRESA.has(action)) {
-      const inativaGlobal = respostaIntegracaoDesativada('asaas', corsHeaders);
-      if (inativaGlobal) return inativaGlobal;
-    }
+    // Kill-switch global pós-autenticação e papel admin/financeiro: cobre
+    // todas as ações — tanto as que passam por exigirEmpresaDoRecurso quanto
+    // as listagens com filtro pós-fetch (listar_clientes, extrato,
+    // listar_links_pagamento, listar_antecipacoes) e as ações globais.
+    const inativa = respostaIntegracaoDesativada('asaas', corsHeaders);
+    if (inativa) return inativa;
 
     const ok = (result: any) =>
       new Response(JSON.stringify(result), {
@@ -204,9 +198,7 @@ export const handler = async (req: Request) => {
       if (!empresaId) return err('Recurso não encontrado', 404);
       const vinculo = await exigirVinculoEmpresa(user.id, empresaId, req);
       if (!vinculo.ok) return vinculo.resposta;
-      // Kill-switch pós-escopo: só quem tem vínculo com a empresa do recurso
-      // descobre que a integração está desativada.
-      return respostaIntegracaoDesativada('asaas', corsHeaders);
+      return null;
     };
 
     let result: any;
