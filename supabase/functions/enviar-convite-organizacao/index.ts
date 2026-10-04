@@ -12,6 +12,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('enviar-convite-organizacao');
 
 const BodySchema = z.object({
   convite_id: z.string().uuid(),
@@ -45,90 +48,96 @@ function escapeHtml(value: string): string {
 }
 
 Deno.serve(async (req) => {
-  const cors = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
-  const res = (body: unknown, status = 200) => json(body, status, cors);
-
+  const _t0 = Date.now();
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res({ error: 'Não autenticado.' }, 401);
-    }
+    const cors = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+    const res = (body: unknown, status = 200) => json(body, status, cors);
 
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        return res({ error: 'Não autenticado.' }, 401);
+      }
 
-    const userClient = createClient(SUPABASE_URL, ANON, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData, error: userError } = await userClient.auth.getUser();
-    if (userError || !userData?.user) {
-      return res({ error: 'Sessão inválida.' }, 401);
-    }
-    const solicitanteId = userData.user.id;
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+      const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    const parsed = BodySchema.safeParse(await req.json().catch(() => null));
-    if (!parsed.success) {
-      return res({ error: 'Dados inválidos.', detalhes: parsed.error.flatten().fieldErrors }, 400);
-    }
-    const { convite_id, origin } = parsed.data;
+      const userClient = createClient(SUPABASE_URL, ANON, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: userData, error: userError } = await userClient.auth.getUser();
+      if (userError || !userData?.user) {
+        return res({ error: 'Sessão inválida.' }, 401);
+      }
+      const solicitanteId = userData.user.id;
 
-    const admin = createClient(SUPABASE_URL, SERVICE);
+      const parsed = BodySchema.safeParse(await req.json().catch(() => null));
+      if (!parsed.success) {
+        return res(
+          { error: 'Dados inválidos.', detalhes: parsed.error.flatten().fieldErrors },
+          400
+        );
+      }
+      const { convite_id, origin } = parsed.data;
 
-    const { data: convite, error: conviteError } = await admin
-      .from('convites')
-      .select(
-        'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em'
-      )
-      .eq('id', convite_id)
-      .maybeSingle();
+      const admin = createClient(SUPABASE_URL, SERVICE);
 
-    if (conviteError) return res({ error: 'Falha ao carregar convite.' }, 500);
-    if (!convite) return res({ error: 'Convite não encontrado.' }, 404);
-    if (convite.revogado_em) return res({ error: 'Convite revogado.' }, 409);
-    if (convite.aceito_em) return res({ error: 'Convite já aceito.' }, 409);
-    if (new Date(convite.expira_em).getTime() <= Date.now()) {
-      return res({ error: 'Convite expirado.' }, 409);
-    }
+      const { data: convite, error: conviteError } = await admin
+        .from('convites')
+        .select(
+          'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em'
+        )
+        .eq('id', convite_id)
+        .maybeSingle();
 
-    // Autorização: gestor ativo da organização do convite.
-    const { data: vinculo } = await admin
-      .from('organizacao_membros')
-      .select('papel_na_org, ativo')
-      .eq('organizacao_id', convite.organizacao_id)
-      .eq('usuario_id', solicitanteId)
-      .maybeSingle();
+      if (conviteError) return res({ error: 'Falha ao carregar convite.' }, 500);
+      if (!convite) return res({ error: 'Convite não encontrado.' }, 404);
+      if (convite.revogado_em) return res({ error: 'Convite revogado.' }, 409);
+      if (convite.aceito_em) return res({ error: 'Convite já aceito.' }, 409);
+      if (new Date(convite.expira_em).getTime() <= Date.now()) {
+        return res({ error: 'Convite expirado.' }, 409);
+      }
 
-    const { data: org } = await admin
-      .from('organizacoes')
-      .select('nome, responsavel_id')
-      .eq('id', convite.organizacao_id)
-      .maybeSingle();
+      // Autorização: gestor ativo da organização do convite.
+      const { data: vinculo } = await admin
+        .from('organizacao_membros')
+        .select('papel_na_org, ativo')
+        .eq('organizacao_id', convite.organizacao_id)
+        .eq('usuario_id', solicitanteId)
+        .maybeSingle();
 
-    const ehResponsavel = org?.responsavel_id === solicitanteId;
-    const ehGestor =
-      ehResponsavel ||
-      (vinculo?.ativo === true && ['RESPONSAVEL', 'ADMIN'].includes(String(vinculo.papel_na_org)));
+      const { data: org } = await admin
+        .from('organizacoes')
+        .select('nome, responsavel_id')
+        .eq('id', convite.organizacao_id)
+        .maybeSingle();
 
-    if (!ehGestor) {
-      return res({ error: 'Sem permissão para enviar este convite.' }, 403);
-    }
+      const ehResponsavel = org?.responsavel_id === solicitanteId;
+      const ehGestor =
+        ehResponsavel ||
+        (vinculo?.ativo === true &&
+          ['RESPONSAVEL', 'ADMIN'].includes(String(vinculo.papel_na_org)));
 
-    const resendKey = Deno.env.get('RESEND_API_KEY');
-    const baseUrl = (origin ?? getAppBaseUrl()).replace(/\/+$/, '');
-    const link = `${baseUrl}/convite/${convite.token}`;
+      if (!ehGestor) {
+        return res({ error: 'Sem permissão para enviar este convite.' }, 403);
+      }
 
-    if (!resendKey) {
-      // Modo simulado: não falha o fluxo de criação do convite.
-      return res({ enviado: false, motivo: 'email_nao_configurado', link });
-    }
+      const resendKey = Deno.env.get('RESEND_API_KEY');
+      const baseUrl = (origin ?? getAppBaseUrl()).replace(/\/+$/, '');
+      const link = `${baseUrl}/convite/${convite.token}`;
 
-    const nomeOrg = escapeHtml(org?.nome ?? 'Organização');
-    const papel = PAPEL_LABEL[String(convite.papel_proposto)] ?? String(convite.papel_proposto);
-    const expiraEm = new Date(convite.expira_em).toLocaleDateString('pt-BR');
+      if (!resendKey) {
+        // Modo simulado: não falha o fluxo de criação do convite.
+        return res({ enviado: false, motivo: 'email_nao_configurado', link });
+      }
 
-    const html = `
+      const nomeOrg = escapeHtml(org?.nome ?? 'Organização');
+      const papel = PAPEL_LABEL[String(convite.papel_proposto)] ?? String(convite.papel_proposto);
+      const expiraEm = new Date(convite.expira_em).toLocaleDateString('pt-BR');
+
+      const html = `
       <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#111">
         <h2 style="margin-bottom:8px">Convite para ${nomeOrg}</h2>
         <p>Você foi convidado(a) para participar da organização <strong>${nomeOrg}</strong> como <strong>${escapeHtml(papel)}</strong>.</p>
@@ -138,29 +147,35 @@ Deno.serve(async (req) => {
         <p style="font-size:13px;color:#555">Este convite expira em ${expiraEm}. Se você não reconhece este convite, ignore este e-mail.</p>
       </div>`;
 
-    const resp = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: Deno.env.get('RESEND_FROM') ?? 'Convites <onboarding@resend.dev>',
-        to: [convite.email_convidado],
-        subject: `Convite para ${org?.nome ?? 'organização'}`,
-        html,
-      }),
-    });
+      const resp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${resendKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: Deno.env.get('RESEND_FROM') ?? 'Convites <onboarding@resend.dev>',
+          to: [convite.email_convidado],
+          subject: `Convite para ${org?.nome ?? 'organização'}`,
+          html,
+        }),
+      });
 
-    if (!resp.ok) {
-      const detalhe = await resp.text();
-      console.error('resend_error', resp.status, detalhe.slice(0, 300));
-      return res({ enviado: false, motivo: 'falha_provedor_email', link }, 502);
+      if (!resp.ok) {
+        const detalhe = await resp.text();
+        log.error('resend_error', { context: { args: [resp.status, detalhe.slice(0, 300)] } });
+        return res({ enviado: false, motivo: 'falha_provedor_email', link }, 502);
+      }
+
+      return res({ enviado: true, link });
+    } catch (e) {
+      log.error('enviar-convite-organizacao_error', {
+        error_message: mensagemErro(e instanceof Error ? e.message : e),
+      });
+      return res({ error: 'Erro interno ao enviar convite.' }, 500);
     }
-
-    return res({ enviado: true, link });
-  } catch (e) {
-    console.error('enviar-convite-organizacao_error', e instanceof Error ? e.message : e);
-    return res({ error: 'Erro interno ao enviar convite.' }, 500);
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

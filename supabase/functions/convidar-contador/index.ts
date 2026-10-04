@@ -35,6 +35,7 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
 }
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   const corsHeaders = corsHeadersPara(req);
   const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -221,6 +222,7 @@ Deno.serve(async (req) => {
     });
     return res({ error: 'Erro interno' }, 500);
   } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
     await log.flush();
   }
 });

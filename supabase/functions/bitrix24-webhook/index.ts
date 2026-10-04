@@ -14,6 +14,9 @@ import { authenticateWebhook, resolveSecret } from '../_shared/webhook-auth.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { processWithIdempotency } from '../_shared/webhook-idempotency.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('bitrix24-webhook');
 
 /** Comparação de segredos em tempo constante-ish (mesmo estilo do auth-guard). */
 function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
@@ -96,9 +99,15 @@ export const handler = async (req: Request) => {
         );
       }
     }
-    console.log('[bitrix24-webhook] Event received:', {
-      evento: rawPayload?.event,
-      ts: rawPayload?.ts,
+    log.info('[bitrix24-webhook] Event received:', {
+      context: {
+        args: [
+          {
+            evento: rawPayload?.event,
+            ts: rawPayload?.ts,
+          },
+        ],
+      },
     });
 
     // Rate limit: 120 req/min por IP (defesa em profundidade apos autenticacao)
@@ -157,11 +166,19 @@ export const handler = async (req: Request) => {
     });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
-    console.error('Erro bitrix24 webhook:', errMsg.slice(0, 100));
+    log.error('Erro bitrix24 webhook:', { error_message: mensagemErro(errMsg.slice(0, 100)) });
     return createErrorResponse(errMsg, 500, undefined, req);
   }
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  });
 }
