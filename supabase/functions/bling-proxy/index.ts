@@ -49,10 +49,6 @@ Deno.serve(async (req) => {
         return jsonResponse({ error: 'Unauthorized' }, 401, corsHeaders);
       }
 
-      // Depois da autenticação — request não autenticada recebe 401 e não o 503 que vazaria a config do kill-switch.
-      const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
-      if (inativa) return inativa;
-
       const userId = user.id;
       const rawBody = await req.json();
       const validation = validatePayload(BlingProxySchema, rawBody, 'bling-proxy');
@@ -87,6 +83,11 @@ Deno.serve(async (req) => {
           return jsonResponse({ error: 'Sem permissao para executar esta acao' }, 403, corsHeaders);
         }
       }
+
+      // Depois da autenticação e do RBAC — ação destrutiva sem permissão recebe
+      // 403 e não o 503 que vazaria a configuração do kill-switch.
+      const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
+      if (inativa) return inativa;
 
       // --- OAuth Actions ---
       if (action === 'oauth_callback') {
