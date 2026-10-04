@@ -13,8 +13,10 @@ WITH (security_invoker = true) AS
 SELECT
   l.function_name,
   COUNT(*)::bigint AS total_calls,
-  COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 400)::bigint AS error_count,
-  ROUND(100.0 * COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 400) / NULLIF(COUNT(*), 0), 2) AS error_rate_pct,
+  -- Falha = erro de servidor: 4xx é resposta normal de validação/auth e
+  -- não pode inflar a taxa de erro nem acionar alertas de SLO.
+  COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500)::bigint AS error_count,
+  ROUND(100.0 * COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500) / NULLIF(COUNT(*), 0), 2) AS error_rate_pct,
   ROUND((percentile_cont(0.5) WITHIN GROUP (ORDER BY l.duration_ms))::numeric, 2) AS p50_ms,
   ROUND((percentile_cont(0.95) WITHIN GROUP (ORDER BY l.duration_ms))::numeric, 2) AS p95_ms,
   MAX(l.created_at) AS last_call_at

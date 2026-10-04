@@ -132,29 +132,31 @@ function espelharStream(
   origem: ReadableStream<Uint8Array>,
   aoTerminar: (desfecho: 'ok' | 'error' | 'cancel', detalhe?: string) => void
 ): ReadableStream<Uint8Array> {
+  const reader = origem.getReader();
+  // pull() em vez de drenar em start(): cada leitura só acontece quando o
+  // consumidor pede (desiredSize > 0), preservando a contrapressão do SSE.
   return new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const reader = origem.getReader();
+    async pull(controller) {
       try {
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) {
-            controller.close();
-            aoTerminar('ok');
-            return;
-          }
-          controller.enqueue(value);
+        const { done, value } = await reader.read();
+        if (done) {
+          controller.close();
+          aoTerminar('ok');
+          reader.releaseLock();
+          return;
         }
+        controller.enqueue(value);
       } catch (e) {
         aoTerminar('error', e instanceof Error ? e.message : String(e));
         controller.error(e);
-      } finally {
         reader.releaseLock();
       }
     },
     cancel(reason) {
       aoTerminar('cancel', typeof reason === 'string' ? reason : undefined);
-      void origem.cancel(reason);
+      // Cancela o reader (e não a origem direta): a mesma referência usada
+      // pelo pull é liberada e propaga o cancelamento ao produtor.
+      void reader.cancel(reason);
     },
   });
 }
@@ -172,7 +174,12 @@ export function withEdgeObservability(functionName: string, handler: Handler): H
     const log = createLogger(functionName, requestId);
     const inicio = Date.now();
     try {
-      const res = await handler(req);
+      // O handler recebe o ID resolvido: sem isso, requisições sem
+      // x-request-id (ou só com x-correlation-id) logariam dentro do
+      // handler um ID diverso do usado nos eventos request_end/error.
+      const cabecalhos = new Headers(req.headers);
+      cabecalhos.set('x-request-id', requestId);
+      const res = await handler(new Request(req, { headers: cabecalhos }));
       // Resposta SSE (text/event-stream) continua produzindo depois do
       // return — medir aqui registraria ~0ms e sucesso mesmo se o stream
       // falhar no meio. Encadeia um stream espelho que registra o fim real.
