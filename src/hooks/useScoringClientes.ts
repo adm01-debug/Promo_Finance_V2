@@ -83,9 +83,19 @@ export function useScoringClientes() {
 
       if (contasError) throw contasError;
 
+      const contasNormalizadas: ContaReceberScoring[] = (contasReceber || []).map((c) => ({
+        cliente_id: c.cliente_id ?? undefined,
+        status: c.status ?? '',
+        data_vencimento: c.data_vencimento,
+        data_recebimento: c.data_recebimento,
+        valor: c.valor,
+        valor_recebido: c.valor_recebido,
+        created_at: c.created_at ?? '',
+      }));
+
       // Calcular score para cada cliente
       const clientesProcessados: ClienteScore[] = (clientes || []).map((cliente) => {
-        const contasCliente = (contasReceber || []).filter((c) => c.cliente_id === cliente.id);
+        const contasCliente = contasNormalizadas.filter((c) => c.cliente_id === cliente.id);
         const historico = calcularHistorico(contasCliente);
         const { score, fatores, classificacao, risco } = calcularScore(historico);
 
@@ -102,7 +112,7 @@ export function useScoringClientes() {
 
         return {
           clienteId: cliente.id,
-          clienteNome: cliente.nome_fantasia || cliente.razao_social,
+          clienteNome: cliente.nome_fantasia || cliente.razao_social || 'Sem nome',
           score,
           classificacao,
           risco,
