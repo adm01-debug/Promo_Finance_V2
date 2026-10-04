@@ -11,6 +11,8 @@ import {
   createErrorResponse,
 } from '../_shared/validation.ts';
 
+import { getRequestId } from '../_shared/correlation.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 const CACHE_TTL_DAYS = 30;
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_MIN = 60;
@@ -74,11 +76,12 @@ async function fetchCnpjaWithRetry(
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const logger = createLogger('cnpja-lookup');
+  const logger = createLogger('cnpja-lookup', getRequestId(req));
   const t0 = Date.now();
   logger.info('fn_start');
 
@@ -128,13 +131,13 @@ Deno.serve(async (req: Request) => {
     const rawBody = await req.json().catch(() => ({}));
     const validation = validatePayload(CnpjaLookupSchema, rawBody, 'cnpja-lookup');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
 
     const cnpj = sanitizeCnpj(String(validation.data.cnpj));
 
     if (!isValidCnpj(cnpj)) {
-      return createErrorResponse('CNPJ inválido. Informe 14 dígitos.');
+      return createErrorResponse('CNPJ inválido. Informe 14 dígitos.', undefined, req);
     }
 
     // Cliente admin para cache e rate limit

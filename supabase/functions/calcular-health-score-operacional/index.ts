@@ -1,8 +1,12 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { OptionalEmpresaIdSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-import { exigirInternaOuUsuario } from "../_shared/auth-guard.ts";
-
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import {
+  OptionalEmpresaIdSchema,
+  validatePayload,
+  createErrorResponse,
+} from '../_shared/validation.ts';
+import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const PESOS = {
   tributario: 0.25,
@@ -17,73 +21,80 @@ function clamp(n: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, n));
 }
 
-async function calcularEmpresa(
-  client: ReturnType<typeof createClient>,
-  empresaId: string | null
-) {
+async function calcularEmpresa(client: ReturnType<typeof createClient>, empresaId: string | null) {
   // 1) Tributário: % apurações com status finalizado nos últimos 3 meses
   let scoreTrib = 50;
   try {
     const { data: aps } = await client
-      .from("apuracoes_tributarias")
-      .select("status")
-      .eq("empresa_id", empresaId)
-      .gte("competencia", new Date(new Date().setMonth(new Date().getMonth() - 3))
-        .toISOString()
-        .slice(0, 10));
+      .from('apuracoes_tributarias')
+      .select('status')
+      .eq('empresa_id', empresaId)
+      .gte(
+        'competencia',
+        new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString().slice(0, 10)
+      );
     if (aps && aps.length > 0) {
-      const ok = aps.filter((a: { status: string | null }) => a.status === "finalizado").length;
+      const ok = aps.filter((a: { status: string | null }) => a.status === 'finalizado').length;
       scoreTrib = clamp((ok / aps.length) * 100);
     } else {
       scoreTrib = 70;
     }
-  } catch { /* default */ }
+  } catch {
+    /* default */
+  }
 
   // 2) Financeiro: saldo positivo + inadimplência baixa
   let scoreFin = 50;
   try {
     const { data: contas } = await client
-      .from("contas_bancarias")
-      .select("saldo_atual")
-      .eq("empresa_id", empresaId);
+      .from('contas_bancarias')
+      .select('saldo_atual')
+      .eq('empresa_id', empresaId);
     const saldoTotal = (contas ?? []).reduce(
       (s: number, c: { saldo_atual: number | null }) => s + (Number(c.saldo_atual) || 0),
       0
     );
     const { data: vencidas } = await client
-      .from("contas_receber")
-      .select("valor")
-      .eq("empresa_id", empresaId)
-      .eq("status", "vencido");
+      .from('contas_receber')
+      .select('valor')
+      .eq('empresa_id', empresaId)
+      .eq('status', 'vencido');
     const totalVencido = (vencidas ?? []).reduce(
       (s: number, c: { valor: number | null }) => s + (Number(c.valor) || 0),
       0
     );
     const ratio = saldoTotal > 0 ? totalVencido / saldoTotal : 1;
     scoreFin = clamp(saldoTotal > 0 ? 100 - ratio * 50 : 30);
-  } catch { /* default */ }
+  } catch {
+    /* default */
+  }
 
   // 3) Operacional: % conciliação
   let scoreOp = 60;
   try {
     const { data: txs } = await client
-      .from("transacoes_bancarias")
-      .select("conciliada, contas_bancarias!inner(empresa_id)")
-      .eq("contas_bancarias.empresa_id", empresaId)
-      .gte("data", new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().slice(0, 10));
+      .from('transacoes_bancarias')
+      .select('conciliada, contas_bancarias!inner(empresa_id)')
+      .eq('contas_bancarias.empresa_id', empresaId)
+      .gte(
+        'data',
+        new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().slice(0, 10)
+      );
     if (txs && txs.length > 0) {
       const conc = txs.filter((t: { conciliada: boolean | null }) => t.conciliada).length;
       scoreOp = clamp((conc / txs.length) * 100);
     }
-  } catch { /* default */ }
+  } catch {
+    /* default */
+  }
 
   // 4) LGPD: solicitações abertas há mais de 7 dias
   let scoreLgpd = 100;
   try {
     const { data: solicAbertas } = await client
-      .from("solicitacoes_lgpd")
-      .select("created_at")
-      .in("status", ["aberta", "em_analise"]);
+      .from('solicitacoes_lgpd')
+      .select('created_at')
+      .in('status', ['aberta', 'em_analise']);
     if (solicAbertas && solicAbertas.length > 0) {
       const atrasadas = solicAbertas.filter(
         (s: { created_at: string }) =>
@@ -91,15 +102,17 @@ async function calcularEmpresa(
       ).length;
       scoreLgpd = clamp(100 - atrasadas * 20);
     }
-  } catch { /* default */ }
+  } catch {
+    /* default */
+  }
 
   // 5) Cadastros: empresa tem regime + cnae
   let scoreCad = 50;
   try {
     const { data: empresa } = await client
-      .from("empresas")
-      .select("regime_tributario, cnae_principal")
-      .eq("id", empresaId)
+      .from('empresas')
+      .select('regime_tributario, cnae_principal')
+      .eq('id', empresaId)
       .maybeSingle();
     if (empresa) {
       let v = 0;
@@ -107,20 +120,24 @@ async function calcularEmpresa(
       if (empresa.cnae_principal) v += 50;
       scoreCad = v;
     }
-  } catch { /* default */ }
+  } catch {
+    /* default */
+  }
 
   // 6) Engajamento: alertas atendidos
   let scoreEng = 60;
   try {
     const { data: alertas } = await client
-      .from("alertas")
-      .select("lido")
-      .gte("created_at", new Date(new Date().setDate(new Date().getDate() - 30)).toISOString());
+      .from('alertas')
+      .select('lido')
+      .gte('created_at', new Date(new Date().setDate(new Date().getDate() - 30)).toISOString());
     if (alertas && alertas.length > 0) {
       const lidos = alertas.filter((a: { lido: boolean | null }) => a.lido).length;
       scoreEng = clamp((lidos / alertas.length) * 100);
     }
-  } catch { /* default */ }
+  } catch {
+    /* default */
+  }
 
   const total =
     scoreTrib * PESOS.tributario +
@@ -142,84 +159,102 @@ async function calcularEmpresa(
 }
 
 async function gerarInsightsIA(score: Record<string, number>): Promise<string> {
-  const apiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!apiKey) return "_IA indisponível._";
+  const apiKey = Deno.env.get('LOVABLE_API_KEY');
+  if (!apiKey) return '_IA indisponível._';
   try {
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
+    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
-            role: "system",
+            role: 'system',
             content:
-              "Você é consultor financeiro/tributário sênior. Gere 3 insights priorizados em markdown (use ✅/⚠️/🚨), curtos e acionáveis em português.",
+              'Você é consultor financeiro/tributário sênior. Gere 3 insights priorizados em markdown (use ✅/⚠️/🚨), curtos e acionáveis em português.',
           },
           {
-            role: "user",
+            role: 'user',
             content: `Health score 360°:\n${JSON.stringify(score, null, 2)}\n\nGere 3 insights priorizados.`,
           },
         ],
       }),
     });
-    if (!resp.ok) return "_Falha ao gerar insights._";
+    if (!resp.ok) return '_Falha ao gerar insights._';
     const data = await resp.json();
-    return data?.choices?.[0]?.message?.content ?? "_Sem insights._";
+    return data?.choices?.[0]?.message?.content ?? '_Sem insights._';
   } catch {
-    return "_Erro ao consultar IA._";
+    return '_Erro ao consultar IA._';
   }
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
+  const corsHeaders = corsHeadersPara(req);
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const guard = await exigirInternaOuUsuario(req, "p13_health_score_diario");
+  const guard = await exigirInternaOuUsuario(req, 'p13_health_score_diario');
   if (!guard.ok) return guard.resposta;
 
   try {
-    const url = Deno.env.get("SUPABASE_URL")!;
-    const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const url = Deno.env.get('SUPABASE_URL')!;
+    const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const client = createClient(url, key);
 
-    const rawBody = req.method === "POST" ? await req.json().catch(() => ({})) : {};
-    const validation = validatePayload(OptionalEmpresaIdSchema, rawBody, "calcular-health-score-operacional");
+    const rawBody = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
+    const validation = validatePayload(
+      OptionalEmpresaIdSchema,
+      rawBody,
+      'calcular-health-score-operacional'
+    );
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const empresaIdFiltro = validation.data.empresa_id ?? null;
 
-    if (guard.dados.origem === "usuario") {
-      const { data: isAdmin } = await client.rpc("has_role", { _user_id: guard.dados.userId, _role: "admin" });
+    if (guard.dados.origem === 'usuario') {
+      const { data: isAdmin } = await client.rpc('has_role', {
+        _user_id: guard.dados.userId,
+        _role: 'admin',
+      });
       if (!isAdmin) {
         if (!empresaIdFiltro) {
-          return new Response(JSON.stringify({ error: "Apenas admin pode rodar para todas as empresas" }), {
-            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
+            {
+              status: 403,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
         }
-        const { data: vinculo } = await client.from("user_empresas").select("id")
-          .eq("user_id", guard.dados.userId).eq("empresa_id", empresaIdFiltro).eq("ativo", true).maybeSingle();
+        const { data: vinculo } = await client
+          .from('user_empresas')
+          .select('id')
+          .eq('user_id', guard.dados.userId)
+          .eq('empresa_id', empresaIdFiltro)
+          .eq('ativo', true)
+          .maybeSingle();
         if (!vinculo) {
-          return new Response(JSON.stringify({ error: "Sem permissão para esta empresa" }), {
-            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
       }
     }
 
     const { data: empresas } = await client
-      .from("empresas")
-      .select("id, razao_social")
-      .eq("ativo", true);
+      .from('empresas')
+      .select('id, razao_social')
+      .eq('ativo', true);
 
     const lista = empresaIdFiltro
       ? (empresas ?? []).filter((e: { id: string }) => e.id === empresaIdFiltro)
-      : empresas ?? [];
+      : (empresas ?? []);
 
     const resultados: Array<Record<string, unknown>> = [];
 
@@ -228,14 +263,14 @@ serve(async (req) => {
 
       // Tendência vs 7 dias atrás
       const { data: anterior } = await client
-        .from("health_scores_operacionais")
-        .select("score_total")
-        .eq("empresa_id", emp.id)
+        .from('health_scores_operacionais')
+        .select('score_total')
+        .eq('empresa_id', emp.id)
         .lte(
-          "snapshot_data",
+          'snapshot_data',
           new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10)
         )
-        .order("snapshot_data", { ascending: false })
+        .order('snapshot_data', { ascending: false })
         .limit(1)
         .maybeSingle();
 
@@ -245,7 +280,7 @@ serve(async (req) => {
 
       const insights = await gerarInsightsIA({ ...scores, empresa: emp.razao_social });
 
-      const { error } = await client.from("health_scores_operacionais").upsert(
+      const { error } = await client.from('health_scores_operacionais').upsert(
         {
           empresa_id: emp.id,
           snapshot_data: new Date().toISOString().slice(0, 10),
@@ -254,25 +289,21 @@ serve(async (req) => {
           insights_md: insights,
           detalhes: { pesos: PESOS },
         },
-        { onConflict: "empresa_id,snapshot_data" }
+        { onConflict: 'empresa_id,snapshot_data' }
       );
-      if (error) console.error("upsert error:", error.message);
+      if (error) console.error('upsert error:', error.message);
 
       resultados.push({ empresa_id: emp.id, ...scores, tendencia_pct: tendencia });
     }
 
-    return new Response(
-      JSON.stringify({ ok: true, total: resultados.length, resultados }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ ok: true, total: resultados.length, resultados }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (e) {
-    console.error("calcular-health-score-operacional error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "unknown" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    console.error('calcular-health-score-operacional error:', e);
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

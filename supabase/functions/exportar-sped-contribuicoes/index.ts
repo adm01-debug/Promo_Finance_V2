@@ -4,16 +4,15 @@ import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { buildEfdContribuicoesLinhas } from './layout.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+import { getRequestId } from '../_shared/correlation.ts';
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const logger = createLogger('exportar-sped-contribuicoes');
+  const logger = createLogger('exportar-sped-contribuicoes', getRequestId(req));
   const t0 = Date.now();
   logger.info('fn_start');
 
@@ -63,7 +62,8 @@ Deno.serve(async (req) => {
       (typeof body === 'object' ? body : {}) as unknown,
       'exportar-sped-contribuicoes'
     );
-    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    if (!__contract.success)
+      return createErrorResponse(__contract.error, 422, __contract.details, req);
     const empresa_id = body.empresa_id as string | undefined;
     const periodo = body.periodo as string | undefined; // YYYY-MM
 

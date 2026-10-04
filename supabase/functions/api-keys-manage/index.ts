@@ -80,14 +80,15 @@ export async function hashChaveApi(chave: string): Promise<string> {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-function erro(status: number, error: string, message: string): Response {
-  return jsonComCors({ error, message }, status);
+function erro(req: Request, status: number, error: string, message: string): Response {
+  return jsonComCors({ error, message }, status, req);
 }
 
 export function createHandler(deps: DependenciasApiKeys): (req: Request) => Promise<Response> {
   return async (req: Request): Promise<Response> => {
-    if (req.method === 'OPTIONS') return respostaPreflight();
-    if (req.method !== 'POST') return erro(405, 'method_not_allowed', 'Use POST neste endpoint.');
+    if (req.method === 'OPTIONS') return respostaPreflight(req);
+    if (req.method !== 'POST')
+      return erro(req, 405, 'method_not_allowed', 'Use POST neste endpoint.');
 
     const auth = await deps.exigirPapel(req, ['admin']);
     if (!auth.ok) return auth.resposta;
@@ -95,7 +96,7 @@ export function createHandler(deps: DependenciasApiKeys): (req: Request) => Prom
     const corpo = await req.json().catch(() => null);
     const validacao = CriarChaveSchema.safeParse(corpo);
     if (!validacao.success) {
-      return erro(400, 'payload_invalido', 'Dados inválidos para criar a chave de API.');
+      return erro(req, 400, 'payload_invalido', 'Dados inválidos para criar a chave de API.');
     }
 
     const payload: CriarChavePayload = validacao.data;
@@ -109,8 +110,13 @@ export function createHandler(deps: DependenciasApiKeys): (req: Request) => Prom
       .maybeSingle();
 
     if (erroVinculo)
-      return erro(500, 'erro_autorizacao', 'Não foi possível validar o vínculo com a empresa.');
-    if (!vinculo) return erro(403, 'sem_permissao', 'Você não possui acesso a esta empresa.');
+      return erro(
+        req,
+        500,
+        'erro_autorizacao',
+        'Não foi possível validar o vínculo com a empresa.'
+      );
+    if (!vinculo) return erro(req, 403, 'sem_permissao', 'Você não possui acesso a esta empresa.');
 
     const chave = deps.gerarChave();
     const key_hash = await deps.gerarHash(chave);
@@ -134,13 +140,13 @@ export function createHandler(deps: DependenciasApiKeys): (req: Request) => Prom
       .single();
 
     if (erroInsercao?.code === '23505') {
-      return erro(409, 'chave_duplicada', 'Já existe uma chave com este nome para a empresa.');
+      return erro(req, 409, 'chave_duplicada', 'Já existe uma chave com este nome para a empresa.');
     }
     if (erroInsercao || !criada) {
-      return erro(500, 'erro_criacao', 'Não foi possível criar a chave de API.');
+      return erro(req, 500, 'erro_criacao', 'Não foi possível criar a chave de API.');
     }
 
-    return jsonComCors({ id: criada.id, key: chave }, 201);
+    return jsonComCors({ id: criada.id, key: chave }, 201, req);
   };
 }
 

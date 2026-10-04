@@ -5,12 +5,7 @@
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const SIMPLES_SUBLIMITE = 4_800_000;
 const SIMPLES_LIMITE_ALERTA = SIMPLES_SUBLIMITE * 0.9;
@@ -60,6 +55,8 @@ async function withRetry<T>(op: () => PromiseLike<T>, label: string, maxAttempts
 }
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const auth = await exigirChamadaInterna(req, 'gerar_alertas_tributarios');

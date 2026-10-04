@@ -7,13 +7,9 @@ import { z } from 'https://esm.sh/zod@3.23.8';
 import { create as createJwt, getNumericDate } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-};
-
+import { getRequestId } from '../_shared/correlation.ts';
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
   email: z.string().trim().email().max(255),
@@ -34,14 +30,16 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
     new TextEncoder().encode(secret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign', 'verify'],
+    ['sign', 'verify']
   );
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const log = createLogger('convidar-contador');
+  const log = createLogger('convidar-contador', getRequestId(req));
   const startedAt = Date.now();
   log.info('fn_start');
 
@@ -49,7 +47,7 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       log.warn('unauthorized_no_token');
-      return json({ error: 'Unauthorized' }, 401);
+      return res({ error: 'Unauthorized' }, 401);
     }
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -64,7 +62,7 @@ Deno.serve(async (req) => {
     const { data: claims, error: claimsErr } = await supaUser.auth.getClaims(token);
     if (claimsErr || !claims?.claims?.sub) {
       log.warn('unauthorized_invalid_jwt');
-      return json({ error: 'Unauthorized' }, 401);
+      return res({ error: 'Unauthorized' }, 401);
     }
     const userId = claims.claims.sub as string;
 
@@ -72,9 +70,16 @@ Deno.serve(async (req) => {
     try {
       rawBody = JSON.parse(await req.text());
     } catch {
-      return createValidationErrorResponse([{
-        path: '$', message: 'JSON malformado', code: 'invalid_json',
-      }], corsHeaders);
+      return createValidationErrorResponse(
+        [
+          {
+            path: '$',
+            message: 'JSON malformado',
+            code: 'invalid_json',
+          },
+        ],
+        corsHeaders
+      );
     }
     const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
@@ -97,7 +102,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!vinculo || !['admin', 'financeiro'].includes(vinculo.role)) {
       log.warn('forbidden_empresa_access', { context: { empresa_id } });
-      return json({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
+      return res({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
     }
 
     // Gera token aleatório de 32 bytes (URL-safe)
@@ -119,7 +124,7 @@ Deno.serve(async (req) => {
         role: 'contador_readonly',
         exp: getNumericDate(60 * 60 * 24 * 30),
       },
-      key,
+      key
     );
 
     const tokenHash = await sha256Hex(rawToken);
@@ -139,7 +144,7 @@ Deno.serve(async (req) => {
 
     if (insertErr) {
       log.error('insert_failed', { error_message: insertErr.message });
-      return json({ error: 'Falha ao registrar convite' }, 500);
+      return res({ error: 'Falha ao registrar convite' }, 500);
     }
 
     // Envia e-mail via Resend (gateway connector)
@@ -178,7 +183,10 @@ Deno.serve(async (req) => {
         emailSent = resp.ok;
         if (!resp.ok) {
           const txt = await resp.text();
-          log.warn('email_send_failed', { status_code: resp.status, error_message: txt.slice(0, 200) });
+          log.warn('email_send_failed', {
+            status_code: resp.status,
+            error_message: txt.slice(0, 200),
+          });
         } else {
           log.info('email_sent', { context: { email } });
         }
@@ -196,27 +204,30 @@ Deno.serve(async (req) => {
       context: { convite_id: convite.id, email_sent: emailSent },
     });
 
-    return json({
-      success: true,
-      convite_id: convite.id,
-      link,
-      email_sent: emailSent,
-      expires_at: expiresAt.toISOString(),
-    }, 200);
+    return res(
+      {
+        success: true,
+        convite_id: convite.id,
+        link,
+        email_sent: emailSent,
+        expires_at: expiresAt.toISOString(),
+      },
+      200
+    );
   } catch (err) {
     log.error('fn_failure', {
       error_message: err instanceof Error ? err.message : String(err),
       duration_ms: Date.now() - startedAt,
     });
-    return json({ error: 'Erro interno' }, 500);
+    return res({ error: 'Erro interno' }, 500);
   } finally {
     await log.flush();
   }
 });
 
-function json(body: unknown, status = 200) {
+function json(body: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

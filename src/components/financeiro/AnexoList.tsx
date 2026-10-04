@@ -4,8 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Paperclip, Download, FileText, Loader2, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { validarMagicBytes } from '@/lib/magic-bytes';
 import { mustSucceed } from '@/lib/supabase-write';
-import { logger } from '@/lib/logger';
 import { caminhoNoStorage, BUCKET_FINANCEIRO as BUCKET } from '@/lib/storage-path';
 
 interface AnexoListProps {
@@ -38,49 +38,16 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
     mutationFn: async (file: File) => {
       setUploading(true);
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${entidadeTipo}/${entidadeId}/${fileName}`;
-
-        // 1. Upload to Storage (Private bucket)
-        const { error: uploadError } = await supabase.storage
-          .from('financeiro')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        // 2. Get Signed URL (or public if bucket is public, but we prefer private)
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('financeiro').getPublicUrl(filePath);
-
-        // 3. Save to Database
-        try {
-          await mustSucceed(
-            supabase.from('anexos_financeiros').insert({
-              entidade_id: entidadeId,
-              entidade_tipo: entidadeTipo,
-              nome_arquivo: file.name,
-              mime_type: file.type,
-              tamanho_bytes: file.size,
-              url: publicUrl,
-              url_publica: publicUrl,
-            }),
-            'registrar o anexo'
-          );
-        } catch (erroBanco) {
-          // O arquivo já está no bucket. Sem a linha, ele fica invisível na
-          // tela e ninguém mais o remove — mas segue baixável por quem tiver a
-          // URL. Desfazer o upload é o que mantém as duas pontas coerentes.
-          const { error: erroLimpeza } = await supabase.storage.from(BUCKET).remove([filePath]);
-          if (erroLimpeza) {
-            logger.error('Falha ao remover arquivo órfão do storage', {
-              filePath,
-              erro: erroLimpeza.message,
-            });
-          }
-          throw erroBanco;
-        }
+        // O upload vai pela edge function `upload-anexo`: ela revalida os
+        // magic bytes no servidor (a checagem local é só UX — quem chama o
+        // HTTP do Storage direto pula o front), grava via service_role e já
+        // registra a linha em `anexos_financeiros`.
+        const form = new FormData();
+        form.append('arquivo', file);
+        form.append('entidade_tipo', entidadeTipo);
+        form.append('entidade_id', entidadeId);
+        const { error } = await supabase.functions.invoke('upload-anexo', { body: form });
+        if (error) throw error;
       } finally {
         setUploading(false);
       }
@@ -95,8 +62,15 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (anexo: { id: string; url?: string | null; nome_arquivo?: string }) => {
-      const caminho = caminhoNoStorage(anexo.url);
+    mutationFn: async (anexo: {
+      id: string;
+      url?: string | null;
+      storage_path?: string | null;
+      nome_arquivo?: string;
+    }) => {
+      // storage_path é o locator canônico (anexos novos, bucket privado);
+      // a URL parseada cobre linhas legadas.
+      const caminho = anexo.storage_path ?? caminhoNoStorage(anexo.url);
 
       // Storage primeiro, de propósito. Na ordem inversa, a falha do storage
       // deixaria um arquivo sem nenhuma linha apontando para ele: invisível,
@@ -135,11 +109,37 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Bucket privado: `url_publica` não é link HTTP — o download gera uma
+  // URL assinada curta na hora. Linhas legadas com URL pública antiga
+  // resolvem o caminho por caminhoNoStorage da mesma forma.
+  const baixarAnexo = async (anexo: {
+    url?: string | null;
+    url_publica?: string | null;
+    storage_path?: string | null;
+  }) => {
+    const caminho = anexo.storage_path ?? caminhoNoStorage(anexo.url ?? anexo.url_publica);
+    if (!caminho) {
+      toast.error('Não foi possível localizar o arquivo do anexo');
+      return;
+    }
+    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
+    if (error || !data?.signedUrl) {
+      toast.error('Falha ao gerar link de download: ' + (error?.message ?? 'sem URL assinada'));
+      return;
+    }
+    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       if (file.size > 10 * 1024 * 1024) {
         toast.error('Arquivo muito grande (máx 10MB)');
+        return;
+      }
+      const erroConteudo = await validarMagicBytes(file);
+      if (erroConteudo) {
+        toast.error(erroConteudo);
         return;
       }
       uploadMutation.mutate(file);
@@ -226,11 +226,9 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                asChild
+                onClick={() => baixarAnexo(anexo)}
               >
-                <a href={anexo.url_publica} target="_blank" rel="noopener noreferrer">
-                  <Download className="h-4 w-4" />
-                </a>
+                <Download className="h-4 w-4" />
               </Button>
               {!readonly && (
                 <Button

@@ -5,13 +5,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
+import { getRequestId } from '../_shared/correlation.ts';
 interface ReqBody {
   empresaId: string;
   empresaNome: string;
@@ -34,7 +30,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function bitrixCall(
   method: string,
   params: Record<string, unknown>,
-  attempt = 0,
+  attempt = 0
 ): Promise<Record<string, unknown>> {
   const domain = Deno.env.get('BITRIX24_DOMAIN');
   const token = Deno.env.get('BITRIX24_ACCESS_TOKEN');
@@ -58,9 +54,11 @@ async function bitrixCall(
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  const logger = createLogger('log-sped-bitrix24');
+  const logger = createLogger('log-sped-bitrix24', getRequestId(req));
   const t0 = Date.now();
   logger.info('fn_start');
 
@@ -88,14 +86,21 @@ Deno.serve(async (req) => {
     }
 
     const body: ReqBody = await req.json();
-    const __contract = validatePayload(z.object({
-      empresaId: z.string().trim().min(1),
-      empresaNome: z.string().trim().min(1),
-      tipo: z.enum(['ECF', 'ECD']),
-      anoCalendario: z.union([z.string().trim().min(1), z.number()]),
-      status: z.enum(['gerado', 'bloqueado', 'transmitido']),
-    }).passthrough(), (typeof body === 'object' ? body : {}) as unknown, 'log-sped-bitrix24');
-    if (!__contract.success) return createErrorResponse(__contract.error, 422, __contract.details);
+    const __contract = validatePayload(
+      z
+        .object({
+          empresaId: z.string().trim().min(1),
+          empresaNome: z.string().trim().min(1),
+          tipo: z.enum(['ECF', 'ECD']),
+          anoCalendario: z.union([z.string().trim().min(1), z.number()]),
+          status: z.enum(['gerado', 'bloqueado', 'transmitido']),
+        })
+        .passthrough(),
+      (typeof body === 'object' ? body : {}) as unknown,
+      'log-sped-bitrix24'
+    );
+    if (!__contract.success)
+      return createErrorResponse(__contract.error, 422, __contract.details, req);
 
     if (!body.empresaId || !body.empresaNome || !body.tipo || !body.anoCalendario || !body.status) {
       return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {
@@ -169,7 +174,7 @@ Deno.serve(async (req) => {
     // Persiste log local em audit_logs (best-effort)
     const supabaseService = createClient(
       supabaseUrl,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? anonKey,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? anonKey
     );
     try {
       await supabaseService.from('audit_logs').insert({

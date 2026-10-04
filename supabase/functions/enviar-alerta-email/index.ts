@@ -7,6 +7,7 @@ import {
   EnviarAlertaEmailSchema,
   validatePayload,
 } from '../_shared/validation.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const corsHeaders = {
   ...baseCorsHeaders,
@@ -14,6 +15,7 @@ const corsHeaders = {
 };
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -30,7 +32,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const rawBody = await req.json();
     const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, 'enviar-alerta-email');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { tipo, destinatario, dados } = validation.data;
 

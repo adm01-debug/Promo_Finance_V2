@@ -4,12 +4,12 @@
 // persiste os metadados criptografados via RPC certificado_upsert.
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { corsHeaders } from '../_shared/cors.ts';
 import forge from 'npm:node-forge@1.3.1';
 import { z } from 'npm:zod@3.23.8';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
-import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { exigirVinculoEmpresa, mfaAdminInsuficiente } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -34,6 +34,7 @@ function extractCnpjFromSubject(subject: forge.pki.Certificate['subject']): stri
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const t0 = Date.now();
@@ -88,6 +89,18 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Admin confirmado — a troca do certificado que assina NF-e exige
+    // segundo fator quando MFA_ADMIN_ENFORCED está ligado (sessão aal2).
+    if (mfaAdminInsuficiente(['admin'], authHeader.slice(7))) {
+      return new Response(
+        JSON.stringify({
+          error: 'mfa_requerido',
+          message: 'Esta operação exige segundo fator (TOTP) ativo na sessão.',
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const rawBody = await req.json();
     const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
@@ -99,7 +112,7 @@ Deno.serve(async (req) => {
     // empresa, não nesta. Sem o vínculo explícito, o admin da empresa A poderia
     // sobrescrever o certificado A1 e a senha da empresa B — a credencial que
     // assina NF-e perante a SEFAZ.
-    const escopo = await exigirVinculoEmpresa(user.id, empresa_id);
+    const escopo = await exigirVinculoEmpresa(user.id, empresa_id, req);
     if (!escopo.ok) return escopo.resposta;
 
     // Decodifica o .pfx

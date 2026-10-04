@@ -12,7 +12,7 @@
  *  - JWT de usuário com papel `admin`.
  */
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { corsHeaders } from "../_shared/cors.ts";
+import { corsHeaders } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
 
 import { gerarCalendario, competenciasAoRedor } from '../_shared/obrigacoes/calendario.ts';
@@ -23,6 +23,7 @@ import {
   type PontoHistorico,
 } from '../_shared/obrigacoes/alertas.ts';
 import type { RegimeAplicavel } from '../_shared/obrigacoes/types.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 /** Prefixo usado na coluna `tipo` para deduplicar alertas de conformidade. */
 const PREFIXO_ALERTA = 'conformidade';
@@ -35,10 +36,12 @@ const PRIORIDADE: Record<AlertaConformidade['severidade'], string> = {
   baixa: 'baixa',
 };
 
-
 const BodySchema = z.object({
   /** Competências AAAA-MM a recalcular. Se ausente, usa as últimas `meses`. */
-  competencias: z.array(z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/)).max(24).optional(),
+  competencias: z
+    .array(z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/))
+    .max(24)
+    .optional(),
   /** Quantidade de competências retroativas quando `competencias` não é informado. */
   meses: z.number().int().min(1).max(24).default(3),
   /** Restringe a execução a uma empresa. */
@@ -61,6 +64,7 @@ function ultimasCompetencias(hojeISO: string, n: number): string[] {
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const url = Deno.env.get('SUPABASE_URL');
@@ -85,7 +89,6 @@ Deno.serve(async (req: Request) => {
       autorizado = Boolean(segredo?.valor) && segredo?.valor === cronSecret;
       if (!autorizado) return json({ error: 'Não autorizado' }, 401);
     }
-
 
     if (!autorizado) {
       const jwt = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '') ?? '';
@@ -157,7 +160,7 @@ Deno.serve(async (req: Request) => {
           });
           const r = calcularConformidade(
             itens,
-            registros.filter((x) => x.competencia === competencia),
+            registros.filter((x) => x.competencia === competencia)
           );
           resultados.push({
             empresaId: empresa.id as string,
@@ -192,7 +195,7 @@ Deno.serve(async (req: Request) => {
         const { data: hist, error: histErr } = await admin
           .from('conformidade_snapshots')
           .select(
-            'competencia,score,nivel,total_obrigacoes,entregues,vencidas_pendentes,entregues_com_atraso,pontualidade,multa_registrada',
+            'competencia,score,nivel,total_obrigacoes,entregues,vencidas_pendentes,entregues_com_atraso,pontualidade,multa_registrada'
           )
           .eq('empresa_id', empresa.id)
           .order('competencia', { ascending: false })
@@ -260,7 +263,6 @@ Deno.serve(async (req: Request) => {
       alertasCriados,
       falhas,
     });
-
   } catch (e) {
     console.error('gerar-snapshots-conformidade falhou:', (e as Error).message);
     return json({ error: 'Erro interno', details: (e as Error).message }, 500);

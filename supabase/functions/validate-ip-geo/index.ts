@@ -15,17 +15,11 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 // max(254): limite prático de RFC 5321 — evita gravar strings arbitrariamente
 // grandes em auth_logs.metadata.email_informado (endpoint pré-login, sem auth).
 const _IpGeoSchema = z.object({ email: z.string().email().max(254).optional() }).partial();
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
 
 interface GeoLookup {
   ip: string;
@@ -79,6 +73,8 @@ async function lookupGeo(ip: string): Promise<GeoLookup> {
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }

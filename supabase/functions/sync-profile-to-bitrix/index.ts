@@ -1,36 +1,32 @@
-import { createClient } from "npm:@supabase/supabase-js@2.49.4";
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'npm:zod@3.23.8';
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
-const _SyncProfileSchema = z.object({
-  full_name: z.string().optional(),
-  avatar_url: z.string().url().nullable().optional(),
-  telefone: z.string().nullable().optional(),
-}).passthrough();
+const _SyncProfileSchema = z
+  .object({
+    full_name: z.string().optional(),
+    avatar_url: z.string().url().nullable().optional(),
+    telefone: z.string().nullable().optional(),
+  })
+  .passthrough();
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-const BITRIX_DOMAIN = Deno.env.get("BITRIX24_DOMAIN");
-const BITRIX_CLIENT_ID = Deno.env.get("BITRIX24_CLIENT_ID");
-const BITRIX_CLIENT_SECRET = Deno.env.get("BITRIX24_CLIENT_SECRET");
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
+const BITRIX_DOMAIN = Deno.env.get('BITRIX24_DOMAIN');
+const BITRIX_CLIENT_ID = Deno.env.get('BITRIX24_CLIENT_ID');
+const BITRIX_CLIENT_SECRET = Deno.env.get('BITRIX24_CLIENT_SECRET');
 
 interface SyncBody {
   avatar_url?: string | null;
   telefone?: string | null;
 }
 
-function jsonResp(data: unknown, status = 200) {
+function jsonResp(data: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -39,18 +35,18 @@ function normalizePhone(v: unknown): string | null {
   if (v === null || v === undefined) return null;
   const raw = String(v).trim();
   if (!raw) return null;
-  const hasPlus = raw.startsWith("+");
-  const digits = raw.replace(/[^\d]/g, "");
+  const hasPlus = raw.startsWith('+');
+  const digits = raw.replace(/[^\d]/g, '');
   if (!digits) return null;
-  return (hasPlus ? "+" : "") + digits;
+  return (hasPlus ? '+' : '') + digits;
 }
 
 /** Obtém token Bitrix válido: tenta tabela `bitrix_oauth_tokens`, faz refresh se preciso, cai em env. */
 async function getBitrixToken(admin: ReturnType<typeof createClient>): Promise<string | null> {
   const { data: tokenRow } = await admin
-    .from("bitrix_oauth_tokens")
-    .select("access_token, refresh_token, expires_at")
-    .order("created_at", { ascending: false })
+    .from('bitrix_oauth_tokens')
+    .select('access_token, refresh_token, expires_at')
+    .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -61,10 +57,10 @@ async function getBitrixToken(admin: ReturnType<typeof createClient>): Promise<s
     if (tokenRow.refresh_token && BITRIX_DOMAIN && BITRIX_CLIENT_ID && BITRIX_CLIENT_SECRET) {
       try {
         const r = await fetch(`https://${BITRIX_DOMAIN}/oauth/token/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
-            grant_type: "refresh_token",
+            grant_type: 'refresh_token',
             client_id: BITRIX_CLIENT_ID,
             client_secret: BITRIX_CLIENT_SECRET,
             refresh_token: tokenRow.refresh_token,
@@ -73,62 +69,67 @@ async function getBitrixToken(admin: ReturnType<typeof createClient>): Promise<s
         if (r.ok) {
           const d = await r.json();
           const newExp = new Date(Date.now() + (d.expires_in || 3600) * 1000).toISOString();
-          await admin.from("bitrix_oauth_tokens").insert({
+          await admin.from('bitrix_oauth_tokens').insert({
             access_token: d.access_token,
             refresh_token: d.refresh_token,
             expires_at: newExp,
           });
           return d.access_token as string;
         }
-      } catch (_) { /* ignore, fallback abaixo */ }
+      } catch (_) {
+        /* ignore, fallback abaixo */
+      }
     }
   }
 
-  return Deno.env.get("BITRIX24_ACCESS_TOKEN") ?? null;
+  return Deno.env.get('BITRIX24_ACCESS_TOKEN') ?? null;
 }
 
 async function bitrixCall(method: string, payload: Record<string, unknown>) {
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
   const token = await getBitrixToken(admin);
-  if (!token) throw new Error("bitrix_token_missing");
-  if (!BITRIX_DOMAIN) throw new Error("bitrix_domain_missing");
+  if (!token) throw new Error('bitrix_token_missing');
+  if (!BITRIX_DOMAIN) throw new Error('bitrix_domain_missing');
 
   const url = `https://${BITRIX_DOMAIN}/rest/${method}.json`;
   const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...payload, auth: token }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok || data.error) {
-    throw new Error(`bitrix_api_error:${data.error || res.status}:${data.error_description || ""}`);
+    throw new Error(`bitrix_api_error:${data.error || res.status}:${data.error_description || ''}`);
   }
   return data.result;
 }
 
 /** Procura o primeiro contato Bitrix por email. Retorna ID ou null. */
 async function findBitrixContactByEmail(email: string): Promise<string | null> {
-  const result = await bitrixCall("crm.contact.list", {
+  const result = await bitrixCall('crm.contact.list', {
     filter: { EMAIL: email },
-    select: ["ID", "EMAIL", "PHONE"],
+    select: ['ID', 'EMAIL', 'PHONE'],
   });
   if (Array.isArray(result) && result.length > 0) return String(result[0].ID);
   return null;
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return jsonResp({ error: "method_not_allowed" }, 405);
+  const corsHeaders = corsHeadersPara(req);
+  const res = (a: unknown, b = 200) => jsonResp(a, b, corsHeaders);
+
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
   // Autenticação: precisamos do user logado
-  const authHeader = req.headers.get("Authorization") ?? "";
-  if (!authHeader.startsWith("Bearer ")) return jsonResp({ error: "unauthorized" }, 401);
+  const authHeader = req.headers.get('Authorization') ?? '';
+  if (!authHeader.startsWith('Bearer ')) return res({ error: 'unauthorized' }, 401);
 
   const userClient = createClient(SUPABASE_URL, ANON_KEY, {
     global: { headers: { Authorization: authHeader } },
   });
   const { data: userData, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !userData?.user) return jsonResp({ error: "unauthorized" }, 401);
+  if (userErr || !userData?.user) return res({ error: 'unauthorized' }, 401);
   const user = userData.user;
 
   // Body
@@ -139,57 +140,56 @@ Deno.serve(async (req) => {
     if (!_v.success) return _v.response;
     body = _v.data as unknown as SyncBody;
   } catch {
-    return jsonResp({ error: "invalid_json" }, 400);
+    return res({ error: 'invalid_json' }, 400);
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
   // Carrega valores atuais do profile como fallback (caso o cliente envie só um dos campos)
   const { data: profile } = await admin
-    .from("profiles")
-    .select("email, avatar_url, telefone, full_name")
-    .eq("id", user.id)
+    .from('profiles')
+    .select('email, avatar_url, telefone, full_name')
+    .eq('id', user.id)
     .maybeSingle();
 
-  if (!profile?.email) return jsonResp({ error: "profile_email_missing" }, 404);
+  if (!profile?.email) return res({ error: 'profile_email_missing' }, 404);
 
   const emailLower = String(profile.email).toLowerCase();
-  const avatarUrl =
-    body.avatar_url !== undefined ? body.avatar_url : (profile.avatar_url ?? null);
+  const avatarUrl = body.avatar_url !== undefined ? body.avatar_url : (profile.avatar_url ?? null);
   const telefoneNorm = normalizePhone(
-    body.telefone !== undefined ? body.telefone : profile.telefone,
+    body.telefone !== undefined ? body.telefone : profile.telefone
   );
 
   if (!avatarUrl && !telefoneNorm) {
-    return jsonResp({ ok: true, skipped: true, reason: "nothing_to_sync" });
+    return res({ ok: true, skipped: true, reason: 'nothing_to_sync' });
   }
 
   if (!BITRIX_DOMAIN) {
-    return jsonResp({ error: "bitrix_not_configured" }, 503);
+    return res({ error: 'bitrix_not_configured' }, 503);
   }
 
   try {
     const contactId = await findBitrixContactByEmail(emailLower);
     if (!contactId) {
       // Log e retorno graceful — não criamos contato automaticamente.
-      await admin.from("audit_logs").insert({
+      await admin.from('audit_logs').insert({
         user_id: user.id,
         user_email: emailLower,
-        action: "UPDATE",
-        table_name: "bitrix_profile_sync",
+        action: 'UPDATE',
+        table_name: 'bitrix_profile_sync',
         record_id: null,
         new_data: {
-          status: "contact_not_found",
+          status: 'contact_not_found',
           email: emailLower,
         },
-        details: "Bitrix24: contato não encontrado por email",
+        details: 'Bitrix24: contato não encontrado por email',
       });
-      return jsonResp({ ok: false, error: "bitrix_contact_not_found" }, 404);
+      return res({ ok: false, error: 'bitrix_contact_not_found' }, 404);
     }
 
     const fields: Record<string, unknown> = {};
     if (telefoneNorm) {
-      fields.PHONE = [{ VALUE: telefoneNorm, VALUE_TYPE: "WORK" }];
+      fields.PHONE = [{ VALUE: telefoneNorm, VALUE_TYPE: 'WORK' }];
     }
     if (avatarUrl) {
       // Bitrix aceita PHOTO como objeto { fileData: [name, base64] } ou URL via UF.
@@ -201,26 +201,28 @@ Deno.serve(async (req) => {
         if (imgRes.ok) {
           const buf = new Uint8Array(await imgRes.arrayBuffer());
           // base64 encode
-          let bin = "";
+          let bin = '';
           for (let i = 0; i < buf.byteLength; i++) bin += String.fromCharCode(buf[i]);
           const b64 = btoa(bin);
-          const ext = (avatarUrl.split(".").pop() || "jpg").split("?")[0].toLowerCase();
-          const safeExt = ["jpg", "jpeg", "png", "gif", "webp"].includes(ext) ? ext : "jpg";
+          const ext = (avatarUrl.split('.').pop() || 'jpg').split('?')[0].toLowerCase();
+          const safeExt = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext) ? ext : 'jpg';
           fields.PHOTO = { fileData: [`avatar.${safeExt}`, b64] };
         }
-      } catch (_) { /* avatar opcional, segue sem PHOTO */ }
+      } catch (_) {
+        /* avatar opcional, segue sem PHOTO */
+      }
     }
 
-    await bitrixCall("crm.contact.update", {
+    await bitrixCall('crm.contact.update', {
       id: contactId,
       fields,
     });
 
-    await admin.from("audit_logs").insert({
+    await admin.from('audit_logs').insert({
       user_id: user.id,
       user_email: emailLower,
-      action: "UPDATE",
-      table_name: "bitrix_profile_sync",
+      action: 'UPDATE',
+      table_name: 'bitrix_profile_sync',
       record_id: contactId,
       new_data: {
         bitrix_contact_id: contactId,
@@ -228,26 +230,26 @@ Deno.serve(async (req) => {
         avatar_url: avatarUrl ?? null,
         telefone: telefoneNorm ?? null,
       },
-      details: "Sincronização avatar/telefone do perfil para Bitrix24",
+      details: 'Sincronização avatar/telefone do perfil para Bitrix24',
     });
 
-    return jsonResp({
+    return res({
       ok: true,
       bitrix_contact_id: contactId,
       synced_fields: Object.keys(fields),
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error("[sync-profile-to-bitrix] error", msg);
-    await admin.from("audit_logs").insert({
+    console.error('[sync-profile-to-bitrix] error', msg);
+    await admin.from('audit_logs').insert({
       user_id: user.id,
       user_email: emailLower,
-      action: "UPDATE",
-      table_name: "bitrix_profile_sync",
+      action: 'UPDATE',
+      table_name: 'bitrix_profile_sync',
       record_id: null,
       new_data: { error: msg },
-      details: "Falha ao sincronizar perfil para Bitrix24",
+      details: 'Falha ao sincronizar perfil para Bitrix24',
     });
-    return jsonResp({ ok: false, error: "sync_failed", details: msg }, 500);
+    return res({ ok: false, error: 'sync_failed', details: msg }, 500);
   }
 });

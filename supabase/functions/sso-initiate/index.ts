@@ -1,4 +1,4 @@
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -18,6 +18,7 @@ function base64url(buf: ArrayBuffer | Uint8Array) {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
@@ -31,7 +32,8 @@ Deno.serve(async (req) => {
       })
       .passthrough();
     const parsed = validatePayload(Schema, raw, 'sso-initiate');
-    if (!parsed.success) return json({ error: parsed.error, details: parsed.details }, 400);
+    if (!parsed.success)
+      return json({ error: parsed.error, details: parsed.details }, 400, corsHeaders);
     const { provider_id, redirect_to } = parsed.data;
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
@@ -42,12 +44,13 @@ Deno.serve(async (req) => {
       .eq('ativo', true)
       .maybeSingle();
 
-    if (error || !provider) return json({ error: 'Provedor não encontrado ou inativo' }, 404);
+    if (error || !provider)
+      return json({ error: 'Provedor não encontrado ou inativo' }, 404, corsHeaders);
 
     if (provider.tipo === 'saml') {
       // Supabase nativo cuida do SAML — devolve URL pronta
       const url = `${SUPABASE_URL}/auth/v1/sso?provider=${provider.id}&redirect_to=${encodeURIComponent(redirect_to || '')}`;
-      return json({ redirect_url: url, type: 'saml' }, 200);
+      return json({ redirect_url: url, type: 'saml' }, 200, corsHeaders);
     }
 
     // OIDC: descobre endpoints + monta authorize com PKCE
@@ -55,11 +58,12 @@ Deno.serve(async (req) => {
     let scopes = provider.scopes ?? ['openid', 'profile', 'email'];
     if (!authEndpoint && provider.discovery_url) {
       const r = await fetch(provider.discovery_url);
-      if (!r.ok) return json({ error: 'Falha ao descobrir endpoints OIDC' }, 502);
+      if (!r.ok) return json({ error: 'Falha ao descobrir endpoints OIDC' }, 502, corsHeaders);
       const meta = await r.json();
       authEndpoint = meta.authorization_endpoint;
     }
-    if (!authEndpoint) return json({ error: 'authorization_endpoint indisponível' }, 400);
+    if (!authEndpoint)
+      return json({ error: 'authorization_endpoint indisponível' }, 400, corsHeaders);
 
     const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
     const challenge = base64url(
@@ -76,7 +80,7 @@ Deno.serve(async (req) => {
       .eq('provider_id', provider.id)
       .gte('created_at', windowStart);
     if ((recentCount ?? 0) >= 10) {
-      return json({ error: 'Muitas tentativas de SSO. Aguarde alguns minutos.' }, 429);
+      return json({ error: 'Muitas tentativas de SSO. Aguarde alguns minutos.' }, 429, corsHeaders);
     }
 
     const expires_at = new Date(Date.now() + 5 * 60_000).toISOString();
@@ -109,16 +113,17 @@ Deno.serve(async (req) => {
         state,
         type: 'oidc',
       },
-      200
+      200,
+      corsHeaders
     );
   } catch (e) {
-    return json({ error: e instanceof Error ? e.message : 'Erro' }, 500);
+    return json({ error: e instanceof Error ? e.message : 'Erro' }, 500, corsHeaders);
   }
 });
 
-function json(data: unknown, status: number) {
+function json(data: unknown, status: number, headers: Record<string, string>) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

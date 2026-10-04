@@ -24,6 +24,7 @@ import { z } from '../_shared/zod.ts';
 import { construirDigest, type AlertaDigest } from '../_shared/obrigacoes/digest.ts';
 import { hashAlertas, planejarEnvios } from '../_shared/obrigacoes/preferencias-digest.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 /** Prefixo gravado na coluna `tipo` pelo job de snapshots. */
 const PREFIXO_ALERTA = 'conformidade';
@@ -74,6 +75,7 @@ async function destinatariosAdmin(admin: ReturnType<typeof createClient>): Promi
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const url = Deno.env.get('SUPABASE_URL');
@@ -128,7 +130,7 @@ Deno.serve(async (req: Request) => {
     if (origem === 'usuario' && userId) {
       if (empresaId) {
         // Empresa declarada: precisa ser uma das do usuário.
-        const escopo = await exigirVinculoEmpresa(userId, empresaId);
+        const escopo = await exigirVinculoEmpresa(userId, empresaId, req);
         if (!escopo.ok) return escopo.resposta;
         empresasPermitidas = [escopo.dados.empresaId];
       } else {

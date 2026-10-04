@@ -2,44 +2,17 @@ import { z } from './zod.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createLogger, LogLevel } from './logger.ts';
 import { createValidationErrorResponse } from './contract-response.ts';
+import { corsHeaders, corsHeadersPara } from './cors.ts';
 
 /**
- * Default CORS headers used by edge functions.
+ * Headers CORS — delegados a `_shared/cors.ts` (fonte única).
  *
- * `Access-Control-Allow-Origin` is taken from the `ALLOWED_ORIGINS` env var
- * (comma-separated list), falling back to '*' only when not set. For
- * authenticated endpoints, configure ALLOWED_ORIGINS so credentials can't
- * be sent from arbitrary origins. Webhooks from third parties (Asaas,
- * Bling, Bitrix) should keep the wildcard — they're authenticated by
- * shared-secret tokens, not by Origin.
- *
- * Pass the request to `buildCorsHeaders(req)` to echo back the matched
- * allowed origin (required when Allow-Credentials is true).
+ * A allowlist vem de `ALLOWED_ORIGINS` (env, separada por vírgula) caindo no
+ * domínio de produção + localhost de dev. `buildCorsHeaders(req)` ecoa o
+ * `Origin` permitido da requisição — preferir a `corsHeaders` estático.
  */
-const RAW_ALLOWED =
-  (globalThis as { Deno?: { env: { get(k: string): string | undefined } } }).Deno?.env.get(
-    'ALLOWED_ORIGINS'
-  ) ?? '';
-const ALLOWED_ORIGIN_LIST = RAW_ALLOWED
-  ? RAW_ALLOWED.split(',')
-      .map((s) => s.trim())
-      .filter(Boolean)
-  : [];
-
-export const corsHeaders: Record<string, string> = {
-  'Access-Control-Allow-Origin': ALLOWED_ORIGIN_LIST.length === 1 ? ALLOWED_ORIGIN_LIST[0] : '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, asaas-access-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-platform-runtime, x-supabase-client-platform-runtime-version, x-request-id',
-};
-
-export function buildCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin');
-  if (!origin || ALLOWED_ORIGIN_LIST.length === 0) return corsHeaders;
-  if (ALLOWED_ORIGIN_LIST.includes('*') || ALLOWED_ORIGIN_LIST.includes(origin)) {
-    return { ...corsHeaders, 'Access-Control-Allow-Origin': origin };
-  }
-  return { ...corsHeaders, 'Access-Control-Allow-Origin': ALLOWED_ORIGIN_LIST[0] };
-}
+export { corsHeaders };
+export const buildCorsHeaders = corsHeadersPara;
 
 const logger = createLogger('Validation');
 
@@ -65,9 +38,15 @@ export function validatePayload<T>(
   };
 }
 
-export function createErrorResponse(message: string, status = 400, details?: unknown) {
+export function createErrorResponse(
+  message: string,
+  status = 400,
+  details?: unknown,
+  req?: Request
+) {
+  const headers = req ? corsHeadersPara(req) : corsHeaders;
   if (message.includes('Contract Violation')) {
-    return createValidationErrorResponse(details, corsHeaders);
+    return createValidationErrorResponse(details, headers);
   }
   return new Response(
     JSON.stringify({
@@ -77,7 +56,7 @@ export function createErrorResponse(message: string, status = 400, details?: unk
     }),
     {
       status,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...headers, 'Content-Type': 'application/json' },
     }
   );
 }

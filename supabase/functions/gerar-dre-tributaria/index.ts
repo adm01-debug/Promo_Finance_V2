@@ -2,7 +2,7 @@
 // Substitui a versão com Lovable AI Gateway.
 // Calcula DRE com decomposição fiscal: CBS+IBS+PIS+COFINS+ICMS+ISS+IRPJ+CSLL.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeaders, respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
 
@@ -12,8 +12,8 @@ const ReqBodySchema = z.object({
 });
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return respostaPreflight();
-  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405);
+  if (req.method === 'OPTIONS') return respostaPreflight(req);
+  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405, req);
 
   // [auth-guard] Funcao chamada pelo app com o JWT do usuario logado (Authorization
   // validado via getUser). Fail-closed: sem sessao valida -> 401.
@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
   try {
     const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success)
-      return jsonComCors({ error: 'empresa_id e periodo YYYY-MM são obrigatórios' }, 400);
+      return jsonComCors({ error: 'empresa_id e periodo YYYY-MM são obrigatórios' }, 400, req);
     const { empresa_id: empresaId, periodo } = parsed.data;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
           .eq('empresa_id', empresaId)
           .eq('ativo', true)
           .maybeSingle();
-        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403);
+        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403, req);
       }
 
       const [ano, mes] = periodo.split('-').map(Number);
@@ -110,31 +110,35 @@ Deno.serve(async (req) => {
       };
     }
 
-    return jsonComCors({
-      dre: {
-        periodo,
-        receita_bruta: Math.round(receitaBruta),
-        deducoes: {
-          cbs: Math.round(cbs),
-          ibs: Math.round(ibs),
-          imposto_seletivo: Math.round(impostoSeletivo),
-          pis: Math.round(pis),
-          cofins: Math.round(cofins),
-          icms: Math.round(icms),
-          iss: Math.round(iss),
-          total: Math.round(totalDeducoes),
+    return jsonComCors(
+      {
+        dre: {
+          periodo,
+          receita_bruta: Math.round(receitaBruta),
+          deducoes: {
+            cbs: Math.round(cbs),
+            ibs: Math.round(ibs),
+            imposto_seletivo: Math.round(impostoSeletivo),
+            pis: Math.round(pis),
+            cofins: Math.round(cofins),
+            icms: Math.round(icms),
+            iss: Math.round(iss),
+            total: Math.round(totalDeducoes),
+          },
+          receita_liquida: Math.round(receitaLiquida),
+          custos: Math.round(custos),
+          lucro_bruto: Math.round(lucroBruto),
+          irpj: Math.round(irpj),
+          csll: Math.round(csll),
+          lucro_liquido: Math.round(lucroLiquido),
+          carga_tributaria_pct: cargaTributariaPct,
+          comparativo_regime_otimo: comparativoRegimeOtimo,
         },
-        receita_liquida: Math.round(receitaLiquida),
-        custos: Math.round(custos),
-        lucro_bruto: Math.round(lucroBruto),
-        irpj: Math.round(irpj),
-        csll: Math.round(csll),
-        lucro_liquido: Math.round(lucroLiquido),
-        carga_tributaria_pct: cargaTributariaPct,
-        comparativo_regime_otimo: comparativoRegimeOtimo,
       },
-    });
+      200,
+      req
+    );
   } catch (err) {
-    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500);
+    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500, req);
   }
 });
