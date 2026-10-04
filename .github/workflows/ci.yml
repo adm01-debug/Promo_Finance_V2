@@ -135,7 +135,12 @@ jobs:
         # Bloqueante: vulnerabilidades conhecidas em dependências diretas
         # devem ser corrigidas antes do merge, não apenas registradas.
         # Em caso de falsa positivo documentado, use `bun audit --ignore`.
-        run: bun audit
+        # GHSA-vfj7-8cjw-p6xm (braces <=3.0.3): sem release corrigida —
+        # 3.0.3 é a última publicada. Só entra via micromatch de
+        # tailwindcss/lint-staged, ferramentas de build/dev cujos padrões
+        # glob são os nossos, não input de usuário — DoS por padrão
+        # aninhado não se aplica. Revisitar quando sair braces 3.0.4+.
+        run: bun audit --ignore=GHSA-vfj7-8cjw-p6xm
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
