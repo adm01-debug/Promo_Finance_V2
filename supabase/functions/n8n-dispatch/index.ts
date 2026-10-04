@@ -85,9 +85,6 @@ Deno.serve(async (req) => {
 
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  const inativa = respostaIntegracaoDesativada('n8n', corsHeaders);
-  if (inativa) return inativa;
-
   if (req.method !== 'POST')
     return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 
@@ -99,6 +96,9 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const inativa = respostaIntegracaoDesativada('n8n', corsHeaders);
+    if (inativa) return inativa;
 
     const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');

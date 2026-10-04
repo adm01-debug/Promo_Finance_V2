@@ -38,9 +38,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
-  if (inativa) return inativa;
-
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -66,6 +63,9 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
+    if (inativa) return inativa;
 
     const _raw = await req.json();
     const _v = await validateContract(_OFSchema, _raw);

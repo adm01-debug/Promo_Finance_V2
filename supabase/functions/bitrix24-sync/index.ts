@@ -757,9 +757,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
-  if (inativa) return inativa;
-
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -780,6 +777,9 @@ serve(async (req) => {
     if (userError || !user) {
       throw new Error('Invalid authentication token');
     }
+
+    const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+    if (inativa) return inativa;
 
     const rawBody = await req.json();
     const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');

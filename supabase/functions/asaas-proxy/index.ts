@@ -64,9 +64,6 @@ export const handler = async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const inativa = respostaIntegracaoDesativada('asaas', corsHeaders);
-  if (inativa) return inativa;
-
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -94,6 +91,9 @@ export const handler = async (req: Request) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const inativa = respostaIntegracaoDesativada('asaas', corsHeaders);
+    if (inativa) return inativa;
 
     // Verificar role
     const supabase = createClient(supabaseUrl, serviceRoleKey);

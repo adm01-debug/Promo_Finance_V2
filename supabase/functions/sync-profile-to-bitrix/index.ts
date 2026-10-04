@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'npm:zod@3.23.8';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 
 const _SyncProfileSchema = z
   .object({
@@ -131,6 +132,9 @@ Deno.serve(async (req) => {
   const { data: userData, error: userErr } = await userClient.auth.getUser();
   if (userErr || !userData?.user) return res({ error: 'unauthorized' }, 401);
   const user = userData.user;
+
+  const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+  if (inativa) return inativa;
 
   // Body
   let body: SyncBody;

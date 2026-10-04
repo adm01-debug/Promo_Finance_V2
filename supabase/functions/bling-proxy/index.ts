@@ -24,9 +24,6 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
-  if (inativa) return inativa;
-
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -46,6 +43,9 @@ Deno.serve(async (req) => {
     if (userError || !user) {
       return jsonResponse({ error: 'Unauthorized' }, 401, corsHeaders);
     }
+
+    const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
+    if (inativa) return inativa;
 
     const userId = user.id;
     const rawBody = await req.json();
