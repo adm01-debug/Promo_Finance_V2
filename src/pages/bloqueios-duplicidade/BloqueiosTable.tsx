@@ -168,7 +168,7 @@ export function BloqueiosTable({ bloqueios, isLoading, onOpenDetails }: Bloqueio
                         <div
                           className="flex flex-col items-center gap-1 group/key cursor-help"
                           onClick={() => {
-                            navigator.clipboard.writeText(idempotencyKey);
+                            void navigator.clipboard.writeText(idempotencyKey);
                             toast.success('Chave copiada para o clipboard!');
                           }}
                         >

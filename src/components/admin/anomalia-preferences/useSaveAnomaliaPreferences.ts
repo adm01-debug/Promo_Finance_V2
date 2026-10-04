@@ -59,7 +59,7 @@ export function useSaveAnomaliaPreferences() {
       const ccsMudou = previaCcsSorted.join('|') !== ccsSorted.join('|');
       const tiposMudou = previaTiposSorted.join('|') !== tiposSorted.join('|');
 
-      await update.mutateAsync({
+      const saved = await update.mutateAsync({
         toast_enabled: enabled,
         toast_severidades_ativas: severidadesAtivas,
         toast_duracao_segundos: duracao,
@@ -83,8 +83,12 @@ export function useSaveAnomaliaPreferences() {
               ? 'UNSILENCE_ALERTS'
               : 'UPDATE_SILENCE_FILTERS';
 
-        const ccsNomes = ccs.map((id) => centrosCusto.find((c) => c.id === id)?.nome ?? id).sort();
-        const tiposLabels = tipos.map((t) => TIPOS.find((x) => x.value === t)?.label ?? t).sort();
+        const ccsNomes = ccs
+          .map((id) => centrosCusto.find((c) => c.id === id)?.nome ?? id)
+          .sort((a, b) => a.localeCompare(b));
+        const tiposLabels = tipos
+          .map((t) => TIPOS.find((x) => x.value === t)?.label ?? t)
+          .sort((a, b) => a.localeCompare(b));
 
         const detalhes = [
           `${acaoLabel} em ${agora.toISOString()}`,
@@ -99,7 +103,9 @@ export function useSaveAnomaliaPreferences() {
           .mutateAsync({
             action: 'UPDATE',
             tableName: 'user_anomalia_preferences',
-            recordId: preferences?.id ?? '',
+            // No primeiro silêncio a linha ainda não existia em `preferences` —
+            // usa o id devolvido pelo upsert, senão o RPC rejeita UUID vazio.
+            recordId: saved?.id ?? preferences?.id ?? '',
             oldData: {
               silenciar_ate: previaSilenciarAte,
               centros_custo_silenciados: previaCcsSorted,

@@ -134,7 +134,7 @@ export function useFluxoCaixaProjetado(dias: number = 30) {
       const resultado: ProjecaoDiaria[] = [];
 
       Object.keys(fluxoPorData)
-        .sort()
+        .sort((a, b) => a.localeCompare(b))
         .forEach((data) => {
           const { receitas, despesas } = fluxoPorData[data];
           saldoAcumulado = saldoAcumulado + receitas - despesas;
@@ -189,7 +189,7 @@ export function useFluxoCaixaHistorico(dias: number = 30) {
       });
 
       return Object.keys(fluxoPorData)
-        .sort()
+        .sort((a, b) => a.localeCompare(b))
         .map((data) => ({
           data,
           receitas: fluxoPorData[data].receitas,

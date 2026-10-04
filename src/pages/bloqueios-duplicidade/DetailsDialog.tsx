@@ -66,7 +66,7 @@ export function DetailsDialog({ open, onOpenChange, selectedBlock }: DetailsDial
                   size="sm"
                   className="h-8 text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-card/5"
                   onClick={() => {
-                    navigator.clipboard.writeText(idempotencyKey);
+                    void navigator.clipboard.writeText(idempotencyKey);
                     toast.success('Chave de idempotência copiada!');
                   }}
                 >

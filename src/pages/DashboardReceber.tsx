@@ -118,7 +118,9 @@ export default function DashboardReceber() {
   const { data: vendedores = [] } = useVendedores();
 
   const ramosAtividade = useMemo(() => {
-    return ([...new Set(clientes.map((c) => c.ramo_atividade).filter(Boolean))] as string[]).sort();
+    return ([...new Set(clientes.map((c) => c.ramo_atividade).filter(Boolean))] as string[]).sort(
+      (a, b) => a.localeCompare(b)
+    );
   }, [clientes]);
 
   // vw_contas_receber_painel expõe todas as colunas como nullable — normaliza

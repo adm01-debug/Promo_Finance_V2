@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { toast } from 'sonner';
 
 export function openPrintWindow(): Window | null {
@@ -10,7 +11,9 @@ export function openPrintWindow(): Window | null {
 }
 
 export function writeAndPrint(w: Window, html: string): void {
-  w.document.write(html);
+  // O HTML dos PDFs embute dados do banco (nomes, descrições) — sanitiza antes
+  // do document.write para que markup malicioso não execute na origem do app.
+  w.document.write(DOMPurify.sanitize(html, { WHOLE_DOCUMENT: true }));
   w.document.close();
 }
 

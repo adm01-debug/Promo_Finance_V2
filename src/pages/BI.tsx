@@ -386,10 +386,14 @@ export default function BI() {
         valor: c.valor,
       }));
     }
+    // Métricas sem dados próprios (ex.: 'conciliacao') abrem o diálogo vazio,
+    // não com contas a receber — o tipo 'pagar' com dados de receber confunde.
     const receber =
       drillDownItem === 'atraso'
         ? filteredReceber.filter((c) => c.status === 'vencido')
-        : filteredReceber;
+        : drillDownItem === 'receber'
+          ? filteredReceber
+          : [];
     return receber.map((c) => ({
       id: c.id ?? '',
       cliente_nome: c.cliente_nome,

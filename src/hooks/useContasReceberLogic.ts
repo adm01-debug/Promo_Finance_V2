@@ -308,7 +308,7 @@ export function useContasReceberLogic() {
     return filterByDate(contas).filter((c) => {
       let match = true;
       if (advancedFilters.dataVencimentoInicio) {
-        match = match && new Date(c.data_vencimento) >= advancedFilters.dataVencimentoInicio;
+        match = new Date(c.data_vencimento) >= advancedFilters.dataVencimentoInicio;
       }
       if (advancedFilters.dataVencimentoFim) {
         match = match && new Date(c.data_vencimento) <= advancedFilters.dataVencimentoFim;
@@ -354,7 +354,7 @@ export function useContasReceberLogic() {
   });
 
   const handleBulkMarkAsReceived = useCallback(() => {
-    bulkActionsHook.executeBulkAction(
+    void bulkActionsHook.executeBulkAction(
       async (id) => {
         const conta = sortedContas.find((c) => c.id === id);
         const { error } = await supabase
@@ -372,7 +372,7 @@ export function useContasReceberLogic() {
   }, [bulkActionsHook, sortedContas]);
 
   const handleBulkCancel = useCallback(() => {
-    bulkActionsHook.executeBulkAction(
+    void bulkActionsHook.executeBulkAction(
       async (id) => {
         const { error } = await supabase
           .from('contas_receber')
