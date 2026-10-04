@@ -426,8 +426,18 @@ export function useContasPagarLogic() {
     return selecionadas;
   };
 
+  const snapshotOuToast = () => {
+    try {
+      return snapshotSelecionadas();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Seleção inválida para ação em massa');
+      return null;
+    }
+  };
+
   const handleBulkMarkAsPaid = () => {
-    const selecionadas = snapshotSelecionadas();
+    const selecionadas = snapshotOuToast();
+    if (!selecionadas) return;
     bulkActionsHook.executeBulkAction(
       async (id) => {
         const conta = selecionadas.get(id);
@@ -444,7 +454,8 @@ export function useContasPagarLogic() {
   };
 
   const handleBulkCancel = () => {
-    const selecionadas = snapshotSelecionadas();
+    const selecionadas = snapshotOuToast();
+    if (!selecionadas) return;
     bulkActionsHook.executeBulkAction(
       async (id) => {
         await updateMutation.mutateAsync({

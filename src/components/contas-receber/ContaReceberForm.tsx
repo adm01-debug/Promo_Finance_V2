@@ -245,8 +245,17 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
           .select('*')
           .eq('id', contaId)
           .single()
-          .then(({ data: row }) => {
-            if (!row || contaIdRef.current !== contaId) return;
+          .then(({ data: row, error: reloadErr }) => {
+            if (reloadErr || !row) {
+              toast({
+                title: 'Conta alterada por outra pessoa',
+                description:
+                  'Não consegui recarregar a versão atual — feche e reabra a conta antes de salvar de novo.',
+                variant: 'destructive',
+              });
+              return;
+            }
+            if (contaIdRef.current !== contaId) return;
             setVersaoEsperada(row.updated_at);
             // Recarrega os campos com a versão vigente — salvar de novo em
             // cima dos valores antigos sobrescreveria a edição da outra pessoa.
@@ -266,12 +275,12 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
               chave_pix: row.chave_pix || undefined,
               observacoes: row.observacoes || undefined,
             });
+            toast({
+              title: 'Conta alterada por outra pessoa',
+              description: 'Os dados foram recarregados — revise e salve novamente.',
+              variant: 'destructive',
+            });
           });
-        toast({
-          title: 'Conta alterada por outra pessoa',
-          description: 'Os dados foram recarregados — revise e salve novamente.',
-          variant: 'destructive',
-        });
       } else {
         toast({
           title: 'Erro ao atualizar',

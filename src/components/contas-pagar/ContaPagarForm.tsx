@@ -189,8 +189,17 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                 .select('*')
                 .eq('id', contaId)
                 .single()
-                .then(({ data: row }) => {
-                  if (!row || contaIdRef.current !== contaId) return;
+                .then(({ data: row, error: reloadErr }) => {
+                  if (reloadErr || !row) {
+                    toast({
+                      title: 'Conta alterada por outra pessoa',
+                      description:
+                        'Não consegui recarregar a versão atual — feche e reabra a conta antes de salvar de novo.',
+                      variant: 'destructive',
+                    });
+                    return;
+                  }
+                  if (contaIdRef.current !== contaId) return;
                   setVersaoEsperada(row.updated_at);
                   // Recarrega os campos com a versão vigente — salvar de novo
                   // em cima dos valores antigos sobrescreveria a edição da outra pessoa.
@@ -218,6 +227,11 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                       typeof (row as Record<string, unknown>).codigo_barras === 'string'
                         ? ((row as Record<string, unknown>).codigo_barras as string)
                         : undefined,
+                  });
+                  toast({
+                    title: 'Conta alterada por outra pessoa',
+                    description: 'Os dados foram recarregados — revise e salve novamente.',
+                    variant: 'destructive',
                   });
                 });
             }
