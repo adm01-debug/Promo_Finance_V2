@@ -29,12 +29,22 @@ const funcsDir = 'supabase/functions';
 const edgeSet = new Set();
 for (const dir of readdirSync(funcsDir)) {
   if (dir === '_shared') {
-    // Scan _shared/*.ts (exceto arquivos _test.ts) — contém helpers usados por todas as funções
+    // Scan recursivo de _shared/**/*.ts (exceto testes/mocks/fixtures) —
+    // helpers aninhados (sefaz/, nfe/, sped/, obrigacoes/) também leem envs.
+    const stack = [`${funcsDir}/_shared`];
     try {
-      for (const f of readdirSync(`${funcsDir}/_shared`)) {
-        if (!f.endsWith('.ts') || f.endsWith('_test.ts')) continue;
-        const t = readFileSync(`${funcsDir}/_shared/${f}`, 'utf8');
-        for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+      while (stack.length) {
+        const cur = stack.pop();
+        for (const e of readdirSync(cur, { withFileTypes: true })) {
+          const full = `${cur}/${e.name}`;
+          if (e.isDirectory()) {
+            if (!/^(?:__tests__|__mocks__|__fixtures__)$/.test(e.name)) stack.push(full);
+            continue;
+          }
+          if (!e.name.endsWith('.ts') || e.name.endsWith('_test.ts') || e.name.endsWith('.test.ts')) continue;
+          const t = readFileSync(full, 'utf8');
+          for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+        }
       }
     } catch { /* _shared ausente */ }
     continue;
@@ -53,6 +63,7 @@ const opcionais = new Set([
   'ALLOWED_ORIGINS',
   'EDGE_FUNCTION_NAME',
   'MFA_ADMIN_ENFORCED',
+  'NFE_CERT_MASTER_KEY_PREV',
   'SUPABASE_FUNCTION_NAME',
 ]);
 const edge = [...edgeSet].sort().map(name => ({

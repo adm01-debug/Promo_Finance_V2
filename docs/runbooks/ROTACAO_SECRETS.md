@@ -27,6 +27,7 @@
 
 Esta chave criptografa `empresas_certificados.password_encrypted` via `pgp_sym_encrypt`/`pgp_sym_decrypt` — trocar só o valor do secret torna todas as senhas de certificados já cadastrados indecifráveis e quebra os fluxos SEFAZ. O decrypt das edge fns tem **fallback duplo**: tenta `NFE_CERT_MASTER_KEY` e, falhando, `NFE_CERT_MASTER_KEY_PREV` — é isso que elimina a janela entre recriptografia e troca do secret. Ordem correta:
 
+0. **Pré-requisito — publicar o fallback antes de mexer nos secrets.** O deploy de edge fns é manual e por função (`functions-deploy.yml`): enquanto `sefaz-dfe-puxar` e `sefaz-manifestar` (as únicas que importam `_shared/sefaz/pfx.ts`) estiverem na versão antiga em produção, elas não leem `PREV` e o passo 3 derruba os fluxos. Rode o workflow `functions-deploy` para as duas e valide uma chamada real a cada uma antes de continuar — ou pause os consumidores SEFAZ durante a rotação.
 1. Gerar a chave nova (`openssl rand -hex 32`) e anotar a **antiga**.
 2. Criar o secret `NFE_CERT_MASTER_KEY_PREV` = **chave antiga** (Edge Functions > Manage Secrets).
 3. Atualizar `NFE_CERT_MASTER_KEY` = **chave nova**. A partir daqui as linhas antigas decryptam via `PREV` — nenhum fluxo cai.
