@@ -41,3 +41,47 @@ Deno.test('capturarExcecaoSentry com DSN inválida é no-op que resolve', async 
     Deno.env.delete('EDGE_SENTRY_DSN');
   }
 });
+
+Deno.test('resposta SSE entrega o stream completo sem bloquear', async () => {
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode('data: 1\n\n'));
+      controller.enqueue(new TextEncoder().encode('data: 2\n\n'));
+      controller.close();
+    },
+  });
+  const wrapped = withEdgeObservability(
+    'fn-sse',
+    () =>
+      new Response(stream, {
+        status: 200,
+        headers: { 'content-type': 'text/event-stream' },
+      })
+  );
+  const res = await wrapped(new Request('https://x/fn'));
+  assertEquals(res.status, 200);
+  assertEquals(await res.text(), 'data: 1\n\ndata: 2\n\n');
+});
+
+Deno.test('requestId prefere x-request-id e cai para x-correlation-id', async () => {
+  let visto: string | undefined;
+  // createLogger injeta request_id no context — espia pelo console do logger.
+  const logOriginal = console.log;
+  console.log = (s: unknown) => {
+    try {
+      const j = JSON.parse(String(s));
+      if (j.event === 'request_end') visto = j.context?.request_id;
+    } catch {
+      /* ignora */
+    }
+  };
+  try {
+    const wrapped = withEdgeObservability('fn-req', () => new Response('ok'));
+    await wrapped(new Request('https://x/fn', { headers: { 'x-request-id': 'RID-1' } }));
+    assertEquals(visto, 'RID-1');
+    await wrapped(new Request('https://x/fn', { headers: { 'x-correlation-id': 'CID-1' } }));
+    assertEquals(visto, 'CID-1');
+  } finally {
+    console.log = logOriginal;
+  }
+});

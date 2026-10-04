@@ -11,7 +11,7 @@
 // request_error), duration = percentis de duration_ms — consultáveis
 // direto na tabela edge_function_logs.
 
-import { createLogger } from './observability.ts';
+import { createLogger, redigirTexto } from './observability.ts';
 
 type Handler = (req: Request) => Promise<Response> | Response;
 
@@ -79,8 +79,11 @@ export function capturarExcecaoSentry(
       values: [
         {
           type: error instanceof Error ? error.name : 'Error',
-          value: error instanceof Error ? error.message : String(error),
-          stacktrace: error instanceof Error ? framesDo(error.stack) : undefined,
+          // A mensagem e a stack saem do processo sem a redação da tabela —
+          // um erro com token/segredo interpolado vazaria no Sentry.
+          value: redigirTexto(error instanceof Error ? error.message : String(error)),
+          stacktrace:
+            error instanceof Error ? framesDo(redigirTexto(error.stack ?? '')) : undefined,
         },
       ],
     },
@@ -122,17 +125,77 @@ function segundoPlano(p: Promise<void>): Promise<void> | void {
   return p;
 }
 
+// Espelha um ReadableStream chamando `aoTerminar` no desfecho real:
+// 'ok' quando o produtor encerra, 'error' quando quebra no meio, 'cancel'
+// quando o consumidor desiste — sem bloquear a entrega do primeiro chunk.
+function espelharStream(
+  origem: ReadableStream<Uint8Array>,
+  aoTerminar: (desfecho: 'ok' | 'error' | 'cancel', detalhe?: string) => void
+): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const reader = origem.getReader();
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) {
+            controller.close();
+            aoTerminar('ok');
+            return;
+          }
+          controller.enqueue(value);
+        }
+      } catch (e) {
+        aoTerminar('error', e instanceof Error ? e.message : String(e));
+        controller.error(e);
+      } finally {
+        reader.releaseLock();
+      }
+    },
+    cancel(reason) {
+      aoTerminar('cancel', typeof reason === 'string' ? reason : undefined);
+      void origem.cancel(reason);
+    },
+  });
+}
+
 export function withEdgeObservability(functionName: string, handler: Handler): Handler {
   return async (req: Request): Promise<Response> => {
     // Preflight CORS não é tráfego de negócio — medir ele inflaria rate e
     // misturaria durations de ~0ms no percentil. Passa direto.
     if (req.method === 'OPTIONS') return handler(req);
 
-    const requestId = req.headers.get('x-correlation-id') ?? crypto.randomUUID();
+    // O client Supabase propaga x-request-id (correlation.ts); o
+    // x-correlation-id cobre chamadas externas fora do client.
+    const requestId =
+      req.headers.get('x-request-id') ?? req.headers.get('x-correlation-id') ?? crypto.randomUUID();
     const log = createLogger(functionName, requestId);
     const inicio = Date.now();
     try {
       const res = await handler(req);
+      // Resposta SSE (text/event-stream) continua produzindo depois do
+      // return — medir aqui registraria ~0ms e sucesso mesmo se o stream
+      // falhar no meio. Encadeia um stream espelho que registra o fim real.
+      if (res.headers.get('content-type')?.includes('text/event-stream') && res.body) {
+        const corpoEspelhado = espelharStream(res.body, (desfecho, detalhe) => {
+          if (desfecho === 'ok') {
+            log.info('request_end', {
+              duration_ms: Date.now() - inicio,
+              status_code: res.status,
+              context: { method: req.method, stream: true },
+            });
+          } else {
+            log.error('request_error', {
+              duration_ms: Date.now() - inicio,
+              status_code: res.status,
+              error_message: detalhe ?? 'stream interrompido',
+              context: { method: req.method, stream: true, desfecho },
+            });
+          }
+          void segundoPlano(log.flush());
+        });
+        return new Response(corpoEspelhado, res);
+      }
       log.info('request_end', {
         duration_ms: Date.now() - inicio,
         status_code: res.status,
@@ -155,7 +218,9 @@ export function withEdgeObservability(functionName: string, handler: Handler): H
           function_name: functionName,
           request_id: requestId,
           method: req.method,
-          url: req.url,
+          // Só o caminho: a query dos callbacks carrega code/state/verifier
+          // (credenciais OIDC) e não pode sair do processo.
+          path: new URL(req.url).pathname,
         })
       );
       if (envio) await envio;
