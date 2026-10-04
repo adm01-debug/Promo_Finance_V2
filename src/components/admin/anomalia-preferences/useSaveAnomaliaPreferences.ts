@@ -1,12 +1,8 @@
-import { toast } from "sonner";
-import type {
-  Severidade,
-  ToastAcoes,
-  DrawerAcoes,
-} from "@/hooks/useAnomaliaPreferences";
-import { useAnomaliaPreferences } from "@/hooks/useAnomaliaPreferences";
-import { useLogAudit } from "@/hooks/useAuditLog";
-import { TIPOS } from "./constants";
+import { toast } from 'sonner';
+import type { Severidade, ToastAcoes, DrawerAcoes } from '@/hooks/useAnomaliaPreferences';
+import { useAnomaliaPreferences } from '@/hooks/useAnomaliaPreferences';
+import { useLogAudit } from '@/hooks/useAuditLog';
+import { TIPOS } from './constants';
 
 interface CentroCusto {
   id: string;
@@ -45,7 +41,7 @@ export function useSaveAnomaliaPreferences() {
     } = args;
 
     if (severidadesAtivas.length === 0) {
-      toast.error("Selecione ao menos 1 severidade ou desative os toasts");
+      toast.error('Selecione ao menos 1 severidade ou desative os toasts');
       return;
     }
 
@@ -60,8 +56,8 @@ export function useSaveAnomaliaPreferences() {
       const previaTiposSorted = [...previaTipos].sort();
 
       const silenciarAteMudou = previaSilenciarAte !== silenciarAte;
-      const ccsMudou = previaCcsSorted.join("|") !== ccsSorted.join("|");
-      const tiposMudou = previaTiposSorted.join("|") !== tiposSorted.join("|");
+      const ccsMudou = previaCcsSorted.join('|') !== ccsSorted.join('|');
+      const tiposMudou = previaTiposSorted.join('|') !== tiposSorted.join('|');
 
       await update.mutateAsync({
         toast_enabled: enabled,
@@ -82,32 +78,28 @@ export function useSaveAnomaliaPreferences() {
 
         const acaoLabel =
           ate && ate > agora
-            ? "SILENCE_ALERTS"
+            ? 'SILENCE_ALERTS'
             : previaSilenciarAte
-              ? "UNSILENCE_ALERTS"
-              : "UPDATE_SILENCE_FILTERS";
+              ? 'UNSILENCE_ALERTS'
+              : 'UPDATE_SILENCE_FILTERS';
 
-        const ccsNomes = ccs
-          .map((id) => centrosCusto.find((c) => c.id === id)?.nome ?? id)
-          .sort();
-        const tiposLabels = tipos
-          .map((t) => TIPOS.find((x) => x.value === t)?.label ?? t)
-          .sort();
+        const ccsNomes = ccs.map((id) => centrosCusto.find((c) => c.id === id)?.nome ?? id).sort();
+        const tiposLabels = tipos.map((t) => TIPOS.find((x) => x.value === t)?.label ?? t).sort();
 
         const detalhes = [
           `${acaoLabel} em ${agora.toISOString()}`,
           ate && ate > agora
             ? `silenciado_ate=${ate.toISOString()} (${duracaoMin} min)`
-            : "silenciamento_ativo=false",
-          `centros_custo_silenciados=[${ccsNomes.join(", ")}]`,
-          `tipos_silenciados=[${tiposLabels.join(", ")}]`,
-        ].join(" | ");
+            : 'silenciamento_ativo=false',
+          `centros_custo_silenciados=[${ccsNomes.join(', ')}]`,
+          `tipos_silenciados=[${tiposLabels.join(', ')}]`,
+        ].join(' | ');
 
         await logAudit
           .mutateAsync({
-            action: "UPDATE",
-            tableName: "user_anomalia_preferences",
-            recordId: preferences?.id,
+            action: 'UPDATE',
+            tableName: 'user_anomalia_preferences',
+            recordId: preferences?.id ?? '',
             oldData: {
               silenciar_ate: previaSilenciarAte,
               centros_custo_silenciados: previaCcsSorted,
@@ -126,10 +118,10 @@ export function useSaveAnomaliaPreferences() {
           .catch(() => undefined);
       }
 
-      toast.success("Preferências salvas");
+      toast.success('Preferências salvas');
       onSuccess();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erro ao salvar preferências");
+      toast.error(e instanceof Error ? e.message : 'Erro ao salvar preferências');
     }
   };
 
