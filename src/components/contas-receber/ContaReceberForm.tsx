@@ -225,7 +225,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         supabase
           .from('contas_receber')
           .select('*')
-          .eq('id', conta.id)
+          .eq('id', conta.id as string)
           .single()
           .then(({ data: row }) => {
             if (!row) return;
@@ -239,7 +239,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
               valor: row.valor ?? 0,
               data_vencimento: row.data_vencimento || '',
               data_emissao: row.data_emissao || '',
-              empresa_id: row.empresa_id,
+              empresa_id: row.empresa_id ?? '',
               centro_custo_id: row.centro_custo_id || undefined,
               categoria_id: row.categoria_id || undefined,
               conta_bancaria_id: row.conta_bancaria_id || undefined,

@@ -191,7 +191,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                     descricao: row.descricao || '',
                     valor: row.valor ?? 0,
                     data_vencimento: row.data_vencimento || '',
-                    empresa_id: row.empresa_id,
+                    empresa_id: row.empresa_id ?? '',
                     centro_custo_id: row.centro_custo_id || undefined,
                     categoria_id: row.categoria_id || undefined,
                     conta_bancaria_id: row.conta_bancaria_id || undefined,
