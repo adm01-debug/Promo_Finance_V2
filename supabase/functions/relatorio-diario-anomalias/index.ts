@@ -4,6 +4,9 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('relatorio-diario-anomalias');
 
 const _RelAnomSchema = z
   .object({
@@ -36,7 +39,6 @@ function fmt(n: number) {
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -228,7 +230,7 @@ serve(async (req) => {
       envioStatus = 'sem_destinatarios';
     } else if (!resendKey) {
       envioStatus = 'simulado';
-      console.log('RESEND_API_KEY ausente — relatório simulado');
+      log.info('RESEND_API_KEY ausente — relatório simulado');
     } else {
       const resp = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -245,7 +247,7 @@ serve(async (req) => {
       });
       if (!resp.ok) {
         const txt = await resp.text();
-        console.error('Resend erro:', resp.status, txt);
+        log.error('Resend erro:', { context: { args: [resp.status, txt] } });
         throw new Error(`Falha ao enviar: ${resp.status}`);
       }
     }
@@ -273,7 +275,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('relatorio-diario-anomalias error:', e);
+    log.error('relatorio-diario-anomalias error:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

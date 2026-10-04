@@ -1,6 +1,9 @@
 import { exigirInternaOuUsuarioComPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('gerar-resumo-financeiro-diario');
 
 export const handler = async (req: Request) => {
   const corsHeaders = corsHeadersPara(req);
@@ -18,7 +21,7 @@ export const handler = async (req: Request) => {
     const supabase = ctx.dados.supabase;
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 
-    console.log('Gerando relatório diário de operações financeiras...');
+    log.info('Gerando relatório diário de operações financeiras...');
 
     // 1. Buscar todas as empresas ativas
     const { data: empresas } = await supabase.from('empresas').select('id, razao_social');
@@ -80,7 +83,7 @@ export const handler = async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Erro ao gerar relatório diário:', error);
+    log.error('Erro ao gerar relatório diário:', { error_message: mensagemErro(error) });
     return new Response(JSON.stringify({ error: 'Erro interno ao gerar o relatório diário.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -16,6 +16,9 @@ import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('digest-silenciamentos-erro');
 
 const BodySchema = z
   .object({
@@ -148,7 +151,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     });
 
     if (error) {
-      console.error('Falha ao reivindicar digest:', error.message);
+      log.error('Falha ao reivindicar digest:', { error_message: mensagemErro(error.message) });
       return jsonResponse({ success: false, error: 'falha ao consultar silenciamentos' }, 500);
     }
 
@@ -198,7 +201,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
         canais.slack = resp.ok ? 'enviado' : `falha_${resp.status}`;
       } catch (e) {
         canais.slack = 'falha';
-        console.error('Slack:', e instanceof Error ? e.message : String(e));
+        log.error('Slack:', {
+          error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+        });
       }
     } else {
       canais.slack = 'nao_configurado';
@@ -221,10 +226,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
           }),
         });
         canais.email = resp.ok ? 'enviado' : `falha_${resp.status}`;
-        if (!resp.ok) console.error('Resend:', await resp.text());
+        if (!resp.ok) log.error('Resend:', { error_message: mensagemErro(await resp.text()) });
       } catch (e) {
         canais.email = 'falha';
-        console.error('Resend:', e instanceof Error ? e.message : String(e));
+        log.error('Resend:', {
+          error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+        });
       }
     } else {
       canais.email = resendKey ? 'sem_destinatarios' : 'nao_configurado';
@@ -238,7 +245,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
       janelaHoras,
     });
   } catch (e) {
-    console.error('Erro inesperado:', e instanceof Error ? e.message : String(e));
+    log.error('Erro inesperado:', {
+      error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+    });
     return jsonResponse({ success: false, error: 'erro interno' }, 500);
   }
 });

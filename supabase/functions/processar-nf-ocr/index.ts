@@ -3,6 +3,9 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validatePayload } from '../_shared/validation.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('processar-nf-ocr');
 
 const TOOL_DEF = {
   type: 'function',
@@ -45,7 +48,6 @@ const TOOL_DEF = {
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
@@ -173,7 +175,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('ocr error:', e);
+    log.error('ocr error:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -7,6 +7,9 @@ import {
 } from '../_shared/validation.ts';
 import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('bling-proxy');
 
 const BLING_API_BASE = 'https://api.bling.com.br/Api/v3';
 const BLING_AUTH_BASE = 'https://www.bling.com.br/Api/v3/oauth';
@@ -588,7 +591,7 @@ Deno.serve(async (req) => {
         return jsonResponse({ error: `Ação desconhecida: ${action}` }, 400, corsHeaders);
     }
   } catch (error) {
-    console.error('Bling proxy error:', error);
+    log.error('Bling proxy error:', { error_message: mensagemErro(error) });
     return jsonResponse(
       { error: error instanceof Error ? error.message : 'Erro interno' },
       500,
@@ -633,10 +636,10 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
 
     if (!res.ok) {
       const errText = await res.text();
-      console.error('Bling revoke error:', errText);
+      log.error('Bling revoke error:', { error_message: mensagemErro(errText) });
     }
   } catch (e) {
-    console.error('Revoke fetch error:', e);
+    log.error('Revoke fetch error:', { error_message: mensagemErro(e) });
   }
 
   // Always clean up local tokens
@@ -679,7 +682,7 @@ async function handleOAuthCallback(
 
   if (!tokenRes.ok) {
     const errText = await tokenRes.text();
-    console.error('Bling OAuth error:', errText);
+    log.error('Bling OAuth error:', { error_message: mensagemErro(errText) });
     return jsonResponse({ error: 'Falha ao trocar código OAuth', details: errText }, 400, cors);
   }
 
@@ -699,7 +702,7 @@ async function handleOAuthCallback(
   });
 
   if (insertError) {
-    console.error('Error storing Bling token:', insertError);
+    log.error('Error storing Bling token:', { error_message: mensagemErro(insertError) });
     return jsonResponse({ error: 'Erro ao salvar token' }, 500, cors);
   }
 
@@ -751,7 +754,7 @@ async function refreshAccessToken(adminClient: any, token: any): Promise<string 
     });
 
     if (!res.ok) {
-      console.error('Bling refresh failed:', await res.text());
+      log.error('Bling refresh failed:', { error_message: mensagemErro(await res.text()) });
       return token.access_token;
     }
 
@@ -769,7 +772,7 @@ async function refreshAccessToken(adminClient: any, token: any): Promise<string 
 
     return data.access_token;
   } catch (e) {
-    console.error('Bling refresh error:', e);
+    log.error('Bling refresh error:', { error_message: mensagemErro(e) });
     return token.access_token;
   }
 }
@@ -873,7 +876,9 @@ async function blingFetch(
       }
 
       if (!res.ok) {
-        console.error(`Bling API error [${res.status}]:`, JSON.stringify(responseData));
+        log.error(`Bling API error [${res.status}]:`, {
+          error_message: mensagemErro(JSON.stringify(responseData)),
+        });
         return jsonResponse(
           { error: `Bling API error`, status: res.status, details: responseData },
           res.status === 403 ? 403 : 400,

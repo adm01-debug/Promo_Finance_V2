@@ -5,6 +5,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { segredosIguais } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('n8n-dispatch');
 
 interface DispatchRequest {
   event_type: string;
@@ -81,7 +84,6 @@ async function dispatchWithRetry(
 
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   if (req.method !== 'POST')
     return new Response('Method not allowed', { status: 405, headers: corsHeaders });
@@ -163,6 +165,7 @@ Deno.serve(async (req) => {
           duration_ms: r.ms,
           error: r.error ?? null,
         });
+        await log.flush();
         return {
           workflow: cfg.name,
           success: r.success,
@@ -184,7 +187,7 @@ Deno.serve(async (req) => {
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error('n8n-dispatch error:', msg);
+    log.error('n8n-dispatch error:', { error_message: mensagemErro(msg) });
     return new Response(JSON.stringify({ error: 'Erro interno no dispatch.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

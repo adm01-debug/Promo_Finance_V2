@@ -1,5 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('external-data');
 
 // ── Telemetry constants ─────────────────────────────────────────────────
 const SLOW_QUERY_THRESHOLD_MS = 3000;
@@ -46,13 +49,13 @@ async function emitTelemetry(opts: {
     ` count=${opts.count_mode ?? '-'}`;
 
   if (severity === 'very_slow') {
-    console.warn(`⚠️ VERY SLOW QUERY: ${line}`);
+    log.warn(`⚠️ VERY SLOW QUERY: ${line}`);
   } else if (severity === 'slow') {
-    console.warn(`⚠️ SLOW QUERY: ${line}`);
+    log.warn(`⚠️ SLOW QUERY: ${line}`);
   } else if (severity === 'error') {
-    console.error(`${line} error=${opts.error_message}`);
+    log.error(`${line} error=${opts.error_message}`);
   } else {
-    console.info(line);
+    log.info('log_console', { context: { args: [line] } });
   }
 
   // Only persist slow/error queries to avoid flooding
@@ -82,18 +85,20 @@ async function emitTelemetry(opts: {
         empresa_id: opts.empresa_id || null,
       })
       .then(({ error: insertErr }) => {
-        if (insertErr) console.warn('[telemetry-persist] Insert failed:', insertErr.message);
+        if (insertErr)
+          log.warn('[telemetry-persist] Insert failed:', {
+            context: { args: [insertErr.message] },
+          });
       });
   } catch (e) {
     // Fire-and-forget: NEVER block the main response
-    console.error('[telemetry] Failed to persist telemetry:', e);
+    log.error('[telemetry] Failed to persist telemetry:', { error_message: mensagemErro(e) });
   }
 }
 
 // ── Main handler (v2: graceful fallback when EXTERNAL_* secrets missing) ──
 Deno.serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -182,7 +187,7 @@ Deno.serve(async (req) => {
         `Configure em Lovable Cloud → Edge Functions → Secrets para habilitar a sincronização. ` +
         `Enquanto isso, a listagem retorna vazia (fallback) sem interromper o app.`;
 
-      console.warn(
+      log.warn(
         `[external-data] EXTERNAL_DB_NOT_CONFIGURED — missing=[${missing.join(', ')}] tabela=${tabela}`
       );
 
@@ -242,7 +247,9 @@ Deno.serve(async (req) => {
     const queryDurationMs = Math.round(performance.now() - queryStart);
 
     if (error) {
-      console.error(`[external-data] Error querying companies (${tabela}):`, error);
+      log.error(`[external-data] Error querying companies (${tabela}):`, {
+        error_message: mensagemErro(error),
+      });
 
       // Emit error telemetry
       void emitTelemetry({
@@ -341,7 +348,7 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     const durationMs = Math.round(performance.now() - startTime);
-    console.error('[external-data] Unexpected error:', error);
+    log.error('[external-data] Unexpected error:', { error_message: mensagemErro(error) });
 
     // Emit telemetry for unexpected errors
     void emitTelemetry({

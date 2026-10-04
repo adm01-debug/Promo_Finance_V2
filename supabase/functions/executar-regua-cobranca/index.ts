@@ -3,6 +3,9 @@ import { dataAlvoUtc, normalizarCanais, normalizarDiasGatilho, type CanalRegua }
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
+import { createLogger } from '../_shared/observability.ts';
+
+const log = createLogger('executar-regua-cobranca');
 
 const BodySchema = z.object({ dry_run: z.boolean().default(false) });
 
@@ -118,7 +121,7 @@ Deno.serve(async (req) => {
       details: detalhes,
     });
   } catch (erro) {
-    console.error('Erro régua cobrança:', erro);
+    log.error('Erro régua cobrança:', { error_message: mensagemErro(erro) });
     return res({ error: mensagemErro(erro) }, 500);
   }
 });

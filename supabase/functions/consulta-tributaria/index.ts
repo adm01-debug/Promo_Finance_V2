@@ -22,6 +22,9 @@ import {
   vigentes,
   type MatchInfo,
 } from './helpers.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('consulta-tributaria');
 
 const UFS = [
   'AC',
@@ -401,7 +404,7 @@ Deno.serve(async (req) => {
     return await consultarNCM(db, p, res);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Erro desconhecido';
-    console.error('[consulta-tributaria]', msg);
+    log.error('[consulta-tributaria]', { error_message: mensagemErro(msg) });
     return res({ error: 'Erro interno na consulta tributária' }, 500);
   }
 });

@@ -1,9 +1,11 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('get-vapid-key');
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -12,14 +14,14 @@ serve(async (req) => {
     const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
 
     if (!vapidPublicKey) {
-      console.error('[get-vapid-key] VAPID_PUBLIC_KEY not configured');
+      log.error('[get-vapid-key] VAPID_PUBLIC_KEY not configured');
       return new Response(JSON.stringify({ error: 'VAPID key not configured' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
-    console.log('[get-vapid-key] Returning VAPID public key');
+    log.info('[get-vapid-key] Returning VAPID public key');
 
     return new Response(JSON.stringify({ vapidPublicKey }), {
       status: 200,
@@ -27,7 +29,7 @@ serve(async (req) => {
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-    console.error('[get-vapid-key] Erro:', errorMessage);
+    log.error('[get-vapid-key] Erro:', { error_message: mensagemErro(errorMessage) });
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },

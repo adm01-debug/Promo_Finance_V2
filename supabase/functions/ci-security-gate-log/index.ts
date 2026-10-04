@@ -7,6 +7,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('ci-security-gate-log');
 
 const bodySchema = z.object({
   git_sha: z.string().optional(),
@@ -74,7 +77,7 @@ export function createHandler(deps: HandlerDeps) {
     const { error, count } = await deps.insertRows(rows);
 
     if (error) {
-      console.error('insert_failed', error);
+      log.error('insert_failed', { error_message: mensagemErro(error) });
       return res({ error: 'insert_failed', details: error.message }, 500);
     }
 

@@ -7,6 +7,9 @@ import {
 } from '../_shared/validation.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('calcular-health-score-operacional');
 
 const PESOS = {
   tributario: 0.25,
@@ -291,7 +294,7 @@ serve(async (req) => {
         },
         { onConflict: 'empresa_id,snapshot_data' }
       );
-      if (error) console.error('upsert error:', error.message);
+      if (error) log.error('upsert error:', { error_message: mensagemErro(error.message) });
 
       resultados.push({ empresa_id: emp.id, ...scores, tendencia_pct: tendencia });
     }
@@ -300,7 +303,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error('calcular-health-score-operacional error:', e);
+    log.error('calcular-health-score-operacional error:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

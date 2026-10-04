@@ -11,6 +11,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('overlay-rejeicoes-auditoria');
 
 const RejeicaoSchema = z.object({
   catalogo: z.enum([
@@ -100,7 +103,9 @@ Deno.serve(async (req) => {
       })
       .eq('id', body.id);
     if (error) {
-      console.error('[auditoria-overlay] falha ao resolver', error.message);
+      log.error('[auditoria-overlay] falha ao resolver', {
+        error_message: mensagemErro(error.message),
+      });
       return res({ error: 'persist_failed' }, 500);
     }
     return res({ ok: true });
@@ -115,7 +120,9 @@ Deno.serve(async (req) => {
     .select('id, catalogo, identificador, campo, motivo, ocorrencias')
     .eq('referencia', referencia);
   if (readError) {
-    console.error('[auditoria-overlay] falha ao ler existentes', readError.message);
+    log.error('[auditoria-overlay] falha ao ler existentes', {
+      error_message: mensagemErro(readError.message),
+    });
     return res({ error: 'read_failed' }, 500);
   }
 
@@ -160,7 +167,9 @@ Deno.serve(async (req) => {
   if (novos.length > 0) {
     const { error } = await admin.from('overlay_rejeicoes_auditoria').insert(novos);
     if (error) {
-      console.error('[auditoria-overlay] falha ao inserir', error.message);
+      log.error('[auditoria-overlay] falha ao inserir', {
+        error_message: mensagemErro(error.message),
+      });
       return res({ error: 'persist_failed' }, 500);
     }
   }

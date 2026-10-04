@@ -9,6 +9,9 @@ import {
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('categorizar-despesa');
 
 interface Despesa {
   id?: string;
@@ -127,14 +130,14 @@ Responda APENAS com o array JSON, sem texto adicional.`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Erro na API de IA:', errorText);
+      log.error('Erro na API de IA:', { error_message: mensagemErro(errorText) });
       throw new Error(`Erro na API de IA: ${response.status}`);
     }
 
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content || '';
 
-    console.log('Resposta da IA:', content);
+    log.info('Resposta da IA:', { context: { args: [content] } });
 
     // Extrair JSON da resposta
     let categorias: CategoriaDetectada[] = [];
@@ -149,7 +152,7 @@ Responda APENAS com o array JSON, sem texto adicional.`;
         categorias = JSON.parse(content);
       }
     } catch (parseError) {
-      console.error('Erro ao parsear resposta da IA:', parseError);
+      log.error('Erro ao parsear resposta da IA:', { error_message: mensagemErro(parseError) });
       // Fallback: categorização básica
       categorias = despesas.map((d) => ({
         categoria: 'Outros',
@@ -164,7 +167,7 @@ Responda APENAS com o array JSON, sem texto adicional.`;
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Erro ao categorizar despesas:', error);
+    log.error('Erro ao categorizar despesas:', { error_message: mensagemErro(error) });
     const errorMessage = error instanceof Error ? error.message : 'Erro interno';
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,

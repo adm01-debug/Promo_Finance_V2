@@ -8,6 +8,9 @@ import {
 } from '../_shared/validation.ts';
 import { exigirUsuarioComEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('analise-preditiva');
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
@@ -228,7 +231,7 @@ IMPORTANTE:
 - Projete tendências futuras com base no histórico
 - Responda APENAS com o JSON, sem texto adicional.`;
 
-    console.log('Calling Lovable AI Gateway for trend analysis...');
+    log.info('Calling Lovable AI Gateway for trend analysis...');
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -271,7 +274,7 @@ IMPORTANTE:
         );
       }
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
@@ -291,11 +294,11 @@ IMPORTANTE:
         .trim();
       analise = JSON.parse(cleanContent);
     } catch (parseError) {
-      console.error('Failed to parse AI response:', content);
+      log.error('Failed to parse AI response:', { error_message: mensagemErro(content) });
       throw new Error('Invalid JSON response from AI');
     }
 
-    console.log('Trend analysis completed successfully');
+    log.info('Trend analysis completed successfully');
 
     return new Response(
       JSON.stringify({
@@ -313,7 +316,7 @@ IMPORTANTE:
       }
     );
   } catch (error) {
-    console.error('Error in analise-preditiva function:', error);
+    log.error('Error in analise-preditiva function:', { error_message: mensagemErro(error) });
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'Erro desconhecido',

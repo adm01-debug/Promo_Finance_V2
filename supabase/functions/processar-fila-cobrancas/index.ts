@@ -1,6 +1,9 @@
 import { exigirInternaOuUsuarioComPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('processar-fila-cobrancas');
 
 export const handler = async (req: Request) => {
   const corsHeaders = corsHeadersPara(req);
@@ -18,7 +21,7 @@ export const handler = async (req: Request) => {
     const supabase = ctx.dados.supabase;
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 
-    console.log('Iniciando processamento da fila de cobranças...');
+    log.info('Iniciando processamento da fila de cobranças...');
 
     // 1. Reivindicar itens pendentes de forma atomica: a RPC processar_fila_cobrancas
     // usa FOR UPDATE SKIP LOCKED, eliminando a corrida do SELECT+UPDATE manual anterior
@@ -111,7 +114,7 @@ export const handler = async (req: Request) => {
 
           results.push({ id: item.fila_id, success });
         } catch (e) {
-          console.error(`Falha ao processar item ${item.fila_id}:`, e);
+          log.error(`Falha ao processar item ${item.fila_id}:`, { error_message: mensagemErro(e) });
           await supabase
             .from('fila_cobrancas')
             .update({ status: 'falhou', erro: e instanceof Error ? e.message : String(e) })
@@ -124,7 +127,7 @@ export const handler = async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Erro processar fila:', error);
+    log.error('Erro processar fila:', { error_message: mensagemErro(error) });
     return new Response(JSON.stringify({ error: 'Erro interno ao processar a fila.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

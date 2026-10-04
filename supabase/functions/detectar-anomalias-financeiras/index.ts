@@ -4,6 +4,9 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirChamadaInterna, exigirPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('detectar-anomalias-financeiras');
 
 const AnomaliaRunInputSchema = z.object({
   run_id: z.string().uuid().optional(),
@@ -371,7 +374,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('detectar-anomalias-financeiras error:', e);
+    log.error('detectar-anomalias-financeiras error:', { error_message: mensagemErro(e) });
     const msg = e instanceof Error ? e.message : 'unknown';
     await updateRun({
       status: 'failed',

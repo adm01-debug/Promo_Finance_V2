@@ -4,6 +4,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('copilot-global');
 
 const CopilotGlobalBodySchema = z.object({
   contexto_pagina: z.string().max(64).optional(),
@@ -222,7 +225,7 @@ Deno.serve(async (req) => {
         });
       if (!resp.ok) {
         const t = await resp.text();
-        console.error('AI gateway:', resp.status, t);
+        log.error('AI gateway:', { context: { args: [resp.status, t] } });
         return new Response(JSON.stringify({ error: 'AI gateway error' }), {
           status: 500,
           headers: corsHeaders,
@@ -277,7 +280,7 @@ Deno.serve(async (req) => {
       headers: corsHeaders,
     });
   } catch (e) {
-    console.error('copilot-global:', e);
+    log.error('copilot-global:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
       headers: corsHeaders,

@@ -4,6 +4,9 @@ import { ExpertAgentSchema, validatePayload, createErrorResponse } from '../_sha
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('expert-agent');
 
 const SYSTEM_PROMPT = `Você é o EXPERT, um assistente de IA especializado em finanças corporativas para a empresa Promo Finance.
 
@@ -166,7 +169,9 @@ Baseado nos dados financeiros acima, você DEVE:
 4. Alertar sobre clientes/fornecedores que precisam de atenção especial`;
     }
 
-    console.log('Starting EXPERT agent request with', messages.length, 'messages');
+    log.info('Starting EXPERT agent request with', {
+      context: { args: [messages.length, 'messages'] },
+    });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -183,7 +188,7 @@ Baseado nos dados financeiros acima, você DEVE:
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.error('Rate limit exceeded');
+        log.error('Rate limit exceeded');
         return new Response(
           JSON.stringify({
             error: 'Limite de requisições excedido. Por favor, aguarde alguns instantes.',
@@ -192,7 +197,7 @@ Baseado nos dados financeiros acima, você DEVE:
         );
       }
       if (response.status === 402) {
-        console.error('Payment required');
+        log.error('Payment required');
         return new Response(
           JSON.stringify({
             error: 'Créditos insuficientes. Entre em contato com o administrador.',
@@ -201,7 +206,7 @@ Baseado nos dados financeiros acima, você DEVE:
         );
       }
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
       return new Response(JSON.stringify({ error: 'Erro ao processar sua solicitação' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -212,7 +217,7 @@ Baseado nos dados financeiros acima, você DEVE:
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
   } catch (error) {
-    console.error('EXPERT agent error:', error);
+    log.error('EXPERT agent error:', { error_message: mensagemErro(error) });
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Erro desconhecido' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

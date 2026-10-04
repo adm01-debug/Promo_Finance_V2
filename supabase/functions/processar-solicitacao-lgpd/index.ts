@@ -4,6 +4,9 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { mfaAdminInsuficiente } from '../_shared/auth-guard.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('processar-solicitacao-lgpd');
 
 interface Payload {
   solicitacao_id: string;
@@ -11,7 +14,6 @@ interface Payload {
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -213,7 +215,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('processar-solicitacao-lgpd error:', e);
+    log.error('processar-solicitacao-lgpd error:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

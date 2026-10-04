@@ -5,6 +5,9 @@ import { z } from '../_shared/zod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('insights-relatorio');
 
 const InsightsRelatorioBodySchema = z.object({
   dados: z.unknown(),
@@ -13,7 +16,6 @@ const InsightsRelatorioBodySchema = z.object({
 
 export const handler = async (req: Request): Promise<Response> => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -112,7 +114,7 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
         );
       }
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
@@ -146,7 +148,7 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error('insights-relatorio error:', e);
+    log.error('insights-relatorio error:', { error_message: mensagemErro(e) });
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : 'Erro desconhecido' }),
       {

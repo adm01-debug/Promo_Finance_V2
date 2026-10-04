@@ -4,6 +4,9 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('gerar-alertas');
 
 const _GerarAlertasSchema = z
   .object({
@@ -14,7 +17,6 @@ const _GerarAlertasSchema = z
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -31,7 +33,7 @@ serve(async (req) => {
   if (!auth.ok) return auth.resposta;
 
   try {
-    console.log('[gerar-alertas] Iniciando geração de alertas automáticos...');
+    log.info('[gerar-alertas] Iniciando geração de alertas automáticos...');
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -53,18 +55,20 @@ serve(async (req) => {
     const { error: vencimentoError } = await supabase.rpc('gerar_alertas_vencimento');
 
     if (vencimentoError) {
-      console.error('[gerar-alertas] Erro ao gerar alertas de vencimento:', vencimentoError);
+      log.error('[gerar-alertas] Erro ao gerar alertas de vencimento:', {
+        error_message: mensagemErro(vencimentoError),
+      });
     }
 
     let alertasMetasCriados = 0;
 
     // Verificar metas em risco
     if (options.incluirMetas) {
-      console.log('[gerar-alertas] Verificando metas em risco...');
+      log.info('[gerar-alertas] Verificando metas em risco...');
       alertasMetasCriados = await verificarMetasEmRisco(supabase, options.userId);
     }
 
-    console.log('[gerar-alertas] Alertas gerados com sucesso');
+    log.info('[gerar-alertas] Alertas gerados com sucesso');
 
     // Contar alertas criados recentemente
     const { count } = await supabase
@@ -85,7 +89,7 @@ serve(async (req) => {
       }
     );
   } catch (error: any) {
-    console.error('[gerar-alertas] Erro:', error);
+    log.error('[gerar-alertas] Erro:', { error_message: mensagemErro(error) });
     return new Response(JSON.stringify({ success: false, error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
@@ -101,7 +105,7 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
   const diasNoMes = new Date(anoAtual, mesAtual, 0).getDate();
   const percentualMesDecorrido = (diaDoMes / diasNoMes) * 100;
 
-  console.log(
+  log.info(
     `[gerar-alertas] Verificando metas para ${mesAtual}/${anoAtual} - ${percentualMesDecorrido.toFixed(1)}% do mês decorrido`
   );
 
@@ -114,12 +118,12 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
     .eq('ativo', true);
 
   if (metasError) {
-    console.error('[gerar-alertas] Erro ao buscar metas:', metasError);
+    log.error('[gerar-alertas] Erro ao buscar metas:', { error_message: mensagemErro(metasError) });
     return 0;
   }
 
   if (!metas || metas.length === 0) {
-    console.log('[gerar-alertas] Nenhuma meta ativa encontrada');
+    log.info('[gerar-alertas] Nenhuma meta ativa encontrada');
     return 0;
   }
 
@@ -242,7 +246,7 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
         .gte('created_at', ontemISO);
 
       if (!alertasExistentes || alertasExistentes.length === 0) {
-        console.log(`[gerar-alertas] Criando alerta para meta ${meta.tipo} (${meta.id})`);
+        log.info(`[gerar-alertas] Criando alerta para meta ${meta.tipo} (${meta.id})`);
 
         const targetUserId = userId || meta.created_by;
         const alertaTitulo = `${meta.titulo} em Risco`;
@@ -259,12 +263,14 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
         });
 
         if (insertError) {
-          console.error('[gerar-alertas] Erro ao criar alerta de meta:', insertError);
+          log.error('[gerar-alertas] Erro ao criar alerta de meta:', {
+            error_message: mensagemErro(insertError),
+          });
         } else {
           alertasCriados++;
 
           // Enviar notificação push
-          console.log(`[gerar-alertas] Enviando notificação push para meta ${meta.tipo}`);
+          log.info(`[gerar-alertas] Enviando notificação push para meta ${meta.tipo}`);
           try {
             const pushResponse = await fetch(
               `${Deno.env.get('SUPABASE_URL')}/functions/v1/send-push-notification`,
@@ -293,20 +299,24 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
 
             if (!pushResponse.ok) {
               const errorText = await pushResponse.text();
-              console.error('[gerar-alertas] Erro ao enviar push:', errorText);
+              log.error('[gerar-alertas] Erro ao enviar push:', {
+                error_message: mensagemErro(errorText),
+              });
             } else {
-              console.log('[gerar-alertas] Notificação push enviada com sucesso');
+              log.info('[gerar-alertas] Notificação push enviada com sucesso');
             }
           } catch (pushError) {
-            console.error('[gerar-alertas] Erro ao enviar notificação push:', pushError);
+            log.error('[gerar-alertas] Erro ao enviar notificação push:', {
+              error_message: mensagemErro(pushError),
+            });
           }
         }
       } else {
-        console.log(`[gerar-alertas] Alerta para meta ${meta.tipo} já existe nas últimas 24h`);
+        log.info(`[gerar-alertas] Alerta para meta ${meta.tipo} já existe nas últimas 24h`);
       }
     }
   }
 
-  console.log(`[gerar-alertas] ${alertasCriados} alertas de metas criados`);
+  log.info(`[gerar-alertas] ${alertasCriados} alertas de metas criados`);
   return alertasCriados;
 }

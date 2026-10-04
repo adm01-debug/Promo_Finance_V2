@@ -24,6 +24,9 @@ import {
 } from '../_shared/obrigacoes/alertas.ts';
 import type { RegimeAplicavel } from '../_shared/obrigacoes/types.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('gerar-snapshots-conformidade');
 
 /** Prefixo usado na coluna `tipo` para deduplicar alertas de conformidade. */
 const PREFIXO_ALERTA = 'conformidade';
@@ -264,7 +267,9 @@ Deno.serve(async (req: Request) => {
       falhas,
     });
   } catch (e) {
-    console.error('gerar-snapshots-conformidade falhou:', (e as Error).message);
+    log.error('gerar-snapshots-conformidade falhou:', {
+      error_message: mensagemErro((e as Error).message),
+    });
     return json({ error: 'Erro interno', details: (e as Error).message }, 500);
   }
 });

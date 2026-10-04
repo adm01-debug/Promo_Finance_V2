@@ -4,6 +4,9 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('open-finance');
 
 const _OFSchema = z.object({
   action: z.string().min(1),
@@ -32,7 +35,6 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -67,7 +69,7 @@ serve(async (req) => {
     const _v = await validateContract(_OFSchema, _raw);
     if (!_v.success) return _v.response;
     const { action, params } = _v.data as unknown as OpenFinanceRequest;
-    console.log(`[open-finance] Action: ${action}, User: ${user.id}`);
+    log.info(`[open-finance] Action: ${action}, User: ${user.id}`);
 
     let result;
 
@@ -151,7 +153,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
-    console.error('[open-finance] Error:', error);
+    log.error('[open-finance] Error:', { error_message: mensagemErro(error) });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -161,7 +163,7 @@ serve(async (req) => {
 
 // Get list of participating institutions in Open Finance Brazil
 async function getParticipatingInstitutions(): Promise<any> {
-  console.log('[open-finance] Fetching participating institutions');
+  log.info('[open-finance] Fetching participating institutions');
 
   // This would call the Open Finance directory API
   // For now, return a simulated list of major Brazilian banks
@@ -245,7 +247,7 @@ async function createConsent(
     'CREDIT_CARDS_ACCOUNTS_BILLS_READ',
   ];
 
-  console.log(`[open-finance] Creating consent for user ${userId} at institution ${institutionId}`);
+  log.info(`[open-finance] Creating consent for user ${userId} at institution ${institutionId}`);
 
   // In a real implementation, this would:
   // 1. Call the institution's consent API
@@ -299,7 +301,7 @@ function buildAuthorizationUrl(
 
 // Get linked accounts
 async function getAccounts(supabase: any, userId: string, consentId?: string): Promise<any> {
-  console.log(`[open-finance] Getting accounts for user ${userId}, consent ${consentId}`);
+  log.info(`[open-finance] Getting accounts for user ${userId}, consent ${consentId}`);
 
   // Check consent is valid
   if (consentId) {
@@ -359,7 +361,7 @@ async function getBalances(
   consentId?: string,
   accountId?: string
 ): Promise<any> {
-  console.log(`[open-finance] Getting balances for account ${accountId}`);
+  log.info(`[open-finance] Getting balances for account ${accountId}`);
 
   // Simulated balances
   const balances = {
@@ -394,7 +396,7 @@ async function getTransactions(
   startDate?: string,
   endDate?: string
 ): Promise<any> {
-  console.log(`[open-finance] Getting transactions for account ${accountId}`);
+  log.info(`[open-finance] Getting transactions for account ${accountId}`);
 
   const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const end = endDate || new Date().toISOString();
@@ -471,7 +473,7 @@ async function importTransactionsToSystem(
   startDate?: string,
   endDate?: string
 ): Promise<any> {
-  console.log(
+  log.info(
     `[open-finance] Importing transactions for account ${accountId} to conta_bancaria ${contaBancariaId}`
   );
 
@@ -522,7 +524,7 @@ async function importTransactionsToSystem(
     // Check for duplicates
     const key = `${txn.description}-${txnDate}-${valorAbsoluto}`;
     if (existingKeys.has(key)) {
-      console.log(`[open-finance] Skipping duplicate transaction: ${txn.description}`);
+      log.info(`[open-finance] Skipping duplicate transaction: ${txn.description}`);
       skipped++;
       continue;
     }
@@ -540,7 +542,9 @@ async function importTransactionsToSystem(
       });
 
       if (insertError) {
-        console.error(`[open-finance] Error inserting transaction:`, insertError);
+        log.error(`[open-finance] Error inserting transaction:`, {
+          error_message: mensagemErro(insertError),
+        });
         errors++;
       } else {
         imported++;
@@ -548,12 +552,14 @@ async function importTransactionsToSystem(
         existingKeys.add(key);
       }
     } catch (err) {
-      console.error(`[open-finance] Error processing transaction:`, err);
+      log.error(`[open-finance] Error processing transaction:`, {
+        error_message: mensagemErro(err),
+      });
       errors++;
     }
   }
 
-  console.log(
+  log.info(
     `[open-finance] Import complete: ${imported} imported, ${skipped} skipped, ${errors} errors`
   );
 
@@ -569,7 +575,7 @@ async function importTransactionsToSystem(
 
 // Refresh access token
 async function refreshAccessToken(supabase: any, userId: string, consentId?: string): Promise<any> {
-  console.log(`[open-finance] Refreshing token for consent ${consentId}`);
+  log.info(`[open-finance] Refreshing token for consent ${consentId}`);
 
   // In real implementation, call token refresh endpoint
   // Update stored tokens
@@ -583,7 +589,7 @@ async function refreshAccessToken(supabase: any, userId: string, consentId?: str
 
 // Revoke consent
 async function revokeConsent(supabase: any, userId: string, consentId?: string): Promise<any> {
-  console.log(`[open-finance] Revoking consent ${consentId}`);
+  log.info(`[open-finance] Revoking consent ${consentId}`);
 
   if (!consentId) {
     throw new Error('Consent ID is required');

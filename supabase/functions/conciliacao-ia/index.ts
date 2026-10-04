@@ -5,6 +5,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('conciliacao-ia');
 
 const TransacaoExtratoSchema = z.object({
   id: z.string(),
@@ -86,7 +89,6 @@ IMPORTANTE:
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -134,9 +136,7 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log(
-      `Analisando ${transacoes.length} transações contra ${lancamentos.length} lançamentos`
-    );
+    log.info(`Analisando ${transacoes.length} transações contra ${lancamentos.length} lançamentos`);
 
     // Prepare context for AI
     const transacoesResumo = transacoes.slice(0, 50).map((t) => ({
@@ -192,7 +192,7 @@ Encontre os melhores matches e retorne o JSON conforme especificado.`;
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.error('Rate limit exceeded');
+        log.error('Rate limit exceeded');
         return new Response(
           JSON.stringify({
             error: 'Limite de requisições excedido. Tente novamente em alguns instantes.',
@@ -201,21 +201,21 @@ Encontre os melhores matches e retorne o JSON conforme especificado.`;
         );
       }
       if (response.status === 402) {
-        console.error('Payment required');
+        log.error('Payment required');
         return new Response(
           JSON.stringify({ error: 'Créditos insuficientes para análise de IA.' }),
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || '';
 
-    console.log('AI response received, parsing...');
+    log.info('AI response received, parsing...');
 
     // Extract JSON from response
     let matches: MatchSugestaoIA[] = [];
@@ -234,11 +234,11 @@ Encontre os melhores matches e retorne o JSON conforme especificado.`;
         }));
       }
     } catch (parseError) {
-      console.error('Error parsing AI response:', parseError);
-      console.log('Raw content:', content);
+      log.error('Error parsing AI response:', { error_message: mensagemErro(parseError) });
+      log.info('Raw content:', { context: { args: [content] } });
     }
 
-    console.log(`Found ${matches.length} AI-suggested matches`);
+    log.info(`Found ${matches.length} AI-suggested matches`);
 
     return new Response(
       JSON.stringify({
@@ -250,7 +250,7 @@ Encontre os melhores matches e retorne o JSON conforme especificado.`;
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Conciliação IA error:', error);
+    log.error('Conciliação IA error:', { error_message: mensagemErro(error) });
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'Erro ao processar análise de IA',

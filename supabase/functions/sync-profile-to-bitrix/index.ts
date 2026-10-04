@@ -2,6 +2,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'npm:zod@3.23.8';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('sync-profile-to-bitrix');
 
 const _SyncProfileSchema = z
   .object({
@@ -240,7 +243,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error('[sync-profile-to-bitrix] error', msg);
+    log.error('[sync-profile-to-bitrix] error', { error_message: mensagemErro(msg) });
     await admin.from('audit_logs').insert({
       user_id: user.id,
       user_email: emailLower,

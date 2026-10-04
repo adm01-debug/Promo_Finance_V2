@@ -4,6 +4,9 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { exigirAdminOuVinculo, exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('gerar-acoes-recomendadas');
 
 const AcoesRecomendadasBodySchema = z.object({
   empresa_id: z.string().uuid().optional(),
@@ -21,7 +24,6 @@ interface AcaoIA {
 
 serve(async (req) => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   const guard = await exigirInternaOuUsuario(req, 'p13_gerar_acoes_recomendadas');
@@ -198,7 +200,7 @@ Máximo 5 ações, ordenadas por urgência. Se nenhum sinal relevante, retorne a
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('gerar-acoes-recomendadas error:', e);
+    log.error('gerar-acoes-recomendadas error:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

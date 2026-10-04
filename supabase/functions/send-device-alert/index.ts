@@ -1,6 +1,9 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('send-device-alert');
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
@@ -15,7 +18,6 @@ interface DeviceAlertRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -61,7 +63,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    console.log(`Sending new device alert to authenticated user ${userId}`);
+    log.info(`Sending new device alert to authenticated user ${userId}`);
 
     const formattedDate = new Date(timestamp).toLocaleString('pt-BR', {
       timeZone: 'America/Sao_Paulo',
@@ -146,14 +148,14 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const data = await res.json();
-    console.log('Device alert email sent:', data);
+    log.info('Device alert email sent:', { context: { args: [data] } });
 
     return new Response(JSON.stringify({ success: true, data }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   } catch (error: any) {
-    console.error('Error in send-device-alert function:', error);
+    log.error('Error in send-device-alert function:', { error_message: mensagemErro(error) });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },

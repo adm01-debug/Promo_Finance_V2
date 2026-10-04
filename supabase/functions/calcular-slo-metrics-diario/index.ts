@@ -2,6 +2,9 @@
 // Agrega métricas das últimas 24h e persiste snapshot em slo_metrics_diarias.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersComSegredoPara, exigirChamadaInterna } from '../_shared/auth-guard.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('calcular-slo-metrics-diario');
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -91,7 +94,7 @@ export const handler = async (req: Request) => {
       { headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error('calcular-slo-metrics-diario:', e);
+    log.error('calcular-slo-metrics-diario:', { error_message: mensagemErro(e) });
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
       headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },

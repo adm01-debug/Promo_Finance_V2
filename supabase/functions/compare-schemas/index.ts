@@ -1,4 +1,7 @@
 import { corsHeadersComSegredoPara, exigirPapel } from '../_shared/auth-guard.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('compare-schemas');
 
 /** Auditoria administrativa: exige admin e obtém toda credencial do ambiente. */
 Deno.serve(async (req) => {
@@ -98,7 +101,7 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('[compare-schemas] falha na comparação', error);
+    log.error('[compare-schemas] falha na comparação', { error_message: mensagemErro(error) });
     return new Response(JSON.stringify({ error: 'falha_na_comparacao' }), {
       status: 500,
       headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
