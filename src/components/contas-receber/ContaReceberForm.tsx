@@ -226,8 +226,11 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       // reabrir rápido usaria a versão pré-save e cairia em falso conflito.
       setVersaoEsperada(novaVersao);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+    onSuccess: async () => {
+      // Aguarda a recarga antes de fechar: reabrir o mesmo recebível com a
+      // lista velha forneceria o updated_at pré-save e o próximo envio
+      // cairia em falso conflito.
+      await queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       toast({ title: 'Conta atualizada', description: 'Alterações salvas.' });
       onOpenChange(false);
     },

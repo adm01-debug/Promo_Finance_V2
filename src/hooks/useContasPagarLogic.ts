@@ -390,28 +390,35 @@ export function useContasPagarLogic() {
   };
 
   // A seleção em massa persiste entre páginas, mas sortedContas só cobre a
-  // página atual: busca a versão na lista completa.
-  // Reler o updated_at quando a conta está fora da janela carregada fingiria
-  // uma leitura feita na hora da seleção: uma escrita alheia posterior à
-  // seleção passaria pelo lock. Sem versão vista registrada, falha pedindo
-  // recarga em vez de burlar o lock.
-  const versaoVista = (id: string): string | null => {
-    const local = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
-    if (!local) {
-      throw new Error(
-        'Conta fora da janela carregada — recarregue a lista e repita a ação em massa.'
-      );
+  // página atual: busca a linha na lista completa. O snapshot é tirado uma
+  // vez, no início da ação — durante o lote cada sucesso invalida e refaz
+  // ['contas-pagar'], e reler allContas por item pegaria o updated_at de uma
+  // escrita alheia posterior à seleção, fazendo o lock passar com a versão
+  // do outro usuário. Reler quando a conta está fora da janela carregada
+  // fingiria a mesma leitura da seleção: sem versão vista registrada, falha
+  // pedindo recarga em vez de burlar o lock.
+  const snapshotSelecionadas = (): Map<string, { updated_at: string | null; valor: number }> => {
+    const selecionadas = new Map<string, { updated_at: string | null; valor: number }>();
+    for (const id of bulkActionsHook.selectedIds) {
+      const local = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
+      if (!local) {
+        throw new Error(
+          'Conta fora da janela carregada — recarregue a lista e repita a ação em massa.'
+        );
+      }
+      selecionadas.set(id, { updated_at: local.updated_at, valor: local.valor });
     }
-    return local.updated_at;
+    return selecionadas;
   };
 
   const handleBulkMarkAsPaid = () => {
+    const selecionadas = snapshotSelecionadas();
     bulkActionsHook.executeBulkAction(
       async (id) => {
-        const conta = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
+        const conta = selecionadas.get(id);
         await updateMutation.mutateAsync({
           id,
-          expected_updated_at: versaoVista(id),
+          expected_updated_at: conta?.updated_at ?? null,
           status: 'pago',
           data_pagamento: todayISOLocal(),
           valor_pago: conta?.valor || 0,
@@ -422,11 +429,12 @@ export function useContasPagarLogic() {
   };
 
   const handleBulkCancel = () => {
+    const selecionadas = snapshotSelecionadas();
     bulkActionsHook.executeBulkAction(
       async (id) => {
         await updateMutation.mutateAsync({
           id,
-          expected_updated_at: versaoVista(id),
+          expected_updated_at: selecionadas.get(id)?.updated_at ?? null,
           status: 'cancelado',
         });
       },
