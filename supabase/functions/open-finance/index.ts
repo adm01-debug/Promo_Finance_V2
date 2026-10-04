@@ -68,14 +68,18 @@ serve(async (req) => {
         });
       }
 
-      // Depois da autenticação — request não autenticada recebe 401 e não o 503 que vazaria a config do kill-switch.
-      const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
-      if (inativa) return inativa;
-
       const _raw = await req.json();
       const _v = await validateContract(_OFSchema, _raw);
       if (!_v.success) return _v.response;
       const { action, params } = _v.data as unknown as OpenFinanceRequest;
+
+      // Kill-switch depois de auth+schema para as ações sem recurso de empresa:
+      // import_transactions tem vínculo próprio (conta bancária) e checa lá dentro,
+      // senão um usuário sem escopo sobre a conta sondaria o estado do circuito.
+      if (action !== 'import_transactions') {
+        const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
+        if (inativa) return inativa;
+      }
       log.info(`[open-finance] Action: ${action}, User: ${user.id}`);
 
       let result;
@@ -130,6 +134,9 @@ serve(async (req) => {
           }
           const vinculo = await exigirVinculoEmpresa(user.id, contaBancariaAlvo.empresa_id, req);
           if (!vinculo.ok) return vinculo.resposta;
+
+          const inativaImport = respostaIntegracaoDesativada('open_finance', corsHeaders);
+          if (inativaImport) return inativaImport;
 
           result = await importTransactionsToSystem(
             supabase,

@@ -133,11 +133,15 @@ export const handler = async (req: Request) => {
     // kill-switch acontece aqui. As demais descobrem a desativação só depois
     // do vínculo de empresa (ver exigirEmpresaDoRecurso e as listagens com
     // filtro pós-fetch), para não vazar o estado a quem não tem acesso.
+    // cancelar_assinatura entra aqui porque a empresa só é resolvida depois
+    // de um GET prévio ao Asaas — sem este check a chamada alcançaria o
+    // gateway durante o incidente que o switch deveria isolar.
     const ACOES_SEM_ESCOPO_EMPRESA = new Set([
       'consultar_saldo',
       'processar_fila_sincronizacao',
       'simular_backoff',
       'analisar_risco_cliente',
+      'cancelar_assinatura',
     ]);
     if (ACOES_SEM_ESCOPO_EMPRESA.has(action)) {
       const inativaGlobal = respostaIntegracaoDesativada('asaas', corsHeaders);
