@@ -58,6 +58,11 @@ export interface EdgeLogger {
   flush: () => Promise<void>;
 }
 
+// Instância vive no escopo do módulo e atravessa requisições do mesmo worker;
+// o teto evita crescimento ilimitado de memória quando a função nunca chama
+// flush(). Entradas descartadas continuam no stdout (console.log abaixo).
+const MAX_BUFFER = 500;
+
 export function createLogger(functionName: string, requestId?: string): EdgeLogger {
   const buffer: LogEntry[] = [];
   const startedAt = Date.now();
@@ -73,6 +78,7 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
       entry.context = { request_id: requestId, ...(extra?.context ?? {}) };
     }
     buffer.push(entry);
+    if (buffer.length > MAX_BUFFER) buffer.splice(0, buffer.length - MAX_BUFFER);
     // Console também (compatibilidade com supabase logs)
     try {
       console.log(JSON.stringify({ ts: new Date().toISOString(), ...entry }));
@@ -118,7 +124,9 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     error: (event, extra) =>
       push('error', event, {
         ...extra,
-        duration_ms: extra?.duration_ms ?? Date.now() - startedAt,
+        // duration_ms só faz sentido para logger criado por requisição
+        // (requestId); em logger de módulo ele mediria a vida do worker.
+        duration_ms: extra?.duration_ms ?? (requestId ? Date.now() - startedAt : undefined),
       }),
     flush,
   };

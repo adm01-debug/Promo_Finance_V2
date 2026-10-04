@@ -4,6 +4,9 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('relatorio-diario-anomalias');
 
 const _RelAnomSchema = z
   .object({
@@ -35,97 +38,98 @@ function fmt(n: number) {
 }
 
 serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
+  const _t0 = Date.now();
   try {
-    const url = Deno.env.get('SUPABASE_URL')!;
-    const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const resendKey = Deno.env.get('RESEND_API_KEY');
-    const supabase = createClient(url, key);
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
 
-    const _raw = await req.json().catch(() => ({}));
-    const _v = await validateContract(_RelAnomSchema, _raw);
-    if (!_v.success) return _v.response;
-    const body = _v.data;
-    const destinatariosOverride: string[] | undefined = body?.destinatarios;
-    const horasJanela: number = Number(body?.horas ?? 24);
+    try {
+      const url = Deno.env.get('SUPABASE_URL')!;
+      const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const resendKey = Deno.env.get('RESEND_API_KEY');
+      const supabase = createClient(url, key);
 
-    const desde = new Date(Date.now() - horasJanela * 3600 * 1000).toISOString();
+      const _raw = await req.json().catch(() => ({}));
+      const _v = await validateContract(_RelAnomSchema, _raw);
+      if (!_v.success) return _v.response;
+      const body = _v.data;
+      const destinatariosOverride: string[] | undefined = body?.destinatarios;
+      const horasJanela: number = Number(body?.horas ?? 24);
 
-    // 1) Anomalias críticas/altas detectadas na janela
-    const { data: detectadasRaw, error: errDet } = await supabase
-      .from('anomalias_detectadas')
-      .select('id, tipo_anomalia, severidade, status, descricao, detectada_em, resolvida_em')
-      .in('severidade', ['critica', 'alta'])
-      .gte('detectada_em', desde)
-      .order('detectada_em', { ascending: false })
-      .limit(1000);
-    if (errDet) throw errDet;
-    const detectadas = (detectadasRaw ?? []) as Anomalia[];
+      const desde = new Date(Date.now() - horasJanela * 3600 * 1000).toISOString();
 
-    // 2) Anomalias resolvidas na janela (para taxa global de FP)
-    const { data: resolvidasRaw } = await supabase
-      .from('anomalias_detectadas')
-      .select('id, tipo_anomalia, severidade, status, resolvida_em')
-      .in('severidade', ['critica', 'alta'])
-      .in('status', ['confirmada', 'falso_positivo'])
-      .gte('resolvida_em', desde)
-      .limit(2000);
-    const resolvidas = (resolvidasRaw ?? []) as Pick<
-      Anomalia,
-      'id' | 'tipo_anomalia' | 'severidade' | 'status' | 'resolvida_em'
-    >[];
+      // 1) Anomalias críticas/altas detectadas na janela
+      const { data: detectadasRaw, error: errDet } = await supabase
+        .from('anomalias_detectadas')
+        .select('id, tipo_anomalia, severidade, status, descricao, detectada_em, resolvida_em')
+        .in('severidade', ['critica', 'alta'])
+        .gte('detectada_em', desde)
+        .order('detectada_em', { ascending: false })
+        .limit(1000);
+      if (errDet) throw errDet;
+      const detectadas = (detectadasRaw ?? []) as Anomalia[];
 
-    // Agrega por detector (tipo_anomalia)
-    const tipos = Array.from(
-      new Set([
-        ...detectadas.map((a) => a.tipo_anomalia),
-        ...resolvidas.map((a) => a.tipo_anomalia),
-      ])
-    );
-    const porDetector = tipos.map((tipo) => {
-      const det = detectadas.filter((a) => a.tipo_anomalia === tipo);
-      const res = resolvidas.filter((a) => a.tipo_anomalia === tipo);
-      const fp = res.filter((a) => a.status === 'falso_positivo').length;
-      const conf = res.filter((a) => a.status === 'confirmada').length;
-      const total = fp + conf;
-      const taxaFP = total > 0 ? (fp / total) * 100 : 0;
-      return {
-        tipo,
-        label: TIPO_LABEL[tipo] ?? tipo,
-        detectadas: det.length,
-        criticas: det.filter((a) => a.severidade === 'critica').length,
-        altas: det.filter((a) => a.severidade === 'alta').length,
-        confirmadas: conf,
-        falsos_positivos: fp,
-        taxa_fp_pct: taxaFP,
-      };
-    });
+      // 2) Anomalias resolvidas na janela (para taxa global de FP)
+      const { data: resolvidasRaw } = await supabase
+        .from('anomalias_detectadas')
+        .select('id, tipo_anomalia, severidade, status, resolvida_em')
+        .in('severidade', ['critica', 'alta'])
+        .in('status', ['confirmada', 'falso_positivo'])
+        .gte('resolvida_em', desde)
+        .limit(2000);
+      const resolvidas = (resolvidasRaw ?? []) as Pick<
+        Anomalia,
+        'id' | 'tipo_anomalia' | 'severidade' | 'status' | 'resolvida_em'
+      >[];
 
-    const totalDetectadas = detectadas.length;
-    const totalCriticas = detectadas.filter((a) => a.severidade === 'critica').length;
-    const totalAltas = detectadas.filter((a) => a.severidade === 'alta').length;
-    const totalFP = resolvidas.filter((a) => a.status === 'falso_positivo').length;
-    const totalResolvidas = resolvidas.length;
-    const taxaFPGeral = totalResolvidas > 0 ? (totalFP / totalResolvidas) * 100 : 0;
+      // Agrega por detector (tipo_anomalia)
+      const tipos = Array.from(
+        new Set([
+          ...detectadas.map((a) => a.tipo_anomalia),
+          ...resolvidas.map((a) => a.tipo_anomalia),
+        ])
+      );
+      const porDetector = tipos.map((tipo) => {
+        const det = detectadas.filter((a) => a.tipo_anomalia === tipo);
+        const res = resolvidas.filter((a) => a.tipo_anomalia === tipo);
+        const fp = res.filter((a) => a.status === 'falso_positivo').length;
+        const conf = res.filter((a) => a.status === 'confirmada').length;
+        const total = fp + conf;
+        const taxaFP = total > 0 ? (fp / total) * 100 : 0;
+        return {
+          tipo,
+          label: TIPO_LABEL[tipo] ?? tipo,
+          detectadas: det.length,
+          criticas: det.filter((a) => a.severidade === 'critica').length,
+          altas: det.filter((a) => a.severidade === 'alta').length,
+          confirmadas: conf,
+          falsos_positivos: fp,
+          taxa_fp_pct: taxaFP,
+        };
+      });
 
-    // App URL pública (para deep links). Cai para preview se não houver custom.
-    const appUrl = getAppBaseUrl() || 'https://project-promofinance-harmony.lovable.app';
+      const totalDetectadas = detectadas.length;
+      const totalCriticas = detectadas.filter((a) => a.severidade === 'critica').length;
+      const totalAltas = detectadas.filter((a) => a.severidade === 'alta').length;
+      const totalFP = resolvidas.filter((a) => a.status === 'falso_positivo').length;
+      const totalResolvidas = resolvidas.length;
+      const taxaFPGeral = totalResolvidas > 0 ? (totalFP / totalResolvidas) * 100 : 0;
 
-    const linkAnomalia = (id: string) => `${appUrl}/admin/insights-ia/anomalia/${id}`;
+      // App URL pública (para deep links). Cai para preview se não houver custom.
+      const appUrl = getAppBaseUrl() || 'https://project-promofinance-harmony.lovable.app';
 
-    // ===== HTML =====
-    const dataStr = new Date().toLocaleString('pt-BR', {
-      timeZone: 'America/Sao_Paulo',
-    });
-    const linhasDetector = porDetector
-      .sort((a, b) => b.detectadas - a.detectadas)
-      .map(
-        (d) => `
+      const linkAnomalia = (id: string) => `${appUrl}/admin/insights-ia/anomalia/${id}`;
+
+      // ===== HTML =====
+      const dataStr = new Date().toLocaleString('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+      });
+      const linhasDetector = porDetector
+        .sort((a, b) => b.detectadas - a.detectadas)
+        .map(
+          (d) => `
         <tr>
           <td style="padding:8px;border-bottom:1px solid #eee">${d.label}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;text-align:center"><strong>${d.detectadas}</strong></td>
@@ -135,13 +139,13 @@ serve(async (req) => {
           <td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${d.falsos_positivos}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;text-align:center"><strong>${fmt(d.taxa_fp_pct)}%</strong></td>
         </tr>`
-      )
-      .join('');
+        )
+        .join('');
 
-    const linhasItens = detectadas
-      .slice(0, 50)
-      .map(
-        (a) => `
+      const linhasItens = detectadas
+        .slice(0, 50)
+        .map(
+          (a) => `
         <tr>
           <td style="padding:6px;border-bottom:1px solid #f1f1f1;font-size:12px">
             <span style="display:inline-block;padding:2px 6px;border-radius:4px;background:${
@@ -154,10 +158,10 @@ serve(async (req) => {
             <a href="${linkAnomalia(a.id)}" style="color:#2563eb;text-decoration:none">Drill-down →</a>
           </td>
         </tr>`
-      )
-      .join('');
+        )
+        .join('');
 
-    const html = `<!doctype html><html><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;background:#f8fafc;padding:20px">
+      const html = `<!doctype html><html><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;background:#f8fafc;padding:20px">
 <div style="max-width:760px;margin:0 auto;background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0">
   <h1 style="margin:0 0 4px;font-size:20px">Relatório diário de anomalias</h1>
   <p style="margin:0 0 20px;color:#64748b;font-size:13px">Janela: últimas ${horasJanela}h · Gerado em ${dataStr}</p>
@@ -205,78 +209,85 @@ serve(async (req) => {
   <p style="margin-top:24px;font-size:11px;color:#94a3b8">Relatório automático · Não responda este e-mail</p>
 </div></body></html>`;
 
-    // Resolve destinatários: override > admins
-    let destinatarios: string[] = destinatariosOverride ?? [];
-    if (destinatarios.length === 0) {
-      const { data: admins } = await supabase
-        .from('user_roles')
-        .select('user_id')
-        .eq('role', 'admin');
-      const ids = (admins ?? []).map((r: { user_id: string }) => r.user_id);
-      if (ids.length > 0) {
-        const { data: profs } = await supabase.from('profiles').select('email').in('id', ids);
-        destinatarios = (profs ?? [])
-          .map((p: { email: string | null }) => p.email)
-          .filter((e): e is string => !!e);
+      // Resolve destinatários: override > admins
+      let destinatarios: string[] = destinatariosOverride ?? [];
+      if (destinatarios.length === 0) {
+        const { data: admins } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'admin');
+        const ids = (admins ?? []).map((r: { user_id: string }) => r.user_id);
+        if (ids.length > 0) {
+          const { data: profs } = await supabase.from('profiles').select('email').in('id', ids);
+          destinatarios = (profs ?? [])
+            .map((p: { email: string | null }) => p.email)
+            .filter((e): e is string => !!e);
+        }
       }
-    }
 
-    const subject = `[Anomalias] ${totalDetectadas} detecções (${totalCriticas} críticas) · ${horasJanela}h`;
-    let envioStatus: 'enviado' | 'simulado' | 'sem_destinatarios' = 'enviado';
+      const subject = `[Anomalias] ${totalDetectadas} detecções (${totalCriticas} críticas) · ${horasJanela}h`;
+      let envioStatus: 'enviado' | 'simulado' | 'sem_destinatarios' = 'enviado';
 
-    if (destinatarios.length === 0) {
-      envioStatus = 'sem_destinatarios';
-    } else if (!resendKey) {
-      envioStatus = 'simulado';
-      console.log('RESEND_API_KEY ausente — relatório simulado');
-    } else {
-      const resp = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Anomalias <onboarding@resend.dev>',
-          to: destinatarios,
-          subject,
-          html,
-        }),
+      if (destinatarios.length === 0) {
+        envioStatus = 'sem_destinatarios';
+      } else if (!resendKey) {
+        envioStatus = 'simulado';
+        log.info('RESEND_API_KEY ausente — relatório simulado');
+      } else {
+        const resp = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Anomalias <onboarding@resend.dev>',
+            to: destinatarios,
+            subject,
+            html,
+          }),
+        });
+        if (!resp.ok) {
+          const txt = await resp.text();
+          log.error('Resend erro:', { context: { args: [resp.status, txt] } });
+          throw new Error(`Falha ao enviar: ${resp.status}`);
+        }
+      }
+
+      // Persiste alerta para histórico/auditoria
+      await supabase.from('alertas').insert({
+        tipo: 'relatorio_diario_anomalias',
+        titulo: subject,
+        mensagem: `Detectadas=${totalDetectadas} Crit=${totalCriticas} Altas=${totalAltas} TaxaFP=${fmt(taxaFPGeral)}% (status=${envioStatus})`,
+        prioridade: totalCriticas > 0 ? 'alta' : 'media',
+        acao_url: `${appUrl}/admin/insights-ia`,
       });
-      if (!resp.ok) {
-        const txt = await resp.text();
-        console.error('Resend erro:', resp.status, txt);
-        throw new Error(`Falha ao enviar: ${resp.status}`);
-      }
+
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          envioStatus,
+          destinatarios: destinatarios.length,
+          totalDetectadas,
+          totalCriticas,
+          totalAltas,
+          taxaFPGeral,
+          porDetector,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } catch (e) {
+      log.error('relatorio-diario-anomalias error:', {
+        error_message: mensagemErro(e),
+        context: contextoErro(e),
+      });
+      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
-
-    // Persiste alerta para histórico/auditoria
-    await supabase.from('alertas').insert({
-      tipo: 'relatorio_diario_anomalias',
-      titulo: subject,
-      mensagem: `Detectadas=${totalDetectadas} Crit=${totalCriticas} Altas=${totalAltas} TaxaFP=${fmt(taxaFPGeral)}% (status=${envioStatus})`,
-      prioridade: totalCriticas > 0 ? 'alta' : 'media',
-      acao_url: `${appUrl}/admin/insights-ia`,
-    });
-
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        envioStatus,
-        destinatarios: destinatarios.length,
-        totalDetectadas,
-        totalCriticas,
-        totalAltas,
-        taxaFPGeral,
-        porDetector,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (e) {
-    console.error('relatorio-diario-anomalias error:', e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

@@ -11,7 +11,6 @@ import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { validarMagicBytesServidor } from '../_shared/magic-bytes.ts';
 import { createLogger } from '../_shared/logger.ts';
-
 const log = createLogger('upload-anexo');
 
 const BUCKET = 'financeiro';
