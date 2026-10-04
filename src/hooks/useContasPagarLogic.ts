@@ -417,7 +417,7 @@ export function useContasPagarLogic() {
           valor_pago: conta?.valor || 0,
         });
       },
-      { showProgress: true }
+      { showProgress: true, continueOnError: true }
     );
   };
 
@@ -430,7 +430,7 @@ export function useContasPagarLogic() {
           status: 'cancelado',
         });
       },
-      { showProgress: true }
+      { showProgress: true, continueOnError: true }
     );
   };
 

@@ -208,6 +208,16 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                     numero_documento: row.numero_documento || undefined,
                     observacoes: row.observacoes || undefined,
                     recorrente: row.recorrente || false,
+                    // Estas colunas não constam nos tipos gerados de
+                    // contas_pagar — leitura defensiva caso existam no banco.
+                    data_emissao:
+                      typeof (row as Record<string, unknown>).data_emissao === 'string'
+                        ? ((row as Record<string, unknown>).data_emissao as string)
+                        : '',
+                    codigo_barras:
+                      typeof (row as Record<string, unknown>).codigo_barras === 'string'
+                        ? ((row as Record<string, unknown>).codigo_barras as string)
+                        : undefined,
                   });
                 });
             }
