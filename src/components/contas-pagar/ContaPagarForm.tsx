@@ -130,6 +130,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
 
   useEffect(() => {
     if (conta && open) {
+      setVersaoEsperada(null);
       form.reset({
         fornecedor_id: conta.fornecedor_id || undefined,
         fornecedor_nome: conta.fornecedor_nome,
@@ -176,11 +177,29 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
             if (error instanceof ConflitoVersaoError) {
               supabase
                 .from('contas_pagar')
-                .select('updated_at')
+                .select('*')
                 .eq('id', conta.id)
                 .single()
                 .then(({ data: row }) => {
-                  if (row?.updated_at) setVersaoEsperada(row.updated_at);
+                  if (!row) return;
+                  setVersaoEsperada(row.updated_at);
+                  // Recarrega os campos com a versão vigente — salvar de novo
+                  // em cima dos valores antigos sobrescreveria a edição da outra pessoa.
+                  form.reset({
+                    fornecedor_id: row.fornecedor_id || undefined,
+                    fornecedor_nome: row.fornecedor_nome || '',
+                    descricao: row.descricao || '',
+                    valor: row.valor ?? 0,
+                    data_vencimento: row.data_vencimento || '',
+                    empresa_id: row.empresa_id,
+                    centro_custo_id: row.centro_custo_id || undefined,
+                    categoria_id: row.categoria_id || undefined,
+                    conta_bancaria_id: row.conta_bancaria_id || undefined,
+                    tipo_cobranca: row.tipo_cobranca as ContaPagarFormData['tipo_cobranca'],
+                    numero_documento: row.numero_documento || undefined,
+                    observacoes: row.observacoes || undefined,
+                    recorrente: row.recorrente || false,
+                  });
                 });
             }
           },

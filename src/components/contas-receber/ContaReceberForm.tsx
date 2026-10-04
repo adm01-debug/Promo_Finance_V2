@@ -112,6 +112,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
 
   useEffect(() => {
     if (conta && open) {
+      setVersaoEsperada(null);
       form.reset({
         cliente_id: conta.cliente_id || undefined,
         cliente_nome: conta.cliente_nome,
@@ -223,15 +224,31 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
         supabase
           .from('contas_receber')
-          .select('updated_at')
+          .select('*')
           .eq('id', conta.id)
           .single()
           .then(({ data: row }) => {
-            if (row?.updated_at) setVersaoEsperada(row.updated_at);
+            if (!row) return;
+            setVersaoEsperada(row.updated_at);
+            // Recarrega os campos com a versão vigente — salvar de novo em
+            // cima dos valores antigos sobrescreveria a edição da outra pessoa.
+            form.reset({
+              cliente_id: row.cliente_id || undefined,
+              cliente_nome: row.cliente_nome || '',
+              descricao: row.descricao || '',
+              valor: row.valor ?? 0,
+              data_vencimento: row.data_vencimento || '',
+              data_emissao: row.data_emissao || '',
+              empresa_id: row.empresa_id,
+              centro_custo_id: row.centro_custo_id || undefined,
+              categoria_id: row.categoria_id || undefined,
+              conta_bancaria_id: row.conta_bancaria_id || undefined,
+              tipo_cobranca: row.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
+            });
           });
         toast({
           title: 'Conta alterada por outra pessoa',
-          description: 'Revise os dados e salve novamente.',
+          description: 'Os dados foram recarregados — revise e salve novamente.',
           variant: 'destructive',
         });
       } else {
