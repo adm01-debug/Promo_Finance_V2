@@ -23,7 +23,9 @@ Bug em produção com impacto real (S1/S2 do runbook INCIDENTES). Para qualquer 
 5. **Deploy**: merge em `main` dispara deploy Vercel automático (~2-4min). Validar o sintoma original em https://app.promo-finance.com.
 6. **Edge function**: se o fix é numa fn, rodar o workflow `functions-deploy` para ela após o merge — merge não publica fn sozinho.
 7. **Migration de emergência**: usar workflow `prod-migrate` (approval gate) — nunca `db push` da máquina local.
-8. **Cleanup**: após o merge, `git worktree remove ~/hermes-workspaces/hotfix-<slug> --force && git branch -D hotfix/<slug> && git worktree prune`.
+8. **Cleanup**: após o merge, volte para o clone principal antes de remover
+   o worktree (senão o shell fica sem diretório corrente e o `branch -D` falha):
+   `cd <clone-principal> && git worktree remove ~/hermes-workspaces/hotfix-<slug> --force && git branch -D hotfix/<slug> && git worktree prune`.
 
 ## Pós-incidente
 

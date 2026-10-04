@@ -155,7 +155,10 @@ jobs:
           # verdade = divergência; o marcador do próprio CLI = paridade;
           # nem um nem outro = não podemos afirmar nada — falha por segurança.
           if grep -qiE '^\s*(create|alter|drop|grant|revoke|insert into|update |delete from|comment on|truncate )\b' /tmp/prod-diff-pos.sql; then
-            echo "::warning::Ainda há diff entre migrations/ e PROD — revisar artefato."
+            # Diff residual = apply não convergiu PROD para migrations/ — a
+            # execução tem que falhar, não terminar verde com warning.
+            echo "::error::Ainda há diff entre migrations/ e PROD — revisar artefato."
+            exit 1
           elif grep -qi 'no schema changes' /tmp/prod-diff-pos.sql; then
             echo "PROD em paridade com supabase/migrations/ (schemas: public, storage)."
           else
