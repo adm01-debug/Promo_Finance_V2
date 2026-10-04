@@ -111,13 +111,11 @@ export default function CentroCustos() {
   const percentualGasto = totalOrcado > 0 ? (totalRealizado / totalOrcado) * 100 : 0;
   const saldoDisponivel = totalOrcado - totalRealizado;
 
-  const barData = activeCentros
-    .slice(0, 8)
-    .map((c) => ({
-      nome: c.codigo,
-      Orçado: c.orcamento_previsto,
-      Realizado: c.orcamento_realizado,
-    }));
+  const barData = activeCentros.slice(0, 8).map((c) => ({
+    nome: c.codigo,
+    Orçado: c.orcamento_previsto,
+    Realizado: c.orcamento_realizado,
+  }));
   const distribuicao = activeCentros.map((c) => ({
     nome: c.nome,
     valor: c.orcamento_realizado,
