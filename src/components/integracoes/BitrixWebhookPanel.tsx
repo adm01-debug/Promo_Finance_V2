@@ -45,7 +45,11 @@ export const BitrixWebhookPanel = () => {
   const [showUrl, setShowUrl] = useState(false);
 
   // Fetch recent webhook events
-  const { data: events, isLoading, refetch } = useQuery({
+  const {
+    data: events,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['bitrix-webhook-events'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -79,7 +83,9 @@ export const BitrixWebhookPanel = () => {
       return <Badge className="bg-warning/10 text-warning border-warning/20">Fatura</Badge>;
     }
     if (eventType.includes('lead')) {
-      return <Badge className="bg-secondary text-secondary-foreground border-secondary">Lead</Badge>;
+      return (
+        <Badge className="bg-secondary text-secondary-foreground border-secondary">Lead</Badge>
+      );
     }
     return <Badge variant="secondary">{eventType}</Badge>;
   };
@@ -175,9 +181,7 @@ export const BitrixWebhookPanel = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Eventos Recentes</CardTitle>
-          <CardDescription>
-            Últimos 50 eventos recebidos do Bitrix24
-          </CardDescription>
+          <CardDescription>Últimos 50 eventos recebidos do Bitrix24</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -219,7 +223,9 @@ export const BitrixWebhookPanel = () => {
                         )}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {format(new Date(event.received_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}
+                        {format(new Date(event.received_at ?? 0), 'dd/MM/yyyy HH:mm:ss', {
+                          locale: ptBR,
+                        })}
                       </TableCell>
                       <TableCell>
                         <Dialog>
@@ -232,7 +238,8 @@ export const BitrixWebhookPanel = () => {
                             <DialogHeader>
                               <DialogTitle>Detalhes do Evento</DialogTitle>
                               <DialogDescription>
-                                {event.event_type} - {format(new Date(event.received_at), "dd/MM/yyyy HH:mm:ss")}
+                                {event.event_type} -{' '}
+                                {format(new Date(event.received_at ?? 0), 'dd/MM/yyyy HH:mm:ss')}
                               </DialogDescription>
                             </DialogHeader>
                             <ScrollArea className="h-[400px]">

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { 
+import { useMemo, useState } from 'react';
+import {
   Zap,
   RefreshCw,
   ArrowLeftRight,
@@ -8,15 +8,12 @@ import {
   Users,
   DollarSign,
   Link2,
-  Unlink
+  Unlink,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-
-
 
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -33,7 +30,7 @@ export default function Bitrix24() {
   const { toast } = useToast();
   const [autoSync, setAutoSync] = useState(true);
   const [syncInterval, setSyncInterval] = useState('15');
-  
+
   const {
     isConnected,
     isSyncing,
@@ -52,6 +49,29 @@ export default function Bitrix24() {
     fullSync,
     toggleMapping,
   } = useBitrix24();
+
+  const deals = useMemo(
+    () =>
+      syncedDeals?.map((d) => ({
+        id: d.id,
+        bitrix_deal_id: d.bitrix_deal_id,
+        descricao: d.descricao,
+        cliente_nome: d.cliente_nome ?? '',
+        valor: d.valor,
+        data_vencimento: d.data_vencimento,
+        status: d.status ?? '',
+      })),
+    [syncedDeals]
+  );
+
+  const clients = useMemo(
+    () =>
+      syncedClients?.map((c) => ({
+        ...c,
+        razao_social: c.razao_social ?? '',
+      })),
+    [syncedClients]
+  );
 
   const handleTestConnection = async () => {
     try {
@@ -79,7 +99,7 @@ export default function Bitrix24() {
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
-    
+
     if (diffMins < 60) return `${diffMins}min atrás`;
     if (diffHours < 24) return `${diffHours}h atrás`;
     return date.toLocaleDateString('pt-BR');
@@ -90,7 +110,10 @@ export default function Bitrix24() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg" data-tour="bitrix24-icon">
+          <div
+            className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg"
+            data-tour="bitrix24-icon"
+          >
             <Zap className="h-6 w-6 text-white" />
           </div>
           <div>
@@ -101,11 +124,11 @@ export default function Bitrix24() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleTestConnection}
             className={cn(
-              isConnected ? "border-success text-success" : "border-destructive text-destructive"
+              isConnected ? 'border-success text-success' : 'border-destructive text-destructive'
             )}
           >
             {isConnected ? (
@@ -121,7 +144,7 @@ export default function Bitrix24() {
             )}
           </Button>
           <Button onClick={fullSync} disabled={isSyncing || !isConnected}>
-            <RefreshCw className={cn("h-4 w-4 mr-2", isSyncing && "animate-spin")} />
+            <RefreshCw className={cn('h-4 w-4 mr-2', isSyncing && 'animate-spin')} />
             {isSyncing ? 'Sincronizando...' : 'Sincronizar Tudo'}
           </Button>
         </div>
@@ -146,7 +169,11 @@ export default function Bitrix24() {
       )}
 
       {/* KPIs */}
-      <BitrixKpiCards isConnected={isConnected} stats={stats} formatRelativeTime={formatRelativeTime} />
+      <BitrixKpiCards
+        isConnected={isConnected}
+        stats={stats}
+        formatRelativeTime={formatRelativeTime}
+      />
 
       <Tabs defaultValue="deals" className="space-y-6">
         <TabsList>
@@ -174,13 +201,13 @@ export default function Bitrix24() {
 
         {/* Deals Importados */}
         <TabsContent value="deals">
-          <BitrixDealsTab deals={syncedDeals} isLoading={isLoading} onSync={() => syncDeals()} />
+          <BitrixDealsTab deals={deals} isLoading={isLoading} onSync={() => syncDeals()} />
         </TabsContent>
 
         {/* Clientes Importados */}
         <TabsContent value="clients">
           <BitrixClientsTab
-            clients={syncedClients}
+            clients={clients}
             isLoading={isLoading}
             onSyncContacts={() => syncContacts()}
             onSyncCompanies={() => syncCompanies()}
@@ -189,7 +216,11 @@ export default function Bitrix24() {
 
         {/* Histórico de Sincronização */}
         <TabsContent value="logs">
-          <BitrixSyncLogsTab logs={syncLogs} isLoading={isLoading} formatRelativeTime={formatRelativeTime} />
+          <BitrixSyncLogsTab
+            logs={syncLogs}
+            isLoading={isLoading}
+            formatRelativeTime={formatRelativeTime}
+          />
         </TabsContent>
 
         {/* Mapeamento de Campos */}
