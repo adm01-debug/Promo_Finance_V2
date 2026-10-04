@@ -232,14 +232,16 @@ jobs:
           grep -rhoE "ALTER VIEW public\.[a-z0-9_]+ SET \(security_invoker" supabase/migrations/ \
             | sed -E 's/ALTER VIEW public\.([a-z0-9_]+).*/\1/' | sort -u \
             > /tmp/si-esperado.txt
-          # Views criadas já com o atributo (CREATE VIEW ... WITH (security_invoker))
-          grep -rlZ "security_invoker" supabase/migrations/ \
-            | xargs -0 grep -hoE "CREATE OR REPLACE VIEW public\.[a-z0-9_]+|CREATE VIEW public\.[a-z0-9_]+" \
-            | sed -E 's/.*public\.([a-z0-9_]+)/\1/' | sort -u \
-            >> /tmp/si-esperado.txt || true
+          # Views criadas já com o atributo: o WITH (security_invoker)
+          # precisa pertencer ao mesmo CREATE VIEW — por isso o match é
+          # multiline dentro do statement, não um grep solto no arquivo.
+          perl -0777 -ne 'while (/CREATE (?:OR REPLACE )?VIEW public\.([a-z0-9_]+)[^;]*?WITH\s*\(\s*security_invoker/gi) { print "$1\n" }' \
+            supabase/migrations/*.sql | sort -u >> /tmp/si-esperado.txt || true
           sort -u -o /tmp/si-esperado.txt /tmp/si-esperado.txt
+          # Só conta como protegida se o valor for verdadeiro — um
+          # security_invoker=false gravado em PROD não satisfaz a matriz.
           psql "$PROD_DB_URL" -Atc \
-            "SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('v','m') AND COALESCE(array_to_string(c.reloptions,','),'') LIKE '%security_invoker%' ORDER BY 1" \
+            "SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('v','m') AND COALESCE(array_to_string(c.reloptions,','),'') ~ 'security_invoker\s*=\s*(true|on|1|yes)' ORDER BY 1" \
             > /tmp/si-prod.txt
           comm -23 /tmp/si-esperado.txt /tmp/si-prod.txt > /tmp/si-faltando.txt || true
           if [ -s /tmp/si-faltando.txt ]; then
