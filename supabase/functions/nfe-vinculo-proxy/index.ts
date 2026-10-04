@@ -7,6 +7,7 @@ import { VALIDATION_ERROR_CODE, normalizeValidationFields } from '../_shared/con
 import { NfeVinculoProxySchema, validatePayload } from '../_shared/validation.ts';
 import type { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 type Action = z.infer<typeof NfeVinculoProxySchema>;
 
@@ -150,5 +151,5 @@ function defaultDeps(): HandlerDeps {
 }
 
 if (!Deno.env.get('DENO_TESTING')) {
-  Deno.serve(createHandler(defaultDeps()));
+  Deno.serve(withEdgeObservability('nfe-vinculo-proxy', createHandler(defaultDeps())));
 }

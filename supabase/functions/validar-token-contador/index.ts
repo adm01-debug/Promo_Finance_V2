@@ -11,6 +11,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const _TokenSchema = z.object({ token: z.string().min(10) });
 
 async function sha256Hex(input: string): Promise<string> {
@@ -30,100 +31,102 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
   );
 }
 
-Deno.serve(async (req) => {
-  const _t0 = Date.now();
-  const corsHeaders = corsHeadersPara(req);
-  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
+Deno.serve(
+  withEdgeObservability('validar-token-contador', async (req) => {
+    const _t0 = Date.now();
+    const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
 
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const log = createLogger('validar-token-contador', getRequestId(req));
-  const startedAt = Date.now();
+    const log = createLogger('validar-token-contador', getRequestId(req));
+    const startedAt = Date.now();
 
-  try {
-    const _raw = await req.json().catch(() => ({}));
-    const _v = await validateContract(_TokenSchema, _raw);
-    if (!_v.success) return _v.response;
-    const { token } = _v.data;
-    if (!token || typeof token !== 'string') {
-      return res({ error: 'Token ausente' }, 400);
-    }
-
-    const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const JWT_SECRET = Deno.env.get('SUPABASE_JWT_SECRET') ?? SERVICE;
-
-    let payload: Record<string, unknown>;
     try {
-      const key = await importHmacKey(JWT_SECRET);
-      payload = await verifyJwt(token, key);
-    } catch {
-      log.warn('jwt_invalid');
-      return res({ error: 'Token inválido ou expirado' }, 401);
-    }
+      const _raw = await req.json().catch(() => ({}));
+      const _v = await validateContract(_TokenSchema, _raw);
+      if (!_v.success) return _v.response;
+      const { token } = _v.data;
+      if (!token || typeof token !== 'string') {
+        return res({ error: 'Token ausente' }, 400);
+      }
 
-    if (payload.role !== 'contador_readonly') {
-      return res({ error: 'Token sem permissão' }, 403);
-    }
+      const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+      const JWT_SECRET = Deno.env.get('SUPABASE_JWT_SECRET') ?? SERVICE;
 
-    const rawToken = String(payload.sub ?? '');
-    const empresaId = String(payload.empresa_id ?? '');
-    if (!rawToken || !empresaId) return res({ error: 'Token malformado' }, 400);
+      let payload: Record<string, unknown>;
+      try {
+        const key = await importHmacKey(JWT_SECRET);
+        payload = await verifyJwt(token, key);
+      } catch {
+        log.warn('jwt_invalid');
+        return res({ error: 'Token inválido ou expirado' }, 401);
+      }
 
-    const tokenHash = await sha256Hex(rawToken);
-    const admin = createClient(SUPABASE_URL, SERVICE);
+      if (payload.role !== 'contador_readonly') {
+        return res({ error: 'Token sem permissão' }, 403);
+      }
 
-    const { data: convite } = await admin
-      .from('convites_contador')
-      .select('id, empresa_id, email, expires_at, accepted_at, revoked_at')
-      .eq('token_hash', tokenHash)
-      .maybeSingle();
+      const rawToken = String(payload.sub ?? '');
+      const empresaId = String(payload.empresa_id ?? '');
+      if (!rawToken || !empresaId) return res({ error: 'Token malformado' }, 400);
 
-    if (!convite) return res({ error: 'Convite não encontrado' }, 404);
-    if (convite.revoked_at) return res({ error: 'Convite revogado' }, 403);
-    if (new Date(convite.expires_at) < new Date()) return res({ error: 'Convite expirado' }, 403);
+      const tokenHash = await sha256Hex(rawToken);
+      const admin = createClient(SUPABASE_URL, SERVICE);
 
-    // Marca aceite na primeira visita
-    if (!convite.accepted_at) {
-      await admin
+      const { data: convite } = await admin
         .from('convites_contador')
-        .update({ accepted_at: new Date().toISOString() })
-        .eq('id', convite.id);
+        .select('id, empresa_id, email, expires_at, accepted_at, revoked_at')
+        .eq('token_hash', tokenHash)
+        .maybeSingle();
+
+      if (!convite) return res({ error: 'Convite não encontrado' }, 404);
+      if (convite.revoked_at) return res({ error: 'Convite revogado' }, 403);
+      if (new Date(convite.expires_at) < new Date()) return res({ error: 'Convite expirado' }, 403);
+
+      // Marca aceite na primeira visita
+      if (!convite.accepted_at) {
+        await admin
+          .from('convites_contador')
+          .update({ accepted_at: new Date().toISOString() })
+          .eq('id', convite.id);
+      }
+
+      // Busca dados read-only da empresa
+      const { data: empresa } = await admin
+        .from('empresas')
+        .select('id, razao_social, nome_fantasia, cnpj, regime_tributario')
+        .eq('id', empresaId)
+        .maybeSingle();
+
+      if (!empresa) return res({ error: 'Empresa não encontrada' }, 404);
+
+      log.info('fn_success', {
+        duration_ms: Date.now() - startedAt,
+        context: { empresa_id: empresaId },
+      });
+
+      return res(
+        {
+          success: true,
+          empresa,
+          convite: { email: convite.email, expires_at: convite.expires_at },
+        },
+        200
+      );
+    } catch (err) {
+      log.error('fn_failure', {
+        error_message: err instanceof Error ? err.message : String(err),
+        duration_ms: Date.now() - startedAt,
+      });
+      return res({ error: 'Erro interno' }, 500);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-
-    // Busca dados read-only da empresa
-    const { data: empresa } = await admin
-      .from('empresas')
-      .select('id, razao_social, nome_fantasia, cnpj, regime_tributario')
-      .eq('id', empresaId)
-      .maybeSingle();
-
-    if (!empresa) return res({ error: 'Empresa não encontrada' }, 404);
-
-    log.info('fn_success', {
-      duration_ms: Date.now() - startedAt,
-      context: { empresa_id: empresaId },
-    });
-
-    return res(
-      {
-        success: true,
-        empresa,
-        convite: { email: convite.email, expires_at: convite.expires_at },
-      },
-      200
-    );
-  } catch (err) {
-    log.error('fn_failure', {
-      error_message: err instanceof Error ? err.message : String(err),
-      duration_ms: Date.now() - startedAt,
-    });
-    return res({ error: 'Erro interno' }, 500);
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);
 
 function json(body: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(body), {

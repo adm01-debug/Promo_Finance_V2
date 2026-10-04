@@ -6,6 +6,7 @@ import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('open-finance');
 
 const _OFSchema = z.object({
@@ -33,142 +34,144 @@ const OPEN_FINANCE_REDIRECT_URI = Deno.env.get('OPEN_FINANCE_REDIRECT_URI');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders });
-    }
-
+serve(
+  withEdgeObservability('open-finance', async (req) => {
+    const _t0 = Date.now();
     try {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-      // Get authorization header
-      const authHeader = req.headers.get('authorization');
-      if (!authHeader) {
-        return new Response(JSON.stringify({ error: 'Authorization required' }), {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') {
+        return new Response(null, { headers: corsHeaders });
       }
 
-      // Verify user
-      const token = authHeader.replace('Bearer ', '');
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser(token);
+      try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-      if (authError || !user) {
-        return new Response(JSON.stringify({ error: 'Invalid token' }), {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-
-      const _raw = await req.json();
-      const _v = await validateContract(_OFSchema, _raw);
-      if (!_v.success) return _v.response;
-      const { action, params } = _v.data as unknown as OpenFinanceRequest;
-      log.info(`[open-finance] Action: ${action}, User: ${user.id}`);
-
-      let result;
-
-      switch (action) {
-        case 'get_institutions':
-          result = await getParticipatingInstitutions();
-          break;
-
-        case 'create_consent':
-          result = await createConsent(supabase, user.id, params);
-          break;
-
-        case 'get_accounts':
-          result = await getAccounts(supabase, user.id, params?.consent_id);
-          break;
-
-        case 'get_balances':
-          result = await getBalances(supabase, user.id, params?.consent_id, params?.account_id);
-          break;
-
-        case 'get_transactions':
-          result = await getTransactions(
-            supabase,
-            user.id,
-            params?.consent_id,
-            params?.account_id,
-            params?.start_date,
-            params?.end_date
-          );
-          break;
-
-        case 'import_transactions': {
-          const contaBancariaId = params?.conta_bancaria_id;
-          if (!contaBancariaId) {
-            throw new Error('ID da conta bancária do sistema é obrigatório');
-          }
-
-          // Etapa E-012 (PLANO_100.md): a conta bancária de destino não era validada
-          // contra o vínculo empresa↔usuário antes da gravação via service_role,
-          // permitindo IDOR entre tenants (A-015 em AUDITORIA.md).
-          const { data: contaBancariaAlvo, error: contaBancariaError } = await supabase
-            .from('contas_bancarias')
-            .select('empresa_id')
-            .eq('id', contaBancariaId)
-            .maybeSingle();
-          if (contaBancariaError || !contaBancariaAlvo?.empresa_id) {
-            return new Response(JSON.stringify({ error: 'Conta bancária não encontrada' }), {
-              status: 404,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
-          }
-          const vinculo = await exigirVinculoEmpresa(user.id, contaBancariaAlvo.empresa_id, req);
-          if (!vinculo.ok) return vinculo.resposta;
-
-          result = await importTransactionsToSystem(
-            supabase,
-            user.id,
-            params?.consent_id,
-            params?.account_id,
-            contaBancariaId,
-            params?.start_date,
-            params?.end_date
-          );
-          break;
+        // Get authorization header
+        const authHeader = req.headers.get('authorization');
+        if (!authHeader) {
+          return new Response(JSON.stringify({ error: 'Authorization required' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
-        case 'refresh_token':
-          result = await refreshAccessToken(supabase, user.id, params?.consent_id);
-          break;
+        // Verify user
+        const token = authHeader.replace('Bearer ', '');
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser(token);
 
-        case 'revoke_consent':
-          result = await revokeConsent(supabase, user.id, params?.consent_id);
-          break;
+        if (authError || !user) {
+          return new Response(JSON.stringify({ error: 'Invalid token' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
 
-        default:
-          throw new Error(`Unknown action: ${action}`);
+        const _raw = await req.json();
+        const _v = await validateContract(_OFSchema, _raw);
+        if (!_v.success) return _v.response;
+        const { action, params } = _v.data as unknown as OpenFinanceRequest;
+        log.info(`[open-finance] Action: ${action}, User: ${user.id}`);
+
+        let result;
+
+        switch (action) {
+          case 'get_institutions':
+            result = await getParticipatingInstitutions();
+            break;
+
+          case 'create_consent':
+            result = await createConsent(supabase, user.id, params);
+            break;
+
+          case 'get_accounts':
+            result = await getAccounts(supabase, user.id, params?.consent_id);
+            break;
+
+          case 'get_balances':
+            result = await getBalances(supabase, user.id, params?.consent_id, params?.account_id);
+            break;
+
+          case 'get_transactions':
+            result = await getTransactions(
+              supabase,
+              user.id,
+              params?.consent_id,
+              params?.account_id,
+              params?.start_date,
+              params?.end_date
+            );
+            break;
+
+          case 'import_transactions': {
+            const contaBancariaId = params?.conta_bancaria_id;
+            if (!contaBancariaId) {
+              throw new Error('ID da conta bancária do sistema é obrigatório');
+            }
+
+            // Etapa E-012 (PLANO_100.md): a conta bancária de destino não era validada
+            // contra o vínculo empresa↔usuário antes da gravação via service_role,
+            // permitindo IDOR entre tenants (A-015 em AUDITORIA.md).
+            const { data: contaBancariaAlvo, error: contaBancariaError } = await supabase
+              .from('contas_bancarias')
+              .select('empresa_id')
+              .eq('id', contaBancariaId)
+              .maybeSingle();
+            if (contaBancariaError || !contaBancariaAlvo?.empresa_id) {
+              return new Response(JSON.stringify({ error: 'Conta bancária não encontrada' }), {
+                status: 404,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              });
+            }
+            const vinculo = await exigirVinculoEmpresa(user.id, contaBancariaAlvo.empresa_id, req);
+            if (!vinculo.ok) return vinculo.resposta;
+
+            result = await importTransactionsToSystem(
+              supabase,
+              user.id,
+              params?.consent_id,
+              params?.account_id,
+              contaBancariaId,
+              params?.start_date,
+              params?.end_date
+            );
+            break;
+          }
+
+          case 'refresh_token':
+            result = await refreshAccessToken(supabase, user.id, params?.consent_id);
+            break;
+
+          case 'revoke_consent':
+            result = await revokeConsent(supabase, user.id, params?.consent_id);
+            break;
+
+          default:
+            throw new Error(`Unknown action: ${action}`);
+        }
+
+        return new Response(JSON.stringify(result), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (error: any) {
+        log.error('[open-finance] Error:', {
+          error_message: mensagemErro(error),
+          context: contextoErro(error),
+        });
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
-
-      return new Response(JSON.stringify(result), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (error: any) {
-      log.error('[open-finance] Error:', {
-        error_message: mensagemErro(error),
-        context: contextoErro(error),
-      });
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);
 
 // Get list of participating institutions in Open Finance Brazil
 async function getParticipatingInstitutions(): Promise<any> {

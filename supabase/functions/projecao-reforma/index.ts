@@ -2,6 +2,7 @@ import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 // --- Tipos e Cronograma (Sincronizado com lib/tributario/projecao-reforma.ts) ---
 interface AliquotaTransicao {
   ano: number;
@@ -99,105 +100,107 @@ function redutorSetorial(setor?: string): number {
   }
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
+Deno.serve(
+  withEdgeObservability('projecao-reforma', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
 
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const logger = createLogger('projecao-reforma', getRequestId(req));
-  const t0 = Date.now();
+    const logger = createLogger('projecao-reforma', getRequestId(req));
+    const t0 = Date.now();
 
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) return new Response('Unauthorized', { status: 401, headers: corsHeaders });
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) return new Response('Unauthorized', { status: 401, headers: corsHeaders });
 
-    const raw = await req.json();
-    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
-    const Schema = z
-      .object({
-        faturamentoAnual: z.number().nonnegative(),
-        percentualServicos: z.number().min(0).max(100),
-        pisCofinsAtual: z.number().optional(),
-        icmsAtual: z.number().optional(),
-        issAtual: z.number().optional(),
-        setor: z.string().optional(),
-      })
-      .passthrough();
-    const parsed = validatePayload(Schema, raw, 'projecao-reforma');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
-    const {
-      faturamentoAnual,
-      percentualServicos,
-      pisCofinsAtual = 9.25,
-      icmsAtual = 18,
-      issAtual = 5,
-      setor = 'geral',
-    } = parsed.data as Record<string, any>;
+      const raw = await req.json();
+      const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+      const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+      const Schema = z
+        .object({
+          faturamentoAnual: z.number().nonnegative(),
+          percentualServicos: z.number().min(0).max(100),
+          pisCofinsAtual: z.number().optional(),
+          icmsAtual: z.number().optional(),
+          issAtual: z.number().optional(),
+          setor: z.string().optional(),
+        })
+        .passthrough();
+      const parsed = validatePayload(Schema, raw, 'projecao-reforma');
+      if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
+      const {
+        faturamentoAnual,
+        percentualServicos,
+        pisCofinsAtual = 9.25,
+        icmsAtual = 18,
+        issAtual = 5,
+        setor = 'geral',
+      } = parsed.data as Record<string, any>;
 
-    const redutor = redutorSetorial(setor);
-    const pctServ = percentualServicos / 100;
-    const pctCom = (100 - percentualServicos) / 100;
+      const redutor = redutorSetorial(setor);
+      const pctServ = percentualServicos / 100;
+      const pctCom = (100 - percentualServicos) / 100;
 
-    const baseServicos = faturamentoAnual * pctServ;
-    const baseComercio = faturamentoAnual * pctCom;
-    const tributosAtuais =
-      faturamentoAnual * (pisCofinsAtual / 100) +
-      baseComercio * (icmsAtual / 100) +
-      baseServicos * (issAtual / 100);
-    const cargaAtual = (tributosAtuais / faturamentoAnual) * 100;
+      const baseServicos = faturamentoAnual * pctServ;
+      const baseComercio = faturamentoAnual * pctCom;
+      const tributosAtuais =
+        faturamentoAnual * (pisCofinsAtual / 100) +
+        baseComercio * (icmsAtual / 100) +
+        baseServicos * (issAtual / 100);
+      const cargaAtual = (tributosAtuais / faturamentoAnual) * 100;
 
-    const projecoes = CRONOGRAMA_REFORMA.map((ano) => {
-      const cbs = faturamentoAnual * (ano.cbs / 100) * redutor;
-      const ibs = faturamentoAnual * (ano.ibs / 100) * redutor;
-      const pisCofins = faturamentoAnual * (pisCofinsAtual / 100) * (ano.pisCofinsResidual / 100);
-      const icms = baseComercio * (icmsAtual / 100) * (ano.icmsResidual / 100);
-      const iss = baseServicos * (issAtual / 100) * (ano.issResidual / 100);
-      const total = cbs + ibs + pisCofins + icms + iss;
-      const carga = (total / faturamentoAnual) * 100;
+      const projecoes = CRONOGRAMA_REFORMA.map((ano) => {
+        const cbs = faturamentoAnual * (ano.cbs / 100) * redutor;
+        const ibs = faturamentoAnual * (ano.ibs / 100) * redutor;
+        const pisCofins = faturamentoAnual * (pisCofinsAtual / 100) * (ano.pisCofinsResidual / 100);
+        const icms = baseComercio * (icmsAtual / 100) * (ano.icmsResidual / 100);
+        const iss = baseServicos * (issAtual / 100) * (ano.issResidual / 100);
+        const total = cbs + ibs + pisCofins + icms + iss;
+        const carga = (total / faturamentoAnual) * 100;
 
-      return {
-        ano: ano.ano,
-        fase: ano.fase,
-        cbs,
-        ibs,
-        pisCofins,
-        icms,
-        iss,
-        totalTributos: total,
-        cargaEfetiva: carga,
-        variacaoVsAtual: carga - cargaAtual,
-      };
-    });
+        return {
+          ano: ano.ano,
+          fase: ano.fase,
+          cbs,
+          ibs,
+          pisCofins,
+          icms,
+          iss,
+          totalTributos: total,
+          cargaEfetiva: carga,
+          variacaoVsAtual: carga - cargaAtual,
+        };
+      });
 
-    const economiaAcumulada = projecoes.reduce(
-      (acc, p) => acc + (tributosAtuais - p.totalTributos),
-      0
-    );
+      const economiaAcumulada = projecoes.reduce(
+        (acc, p) => acc + (tributosAtuais - p.totalTributos),
+        0
+      );
 
-    logger.info('projecao_concluida', { duration_ms: Date.now() - t0 });
-    await logger.flush();
+      logger.info('projecao_concluida', { duration_ms: Date.now() - t0 });
+      await logger.flush();
 
-    return new Response(
-      JSON.stringify({
-        cargaAtual,
-        projecoes,
-        economiaAcumulada,
-        parametros: raw,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
-  } catch (err) {
-    logger.error('erro_projecao', {
-      error_message: err instanceof Error ? err.message : String(err),
-    });
-    await logger.flush();
-    return new Response(JSON.stringify({ error: 'Erro interno ao processar a projeção.' }), {
-      status: 500,
-      headers: corsHeaders,
-    });
-  }
-});
+      return new Response(
+        JSON.stringify({
+          cargaAtual,
+          projecoes,
+          economiaAcumulada,
+          parametros: raw,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    } catch (err) {
+      logger.error('erro_projecao', {
+        error_message: err instanceof Error ? err.message : String(err),
+      });
+      await logger.flush();
+      return new Response(JSON.stringify({ error: 'Erro interno ao processar a projeção.' }), {
+        status: 500,
+        headers: corsHeaders,
+      });
+    }
+  })
+);

@@ -11,6 +11,7 @@ import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('asaas-proxy');
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
@@ -1317,13 +1318,15 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(async (req) => {
-    const _t0 = Date.now();
-    try {
-      return await handler(req);
-    } finally {
-      log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
-    }
-  });
+  Deno.serve(
+    withEdgeObservability('asaas-proxy', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

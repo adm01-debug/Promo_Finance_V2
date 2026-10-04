@@ -6,6 +6,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const SIMPLES_SUBLIMITE = 4_800_000;
 const SIMPLES_LIMITE_ALERTA = SIMPLES_SUBLIMITE * 0.9;
@@ -365,4 +366,4 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-if (import.meta.main) Deno.serve(handler);
+if (import.meta.main) Deno.serve(withEdgeObservability('gerar-alertas-tributarios', handler));

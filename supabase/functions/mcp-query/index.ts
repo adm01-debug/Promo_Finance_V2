@@ -23,6 +23,7 @@ import * as postgresModule from 'https://esm.sh/postgres@3.4.5?target=denonext';
 import { z } from '../_shared/zod.ts';
 import { avaliarSqlMcp } from './sql-policy.ts';
 import { corsHeaders as CORS, corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 export type SqlClient = {
   unsafe(query: string): Promise<unknown[]>;
@@ -558,5 +559,5 @@ export function createHandler(deps: RuntimeDeps = {}) {
 export const handler = createHandler();
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(withEdgeObservability('mcp-query', handler));
 }
