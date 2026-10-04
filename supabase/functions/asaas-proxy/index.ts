@@ -4,7 +4,7 @@
 // ============================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { AsaasProxySchema, createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { validatePayload, createErrorResponse, AsaasProxySchema } from '../_shared/validation.ts';
 import {
   createCircuitBreaker,
   respostaIntegracaoDesativada,
@@ -14,6 +14,9 @@ import {
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('asaas-proxy');
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
 const asaasCB = createCircuitBreaker('asaas');
@@ -39,10 +42,9 @@ async function asaasFetch(path: string, apiKey: string, options: RequestInit = {
       const contentType = response.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
         const text = await response.text();
-        console.error(
-          `ASAAS retornou resposta não-JSON (${response.status}):`,
-          text.substring(0, 500)
-        );
+        log.error(`ASAAS retornou resposta não-JSON (${response.status}):`, {
+          error_message: mensagemErro(text.substring(0, 500)),
+        });
         throw new Error(`ASAAS retornou erro ${response.status}: resposta inesperada`);
       }
 
@@ -139,7 +141,9 @@ export const handler = async (req: Request) => {
       });
     const checkErrors = (result: any) => {
       if (result.errors) {
-        console.error(`Erro ASAAS ${action}:`, JSON.stringify(result.errors));
+        log.error(`Erro ASAAS ${action}:`, {
+          error_message: mensagemErro(JSON.stringify(result.errors)),
+        });
         return new Response(JSON.stringify(result), {
           status: 422,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -197,9 +201,8 @@ export const handler = async (req: Request) => {
     switch (action) {
       // ===== CLIENTES =====
       case 'criar_cliente': {
-        if (!data?.empresa_id || !data?.nome || !data?.cpf_cnpj) {
+        if (!data?.empresa_id || !data?.nome || !data?.cpf_cnpj)
           return err('empresa_id, nome e cpf_cnpj são obrigatórios');
-        }
         const vinculoErrCriarCliente = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrCriarCliente) return vinculoErrCriarCliente;
 
@@ -233,7 +236,11 @@ export const handler = async (req: Request) => {
             telefone: data.telefone || null,
             endereco: data.endereco || null,
           });
-          if (dbError) console.error('Erro DB criar_cliente:', dbError);
+          if (dbError)
+            log.error('Erro DB criar_cliente:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
         }
         break;
       }
@@ -310,22 +317,14 @@ export const handler = async (req: Request) => {
 
       // ===== COBRANÇAS =====
       case 'criar_cobranca': {
-        if (
-          !data?.empresa_id ||
-          !data?.asaas_customer_id ||
-          !data?.valor ||
-          !data?.data_vencimento
-        ) {
+        if (!data?.empresa_id || !data?.asaas_customer_id || !data?.valor || !data?.data_vencimento)
           return err('empresa_id, asaas_customer_id, valor e data_vencimento são obrigatórios');
-        }
         const vinculoErrCriarCobranca = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrCriarCobranca) return vinculoErrCriarCobranca;
         const vinculoErrClienteCriarCobranca = await exigirEmpresaDoRecurso(
           await empresaDoClienteAsaas(data.asaas_customer_id)
         );
-        if (vinculoErrClienteCriarCobranca) {
-          return vinculoErrClienteCriarCobranca;
-        }
+        if (vinculoErrClienteCriarCobranca) return vinculoErrClienteCriarCobranca;
 
         const billingTypeMap: Record<string, string> = {
           boleto: 'BOLETO',
@@ -374,15 +373,11 @@ export const handler = async (req: Request) => {
           .eq('empresa_id', data.empresa_id)
           .maybeSingle();
 
-        if (data.juros || config?.default_interest_percent) {
-          payload.interest = {
-            value: data.juros || config?.default_interest_percent,
-          };
-        }
+        if (data.juros || config?.default_interest_percent)
+          payload.interest = { value: data.juros || config?.default_interest_percent };
 
-        if (data.multa || config?.default_fine_percent) {
+        if (data.multa || config?.default_fine_percent)
           payload.fine = { value: data.multa || config?.default_fine_percent };
-        }
 
         if (data.desconto_valor) {
           payload.discount = {
@@ -440,7 +435,11 @@ export const handler = async (req: Request) => {
             link_boleto: result.bankSlipUrl || null,
             link_fatura: result.invoiceUrl || null,
           });
-          if (dbError) console.error('Erro DB criar_cobranca:', dbError);
+          if (dbError)
+            log.error('Erro DB criar_cobranca:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
 
           result.pixData = pixData;
           result.boletoData = boletoData;
@@ -503,9 +502,8 @@ export const handler = async (req: Request) => {
 
       // ===== SEGUNDA VIA =====
       case 'segunda_via_boleto': {
-        if (!data?.asaas_id || !data?.nova_data_vencimento) {
+        if (!data?.asaas_id || !data?.nova_data_vencimento)
           return err('asaas_id e nova_data_vencimento são obrigatórios');
-        }
         const vinculoErrSegundaVia = await exigirEmpresaDoRecurso(
           await empresaDoPagamento(data.asaas_id)
         );
@@ -559,9 +557,8 @@ export const handler = async (req: Request) => {
 
       // ===== ASSINATURAS (RECORRÊNCIA) =====
       case 'criar_assinatura': {
-        if (!data?.asaas_customer_id || !data?.valor || !data?.ciclo) {
+        if (!data?.asaas_customer_id || !data?.valor || !data?.ciclo)
           return err('asaas_customer_id, valor e ciclo são obrigatórios');
-        }
 
         const vinculoErrCriarAssinatura = await exigirEmpresaDoRecurso(
           await empresaDoClienteAsaas(data.asaas_customer_id)
@@ -602,9 +599,7 @@ export const handler = async (req: Request) => {
           if (vinculoErrListarAssinaturas) return vinculoErrListarAssinaturas;
         } else {
           escopoListarAssinaturas = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
-          if (!escopoListarAssinaturas.ok) {
-            return escopoListarAssinaturas.resposta;
-          }
+          if (!escopoListarAssinaturas.ok) return escopoListarAssinaturas.resposta;
         }
         const params = new URLSearchParams();
         if (data?.customer) params.set('customer', data.customer);
@@ -663,9 +658,8 @@ export const handler = async (req: Request) => {
 
       // ===== TRANSFERÊNCIAS PIX =====
       case 'transferir_pix': {
-        if (!data?.valor || !data?.chave_pix || !data?.idempotency_key || !data?.empresa_id) {
+        if (!data?.valor || !data?.chave_pix || !data?.idempotency_key || !data?.empresa_id)
           return err('empresa_id, valor, chave_pix e idempotency_key são obrigatórios');
-        }
         const vinculoErrPix = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrPix) return vinculoErrPix;
 
@@ -708,17 +702,17 @@ export const handler = async (req: Request) => {
             idempotency_key: data.idempotency_key,
             user_id: user.id,
           });
-          if (dbError) console.error('Erro DB asaas_transfers:', dbError);
+          if (dbError)
+            log.error('Erro DB asaas_transfers:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
 
           // Registrar na auditoria
           await supabase.from('asaas_audit_trail').insert({
             payment_id: null, // transfers don't have a payment_id link here, but we could use metadata if needed
             action: 'PIX_CASHOUT_CREATED',
-            details: {
-              asaas_id: result.id,
-              valor: data.valor,
-              chave: data.chave_pix,
-            },
+            details: { asaas_id: result.id, valor: data.valor, chave: data.chave_pix },
             user_id: user.id,
           });
         }
@@ -798,18 +792,14 @@ export const handler = async (req: Request) => {
         const vinculoErrNotificacoesCobranca = await exigirEmpresaDoRecurso(
           await empresaDoPagamento(data.asaas_id)
         );
-        if (vinculoErrNotificacoesCobranca) {
-          return vinculoErrNotificacoesCobranca;
-        }
+        if (vinculoErrNotificacoesCobranca) return vinculoErrNotificacoesCobranca;
         result = await asaasFetch(`/payments/${data.asaas_id}/notifications`, ASAAS_API_KEY);
         break;
       }
 
       // ===== LINKS DE PAGAMENTO =====
       case 'criar_link_pagamento': {
-        if (!data?.nome || !data?.valor) {
-          return err('nome e valor são obrigatórios');
-        }
+        if (!data?.nome || !data?.valor) return err('nome e valor são obrigatórios');
         // Asaas não amarra paymentLinks a empresa — sem empresa_id aqui não há
         // como listar_links_pagamento filtrar depois (espelho local abaixo).
         if (!data?.empresa_id) return err('empresa_id é obrigatório');
@@ -846,9 +836,11 @@ export const handler = async (req: Request) => {
             url: result.url ?? null,
             created_by: user.id,
           });
-          if (linkMirrorError) {
-            console.error('Erro ao espelhar link de pagamento:', linkMirrorError);
-          }
+          if (linkMirrorError)
+            log.error('Erro ao espelhar link de pagamento:', {
+              error_message: mensagemErro(linkMirrorError),
+              context: contextoErro(linkMirrorError),
+            });
         }
         break;
       }
@@ -859,9 +851,7 @@ export const handler = async (req: Request) => {
         const params = new URLSearchParams();
         if (data?.offset) params.set('offset', data.offset || '0');
         if (data?.limit) params.set('limit', data.limit || '20');
-        if (data?.active !== undefined) {
-          params.set('active', String(data.active));
-        }
+        if (data?.active !== undefined) params.set('active', String(data.active));
         result = await asaasFetch(`/paymentLinks?${params}`, ASAAS_API_KEY);
         if (Array.isArray(result?.data)) {
           const linkIds = Array.from(
@@ -898,9 +888,7 @@ export const handler = async (req: Request) => {
         const empresaLinkExcluir = await empresaDoLinkPagamento(data.id);
         const vinculoErrExcluirLink = await exigirEmpresaDoRecurso(empresaLinkExcluir);
         if (vinculoErrExcluirLink) return vinculoErrExcluirLink;
-        result = await asaasFetch(`/paymentLinks/${data.id}`, ASAAS_API_KEY, {
-          method: 'DELETE',
-        });
+        result = await asaasFetch(`/paymentLinks/${data.id}`, ASAAS_API_KEY, { method: 'DELETE' });
         const errExcluirLink = checkErrors(result);
         if (errExcluirLink) return errExcluirLink;
         await supabase.from('asaas_audit_trail').insert({
@@ -917,9 +905,7 @@ export const handler = async (req: Request) => {
         const vinculoErrSolicitarAntecipacao = await exigirEmpresaDoRecurso(
           await empresaDoPagamento(data.payment_id)
         );
-        if (vinculoErrSolicitarAntecipacao) {
-          return vinculoErrSolicitarAntecipacao;
-        }
+        if (vinculoErrSolicitarAntecipacao) return vinculoErrSolicitarAntecipacao;
         result = await asaasFetch('/anticipations', ASAAS_API_KEY, {
           method: 'POST',
           body: JSON.stringify({
@@ -950,9 +936,7 @@ export const handler = async (req: Request) => {
 
       case 'listar_antecipacoes': {
         const escopoListarAntecipacoes = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
-        if (!escopoListarAntecipacoes.ok) {
-          return escopoListarAntecipacoes.resposta;
-        }
+        if (!escopoListarAntecipacoes.ok) return escopoListarAntecipacoes.resposta;
         const params = new URLSearchParams();
         if (data?.status) params.set('status', data.status);
         if (data?.offset) params.set('offset', data.offset || '0');
@@ -1062,9 +1046,7 @@ export const handler = async (req: Request) => {
           .lte('next_retry_at', new Date().toISOString())
           .limit(10);
 
-        if (queueError) {
-          return err(`Erro ao buscar fila: ${queueError.message}`);
-        }
+        if (queueError) return err(`Erro ao buscar fila: ${queueError.message}`);
 
         const results = [];
         for (const item of queueItems || []) {
@@ -1206,9 +1188,7 @@ export const handler = async (req: Request) => {
           .eq('id', data.cliente_id)
           .single();
         if (clienteError || !cliente) return err('Cliente não encontrado', 404);
-        if (!cliente.empresa_id) {
-          return err('Cliente sem empresa vinculada', 422);
-        }
+        if (!cliente.empresa_id) return err('Cliente sem empresa vinculada', 422);
 
         if (roleData.role !== 'admin') {
           const { data: vinculo, error: vinculoError } = await supabase
@@ -1219,9 +1199,7 @@ export const handler = async (req: Request) => {
             .eq('ativo', true)
             .limit(1)
             .maybeSingle();
-          if (vinculoError) {
-            return err('Falha ao validar acesso à empresa', 500);
-          }
+          if (vinculoError) return err('Falha ao validar acesso à empresa', 500);
           if (!vinculo) return err('Sem acesso ao cliente informado', 403);
         }
 
@@ -1232,12 +1210,8 @@ export const handler = async (req: Request) => {
           .eq('empresa_id', cliente.empresa_id)
           .limit(1)
           .maybeSingle();
-        if (customerError) {
-          return err('Falha ao consultar vínculo Asaas do cliente', 500);
-        }
-        if (!asaasCustomer) {
-          return err('Cliente ainda não vinculado ao Asaas', 422);
-        }
+        if (customerError) return err('Falha ao consultar vínculo Asaas do cliente', 500);
+        if (!asaasCustomer) return err('Cliente ainda não vinculado ao Asaas', 422);
 
         const { data: pagamentos, error: pagamentosError } = await supabase
           .from('asaas_payments')
@@ -1246,9 +1220,7 @@ export const handler = async (req: Request) => {
           .eq('empresa_id', cliente.empresa_id)
           .order('created_at', { ascending: false })
           .limit(20);
-        if (pagamentosError) {
-          return err('Falha ao consultar histórico de pagamentos', 500);
-        }
+        if (pagamentosError) return err('Falha ao consultar histórico de pagamentos', 500);
 
         const prompt = `Analise o histórico de pagamentos e responda somente JSON válido no formato
         {"score": 0, "recomendacao": "texto"}. O score deve ser inteiro entre 0 e 1000.
@@ -1260,14 +1232,10 @@ export const handler = async (req: Request) => {
             body: { prompt, context: 'analise_risco_credito' },
           }
         );
-        if (iaError) {
-          return err('Serviço de análise de risco indisponível', 502);
-        }
+        if (iaError) return err('Serviço de análise de risco indisponível', 502);
 
         const analise = extrairAnaliseRisco(iaResult?.text);
-        if (!analise) {
-          return err('Resposta inválida do serviço de análise de risco', 502);
-        }
+        if (!analise) return err('Resposta inválida do serviço de análise de risco', 502);
         const faixa = faixaDoScore(analise.score);
 
         const { error: insertError } = await supabase.from('asaas_credit_risk_analysis').insert({
@@ -1279,23 +1247,15 @@ export const handler = async (req: Request) => {
         });
         if (insertError) return err('Falha ao persistir análise de risco', 500);
 
-        result = {
-          score: analise.score,
-          faixa,
-          recommendation: analise.recomendacao,
-        };
+        result = { score: analise.score, faixa, recommendation: analise.recomendacao };
         break;
       }
 
       case 'gerar_sugestoes_conciliacao': {
         if (!data?.empresa_id) return err('empresa_id é obrigatório');
         if (!data?.transaction_id) return err('transaction_id é obrigatório');
-        if (!data?.transaction_date) {
-          return err('transaction_date é obrigatório');
-        }
-        if (typeof data?.transaction_value !== 'number') {
-          return err('transaction_value inválido');
-        }
+        if (!data?.transaction_date) return err('transaction_date é obrigatório');
+        if (typeof data?.transaction_value !== 'number') return err('transaction_value inválido');
         const vinculoErrGerarSugestoes = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrGerarSugestoes) return vinculoErrGerarSugestoes;
 
@@ -1331,10 +1291,7 @@ export const handler = async (req: Request) => {
           .from('asaas_reconciliation_suggestions')
           .update({
             status: 'ACCEPTED',
-            metadata: {
-              accepted_by: user.id,
-              accepted_at: new Date().toISOString(),
-            },
+            metadata: { accepted_by: user.id, accepted_at: new Date().toISOString() },
             updated_at: new Date().toISOString(),
           })
           .eq('id', data.suggestion_id);
@@ -1342,10 +1299,7 @@ export const handler = async (req: Request) => {
 
         const { error: contaErr } = await supabase
           .from('contas_receber')
-          .update({
-            status: 'pago',
-            data_recebimento: new Date().toISOString().slice(0, 10),
-          })
+          .update({ status: 'pago', data_recebimento: new Date().toISOString().slice(0, 10) })
           .eq('id', data.conta_id);
         if (contaErr) return err(contaErr.message, 400);
 
@@ -1359,7 +1313,10 @@ export const handler = async (req: Request) => {
 
     return ok(result);
   } catch (error: any) {
-    console.error('Erro asaas-proxy:', error);
+    log.error('Erro asaas-proxy:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -1368,5 +1325,13 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  });
 }

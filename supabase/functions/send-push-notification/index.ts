@@ -2,6 +2,9 @@ import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirInternaOuUsuario, exigirPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('send-push-notification');
 
 interface PushNotificationRequest {
   userId?: string;
@@ -109,7 +112,9 @@ async function sendWebPush(
   vapidPublicKey: string,
   vapidPrivateKey: string
 ): Promise<Response> {
-  console.log('[send-push-notification] Sending to endpoint:', subscription.endpoint);
+  log.info('[send-push-notification] Sending to endpoint:', {
+    context: { args: [subscription.endpoint] },
+  });
 
   try {
     // For now, we'll use a simpler approach - just POST to the endpoint
@@ -123,17 +128,21 @@ async function sendWebPush(
       body: payload,
     });
 
-    console.log('[send-push-notification] Push response status:', response.status);
+    log.info('[send-push-notification] Push response status:', {
+      context: { args: [response.status] },
+    });
     return response;
   } catch (error) {
-    console.error('[send-push-notification] Push send error:', error);
+    log.error('[send-push-notification] Push send error:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     throw error;
   }
 }
 
 export async function handler(req: Request): Promise<Response> {
   const corsHeaders = corsHeadersPara(req);
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -194,9 +203,15 @@ export async function handler(req: Request): Promise<Response> {
       if (!admin.ok) return admin.resposta;
     }
 
-    console.log('[send-push-notification] Enviando notificação:', {
-      userId: targetUserId,
-      prioridade,
+    log.info('[send-push-notification] Enviando notificação:', {
+      context: {
+        args: [
+          {
+            userId: targetUserId,
+            prioridade,
+          },
+        ],
+      },
     });
 
     // Buscar subscriptions ativas
@@ -207,19 +222,22 @@ export async function handler(req: Request): Promise<Response> {
     const { data: subscriptions, error: fetchError } = await query;
 
     if (fetchError) {
-      console.error('[send-push-notification] Erro ao buscar subscriptions:', fetchError);
+      log.error('[send-push-notification] Erro ao buscar subscriptions:', {
+        error_message: mensagemErro(fetchError),
+        context: contextoErro(fetchError),
+      });
       throw fetchError;
     }
 
     if (!subscriptions || subscriptions.length === 0) {
-      console.log('[send-push-notification] Nenhuma subscription ativa encontrada');
+      log.info('[send-push-notification] Nenhuma subscription ativa encontrada');
       return new Response(
         JSON.stringify({ success: true, sent: 0, message: 'Nenhuma subscription ativa' }),
         { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
-    console.log(`[send-push-notification] Encontradas ${subscriptions.length} subscriptions`);
+    log.info(`[send-push-notification] Encontradas ${subscriptions.length} subscriptions`);
 
     // Preparar payload da notificação
     const payload = JSON.stringify({
@@ -260,14 +278,14 @@ export async function handler(req: Request): Promise<Response> {
             );
 
             if (pushResponse.ok || pushResponse.status === 201) {
-              console.log(
+              log.info(
                 `[send-push-notification] Push enviado com sucesso para user ${subscription.user_id}`
               );
               successCount++;
               continue;
             } else if (pushResponse.status === 410 || pushResponse.status === 404) {
               // Subscription is no longer valid, mark as inactive
-              console.log(
+              log.info(
                 `[send-push-notification] Subscription expirada para user ${subscription.user_id}, desativando...`
               );
               await supabase
@@ -278,12 +296,15 @@ export async function handler(req: Request): Promise<Response> {
               continue;
             }
           } catch (pushError) {
-            console.error(`[send-push-notification] Erro no push para subscription:`, pushError);
+            log.error(`[send-push-notification] Erro no push para subscription:`, {
+              error_message: mensagemErro(pushError),
+              context: contextoErro(pushError),
+            });
           }
         }
 
         // Fallback: Criar alerta no banco para mostrar na UI
-        console.log(
+        log.info(
           `[send-push-notification] Criando alerta no banco para user ${subscription.user_id}`
         );
         await supabase.from('alertas').insert({
@@ -297,12 +318,15 @@ export async function handler(req: Request): Promise<Response> {
 
         successCount++;
       } catch (error) {
-        console.error(`[send-push-notification] Erro ao processar subscription:`, error);
+        log.error(`[send-push-notification] Erro ao processar subscription:`, {
+          error_message: mensagemErro(error),
+          context: contextoErro(error),
+        });
         failCount++;
       }
     }
 
-    console.log(`[send-push-notification] Resultado: ${successCount} sucesso, ${failCount} falhas`);
+    log.info(`[send-push-notification] Resultado: ${successCount} sucesso, ${failCount} falhas`);
 
     return new Response(
       JSON.stringify({
@@ -315,7 +339,10 @@ export async function handler(req: Request): Promise<Response> {
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-    console.error('[send-push-notification] Erro:', errorMessage);
+    log.error('[send-push-notification] Erro:', {
+      error_message: mensagemErro(errorMessage),
+      context: contextoErro(errorMessage),
+    });
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -323,4 +350,13 @@ export async function handler(req: Request): Promise<Response> {
   }
 }
 
-if (import.meta.main) serve(handler);
+if (import.meta.main)
+  serve(async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  });

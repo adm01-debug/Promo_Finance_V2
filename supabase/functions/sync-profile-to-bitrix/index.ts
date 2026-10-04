@@ -3,6 +3,9 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'npm:zod@3.23.8';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('sync-profile-to-bitrix');
 
 const _SyncProfileSchema = z
   .object({
@@ -116,144 +119,155 @@ async function findBitrixContactByEmail(email: string): Promise<string | null> {
 }
 
 Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  const res = (a: unknown, b = 200) => jsonResp(a, b, corsHeaders);
-
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
-
-  // Autenticação: precisamos do user logado
-  const authHeader = req.headers.get('Authorization') ?? '';
-  if (!authHeader.startsWith('Bearer ')) return res({ error: 'unauthorized' }, 401);
-
-  const userClient = createClient(SUPABASE_URL, ANON_KEY, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const { data: userData, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !userData?.user) return res({ error: 'unauthorized' }, 401);
-  const user = userData.user;
-
-  const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
-  if (inativa) return inativa;
-
-  // Body
-  let body: SyncBody;
+  const _t0 = Date.now();
   try {
-    const _raw = await req.json();
-    const _v = await validateContract(_SyncProfileSchema, _raw);
-    if (!_v.success) return _v.response;
-    body = _v.data as unknown as SyncBody;
-  } catch {
-    return res({ error: 'invalid_json' }, 400);
-  }
+    const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => jsonResp(a, b, corsHeaders);
 
-  const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+    if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
-  // Carrega valores atuais do profile como fallback (caso o cliente envie só um dos campos)
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('email, avatar_url, telefone, full_name')
-    .eq('id', user.id)
-    .maybeSingle();
+    // Autenticação: precisamos do user logado
+    const authHeader = req.headers.get('Authorization') ?? '';
+    if (!authHeader.startsWith('Bearer ')) return res({ error: 'unauthorized' }, 401);
 
-  if (!profile?.email) return res({ error: 'profile_email_missing' }, 404);
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userData, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !userData?.user) return res({ error: 'unauthorized' }, 401);
+    const user = userData.user;
 
-  const emailLower = String(profile.email).toLowerCase();
-  const avatarUrl = body.avatar_url !== undefined ? body.avatar_url : (profile.avatar_url ?? null);
-  const telefoneNorm = normalizePhone(
-    body.telefone !== undefined ? body.telefone : profile.telefone
-  );
+    // Depois da autenticação — request não autenticada recebe 401 e não o 503 que vazaria a config do kill-switch.
+    const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+    if (inativa) return inativa;
 
-  if (!avatarUrl && !telefoneNorm) {
-    return res({ ok: true, skipped: true, reason: 'nothing_to_sync' });
-  }
+    // Body
+    let body: SyncBody;
+    try {
+      const _raw = await req.json();
+      const _v = await validateContract(_SyncProfileSchema, _raw);
+      if (!_v.success) return _v.response;
+      body = _v.data as unknown as SyncBody;
+    } catch {
+      return res({ error: 'invalid_json' }, 400);
+    }
 
-  if (!BITRIX_DOMAIN) {
-    return res({ error: 'bitrix_not_configured' }, 503);
-  }
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-  try {
-    const contactId = await findBitrixContactByEmail(emailLower);
-    if (!contactId) {
-      // Log e retorno graceful — não criamos contato automaticamente.
+    // Carrega valores atuais do profile como fallback (caso o cliente envie só um dos campos)
+    const { data: profile } = await admin
+      .from('profiles')
+      .select('email, avatar_url, telefone, full_name')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!profile?.email) return res({ error: 'profile_email_missing' }, 404);
+
+    const emailLower = String(profile.email).toLowerCase();
+    const avatarUrl =
+      body.avatar_url !== undefined ? body.avatar_url : (profile.avatar_url ?? null);
+    const telefoneNorm = normalizePhone(
+      body.telefone !== undefined ? body.telefone : profile.telefone
+    );
+
+    if (!avatarUrl && !telefoneNorm) {
+      return res({ ok: true, skipped: true, reason: 'nothing_to_sync' });
+    }
+
+    if (!BITRIX_DOMAIN) {
+      return res({ error: 'bitrix_not_configured' }, 503);
+    }
+
+    try {
+      const contactId = await findBitrixContactByEmail(emailLower);
+      if (!contactId) {
+        // Log e retorno graceful — não criamos contato automaticamente.
+        await admin.from('audit_logs').insert({
+          user_id: user.id,
+          user_email: emailLower,
+          action: 'UPDATE',
+          table_name: 'bitrix_profile_sync',
+          record_id: null,
+          new_data: {
+            status: 'contact_not_found',
+            email: emailLower,
+          },
+          details: 'Bitrix24: contato não encontrado por email',
+        });
+        return res({ ok: false, error: 'bitrix_contact_not_found' }, 404);
+      }
+
+      const fields: Record<string, unknown> = {};
+      if (telefoneNorm) {
+        fields.PHONE = [{ VALUE: telefoneNorm, VALUE_TYPE: 'WORK' }];
+      }
+      if (avatarUrl) {
+        // Bitrix aceita PHOTO como objeto { fileData: [name, base64] } ou URL via UF.
+        // Quando é URL pública, gravamos em campo customizado UF_CRM_AVATAR_URL (se existir)
+        // e também tentamos PHOTO via fetch + base64.
+        fields.UF_CRM_AVATAR_URL = avatarUrl;
+        try {
+          const imgRes = await fetch(avatarUrl);
+          if (imgRes.ok) {
+            const buf = new Uint8Array(await imgRes.arrayBuffer());
+            // base64 encode
+            let bin = '';
+            for (let i = 0; i < buf.byteLength; i++) bin += String.fromCharCode(buf[i]);
+            const b64 = btoa(bin);
+            const ext = (avatarUrl.split('.').pop() || 'jpg').split('?')[0].toLowerCase();
+            const safeExt = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext) ? ext : 'jpg';
+            fields.PHOTO = { fileData: [`avatar.${safeExt}`, b64] };
+          }
+        } catch (_) {
+          /* avatar opcional, segue sem PHOTO */
+        }
+      }
+
+      await bitrixCall('crm.contact.update', {
+        id: contactId,
+        fields,
+      });
+
+      await admin.from('audit_logs').insert({
+        user_id: user.id,
+        user_email: emailLower,
+        action: 'UPDATE',
+        table_name: 'bitrix_profile_sync',
+        record_id: contactId,
+        new_data: {
+          bitrix_contact_id: contactId,
+          synced_fields: Object.keys(fields),
+          avatar_url: avatarUrl ?? null,
+          telefone: telefoneNorm ?? null,
+        },
+        details: 'Sincronização avatar/telefone do perfil para Bitrix24',
+      });
+
+      return res({
+        ok: true,
+        bitrix_contact_id: contactId,
+        synced_fields: Object.keys(fields),
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      log.error('[sync-profile-to-bitrix] error', {
+        error_message: mensagemErro(msg),
+        context: contextoErro(msg),
+      });
       await admin.from('audit_logs').insert({
         user_id: user.id,
         user_email: emailLower,
         action: 'UPDATE',
         table_name: 'bitrix_profile_sync',
         record_id: null,
-        new_data: {
-          status: 'contact_not_found',
-          email: emailLower,
-        },
-        details: 'Bitrix24: contato não encontrado por email',
+        new_data: { error: msg },
+        details: 'Falha ao sincronizar perfil para Bitrix24',
       });
-      return res({ ok: false, error: 'bitrix_contact_not_found' }, 404);
+      return res({ ok: false, error: 'sync_failed', details: msg }, 500);
     }
-
-    const fields: Record<string, unknown> = {};
-    if (telefoneNorm) {
-      fields.PHONE = [{ VALUE: telefoneNorm, VALUE_TYPE: 'WORK' }];
-    }
-    if (avatarUrl) {
-      // Bitrix aceita PHOTO como objeto { fileData: [name, base64] } ou URL via UF.
-      // Quando é URL pública, gravamos em campo customizado UF_CRM_AVATAR_URL (se existir)
-      // e também tentamos PHOTO via fetch + base64.
-      fields.UF_CRM_AVATAR_URL = avatarUrl;
-      try {
-        const imgRes = await fetch(avatarUrl);
-        if (imgRes.ok) {
-          const buf = new Uint8Array(await imgRes.arrayBuffer());
-          // base64 encode
-          let bin = '';
-          for (let i = 0; i < buf.byteLength; i++) bin += String.fromCharCode(buf[i]);
-          const b64 = btoa(bin);
-          const ext = (avatarUrl.split('.').pop() || 'jpg').split('?')[0].toLowerCase();
-          const safeExt = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext) ? ext : 'jpg';
-          fields.PHOTO = { fileData: [`avatar.${safeExt}`, b64] };
-        }
-      } catch (_) {
-        /* avatar opcional, segue sem PHOTO */
-      }
-    }
-
-    await bitrixCall('crm.contact.update', {
-      id: contactId,
-      fields,
-    });
-
-    await admin.from('audit_logs').insert({
-      user_id: user.id,
-      user_email: emailLower,
-      action: 'UPDATE',
-      table_name: 'bitrix_profile_sync',
-      record_id: contactId,
-      new_data: {
-        bitrix_contact_id: contactId,
-        synced_fields: Object.keys(fields),
-        avatar_url: avatarUrl ?? null,
-        telefone: telefoneNorm ?? null,
-      },
-      details: 'Sincronização avatar/telefone do perfil para Bitrix24',
-    });
-
-    return res({
-      ok: true,
-      bitrix_contact_id: contactId,
-      synced_fields: Object.keys(fields),
-    });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error('[sync-profile-to-bitrix] error', msg);
-    await admin.from('audit_logs').insert({
-      user_id: user.id,
-      user_email: emailLower,
-      action: 'UPDATE',
-      table_name: 'bitrix_profile_sync',
-      record_id: null,
-      new_data: { error: msg },
-      details: 'Falha ao sincronizar perfil para Bitrix24',
-    });
-    return res({ ok: false, error: 'sync_failed', details: msg }, 500);
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

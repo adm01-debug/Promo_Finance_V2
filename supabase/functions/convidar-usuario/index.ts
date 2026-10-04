@@ -14,6 +14,8 @@ import {
 } from '../_shared/rate-limit.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+const log = createLogger('convidar-usuario');
 
 const PapelSchema = z.enum(['admin', 'financeiro', 'operacional', 'visualizador']);
 const ConviteSchema = z
@@ -218,8 +220,17 @@ export const handler = createHandler({
   exigirPapel,
   clientDeServico: clientDeServico as unknown as () => ClienteConvite,
   appBaseUrl: () => getAppBaseUrl() || undefined,
-  registrarErro: (mensagem, contexto) => console.error(mensagem, contexto),
+  registrarErro: (mensagem, contexto) =>
+    log.error('error_console', { context: { args: [mensagem, contexto] } }),
   verificarRateLimit: checkRateLimit,
 });
 
-Deno.serve(handler);
+Deno.serve(async (req) => {
+  const _t0 = Date.now();
+  try {
+    return await handler(req);
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
+  }
+});
